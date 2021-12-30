@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/e2e/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/e2e/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:simpleType name="timeUnit" final="restriction">
+        <x:restriction base="x:string">
+            <x:enumeration value="millis"/>
+            <x:enumeration value="seconds"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="url" final="restriction">
+        <x:restriction base="x:string">
+            <x:pattern value="https?://.*"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="browserVersionElement" final="restriction">
+        <x:restriction base="x:string">
+            <x:pattern value="(Chrome|Firefox|Opera)__[0-9\\.]+"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="nonEmptyString">
+        <x:restriction base="x:string">
+            <x:minLength value="1"/>
+        </x:restriction>
+    </x:simpleType>
+
+</x:schema>

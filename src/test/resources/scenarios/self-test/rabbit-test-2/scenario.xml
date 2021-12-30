@@ -1,0 +1,140 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario" active="false">
+
+    <overview>
+        <description>Self rabbit test #2</description>
+        <name>RabbitMQ test scenario #2</name>
+        <developer>Developer</developer>
+    </overview>
+
+    <tags>
+        <tag>self_test</tag>
+    </tags>
+
+    <rabbit comment="Receive 2 times and send 1 time"
+            alias="rabbit-one">
+        <receive queue="queue">
+            <file>expected_1.json</file>
+        </receive>
+
+        <receive queue="queue">
+            <message>
+                []
+            </message>
+        </receive>
+
+        <send routingKey="queue">
+            <file>body_1.json</file>
+        </send>
+    </rabbit>
+
+    <rabbit comment="Receive then send and receive 2 time"
+            alias="rabbit-one">
+        <receive queue="queue">
+            <file>expected_2.json</file>
+        </receive>
+
+        <send routingKey="queue">
+            <file>body_1.json</file>
+        </send>
+
+        <receive queue="queue">
+            <message>
+                [ {
+                "message" : "{\n \"squadName\": \"Super hero squad\",\n \"homeTown\": \"Metro City\",\n \"formed\":
+                2016,\n \"secretBase\": \"Super tower\",\n \"active\": true\n}",
+                "correlationId" : "null",
+                "headers" : { }
+                } ]
+            </message>
+        </receive>
+    </rabbit>
+
+    <rabbit comment="Receive then send and receive 2 time"
+            alias="rabbit-one">
+        <send routingKey="queue2" correlationId="343gfrvs-dh4aakgksa-cgo60dmsw-sdf4gj62">
+            <file>body_2.json</file>
+        </send>
+
+        <send routingKey="queue2" correlationId="dfk34f-dfntrij9-fdskngekrf-w4jdskg6g">
+            <file>body_3.json</file>
+        </send>
+
+        <send routingKey="queue3" correlationId="dfskogdfa9sd-rekjdfnkv-sdfkjewnd8-erkfdn">
+            <file>body_4.json</file>
+        </send>
+
+        <receive queue="queue2" timeoutMillis="500" prefetchCount="2">
+            <message>
+                [ {
+                "message" : "{\n \"squadName\": \"Still rule cool\",\n \"homeTown\": \"Metro Tower\",\n \"formed\":
+                2018,\n \"secretBase\": \"Rower\",\n \"active\": false\n}",
+                "correlationId" : "343gfrvs-dh4aakgksa-cgo60dmsw-sdf4gj62",
+                "headers" : { }
+                }, {
+                "message" : "{\n \"rule\": \"1+1+3=5\",\n \"number\": 2\n}",
+                "correlationId" : "dfk34f-dfntrij9-fdskngekrf-w4jdskg6g",
+                "headers" : { }
+                } ]
+            </message>
+        </receive>
+
+        <receive queue="queue3" timeoutMillis="200">
+            <file>expected_3.json</file>
+        </receive>
+    </rabbit>
+
+
+    <rabbit comment="Receive then send with headers"
+            alias="rabbit-one">
+        <send routingKey="queue2">
+            <file>body_2.json</file>
+        </send>
+
+        <send routingKey="queue2" correlationId="lknfre303-dfkm39ej2-dskkeem-dskomdwh">
+            <file>body_3.json</file>
+            <headers>
+                <header name="name1" value="value1"/>
+                <header name="name2" value="value2"/>
+                <header name="name3" value="value3"/>
+            </headers>
+        </send>
+
+        <send routingKey="queue2">
+            <file>body_4.json</file>
+            <headers>
+                <header name="name4" value="value4"/>
+            </headers>
+        </send>
+
+        <receive queue="queue2" timeoutMillis="500" prefetchCount="2">
+            <message>
+                [ {
+                "message" : "{\n \"squadName\": \"Still rule cool\",\n \"homeTown\": \"Metro Tower\",\n \"formed\":
+                2018,\n \"secretBase\": \"Rower\",\n \"active\": false\n}",
+                "correlationId" : "null",
+                "headers" : { }
+                }, {
+                "message" : "{\n \"rule\": \"1+1+3=5\",\n \"number\": 2\n}",
+                "correlationId" : "lknfre303-dfkm39ej2-dskkeem-dskomdwh",
+                "headers" : {
+                "name3" : "value3",
+                "name2" : "value2",
+                "name1" : "value1"
+                }
+                } ]
+            </message>
+        </receive>
+
+        <receive queue="queue2" timeoutMillis="500">
+            <message>
+                [ {
+                "message" : "{\n \"data\": \"Are you\",\n \"make\": true\n}",
+                "correlationId" : "null",
+                "headers" : {
+                "name4" : "value4"
+                }
+                } ]
+            </message>
+        </receive>
+    </rabbit>
+</scenario>

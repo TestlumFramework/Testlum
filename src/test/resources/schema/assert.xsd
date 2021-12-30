@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/e2e/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/e2e/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="assert">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
+                <x:choice>
+                    <x:element name="content" type="tns:nonEmptyString"/>
+                </x:choice>
+                <x:attribute name="attribute" type="tns:attribute" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="attribute">
+        <x:restriction base="x:string">
+            <x:enumeration value="outerHTML"/>
+            <x:enumeration value="class"/>
+            <x:enumeration value="id"/>
+        </x:restriction>
+    </x:simpleType>
+
+</x:schema>

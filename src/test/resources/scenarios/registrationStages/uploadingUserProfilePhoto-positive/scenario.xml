@@ -1,0 +1,31 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario" variations="userProfilePhotoP.csv" active="false">
+
+    <overview>
+        <description>Checking upload photo for user profile</description>
+        <name>User photo upload positive case</name>
+    </overview>
+
+    <tags>
+        <tag>Frontend</tag>
+    </tags>
+
+    <navigateTo comment="Navigate to add photo profile"
+                path="/register/user-photo"/>
+
+    <input comment="Add profile photo"
+           locatorId="userPhoto.addProfilePhotoButton"
+           value="{{nameOfPhoto}}"/>
+
+    <click comment="Click confirm button"
+           locatorId="userPhoto.confirmButton"/>
+
+    <wait comment="Waiting for loading Dashboard page"
+          time="1" unit="seconds"/>
+
+    <assert comment="We go to Dashboard page"
+            locatorId="dashboard.dashBoardTitle"
+            attribute="outerHTML">
+        <content><![CDATA[<h3 data-v-17e687e5="">Dashboard</h3>]]></content>
+    </assert>
+
+</scenario>

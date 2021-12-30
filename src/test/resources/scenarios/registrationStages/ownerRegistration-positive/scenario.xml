@@ -1,0 +1,47 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario" variations="ownerRegisterP.csv" active="false">
+
+    <overview>
+        <description>Check the ability of successful registration for "Owner" on "pme"</description>
+        <name>Owner registration positive case</name>
+    </overview>
+
+    <tags>
+        <tag>Frontend</tag>
+    </tags>
+
+    <navigateTo comment="navigate to register owner"
+                path="/register-account/"/>
+
+    <input comment="Input first name"
+           locatorId="ownerRegistration.firstName"
+           value="{{firstName}}"/>
+
+    <input comment="Input lastname"
+           locatorId="ownerRegistration.lastName"
+           value="{{lastName}}"/>
+
+    <input comment="Input email"
+           locatorId="ownerRegistration.emailAddress"
+           value="{{emailAddress}}"/>
+
+    <input comment="Input password"
+           locatorId="ownerRegistration.password"
+           value="{{password}}"/>
+
+    <input comment="Input repeat password"
+           locatorId="ownerRegistration.repPassword"
+           value="{{repPassword}}"/>
+
+    <click comment="Click on 'confirm' button"
+           locatorId="ownerRegistration.confirm"/>
+
+    <click comment="Click on 'Register account' button"
+           locatorId="ownerRegistration.regAccount"/>
+
+    <wait comment="Waiting of loading the 2nd auth page"
+          time="2"
+          unit="seconds"/>
+
+</scenario>
+
+

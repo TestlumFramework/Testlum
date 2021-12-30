@@ -1,0 +1,22 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario">
+    <overview>
+        <description>Test for mutiple apis</description>
+        <name>HTTP test</name>
+    </overview>
+
+    <tags>
+        <tag>self_test</tag>
+    </tags>
+
+    <http comment="Get info from first api" alias="zipCode">
+        <get url="/33162">
+            <response file="expected_1.json"/>
+        </get>
+    </http>
+
+    <http comment="Get info from second api" alias="catFacts">
+        <get url="/facts">
+            <response file="expected_2.json"/>
+        </get>
+    </http>
+</scenario>

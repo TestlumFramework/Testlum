@@ -1,0 +1,48 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario">
+
+    <overview>
+        <description>Mongo Database Test</description>
+        <name>MongoDB test scenario</name>
+    </overview>
+
+    <tags>
+        <tag>self_test</tag>
+    </tags>
+
+    <migrate comment="Prepare information from mongo_init.bson"
+             name="MONGODB"
+             alias="database_one">
+        <patches>mongo_patch.bson</patches>
+    </migrate>
+
+    <mongo comment="Execute mixed mongodb commands (insert/find/update/delete/find all)"
+           alias="database_one"
+           file="expected_2.json">
+        <query>{insert : 'test', documents : [{_id: 1, item: 'pencil', qty: 50, type: 'no.2'}, { _id: 12, item: 'book',
+            qty: 40}]}
+        </query>
+        <query>{find: 'test', filter: {'item': 'pencil'}}</query>
+        <query>{update: 'test', updates: [{q: {_id: 12}, u: {qty: 35}}]}</query>
+        <query>{delete: 'test', deletes: [{q: {_id: 1}, limit: 1}]}</query>
+        <query>{find: 'test'}</query>
+    </mongo>
+<!--    DATABASE TWO-->
+    <migrate comment="Prepare information from mongo_init.bson"
+             name="MONGODB"
+             alias="database_two">
+        <patches>mongo_patch.bson</patches>
+    </migrate>
+
+    <mongo comment="Execute mixed mongodb commands (insert/find/update/delete/find all)"
+           alias="database_two"
+           file="expected_4.json">
+        <query>{insert : 'test', documents : [{_id: 1, item: 'pencil', qty: 50, type: 'no.2'}, { _id: 12, item: 'book',
+            qty: 40}]}
+        </query>
+        <query>{find: 'test', filter: {'item': 'pencil'}}</query>
+        <query>{update: 'test', updates: [{q: {_id: 12}, u: {qty: 35}}]}</query>
+        <query>{delete: 'test', deletes: [{q: {_id: 1}, limit: 1}]}</query>
+        <query>{find: 'test'}</query>
+    </mongo>
+
+</scenario>

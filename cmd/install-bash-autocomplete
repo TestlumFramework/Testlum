@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+function source_template_autocomplete_script() {
+  echo "============ Sourcing utt-autocomplete script ============"
+  source cmd/utt-autocomplete;
+}
+
+function do_bash_complete_install_on_linux() {
+  echo "============ Refreshing package database ============"
+  sudo apt update
+  echo "============ Installing bash-completion package ============"
+  sudo apt-get install bash-completion
+  source_template_autocomplete_script
+}
+
+function do_bash_complete_install_on_mac() {
+  echo "============ Installing bash-completion package ============"
+  brew install bash-completion
+  source_template_autocomplete_script
+}
+
+function check_os_type() {
+  local os_type_="$1"
+  echo "============ Installing bash autocomplete for OS type: $os_type_ ============"
+  case $os_type_ in
+  "linux-gnu"*)
+  do_bash_complete_install_on_linux
+    ;;
+  "darwin"*)
+  do_bash_complete_install_on_mac
+  esac
+}
+
+function main() {
+  local os_type=$OSTYPE
+  check_os_type "$os_type"
+}
+main

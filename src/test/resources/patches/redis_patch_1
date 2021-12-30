@@ -1,0 +1,6 @@
+SET # jsonDataFirst # {"errors" : null, "id" : 1, "title" : "title1", "text" : "text1", "logo" : "logo", "slug" : "slug", "isPublished" : true, "createAt" : null, "updatedAt" : null, "publishedAt" : null};;
+SET # jsonDataSecond # {"errors" : null, "id" : 2, "title" : "title2", "text" : "text2", "logo" : "logo", "slug" : "slug", "isPublished" : true, "createAt" : null, "updatedAt" : null, "publishedAt" : null};;
+SET # jsonDataThird # {"errors" : null, "id" : 3, "title" : "title3", "text" : "text3", "logo" : "logo", "slug" : "slug", "isPublished" : true, "createAt" : null, "updatedAt" : null, "publishedAt" : null};;
+SET # jsonDataFourth # {"errors" : null, "id" : 4, "title" : "title4", "text" : "text4", "logo" : "logo", "slug" : "slug", "isPublished" : true, "createAt" : null, "updatedAt" : null, "publishedAt" : null};;
+SET # jsonDataFifth # {"errors" : null, "id" : 5, "title" : "title5", "text" : "text5", "logo" : "logo", "slug" : "slug", "isPublished" : true, "createAt" : null, "updatedAt" : null, "publishedAt" : null};;
+SET # jsonDataSixth # {"errors" : null, "id" : 6, "title" : "title6", "text" : "text6", "logo" : "logo", "slug" : "slug", "isPublished" : true, "createAt" : null, "updatedAt" : null, "publishedAt" : null};;

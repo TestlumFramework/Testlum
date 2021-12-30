@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          xmlns:tns="http://www.knubisoft.com/e2e/testing/model/global-config"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+          targetNamespace="http://www.knubisoft.com/e2e/testing/model/global-config"
+          elementFormDefault="qualified" jaxb:version="2.1">
+
+    <x:include schemaLocation="postgreses.xsd"/>
+    <x:include schemaLocation="mysqls.xsd"/>
+    <x:include schemaLocation="oracles.xsd"/>
+    <x:include schemaLocation="redises.xsd"/>
+    <x:include schemaLocation="mongos.xsd"/>
+    <x:include schemaLocation="s3s.xsd"/>
+    <x:include schemaLocation="sqss.xsd"/>
+    <x:include schemaLocation="kafkas.xsd"/>
+    <x:include schemaLocation="rabbitmqs.xsd"/>
+    <x:include schemaLocation="dynamos.xsd"/>
+    <x:include schemaLocation="elasticsearches.xsd"/>
+    <x:include schemaLocation="sendgrids.xsd"/>
+    <x:include schemaLocation="seses.xsd"/>
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:annotation>
+        <x:appinfo>
+            <jaxb:bindings
+                    node="/x:schema/x:element[@name='globalTestConfiguration']//x:complexType//x:sequence">
+            </jaxb:bindings>
+        </x:appinfo>
+    </x:annotation>
+
+    <x:element name="globalTestConfiguration">
+        <x:complexType>
+            <x:sequence>
+                <x:element name="stopScenarioOnFailure" type="x:boolean"/>
+                <x:element name="localStorageAuthorizationKey" type="tns:nonEmptyString"/>
+                <x:element name="filterDirectoryPattern" type="tns:nonEmptyString"/>
+                <x:element name="debugMode" type="x:boolean"/>
+                <x:element name="filterTags" type="tns:filterTags"/>
+                <x:element name="parallelExecution" type="x:boolean"/>
+                <x:element name="parallelExecutionLimit" type="x:int"/>
+                <x:element name="ui" type="tns:ui"/>
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="apis" type="tns:apis" minOccurs="0"/>
+                    <x:element name="postgreses" type="tns:postgreses" minOccurs="0"/>
+                    <x:element name="mysqls" type="tns:mysqls" minOccurs="0"/>
+                    <x:element name="oracles" type="tns:oracles" minOccurs="0"/>
+                    <x:element name="redises" type="tns:redises" minOccurs="0"/>
+                    <x:element name="mongos" type="tns:mongos" minOccurs="0"/>
+                    <x:element name="s3s" type="tns:s3s" minOccurs="0"/>
+                    <x:element name="sqss" type="tns:sqss" minOccurs="0"/>
+                    <x:element name="kafkas" type="tns:kafkas" minOccurs="0"/>
+                    <x:element name="rabbitmqs" type="tns:rabbitmqs" minOccurs="0"/>
+                    <x:element name="dynamos" type="tns:dynamos" minOccurs="0"/>
+                    <x:element name="elasticsearches" type="tns:elasticsearches" minOccurs="0"/>
+                    <x:element name="sendgrids" type="tns:sendgrids" minOccurs="0"/>
+                    <x:element name="seses" type="tns:seses" minOccurs="0"/>
+                </x:choice>
+            </x:sequence>
+        </x:complexType>
+    </x:element>
+
+    <x:complexType name="ui">
+        <x:sequence>
+            <x:element name="browserSettings" type="tns:browserSettings"/>
+            <x:element name="browserVersion" type="tns:browserVersion"/>
+            <x:element name="baseUrl" type="tns:url"/>
+            <x:element name="performanceWarning" type="tns:performanceWarning"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="apis">
+        <x:choice>
+            <x:element name="api" type="tns:api" maxOccurs="unbounded"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="api">
+        <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="url" type="tns:url" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="browserSettings">
+        <x:annotation>
+            <x:documentation>Browser Settings Specification (headless gpu etc)</x:documentation>
+        </x:annotation>
+        <x:sequence>
+            <x:element name="localBrowserDebug" type="x:boolean"/>
+            <x:element name="screenshotsLogging" type="x:boolean"/>
+            <x:element name="seleniumExplicitWaitTime" type="x:int"/>
+            <x:element name="options" type="tns:options"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="options">
+        <x:annotation>
+            <x:documentation>
+                Additions browser settings:
+
+                options.addArguments("--headless",
+                "--disable-gpu",
+                "--window-size=1920,1200",
+                "--ignore-certificate-errors");
+            </x:documentation>
+        </x:annotation>
+        <x:choice>
+            <x:element name="option" type="x:string"
+                       minOccurs="0" maxOccurs="unbounded"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="performanceWarning">
+        <x:sequence>
+            <x:element name="value" type="x:byte"/>
+            <x:element name="timeUnit" type="tns:timeUnit"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="browserVersion">
+        <x:annotation>
+            <x:documentation>Browser OS Group Specification</x:documentation>
+        </x:annotation>
+        <x:choice>
+            <x:element name="browserVersionElement" maxOccurs="unbounded" type="tns:browserVersionElement"
+                       minOccurs="0"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="filterTags">
+        <x:choice>
+            <x:element name="value" type="tns:nonEmptyString" maxOccurs="unbounded"/>
+        </x:choice>
+        <x:attribute name="enable" type="x:boolean" use="required"/>
+        <x:attribute name="enableOrder" type="x:boolean" default="true"/>
+    </x:complexType>
+
+    <x:complexType name="hikari">
+        <x:sequence>
+            <x:element name="connectionTimeout" type="x:int"/>
+            <x:element name="idleTimeout" type="x:int"/>
+            <x:element name="maxLifetime" type="x:int"/>
+            <x:element name="maximumPoolSize" type="x:int"/>
+            <x:element name="minimumIdle" type="x:int"/>
+            <x:element name="connectionInitSql" type="tns:nonEmptyString"/>
+            <x:element name="connectionTestQuery" type="tns:nonEmptyString"/>
+            <x:element name="poolName" type="tns:nonEmptyString"/>
+            <x:element name="autoCommit" type="x:boolean"/>
+        </x:sequence>
+    </x:complexType>
+</x:schema>
+

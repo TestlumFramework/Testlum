@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+function generate() {
+  local words_ cur_
+  words_="$1"
+  cur_=${COMP_WORDS[COMP_CWORD]}
+  COMPREPLY=($(compgen -W "${words_}" -- "$cur_"))
+}
+
+function get_template_words() {
+  local template_words="$1"
+  generate "$template_words"
+}
+
+function get_build_words() {
+  local build_words="$1"
+  generate "$build_words"
+}
+
+function get_generate_words() {
+  local generate_words="$1"
+  generate "$generate_words"
+}
+
+function main_script() {
+
+  ##Local variables/arrays section
+  local build="build"
+  local generate="generate"
+  local template_words="build generate"
+  local build_words="testSkip qualityChecking"
+  local generate_words="testModels"
+
+  ##Execution section
+  if [[ ${COMP_CWORD} == 1 ]]; then
+    get_template_words "${template_words}"
+  fi
+
+  local sub_command_1="${COMP_WORDS[1]}"
+
+  case "$sub_command_1" in
+  "$build")
+    get_build_words "${build_words}"
+    ;;
+  "$generate")
+    get_generate_words "${generate_words}"
+  esac
+
+}
+complete -o nospace -F main_script utt
+main_script

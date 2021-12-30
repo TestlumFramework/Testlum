@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <Match>
+        <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/> <!--@PostConstruct-->
+    </Match>
+
+    <Match>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.ui.testing.framework.util.FileRemover$FileVisitor"/>
+        <Method name="visitFile"/>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.ui.testing.framework.locator.LocatorCollector"/>
+        <Method name="collectFileToPageMap"/>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.ui.testing.framework.scenario.ScenarioRunner"/>
+        <Method name="matchInterpreterCommand"/>
+        <Bug pattern="REC_CATCH_EXCEPTION"/>  <!--ignore catch exception-->
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.ui.testing.framework.db.sql.SqlExecutor"/>
+        <Bug pattern="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"/>  <!--ignore insert error-->
+    </Match>
+    <Match>
+        <Class name="com.knubisoft.ui.testing.framework.db.s3.S3Operation"/>
+        <Bug pattern="URF_UNREAD_FIELD"/>
+    </Match>
+    <Match>
+        <Class name="com.knubisoft.ui.testing.framework.interpreter.AuthInterpreter"/>
+        <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
+    </Match>
+    <Match>
+        <Class name="com.knubisoft.ui.testing.framework.interpreter.VariableInterpreter"/>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.ui.testing.framework.parser.XMLParser"/>
+        <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
+    </Match>
+    <Match>
+        <Class name="com.knubisoft.ui.testing.framework.scenario.ScenarioValidator"/>
+        <Bug pattern="URF_UNREAD_FIELD"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.ui.testing.framework.scenario.ScenarioRunner"/>
+        <Bug pattern="REC_CATCH_EXCEPTION"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.ui.testing.framework.util.FileSearcher"/>
+        <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME"/>
+    </Match>
+</FindBugsFilter>

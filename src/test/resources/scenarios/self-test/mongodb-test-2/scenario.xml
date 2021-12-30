@@ -1,0 +1,20 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario" active="false">
+
+    <overview>
+        <description>Mongo Database Test 2</description>
+        <name>MongoDB test scenario #2</name>
+    </overview>
+
+    <tags>
+        <tag>self_test</tag>
+    </tags>
+
+    <mongo comment="Execute mixed mongodb commands (insert/find)"
+           alias="mongo"
+           file="expected_1.json">
+        <query>{find: 'test', filter: {'item': 'pencil'}}</query>
+        <query>{insert : 'test', documents : [{entityId:2,columnName1:'columnName2.1',columnName2:'columnName2.2'}, { _id: 11, item: 'pencil', qty: 50, type: 'no.2' }]}</query>
+        <query>{find: 'test', filter: {'item': 'pencil'}}</query>
+    </mongo>
+
+</scenario>

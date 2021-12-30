@@ -1,0 +1,44 @@
+version: '3.2'
+
+services:
+  elasticsearch:
+    restart: always
+    container_name: elasticsearch
+    build:
+      context: elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./elasticsearch/data:/usr/share/elasticsearch/data:rw
+      - ./elasticsearch/config/jvm.options:/usr/share/elasticsearch/config/jvm.options
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ELASTIC_PASSWORD: q98374fkjdkfuyqiweysdc
+    networks:
+      - elastic
+
+  elasticsearch2:
+    restart: always
+    container_name: elasticsearch2
+    build:
+      context: elasticsearch2/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - ./elasticsearch2/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./elasticsearch2/data:/usr/share/elasticsearch/data:rw
+      - ./elasticsearch2/config/jvm.options:/usr/share/elasticsearch/config/jvm.options
+    ports:
+      - "9202:9200"
+      - "9302:9300"
+    environment:
+      ELASTIC_PASSWORD: q98374fkjdkfuyqiweysdc
+    networks:
+      - elastic
+
+networks:
+  elastic:
+    driver: bridge

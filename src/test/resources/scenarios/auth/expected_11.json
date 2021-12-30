@@ -1,0 +1,14 @@
+{
+  "body": {
+    "id": 1,
+    "firmName": "Lawyer Company",
+    "country": "United State",
+    "state": "California",
+    "city": "Los Angeles",
+    "firstAddress": "11845 W Olympic Blvd 800, Los Angeles, CA 90064,",
+    "secondAddress": "11845 W Olympic Blvd 800, Los Angeles, CA 90064,",
+    "postCode": "30025"
+  },
+  "errors": null,
+  "debugInfo": null
+}

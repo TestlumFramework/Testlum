@@ -1,0 +1,310 @@
+version: "3.4"
+services:
+
+  hub:
+    image: selenium/hub
+    ports:
+      - 4444:4444
+    environment:
+      GRID_MAX_SESSION: 16
+      GRID_BROWSER_TIMEOUT: 3000
+      GRID_TIMEOUT: 3000
+
+  chrome:
+    image: selenium/node-chrome
+    container_name: pme-web-chrome
+    depends_on:
+      - hub
+    environment:
+      HUB_PORT_4444_TCP_ADDR: hub
+      HUB_PORT_4444_TCP_PORT: 4444
+      NODE_MAX_SESSION: 4
+      NODE_MAX_INSTANCES: 4
+    volumes:
+      - /dev/shm:/dev/shm
+      - ./src/test/resources:/opt/src/test/resources
+    ports:
+      - 5900:5900
+    links:
+      - hub
+
+  firefox:
+    image: selenium/node-firefox
+    container_name: pme-web-firefox
+    depends_on:
+      - hub
+    environment:
+      HUB_PORT_4444_TCP_ADDR: hub
+      HUB_PORT_4444_TCP_PORT: 4444
+      NODE_MAX_SESSION: 4
+      NODE_MAX_INSTANCES: 4
+    volumes:
+      - /dev/shm:/dev/shm
+      - ./src/test/resources:/opt/src/test/resources
+    ports:
+      - 5901:5901
+    links:
+      - hub
+
+  postgres:
+    image: postgres
+    container_name: postgres-one
+    restart: always
+    environment:
+      POSTGRES_USER: playground
+      POSTGRES_PASSWORD: playground
+      POSTGRES_DB: playground_db
+    ports:
+      - "5433:5432"
+    networks:
+      - backendtemplate
+    volumes:
+    - ./init/postgres:/docker-entrypoint-initdb.d
+
+  postgrestwo:
+    image: postgres
+    container_name: postgres-two
+    restart: always
+    environment:
+      POSTGRES_USER: cloud
+      POSTGRES_PASSWORD: cloud
+      POSTGRES_DB: cloud_db
+    ports:
+      - "5434:5432"
+    networks:
+      - backendtemplate
+    volumes:
+    - ./init/postgres:/docker-entrypoint-initdb.d
+
+  mysql:
+    image: mysql
+    container_name: mysql-one
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: playground_db
+      MYSQL_USER: playground
+      MYSQL_PASSWORD: playground
+    ports:
+      - "3306:3306"
+    networks:
+      - backendtemplate
+    volumes:
+    - ./init/mysql:/docker-entrypoint-initdb.d
+
+  mysqltwo:
+    image: mysql
+    container_name: mysql-two
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cloud_db
+      MYSQL_USER: cloud
+      MYSQL_PASSWORD: cloud
+    ports:
+      - "3307:3306"
+    networks:
+      - backendtemplate
+    volumes:
+    - ./init/mysql:/docker-entrypoint-initdb.d
+
+
+      #  oracle:
+#    image: pvargacl/oracle-xe-18.4.0
+#    container_name: oracle
+#    environment:
+#      - ORACLE_SID=xe
+#      - ORACLE_PDB=system
+#      - ORACLE_PWD=oracle
+#    volumes:
+#      - /opt/oracle/oradata
+#    ports:
+#      - 1521:1521
+#    networks:
+#      - backendtemplate
+
+  localstack:
+    container_name: localstack
+    image: localstack/localstack
+    environment:
+      - SERVICES=s3,sqs,ses
+    ports:
+      - 4566:4566
+    networks:
+      - backendtemplate
+    volumes:
+    - ./init/aws:/docker-entrypoint-initaws.d
+
+  redisone:
+    container_name: redis-one
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - backendtemplate
+
+  dynamodb-one:
+    image: amazon/dynamodb-local
+    container_name: dynamodb-one
+    command: -jar DynamoDBLocal.jar -sharedDb -dbPath . -optimizeDbBeforeStartup
+    volumes:
+      - dynamodb:/home/dynamodblocal
+    ports:
+      - 8000:8000
+
+  dynamodb-two:
+    image: amazon/dynamodb-local
+    container_name: dynamodb-two
+    command: -jar DynamoDBLocal.jar -sharedDb -dbPath . -optimizeDbBeforeStartup
+    volumes:
+      - dynamodb:/home/dynamodblocaltwo
+    ports:
+      - 8001:8000
+
+  awscli-one:
+    container_name: awscli-one
+    build:
+      context: ./init/dynamo/aws-cli-one
+      dockerfile: Dockerfile
+    depends_on:
+      - dynamodb-one
+    entrypoint: [""]
+    tty: true
+    command:
+      - /opt/pme/bin/sh/dynamo-one.sh
+
+  awscli-two:
+    container_name: awscli-two
+    build:
+      context: ./init/dynamo/aws-cli-two
+      dockerfile: Dockerfile
+    depends_on:
+      - dynamodb-two
+    entrypoint: [""]
+    tty: true
+    command:
+      - /opt/pme/bin/sh/dynamo-two.sh
+
+  redistwo:
+    container_name: redis-two
+    image: redis:alpine
+    ports:
+      - "6360:6379"
+    networks:
+      - backendtemplate
+
+  rabbitmqone:
+    container_name: rabbitmq-one
+    hostname: rabbit
+    image: rabbitmq:3.6.6-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - backendtemplate
+
+  rabbitmqtwo:
+    container_name: rabbitmq-two
+    hostname: rabbit
+    image: rabbitmq:3.6.6-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    networks:
+      - backendtemplate
+
+  mongodbone:
+    image: mongo:4.2.3-bionic
+    container_name: mongodb-one
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_DATABASE=database_one
+      - MONGO_INITDB_ROOT_USERNAME=username
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongodb:/data/db
+      - mongoconfig:/data/configdb
+    networks:
+      - backendtemplate
+
+  mongodbtwo:
+    image: mongo:4.2.3-bionic
+    container_name: mongodb-two
+    ports:
+      - 27018:27017
+    environment:
+      - MONGO_INITDB_DATABASE=database_two
+      - MONGO_INITDB_ROOT_USERNAME=username
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    networks:
+      - backendtemplate
+
+  zookeeperone:
+    image: 'bitnami/zookeeper:latest'
+    container_name: zookeeper-one
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - backendtemplate
+
+  zookeepertwo:
+    image: 'bitnami/zookeeper:latest'
+    container_name: zookeeper-two
+    ports:
+      - '2182:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - backendtemplate
+
+  kafkaone:
+    image: 'bitnami/kafka:latest'
+    container_name: kafka-one
+    ports:
+      - '9092:9092'
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeperone:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeperone
+    networks:
+      - backendtemplate
+
+  kafkatwo:
+    image: 'bitnami/kafka:latest'
+    container_name: kafka-two
+    ports:
+      - '9093:9092'
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeepertwo:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeepertwo
+    networks:
+      - backendtemplate
+
+networks:
+  backendtemplate:
+    driver: bridge
+
+volumes:
+  dynamodb:
+    driver: local
+  mongodb:
+  mongoconfig:
+  mongodb_data_container:

@@ -1,0 +1,24 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario">
+
+    <overview>
+        <description>Self ses test</description>
+        <name>SES test scenario</name>
+    </overview>
+
+    <tags>
+        <tag>self_test</tag>
+    </tags>
+
+    <ses comment="Sending a message to the email"
+         alias="ses_one">
+        <destination>example@gmail.com</destination>
+        <source>examplehello@gmail.com</source>
+        <message>
+            <body>
+                <html>Amazon SES test</html>
+                <text>Hello World</text>
+            </body>
+            <subject>TITLE</subject>
+        </message>
+    </ses>
+</scenario>

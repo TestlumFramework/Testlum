@@ -1,0 +1,8 @@
+{
+    insert : 'test',
+    documents :
+   [
+     { _id: 3, item: "pen", qty: 20 },
+     { _id: 4, item: "eraser", qty: 25 }
+   ]
+}

@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+function main {
+    local SUBCOMMAND="$1"
+
+    case $SUBCOMMAND in
+    build) build "${@:2}" ;;
+    generate) generate "${@:2}" ;;
+    help) printUsage ;;
+    *) printUsage
+    esac
+}
+
+function build {
+    local mvnCommand="clean package"
+    for var in "$@"
+      do
+        getBuildVal "$var"
+        if [ -z "${mvnCommand##*$result*}" ] ;then
+          echo "'$mvnCommand' contain: '$result'.";
+        else
+          mvnCommand+=$result
+        fi
+    done
+
+    echo "============ Run the command: mvn $mvnCommand =============="
+    mvn $mvnCommand
+}
+
+function generate {
+    for var in "$@"
+      do
+        getGenerateVal "$var"
+    done
+
+}
+
+function getBuildVal() {
+    local arg="$1"
+    case $arg in
+          testSkip) result=" -DskipTests=true";;
+          qualityChecking) result=" -Pquality-checking" ;;
+          *) result=""
+    esac
+}
+
+function getGenerateVal() {
+    local arg="$1"
+    case $arg in
+          testModels) mvn -pl :ui-testing-framework --also-make clean package -DskipTests=true -Dgenerate.test.models.skip=false ;;
+          *) result=""
+    esac
+}
+
+function printUsage {
+    echo "usage: utt <command> [<args>]
+
+Common commands:
+   cmd/utt build                              build project
+   cmd/utt build testSkip                     build project without run unit and integration tests
+   cmd/utt build qualityChecking              build project with run quality checking
+   cmd/utt generate testModels                generate test models
+   "
+    exit 1
+}
+
+main "$@"

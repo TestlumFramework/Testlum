@@ -1,0 +1,55 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario">
+
+    <overview>
+        <description>Self MySQL test</description>
+        <name>MySQL test scenario</name>
+    </overview>
+    <tags>
+        <tag>self_test</tag>
+    </tags>
+
+    <migrate comment="Prepare information from news_init patch (10 records)"
+             alias="playground_db"
+             name="MYSQL">
+        <patches>mysql_patch_1.sql</patches>
+    </migrate>
+
+    <migrate comment="Prepare information from news_init patch (10 records)"
+             alias="cloud_db"
+             name="MYSQL">
+        <patches>mysql_patch_1.sql</patches>
+    </migrate>
+
+    <mysql comment="Execute mixed mysql commands (SELECT/INSERT/DELETE).
+  Expect to see content from expected_2"
+           alias="playground_db"
+           file="expected_3.json">
+        <query>SELECT * FROM news</query>
+        <query>INSERT INTO news
+            (id, title, text, logo, slug, is_published, created_at, updated_at, published_at)
+            VALUES
+            (11,'title11', 'text11', 'logo11', 'slug11', true, '2020-05-22 09:30:00',
+            '2020-05-22 09:30:00', '2020-05-22 09:30:00')
+        </query>
+        <query>SELECT id FROM news WHERE id=11</query>
+        <query>DELETE FROM news WHERE 1=1</query>
+        <query>SELECT * FROM news</query>
+    </mysql>
+
+    <mysql comment="Execute mixed mysql commands (SELECT/INSERT/DELETE).
+  Expect to see content from expected_2"
+           alias="cloud_db"
+           file="expected_4.json">
+        <query>SELECT * FROM news</query>
+        <query>INSERT INTO news
+            (id, title, text, logo, slug, is_published, created_at, updated_at, published_at)
+            VALUES
+            (11,'title11', 'text11', 'logo11', 'slug11', true, '2020-05-22 09:30:00',
+            '2020-05-22 09:30:00', '2020-05-22 09:30:00')
+        </query>
+        <query>SELECT id FROM news WHERE id=11</query>
+        <query>DELETE FROM news WHERE 1=1</query>
+        <query>SELECT * FROM news</query>
+    </mysql>
+
+</scenario>

@@ -1,0 +1,38 @@
+[
+  {
+    "query" : "GET # jsonDataFirst",
+    "content" : "t({\"errors\" : null, \"id\" : 1, \"title\" : \"title1\", \"text\" : \"text1\", \"logo\" : \"logo\", \"slug\" : \"slug\", \"isPublished\" : true, \"createAt\" : null, \"updatedAt\" : null, \"publishedAt\" : null})"
+  },
+  {
+    "query" : "GET # jsonDataSecond",
+    "content" : "t({\"errors\" : null, \"id\" : 2, \"title\" : \"title2\", \"text\" : \"text2\", \"logo\" : \"logo\", \"slug\" : \"slug\", \"isPublished\" : true, \"createAt\" : null, \"updatedAt\" : null, \"publishedAt\" : null})"
+  },
+  {
+    "query" : "GET # jsonDataThird",
+    "content" : "t({\"errors\" : null, \"id\" : 3, \"title\" : \"title3\", \"text\" : \"text3\", \"logo\" : \"logo\", \"slug\" : \"slug\", \"isPublished\" : true, \"createAt\" : null, \"updatedAt\" : null, \"publishedAt\" : null})"
+  },
+  {
+    "query" : "GET # jsonDataFourth",
+    "content" : "t({\"errors\" : null, \"id\" : 4, \"title\" : \"title4\", \"text\" : \"text4\", \"logo\" : \"logo\", \"slug\" : \"slug\", \"isPublished\" : true, \"createAt\" : null, \"updatedAt\" : null, \"publishedAt\" : null})"
+  },
+  {
+    "query" : "GET # jsonDataFifth",
+    "content" : "t({\"errors\" : null, \"id\" : 5, \"title\" : \"title5\", \"text\" : \"text5\", \"logo\" : \"logo\", \"slug\" : \"slug\", \"isPublished\" : true, \"createAt\" : null, \"updatedAt\" : null, \"publishedAt\" : null})"
+  },
+  {
+    "query" : "GET # jsonDataSixth",
+    "content" : "t({\"errors\" : null, \"id\" : 6, \"title\" : \"title6\", \"text\" : \"text6\", \"logo\" : \"logo\", \"slug\" : \"slug\", \"isPublished\" : true, \"createAt\" : null, \"updatedAt\" : null, \"publishedAt\" : null})"
+  },
+  {
+    "query" : "GET # simpleDataFirst",
+    "content" : "first"
+  },
+  {
+    "query" : "GET # simpleDataSecond",
+    "content" : "2"
+  },
+  {
+    "query" : "GET # simpleDataThird",
+    "content" : "true"
+  }
+]

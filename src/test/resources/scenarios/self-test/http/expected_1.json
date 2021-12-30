@@ -1,0 +1,21 @@
+{
+  "code": 200,
+  "headers": {
+    "Date": "p(any)",
+    "Content-Type": "application/json",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "x-cache": "hit",
+    "charset": "UTF-8",
+    "vary": "Accept-Encoding",
+    "access-control-allow-origin": "*",
+    "CF-Cache-Status": "DYNAMIC",
+    "Expect-CT": "max-age=604800, report-uri=\"https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct\"",
+    "Report-To": "p(any)",
+    "NEL": "{\"success_fraction\":0,\"report_to\":\"cf-nel\",\"max_age\":604800}",
+    "Server": "cloudflare",
+    "CF-RAY": "p(any)",
+    "alt-svc": "h3=\":443\"; ma=86400, h3-29=\":443\"; ma=86400, h3-28=\":443\"; ma=86400, h3-27=\":443\"; ma=86400"
+  },
+  "body": "{\"post code\": \"33162\", \"country\": \"United States\", \"country abbreviation\": \"US\", \"places\": [{\"place name\": \"Miami\", \"longitude\": \"-80.183\", \"state\": \"Florida\", \"state abbreviation\": \"FL\", \"latitude\": \"25.9286\"}]}"
+}

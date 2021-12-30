@@ -1,0 +1,65 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario" variations="twoFaN.csv" active="false">
+
+    <overview>
+        <description>Checking the ability for unsuccessful twoFactor authenticate</description>
+        <name>Two factor authenticate negative case</name>
+    </overview>
+
+    <tags>
+        <tag>Frontend</tag>
+    </tags>
+
+    <navigateTo comment="Navigate to TwoFactor authenticate"
+                path="/register/phone-verify"/>
+
+    <input highlight="false"
+           comment="Input phone number"
+           locatorId="twoFactor.phoneNumber"
+           value="{{inputNumber}}"/>
+
+    <click comment="Click on 'Send code'"
+           locatorId="twoFactor.sandCode"/>
+
+    <wait comment="Waiting fot sms server send sms on entered phone number"
+          time="5"
+          unit="seconds"/>
+
+    <input comment="Input verification code1"
+           locatorId="twoFactor.enterCode1"
+           value="{{inputCode1}}"/>
+
+    <input comment="Input verification code2"
+           locatorId="twoFactor.enterCode2"
+           value="{{inputCode2}}"/>
+
+    <input comment="Input verification code3"
+           locatorId="twoFactor.enterCode3"
+           value="{{inputCode3}}"/>
+
+    <input comment="Input verification code4"
+           locatorId="twoFactor.enterCode4"
+           value="{{inputCode4}}"/>
+
+    <input comment="Input verification code5"
+           locatorId="twoFactor.enterCode5"
+           value="{{inputCode5}}"/>
+
+    <input comment="Input verification code6"
+           locatorId="twoFactor.enterCode6"
+           value="{{inputCode6}}"/>
+
+    <wait comment="For inputting data in fields"
+          time="2"
+          unit="seconds"/>
+
+    <click comment="Click on continue button"
+           locatorId="twoFactor.sandPass"/>
+
+    <assert comment="Stay at this page after error"
+            locatorId="twoFactor.assertNegativeTwoFa"
+            attribute="id">
+        <content>register_phone-verify__otp_input_0</content>
+    </assert>
+
+</scenario>
+

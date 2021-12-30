@@ -1,0 +1,14 @@
+[
+  {
+    "query" : "GET # jsonDataFirst",
+    "content" : "null"
+  },
+  {
+    "query" : "GET # jsonDataSecond",
+    "content" : "null"
+  },
+  {
+    "query" : "GET # simpleValue",
+    "content" : "null"
+  }
+]

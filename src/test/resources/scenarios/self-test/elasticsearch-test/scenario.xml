@@ -1,0 +1,59 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario">
+
+    <overview>
+        <description>Elasticsearch Tests</description>
+        <name>Elasticsearch test scenario</name>
+    </overview>
+
+    <tags>
+        <tag>self_test</tag>
+    </tags>
+
+    <elasticsearch comment="Execute elasticsearch commands - create index"
+                   alias="elastic_one">
+        <put url="/my-index-000001">
+            <response file="expected_2.json"/>
+            <body>
+                <raw>
+                    {
+                    "settings": {
+                    "index": {
+                    "number_of_shards": 3,
+                    "number_of_replicas": 2
+                    }
+                    },
+                    "mappings": {
+                    "properties": {
+                    "field1": { "type": "text" }
+                    }
+                    }
+                    }
+                </raw>
+            </body>
+        </put>
+    </elasticsearch>
+<elasticsearch comment="Execute elasticsearch commands - create index"
+                   alias="elastic_two">
+        <put url="/my-index-000001">
+            <response file="expected_2.json"/>
+            <body>
+                <raw>
+                    {
+                    "settings": {
+                    "index": {
+                    "number_of_shards": 3,
+                    "number_of_replicas": 2
+                    }
+                    },
+                    "mappings": {
+                    "properties": {
+                    "field1": { "type": "text" }
+                    }
+                    }
+                    }
+                </raw>
+            </body>
+        </put>
+    </elasticsearch>
+
+</scenario>

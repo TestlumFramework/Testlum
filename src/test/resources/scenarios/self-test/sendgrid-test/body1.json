@@ -1,0 +1,21 @@
+{
+  "from": {
+    "email": "mamedov.murik.lezgin@gmail.com"
+  },
+  "subject": "Test message from file",
+  "personalizations": [
+    {
+      "to": [
+        {
+          "email": "denys.mamedov@nure.ua"
+        }
+      ]
+    }
+  ],
+  "content": [
+    {
+      "type": "text/plain",
+      "value": "Hello this is test message from file"
+    }
+  ]
+}

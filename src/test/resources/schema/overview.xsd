@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/e2e/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/e2e/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="overview">
+        <x:sequence>
+            <x:element name="description" type="tns:stringMin10"/>
+            <x:element name="name" type="tns:stringMin1"/>
+            <x:element name="jira" type="tns:nonEmptyString" minOccurs="0"/>
+            <x:element name="developer" type="tns:nonEmptyString" minOccurs="0"/>
+            <x:element name="link" type="tns:nonEmptyString" minOccurs="0" maxOccurs="unbounded"/>
+        </x:sequence>
+    </x:complexType>
+
+</x:schema>

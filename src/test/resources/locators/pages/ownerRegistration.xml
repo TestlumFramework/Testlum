@@ -1,0 +1,57 @@
+<page xmlns="http://www.knubisoft.com/e2e/testing/model/pages">
+
+
+    <details>
+        <name>Registration</name>
+        <url>pme-dev-en.xyz</url>
+        <description>Checking the operation of active buttons on the main page of the site</description>
+    </details>
+
+    <include component="header.xml"/>
+
+
+    <locators>
+        <locator locatorId="firstName">
+            <id>register_account_first-name_input</id>
+        </locator>
+
+        <locator locatorId="lastName">
+            <id>register_account_last-name_input</id>
+        </locator>
+
+        <locator locatorId="emailAddress">
+            <id>register_account_mail_input</id>
+        </locator>
+
+        <locator locatorId="password">
+            <id>register_account_password_input</id>
+        </locator>
+
+        <locator locatorId="repPassword">
+            <id>register_account_confirm-password_input</id>
+        </locator>
+
+        <locator locatorId="confirm">
+            <class>label-checkbox</class>
+        </locator>
+
+        <locator locatorId="regAccount">
+            <id>register_account_button</id>
+        </locator>
+
+        <locator locatorId="negativeAssertOwner">
+            <id>register_account_first-name_input</id>
+        </locator>
+
+        <locator locatorId="positiveAssertOwner">
+            <id>home_header_button</id>
+        </locator>
+
+        <locator locatorId="assertTwoFaPositive">
+            <id>register_phone-resend_button</id>
+        </locator>
+
+    </locators>
+</page>
+
+

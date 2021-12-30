@@ -1,0 +1,72 @@
+package com.knubisoft.e2e.testing.framework.parser;
+
+import com.knubisoft.e2e.testing.model.pages.Component;
+import com.knubisoft.e2e.testing.model.pages.ObjectFactory;
+import com.knubisoft.e2e.testing.model.pages.Page;
+import com.knubisoft.e2e.testing.model.global_config.GlobalTestConfiguration;
+import com.knubisoft.e2e.testing.model.scenario.Scenario;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import java.io.File;
+
+@RequiredArgsConstructor
+@Slf4j
+public final class XMLParser<E> {
+
+    private final Schema schema;
+    private final Class<E> cls;
+    private final Class<?> objectFactory;
+
+    public static XMLParser<GlobalTestConfiguration> forGlobalTestConfiguration() {
+        return new XMLParser<>(SchemaInitializer.SCHEMA_GLOBAL_CFG, GlobalTestConfiguration.class,
+                com.knubisoft.e2e.testing.model.global_config.ObjectFactory.class);
+    }
+
+    public static XMLParser<Page> forPageLocators() {
+        return new XMLParser<>(SchemaInitializer.SCHEMA_PAGES, Page.class,
+                ObjectFactory.class);
+    }
+
+    public static XMLParser<Component> forComponentLocators() {
+        return new XMLParser<>(SchemaInitializer.SCHEMA_PAGES, Component.class,
+                ObjectFactory.class);
+    }
+
+    public static XMLParser<Scenario> forScenarios() {
+        return new XMLParser<>(SchemaInitializer.SCHEMA_SCENARIOS, Scenario.class,
+                com.knubisoft.e2e.testing.model.scenario.ObjectFactory.class);
+    }
+
+    private static <E> E deserializeXmlTo(final File file,
+                                          final Class<E> cls,
+                                          final Class<?> objectFactory) throws JAXBException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(objectFactory);
+        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        StreamSource streamSource = new StreamSource(file);
+        JAXBElement<E> element = unmarshaller.unmarshal(streamSource, cls);
+        return element.getValue();
+    }
+
+    @SneakyThrows
+    public E process(final File file, final XMLValidator<E> validator) {
+        final Scenario scenario = new Scenario();
+        XSDValidator.validateBySchema(file, this.schema);
+        E obj = deserializeXmlTo(file, this.cls, this.objectFactory);
+        validator.validate(obj, file);
+        return obj;
+    }
+
+    @SneakyThrows
+    public E process(final File file) {
+        XSDValidator.validateBySchema(file, this.schema);
+        return deserializeXmlTo(file, this.cls, this.objectFactory);
+    }
+}

@@ -1,0 +1,58 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario" active="false">
+
+    <overview>
+        <description>Checking the operation of active buttons on the main page of the site</description>
+        <name>Main page</name>
+    </overview>
+
+    <tags>
+        <tag>Frontend</tag>
+    </tags>
+    <migrate comment="fedfesfisdnifnsdfub" alias="playground_db">
+        <patches>playground_db_init.sql</patches>
+    </migrate>
+    <click comment="Click on login button"
+           locatorId="mainPage.logIn"/>
+
+    <navigateBack comment="Navigate back"/>
+
+    <click comment="Click on 'Register' button"
+           locatorId="mainPage.register"/>
+
+    <navigateBack comment="Navigate back"/>
+
+    <click comment="Click on Google Play button"
+           locatorId="mainPage.google"/>
+
+    <navigateBack comment="Navigate back"/>
+
+    <click comment="Click on App Store button"
+           locatorId="mainPage.appStore"/>
+
+    <navigateBack comment="Navigate back"/>
+
+    <click comment="'Clock on Get support' button"
+           locatorId="mainPage.getSupport"/>
+
+    <click comment="Click on 'FAQ' button"
+           locatorId="mainPage.faq"/>
+
+    <click comment="Click on 'Terms of conditions' button"
+           locatorId="mainPage.termsOfConditions"/>
+
+    <click comment="Click on 'Privacy Policy' button"
+           locatorId="mainPage.privacyPolicy"/>
+
+    <click comment="Click on 'Cookie Policy' button"
+           locatorId="mainPage.cookiePolicy"/>
+
+    <click comment="Click on 'Facebook' button"
+           locatorId="mainPage.facebook"/>
+
+    <click comment="Click on 'Twitter' button"
+           locatorId="mainPage.twitter"/>
+
+    <click comment="Click on 'Instagram' button"
+           locatorId="mainPage.instagram"/>
+
+</scenario>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          xmlns:tns="http://www.knubisoft.com/e2e/testing/model/scenario"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+          targetNamespace="http://www.knubisoft.com/e2e/testing/model/scenario"
+          elementFormDefault="qualified" jaxb:version="2.1">
+
+    <x:include schemaLocation="scenario.xsd"/>
+
+    <x:complexType name="break">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand"/>
+        </x:complexContent>
+    </x:complexType>
+
+</x:schema>

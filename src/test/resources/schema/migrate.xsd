@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/e2e/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/e2e/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="migrate">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice minOccurs="1" maxOccurs="unbounded">
+                    <x:element name="patches" type="tns:nonEmptyString" minOccurs="1" maxOccurs="1"/>
+                </x:choice>
+                <x:attribute name="name" type="tns:storageName" default="POSTGRES"/>
+                <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="storageName">
+        <x:restriction base="x:string">
+            <x:enumeration value="POSTGRES"/>
+            <x:enumeration value="MYSQL"/>
+            <x:enumeration value="ORACLE"/>
+            <x:enumeration value="REDIS"/>
+            <x:enumeration value="MONGODB"/>
+            <x:enumeration value="DYNAMO"/>
+        </x:restriction>
+    </x:simpleType>
+</x:schema>

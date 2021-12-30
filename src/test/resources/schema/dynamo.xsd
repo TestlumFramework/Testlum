@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          xmlns:tns="http://www.knubisoft.com/e2e/testing/model/scenario"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+          targetNamespace="http://www.knubisoft.com/e2e/testing/model/scenario"
+          elementFormDefault="qualified" jaxb:version="2.1">
+
+    <x:include schemaLocation="scenario.xsd"/>
+
+    <x:complexType name="dynamo">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:sequence>
+                    <x:element name="query" type="tns:nonEmptyString" maxOccurs="unbounded"/>
+                </x:sequence>
+                <x:attribute name="file" type="tns:expected"/>
+                <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+</x:schema>

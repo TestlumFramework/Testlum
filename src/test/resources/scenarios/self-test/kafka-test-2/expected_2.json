@@ -1,0 +1,6 @@
+[ {
+  "key" : null,
+  "value" : "{\n  \"squadName\": \"Super hero squad\",\n  \"homeTown\": \"Metro City\",\n  \"formed\": 2016,\n  \"secretBase\": \"Super tower\",\n  \"active\": true\n}",
+  "correlationId" : null,
+  "headers" : { }
+} ]

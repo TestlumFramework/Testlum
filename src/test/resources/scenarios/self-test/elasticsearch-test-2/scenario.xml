@@ -1,0 +1,67 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario" active="false">
+
+    <overview>
+        <description>Elasticsearch Tests #2</description>
+        <name>Elasticsearch test scenario #2</name>
+    </overview>
+
+    <tags>
+        <tag>self_test</tag>
+    </tags>
+
+    <elasticsearch comment="Execute elasticsearch commands - get list of indexes"
+                   alias="elastic_one">
+        <get url="/_cat/indices">
+            <response file="expected_1.json">
+                <header name="content-length" data="0"/>
+            </response>
+        </get>
+    </elasticsearch>
+
+    <elasticsearch comment="Execute elasticsearch commands - create index"
+                   alias="elastic_one">
+        <put url="/my-index-000001">
+            <response file="expected_2.json"/>
+            <body>
+                <raw>
+                    {
+                    "settings": {
+                    "index": {
+                    "number_of_shards": 3,
+                    "number_of_replicas": 2
+                    }
+                    },
+                    "mappings": {
+                    "properties": {
+                    "field1": { "type": "text" }
+                    }
+                    }
+                    }
+                </raw>
+            </body>
+        </put>
+    </elasticsearch>
+
+
+    <elasticsearch comment="Execute elasticsearch commands - get list of indexes #2"
+                   alias="elastic_one">
+        <get url="/_cat/indices">
+            <response code="200"/>
+        </get>
+    </elasticsearch>
+
+    <elasticsearch comment="Execute elasticsearch commands - get index settings"
+                   alias="elastic_one">
+        <get url="/my-index-000001/_settings">
+            <response file="expected_3.json"/>
+        </get>
+    </elasticsearch>
+
+    <elasticsearch comment="Execute elasticsearch commands - delete not existing index"
+                   alias="elastic_one">
+        <delete url="/my-index-000002">
+            <response file="expected_4.json" code="404"/>
+        </delete>
+    </elasticsearch>
+
+</scenario>

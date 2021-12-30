@@ -1,0 +1,120 @@
+[ {
+  "query" : "SELECT * FROM news",
+  "content" : [ {
+    "id" : 1,
+    "title" : "title1",
+    "text" : "text1",
+    "logo" : "logo",
+    "slug" : "slug",
+    "is_published" : true,
+    "created_at" : "p(any)",
+    "updated_at" : "p(any)",
+    "published_at" : "p(any)"
+  }, {
+    "id" : 2,
+    "title" : "title2",
+    "text" : "text2",
+    "logo" : "logo2",
+    "slug" : "slug2",
+    "is_published" : false,
+    "created_at" : "p(any)",
+    "updated_at" : "p(any)",
+    "published_at" : "p(any)"
+  }, {
+    "id" : 3,
+    "title" : "title3",
+    "text" : "text3",
+    "logo" : "logo3",
+    "slug" : "slug3",
+    "is_published" : true,
+    "created_at" : "p(any)",
+    "updated_at" : "p(any)",
+    "published_at" : "p(any)"
+  }, {
+    "id" : 4,
+    "title" : "title4",
+    "text" : "text4",
+    "logo" : "logo4",
+    "slug" : "slug4",
+    "is_published" : true,
+    "created_at" : "p(any)",
+    "updated_at" : "p(any)",
+    "published_at" : "p(any)"
+  }, {
+    "id" : 5,
+    "title" : "title5",
+    "text" : "text5",
+    "logo" : "logo5",
+    "slug" : "slug5",
+    "is_published" : true,
+    "created_at" : "p(any)",
+    "updated_at" : "p(any)",
+    "published_at" : "p(any)"
+  }, {
+    "id" : 6,
+    "title" : "title6",
+    "text" : "text6",
+    "logo" : "logo6",
+    "slug" : "slug6",
+    "is_published" : true,
+    "created_at" : "p(any)",
+    "updated_at" : "p(any)",
+    "published_at" : "p(any)"
+  }, {
+    "id" : 7,
+    "title" : "title7",
+    "text" : "text7",
+    "logo" : "logo7",
+    "slug" : "slug7",
+    "is_published" : true,
+    "created_at" : "p(any)",
+    "updated_at" : "p(any)",
+    "published_at" : "p(any)"
+  }, {
+    "id" : 8,
+    "title" : "title8",
+    "text" : "text8",
+    "logo" : "logo8",
+    "slug" : "slug8",
+    "is_published" : true,
+    "created_at" : "p(any)",
+    "updated_at" : "p(any)",
+    "published_at" : "p(any)"
+  }, {
+    "id" : 9,
+    "title" : "title9",
+    "text" : "text9",
+    "logo" : "logo9",
+    "slug" : "slug9",
+    "is_published" : true,
+    "created_at" : "p(any)",
+    "updated_at" : "p(any)",
+    "published_at" : "p(any)"
+  }, {
+    "id" : 10,
+    "title" : "title10",
+    "text" : "text10",
+    "logo" : "logo10",
+    "slug" : "slug10",
+    "is_published" : true,
+    "created_at" : "p(any)",
+    "updated_at" : "p(any)",
+    "published_at" : "p(any)"
+  } ]
+}, {
+  "query" : "INSERT INTO news (id, title, text, logo, slug, is_published, created_at, updated_at, published_at) VALUES (11,'title11', 'text11', 'logo11', 'slug11', true, '2020-05-22 09:30:00', '2020-05-22 09:30:00', '2020-05-22 09:30:00')",
+  "content" : [ ]
+}, {
+  "query" : "SELECT id FROM news WHERE id=11",
+  "content" : [ {
+    "id" : 11
+  } ]
+}, {
+  "query" : "DELETE FROM news WHERE 1=1",
+  "content" : {
+    "count" : 11
+  }
+}, {
+  "query" : "SELECT * FROM news",
+  "content" : [ ]
+} ]

@@ -1,0 +1,120 @@
+[ {
+  "query" : "SELECT * FROM t_user",
+  "content" : [ {
+    "id" : 1,
+    "email" : "email1@gmail.com",
+    "email_verified" : true,
+    "first_name" : "testuser1",
+    "last_name" : "testuser1",
+    "username" : "testuser1",
+    "password" : "$2a$10$neQFs2lytkzy12dAj./dS.gWbzEKRzaEpgfAbb2Z1SeIMWF4WYCou",
+    "salt" : "",
+    "phone_number" : null,
+    "phone_number_verified" : false,
+    "photo_profile" : null,
+    "is_active" : true,
+    "last_login" : "2021-12-21T22:00:00.000+00:00",
+    "locked" : false,
+    "locked_cause" : null,
+    "created_at" : "p(any)",
+    "created_by" : null,
+    "deleted_at" : null,
+    "deleted_by" : null
+  }, {
+    "id" : 2,
+    "email" : "email2@knubisoft.uk",
+    "email_verified" : true,
+    "first_name" : "testuser2",
+    "last_name" : "testuser2",
+    "username" : "testuser2",
+    "password" : "$2a$10$neQFs2lytkzy12dAj./dS.gWbzEKRzaEpgfAbb2Z1SeIMWF4WYCou",
+    "salt" : "",
+    "phone_number" : null,
+    "phone_number_verified" : false,
+    "photo_profile" : null,
+    "is_active" : true,
+    "last_login" : "p(any)",
+    "locked" : false,
+    "locked_cause" : null,
+    "created_at" : "p(any)",
+    "created_by" : null,
+    "deleted_at" : null,
+    "deleted_by" : null
+  }, {
+    "id" : 3,
+    "email" : "email3@gmail.com",
+    "email_verified" : true,
+    "first_name" : "testuser3",
+    "last_name" : "testuser3",
+    "username" : "testuser3",
+    "password" : "$2a$10$neQFs2lytkzy12dAj./dS.gWbzEKRzaEpgfAbb2Z1SeIMWF4WYCou",
+    "salt" : "",
+    "phone_number" : null,
+    "phone_number_verified" : false,
+    "photo_profile" : null,
+    "is_active" : true,
+    "last_login" : "p(any)",
+    "locked" : false,
+    "locked_cause" : null,
+    "created_at" : "p(any)",
+    "created_by" : null,
+    "deleted_at" : null,
+    "deleted_by" : null
+  }, {
+    "id" : 4,
+    "email" : "email4@gmail.com",
+    "email_verified" : true,
+    "first_name" : "testuser4",
+    "last_name" : "testuser4",
+    "username" : "testuser4",
+    "password" : "$2a$10$neQFs2lytkzy12dAj./dS.gWbzEKRzaEpgfAbb2Z1SeIMWF4WYCou",
+    "salt" : "",
+    "phone_number" : null,
+    "phone_number_verified" : false,
+    "photo_profile" : null,
+    "is_active" : true,
+    "last_login" : "p(any)",
+    "locked" : false,
+    "locked_cause" : null,
+    "created_at" : "p(any)",
+    "created_by" : null,
+    "deleted_at" : null,
+    "deleted_by" : null
+  }, {
+    "id" : 5,
+    "email" : "email5@gmail.com",
+    "email_verified" : true,
+    "first_name" : "testuser5",
+    "last_name" : "testuser5",
+    "username" : "testuser5",
+    "password" : "$2a$10$neQFs2lytkzy12dAj./dS.gWbzEKRzaEpgfAbb2Z1SeIMWF4WYCou",
+    "salt" : "",
+    "phone_number" : null,
+    "phone_number_verified" : false,
+    "photo_profile" : null,
+    "is_active" : true,
+    "last_login" : "p(any)",
+    "locked" : false,
+    "locked_cause" : null,
+    "created_at" : "p(any)",
+    "created_by" : null,
+    "deleted_at" : null,
+    "deleted_by" : null
+  } ]
+}, {
+  "query" : "INSERT INTO t_user (id, username, email, email_verified, first_name, last_name, salt, password, is_active, last_login, locked, locked_cause, created_at, created_by,deleted_at, deleted_by) VALUES (9, 'testuser9', 'email9@gmail.com', true, 'testuser9', 'testuser9', '', '$2a$10$neQFs2lytkzy12dAj./dS.gWbzEKRzaEpgfAbb2Z1SeIMWF4WYCou', true, current_date + 1, false, null, '2021-09-29 18:06:16.000000', null, null, null);",
+  "content" : [ 9 ]
+}, {
+  "query" : "SELECT id FROM t_user WHERE id=9",
+  "content" : [ {
+    "id" : 9
+  } ]
+}, {
+  "query" : "DELETE FROM t_user WHERE 1=1",
+  "content" : {
+    "count" : 6
+  }
+}, {
+  "query" : "SELECT * FROM t_user",
+  "content" : [ ]
+} ]

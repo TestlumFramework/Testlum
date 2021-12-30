@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/e2e/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/e2e/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="var">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice>
+                    <x:element name="value" type="tns:nonEmptyString"/>
+                    <x:element name="xpath" type="tns:nonEmptyString"/>
+                    <x:element name="jpath" type="tns:nonEmptyString"/>
+                    <x:element name="postgresResult" type="tns:postgresResult"/>
+                    <x:element name="expression" type="tns:nonEmptyString"/>
+                </x:choice>
+                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="postgresResult">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:sequence>
+                    <x:element name="query" type="tns:variableQuery"/>
+                </x:sequence>
+                <x:attribute name="file" type="tns:nonEmptyString"/>
+                <x:attribute name="databaseName" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="variableQuery">
+        <x:restriction base="x:string">
+            <x:pattern value="SELECT[^\*,]+FROM.+WHERE.+"/>
+        </x:restriction>
+    </x:simpleType>
+</x:schema>

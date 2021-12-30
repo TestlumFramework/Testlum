@@ -1,0 +1,101 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario">
+    <overview>
+        <description>SendGrid self test</description>
+        <name>Sendgrid test scenario</name>
+    </overview>
+
+    <tags>
+        <tag>self_test</tag>
+    </tags>
+
+    <sendgrid comment="Sending a message to the email with raw body" alias="sendgrid_one">
+        <post url="mail/send">
+            <response code="202"/>
+            <body>
+                <raw>{
+                    "from":
+                    {
+                    "email" : "mamedov.murik.lezgin@gmail.com"
+                    },
+                    "subject" : "Test message",
+                    "personalizations" : [
+                    {
+                    "to" : [
+                    {
+                    "email" : "denys.mamedov@nure.ua"
+                    }
+                    ]
+                    }
+                    ],
+                    "content" : [
+                    {
+                    "type" : "text/plain",
+                    "value":"Sending direct test message raw"}
+                    ]
+                    }
+                </raw>
+            </body>
+        </post>
+    </sendgrid>
+
+    <sendgrid comment="Sending a message to the email from file"
+              alias="sendgrid_one">
+        <post url="mail/send">
+            <response code="202"/>
+            <body>
+                <from file="body1.json"/>
+            </body>
+        </post>
+    </sendgrid>
+
+    <sendgrid comment="Trying to generate new batch id"
+              alias="sendgrid_one">
+        <post url="mail/batch">
+            <response code="201" file="expected_1.json"/>
+        </post>
+    </sendgrid>
+
+    <var comment="Inserting batch_id for scheduled message" name="var-param">
+        <jpath>$.batch_id</jpath>
+    </var>
+
+    <sendgrid comment="Schedule the email to be sent, using batch ID"
+              alias="sendgrid_one">
+        <post url="mail/send">
+            <response code="202"/>
+            <body>
+                <raw>
+                    {
+                    "personalizations":
+                    [
+                    {
+                    "to":
+                    [
+                    {
+                    "email" : "denys.mamedov@nure.ua"
+                    }
+                    ]
+                    }
+                    ],
+                    "from":
+                    {
+                    "email" : "mamedov.murik.lezgin@gmail.com"
+                    },
+                    "subject" : "Test message",
+                    "content":
+                    [
+                    {
+                    "type": "text/plain",
+                    "value": "Scheduled message"
+                    }
+                    ],
+                    "send_at" : 1637323197,
+                    "batch_id" : "{{var-param}}"
+                    }
+                </raw>
+            </body>
+        </post>
+    </sendgrid>
+
+
+</scenario>

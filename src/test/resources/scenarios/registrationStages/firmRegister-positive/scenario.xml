@@ -1,0 +1,56 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario" variations="firmRegisterP.csv" active="false">
+
+    <overview>
+        <description>Check the ability of successful registration “Firm” on “pme”</description>
+        <name>Firm registration positive case</name>
+    </overview>
+
+    <tags>
+        <tag>Frontend</tag>
+    </tags>
+
+    <navigateTo comment="Navigate to Firm Registration"
+                path="/register/firm-information"/>
+
+    <input comment="Input 'Firm Name'"
+           locatorId="firmRegistration.firmName"
+           value="{{firmName}}"/>
+
+    <input comment="Input country"
+           locatorId="firmRegistration.country"
+           value="{{country}}"/>
+
+    <input comment="Input City"
+           locatorId="firmRegistration.city"
+           value="{{city}}"/>
+
+    <input comment="Input State"
+           locatorId="firmRegistration.state"
+           value="{{state}}"/>
+
+    <input comment="Input Firm address1"
+           locatorId="firmRegistration.firmAddress1"
+           value="{{firmAddress1}}"/>
+
+    <input comment="Input Firm Address2"
+           locatorId="firmRegistration.firmAddress2"
+           value="{{firmAddress2}}"/>
+
+    <input comment="Input 'Postcode'"
+           locatorId="firmRegistration.postcode"
+           value="{{postcode}}"/>
+
+    <click comment="Click on 'Confirm' button"
+           locatorId="firmRegistration.confirmFirm"/>
+
+    <wait comment="Waiting for loading element for assert"
+          time="1 " unit="seconds"/>
+
+    <assert comment="We go to 'Billing page'"
+            locatorId="firmRegistration.firmRegisterPositiveAssert"
+            attribute="id">
+        <content>register_card_button</content>
+    </assert>
+
+</scenario>
+

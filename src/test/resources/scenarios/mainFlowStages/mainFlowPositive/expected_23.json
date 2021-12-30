@@ -1,0 +1,11 @@
+[
+  {
+    "query": "SELECT token, user_id FROM t_temp_user_one_time_token ORDER BY ID DESC LIMIT 1",
+    "content": [
+      {
+        "token": "p(any)",
+        "user_id": "p(digit)"
+      }
+    ]
+  }
+]

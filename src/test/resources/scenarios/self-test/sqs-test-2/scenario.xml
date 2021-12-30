@@ -1,0 +1,130 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario" active="false">
+
+    <overview>
+        <description>Self sqs test #2</description>
+        <name>SQS test scenario #2</name>
+    </overview>
+
+    <tags>
+        <tag>self_test</tag>
+    </tags>
+
+    <sqs comment="Compare message from empty queue with file content"
+         alias="sqs"
+         queue="queue">
+        <receive>expected_1.json</receive>
+    </sqs>
+
+    <sqs comment="Compare message from empty queue inline mode"
+         alias="sqs"
+         queue="queue">
+        <receive>null</receive>
+    </sqs>
+
+    <sqs comment="Sending message from file expected_3 to queue"
+         alias="sqs"
+         queue="queue">
+        <send>expected_3.json</send>
+    </sqs>
+
+    <sqs comment="Test compare previous message from queue with file expected_4"
+         alias="sqs"
+         queue="queue">
+        <receive>expected_4.json</receive>
+    </sqs>
+
+    <sqs comment="Test send message to message queue directly from xml file"
+         alias="sqs"
+         queue="queue">
+        <send>{
+            "squadName": "Super hero squad",
+            "homeTown": "Metro City",
+            "formed": 2016,
+            "secretBase": "Super tower",
+            "active": true,
+            "members": [
+            {
+            "name": "Molecule Man",
+            "age": 29,
+            "secretIdentity": "Dan Jukes",
+            "powers": [
+            "Radiation resistance",
+            "Turning tiny",
+            "Radiation blast"
+            ]
+            },
+            {
+            "name": "Madame Uppercut",
+            "age": 39,
+            "secretIdentity": "Jane Wilson",
+            "powers": [
+            "Million tonne punch",
+            "Damage resistance",
+            "Superhuman reflexes"
+            ]
+            },
+            {
+            "name": "Eternal Flame",
+            "age": 1000000,
+            "secretIdentity": "Unknown",
+            "powers": [
+            "Immortality",
+            "Heat Immunity",
+            "Inferno",
+            "Teleportation",
+            "Interdimensional travel"
+            ]
+            }
+            ]
+            }
+        </send>
+    </sqs>
+
+    <sqs comment="Test compare previous message with json from xml file"
+         alias="sqs"
+         queue="queue">
+        <receive>{
+            "squadName": "Super hero squad",
+            "homeTown": "Metro City",
+            "formed": 2016,
+            "secretBase": "Super tower",
+            "active": true,
+            "members": [
+            {
+            "name": "Molecule Man",
+            "age": 29,
+            "secretIdentity": "Dan Jukes",
+            "powers": [
+            "Radiation resistance",
+            "Turning tiny",
+            "Radiation blast"
+            ]
+            },
+            {
+            "name": "Madame Uppercut",
+            "age": 39,
+            "secretIdentity": "Jane Wilson",
+            "powers": [
+            "Million tonne punch",
+            "Damage resistance",
+            "Superhuman reflexes"
+            ]
+            },
+            {
+            "name": "Eternal Flame",
+            "age": 1000000,
+            "secretIdentity": "Unknown",
+            "powers": [
+            "Immortality",
+            "Heat Immunity",
+            "Inferno",
+            "Teleportation",
+            "Interdimensional travel"
+            ]
+            }
+            ]
+            }
+        </receive>
+    </sqs>
+
+</scenario>

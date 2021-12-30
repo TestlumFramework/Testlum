@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/e2e/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/e2e/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared.xsd"/>
+    <x:include schemaLocation="overview.xsd"/>
+    <x:include schemaLocation="tags.xsd"/>
+    <x:include schemaLocation="click.xsd"/>
+    <x:include schemaLocation="input.xsd"/>
+    <x:include schemaLocation="navigate-back.xsd"/>
+    <x:include schemaLocation="navigate-reload.xsd"/>
+    <x:include schemaLocation="navigate-to.xsd"/>
+    <x:include schemaLocation="select-dropdown.xsd"/>
+    <x:include schemaLocation="deselect-dropdown.xsd"/>
+    <x:include schemaLocation="deselect-dropdown-all.xsd"/>
+    <x:include schemaLocation="assert.xsd"/>
+    <x:include schemaLocation="migrate.xsd"/>
+    <x:include schemaLocation="postgres.xsd"/>
+    <x:include schemaLocation="mongo.xsd"/>
+    <x:include schemaLocation="rabbit.xsd"/>
+    <x:include schemaLocation="redis.xsd"/>
+    <x:include schemaLocation="s3.xsd"/>
+    <x:include schemaLocation="sqs.xsd"/>
+    <x:include schemaLocation="oracle.xsd"/>
+    <x:include schemaLocation="kafka.xsd"/>
+    <x:include schemaLocation="mysql.xsd"/>
+    <x:include schemaLocation="break.xsd"/>
+    <x:include schemaLocation="elasticsearch.xsd"/>
+    <x:include schemaLocation="ses.xsd"/>
+    <x:include schemaLocation="sendgrid.xsd"/>
+    <x:include schemaLocation="when-then.xsd"/>
+    <x:include schemaLocation="dynamo.xsd"/>
+    <x:include schemaLocation="var.xsd"/>
+    <x:include schemaLocation="wait.xsd"/>
+    <x:include schemaLocation="invoke.xsd"/>
+    <x:include schemaLocation="http.xsd"/>
+    <x:include schemaLocation="logout.xsd"/>
+
+    <x:annotation>
+        <x:appinfo>
+            <jaxb:bindings
+                    node="/x:schema/x:element[@name='scenario']//x:complexType//x:sequence/x:choice">
+                <jaxb:property name="commands"/>
+            </jaxb:bindings>
+
+            <jaxb:bindings
+                    node="/x:schema/x:complexType[@name='auth']//x:complexContent//x:extension/x:choice">
+                <jaxb:property name="commands"/>
+            </jaxb:bindings>
+
+            <jaxb:bindings
+                    node="/x:schema/x:complexType[@name='repeat']//x:complexContent//x:extension/x:choice">
+                <jaxb:property name="commands"/>
+            </jaxb:bindings>
+        </x:appinfo>
+    </x:annotation>
+
+    <x:element name="scenario">
+        <x:complexType>
+            <x:sequence>
+                <x:element name="overview" type="tns:overview"/>
+                <x:element name="tags" type="tns:tags"/>
+                <x:choice maxOccurs="unbounded" minOccurs="1">
+                    <x:element name="include" type="tns:include"/>
+                    <x:element name="auth" type="tns:auth"/>
+                    <x:element name="repeat" type="tns:repeat"/>
+                    <x:element name="click" type="tns:click"/>
+                    <x:element name="input" type="tns:input"/>
+                    <x:element name="navigateBack" type="tns:navigateBack"/>
+                    <x:element name="navigateReload" type="tns:navigateReload"/>
+                    <x:element name="navigateTo" type="tns:navigateTo"/>
+                    <x:element name="assert" type="tns:assert"/>
+                    <x:element name="selectDropDown" type="tns:selectDropDown"/>
+                    <x:element name="deselectDropDown" type="tns:deselectDropDown"/>
+                    <x:element name="deselectDropDownAll" type="tns:deselectDropDownAll"/>
+
+                    <x:element name="http" type="tns:http"/>
+                    <x:element name="migrate" type="tns:migrate"/>
+                    <x:element name="postgres" type="tns:postgres"/>
+                    <x:element name="mysql" type="tns:mysql"/>
+                    <x:element name="oracle" type="tns:oracle"/>
+                    <x:element name="mongo" type="tns:mongo"/>
+                    <x:element name="redis" type="tns:redis"/>
+                    <x:element name="rabbit" type="tns:rabbit"/>
+                    <x:element name="kafka" type="tns:kafka"/>
+                    <x:element name="s3" type="tns:s3"/>
+                    <x:element name="sqs" type="tns:sqs"/>
+                    <x:element name="elasticsearch" type="tns:elasticsearch"/>
+                    <x:element name="sendgrid" type="tns:sendgrid"/>
+                    <x:element name="ses" type="tns:ses"/>
+                    <x:element name="dynamo" type="tns:dynamo"/>
+
+                    <x:element name="var" type="tns:var"/>
+                    <x:element name="wait" type="tns:wait"/>
+                    <x:element name="invoke" type="tns:invoke"/>
+                </x:choice>
+            </x:sequence>
+            <x:attribute name="onlyThis" type="x:boolean" default="false"/>
+            <x:attribute name="active" type="x:boolean" default="true"/>
+            <x:attribute name="variations" type="tns:csv"/>
+        </x:complexType>
+    </x:element>
+
+    <x:complexType name="auth">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="include" type="tns:include"/>
+                    <x:element name="auth" type="tns:auth"/>
+                    <x:element name="repeat" type="tns:repeat"/>
+                    <x:element name="click" type="tns:click"/>
+                    <x:element name="input" type="tns:input"/>
+                    <x:element name="navigateBack" type="tns:navigateBack"/>
+                    <x:element name="navigateReload" type="tns:navigateReload"/>
+                    <x:element name="navigateTo" type="tns:navigateTo"/>
+                    <x:element name="assert" type="tns:assert"/>
+                    <x:element name="selectDropDown" type="tns:selectDropDown"/>
+                    <x:element name="deselectDropDown" type="tns:deselectDropDown"/>
+                    <x:element name="deselectDropDownAll" type="tns:deselectDropDownAll"/>
+
+                    <x:element name="http" type="tns:http"/>
+                    <x:element name="migrate" type="tns:migrate"/>
+                    <x:element name="postgres" type="tns:postgres"/>
+                    <x:element name="mysql" type="tns:mysql"/>
+
+                    <x:element name="var" type="tns:var"/>
+                    <x:element name="wait" type="tns:wait"/>
+                    <x:element name="invoke" type="tns:invoke"/>
+                </x:choice>
+                <x:attribute name="credentials" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="repeat">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="include" type="tns:include"/>
+                    <x:element name="auth" type="tns:auth"/>
+                    <x:element name="repeat" type="tns:repeat"/>
+                    <x:element name="click" type="tns:click"/>
+                    <x:element name="input" type="tns:input"/>
+                    <x:element name="navigateBack" type="tns:navigateBack"/>
+                    <x:element name="navigateReload" type="tns:navigateReload"/>
+                    <x:element name="navigateTo" type="tns:navigateTo"/>
+                    <x:element name="assert" type="tns:assert"/>
+                    <x:element name="selectDropDown" type="tns:selectDropDown"/>
+                    <x:element name="deselectDropDown" type="tns:deselectDropDown"/>
+                    <x:element name="deselectDropDownAll" type="tns:deselectDropDownAll"/>
+
+                    <x:element name="http" type="tns:http"/>
+                    <x:element name="migrate" type="tns:migrate"/>
+                    <x:element name="postgres" type="tns:postgres"/>
+                    <x:element name="mysql" type="tns:mysql"/>
+                    <x:element name="wait" type="tns:wait"/>
+
+                </x:choice>
+                <x:attribute name="times" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="include">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:attribute name="scenario" type="tns:nonEmptyString"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="csv">
+        <x:restriction base="x:string">
+            <x:pattern value="[a-zA-Z\d_]+\.csv"/>
+        </x:restriction>
+    </x:simpleType>
+</x:schema>

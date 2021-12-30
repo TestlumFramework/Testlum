@@ -1,0 +1,14 @@
+[
+  {
+    "query" : "DEL # jsonDataFirst",
+    "content" : "1"
+  },
+  {
+    "query" : "DEL # jsonDataSecond",
+    "content" : "1"
+  },
+  {
+    "query" : "DEL # simpleValue",
+    "content" : "1"
+  }
+]

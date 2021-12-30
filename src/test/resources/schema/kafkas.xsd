@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/e2e/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/e2e/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+<!--    <x:include schemaLocation="shared-config.xsd"/>-->
+    <x:include schemaLocation="global-config.xsd"/>
+
+    <x:complexType name="kafkas">
+        <x:choice maxOccurs="unbounded">
+            <x:element name="kafka" type="tns:kafka"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="kafka">
+        <x:sequence>
+            <x:element name="bootstrapAddress" type="tns:nonEmptyString"/>
+            <x:element name="autoOffsetReset" type="tns:nonEmptyString"/>
+            <x:element name="maxPollRecords" type="x:int"/>
+            <x:element name="maxPollIntervalMs" type="x:int"/>
+            <x:element name="clientId" type="tns:nonEmptyString"/>
+            <x:element name="groupId" type="tns:nonEmptyString"/>
+        </x:sequence>
+        <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+    </x:complexType>
+
+</x:schema>
+

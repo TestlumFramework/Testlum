@@ -1,0 +1,125 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario">
+    <overview>
+        <description>Self redis test</description>
+        <name>Redis test scenario</name>
+    </overview>
+
+    <tags>
+        <tag>self_test</tag>
+    </tags>
+
+    <migrate comment="Prepare information from redis_patch_1 and redis_patch_2 (9 records)"
+             alias="redis"
+             name="REDIS">
+        <patches>redis_patch_1</patches>
+        <patches>redis_patch_2</patches>
+    </migrate>
+    <migrate comment="Prepare information from redis_patch_1 and redis_patch_2 (9 records)"
+             alias="redis_two"
+             name="REDIS">
+        <patches>redis_patch_1</patches>
+        <patches>redis_patch_2</patches>
+    </migrate>
+
+    <redis comment="Execute the command as get in redis by key. Expect to see content from step_2"
+           alias="redis"
+           file="expected_2.json">
+        <query>GET # jsonDataFirst</query>
+        <query>GET # jsonDataSecond</query>
+        <query>GET # jsonDataThird</query>
+        <query>GET # jsonDataFourth</query>
+        <query>GET # jsonDataFifth</query>
+        <query>GET # jsonDataSixth</query>
+        <query>GET # simpleDataFirst</query>
+        <query>GET # simpleDataSecond</query>
+        <query>GET # simpleDataThird</query>
+    </redis>
+
+    <redis comment="Execute the command as get in redis by key. Expect to see content from step_2"
+           alias="redis_two"
+           file="expected_7.json">
+        <query>GET # jsonDataFirst</query>
+        <query>GET # jsonDataSecond</query>
+        <query>GET # jsonDataThird</query>
+        <query>GET # jsonDataFourth</query>
+        <query>GET # jsonDataFifth</query>
+        <query>GET # jsonDataSixth</query>
+        <query>GET # simpleDataFirst</query>
+        <query>GET # simpleDataSecond</query>
+        <query>GET # simpleDataThird</query>
+    </redis>
+
+    <redis comment="Execute the command as set in redis key-value (JSON DATA/SIMPLE DATA). Expect to see content from step_3"
+           alias="redis"
+           file="expected_3.json">
+        <query>SET # jsonDataFirst # {"errors" : null, "id" : 1, "title" : "title1", "text" : "text1", "logo" : "logo",
+            "slug" : "slug", "isPublished" : true, "createAt" : null, "updatedAt" : null, "publishedAt" : null}
+        </query>
+        <query>SET # jsonDataSecond # {"errors" : null, "id" : 2, "title" : "title2", "text" : "text2", "logo" :
+            "logo2", "slug" : "slug2", "isPublished" : false, "createAt" : null, "updatedAt" : null, "publishedAt" :
+            null}
+        </query>
+        <query>SET # simpleValue # 123</query>
+    </redis>
+
+    <redis comment="Execute the command as get in redis by key. Expect to see content from step_4"
+           alias="redis"
+           file="expected_4.json">
+        <query>GET # jsonDataFirst</query>
+        <query>GET # jsonDataSecond</query>
+        <query>GET # simpleValue</query>
+    </redis>
+
+    <redis comment="Execute the command as del in redis by key. Expect to see content from step_5"
+           alias="redis"
+           file="expected_5.json">
+        <query>DEL # jsonDataFirst</query>
+        <query>DEL # jsonDataSecond</query>
+        <query>DEL # simpleValue</query>
+    </redis>
+
+    <redis comment="Execute the command as get in redis by key. Expect to see content from step_6"
+           alias="redis"
+           file="expected_6.json">
+        <query>GET # jsonDataFirst</query>
+        <query>GET # jsonDataSecond</query>
+        <query>GET # simpleValue</query>
+    </redis>
+
+    <redis comment="Execute the command as set in redis key-value (JSON DATA/SIMPLE DATA). Expect to see content from step_3"
+           alias="redis_two"
+           file="expected_8.json">
+        <query>SET # jsonDataFirst # {"errors" : null, "id" : 1, "title" : "title1", "text" : "text1", "logo" : "logo",
+            "slug" : "slug", "isPublished" : true, "createAt" : null, "updatedAt" : null, "publishedAt" : null}
+        </query>
+        <query>SET # jsonDataSecond # {"errors" : null, "id" : 2, "title" : "title2", "text" : "text2", "logo" :
+            "logo2", "slug" : "slug2", "isPublished" : false, "createAt" : null, "updatedAt" : null, "publishedAt" :
+            null}
+        </query>
+        <query>SET # simpleValue # 123</query>
+    </redis>
+
+    <redis comment="Execute the command as get in redis by key. Expect to see content from step_4"
+           alias="redis_two"
+           file="expected_9.json">
+        <query>GET # jsonDataFirst</query>
+        <query>GET # jsonDataSecond</query>
+        <query>GET # simpleValue</query>
+    </redis>
+
+    <redis comment="Execute the command as del in redis by key. Expect to see content from step_5"
+           alias="redis_two"
+           file="expected_10.json">
+        <query>DEL # jsonDataFirst</query>
+        <query>DEL # jsonDataSecond</query>
+        <query>DEL # simpleValue</query>
+    </redis>
+
+    <redis comment="Execute the command as get in redis by key. Expect to see content from step_6"
+           alias="redis_two"
+           file="expected_11.json">
+        <query>GET # jsonDataFirst</query>
+        <query>GET # jsonDataSecond</query>
+        <query>GET # simpleValue</query>
+    </redis>
+</scenario>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/e2e/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/e2e/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+  <x:include schemaLocation="shared.xsd"/>
+
+  <x:complexType name="rabbit">
+    <x:complexContent>
+      <x:extension base="tns:abstractCommand">
+        <x:sequence maxOccurs="unbounded">
+          <x:choice>
+            <x:element name="send" type="tns:sendRmqMessage" maxOccurs="unbounded"/>
+            <x:element name="receive" type="tns:receiveRmqMessage" maxOccurs="unbounded"/>
+          </x:choice>
+        </x:sequence>
+        <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
+      </x:extension>
+    </x:complexContent>
+  </x:complexType>
+
+  <x:complexType name="sendRmqMessage">
+    <x:sequence>
+      <x:choice>
+        <x:element name="body" type="tns:nonEmptyString"/>
+        <x:element name="file" type="tns:bodyFile"/>
+      </x:choice>
+      <x:element name="headers" type="tns:rmqHeaders" minOccurs="0"/>
+    </x:sequence>
+    <x:attribute name="routingKey" type="tns:nonEmptyString" use="required"/>
+    <x:attribute name="exchange" type="x:string" default=""/>
+    <x:attribute name="correlationId" type="tns:nonEmptyString"/>
+  </x:complexType>
+
+  <x:complexType name="receiveRmqMessage">
+    <x:choice>
+      <x:element name="message" type="tns:nonEmptyString"/>
+      <x:element name="file" type="tns:expected"/>
+    </x:choice>
+    <x:attribute name="queue" type="tns:nonEmptyString" use="required"/>
+    <x:attribute name="prefetchCount" type="x:int" default="1"/>
+    <x:attribute name="timeoutMillis" type="x:long" default="1000"/>
+    <x:attribute name="headers" type="x:boolean" default="true"/>
+  </x:complexType>
+
+  <x:complexType name="rmqHeaders">
+    <x:sequence maxOccurs="unbounded">
+      <x:element name="header" type="tns:rmqHeader"/>
+    </x:sequence>
+  </x:complexType>
+
+  <x:complexType name="rmqHeader">
+    <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+    <x:attribute name="value" type="x:string" use="required"/>
+  </x:complexType>
+
+</x:schema>

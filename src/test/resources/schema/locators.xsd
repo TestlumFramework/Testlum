@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          xmlns:tns="http://www.knubisoft.com/e2e/testing/model/pages"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+          jaxb:version="2.1">
+
+    <x:annotation>
+        <x:appinfo>
+            <jaxb:bindings
+                node="/x:schema/x:complexType[@name='locator']//x:choice">
+            </jaxb:bindings>
+        </x:appinfo>
+    </x:annotation>
+
+    <x:complexType name="locators">
+        <x:choice>
+            <x:element name="locator" type="tns:locator" maxOccurs="unbounded"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="locator">
+        <x:annotation>
+            <x:documentation>HTML DOM element</x:documentation>
+        </x:annotation>
+        <x:choice>
+            <x:element name="xpath" type="tns:nonEmptyString"/>
+            <x:element name="id" type="tns:nonEmptyString"/>
+            <x:element name="class" type="tns:nonEmptyString"/>
+        </x:choice>
+        <x:attribute name="locatorId" type="tns:pagesLocator" use="required"/>
+        <x:attribute name="description" type="tns:nonEmptyString"/>
+    </x:complexType>
+
+    <x:simpleType name="nonEmptyString">
+        <x:restriction base="x:string">
+            <x:minLength value="1"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="stringMin10">
+        <x:restriction base="x:string">
+            <x:minLength value="10"/>
+        </x:restriction>
+    </x:simpleType>
+
+</x:schema>

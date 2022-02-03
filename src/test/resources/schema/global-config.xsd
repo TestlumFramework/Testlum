@@ -6,6 +6,7 @@
           elementFormDefault="qualified" jaxb:version="2.1">
 
     <x:include schemaLocation="postgreses.xsd"/>
+    <x:include schemaLocation="clickhouses.xsd"/>
     <x:include schemaLocation="mysqls.xsd"/>
     <x:include schemaLocation="oracles.xsd"/>
     <x:include schemaLocation="redises.xsd"/>
@@ -42,6 +43,7 @@
                 <x:choice maxOccurs="unbounded">
                     <x:element name="apis" type="tns:apis" minOccurs="0"/>
                     <x:element name="postgreses" type="tns:postgreses" minOccurs="0"/>
+                    <x:element name="clickhouses" type="tns:clickhouses" minOccurs="0"/>
                     <x:element name="mysqls" type="tns:mysqls" minOccurs="0"/>
                     <x:element name="oracles" type="tns:oracles" minOccurs="0"/>
                     <x:element name="redises" type="tns:redises" minOccurs="0"/>

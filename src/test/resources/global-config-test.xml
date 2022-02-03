@@ -22,7 +22,7 @@
         </browserSettings>
 
         <browserVersion>
-            <browserVersionElement>Chrome__95.0.4638</browserVersionElement>
+            <browserVersionElement>Chrome__97.0.4692</browserVersionElement>
         </browserVersion>
         <baseUrl>http://localhost:8080</baseUrl>
         <performanceWarning>
@@ -306,5 +306,20 @@
             <password>q98374fkjdkfuyqiweysdc</password>
         </elasticsearch>
     </elasticsearches>
+
+    <clickhouses>
+        <clickhouse alias="clickhouse-one" enabled="true">
+            <jdbcDriver>ru.yandex.clickhouse.ClickHouseDriver</jdbcDriver>
+            <username>test</username>
+            <password>test</password>
+            <connectionUrl>jdbc:clickhouse://localhost:8125/test_db</connectionUrl>
+        </clickhouse>
+        <clickhouse alias="clickhouse-two" enabled="true">
+            <jdbcDriver>ru.yandex.clickhouse.ClickHouseDriver</jdbcDriver>
+            <username>test</username>
+            <password>test</password>
+            <connectionUrl>jdbc:clickhouse://localhost:812/test_db</connectionUrl>
+        </clickhouse>
+    </clickhouses>
 
 </globalTestConfiguration>

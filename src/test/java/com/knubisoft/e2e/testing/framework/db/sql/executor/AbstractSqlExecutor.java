@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.util.CollectionUtils;
+import ru.yandex.clickhouse.ClickHouseDataSource;
 
 import javax.sql.DataSource;
 import java.util.Collections;
@@ -25,7 +26,9 @@ public abstract class AbstractSqlExecutor {
     private static final String PK_NAME = "id";
     private static final String SPACE_PLUS = " +";
     private static final String INSERT = "INSERT";
+    private static final String ALTER = "ALTER";
     private static final String UPDATE = "UPDATE";
+    private static final String CREATE = "CREATE";
     private static final String DELETE = "DELETE";
     private static final String COUNT = "count";
 
@@ -59,9 +62,9 @@ public abstract class AbstractSqlExecutor {
     }
 
     private Object executeAppropriateQuery(final String query) {
-        if (checkMatchQuery(query, INSERT)) {
+        if (checkMatchQuery(query, INSERT, ALTER, CREATE)) {
             return executeInsertQuery(query);
-        } else if (checkMatchQuery(query, UPDATE, DELETE)) {
+        } else if (checkMatchQuery(query, UPDATE,  DELETE)) {
             return executeDmlQuery(query);
         }
         return executeDqlQuery(query);
@@ -69,10 +72,19 @@ public abstract class AbstractSqlExecutor {
 
     private List<Number> executeInsertQuery(final String query) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        requireNonNull(template).update(connection ->
-                connection.prepareStatement(query, new String[]{PK_NAME}), keyHolder);
+        executeDdlQuery(query, keyHolder);
         List<Map<String, Object>> keyList = keyHolder.getKeyList();
         return CollectionUtils.isEmpty(keyList) ? Collections.emptyList() : getAffectedKeys(keyList);
+    }
+
+    private void executeDdlQuery(final String query, final KeyHolder keyHolder) {
+        if (this.template.getDataSource() instanceof ClickHouseDataSource) {
+            requireNonNull(template).update(connection ->
+                    connection.prepareStatement(query), keyHolder);
+        } else {
+            requireNonNull(template).update(connection ->
+                    connection.prepareStatement(query, new String[]{PK_NAME}), keyHolder);
+        }
     }
 
     private Map<String, Integer> executeDmlQuery(final String query) {

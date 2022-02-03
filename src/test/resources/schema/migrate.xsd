@@ -27,6 +27,7 @@
             <x:enumeration value="REDIS"/>
             <x:enumeration value="MONGODB"/>
             <x:enumeration value="DYNAMO"/>
+            <x:enumeration value="CLICKHOUSE"/>
         </x:restriction>
     </x:simpleType>
 </x:schema>

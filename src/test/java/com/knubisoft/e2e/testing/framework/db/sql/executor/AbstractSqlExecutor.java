@@ -64,7 +64,7 @@ public abstract class AbstractSqlExecutor {
     private Object executeAppropriateQuery(final String query) {
         if (checkMatchQuery(query, INSERT, ALTER, CREATE)) {
             return executeInsertQuery(query);
-        } else if (checkMatchQuery(query, UPDATE,  DELETE)) {
+        } else if (checkMatchQuery(query, UPDATE, DELETE)) {
             return executeDmlQuery(query);
         }
         return executeDqlQuery(query);

@@ -16,9 +16,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for assert complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="assert"&gt;
  *   &lt;complexContent&gt;
@@ -31,16 +31,13 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "assert", propOrder = {
-    "content"
+        "content"
 })
 public class Assert
-    extends CommandWithLocator
-{
+        extends CommandWithLocator {
 
     protected String content;
     @XmlAttribute(name = "attribute", required = true)
@@ -48,11 +45,9 @@ public class Assert
 
     /**
      * Gets the value of the content property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getContent() {
         return content;
@@ -60,11 +55,9 @@ public class Assert
 
     /**
      * Sets the value of the content property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setContent(String value) {
         this.content = value;
@@ -72,11 +65,9 @@ public class Assert
 
     /**
      * Gets the value of the attribute property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Attribute }
-     *     
+     *
+     * @return possible object is
+     * {@link Attribute }
      */
     public Attribute getAttribute() {
         return attribute;
@@ -84,11 +75,9 @@ public class Assert
 
     /**
      * Sets the value of the attribute property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Attribute }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Attribute }
      */
     public void setAttribute(Attribute value) {
         this.attribute = value;

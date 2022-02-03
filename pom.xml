@@ -116,6 +116,16 @@
             <groupId>ru.yandex.clickhouse</groupId>
             <artifactId>clickhouse-jdbc</artifactId>
             <version>${ru.yandex.clickhouse.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -880,7 +890,7 @@
                             <logViolationsToConsole>true</logViolationsToConsole>
                             <failsOnError>true</failsOnError>
                             <linkXRef>false</linkXRef>
-                            <excludes>**/com/knubisoft/ui/testing/model/**/*</excludes>
+                            <excludes>**/com/knubisoft/e2e/testing/model/**/*</excludes>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
                         </configuration>
                         <executions>
@@ -928,7 +938,7 @@
                             <minimumTokens>50</minimumTokens>
                             <targetJdk>${java.version}</targetJdk>
                             <excludes>
-                                <exclude>**/com/knubisoft/ui/testing/model/**/*.java
+                                <exclude>**/com/knubisoft/e2e/testing/model/**/*.java
                                 </exclude>
                             </excludes>
                         </configuration>

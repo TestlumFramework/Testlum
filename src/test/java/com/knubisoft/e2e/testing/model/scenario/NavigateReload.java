@@ -15,11 +15,11 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * Reload page
- * 
+ *
  * <p>Java class for navigateReload complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="navigateReload"&gt;
  *   &lt;complexContent&gt;
@@ -28,14 +28,11 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "navigateReload")
 public class NavigateReload
-    extends AbstractCommand
-{
+        extends AbstractCommand {
 
 
 }

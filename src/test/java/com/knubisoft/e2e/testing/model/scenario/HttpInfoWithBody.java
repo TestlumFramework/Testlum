@@ -16,9 +16,9 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for httpInfoWithBody complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="httpInfoWithBody"&gt;
  *   &lt;complexContent&gt;
@@ -30,32 +30,27 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "httpInfoWithBody", propOrder = {
-    "body"
+        "body"
 })
 @XmlSeeAlso({
-    Post.class,
-    Put.class,
-    Patch.class,
-    Trace.class
+        Post.class,
+        Put.class,
+        Patch.class,
+        Trace.class
 })
 public abstract class HttpInfoWithBody
-    extends HttpInfo
-{
+        extends HttpInfo {
 
     protected Body body;
 
     /**
      * Gets the value of the body property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Body }
-     *     
+     *
+     * @return possible object is
+     * {@link Body }
      */
     public Body getBody() {
         return body;
@@ -63,11 +58,9 @@ public abstract class HttpInfoWithBody
 
     /**
      * Sets the value of the body property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Body }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Body }
      */
     public void setBody(Body value) {
         this.body = value;

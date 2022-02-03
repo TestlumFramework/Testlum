@@ -14,7 +14,6 @@ import java.util.Map;
 
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.RETHROWN_ERRORS_LOG;
 import static java.lang.String.format;
-import static java.lang.String.join;
 import static java.lang.String.valueOf;
 
 @RequiredArgsConstructor
@@ -71,7 +70,8 @@ public final class HttpValidator {
 
     public void rethrowOnErrors() {
         if (!result.isEmpty()) {
-            throw new DefaultFrameworkException(RETHROWN_ERRORS_LOG, String.join(DelimiterConstant.SPACE_WITH_LF, result));
+            throw new DefaultFrameworkException(RETHROWN_ERRORS_LOG,
+                    String.join(DelimiterConstant.SPACE_WITH_LF, result));
         }
     }
 

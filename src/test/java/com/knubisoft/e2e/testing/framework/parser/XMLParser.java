@@ -57,7 +57,6 @@ public final class XMLParser<E> {
 
     @SneakyThrows
     public E process(final File file, final XMLValidator<E> validator) {
-        final Scenario scenario = new Scenario();
         XSDValidator.validateBySchema(file, this.schema);
         E obj = deserializeXmlTo(file, this.cls, this.objectFactory);
         validator.validate(obj, file);

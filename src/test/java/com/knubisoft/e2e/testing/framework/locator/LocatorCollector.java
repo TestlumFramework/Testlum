@@ -40,7 +40,6 @@ public class LocatorCollector {
 
     private Map<File, Page> collectFileToPageMap() {
         Map<File, Page> fileToPage = new LinkedHashMap<>();
-
         File[] listFiles = Objects.requireNonNull(pagesFolder.listFiles());
         for (File each : listFiles) {
             fileToPage.put(each, parseLocatorOrThrow(each));
@@ -86,7 +85,8 @@ public class LocatorCollector {
     }
 
     private String getKeyName(final Map.Entry<File, Page> each, final Locator locator) {
-        String prefix = each.getKey().getName().replace(TestResourceSettings.XML_SUFFIX, DelimiterConstant.EMPTY) + DelimiterConstant.DOT;
+        String prefix = each.getKey().getName().replace(TestResourceSettings.XML_SUFFIX, DelimiterConstant.EMPTY)
+                + DelimiterConstant.DOT;
         return prefix + locator.getLocatorId();
     }
 }

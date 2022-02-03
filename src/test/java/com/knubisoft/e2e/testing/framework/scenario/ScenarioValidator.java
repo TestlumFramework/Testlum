@@ -2,38 +2,37 @@ package com.knubisoft.e2e.testing.framework.scenario;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
-import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.e2e.testing.model.global_config.Postgres;
-import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
-import com.knubisoft.e2e.testing.model.scenario.CommandWithLocator;
-import com.knubisoft.e2e.testing.model.scenario.Dynamo;
-import com.knubisoft.e2e.testing.model.scenario.Elasticsearch;
-import com.knubisoft.e2e.testing.model.scenario.Http;
-import com.knubisoft.e2e.testing.model.scenario.Include;
-import com.knubisoft.e2e.testing.model.scenario.PostgresResult;
-import com.knubisoft.e2e.testing.model.scenario.S3;
-import com.knubisoft.e2e.testing.model.scenario.Var;
 import com.knubisoft.e2e.testing.framework.db.source.FileSource;
+import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.locator.GlobalLocators;
 import com.knubisoft.e2e.testing.framework.parser.XMLValidator;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.HttpUtil;
 import com.knubisoft.e2e.testing.model.global_config.GlobalTestConfiguration;
+import com.knubisoft.e2e.testing.model.global_config.Postgres;
+import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.model.scenario.Auth;
+import com.knubisoft.e2e.testing.model.scenario.CommandWithLocator;
+import com.knubisoft.e2e.testing.model.scenario.Dynamo;
+import com.knubisoft.e2e.testing.model.scenario.Elasticsearch;
+import com.knubisoft.e2e.testing.model.scenario.Http;
 import com.knubisoft.e2e.testing.model.scenario.HttpInfo;
+import com.knubisoft.e2e.testing.model.scenario.Include;
 import com.knubisoft.e2e.testing.model.scenario.Migrate;
 import com.knubisoft.e2e.testing.model.scenario.Mongo;
 import com.knubisoft.e2e.testing.model.scenario.Mysql;
 import com.knubisoft.e2e.testing.model.scenario.Oracle;
+import com.knubisoft.e2e.testing.model.scenario.PostgresResult;
 import com.knubisoft.e2e.testing.model.scenario.Redis;
 import com.knubisoft.e2e.testing.model.scenario.Repeat;
 import com.knubisoft.e2e.testing.model.scenario.Response;
+import com.knubisoft.e2e.testing.model.scenario.S3;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
+import com.knubisoft.e2e.testing.model.scenario.Var;
 import com.knubisoft.e2e.testing.model.scenario.When;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +47,6 @@ import static java.lang.String.format;
 
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
-    private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
     private final FileSearcher fileSearcher;
     private final File patchesFolder;
     private final TestResourceSettings testResourceSettings;
@@ -92,7 +90,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         });
 
         validatorMap.put(o -> o instanceof com.knubisoft.e2e.testing.model.scenario.Postgres, (xmlFile, command) -> {
-            com.knubisoft.e2e.testing.model.scenario.Postgres postgres = (com.knubisoft.e2e.testing.model.scenario.Postgres) command;
+            com.knubisoft.e2e.testing.model.scenario.Postgres postgres =
+                    (com.knubisoft.e2e.testing.model.scenario.Postgres) command;
             validateFileExistence(xmlFile, postgres.getFile());
         });
 
@@ -120,8 +119,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             Dynamo dynamo = (Dynamo) command;
             validateFileExistence(xmlFile, dynamo.getFile());
         });
-
-        this.abstractCommandValidatorsMap = Collections.unmodifiableMap(validatorMap);
     }
 
     @Override
@@ -187,6 +184,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             }
         }
     }
+
     private void validateAction(final AbstractCommand command,
                                 final File xmlFile,
                                 final Scenario scenario) {
@@ -248,6 +246,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             checkDatabaseConnection(command.getPostgresResult());
         }
     }
+
     private void checkDatabaseConnection(final PostgresResult postgresResult) {
         GlobalTestConfiguration configuration = GlobalTestConfigurationProvider.provide();
         for (Postgres postgres
@@ -280,7 +279,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
-    private void validatePostgresCommand(final com.knubisoft.e2e.testing.model.scenario.Postgres postgres, final File xmlFile) {
+    private void validatePostgresCommand(final com.knubisoft.e2e.testing.model.scenario.Postgres postgres,
+                                         final File xmlFile) {
         if (!postgres.getFile().isEmpty() && postgres.getFile() != null) {
             fileSearcher.search(xmlFile, postgres.getFile());
         }
@@ -293,7 +293,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             if (command instanceof Migrate) {
                 turnOffReadonly = arePatchesMutating(((Migrate) command));
             } else if (command instanceof com.knubisoft.e2e.testing.model.scenario.Postgres) {
-                turnOffReadonly = isQueryContainsMutatingAction(((com.knubisoft.e2e.testing.model.scenario.Postgres) command).getQuery());
+                turnOffReadonly =
+                        isQueryContainsMutatingAction(((com.knubisoft.e2e.testing.model.scenario.Postgres) command)
+                                .getQuery());
             } else if (command instanceof Auth) {
                 turnOffReadonly = true;
             } else if (command instanceof Http) {

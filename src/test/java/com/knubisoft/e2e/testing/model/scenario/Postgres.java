@@ -8,20 +8,20 @@
 
 package com.knubisoft.e2e.testing.model.scenario;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * <p>Java class for postgres complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="postgres"&gt;
  *   &lt;complexContent&gt;
@@ -35,16 +35,13 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "postgres", propOrder = {
-    "query"
+        "query"
 })
 public class Postgres
-    extends AbstractCommand
-{
+        extends AbstractCommand {
 
     @XmlElement(required = true)
     protected List<String> query;
@@ -55,25 +52,23 @@ public class Postgres
 
     /**
      * Gets the value of the query property.
-     * 
+     *
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the query property.
-     * 
+     *
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getQuery().add(newItem);
      * </pre>
-     * 
-     * 
+     *
+     *
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
-     * 
-     * 
      */
     public List<String> getQuery() {
         if (query == null) {
@@ -84,11 +79,9 @@ public class Postgres
 
     /**
      * Gets the value of the file property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getFile() {
         return file;
@@ -96,11 +89,9 @@ public class Postgres
 
     /**
      * Sets the value of the file property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setFile(String value) {
         this.file = value;
@@ -108,11 +99,9 @@ public class Postgres
 
     /**
      * Gets the value of the alias property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getAlias() {
         return alias;
@@ -120,11 +109,9 @@ public class Postgres
 
     /**
      * Sets the value of the alias property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setAlias(String value) {
         this.alias = value;

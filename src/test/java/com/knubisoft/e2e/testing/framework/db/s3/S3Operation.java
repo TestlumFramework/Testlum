@@ -3,10 +3,8 @@ package com.knubisoft.e2e.testing.framework.db.s3;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.framework.db.StorageOperation;
 import com.knubisoft.e2e.testing.framework.db.source.Source;
-import com.knubisoft.e2e.testing.model.global_config.GlobalTestConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,12 +14,10 @@ import java.util.Map;
 public class S3Operation implements StorageOperation {
 
     private final Map<String, AmazonS3> amazonS3;
-    private final GlobalTestConfiguration globalConfiguration;
 
 
     public S3Operation(@Autowired(required = false) final Map<String, AmazonS3> amazonS3) {
         this.amazonS3 = amazonS3;
-        this.globalConfiguration = GlobalTestConfigurationProvider.provide();
     }
 
     @Override

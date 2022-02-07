@@ -31,7 +31,8 @@ public class GlobalTestConfigurationProvider {
 
     private static String getConfigNameByProfile() {
         if (System.getProperty(PROFILE) != null) {
-            return TestResourceSettings.GLOBAL_CONFIG_FILENAME + DASH + System.getProperty(PROFILE) + TestResourceSettings.XML_SUFFIX;
+            return TestResourceSettings.GLOBAL_CONFIG_FILENAME + DASH + System.getProperty(PROFILE)
+                    + TestResourceSettings.XML_SUFFIX;
         } else {
             throw new DefaultFrameworkException(CANNOT_FIND_PROFILE);
         }

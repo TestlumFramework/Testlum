@@ -77,7 +77,8 @@ public class TestSetCollector {
         return result;
     }
 
-    private Set<ScenarioCollector.MappingResult> filterScenariosIfOnlyThis(final Set<ScenarioCollector.MappingResult> original) {
+    private Set<ScenarioCollector.MappingResult> filterScenariosIfOnlyThis(
+            final Set<ScenarioCollector.MappingResult> original) {
         Set<ScenarioCollector.MappingResult> filtered = original.stream()
                 .filter(this::filterIsActive)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
@@ -89,7 +90,8 @@ public class TestSetCollector {
         return scenario.isActive() && scenario.isOnlyThis();
     }
 
-    private Set<ScenarioCollector.MappingResult> filterAndSortByTags(final Set<ScenarioCollector.MappingResult> original) {
+    private Set<ScenarioCollector.MappingResult> filterAndSortByTags(
+            final Set<ScenarioCollector.MappingResult> original) {
         FilterTags tags = GlobalTestConfigurationProvider.provide().getFilterTags();
         if (tags.isEnable()) {
             Set<ScenarioCollector.MappingResult> filtered = filterByTags(original, tags);
@@ -98,7 +100,8 @@ public class TestSetCollector {
         return original;
     }
 
-    private Set<ScenarioCollector.MappingResult> filterByTags(final Set<ScenarioCollector.MappingResult> original, final FilterTags tags) {
+    private Set<ScenarioCollector.MappingResult> filterByTags(final Set<ScenarioCollector.MappingResult> original,
+                                                              final FilterTags tags) {
         Set<ScenarioCollector.MappingResult> filtered = original.stream().filter(m -> isMatchesTestTags(m, tags))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
@@ -110,7 +113,8 @@ public class TestSetCollector {
         return scenarioTags.stream().anyMatch(tags.getValue()::contains);
     }
 
-    private Set<ScenarioCollector.MappingResult> sortByTags(final Set<ScenarioCollector.MappingResult> original, final FilterTags tags) {
+    private Set<ScenarioCollector.MappingResult> sortByTags(final Set<ScenarioCollector.MappingResult> original,
+                                                            final FilterTags tags) {
         return original.stream().sorted(Comparator.comparing(e -> getScenarioTagOrderIndex(e, tags.getValue())))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
@@ -123,13 +127,15 @@ public class TestSetCollector {
                 .orElse(0);
     }
 
-    private Set<ScenarioCollector.MappingResult> filterParsedScenarios(final Set<ScenarioCollector.MappingResult> original) {
+    private Set<ScenarioCollector.MappingResult> filterParsedScenarios(
+            final Set<ScenarioCollector.MappingResult> original) {
         return original.stream()
                 .filter(this::isScenarioParsed)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    private Set<ScenarioCollector.MappingResult> getNonParsedScenarios(final Set<ScenarioCollector.MappingResult> original) {
+    private Set<ScenarioCollector.MappingResult> getNonParsedScenarios(
+            final Set<ScenarioCollector.MappingResult> original) {
         return original.stream()
                 .filter(e -> !isScenarioParsed(e))
                 .collect(Collectors.toCollection(LinkedHashSet::new));

@@ -16,7 +16,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.NOT_DECLARED_W
 @UtilityClass
 public class InterpreterScanner {
 
-    private static final String PACKAGE_TO_SCAN = "com.knubisoft.ui.testing.framework.interpreter";
+    private static final String PACKAGE_TO_SCAN = "com.knubisoft.e2e.testing.framework.interpreter";
 
     private static final Supplier<CommandToInterpreterClassMap> CACHE =
             Suppliers.memoize(InterpreterScanner::collectAvailableInterpreters);

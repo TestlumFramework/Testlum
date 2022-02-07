@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  ch_server_01:
+    container_name: clickhouse01
+    image: yandex/clickhouse-server
+    ports:
+      - 8125:8123
+      - 9005:9000
+    environment:
+      CLICKHOUSE_DB: test_db
+      CLICKHOUSE_USER: test
+      CLICKHOUSE_PASSWORD: test
+    volumes:
+      - ./init/clickhouse/ch01/db:/var/lib/clickhouse/ch01
+      - ./init/clickhouse/ch01/init.sh:/etc/clickhouse-server/ch01/init.sh:ro
+      - ./init/clickhouse/ch01/users.xml:/etc/clickhouse-server/ch01/users.xml
+    networks:
+      - e2eclickhouseloader
+
+  ch_server_02:
+    container_name: clickhouse02
+    image: yandex/clickhouse-server
+    ports:
+      - 8124:8123
+      - 9004:9000
+    environment:
+      CLICKHOUSE_DB: test_db
+      CLICKHOUSE_USER: test
+      CLICKHOUSE_PASSWORD: test
+    volumes:
+      - ./init/clickhouse/ch02/db:/var/lib/clickhouse/ch02
+      - ./init/clickhouse/ch02/init.sh:/etc/clickhouse-server/ch02/init.sh:ro
+      - ./init/clickhouse/ch02/users.xml:/etc/clickhouse-server/ch02/users.xml
+    networks:
+      - e2eclickhouseloader
+
+networks:
+  e2eclickhouseloader:
+    driver: bridge

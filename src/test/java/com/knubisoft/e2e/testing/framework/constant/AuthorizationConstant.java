@@ -15,7 +15,7 @@ public class AuthorizationConstant {
             + "WHERE type='EMAIL_2FA'";
     public static final String GET_TENANT_ID_QUERY = "SELECT tenant_id FROM t_user_email_to_tenant WHERE email='%s'";
     public static final String LOGIN_SECOND_STEP_JSON = "{ \"email\":\"%s\", \"token\":\"%s\","
-            + "    \"code\":\"%s\",\n"
-            + "    \"type\":\"%s\"\n"
+            + "    \"code\":\"%s\"%n"
+            + "    \"type\":\"%s\"%n"
             + "}";
 }

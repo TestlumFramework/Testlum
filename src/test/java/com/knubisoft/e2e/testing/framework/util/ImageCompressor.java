@@ -24,15 +24,21 @@ public class ImageCompressor {
 
     public MultipartFile compress(final File originalImage) {
         final BufferedImage image;
+        final MultipartFile multipartFile = tryToGetMultipart(originalImage);
+        image = getBufferedImage(multipartFile);
+        return image.getWidth() == WIDTH_IMAGE_SIZE && image.getHeight() == HEIGHT_IMAGE_SIZE
+                ? multipartFile : resizeImage(multipartFile.getName(), image);
+    }
+
+    @NotNull
+    private MultipartFile tryToGetMultipart(final File originalImage) {
         final MultipartFile multipartFile;
         try {
             multipartFile = getMultipartFile(originalImage);
         } catch (IOException e) {
             throw new DefaultFrameworkException("Image processing error, please recheck the screenshot", e);
         }
-        image = getBufferedImage(multipartFile);
-        return image.getWidth() == WIDTH_IMAGE_SIZE && image.getHeight() == HEIGHT_IMAGE_SIZE
-                ? multipartFile : resizeImage(multipartFile.getName(), image);
+        return multipartFile;
     }
 
     private BufferedImage getBufferedImage(final MultipartFile multipartFile) {

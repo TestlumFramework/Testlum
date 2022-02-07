@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE module PUBLIC
-    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
-    "https://checkstyle.org/dtds/configuration_1_3.dtd">
+        "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <module name="Checker">
 
@@ -28,13 +28,13 @@
 
         <module name="SuppressionCommentFilter"/>
 
-        <!--ANNOTATIONS-->
+        <!--        ANNOTATIONS-->
         <module name="AnnotationLocation"/>
         <module name="AnnotationLocation"/>
         <module name="MissingOverride"/>
 
 
-        <!--BLOCKS CHECKS-->
+        <!--        BLOCKS CHECKS-->
         <module name="AvoidNestedBlocks"/>
         <module name="EmptyBlock"/>
         <module name="EmptyCatchBlock"/>
@@ -42,7 +42,7 @@
         <module name="NeedBraces"/>
         <module name="RightCurly"/>
 
-        <!--CODING-->
+        <!--        CODING-->
         <!--        <module name="AvoidDoubleBraceInitialization"/>-->
         <module name="AvoidNoArgumentSuperConstructorCall"/>
         <module name="CovariantEquals"/>
@@ -83,13 +83,13 @@
         <module name="UnnecessarySemicolonInTryWithResources"/>
         <module name="VariableDeclarationUsageDistance"/>
 
-        <!--IMPORTS-->
+        <!--        IMPORTS-->
         <module name="AvoidStarImport"/>
         <module name="IllegalImport"/>
         <module name="RedundantImport"/>
         <module name="UnusedImports"/>
 
-        <!--JAVADOC-->
+        <!--        JAVADOC-->
         <module name="JavadocType">
             <property name="severity" value="ignore"/>
         </module>
@@ -100,13 +100,13 @@
             <property name="severity" value="ignore"/>
         </module>
 
-        <!--MISCELLANEOUS-->
+        <!--        MISCELLANEOUS-->
         <module name="ArrayTypeStyle"/>
         <module name="FinalParameters"/>
         <module name="TodoComment"/>
         <module name="UpperEll"/>
 
-        <!--MODIFIERS-->
+        <!--        MODIFIERS-->
         <!--        <module name="ClassMemberImpliedModifier"/>-->
         <!--        <module name="InterfaceMemberImpliedModifier" />-->
         <module name="ModifierOrder"/>
@@ -131,10 +131,11 @@
         <module name="StaticVariableName"/>
         <module name="TypeName"/>
 
-        <!--CHECKS FOR SIZE VIOLATIONS-->
+
+        <!-- Checks for Size Violations.                    -->
         <module name="MethodLength">
             <property name="tokens" value="METHOD_DEF"/>
-            <property name="max" value="10"/>
+            <property name="max" value="15"/>
             <property name="countEmpty" value="false"/>
         </module>
         <module name="ParameterNumber">
@@ -143,7 +144,7 @@
         </module>
         <module name="LambdaBodyLength"/>
 
-        <!--WHITESPACES-->
+        <!--        WHITESPACES-->
         <module name="EmptyForIteratorPad"/>
         <!--        <module name="EmptyLineSeparator"/>-->
         <!--        <module name="FileTabCharacter"/>-->

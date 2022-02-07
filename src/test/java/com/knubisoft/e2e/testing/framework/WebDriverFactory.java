@@ -80,9 +80,9 @@ public class WebDriverFactory {
     }
 
     private interface WebDriverInitializer<T extends RemoteWebDriver> {
-        T init(final String version, final BrowserSettings browserSettings);
+        T init(String version, BrowserSettings browserSettings);
 
-        RemoteWebDriver initRemote(final String version, final BrowserSettings browserSettings);
+        RemoteWebDriver initRemote(String version, BrowserSettings browserSettings);
     }
 
     private static class ChromeDriverInitializer implements WebDriverInitializer<ChromeDriver> {
@@ -177,7 +177,7 @@ public class WebDriverFactory {
         }
 
         @Override
-        public RemoteWebDriver initRemote(String version, BrowserSettings browserSettings) {
+        public RemoteWebDriver initRemote(final String version, final BrowserSettings browserSettings) {
             throw new NotImplementedException();
         }
     }

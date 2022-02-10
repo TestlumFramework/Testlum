@@ -8,15 +8,7 @@
     <x:include schemaLocation="shared.xsd"/>
     <x:include schemaLocation="overview.xsd"/>
     <x:include schemaLocation="tags.xsd"/>
-    <x:include schemaLocation="click.xsd"/>
-    <x:include schemaLocation="input.xsd"/>
-    <x:include schemaLocation="navigate-back.xsd"/>
-    <x:include schemaLocation="navigate-reload.xsd"/>
-    <x:include schemaLocation="navigate-to.xsd"/>
-    <x:include schemaLocation="select-dropdown.xsd"/>
-    <x:include schemaLocation="deselect-dropdown.xsd"/>
-    <x:include schemaLocation="deselect-dropdown-all.xsd"/>
-    <x:include schemaLocation="assert.xsd"/>
+    <x:include schemaLocation="ui.xsd"/>
     <x:include schemaLocation="migrate.xsd"/>
     <x:include schemaLocation="postgres.xsd"/>
     <x:include schemaLocation="mongo.xsd"/>
@@ -68,15 +60,7 @@
                     <x:element name="include" type="tns:include"/>
                     <x:element name="auth" type="tns:auth"/>
                     <x:element name="repeat" type="tns:repeat"/>
-                    <x:element name="click" type="tns:click"/>
-                    <x:element name="input" type="tns:input"/>
-                    <x:element name="navigateBack" type="tns:navigateBack"/>
-                    <x:element name="navigateReload" type="tns:navigateReload"/>
-                    <x:element name="navigateTo" type="tns:navigateTo"/>
-                    <x:element name="assert" type="tns:assert"/>
-                    <x:element name="selectDropDown" type="tns:selectDropDown"/>
-                    <x:element name="deselectDropDown" type="tns:deselectDropDown"/>
-                    <x:element name="deselectDropDownAll" type="tns:deselectDropDownAll"/>
+                    <x:element name="ui" type="tns:ui"/>
 
                     <x:element name="http" type="tns:http"/>
                     <x:element name="migrate" type="tns:migrate"/>
@@ -113,15 +97,7 @@
                     <x:element name="include" type="tns:include"/>
                     <x:element name="auth" type="tns:auth"/>
                     <x:element name="repeat" type="tns:repeat"/>
-                    <x:element name="click" type="tns:click"/>
-                    <x:element name="input" type="tns:input"/>
-                    <x:element name="navigateBack" type="tns:navigateBack"/>
-                    <x:element name="navigateReload" type="tns:navigateReload"/>
-                    <x:element name="navigateTo" type="tns:navigateTo"/>
-                    <x:element name="assert" type="tns:assert"/>
-                    <x:element name="selectDropDown" type="tns:selectDropDown"/>
-                    <x:element name="deselectDropDown" type="tns:deselectDropDown"/>
-                    <x:element name="deselectDropDownAll" type="tns:deselectDropDownAll"/>
+                    <x:element name="ui" type="tns:ui"/>
 
                     <x:element name="http" type="tns:http"/>
                     <x:element name="migrate" type="tns:migrate"/>
@@ -145,15 +121,7 @@
                     <x:element name="include" type="tns:include"/>
                     <x:element name="auth" type="tns:auth"/>
                     <x:element name="repeat" type="tns:repeat"/>
-                    <x:element name="click" type="tns:click"/>
-                    <x:element name="input" type="tns:input"/>
-                    <x:element name="navigateBack" type="tns:navigateBack"/>
-                    <x:element name="navigateReload" type="tns:navigateReload"/>
-                    <x:element name="navigateTo" type="tns:navigateTo"/>
-                    <x:element name="assert" type="tns:assert"/>
-                    <x:element name="selectDropDown" type="tns:selectDropDown"/>
-                    <x:element name="deselectDropDown" type="tns:deselectDropDown"/>
-                    <x:element name="deselectDropDownAll" type="tns:deselectDropDownAll"/>
+                    <x:element name="ui" type="tns:ui"/>
 
                     <x:element name="http" type="tns:http"/>
                     <x:element name="migrate" type="tns:migrate"/>

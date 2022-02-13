@@ -1,0 +1,21 @@
+<page xmlns="http://www.knubisoft.com/e2e/testing/model/pages">
+
+
+    <details>
+        <name>customLocators</name>
+        <url>demo.pme-dev-en.xyz</url>
+        <description>Check ability login on the site PME with 2factor authentication </description>
+    </details>
+
+    <locators>
+        <locator locatorId="searchTextArea">
+            <xpath>/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/input</xpath>
+        </locator>
+
+        <locator locatorId="submitBtn">
+            <xpath>/html/body/div[1]/div[3]/form/div[1]/div[1]/div[3]/center/input[1]</xpath>
+        </locator>
+
+    </locators>
+</page>
+

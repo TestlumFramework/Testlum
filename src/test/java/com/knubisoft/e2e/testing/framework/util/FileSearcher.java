@@ -71,6 +71,7 @@ public final class FileSearcher {
             log.info("File {} is an image", result);
             return true;
         }
+        //do we need this log?
         log.info("File {} is NOT an image", result);
         return false;
     }

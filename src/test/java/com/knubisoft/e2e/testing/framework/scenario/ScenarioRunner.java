@@ -7,12 +7,12 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.CommandToInterpreterMap;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterScanner;
+import com.knubisoft.e2e.testing.model.TestArguments;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.model.scenario.Overview;
 import com.knubisoft.e2e.testing.framework.WebDriverFactory;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.report.ScenarioResult;
-import com.knubisoft.e2e.testing.model.global_config.BrowserSettings;
 import com.knubisoft.e2e.testing.model.scenario.Repeat;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.context.ApplicationContext;
 
-import java.io.File;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXCEPTION_LOG;
@@ -39,11 +37,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.OVERVIEW_LOG;
 @RequiredArgsConstructor
 public class ScenarioRunner {
     private static final AtomicInteger SCENARIO_ID_GENERATOR = new AtomicInteger();
-    private final File file;
-    private final Scenario scenario;
-    private final String browserVersionElement;
-    private final BrowserSettings browserSettings;
-    private final Map<String, String> variation;
+    private final TestArguments testArguments;
     private final ApplicationContext ctx;
     private final ScenarioResult scenarioResult = new ScenarioResult();
     private final AtomicInteger idGenerator = new AtomicInteger();
@@ -53,36 +47,39 @@ public class ScenarioRunner {
 
     public ScenarioResult run() {
         log.info("--------------------------------------------------");
-        log.info(EXECUTE_SCENARIO_LOG, file.getAbsolutePath());
+        log.info(EXECUTE_SCENARIO_LOG, testArguments.getFile().getAbsolutePath());
         prepare();
         logOverview();
         prepareReport();
-        runScenarioCommands(scenario.getCommands());
+        runScenarioCommands(testArguments);
         return scenarioResult;
     }
 
     private void prepare() {
-        this.dependencies = createDependencies(ctx);
+        this.dependencies = createDependencies();
         this.stopScenarioOnFailure = GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure();
         this.cmdToInterpreterMap = createClassToInterpreterMap(dependencies);
     }
 
     private void prepareReport() {
+        Scenario scenario = testArguments.getMappingResult().scenario;
         scenarioResult.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
-        scenarioResult.setPath(StringUtils.remove(file.getPath(), System.getProperty("PWD")));
+        scenarioResult.setPath(StringUtils.remove(testArguments.getFile().getPath(), System.getProperty("PWD")));
         scenarioResult.setName(scenario.getOverview().getName());
         scenarioResult.setOverview(scenario.getOverview());
         scenarioResult.setTags(scenario.getTags());
         scenarioResult.setSuccess(true);
     }
 
-    private void runScenarioCommands(final List<AbstractCommand> commands) {
+    private void runScenarioCommands(final TestArguments testArguments) {
         try {
-            runCommands(commands);
+            runCommands(testArguments.getMappingResult().scenario.getCommands());
         } catch (StopSignalException ignore) {
             log.info(EXECUTION_STOP_SIGNAL_LOG);
         } finally {
-            dependencies.getWebDriver().quit();
+            if (testArguments.isContainsUiSteps()) {
+                dependencies.getWebDriver().quit();
+            }
         }
     }
 
@@ -197,7 +194,7 @@ public class ScenarioRunner {
     }
 
     private void logOverview() {
-        Overview overview = scenario.getOverview();
+        Overview overview = testArguments.getMappingResult().scenario.getOverview();
         if (overview != null) {
             log.info(OVERVIEW_LOG);
             logIfExist(overview.getDescription(), overview.getDeveloper(), overview.getJira());
@@ -213,12 +210,29 @@ public class ScenarioRunner {
         }
     }
 
-    private InterpreterDependencies createDependencies(final ApplicationContext ctx) {
+    private InterpreterDependencies createDependencies() {
+        if (testArguments.isContainsUiSteps()) {
+            return createUiDependencies();
+        } else {
+            return createBackendDependencies();
+        }
+    }
+
+    private InterpreterDependencies createBackendDependencies() {
         return new InterpreterDependencies(
-                WebDriverFactory.create(browserVersionElement, browserSettings),
                 ctx,
-                file,
-                new ScenarioContext(variation),
+                testArguments.getFile(),
+                new ScenarioContext(testArguments.getVariation()),
+                idGenerator
+        );
+    }
+
+    private InterpreterDependencies createUiDependencies() {
+        return new InterpreterDependencies(
+                WebDriverFactory.create(testArguments.getBrowserVersion(), testArguments.getBrowserSettings()),
+                ctx,
+                testArguments.getFile(),
+                new ScenarioContext(testArguments.getVariation()),
                 idGenerator
         );
     }

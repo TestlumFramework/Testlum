@@ -10,10 +10,10 @@ import com.knubisoft.e2e.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.e2e.testing.framework.scenario.ScenarioRunner;
 import com.knubisoft.e2e.testing.framework.util.FileRemover;
 import com.knubisoft.e2e.testing.framework.util.LogMessage;
+import com.knubisoft.e2e.testing.model.TestArguments;
 import com.knubisoft.e2e.testing.model.scenario.Overview;
 import com.knubisoft.e2e.testing.framework.SystemDataStoreCleaner;
 import com.knubisoft.e2e.testing.framework.TestSetCollector;
-import com.knubisoft.e2e.testing.model.global_config.BrowserSettings;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -23,15 +23,12 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.TestContextManager;
 
-import java.io.File;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -54,7 +51,7 @@ class E2ERootTest {
     @Autowired
     private ReportGenerator reportGenerator;
 
-    public static Stream<Arguments> prepareTestData() {
+    public static Stream<TestArguments> prepareTestData() {
         return new TestSetCollector().collect();
     }
 
@@ -69,27 +66,17 @@ class E2ERootTest {
     @ParameterizedTest(name = "[{index}] path -- {0}")
     @MethodSource("prepareTestData")
     @SneakyThrows
-    void execution(final String path,
-                   final File file,
-                   final ScenarioCollector.MappingResult result,
-                   final String browserVersionElement,
-                   final BrowserSettings browserSettings,
-                   final Map<String, String> variations) {
-        Scenario scenario = result.scenario;
-        verifyScenario(path, result, scenario);
-        executeTest(file, browserVersionElement, browserSettings, variations, scenario);
+    void execution(final TestArguments testArguments) {
+        verifyScenario(testArguments.getPath(), testArguments.getMappingResult(),
+                testArguments.getMappingResult().scenario);
+        executeTest(testArguments);
     }
 
-    private void executeTest(final File file,
-                             final String browserVersionElement,
-                             final BrowserSettings browserSettings,
-                             final Map<String, String> variations,
-                             final Scenario scenario) {
-        cleanDbAndMigrateIfRequired(scenario);
+    private void executeTest(final TestArguments testArguments) {
+        cleanDbAndMigrateIfRequired(testArguments.getMappingResult().scenario);
         StopWatch stopWatch = StopWatch.createStarted();
         ScenarioRunner scenarioRunner =
-                new ScenarioRunner(file, scenario, browserVersionElement,
-                        browserSettings, variations, ctx);
+                new ScenarioRunner(testArguments, ctx);
         ctx.getAutowireCapableBeanFactory().autowireBean(scenarioRunner);
         setTestScenarioResult(stopWatch, scenarioRunner);
     }

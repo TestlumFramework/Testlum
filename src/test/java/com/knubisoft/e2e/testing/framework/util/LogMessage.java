@@ -87,8 +87,8 @@ public final class LogMessage {
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
     public static final String EXECUTE_SCENARIO_LOG = ANSI_GREEN + "Execute for scenario" + ANSI_RESET + " {}";
 
-    public static final String CANNOT_FIND_PROFILE = "Cannot find PME_PROFILE option. "
-            + "Please set PME_PROFILE to VM options.";
+    public static final String CANNOT_FIND_PROFILE = "Cannot find active profile option. "
+            + "Please set profile to VM options.";
     public static final String EXECUTION_STOP_SIGNAL_LOG = "Execution has been stopped because of StopSignal";
     public static final String EXCEPTION_LOG = ANSI_RED + "Exception ->" + ANSI_RESET + " {}";
     public static final String AUTHENTICATE_WITH_CREDENTIALS_COMMENT = "Authenticate with credentials %s";

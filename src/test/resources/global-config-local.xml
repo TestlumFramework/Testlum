@@ -11,7 +11,7 @@
     <parallelExecution>true</parallelExecution>
     <parallelExecutionLimit>10</parallelExecutionLimit>
 
-    <uiConfiguration enabled="true">
+    <ui enabled="true">
         <browserSettings>
             <localBrowserDebug>true</localBrowserDebug>
             <screenshotsLogging>false</screenshotsLogging>
@@ -29,7 +29,7 @@
             <value>5</value>
             <timeUnit>seconds</timeUnit>
         </performanceWarning>
-    </uiConfiguration>
+    </ui>
 
     <apis>
         <api alias="api" url="http://localhost:8073/"/>

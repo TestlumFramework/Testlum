@@ -116,7 +116,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private void navigateTo(final String path) {
-        String url = inject(dependencies.getGlobalTestConfiguration().getUiConfiguration().getBaseUrl() + path);
+        String url = inject(dependencies.getGlobalTestConfiguration().getUi().getBaseUrl() + path);
         log.info(BY_URL_LOG, url);
         dependencies.getWebDriver().navigate().to(url);
     }

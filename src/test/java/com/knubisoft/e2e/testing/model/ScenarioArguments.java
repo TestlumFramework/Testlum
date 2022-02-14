@@ -1,7 +1,7 @@
 package com.knubisoft.e2e.testing.model;
 
-import com.knubisoft.e2e.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.e2e.testing.model.global_config.BrowserSettings;
+import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -12,11 +12,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Builder
 @Getter
-public class TestArguments {
+public class ScenarioArguments {
 
     private final String path;
     private final File file;
-    private final ScenarioCollector.MappingResult mappingResult;
+    private final Scenario scenario;
+    private final Exception exception;
     private final String browserVersion;
     private final BrowserSettings browserSettings;
     private final Map<String, String> variation;

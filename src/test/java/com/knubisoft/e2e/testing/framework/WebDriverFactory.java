@@ -76,7 +76,7 @@ public class WebDriverFactory {
         Dimension dimension = new Dimension(SeleniumConstant.SCREEN_WIDTH, SeleniumConstant.SCREEN_HEIGHT);
         driver.manage().window().setSize(dimension);
         driver.manage().window().maximize();
-        driver.get(GlobalTestConfigurationProvider.provide().getUiConfiguration().getBaseUrl());
+        driver.get(GlobalTestConfigurationProvider.provide().getUi().getBaseUrl());
     }
 
     private interface WebDriverInitializer<T extends RemoteWebDriver> {

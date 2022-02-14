@@ -39,7 +39,7 @@
                 <x:element name="filterTags" type="tns:filterTags"/>
                 <x:element name="parallelExecution" type="x:boolean"/>
                 <x:element name="parallelExecutionLimit" type="x:int"/>
-                <x:element name="uiConfiguration" type="tns:uiConfiguration" minOccurs="0"/>
+                <x:element name="ui" type="tns:ui" minOccurs="0"/>
                 <x:choice maxOccurs="unbounded">
                     <x:element name="apis" type="tns:apis" minOccurs="0"/>
                     <x:element name="postgreses" type="tns:postgreses" minOccurs="0"/>
@@ -61,7 +61,7 @@
         </x:complexType>
     </x:element>
 
-    <x:complexType name="uiConfiguration">
+    <x:complexType name="ui">
         <x:sequence>
             <x:element name="browserSettings" type="tns:browserSettings"/>
             <x:element name="baseUrl" type="tns:url"/>

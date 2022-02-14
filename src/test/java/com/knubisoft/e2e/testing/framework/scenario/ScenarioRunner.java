@@ -7,7 +7,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.CommandToInterpreterMap;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterScanner;
-import com.knubisoft.e2e.testing.model.TestArguments;
+import com.knubisoft.e2e.testing.model.ScenarioArguments;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.model.scenario.Overview;
 import com.knubisoft.e2e.testing.framework.WebDriverFactory;
@@ -37,7 +37,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.OVERVIEW_LOG;
 @RequiredArgsConstructor
 public class ScenarioRunner {
     private static final AtomicInteger SCENARIO_ID_GENERATOR = new AtomicInteger();
-    private final TestArguments testArguments;
+    private final ScenarioArguments scenarioArguments;
     private final ApplicationContext ctx;
     private final ScenarioResult scenarioResult = new ScenarioResult();
     private final AtomicInteger idGenerator = new AtomicInteger();
@@ -47,11 +47,11 @@ public class ScenarioRunner {
 
     public ScenarioResult run() {
         log.info("--------------------------------------------------");
-        log.info(EXECUTE_SCENARIO_LOG, testArguments.getFile().getAbsolutePath());
+        log.info(EXECUTE_SCENARIO_LOG, scenarioArguments.getFile().getAbsolutePath());
         prepare();
         logOverview();
         prepareReport();
-        runScenarioCommands(testArguments);
+        runScenarioCommands();
         return scenarioResult;
     }
 
@@ -62,22 +62,22 @@ public class ScenarioRunner {
     }
 
     private void prepareReport() {
-        Scenario scenario = testArguments.getMappingResult().scenario;
+        Scenario scenario = scenarioArguments.getScenario();
         scenarioResult.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
-        scenarioResult.setPath(StringUtils.remove(testArguments.getFile().getPath(), System.getProperty("PWD")));
+        scenarioResult.setPath(StringUtils.remove(scenarioArguments.getFile().getPath(), System.getProperty("PWD")));
         scenarioResult.setName(scenario.getOverview().getName());
         scenarioResult.setOverview(scenario.getOverview());
         scenarioResult.setTags(scenario.getTags());
         scenarioResult.setSuccess(true);
     }
 
-    private void runScenarioCommands(final TestArguments testArguments) {
+    private void runScenarioCommands() {
         try {
-            runCommands(testArguments.getMappingResult().scenario.getCommands());
+            runCommands(scenarioArguments.getScenario().getCommands());
         } catch (StopSignalException ignore) {
             log.info(EXECUTION_STOP_SIGNAL_LOG);
         } finally {
-            if (testArguments.isContainsUiSteps()) {
+            if (scenarioArguments.isContainsUiSteps()) {
                 dependencies.getWebDriver().quit();
             }
         }
@@ -194,7 +194,7 @@ public class ScenarioRunner {
     }
 
     private void logOverview() {
-        Overview overview = testArguments.getMappingResult().scenario.getOverview();
+        Overview overview = scenarioArguments.getScenario().getOverview();
         if (overview != null) {
             log.info(OVERVIEW_LOG);
             logIfExist(overview.getDescription(), overview.getDeveloper(), overview.getJira());
@@ -211,28 +211,28 @@ public class ScenarioRunner {
     }
 
     private InterpreterDependencies createDependencies() {
-        if (testArguments.isContainsUiSteps()) {
-            return createUiDependencies();
+        if (scenarioArguments.isContainsUiSteps()) {
+            return createDependenciesWithUI();
         } else {
-            return createBackendDependencies();
+            return createDependenciesWithoutUI();
         }
     }
 
-    private InterpreterDependencies createBackendDependencies() {
+    private InterpreterDependencies createDependenciesWithoutUI() {
         return new InterpreterDependencies(
                 ctx,
-                testArguments.getFile(),
-                new ScenarioContext(testArguments.getVariation()),
+                scenarioArguments.getFile(),
+                new ScenarioContext(scenarioArguments.getVariation()),
                 idGenerator
         );
     }
 
-    private InterpreterDependencies createUiDependencies() {
+    private InterpreterDependencies createDependenciesWithUI() {
         return new InterpreterDependencies(
-                WebDriverFactory.create(testArguments.getBrowserVersion(), testArguments.getBrowserSettings()),
+                WebDriverFactory.create(scenarioArguments.getBrowserVersion(), scenarioArguments.getBrowserSettings()),
                 ctx,
-                testArguments.getFile(),
-                new ScenarioContext(testArguments.getVariation()),
+                scenarioArguments.getFile(),
+                new ScenarioContext(scenarioArguments.getVariation()),
                 idGenerator
         );
     }

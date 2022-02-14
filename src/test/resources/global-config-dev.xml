@@ -1,0 +1,60 @@
+<globalTestConfiguration xmlns="http://www.knubisoft.com/e2e/testing/model/global-config">
+    <stopScenarioOnFailure>true</stopScenarioOnFailure>
+    <localStorageAuthorizationKey>Authorization</localStorageAuthorizationKey>
+    <filterDirectoryPattern>.+</filterDirectoryPattern>
+    <debugMode>false</debugMode>
+
+    <filterTags enable="false">
+        <value>Mutating</value>
+        <value>Readonly</value>
+        <value>Smoke</value>
+    </filterTags>
+
+    <parallelExecution>true</parallelExecution>
+    <parallelExecutionLimit>10</parallelExecutionLimit>
+
+    <ui enabled="true">
+        <browserSettings>
+            <localBrowserDebug>true</localBrowserDebug>
+            <screenshotsLogging>false</screenshotsLogging>
+            <seleniumExplicitWaitTime>3</seleniumExplicitWaitTime>
+            <options>
+                <!--            <option>&#45;&#45;headless</option>-->
+            </options>
+            <versions>
+                <version>Chrome__93.0.4577</version>
+            </versions>
+        </browserSettings>
+
+        <baseUrl>https://pme-dev-en.xyz</baseUrl>
+
+        <performanceWarning>
+            <value>5</value>
+            <timeUnit>seconds</timeUnit>
+        </performanceWarning>
+    </ui>
+
+    <apis>
+        <api alias="api" url="https://api.pme-dev-en.xyz"/>
+    </apis>
+
+    <postgreses>
+        <postgres alias="playground_db" enabled="false">
+            <jdbcDriver>org.postgresql.Driver</jdbcDriver>
+            <username>postgres</username>
+            <password>qeR2f4eDXVtkeXb</password>
+            <connectionUrl>jdbc:postgresql://3.19.101.249:5432/playground_db</connectionUrl>
+            <hikari>
+                <connectionTimeout>45000</connectionTimeout>
+                <idleTimeout>60000</idleTimeout>
+                <maxLifetime>180000</maxLifetime>
+                <maximumPoolSize>50</maximumPoolSize>
+                <minimumIdle>5</minimumIdle>
+                <connectionInitSql>SELECT 1</connectionInitSql>
+                <connectionTestQuery>SELECT 1</connectionTestQuery>
+                <poolName>core-postgres-db-pool</poolName>
+                <autoCommit>true</autoCommit>
+            </hikari>
+        </postgres>
+    </postgreses>
+</globalTestConfiguration>

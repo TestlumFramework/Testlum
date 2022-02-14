@@ -25,7 +25,7 @@ public class GlobalTestConfigurationProvider {
     }
 
     public static BrowserSettings getBrowserSettings() {
-       return GlobalTestConfigurationProvider.provide().getUiConfiguration().getBrowserSettings();
+       return GlobalTestConfigurationProvider.provide().getUi().getBrowserSettings();
     }
 
     private static GlobalTestConfiguration init() {

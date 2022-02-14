@@ -3,7 +3,6 @@ package com.knubisoft.e2e.testing.framework.scenario;
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.model.global_config.FilterTags;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
-import com.knubisoft.e2e.testing.model.scenario.Ui;
 import lombok.experimental.UtilityClass;
 
 import java.util.Comparator;
@@ -24,32 +23,6 @@ public class ScenarioFilter {
         Set<ScenarioCollector.MappingResult> result = getNonParsedScenarios(original);
         result.addAll(filtered);
         return result;
-    }
-
-
-    public Set<ScenarioCollector.MappingResult> filterScenarioByType(final ScenarioType scenarioType,
-            final Set<ScenarioCollector.MappingResult> original) {
-        if (scenarioType == ScenarioType.UI) {
-            return filterOnlyUiScenarios(original);
-        } else if (scenarioType == ScenarioType.BACKEND) {
-            return filterOnlyBackendScenarios(original);
-        } else {
-            throw new UnsupportedOperationException("Scenario type not supported");
-        }
-    }
-
-    private Set<ScenarioCollector.MappingResult> filterOnlyBackendScenarios(
-            final Set<ScenarioCollector.MappingResult> original) {
-        return original.stream()
-                .filter(ScenarioFilter::scenarioHasNotUiTestingSteps)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    private Set<ScenarioCollector.MappingResult> filterOnlyUiScenarios(
-            final Set<ScenarioCollector.MappingResult> original) {
-        return original.stream()
-                .filter(ScenarioFilter::scenarioHasUiTestingSteps)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private Set<ScenarioCollector.MappingResult> filterParsedScenarios(
@@ -77,16 +50,6 @@ public class ScenarioFilter {
     private boolean filterIsActive(final ScenarioCollector.MappingResult entry) {
         Scenario scenario = entry.scenario;
         return scenario.isActive() && scenario.isOnlyThis();
-    }
-
-    private boolean scenarioHasNotUiTestingSteps(final ScenarioCollector.MappingResult entry) {
-        Scenario scenario = entry.scenario;
-        return scenario.getCommands().stream().noneMatch(command -> command instanceof Ui);
-    }
-
-    private boolean scenarioHasUiTestingSteps(final ScenarioCollector.MappingResult entry) {
-        Scenario scenario = entry.scenario;
-        return scenario.getCommands().stream().anyMatch(command -> command instanceof Ui);
     }
 
     private Set<ScenarioCollector.MappingResult> filterAndSortByTags(
@@ -128,10 +91,5 @@ public class ScenarioFilter {
 
     private boolean isScenarioParsed(final ScenarioCollector.MappingResult entry) {
         return Objects.nonNull(entry.scenario);
-    }
-
-    public enum ScenarioType {
-        UI,
-        BACKEND
     }
 }

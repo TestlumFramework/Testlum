@@ -6,11 +6,10 @@ import com.knubisoft.e2e.testing.framework.context.SpringTestContext;
 import com.knubisoft.e2e.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.e2e.testing.framework.report.ReportGenerator;
 import com.knubisoft.e2e.testing.framework.report.ScenarioResult;
-import com.knubisoft.e2e.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.e2e.testing.framework.scenario.ScenarioRunner;
 import com.knubisoft.e2e.testing.framework.util.FileRemover;
 import com.knubisoft.e2e.testing.framework.util.LogMessage;
-import com.knubisoft.e2e.testing.model.TestArguments;
+import com.knubisoft.e2e.testing.model.ScenarioArguments;
 import com.knubisoft.e2e.testing.model.scenario.Overview;
 import com.knubisoft.e2e.testing.framework.SystemDataStoreCleaner;
 import com.knubisoft.e2e.testing.framework.TestSetCollector;
@@ -51,7 +50,7 @@ class E2ERootTest {
     @Autowired
     private ReportGenerator reportGenerator;
 
-    public static Stream<TestArguments> prepareTestData() {
+    public static Stream<ScenarioArguments> prepareTestData() {
         return new TestSetCollector().collect();
     }
 
@@ -66,17 +65,16 @@ class E2ERootTest {
     @ParameterizedTest(name = "[{index}] path -- {0}")
     @MethodSource("prepareTestData")
     @SneakyThrows
-    void execution(final TestArguments testArguments) {
-        verifyScenario(testArguments.getPath(), testArguments.getMappingResult(),
-                testArguments.getMappingResult().scenario);
-        executeTest(testArguments);
+    void execution(final ScenarioArguments scenarioArguments) {
+        verifyScenario(scenarioArguments);
+        executeTest(scenarioArguments);
     }
 
-    private void executeTest(final TestArguments testArguments) {
-        cleanDbAndMigrateIfRequired(testArguments.getMappingResult().scenario);
+    private void executeTest(final ScenarioArguments scenarioArguments) {
+        cleanDbAndMigrateIfRequired(scenarioArguments.getScenario());
         StopWatch stopWatch = StopWatch.createStarted();
         ScenarioRunner scenarioRunner =
-                new ScenarioRunner(testArguments, ctx);
+                new ScenarioRunner(scenarioArguments, ctx);
         ctx.getAutowireCapableBeanFactory().autowireBean(scenarioRunner);
         setTestScenarioResult(stopWatch, scenarioRunner);
     }
@@ -101,13 +99,12 @@ class E2ERootTest {
         systemDataStoreCleaner.cleanAll(this.nameToAdapterAlias);
     }
 
-    private void verifyScenario(final String path,
-                                final ScenarioCollector.MappingResult result,
-                                final Scenario scenario) throws Exception {
+    private void verifyScenario(final ScenarioArguments scenarioArguments) throws Exception {
+        Scenario scenario = scenarioArguments.getScenario();
         if (scenario == null) {
-            throw result.exception;
+            throw scenarioArguments.getException();
         } else if (!scenario.isActive()) {
-            throw assumptionViolatedException(path, scenario);
+            throw assumptionViolatedException(scenarioArguments.getPath(), scenario);
         }
     }
 

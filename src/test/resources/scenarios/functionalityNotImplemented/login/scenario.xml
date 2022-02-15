@@ -1,0 +1,107 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario" active="false">
+
+    <overview>
+        <description>Check ability successful login on "pme" with 2factor authentication</description>
+        <name>Login process</name>
+    </overview>
+
+    <tags>
+        <tag>Frontend</tag>
+    </tags>
+    <ui comment="First part of ui commands">
+    <click comment="Click on 'login' button"
+           locatorId="login.login"/>
+
+    <input comment="Enter email"
+           locatorId="login.enterEmail"
+           value="konovalovtest19@gmail.com"/>
+
+    <input comment="Enter password"
+           locatorId="login.enterPassword"
+           value="Firm@nino19"/>
+
+    <click comment="Click on log in button"
+           locatorId="login.logIn"/>
+
+    <click comment="Click on select country"
+           locatorId="twoFactor.selectCountryFa"/>
+
+    <click comment="Select Ukraine"
+           locatorId="twoFactor.selectUkraine"/>
+
+    <input highlight="false"
+           comment="Input phone number"
+           locatorId="twoFactor.phoneNumber"
+           value="9923267220"/>
+
+    <click comment="Click on 'Sand code'"
+           locatorId="twoFactor.sandCode"/>
+    </ui>
+
+    <wait comment="Wait 2 seconds before starting set values in fields"
+          time="6"
+          unit="seconds"/>
+
+    <!--    <postgres comment="Get token and user_id from t_one_time_token table" file="expected_2.json" databaseName="playground_db">-->
+    <!--        <query>SELECT token, user_id FROM t_user_one_time_token ORDER BY ID DESC LIMIT 1</query>-->
+    <!--    </postgres>-->
+
+    <!--    <var comment="Created token var" name="TOKEN">-->
+    <!--        <jpath>$.[0].content.[0].token</jpath>-->
+    <!--    </var>-->
+
+    <wait comment="wait 10 second"
+          time="5"
+          unit="seconds"/>
+
+    <ui comment="Second part of ui commands">
+    <input comment="Input verification code1"
+           locatorId="twoFactor.enterCode1"
+           value="3"/>
+
+    <input comment="Input verification code2"
+           locatorId="twoFactor.enterCode2"
+           value="2"/>
+
+    <input comment="Input verification code3"
+           locatorId="twoFactor.enterCode3"
+           value="1"/>
+
+    <input comment="Input verification code4"
+           locatorId="twoFactor.enterCode4"
+           value="3"/>
+
+    <input comment="Input verification code5"
+           locatorId="twoFactor.enterCode5"
+           value="2"/>
+
+    <input comment="Input verification code6"
+           locatorId="twoFactor.enterCode6"
+           value="1"/>
+
+    <click comment="Click on Sand password button"
+           locatorId="twoFactor.sandPass"/>
+    </ui>
+
+    <wait comment="wait 5 second"
+          time="3"
+          unit="seconds"/>
+
+    <ui comment="Third part of ui commands">
+        <click comment="Click on Sand password button"
+               locatorId="twoFactor.sandPass"/>
+    </ui>
+
+    <wait comment="wait 5 second"
+          time="3"
+          unit="seconds"/>
+
+</scenario>
+
+
+
+
+
+
+
+

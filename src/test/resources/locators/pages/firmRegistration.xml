@@ -1,0 +1,69 @@
+<page xmlns="http://www.knubisoft.com/e2e/testing/model/pages">
+
+
+    <details>
+        <name>Registration</name>
+        <url>pme-dev-en.xyz</url>
+        <description>Checking ability registration Firm</description>
+    </details>
+
+    <include component="header.xml"/>
+
+
+    <locators>
+
+        <locator locatorId="firmName">
+            <id>register_firm-registration-name_input</id>
+        </locator>
+
+        <locator locatorId="country">
+            <id>register_firm-registration-country_input</id>
+        </locator>
+        
+        <locator locatorId="selectCountry">
+            <id>register_countries-item_233_input</id>
+        </locator>
+
+        <locator locatorId="city">
+            <id>register_firm-registration-state_input</id>
+        </locator>
+        
+        <locator locatorId="selectCity">
+            <id>register_cities-item_19_input</id>
+        </locator>
+
+        <locator locatorId="state">
+            <id>register_firm-registration-city_input</id>
+        </locator>
+
+        <locator locatorId="selectState">
+            <id>register_states-item_559_input</id>
+        </locator>
+
+        <locator locatorId="firmAddress1">
+            <id>register_firm-registration-first-adress_input</id>
+        </locator>
+
+        <locator locatorId="firmAddress2">
+            <id>firm_edit-second-adress_input</id>
+        </locator>
+
+        <locator locatorId="postcode">
+            <id>firm_edit-postcode_input</id>
+        </locator>
+
+        <locator locatorId="confirmFirm">
+            <id>firm_edit_button</id>
+        </locator>
+
+        <locator locatorId="firmRegisterPositiveAssert">
+            <id>register_card_button</id>
+        </locator>
+
+        <locator locatorId="firmRegisterNegativeAssert">
+            <id>register_firm-registration-name_input</id>
+        </locator>
+
+
+    </locators>
+</page>

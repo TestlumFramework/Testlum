@@ -1,0 +1,125 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario" active="false">
+    <overview>
+        <description>Test for admin page</description>
+        <name>Vadim Morev</name>
+    </overview>
+    <tags>
+        <tag>AdminPage</tag>
+    </tags>
+
+    <ui comment="Test for admin page">
+        <input comment="Input login" locatorId="adminPage.username" value="root"></input>
+        <input comment="Input login" locatorId="adminPage.password" value="Qwerty1!"></input>
+
+        <click comment="Click on loginButton" locatorId="adminPage.loginButton"/>
+
+        <click comment="Click on authorityGroupLink" locatorId="adminPage.authorityGroupLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on authorityLink" locatorId="adminPage.authorityLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on caseInviteLink" locatorId="adminPage.caseInviteLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on caseLink" locatorId="adminPage.caseLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on emailTemplateLink" locatorId="adminPage.emailTemplateLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on faqCategoryLink" locatorId="adminPage.faqCategoryLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on faqCategoryLink" locatorId="adminPage.faqCategoryLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on faqLink" locatorId="adminPage.faqLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on firmInfoLink" locatorId="adminPage.firmInfoLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on google2faLink" locatorId="adminPage.google2faLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on publicHtmlPage" locatorId="adminPage.publicHtmlPage"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on roleToAuthorityLink" locatorId="adminPage.roleToAuthorityLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on roleLink" locatorId="adminPage.roleLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on userCreditCardLink" locatorId="adminPage.userCreditCardLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on userOneTimeTokenLink" locatorId="adminPage.userOneTimeTokenLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on userToAuthorityLink" locatorId="adminPage.userToAuthorityLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on userToRolesLink" locatorId="adminPage.userToRolesLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+
+        <click comment="Click on userLink" locatorId="adminPage.userLink"/>
+
+        <assert comment="Assert body is not empty" locatorId="adminPage.siteName" attribute="id">
+            <content>site-name</content>
+        </assert>
+    </ui>
+
+</scenario>

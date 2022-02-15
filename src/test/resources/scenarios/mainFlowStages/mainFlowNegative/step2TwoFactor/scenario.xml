@@ -1,0 +1,146 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario">
+
+    <overview>
+        <description>Check ability successful registration on "pme"</description>
+        <name>Registration main flow</name>
+    </overview>
+
+    <tags>
+        <tag>Frontend</tag>
+    </tags>
+
+    <migrate comment="Add public pages" alias="central">
+        <patches>central_required.sql</patches>
+        <patches>central_email_templates.sql</patches>
+    </migrate>
+
+    <ui comment="First part of ui commands">
+    <click comment="Click on Registration button"
+           locatorId="mainPage.register"/>
+
+    <input comment="Input first name"
+           locatorId="ownerRegistration.firstName"
+           value="Roberto"/>
+
+    <input comment="Input lastname"
+           locatorId="ownerRegistration.lastName"
+           value="Firmino"/>
+
+    <input comment="Input email"
+           locatorId="ownerRegistration.emailAddress"
+           value="konovalovtest19@gmail.com"/>
+
+    <input comment="Input password"
+           locatorId="ownerRegistration.password"
+           value="Firm@no12"/>
+
+    <input comment="Input repeat password"
+           locatorId="ownerRegistration.repPassword"
+           value="Firm@no12"/>
+
+    <click comment="Click on 'confirm' 'Terms of use' and 'Privacy Policy' button"
+           locatorId="ownerRegistration.confirm"/>
+
+    <click comment="Click on 'Register account' button"
+           locatorId="ownerRegistration.regAccount"
+           method="js"/>
+    </ui>
+
+    <wait comment="Waiting of loading the 2Fa auth page"
+          time="3"
+          unit="seconds"/>
+
+    <ui comment="Second part of ui commands">
+        <assert comment="Go to confirm email address page"
+                locatorId="ownerRegistration.positiveAssertOwner"
+                attribute="id">
+            <content>home_header_button</content>
+        </assert>
+    </ui>
+
+    <postgres comment="Get token and user_id from t_one_time_token table" file="expected_12.json"
+              alias="central">
+        <query>SELECT token, user_id FROM t_temp_user_one_time_token ORDER BY ID DESC LIMIT 1</query>
+    </postgres>
+
+    <var comment="Created token var" name="TOKEN">
+        <jpath>$.[0].content.[0].token</jpath>
+    </var>
+
+    <var comment="Created user id var" name="USER_ID">
+        <jpath>$.[0].content.[0].user_id</jpath>
+    </var>
+
+    <ui comment="Navigate to">
+        <navigateTo comment="Emulate press on verify link button on email"
+                    path="/register/phone-verify/{{TOKEN}}"/>
+    </ui>
+
+    <wait comment="Waiting of loading the 2Fa auth page"
+          time="1"
+          unit="seconds"/>
+
+    <ui comment="Third part of ui commands">
+    <assert comment="Make sure that the transition to the 2Fa page was successful"
+            locatorId="ownerRegistration.positiveAssertOwner"
+            attribute="id">
+        <content>home_header_button</content>
+    </assert>
+
+    <click comment="Click on select country"
+           locatorId="twoFactor.selectCountryFa"/>
+
+    <click comment="Select Ukraine"
+           locatorId="twoFactor.selectUkraine"/>
+
+    <input highlight="false"
+           comment="Input phone number"
+           locatorId="twoFactor.phoneNumber"
+           value="0992326722"/>
+
+    <click comment="Click on 'Send code'"
+           locatorId="twoFactor.sandCode"/>
+    </ui>
+
+    <wait comment="Wait 2 seconds before starting set values in fields"
+          time="2"
+          unit="seconds"/>
+
+    <ui comment="Fourth part of ui commands">
+    <input comment="Input invalid verification code1"
+           locatorId="twoFactor.enterCode1"
+           value="0"/>
+
+    <input comment="Input invalid verification code2"
+           locatorId="twoFactor.enterCode2"
+           value="0"/>
+
+    <input comment="Input invalid verification code3"
+           locatorId="twoFactor.enterCode3"
+           value="0"/>
+
+    <input comment="Input invalid verification code4"
+           locatorId="twoFactor.enterCode4"
+           value="0"/>
+
+    <input comment="Input invalid verification code5"
+           locatorId="twoFactor.enterCode5"
+           value="0"/>
+
+    <input comment="Input invalid verification code6"
+           locatorId="twoFactor.enterCode6"
+           value="0"/>
+    </ui>
+
+    <wait comment="Wait to make sure the code is invalid"
+          time="30"
+          unit="seconds"/>
+
+    <ui comment="Assert commands">
+        <assert comment="Stay at this page after error"
+                locatorId="twoFactor.assertNegativeTwoFa"
+                attribute="id">
+            <content>register_phone-resend_button</content>
+        </assert>
+    </ui>
+</scenario>

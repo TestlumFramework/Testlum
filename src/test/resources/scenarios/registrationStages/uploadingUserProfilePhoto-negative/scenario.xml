@@ -1,0 +1,41 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario" variations="userProfilePhotoN.csv" active="false">
+
+    <overview>
+        <description>Checking the upload of a photo for a user profile - negative</description>
+        <name>User photo upload negative case</name>
+    </overview>
+
+    <tags>
+        <tag>Frontend</tag>
+    </tags>
+
+    <ui comment="List of ui commands">
+        <navigateTo comment="Navigate to add photo profile"
+                    path="/register/user-photo"/>
+
+        <input comment="Add profile photo"
+               locatorId="userPhoto.addProfilePhotoButton"
+               value="{{nameOfPhoto}}"/>
+    </ui>
+
+    <wait comment="Waiting for uploading photo for user profile"
+          time="1"
+          unit="seconds"/>
+
+    <ui comment="Assert command">
+        <assert comment="We stay on this page after 'error' input"
+                locatorId="userPhoto.negativePhotoScenario"
+                attribute="id">
+            <content>register_profile-photo_error</content>
+        </assert>
+    </ui>
+
+</scenario>
+
+
+
+
+
+
+
+

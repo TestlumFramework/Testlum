@@ -1,0 +1,10 @@
+[
+  {
+    "query": "SELECT email FROM t_user WHERE first_name = 'Roberto'",
+    "content": [
+      {
+        "email": "konovalovtest19@gmail.com"
+      }
+    ]
+  }
+]

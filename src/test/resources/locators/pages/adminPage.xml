@@ -1,0 +1,73 @@
+<page xmlns="http://www.knubisoft.com/e2e/testing/model/pages">
+    <details>
+        <name>Admin panel</name>
+        <url>https://admin.pme-dev-en.xyz</url>
+        <description>Admin panel smoke tests</description>
+    </details>
+    <locators>
+        <locator locatorId="username">
+            <id>id_username</id>
+        </locator>
+        <locator locatorId="password">
+            <id>id_password</id>
+        </locator>
+        <locator locatorId="loginButton">
+            <xpath>//*[@id="login-form"]/div[3]/input</xpath>
+        </locator>
+
+        <locator locatorId="authorityGroupLink">
+            <xpath>//*[@id="content-main"]/div[1]/table/tbody/tr[1]/th/a</xpath>
+        </locator>
+        <locator locatorId="authorityLink">
+            <xpath>//*[@id="nav-sidebar"]/div[1]/table/tbody/tr[2]/th/a</xpath>
+        </locator>
+        <locator locatorId="caseInviteLink">
+            <xpath>//*[@id="nav-sidebar"]/div[1]/table/tbody/tr[3]/th/a</xpath>
+        </locator>
+        <locator locatorId="caseLink">
+            <xpath>//*[@id="nav-sidebar"]/div[1]/table/tbody/tr[4]/th/a</xpath>
+        </locator>
+        <locator locatorId="emailTemplateLink">
+            <xpath>//*[@id="nav-sidebar"]/div[1]/table/tbody/tr[5]/th/a</xpath>
+        </locator>
+        <locator locatorId="faqCategoryLink">
+            <xpath>//*[@id="nav-sidebar"]/div[1]/table/tbody/tr[6]/th/a</xpath>
+        </locator>
+        <locator locatorId="faqLink">
+            <xpath>//*[@id="nav-sidebar"]/div[1]/table/tbody/tr[7]/th/a</xpath>
+        </locator>
+        <locator locatorId="firmInfoLink">
+            <xpath>//*[@id="nav-sidebar"]/div[1]/table/tbody/tr[8]/th/a</xpath>
+        </locator>
+        <locator locatorId="google2faLink">
+            <xpath>//*[@id="nav-sidebar"]/div[1]/table/tbody/tr[9]/th/a</xpath>
+        </locator>
+        <locator locatorId="publicHtmlPage">
+            <xpath>//*[@id="nav-sidebar"]/div[1]/table/tbody/tr[10]/th/a</xpath>
+        </locator>
+        <locator locatorId="roleToAuthorityLink">
+            <xpath>//*[@id="nav-sidebar"]/div[1]/table/tbody/tr[11]/th/a</xpath>
+        </locator>
+        <locator locatorId="roleLink">
+            <xpath>//*[@id="nav-sidebar"]/div[1]/table/tbody/tr[12]/th/a</xpath>
+        </locator>
+        <locator locatorId="userCreditCardLink">
+            <xpath>//*[@id="nav-sidebar"]/div[1]/table/tbody/tr[13]/th/a</xpath>
+        </locator>
+        <locator locatorId="userOneTimeTokenLink">
+            <xpath>//*[@id="nav-sidebar"]/div[1]/table/tbody/tr[14]/th/a</xpath>
+        </locator>
+        <locator locatorId="userToAuthorityLink">
+            <xpath>//*[@id="nav-sidebar"]/div[1]/table/tbody/tr[15]/th/a</xpath>
+        </locator>
+        <locator locatorId="userToRolesLink">
+            <xpath>//*[@id="nav-sidebar"]/div[1]/table/tbody/tr[16]/th/a</xpath>
+        </locator>
+        <locator locatorId="userLink">
+            <xpath>//*[@id="nav-sidebar"]/div[1]/table/tbody/tr[17]/th/a</xpath>
+        </locator>
+        <locator locatorId="siteName">
+            <id>site-name</id>
+        </locator>
+    </locators>
+</page>

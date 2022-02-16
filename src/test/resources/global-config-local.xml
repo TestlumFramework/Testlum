@@ -91,7 +91,7 @@
         </postgres>
     </postgreses>
 
-    <!--<mongos>
+    <mongos>
         <mongo alias="database_one" enabled="true">
             <authenticationDatabase>admin</authenticationDatabase>
             <username>username</username>
@@ -320,5 +320,5 @@
             <password>test</password>
             <connectionUrl>jdbc:clickhouse://localhost:8124/test_db</connectionUrl>
         </clickhouse>
-    </clickhouses>-->
+    </clickhouses>
 </globalTestConfiguration>

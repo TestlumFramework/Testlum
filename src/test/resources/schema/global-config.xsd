@@ -39,7 +39,7 @@
                 <x:element name="filterTags" type="tns:filterTags"/>
                 <x:element name="parallelExecution" type="x:boolean"/>
                 <x:element name="parallelExecutionLimit" type="x:int"/>
-                <x:element name="ui" type="tns:ui"/>
+                <x:element name="ui" type="tns:ui" minOccurs="0"/>
                 <x:choice maxOccurs="unbounded">
                     <x:element name="apis" type="tns:apis" minOccurs="0"/>
                     <x:element name="postgreses" type="tns:postgreses" minOccurs="0"/>
@@ -64,10 +64,10 @@
     <x:complexType name="ui">
         <x:sequence>
             <x:element name="browserSettings" type="tns:browserSettings"/>
-            <x:element name="browserVersion" type="tns:browserVersion"/>
             <x:element name="baseUrl" type="tns:url"/>
             <x:element name="performanceWarning" type="tns:performanceWarning"/>
         </x:sequence>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
     <x:complexType name="apis">
@@ -90,6 +90,7 @@
             <x:element name="screenshotsLogging" type="x:boolean"/>
             <x:element name="seleniumExplicitWaitTime" type="x:int"/>
             <x:element name="options" type="tns:options"/>
+            <x:element name="versions" type="tns:browserVersions"/>
         </x:sequence>
     </x:complexType>
 
@@ -117,12 +118,12 @@
         </x:sequence>
     </x:complexType>
 
-    <x:complexType name="browserVersion">
+    <x:complexType name="browserVersions">
         <x:annotation>
             <x:documentation>Browser OS Group Specification</x:documentation>
         </x:annotation>
         <x:choice>
-            <x:element name="browserVersionElement" maxOccurs="unbounded" type="tns:browserVersionElement"
+            <x:element name="version" maxOccurs="unbounded" type="tns:browserVersionElement"
                        minOccurs="0"/>
         </x:choice>
     </x:complexType>

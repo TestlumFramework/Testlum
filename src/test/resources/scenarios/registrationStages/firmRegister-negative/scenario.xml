@@ -8,6 +8,7 @@
         <tag>Frontend</tag>
     </tags>
 
+    <ui comment="List of ui commands">
     <navigateTo comment="Navigate to Firm Registration"
                 path="/register/firm-information"/>
 
@@ -47,6 +48,7 @@
             attribute="id">
         <content>register_firm-registration-name_input</content>
     </assert>
+    </ui>
 
 </scenario>
 

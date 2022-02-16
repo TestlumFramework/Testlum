@@ -23,15 +23,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 @Setter
 public class InterpreterDependencies {
-    private final GlobalTestConfiguration globalTestConfiguration;
-    private final WebDriver webDriver;
-    private final WebElementFinder webElementFinder;
-    private final GlobalLocators globalLocators;
+    private final GlobalTestConfiguration globalTestConfiguration = GlobalTestConfigurationProvider.provide();
     private final ApplicationContext context;
     private final File file;
     private final ScenarioContext scenarioContext;
     private final FileSearcher fileSearcher;
     private final AtomicInteger position;
+    private WebDriver webDriver;
+    private WebElementFinder webElementFinder;
+    private GlobalLocators globalLocators;
 
     private Authorization authorization;
 
@@ -45,9 +45,22 @@ public class InterpreterDependencies {
         this.file = file;
         this.scenarioContext = scenarioContext;
         this.position = position;
-        this.globalTestConfiguration = GlobalTestConfigurationProvider.provide();
         this.webElementFinder = new WebElementFinder();
         this.globalLocators = GlobalLocators.getInstance();
+
+        boolean overridePathToVolume = SystemInfo.USE_SELENIUM_HUB;
+        this.fileSearcher = new FileSearcher(TestResourceSettings.getInstance().getTestResourcesFolder(),
+                file, overridePathToVolume);
+    }
+
+    public InterpreterDependencies(final ApplicationContext context,
+                                   final File file,
+                                   final ScenarioContext scenarioContext,
+                                   final AtomicInteger position) {
+        this.context = context;
+        this.file = file;
+        this.scenarioContext = scenarioContext;
+        this.position = position;
 
         boolean overridePathToVolume = SystemInfo.USE_SELENIUM_HUB;
         this.fileSearcher = new FileSearcher(TestResourceSettings.getInstance().getTestResourcesFolder(),

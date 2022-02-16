@@ -14,6 +14,7 @@
         <patches>central_email_templates.sql</patches>
     </migrate>
 
+    <ui comment="First part of ui commands">
     <click comment="Click on Registration button"
            locatorId="mainPage.register"/>
 
@@ -43,16 +44,19 @@
     <click comment="Click on 'Register account' button"
            locatorId="ownerRegistration.regAccount"
            method="js"/>
+    </ui>
 
     <wait comment="Waiting of loading the 2Fa auth page"
           time="3"
           unit="seconds"/>
 
-    <assert comment="Go to confirm email address page"
-            locatorId="ownerRegistration.positiveAssertOwner"
-            attribute="id">
-        <content>home_header_button</content>
-    </assert>
+    <ui comment="Second part of ui commands">
+        <assert comment="Go to confirm email address page"
+                locatorId="ownerRegistration.positiveAssertOwner"
+                attribute="id">
+            <content>home_header_button</content>
+        </assert>
+    </ui>
 
     <postgres comment="Get token and user_id from t_one_time_token table" file="expected_12.json"
               alias="central">
@@ -67,13 +71,16 @@
         <jpath>$.[0].content.[0].user_id</jpath>
     </var>
 
-    <navigateTo comment="Emulate press on verify link button on email"
-                path="/register/phone-verify/{{TOKEN}}"/>
+    <ui comment="Navigate to">
+        <navigateTo comment="Emulate press on verify link button on email"
+                    path="/register/phone-verify/{{TOKEN}}"/>
+    </ui>
 
     <wait comment="Waiting of loading the 2Fa auth page"
           time="1"
           unit="seconds"/>
 
+    <ui comment="Third part of ui commands">
     <assert comment="Make sure that the transition to the 2Fa page was successful"
             locatorId="ownerRegistration.positiveAssertOwner"
             attribute="id">
@@ -93,11 +100,13 @@
 
     <click comment="Click on 'Send code'"
            locatorId="twoFactor.sandCode"/>
+    </ui>
 
     <wait comment="Wait 2 seconds before starting set values in fields"
           time="2"
           unit="seconds"/>
 
+    <ui comment="Fourth part of ui commands">
     <input comment="Input invalid verification code1"
            locatorId="twoFactor.enterCode1"
            value="0"/>
@@ -121,14 +130,17 @@
     <input comment="Input invalid verification code6"
            locatorId="twoFactor.enterCode6"
            value="0"/>
+    </ui>
 
     <wait comment="Wait to make sure the code is invalid"
           time="30"
           unit="seconds"/>
 
-    <assert comment="Stay at this page after error"
-            locatorId="twoFactor.assertNegativeTwoFa"
-            attribute="id">
-        <content>register_phone-resend_button</content>
-    </assert>
+    <ui comment="Assert commands">
+        <assert comment="Stay at this page after error"
+                locatorId="twoFactor.assertNegativeTwoFa"
+                attribute="id">
+            <content>register_phone-resend_button</content>
+        </assert>
+    </ui>
 </scenario>

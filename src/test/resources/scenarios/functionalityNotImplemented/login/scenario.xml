@@ -8,7 +8,7 @@
     <tags>
         <tag>Frontend</tag>
     </tags>
-
+    <ui comment="First part of ui commands">
     <click comment="Click on 'login' button"
            locatorId="login.login"/>
 
@@ -36,6 +36,7 @@
 
     <click comment="Click on 'Sand code'"
            locatorId="twoFactor.sandCode"/>
+    </ui>
 
     <wait comment="Wait 2 seconds before starting set values in fields"
           time="6"
@@ -53,6 +54,7 @@
           time="5"
           unit="seconds"/>
 
+    <ui comment="Second part of ui commands">
     <input comment="Input verification code1"
            locatorId="twoFactor.enterCode1"
            value="3"/>
@@ -79,13 +81,16 @@
 
     <click comment="Click on Sand password button"
            locatorId="twoFactor.sandPass"/>
+    </ui>
 
     <wait comment="wait 5 second"
           time="3"
           unit="seconds"/>
 
-    <click comment="Click on Sand password button"
-           locatorId="twoFactor.sandPass"/>
+    <ui comment="Third part of ui commands">
+        <click comment="Click on Sand password button"
+               locatorId="twoFactor.sandPass"/>
+    </ui>
 
     <wait comment="wait 5 second"
           time="3"

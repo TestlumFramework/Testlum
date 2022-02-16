@@ -16,9 +16,12 @@
 
     <http comment="Clear cash for successful start scenario"
           alias="api">
-        <post url="/api/v1/cache/invalidate"/>
+        <post url="/api/v1/cache/invalidate">
+            <response code="200"/>
+        </post>
     </http>
 
+    <ui comment="First part of ui commands">
     <click comment="Click on Registration button"
            locatorId="mainPage.register"/>
 
@@ -48,16 +51,19 @@
     <click comment="Click on 'Register account' button"
            locatorId="ownerRegistration.regAccount"
            method="js"/>
+    </ui>
 
     <wait comment="Waiting of loading the 2Fa auth page"
           time="3"
           unit="seconds"/>
 
-    <assert comment="We stayed on the current page"
-            locatorId="ownerRegistration.negativeAssertOwner"
-            attribute="id">
-        <content>register_account_first-name_input</content>
-    </assert>
+    <ui comment="Second part of ui commands">
+        <assert comment="We stayed on the current page"
+                locatorId="ownerRegistration.negativeAssertOwner"
+                attribute="id">
+            <content>register_account_first-name_input</content>
+        </assert>
+    </ui>
 
 
 </scenario>

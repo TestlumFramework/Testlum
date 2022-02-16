@@ -9,40 +9,42 @@
         <tag>Frontend</tag>
     </tags>
 
-    <navigateTo comment="Navigate to billing page"
-                path="/register/billing"/>
+    <ui comment="List of ui commands">
+        <navigateTo comment="Navigate to billing page"
+                    path="/register/billing"/>
 
-    <input comment="Add card number"
-           locatorId="billing.cardNumber"
-           value="{{numberOfCard}}"/>
+        <input comment="Add card number"
+               locatorId="billing.cardNumber"
+               value="{{numberOfCard}}"/>
 
-    <input comment="Add card name on card"
-           locatorId="billing.nameOnCard"
-           value="{{nameOnCard}}"/>
+        <input comment="Add card name on card"
+               locatorId="billing.nameOnCard"
+               value="{{nameOnCard}}"/>
 
-    <click comment="Choose 'exp date' month"
-           locatorId="billing.expDateMonth"/>
+        <click comment="Choose 'exp date' month"
+               locatorId="billing.expDateMonth"/>
 
-    <click comment="Choose month"
-           locatorId="billing.january"/>
+        <click comment="Choose month"
+               locatorId="billing.january"/>
 
-    <click comment="Choose 'exp date' Year"
-           locatorId="billing.expDateYear"/>
+        <click comment="Choose 'exp date' Year"
+               locatorId="billing.expDateYear"/>
 
-    <click comment="Choose Year"
-           locatorId="billing.chooseYear"/>
+        <click comment="Choose Year"
+               locatorId="billing.chooseYear"/>
 
-    <input comment="Add cvc code"
-           locatorId="billing.cvc"
-           value="{{cvc}}"/>
+        <input comment="Add cvc code"
+               locatorId="billing.cvc"
+               value="{{cvc}}"/>
 
-    <click comment="Click confirm button"
-           locatorId="billing.confirmButton"/>
+        <click comment="Click confirm button"
+               locatorId="billing.confirmButton"/>
 
-    <assert comment="We stay on this page after input incorrect card data"
-            locatorId="billing.billingNegativeAssert"
-            attribute="id">
-        <content>register_card-number_input</content>
-    </assert>
+        <assert comment="We stay on this page after input incorrect card data"
+                locatorId="billing.billingNegativeAssert"
+                attribute="id">
+            <content>register_card-number_input</content>
+        </assert>
+    </ui>
 
 </scenario>

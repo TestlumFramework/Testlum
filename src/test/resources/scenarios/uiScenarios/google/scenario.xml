@@ -1,0 +1,18 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario" variations="testVariation.csv">
+
+    <overview>
+        <description>Custom test for ui</description>
+        <name>Custom test for ui</name>
+    </overview>
+
+    <tags>
+        <tag>self_test</tag>
+    </tags>
+
+    <ui comment="Input step">
+        <input comment="Input text value for searching"
+               locatorId="testLocators.searchTextArea"
+               value="{{value1}}"/>
+    </ui>
+
+</scenario>

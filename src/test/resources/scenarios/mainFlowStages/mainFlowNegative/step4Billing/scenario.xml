@@ -19,6 +19,7 @@
         <post url="/api/v1/cache/invalidate"/>
     </http>
 
+    <ui comment="First part of ui commands">
     <click comment="Click on Registration button"
            locatorId="mainPage.register"/>
 
@@ -48,16 +49,19 @@
     <click comment="Click on 'Register account' button"
            locatorId="ownerRegistration.regAccount"
            method="js"/>
+    </ui>
 
     <wait comment="Waiting of loading the 2Fa auth page"
           time="3"
           unit="seconds"/>
 
-    <assert comment="Go to confirm email address page"
-            locatorId="ownerRegistration.positiveAssertOwner"
-            attribute="id">
-        <content>home_header_button</content>
-    </assert>
+    <ui comment="Assert command">
+        <assert comment="Go to confirm email address page"
+                locatorId="ownerRegistration.positiveAssertOwner"
+                attribute="id">
+            <content>home_header_button</content>
+        </assert>
+    </ui>
 
     <postgres comment="Get token and user_id from t_one_time_token table"
               alias="central"
@@ -73,6 +77,7 @@
         <jpath>$.[0].content.[0].user_id</jpath>
     </var>
 
+    <ui comment="Second part of ui commands">
     <navigateTo comment="Emulate press on verify link button on email"
                 path="/register/phone-verify/{{TOKEN}}"/>
 
@@ -96,6 +101,7 @@
 
     <click comment="Click on 'Send code'"
            locatorId="twoFactor.sandCode"/>
+    </ui>
 
     <wait comment="Waiting to process a completed database request"
           time="6"
@@ -147,6 +153,7 @@
           time="5"
           unit="seconds"/>
 
+    <ui comment="Third part of ui commands">
     <input comment="Input verification code1"
            locatorId="twoFactor.enterCode1"
            value="{{firstTokenDigit}}"/>
@@ -170,17 +177,21 @@
     <input comment="Input verification code6"
            locatorId="twoFactor.enterCode6"
            value="{{sixthTokenDigit}}"/>
+    </ui>
 
     <wait comment="Wait one second for a request to check the correct response code"
           time="1" unit="seconds"/>
 
-    <click comment="Click on Sand password button"
-           locatorId="twoFactor.sandPass"/>
+    <ui comment="Click command">
+        <click comment="Click on Sand password button"
+               locatorId="twoFactor.sandPass"/>
+    </ui>
 
     <wait comment="Waiting 1 second for loaded field name-input"
           time="1"
           unit="seconds"/>
 
+    <ui comment="Fourth part of ui commands">
     <assert comment="Make sure that after the correct entered data, the transition to the 'Firm registration' page is completed'"
             locatorId="twoFactor.assertPositiveTwoFa"
             attribute="id">
@@ -193,28 +204,34 @@
 
     <click comment=" Click to Select country"
            locatorId="firmRegistration.country"/>
+    </ui>
 
     <wait comment="Loading select input country"
           time="2" unit="seconds"/>
 
+    <ui comment="Fifth part of ui commands">
     <click comment="Select United States"
            locatorId="firmRegistration.selectCountry"/>
 
     <click comment="Click to Select City"
            locatorId="firmRegistration.city"/>
+    </ui>
 
     <wait comment="Loading select input city"
           time="2" unit="seconds"/>
 
-    <click comment="Select California"
-           locatorId="firmRegistration.selectCity"/>
+    <ui comment="Sixth part of ui comment">
+        <click comment="Select California"
+               locatorId="firmRegistration.selectCity"/>
 
-    <click comment="Click to Select State"
-           locatorId="firmRegistration.state"/>
+        <click comment="Click to Select State"
+               locatorId="firmRegistration.state"/>
+    </ui>
 
     <wait comment="Loading select input state"
           time="4" unit="seconds"/>
 
+    <ui comment="Seventh part of ui commands">
     <click comment="Select State 'Los Angeles'"
            locatorId="firmRegistration.selectState"/>
 
@@ -232,10 +249,12 @@
 
     <click comment="Click on 'Confirm' button"
            locatorId="firmRegistration.confirmFirm"/>
+    </ui>
 
     <wait comment="Waiting for loading billing page"
           time="7 " unit="seconds"/>
 
+    <ui comment="Eighth part of ui commands">
     <assert comment="Checking the available, adding the value into the postcode field"
             locatorId="firmRegistration.firmRegisterPositiveAssert"
             attribute="id">
@@ -252,19 +271,23 @@
 
     <click comment="Choose 'exp date' month"
            locatorId="billing.expDateMonth"/>
+    </ui>
 
     <wait comment="Loading select input Month"
           time="2" unit="seconds"/>
 
+    <ui comment="Ninth part of ui commands">
     <click comment="Choose month"
            locatorId="billing.january"/>
 
     <click comment="Choose 'exp date' Year"
            locatorId="billing.expDateYear"/>
+    </ui>
 
     <wait comment="Loading select input City"
           time="2" unit="seconds"/>
 
+    <ui comment="Tenth part of ui commands">
     <click comment="Choose Year"
            locatorId="billing.chooseYear"/>
 
@@ -280,6 +303,7 @@
             attribute="id">
         <content>register_card-number_input</content>
     </assert>
+    </ui>
 
 </scenario>
 

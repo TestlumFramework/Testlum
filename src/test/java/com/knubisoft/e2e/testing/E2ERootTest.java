@@ -6,14 +6,13 @@ import com.knubisoft.e2e.testing.framework.context.SpringTestContext;
 import com.knubisoft.e2e.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.e2e.testing.framework.report.ReportGenerator;
 import com.knubisoft.e2e.testing.framework.report.ScenarioResult;
-import com.knubisoft.e2e.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.e2e.testing.framework.scenario.ScenarioRunner;
 import com.knubisoft.e2e.testing.framework.util.FileRemover;
 import com.knubisoft.e2e.testing.framework.util.LogMessage;
+import com.knubisoft.e2e.testing.model.ScenarioArguments;
 import com.knubisoft.e2e.testing.model.scenario.Overview;
 import com.knubisoft.e2e.testing.framework.SystemDataStoreCleaner;
 import com.knubisoft.e2e.testing.framework.TestSetCollector;
-import com.knubisoft.e2e.testing.model.global_config.BrowserSettings;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +20,8 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.junit.AssumptionViolatedException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -30,8 +31,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.TestContextManager;
 
-import java.io.File;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -66,30 +65,21 @@ class E2ERootTest {
         cleanDatabases();
     }
 
+    @DisplayName("Execution of test scenarios:")
     @ParameterizedTest(name = "[{index}] path -- {0}")
     @MethodSource("prepareTestData")
     @SneakyThrows
-    void execution(final String path,
-                   final File file,
-                   final ScenarioCollector.MappingResult result,
-                   final String browserVersionElement,
-                   final BrowserSettings browserSettings,
-                   final Map<String, String> variations) {
-        Scenario scenario = result.scenario;
-        verifyScenario(path, result, scenario);
-        executeTest(file, browserVersionElement, browserSettings, variations, scenario);
+    void execution(final Named<ScenarioArguments> arguments) {
+        ScenarioArguments scenarioArguments = arguments.getPayload();
+        verifyScenario(scenarioArguments);
+        executeScenario(scenarioArguments);
     }
 
-    private void executeTest(final File file,
-                             final String browserVersionElement,
-                             final BrowserSettings browserSettings,
-                             final Map<String, String> variations,
-                             final Scenario scenario) {
-        cleanDbAndMigrateIfRequired(scenario);
+    private void executeScenario(final ScenarioArguments scenarioArguments) {
+        cleanDbAndMigrateIfRequired(scenarioArguments.getScenario());
         StopWatch stopWatch = StopWatch.createStarted();
         ScenarioRunner scenarioRunner =
-                new ScenarioRunner(file, scenario, browserVersionElement,
-                        browserSettings, variations, ctx);
+                new ScenarioRunner(scenarioArguments, ctx);
         ctx.getAutowireCapableBeanFactory().autowireBean(scenarioRunner);
         setTestScenarioResult(stopWatch, scenarioRunner);
     }
@@ -114,13 +104,12 @@ class E2ERootTest {
         systemDataStoreCleaner.cleanAll(this.nameToAdapterAlias);
     }
 
-    private void verifyScenario(final String path,
-                                final ScenarioCollector.MappingResult result,
-                                final Scenario scenario) throws Exception {
+    private void verifyScenario(final ScenarioArguments scenarioArguments) throws Exception {
+        Scenario scenario = scenarioArguments.getScenario();
         if (scenario == null) {
-            throw result.exception;
+            throw scenarioArguments.getException();
         } else if (!scenario.isActive()) {
-            throw assumptionViolatedException(path, scenario);
+            throw assumptionViolatedException(scenarioArguments.getPath(), scenario);
         }
     }
 

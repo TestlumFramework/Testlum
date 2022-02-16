@@ -16,48 +16,54 @@
 
     <http comment="Clear cash for successful start scenario"
           alias="api">
-        <post url="/api/v1/cache/invalidate"/>
+        <post url="/api/v1/cache/invalidate">
+            <response code="200"/>
+        </post>
     </http>
 
-    <click comment="Click on Registration button"
-           locatorId="mainPage.register"/>
+    <ui comment="First part of ui commands">
+        <click comment="Click on Registration button"
+               locatorId="mainPage.register"/>
 
-    <input comment="Input first name"
-           locatorId="ownerRegistration.firstName"
-           value="Roberto"/>
+        <input comment="Input first name"
+               locatorId="ownerRegistration.firstName"
+               value="Roberto"/>
 
-    <input comment="Input lastname"
-           locatorId="ownerRegistration.lastName"
-           value="Firmino"/>
+        <input comment="Input lastname"
+               locatorId="ownerRegistration.lastName"
+               value="Firmino"/>
 
-    <input comment="Input email"
-           locatorId="ownerRegistration.emailAddress"
-           value="konovalovtest19@gmail.com"/>
+        <input comment="Input email"
+               locatorId="ownerRegistration.emailAddress"
+               value="konovalovtest19@gmail.com"/>
 
-    <input comment="Input password"
-           locatorId="ownerRegistration.password"
-           value="Firm@nino19"/>
+        <input comment="Input password"
+               locatorId="ownerRegistration.password"
+               value="Firm@nino19"/>
 
-    <input comment="Input repeat password"
-           locatorId="ownerRegistration.repPassword"
-           value="Firm@nino19"/>
+        <input comment="Input repeat password"
+               locatorId="ownerRegistration.repPassword"
+               value="Firm@nino19"/>
 
-    <click comment="Click on 'confirm' 'Terms of use' and 'Privacy Policy' button"
-           locatorId="ownerRegistration.confirm"/>
+        <click comment="Click on 'confirm' 'Terms of use' and 'Privacy Policy' button"
+               locatorId="ownerRegistration.confirm"/>
 
-    <click comment="Click on 'Register account' button"
-           locatorId="ownerRegistration.regAccount"
-           method="js"/>
+        <click comment="Click on 'Register account' button"
+               locatorId="ownerRegistration.regAccount"
+               method="js"/>
+    </ui>
 
     <wait comment="Waiting of loading the 2Fa auth page"
           time="3"
           unit="seconds"/>
 
-    <assert comment="Go to 2Fa page"
-            locatorId="ownerRegistration.positiveAssertOwner"
-            attribute="id">
-        <content>home_header_button</content>
-    </assert>
+    <ui comment="Assert command">
+        <assert comment="Go to 2Fa page"
+                locatorId="ownerRegistration.positiveAssertOwner"
+                attribute="id">
+            <content>home_header_button</content>
+        </assert>
+    </ui>
 
     <postgres comment="Get token and user_id from t_one_time_token table"
               file="expected_13.json"
@@ -73,28 +79,30 @@
         <jpath>$.[0].content.[0].user_id</jpath>
     </var>
 
-    <navigateTo comment="Emulate press on verify link button on email"
-                path="/register/phone-verify/{{TOKEN}}"/>
+    <ui comment="Second part of ui command">
+        <navigateTo comment="Emulate press on verify link button on email"
+                    path="/register/phone-verify/{{TOKEN}}"/>
 
-    <assert comment="Make sure that the transition to the 2Fa page was successful"
-            locatorId="ownerRegistration.assertTwoFaPositive"
-            attribute="id">
-        <content>register_phone-resend_button</content>
-    </assert>
+        <assert comment="Make sure that the transition to the 2Fa page was successful"
+                locatorId="ownerRegistration.assertTwoFaPositive"
+                attribute="id">
+            <content>register_phone-resend_button</content>
+        </assert>
 
-    <click comment="Click on select country"
-           locatorId="twoFactor.selectCountryFa"/>
+        <click comment="Click on select country"
+               locatorId="twoFactor.selectCountryFa"/>
 
-    <click comment="Select Ukraine"
-           locatorId="twoFactor.selectUkraine"/>
+        <click comment="Select Ukraine"
+               locatorId="twoFactor.selectUkraine"/>
 
-    <input highlight="false"
-           comment="Input phone number"
-           locatorId="twoFactor.phoneNumber"
-           value="966576650"/>
+        <input highlight="false"
+               comment="Input phone number"
+               locatorId="twoFactor.phoneNumber"
+               value="966576650"/>
 
-    <click comment="Click on 'Send code'"
-           locatorId="twoFactor.sandCode"/>
+        <click comment="Click on 'Send code'"
+               locatorId="twoFactor.sandCode"/>
+    </ui>
 
     <wait comment="Wait 5 seconds before starting set values in fields"
           time="5"
@@ -146,158 +154,180 @@
           time="3"
           unit="seconds"/>
 
-    <input comment="Input verification code1"
-           locatorId="twoFactor.enterCode1"
-           value="{{firstTokenDigit}}"/>
+    <ui comment="Third part of ui commands">
+        <input comment="Input verification code1"
+               locatorId="twoFactor.enterCode1"
+               value="{{firstTokenDigit}}"/>
 
-    <input comment="Input verification code2"
-           locatorId="twoFactor.enterCode2"
-           value="{{secondTokenDigit}}"/>
+        <input comment="Input verification code2"
+               locatorId="twoFactor.enterCode2"
+               value="{{secondTokenDigit}}"/>
 
-    <input comment="Input verification code3"
-           locatorId="twoFactor.enterCode3"
-           value="{{thirdTokenDigit}}"/>
+        <input comment="Input verification code3"
+               locatorId="twoFactor.enterCode3"
+               value="{{thirdTokenDigit}}"/>
 
-    <input comment="Input verification code4"
-           locatorId="twoFactor.enterCode4"
-           value="{{fourthTokenDigit}}"/>
+        <input comment="Input verification code4"
+               locatorId="twoFactor.enterCode4"
+               value="{{fourthTokenDigit}}"/>
 
-    <input comment="Input verification code5"
-           locatorId="twoFactor.enterCode5"
-           value="{{fifthTokenDigit}}"/>
+        <input comment="Input verification code5"
+               locatorId="twoFactor.enterCode5"
+               value="{{fifthTokenDigit}}"/>
 
-    <input comment="Input verification code6"
-           locatorId="twoFactor.enterCode6"
-           value="{{sixthTokenDigit}}"/>
+        <input comment="Input verification code6"
+               locatorId="twoFactor.enterCode6"
+               value="{{sixthTokenDigit}}"/>
+    </ui>
 
     <wait comment="Wait one second for a request to check the correct response code"
           time="1" unit="seconds"/>
 
-    <click comment="Click on Sand password button"
-           locatorId="twoFactor.sandPass"/>
+    <ui comment="Click command">
+        <click comment="Click on Sand password button"
+               locatorId="twoFactor.sandPass"/>
+    </ui>
 
     <wait comment="Waiting 1 second for loaded field name-input"
           time="1"
           unit="seconds"/>
 
-    <assert comment="Assert go to page 'Register Firm account'"
-            locatorId="twoFactor.assertPositiveTwoFa"
-            attribute="id">
-        <content>register_firm-registration-name_input</content>
-    </assert>
+    <ui comment="Fourth part of ui commands">
+        <assert comment="Assert go to page 'Register Firm account'"
+                locatorId="twoFactor.assertPositiveTwoFa"
+                attribute="id">
+            <content>register_firm-registration-name_input</content>
+        </assert>
 
-    <input comment="Input 'Firm Name'"
-           locatorId="firmRegistration.firmName"
-           value="Hubbard Company"/>
+        <input comment="Input 'Firm Name'"
+               locatorId="firmRegistration.firmName"
+               value="Hubbard Company"/>
 
-    <click comment=" Click to Select country"
-           locatorId="firmRegistration.country"/>
+        <click comment=" Click to Select country"
+               locatorId="firmRegistration.country"/>
+    </ui>
 
     <wait comment="Loading select input country"
           time="2" unit="seconds"/>
 
-    <click comment="Select United States"
-           locatorId="firmRegistration.selectCountry"/>
+    <ui comment="Fifth part of ui commands">
+        <click comment="Select United States"
+               locatorId="firmRegistration.selectCountry"/>
 
-    <click comment="Click to Select City"
-           locatorId="firmRegistration.city"/>
+        <click comment="Click to Select City"
+               locatorId="firmRegistration.city"/>
+    </ui>
 
     <wait comment="Loading select input city"
           time="2" unit="seconds"/>
 
-    <click comment="Select California"
-           locatorId="firmRegistration.selectCity"/>
+    <ui comment="Sixth part of ui commands">
+        <click comment="Select California"
+               locatorId="firmRegistration.selectCity"/>
 
-    <click comment="Click to Select State"
-           locatorId="firmRegistration.state"/>
+        <click comment="Click to Select State"
+               locatorId="firmRegistration.state"/>
+    </ui>
 
     <wait comment="Loading select input state"
           time="4" unit="seconds"/>
 
-    <click comment="Select State 'Los Angeles'"
-           locatorId="firmRegistration.selectState"/>
+    <ui comment="Seventh part of ui commands">
+        <click comment="Select State 'Los Angeles'"
+               locatorId="firmRegistration.selectState"/>
 
-    <input comment="Input Firm address1"
-           locatorId="firmRegistration.firmAddress1"
-           value="S Figueroa St Los Angeles CA United States"/>
+        <input comment="Input Firm address1"
+               locatorId="firmRegistration.firmAddress1"
+               value="S Figueroa St Los Angeles CA United States"/>
 
-    <input comment="Input Firm Address2"
-           locatorId="firmRegistration.firmAddress2"
-           value="Vista Del Mar,Playa Del Rey United States"/>
+        <input comment="Input Firm Address2"
+               locatorId="firmRegistration.firmAddress2"
+               value="Vista Del Mar,Playa Del Rey United States"/>
 
-    <input comment="Input 'Postcode'"
-           locatorId="firmRegistration.postcode"
-           value="90032"/>
+        <input comment="Input 'Postcode'"
+               locatorId="firmRegistration.postcode"
+               value="90032"/>
 
-    <click comment="Click on 'Confirm' button"
-           locatorId="firmRegistration.confirmFirm"/>
+        <click comment="Click on 'Confirm' button"
+               locatorId="firmRegistration.confirmFirm"/>
+    </ui>
 
     <wait comment="Waiting for loading billing page"
           time="7" unit="seconds"/>
 
-    <assert comment="Checking the available, adding the value into the postcode field"
-            locatorId="firmRegistration.firmRegisterPositiveAssert"
-            attribute="id">
-        <content>register_card_button</content>
-    </assert>
+    <ui comment="Eighth part of ui commands">
+        <assert comment="Checking the available, adding the value into the postcode field"
+                locatorId="firmRegistration.firmRegisterPositiveAssert"
+                attribute="id">
+            <content>register_card_button</content>
+        </assert>
 
-    <input comment="Add card number"
-           locatorId="billing.cardNumber"
-           value="4149439398767754"/>
+        <input comment="Add card number"
+               locatorId="billing.cardNumber"
+               value="4149439398767754"/>
 
-    <input comment="Add card name on card"
-           locatorId="billing.nameOnCard"
-           value="Roberto Firmino"/>
+        <input comment="Add card name on card"
+               locatorId="billing.nameOnCard"
+               value="Roberto Firmino"/>
 
-    <click comment="Choose 'exp date' month"
-           locatorId="billing.expDateMonth"/>
+        <click comment="Choose 'exp date' month"
+               locatorId="billing.expDateMonth"/>
+    </ui>
 
     <wait comment="Loading select input Month"
           time="2" unit="seconds"/>
 
-    <click comment="Choose month"
-           locatorId="billing.january"/>
+    <ui comment="Ninth part of ui commands">
+        <click comment="Choose month"
+               locatorId="billing.january"/>
 
-    <click comment="Choose 'exp date' Year"
-           locatorId="billing.expDateYear"/>
+        <click comment="Choose 'exp date' Year"
+               locatorId="billing.expDateYear"/>
 
-    <click comment="Choose Year"
-           locatorId="billing.chooseYear"/>
+        <click comment="Choose Year"
+               locatorId="billing.chooseYear"/>
 
-    <input comment="Add cvc code"
-           locatorId="billing.cvc"
-           value="777"/>
+        <input comment="Add cvc code"
+               locatorId="billing.cvc"
+               value="777"/>
 
-    <click comment="Click on confirm button"
-           locatorId="billing.confirmButton"/>
+        <click comment="Click on confirm button"
+               locatorId="billing.confirmButton"/>
+    </ui>
 
     <wait comment="Wait 2 second's for loading Add Profile Photo page"
           time="2" unit="seconds"/>
 
-    <assert comment="We go to Add Profile Photo page"
-            locatorId="billing.billingPositiveAssert"
-            attribute="id">
-        <content>register_profile-photo_input</content>
-    </assert>
+    <ui comment="Assert command">
+        <assert comment="We go to Add Profile Photo page"
+                locatorId="billing.billingPositiveAssert"
+                attribute="id">
+            <content>register_profile-photo_input</content>
+        </assert>
+    </ui>
 
     <wait comment="Loading select input Year"
           time="2" unit="seconds"/>
 
-    <input comment="Add profile photo"
-           locatorId="userPhoto.addProfilePhotoButton"
-           value="file:Firmino.jpg"/>
+    <ui comment="Tenth part of ui command">
+        <input comment="Add profile photo"
+               locatorId="userPhoto.addProfilePhotoButton"
+               value="file:Firmino.jpg"/>
 
-    <click comment="Click confirm button"
-           locatorId="userPhoto.confirmButton"/>
+        <click comment="Click confirm button"
+               locatorId="userPhoto.confirmButton"/>
+    </ui>
 
     <wait comment="Waiting for loading Dashboard page"
           time="1" unit="seconds"/>
 
-    <assert comment="We go to Dashboard page"
-            locatorId="dashboard.dashBoardTitle"
-            attribute="class">
-        <content>holder-logo</content>
-    </assert>
+    <ui comment="Assert command">
+        <assert comment="We go to Dashboard page"
+                locatorId="dashboard.dashBoardTitle"
+                attribute="class">
+            <content>holder-logo</content>
+        </assert>
+    </ui>
 
     <wait comment="Waiting for loading Dashboard page"
           time="1" unit="seconds"/>

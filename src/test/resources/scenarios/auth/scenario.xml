@@ -103,14 +103,16 @@
 
     <auth comment="Start auth command " credentials="user_owner.json" alias="api">
 
-        <navigateTo comment="go to dashboard" path="/contacts"/>
+        <ui comment="Ui command">
+            <navigateTo comment="go to dashboard" path="/contacts"/>
 
-        <assert comment="Assert auth command successfully works"
-                locatorId="dashboard.dashBoardTitle"
-                attribute="outerHTML">
-            <content>
-                <![CDATA[<divdata-v-7d622f5c=""class="holder-logo"><adata-v-7d622f5c=""class="logo"><imgdata-v-7d622f5c=""src="/img/pme-logo.f9dd7485.svg"alt="logo"></a></div>]]></content>
-        </assert>
+            <assert comment="Assert auth command successfully works"
+                    locatorId="dashboard.dashBoardTitle"
+                    attribute="outerHTML">
+                <content>
+                    <![CDATA[<divdata-v-7d622f5c=""class="holder-logo"><adata-v-7d622f5c=""class="logo"><imgdata-v-7d622f5c=""src="/img/pme-logo.f9dd7485.svg"alt="logo"></a></div>]]></content>
+            </assert>
+        </ui>
     </auth>
 
 </scenario>

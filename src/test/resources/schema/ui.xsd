@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/e2e/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/e2e/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="ui">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="click" type="tns:click"/>
+                    <x:element name="input" type="tns:input"/>
+                    <x:element name="navigateBack" type="tns:navigateBack"/>
+                    <x:element name="navigateReload" type="tns:navigateReload"/>
+                    <x:element name="navigateTo" type="tns:navigateTo"/>
+                    <x:element name="assert" type="tns:assert"/>
+                    <x:element name="selectDropDown" type="tns:selectDropDown"/>
+                    <x:element name="deselectDropDown" type="tns:deselectDropDown"/>
+                    <x:element name="deselectDropDownAll" type="tns:deselectDropDownAll"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="click">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
+                <x:attribute name="method" type="tns:clickMethod"/>
+                <x:attribute name="highlight" type="x:boolean"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="clickMethod">
+        <x:restriction base="x:string">
+            <x:enumeration value="selenium"/>
+            <x:enumeration value="js"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="input">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
+                <x:attribute name="highlight" type="x:boolean"/>
+                <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="navigateBack">
+        <x:annotation>
+            <x:documentation>Navigate back if possible</x:documentation>
+        </x:annotation>
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="navigateReload">
+        <x:annotation>
+            <x:documentation>Reload page</x:documentation>
+        </x:annotation>
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="navigateTo">
+        <x:annotation>
+            <x:documentation>Navigate to page</x:documentation>
+        </x:annotation>
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:attribute name="path" type="tns:slashStartedString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="slashStartedString">
+        <x:restriction base="x:string">
+            <x:minLength value="2"/>
+            <x:pattern value="/.*"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="selectDropDown">
+        <x:annotation>
+            <x:documentation>Select item in dropdown by value/text/index</x:documentation>
+        </x:annotation>
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
+                <x:choice>
+                    <x:element name="text" type="tns:nonEmptyString"/>
+                    <x:element name="value" type="tns:nonEmptyString"/>
+                    <x:element name="index" type="x:int"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="deselectDropDown">
+        <x:annotation>
+            <x:documentation>Deselect item in dropdown by value/text/index</x:documentation>
+        </x:annotation>
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
+                <x:choice>
+                    <x:element name="text" type="tns:nonEmptyString"/>
+                    <x:element name="value" type="tns:nonEmptyString"/>
+                    <x:element name="index" type="x:int"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="deselectDropDownAll">
+        <x:annotation>
+            <x:documentation>Deselect all elements in dropdown</x:documentation>
+        </x:annotation>
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="assert">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
+                <x:choice>
+                    <x:element name="content" type="tns:nonEmptyString"/>
+                </x:choice>
+                <x:attribute name="attribute" type="tns:attribute" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="attribute">
+        <x:restriction base="x:string">
+            <x:enumeration value="outerHTML"/>
+            <x:enumeration value="class"/>
+            <x:enumeration value="id"/>
+        </x:restriction>
+    </x:simpleType>
+
+</x:schema>

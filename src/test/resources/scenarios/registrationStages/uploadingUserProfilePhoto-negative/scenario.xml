@@ -9,22 +9,26 @@
         <tag>Frontend</tag>
     </tags>
 
-    <navigateTo comment="Navigate to add photo profile"
-                path="/register/user-photo"/>
+    <ui comment="List of ui commands">
+        <navigateTo comment="Navigate to add photo profile"
+                    path="/register/user-photo"/>
 
-    <input comment="Add profile photo"
-           locatorId="userPhoto.addProfilePhotoButton"
-           value="{{nameOfPhoto}}"/>
+        <input comment="Add profile photo"
+               locatorId="userPhoto.addProfilePhotoButton"
+               value="{{nameOfPhoto}}"/>
+    </ui>
 
     <wait comment="Waiting for uploading photo for user profile"
           time="1"
           unit="seconds"/>
 
-    <assert comment="We stay on this page after 'error' input"
-            locatorId="userPhoto.negativePhotoScenario"
-            attribute="id">
-        <content>register_profile-photo_error</content>
-    </assert>
+    <ui comment="Assert command">
+        <assert comment="We stay on this page after 'error' input"
+                locatorId="userPhoto.negativePhotoScenario"
+                attribute="id">
+            <content>register_profile-photo_error</content>
+        </assert>
+    </ui>
 
 </scenario>
 

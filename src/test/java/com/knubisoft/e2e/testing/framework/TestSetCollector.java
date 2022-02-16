@@ -114,8 +114,7 @@ public class TestSetCollector {
 
     @NotNull
     private List<Map<String, String>> getVariationList(final ScenarioCollector.MappingResult entry) {
-        String variations = entry.scenario.getVariations();
-        return new CSVParser().parseVariations(variations);
+        return new CSVParser().parseVariations(entry.scenario.getVariations());
     }
 
     private boolean variationsExist(final ScenarioCollector.MappingResult entry) {

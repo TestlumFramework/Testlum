@@ -72,10 +72,10 @@ class E2ERootTest {
     void execution(final Named<ScenarioArguments> arguments) {
         ScenarioArguments scenarioArguments = arguments.getPayload();
         verifyScenario(scenarioArguments);
-        executeTest(scenarioArguments);
+        executeScenario(scenarioArguments);
     }
 
-    private void executeTest(final ScenarioArguments scenarioArguments) {
+    private void executeScenario(final ScenarioArguments scenarioArguments) {
         cleanDbAndMigrateIfRequired(scenarioArguments.getScenario());
         StopWatch stopWatch = StopWatch.createStarted();
         ScenarioRunner scenarioRunner =

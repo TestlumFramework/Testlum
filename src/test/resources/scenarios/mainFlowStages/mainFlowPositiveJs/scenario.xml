@@ -1,0 +1,15 @@
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario" onlyThis="true">
+    <overview>
+        <description>Check all buttons and links on homepage</description>
+        <name>Homepage</name>
+    </overview>
+    <tags>
+        <tag>Frontend</tag>
+    </tags>
+
+    <ui comment="First part of ui commands">
+        <javascript comment="The try to output the command 'console'" file="consoleLog.js"/>
+        <javascript comment="The try to output the command with a variable" file="greating.js"/>
+        <javascript comment="The try to output the command with a variable" file="changeColorOfButtonByHovering.js"/>
+    </ui>
+</scenario>

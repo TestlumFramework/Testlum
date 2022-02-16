@@ -5,6 +5,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependenci
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.ExplicitWaitUtil;
+import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.SeleniumUtil;
 import com.knubisoft.e2e.testing.model.scenario.Assert;
 import com.knubisoft.e2e.testing.model.scenario.Click;
@@ -12,6 +13,7 @@ import com.knubisoft.e2e.testing.model.scenario.ClickMethod;
 import com.knubisoft.e2e.testing.model.scenario.DeselectDropDown;
 import com.knubisoft.e2e.testing.model.scenario.DeselectDropDownAll;
 import com.knubisoft.e2e.testing.model.scenario.Input;
+import com.knubisoft.e2e.testing.model.scenario.Javascript;
 import com.knubisoft.e2e.testing.model.scenario.NavigateBack;
 import com.knubisoft.e2e.testing.model.scenario.NavigateReload;
 import com.knubisoft.e2e.testing.model.scenario.NavigateTo;
@@ -19,9 +21,18 @@ import com.knubisoft.e2e.testing.model.scenario.SelectDropDown;
 import com.knubisoft.e2e.testing.model.scenario.Ui;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.util.List;
+
+import static com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings.JS_FOLDER;
 import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BY_URL_LOG;
 import static com.knubisoft.e2e.testing.model.scenario.ClickMethod.JS;
@@ -61,6 +72,8 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
                 deselectDropDown((DeselectDropDown) action, result);
             } else if (action instanceof DeselectDropDownAll) {
                 deselectDropDownAll((DeselectDropDownAll) action, result);
+            } else if (action instanceof Javascript) {
+                execJsCommands((Javascript) action, result);
             }
         }
     }
@@ -89,6 +102,37 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         JavascriptExecutor js = (JavascriptExecutor) dependencies.getWebDriver();
         takeScreenshotIfRequired(result);
         js.executeScript(CLICK_SCRIPT, element);
+    }
+
+    private void execJsCommands(final Javascript o, final CommandResult result) {
+        WebDriver driver = dependencies.getWebDriver();
+        String filePath = o.getFile();
+        String command = readCommands(filePath);
+
+        JavascriptExecutor executor = (JavascriptExecutor) driver;
+        executor.executeScript(command);
+    }
+
+    private String readCommands(final String filePath) {
+        try {
+            File jsFile = getJsFileByPath(filePath);
+            List<String> commands = Files.readAllLines(jsFile.toPath());
+            return String.join(EMPTY, commands);
+        } catch (IOException e) {
+            throw new RuntimeException("Can't read the file by path ./javascript/"
+                    + filePath);
+        }
+    }
+
+    private File getJsFileByPath(final String filePath) {
+        FileSearcher fileSearcher = dependencies.getFileSearcher();
+        URL resource = getClass().getClassLoader().getResource(JS_FOLDER);
+        try {
+            File fromDir = new File(resource.toURI());
+            return fileSearcher.search(fromDir, filePath);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Can't find the file in the resources folder");
+        }
     }
 
     private void input(final Input input, final CommandResult result) {

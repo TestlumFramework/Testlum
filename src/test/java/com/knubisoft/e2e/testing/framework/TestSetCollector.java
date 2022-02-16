@@ -56,7 +56,7 @@ public class TestSetCollector {
                                                 final String browserVersion,
                                                 final List<ScenarioArguments> arguments) {
         BrowserSettings browserSettings = GlobalTestConfigurationProvider.getBrowserSettings();
-        if (!checkIfScenarioWithoutVariations(entry)) {
+        if (variationsExist(entry)) {
             List<Map<String, String>> variationList = getVariationList(entry);
             variationList.forEach(variation ->
                     arguments.add(getArgumentsWithUIConfigurations(entry, browserVersion, browserSettings, variation)));
@@ -118,8 +118,8 @@ public class TestSetCollector {
         return new CSVParser().parseVariations(variations);
     }
 
-    private boolean checkIfScenarioWithoutVariations(final ScenarioCollector.MappingResult entry) {
-        return !Objects.nonNull(entry.scenario) || Objects.isNull(entry.scenario.getVariations());
+    private boolean variationsExist(final ScenarioCollector.MappingResult entry) {
+        return Objects.nonNull(entry.scenario) && Objects.nonNull(entry.scenario.getVariations());
     }
 
     private boolean uiDisabled() {

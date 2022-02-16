@@ -69,9 +69,10 @@ class E2ERootTest {
     @ParameterizedTest(name = "[{index}] path -- {0}")
     @MethodSource("prepareTestData")
     @SneakyThrows
-    void execution(final Named<ScenarioArguments> scenarioArguments) {
-        verifyScenario(scenarioArguments.getPayload());
-        executeTest(scenarioArguments.getPayload());
+    void execution(final Named<ScenarioArguments> arguments) {
+        ScenarioArguments scenarioArguments = arguments.getPayload();
+        verifyScenario(scenarioArguments);
+        executeTest(scenarioArguments);
     }
 
     private void executeTest(final ScenarioArguments scenarioArguments) {

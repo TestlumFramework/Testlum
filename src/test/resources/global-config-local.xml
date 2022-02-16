@@ -4,7 +4,7 @@
     <filterDirectoryPattern>.+</filterDirectoryPattern>
     <debugMode>false</debugMode>
 
-    <filterTags enable="false">
+    <filterTags enable="true">
         <value>self_test</value>
     </filterTags>
 
@@ -17,7 +17,7 @@
             <screenshotsLogging>false</screenshotsLogging>
             <seleniumExplicitWaitTime>3</seleniumExplicitWaitTime>
             <options>
-                <option>--headless</option>
+<!--                <option>&#45;&#45;headless</option>-->
             </options>
             <versions>
                 <version>Chrome__97.0.4692</version>
@@ -33,9 +33,28 @@
 
     <apis>
         <api alias="api" url="http://localhost:8073/"/>
+        <api alias="zipCode" url="https://api.zippopotam.us/us/"/>
+        <api alias="catFacts" url="https://catfact.ninja/"/>
     </apis>
 
     <postgreses>
+        <postgres alias="central" enabled="true">
+            <jdbcDriver>org.postgresql.Driver</jdbcDriver>
+            <username>postgres</username>
+            <password>postgres</password>
+            <connectionUrl>jdbc:postgresql://localhost:5432/central</connectionUrl>
+            <hikari>
+                <connectionTimeout>45000</connectionTimeout>
+                <idleTimeout>60000</idleTimeout>
+                <maxLifetime>180000</maxLifetime>
+                <maximumPoolSize>50</maximumPoolSize>
+                <minimumIdle>5</minimumIdle>
+                <connectionInitSql>SELECT 1</connectionInitSql>
+                <connectionTestQuery>SELECT 1</connectionTestQuery>
+                <poolName>core-postgres-db-pool</poolName>
+                <autoCommit>true</autoCommit>
+            </hikari>
+        </postgres>
         <postgres alias="playground_db" enabled="true">
             <jdbcDriver>org.postgresql.Driver</jdbcDriver>
             <username>playground</username>
@@ -299,8 +318,7 @@
             <jdbcDriver>ru.yandex.clickhouse.ClickHouseDriver</jdbcDriver>
             <username>test</username>
             <password>test</password>
-            <connectionUrl>jdbc:clickhouse://localhost:812/test_db</connectionUrl>
+            <connectionUrl>jdbc:clickhouse://localhost:8124/test_db</connectionUrl>
         </clickhouse>
     </clickhouses>
-
 </globalTestConfiguration>

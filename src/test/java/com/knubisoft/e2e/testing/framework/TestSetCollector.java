@@ -12,6 +12,8 @@ import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Named;
+import org.junit.jupiter.params.provider.Arguments;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,13 +22,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @RequiredArgsConstructor
 public class TestSetCollector {
 
-    public Stream<ScenarioArguments> collect() {
+    public Stream<Arguments> collect() {
         ScenarioCollector.Result result = new ScenarioCollector().collect();
         Set<ScenarioCollector.MappingResult> filteredScenarios = ScenarioFilter.filterScenarios(result.get());
         if (uiDisabled()) {
@@ -35,7 +38,7 @@ public class TestSetCollector {
         return getScenarioArguments(filteredScenarios);
     }
 
-    private Stream<ScenarioArguments> getScenarioArguments(final Set<ScenarioCollector.MappingResult> scenarios) {
+    private Stream<Arguments> getScenarioArguments(final Set<ScenarioCollector.MappingResult> scenarios) {
         List<String> browserVersions = GlobalTestConfigurationProvider.getBrowserSettings().getVersions().getVersion();
         List<ScenarioArguments> scenarioArgumentsList = new ArrayList<>();
         scenarios.forEach(entry -> {
@@ -46,7 +49,7 @@ public class TestSetCollector {
                 scenarioArgumentsList.add(getArgumentsWithoutUIConfigurations(entry));
             }
         });
-        return scenarioArgumentsList.stream();
+        return scenarioArgumentsList.stream().map(this::convertToNamedArguments);
     }
 
     private void addScenarioArgumentsWithUIConfiguration(final ScenarioCollector.MappingResult entry,
@@ -62,11 +65,11 @@ public class TestSetCollector {
         }
     }
 
-    private Stream<ScenarioArguments> getScenarioArgumentsWithoutUIConfiguration(
+    private Stream<Arguments> getScenarioArgumentsWithoutUIConfiguration(
             final Set<ScenarioCollector.MappingResult> scenarios) {
         return scenarios.stream()
                 .map(this::getArgumentsWithoutUIConfigurations)
-                .collect(Collectors.toList()).stream();
+                .map(this::convertToNamedArguments);
     }
 
     private ScenarioArguments getArgumentsWithUIConfigurations(final ScenarioCollector.MappingResult entry,
@@ -93,6 +96,10 @@ public class TestSetCollector {
                 .exception(entry.exception)
                 .variation(new HashMap<>())
                 .build();
+    }
+
+    private Arguments convertToNamedArguments(final ScenarioArguments scenarioArguments) {
+        return arguments(Named.of(scenarioArguments.getPath(), scenarioArguments));
     }
 
     private boolean scenarioContainsUISteps(final Scenario scenario) {

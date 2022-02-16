@@ -20,8 +20,11 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.junit.AssumptionViolatedException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -50,7 +53,7 @@ class E2ERootTest {
     @Autowired
     private ReportGenerator reportGenerator;
 
-    public static Stream<ScenarioArguments> prepareTestData() {
+    public static Stream<Arguments> prepareTestData() {
         return new TestSetCollector().collect();
     }
 
@@ -62,12 +65,13 @@ class E2ERootTest {
         cleanDatabases();
     }
 
+    @DisplayName("Execution of test scenarios:")
     @ParameterizedTest(name = "[{index}] path -- {0}")
     @MethodSource("prepareTestData")
     @SneakyThrows
-    void execution(final ScenarioArguments scenarioArguments) {
-        verifyScenario(scenarioArguments);
-        executeTest(scenarioArguments);
+    void execution(final Named<ScenarioArguments> scenarioArguments) {
+        verifyScenario(scenarioArguments.getPayload());
+        executeTest(scenarioArguments.getPayload());
     }
 
     private void executeTest(final ScenarioArguments scenarioArguments) {

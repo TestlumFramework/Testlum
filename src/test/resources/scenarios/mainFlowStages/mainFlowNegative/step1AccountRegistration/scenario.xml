@@ -16,7 +16,9 @@
 
     <http comment="Clear cash for successful start scenario"
           alias="api">
-        <post url="/api/v1/cache/invalidate"/>
+        <post url="/api/v1/cache/invalidate">
+            <response code="200"/>
+        </post>
     </http>
 
     <ui comment="First part of ui commands">

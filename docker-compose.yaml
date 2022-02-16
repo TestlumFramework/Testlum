@@ -124,7 +124,7 @@ services:
 #      - backendtemplate
 
   localstack:
-    container_name: localstack
+    container_name: localstack-e2e
     image: localstack/localstack
     environment:
       - SERVICES=s3,sqs,ses
@@ -171,7 +171,7 @@ services:
     entrypoint: [""]
     tty: true
     command:
-      - /opt/pme/bin/sh/dynamo-one.sh
+      - init/dynamo/aws-cli-one/bin/sh/dynamo-one.sh
 
   awscli-two:
     container_name: awscli-two
@@ -183,7 +183,7 @@ services:
     entrypoint: [""]
     tty: true
     command:
-      - /opt/pme/bin/sh/dynamo-two.sh
+      - init/dynamo/aws-cli-two/bin/sh/dynamo-two.sh
 
   redistwo:
     container_name: redis-two

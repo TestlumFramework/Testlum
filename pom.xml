@@ -33,7 +33,7 @@
         <org.apache.httpcomponents.client.version>4.5.13</org.apache.httpcomponents.client.version>
         <com.google.guava>30.1-jre</com.google.guava>
         <commons-dbutils.version>1.7</commons-dbutils.version>
-        <org.junit.jupiter.version>5.7.1</org.junit.jupiter.version>
+        <org.junit.jupiter.version>5.8.0</org.junit.jupiter.version>
         <org.junit.version>4.12</org.junit.version>
         <lombok.version>1.18.18</lombok.version>
         <imagination.comparator.version>1.4</imagination.comparator.version>

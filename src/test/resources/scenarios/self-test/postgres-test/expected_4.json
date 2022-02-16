@@ -13,7 +13,7 @@
     "phone_number_verified" : false,
     "photo_profile" : null,
     "is_active" : true,
-    "last_login" : "2021-12-21T22:00:00.000+00:00",
+    "last_login" : "p(any)",
     "locked" : false,
     "locked_cause" : null,
     "created_at" : "p(any)",

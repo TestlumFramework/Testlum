@@ -1,4 +1,4 @@
-<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario" onlyThis="true">
+<scenario xmlns="http://www.knubisoft.com/e2e/testing/model/scenario">
 
     <overview>
         <description>Self postgre SQL test</description>

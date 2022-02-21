@@ -27,6 +27,7 @@ public class TestResourceSettings {
     public static final String SCREENSHOT_NAME_TO_SAVE = "%s_action_%s_" + SCREENSHOT_FILENAME;
     public static final String REPORT_TEMPLATE_PATH = "/reportTemplate/index.html";
     public static final String REPORT_PATH = "/report/index-final.html";
+    public static final String JS_FOLDER = "javascript";
 
     private static final File PROJECT_HOME = findProjectHome();
 

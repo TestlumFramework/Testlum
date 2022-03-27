@@ -6,11 +6,14 @@ import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -21,6 +24,8 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings.REPORT_TEMPLATE_PATH;
+
 public class ReportGenerator {
 
     @Autowired
@@ -29,15 +34,15 @@ public class ReportGenerator {
     @SneakyThrows
     public void generateReport() {
         File testResourcesFolder = TestResourceSettings.getInstance().getTestResourcesFolder();
-        String reportTemplatePath = testResourcesFolder + TestResourceSettings.REPORT_TEMPLATE_PATH;
         String reportPath = testResourcesFolder + TestResourceSettings.REPORT_PATH;
         Files.deleteIfExists(Paths.get(reportPath));
-        replaceData(reportTemplatePath, reportPath);
+        replaceData(reportPath);
     }
 
     @SneakyThrows
-    private void replaceData(final String reportTemplatePath, final String reportPath) {
-        String htmlString = FileUtils.readFileToString(new File(reportTemplatePath), "UTF-8")
+    private void replaceData(final String reportPath) {
+        InputStream reportTemplate = new ClassPathResource(REPORT_TEMPLATE_PATH).getInputStream();
+        String htmlString = IOUtils.toString(reportTemplate, StandardCharsets.UTF_8)
                 .replace("$json", getJSONResult());
         FileUtils.writeStringToFile(new File(reportPath), htmlString, "UTF-8");
     }

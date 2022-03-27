@@ -1,10 +1,5 @@
 package com.knubisoft.e2e.testing.framework.parser;
 
-import com.knubisoft.e2e.testing.model.pages.Component;
-import com.knubisoft.e2e.testing.model.pages.ObjectFactory;
-import com.knubisoft.e2e.testing.model.pages.Page;
-import com.knubisoft.e2e.testing.model.global_config.GlobalTestConfiguration;
-import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -24,26 +19,6 @@ public final class XMLParser<E> {
     private final Schema schema;
     private final Class<E> cls;
     private final Class<?> objectFactory;
-
-    public static XMLParser<GlobalTestConfiguration> forGlobalTestConfiguration() {
-        return new XMLParser<>(SchemaInitializer.SCHEMA_GLOBAL_CFG, GlobalTestConfiguration.class,
-                com.knubisoft.e2e.testing.model.global_config.ObjectFactory.class);
-    }
-
-    public static XMLParser<Page> forPageLocators() {
-        return new XMLParser<>(SchemaInitializer.SCHEMA_PAGES, Page.class,
-                ObjectFactory.class);
-    }
-
-    public static XMLParser<Component> forComponentLocators() {
-        return new XMLParser<>(SchemaInitializer.SCHEMA_PAGES, Component.class,
-                ObjectFactory.class);
-    }
-
-    public static XMLParser<Scenario> forScenarios() {
-        return new XMLParser<>(SchemaInitializer.SCHEMA_SCENARIOS, Scenario.class,
-                com.knubisoft.e2e.testing.model.scenario.ObjectFactory.class);
-    }
 
     private static <E> E deserializeXmlTo(final File file,
                                           final Class<E> cls,

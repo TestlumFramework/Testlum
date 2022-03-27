@@ -37,7 +37,7 @@ import java.util.stream.Stream;
 @SpringBootTest(classes = SpringTestContext.class)
 @Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class E2ERootTest {
+public class E2ERootTest {
     @Autowired
     private NameToAdapterAlias nameToAdapterAlias;
 

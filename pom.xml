@@ -856,7 +856,7 @@
                 <version>${maven-assembly-plugin.version}</version>
                 <configuration>
                     <descriptors>
-                        <descriptor>src/test/resources/assembly.xml</descriptor>
+                        <descriptor>src/test/resources/assembly-plugin-configuration.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>

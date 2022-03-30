@@ -107,7 +107,7 @@ public final class LogMessage {
     public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%30s:%n%31s%-100s";
     public static final String CONFIG_FILE_NAME_INPUT_REQUIREMENTS =
             "Use one of the options: -c={configuration-file-name} or --config={configuration-file-name}\n"
-            + "Please don't use spaces in the profile name. Allowed special character [._-:*#]\n"
+            + "Please don't use spaces in the configuration file name. Allowed special character [._-:*#]\n"
             + "Please don't forget to include the file extension [.xml]";
     public static final String RESOURCES_PATH_INPUT_REQUIREMENTS =
             "Use one of the options: -p={path-to-your-test-resources) or --path={path-to-your-test-resources)";

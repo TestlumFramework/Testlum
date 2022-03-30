@@ -19,7 +19,7 @@ public class MysqlDataSourceConfiguration {
     @Bean("mySqlDataSource")
     public Map<String, DataSource> mysqlDataSource() {
         Map<String, DataSource> mysqls = new HashMap<>();
-        for (Mysql dataSource : GlobalTestConfigurationProvider.provide().getMysqls().getMysql()) {
+        for (Mysql dataSource : GlobalTestConfigurationProvider.getIntegrations().getMysqls().getMysql()) {
             if (dataSource.isEnabled()) {
                 mysqls.put(dataSource.getAlias(), getHikariDataSource(dataSource));
             }

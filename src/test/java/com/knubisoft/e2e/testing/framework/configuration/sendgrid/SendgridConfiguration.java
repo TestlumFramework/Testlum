@@ -17,7 +17,7 @@ public class SendgridConfiguration {
 
     @Bean
     public Map<String, SendGrid> sendGrid() {
-        return GlobalTestConfigurationProvider.provide().getSendgrids().getSendgrid().stream()
+        return GlobalTestConfigurationProvider.getIntegrations().getSendgrids().getSendgrid().stream()
                 .filter(Sendgrid::isEnabled)
                 .collect(Collectors.toMap(Sendgrid::getAlias, o -> new SendGrid(o.getApiKey())));
     }

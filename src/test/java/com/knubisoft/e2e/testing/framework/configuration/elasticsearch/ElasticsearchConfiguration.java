@@ -25,7 +25,7 @@ import java.util.Map;
 @Configuration
 @Conditional({OnElasticEnabledCondition.class})
 public class ElasticsearchConfiguration {
-    private final List<Elasticsearch> elasticsearchList = GlobalTestConfigurationProvider.provide()
+    private final List<Elasticsearch> elasticsearchList = GlobalTestConfigurationProvider.getIntegrations()
             .getElasticsearches().getElasticsearch();
 
     @Bean

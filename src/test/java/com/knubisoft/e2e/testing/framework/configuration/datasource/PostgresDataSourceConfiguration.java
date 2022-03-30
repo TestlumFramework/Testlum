@@ -19,7 +19,7 @@ public class PostgresDataSourceConfiguration {
     @Conditional({OnPostgresEnabledCondition.class})
     public Map<String, DataSource> postgresDataSource() {
         Map<String, DataSource> postgreses = new HashMap<>();
-        for (Postgres dataSource : GlobalTestConfigurationProvider.provide().getPostgreses().getPostgres()) {
+        for (Postgres dataSource : GlobalTestConfigurationProvider.getIntegrations().getPostgreses().getPostgres()) {
             if (dataSource.isEnabled()) {
                 postgreses.put(dataSource.getAlias(), getHikariDataSource(dataSource));
             }

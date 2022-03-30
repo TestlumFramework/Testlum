@@ -21,7 +21,7 @@ public class AliasSQSAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Sqs sqs : GlobalTestConfigurationProvider.provide().getSqss().getSqs()) {
+        for (Sqs sqs : GlobalTestConfigurationProvider.getIntegrations().getSqss().getSqs()) {
             if (sqs.isEnabled()) {
                 aliasMap.put(sqs.getAlias(), getMetadataSQS(sqs));
             }

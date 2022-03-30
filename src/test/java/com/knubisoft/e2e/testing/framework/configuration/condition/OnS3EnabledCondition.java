@@ -14,7 +14,7 @@ public class OnS3EnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        final S3S s3S = GlobalTestConfigurationProvider.provide().getS3S();
+        final S3S s3S = GlobalTestConfigurationProvider.getIntegrations().getS3S();
         if (Objects.nonNull(s3S)) {
             return s3S.getS3()
                     .stream().anyMatch(S3::isEnabled);

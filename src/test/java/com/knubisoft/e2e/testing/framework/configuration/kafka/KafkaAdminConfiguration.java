@@ -2,7 +2,6 @@ package com.knubisoft.e2e.testing.framework.configuration.kafka;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.framework.configuration.condition.OnKafkaEnabledCondition;
-import com.knubisoft.e2e.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.e2e.testing.model.global_config.Kafka;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -18,12 +17,11 @@ import java.util.Map;
 @Configuration
 @Conditional({OnKafkaEnabledCondition.class})
 public class KafkaAdminConfiguration {
-    private static final GlobalTestConfiguration GLOBAL_CONFIG = GlobalTestConfigurationProvider.provide();
 
     @Bean
     public Map<String, KafkaAdmin> kafkaAdmin() {
         final Map<String, KafkaAdmin> adminMap = new HashMap<>();
-        for (Kafka kafka : GLOBAL_CONFIG.getKafkas().getKafka()) {
+        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().getKafkas().getKafka()) {
             if (kafka.isEnabled()) {
                 createAdminAndPutIntoMap(adminMap, kafka);
             }
@@ -40,7 +38,7 @@ public class KafkaAdminConfiguration {
     @Bean
     public Map<String, AdminClient> kafkaAdminClient() {
         final Map<String, AdminClient> clientMap = new HashMap<>();
-        for (Kafka kafka : GLOBAL_CONFIG.getKafkas().getKafka()) {
+        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().getKafkas().getKafka()) {
             if (kafka.isEnabled()) {
                 createAdminClientAndPutIntoMap(clientMap, kafka);
             }

@@ -24,7 +24,7 @@ public class RedisConfiguration {
     @Bean
     public Map<String, RedisStandaloneConfiguration> redisStandaloneConfiguration() {
         final Map<String, RedisStandaloneConfiguration> properties = new HashMap<>();
-        for (Redis redis : GlobalTestConfigurationProvider.provide().getRedises().getRedis()) {
+        for (Redis redis : GlobalTestConfigurationProvider.getIntegrations().getRedises().getRedis()) {
             if (redis.isEnabled()) {
                 properties.put(redis.getAlias(), new RedisStandaloneConfiguration(redis.getHost(), redis.getPort()));
             }

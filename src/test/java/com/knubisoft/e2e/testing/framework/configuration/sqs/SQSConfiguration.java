@@ -22,7 +22,7 @@ public class SQSConfiguration {
     @Bean
     public Map<String, AmazonSQS> amazonSQS() {
         final Map<String, AmazonSQS> properties = new HashMap<>();
-        for (Sqs sqs : GlobalTestConfigurationProvider.provide().getSqss().getSqs()) {
+        for (Sqs sqs : GlobalTestConfigurationProvider.getIntegrations().getSqss().getSqs()) {
             if (sqs.isEnabled()) {
                 createSqsAndPutIntoMap(properties, sqs);
             }

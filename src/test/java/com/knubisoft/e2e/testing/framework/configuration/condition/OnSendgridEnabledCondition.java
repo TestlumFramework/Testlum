@@ -14,7 +14,7 @@ public class OnSendgridEnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        final Sendgrids sendgrids = GlobalTestConfigurationProvider.provide().getSendgrids();
+        final Sendgrids sendgrids = GlobalTestConfigurationProvider.getIntegrations().getSendgrids();
         if (Objects.nonNull(sendgrids)) {
             return sendgrids.getSendgrid()
                     .stream().anyMatch(Sendgrid::isEnabled);

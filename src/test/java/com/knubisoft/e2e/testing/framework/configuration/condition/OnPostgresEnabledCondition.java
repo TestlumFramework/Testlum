@@ -14,7 +14,7 @@ public class OnPostgresEnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        final Postgreses postgreses = GlobalTestConfigurationProvider.provide().getPostgreses();
+        final Postgreses postgreses = GlobalTestConfigurationProvider.getIntegrations().getPostgreses();
         if (Objects.nonNull(postgreses)) {
             return postgreses
                     .getPostgres().stream().anyMatch(Postgres::isEnabled);

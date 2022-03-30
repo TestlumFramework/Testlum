@@ -14,7 +14,7 @@ public class OnRedisEnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        final Redises redises = GlobalTestConfigurationProvider.provide().getRedises();
+        final Redises redises = GlobalTestConfigurationProvider.getIntegrations().getRedises();
         if (Objects.nonNull(redises)) {
             return redises.getRedis()
                     .stream().anyMatch(Redis::isEnabled);

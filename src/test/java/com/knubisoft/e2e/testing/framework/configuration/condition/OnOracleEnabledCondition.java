@@ -14,7 +14,7 @@ public class OnOracleEnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        final Oracles oracles = GlobalTestConfigurationProvider.provide().getOracles();
+        final Oracles oracles = GlobalTestConfigurationProvider.getIntegrations().getOracles();
         if (Objects.nonNull(oracles)) {
             return oracles.getOracle()
                     .stream().anyMatch(Oracle::isEnabled);

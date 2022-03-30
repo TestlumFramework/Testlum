@@ -15,7 +15,7 @@ public class OnMysqlEnabledCondition implements Condition {
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
 
-        final Mysqls mysqls = GlobalTestConfigurationProvider.provide().getMysqls();
+        final Mysqls mysqls = GlobalTestConfigurationProvider.getIntegrations().getMysqls();
         if (Objects.nonNull(mysqls)) {
             return mysqls.getMysql()
                     .stream().anyMatch(Mysql::isEnabled);

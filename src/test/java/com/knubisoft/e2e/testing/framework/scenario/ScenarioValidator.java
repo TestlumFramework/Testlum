@@ -5,10 +5,9 @@ import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.db.source.FileSource;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.locator.GlobalLocators;
-import com.knubisoft.e2e.testing.framework.parser.XMLValidator;
+import com.knubisoft.e2e.testing.framework.validator.XMLValidator;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.HttpUtil;
-import com.knubisoft.e2e.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.e2e.testing.model.global_config.Postgres;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.model.scenario.Auth;
@@ -171,7 +170,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     //CHECKSTYLE:OFF
     private void validatePostgresTests(final Scenario scenario,
                                        final File xmlFile) {
-        boolean isPostgresEnabled = GlobalTestConfigurationProvider.provide().getPostgreses()
+        boolean isPostgresEnabled = GlobalTestConfigurationProvider.getIntegrations().getPostgreses()
                 .getPostgres().stream().anyMatch(Postgres::isEnabled);
         if (!isPostgresEnabled) {
             for (AbstractCommand command : scenario.getCommands()) {
@@ -248,9 +247,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void checkDatabaseConnection(final PostgresResult postgresResult) {
-        GlobalTestConfiguration configuration = GlobalTestConfigurationProvider.provide();
         for (Postgres postgres
-                : configuration.getPostgreses().getPostgres()) {
+                : GlobalTestConfigurationProvider.getIntegrations().getPostgreses().getPostgres()) {
             if ((postgres.getAlias().equals(postgresResult.getDatabaseName())
                     && !postgres.isEnabled())) {
                 throw new DefaultFrameworkException(format(FAILED_CONNECTION_TO_DATABASE,

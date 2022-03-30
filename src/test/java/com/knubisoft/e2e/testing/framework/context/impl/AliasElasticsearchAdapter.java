@@ -21,7 +21,7 @@ public class AliasElasticsearchAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Elasticsearch elasticsearch : GlobalTestConfigurationProvider.provide().getElasticsearches()
+        for (Elasticsearch elasticsearch : GlobalTestConfigurationProvider.getIntegrations().getElasticsearches()
                 .getElasticsearch()) {
             if (elasticsearch.isEnabled()) {
                 aliasMap.put(elasticsearch.getAlias(), getMetadataElasticsearch(elasticsearch));

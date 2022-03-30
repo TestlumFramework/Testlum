@@ -1,4 +1,4 @@
-package com.knubisoft.e2e.testing.framework.parser;
+package com.knubisoft.e2e.testing.framework.validator;
 
 import java.io.File;
 

@@ -17,13 +17,13 @@ public class LSResourceResolverImpl implements LSResourceResolver {
 
     private final Set<String> schemaNames = new HashSet<>();
 
-    public LSResourceResolverImpl(String basePath) {
+    public LSResourceResolverImpl(final String basePath) {
         this.schemaBasePath = basePath;
     }
 
     @Override
-    public LSInput resolveResource(String type, String namespaceURI,
-                                   String publicId, String systemId, String baseURI) {
+    public LSInput resolveResource(final String type, final String namespaceURI,
+                                   final String publicId, final String systemId, final String baseURI) {
         if (!schemaNames.contains(systemId)) {
             InputStream resourceAsStream = this.getClass()
                     .getClassLoader()

@@ -50,7 +50,7 @@ public class LocatorCollector {
     private Page parseLocatorOrThrow(final File each) {
         try {
             PageValidator pageValidator = new PageValidator();
-            return XMLParsers.forPageLocators().process(each, pageValidator);
+            return XMLParsers.forPageLocator().process(each, pageValidator);
         } catch (Exception e) {
             throw new DefaultFrameworkException(
                     format(UNABLE_PARSE_FILE_WITH_LOCATORS, each.getName(), e.getMessage()), e);
@@ -81,7 +81,7 @@ public class LocatorCollector {
 
     private Component parseComponent(final Include include) {
         File file = fileSearcher.search(componentsFolder, include.getComponent());
-        return XMLParsers.forComponentLocators().process(file);
+        return XMLParsers.forComponentLocator().process(file);
     }
 
     private String getKeyName(final Map.Entry<File, Page> each, final Locator locator) {

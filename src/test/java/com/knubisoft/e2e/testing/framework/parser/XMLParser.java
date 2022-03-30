@@ -1,5 +1,7 @@
 package com.knubisoft.e2e.testing.framework.parser;
 
+import com.knubisoft.e2e.testing.framework.validator.XMLValidator;
+import com.knubisoft.e2e.testing.framework.validator.XSDValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

@@ -57,7 +57,7 @@ public class ScenarioCollector {
     }
 
     private Scenario convertXmlToScenario(final File xmlFile) {
-        Scenario scenario = XMLParsers.forScenarios().process(xmlFile, scenarioValidator);
+        Scenario scenario = XMLParsers.forScenario().process(xmlFile, scenarioValidator);
         updateScenario(scenario);
         return scenario;
     }
@@ -100,7 +100,7 @@ public class ScenarioCollector {
         File includedScenarioFolder = new File(scenariosFolder,
                 include.getScenario());
         File file = fileSearcher.search(includedScenarioFolder, TestResourceSettings.SCENARIO_FILENAME);
-        return XMLParsers.forScenarios().process(file, scenarioValidator);
+        return XMLParsers.forScenario().process(file, scenarioValidator);
     }
 
     private void addAuthCommands(final List<AbstractCommand> updatedCommand,

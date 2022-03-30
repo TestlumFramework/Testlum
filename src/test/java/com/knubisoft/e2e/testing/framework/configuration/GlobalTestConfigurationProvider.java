@@ -3,6 +3,7 @@ package com.knubisoft.e2e.testing.framework.configuration;
 import com.knubisoft.e2e.testing.framework.parser.XMLParsers;
 import com.knubisoft.e2e.testing.model.global_config.BrowserSettings;
 import com.knubisoft.e2e.testing.model.global_config.GlobalTestConfiguration;
+import com.knubisoft.e2e.testing.model.global_config.Integrations;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +18,10 @@ public class GlobalTestConfigurationProvider {
 
     public static BrowserSettings getBrowserSettings() {
        return GlobalTestConfigurationProvider.provide().getUi().getBrowserSettings();
+    }
+
+    public static Integrations getIntegrations() {
+        return GlobalTestConfigurationProvider.provide().getIntegrations();
     }
 
     private static GlobalTestConfiguration init() {

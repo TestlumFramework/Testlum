@@ -27,6 +27,7 @@ public class TestResourceSettings {
     public static final String REPORT_TEMPLATE_PATH = "reportTemplate/index.html";
     public static final String REPORT_PATH = "/report/index-final.html";
     public static final String JS_FOLDER = "javascript";
+    public static final String SCHEMAS_FOLDER = "schema";
 
     private static final String TEST_RESOURCES_FOLDER = "/src/test/resources";
     private static final String PAGES_FOLDER = "locators/pages";

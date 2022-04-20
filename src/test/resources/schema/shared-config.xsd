@@ -30,4 +30,17 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:complexType name="hikari">
+        <x:sequence>
+            <x:element name="connectionTimeout" type="x:int"/>
+            <x:element name="idleTimeout" type="x:int"/>
+            <x:element name="maxLifetime" type="x:int"/>
+            <x:element name="maximumPoolSize" type="x:int"/>
+            <x:element name="minimumIdle" type="x:int"/>
+            <x:element name="connectionInitSql" type="tns:nonEmptyString"/>
+            <x:element name="connectionTestQuery" type="tns:nonEmptyString"/>
+            <x:element name="poolName" type="tns:nonEmptyString"/>
+            <x:element name="autoCommit" type="x:boolean"/>
+        </x:sequence>
+    </x:complexType>
 </x:schema>

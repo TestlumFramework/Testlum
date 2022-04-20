@@ -87,4 +87,9 @@
         <Class name="com.knubisoft.ui.testing.framework.util.FileSearcher"/>
         <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME"/>
     </Match>
+
+    <Match>
+        <Class name="com.knubisoft.e2e.testing.framework.util.ArgumentsUtils"/>
+        <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
+    </Match>
 </FindBugsFilter>

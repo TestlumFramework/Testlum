@@ -21,7 +21,7 @@ public class KafkaProducerConfiguration {
     @Bean
     public Map<String, KafkaProducer<String, String>> kafkaProducer() {
         Map<String, KafkaProducer<String, String>> producerMap = new HashMap<>();
-        for (Kafka kafka : GlobalTestConfigurationProvider.provide().getKafkas().getKafka()) {
+        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().getKafkas().getKafka()) {
             if (kafka.isEnabled()) {
                 Map<String, Object> configProps = createConfigProps(kafka);
                 producerMap.put(kafka.getAlias(), new KafkaProducer<>(configProps));

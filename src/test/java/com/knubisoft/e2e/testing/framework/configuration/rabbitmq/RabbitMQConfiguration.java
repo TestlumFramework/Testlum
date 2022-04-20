@@ -28,7 +28,8 @@ public class RabbitMQConfiguration {
     private static final String API_PATH = "/api";
     private static final String COLON = ":";
 
-    private final List<Rabbitmq> rabbitmqs = GlobalTestConfigurationProvider.provide().getRabbitmqs().getRabbitmq();
+    private final List<Rabbitmq> rabbitmqs = GlobalTestConfigurationProvider
+            .getIntegrations().getRabbitmqs().getRabbitmq();
 
     @Bean("rabbitMqClient")
     public Map<String, Client> client() throws

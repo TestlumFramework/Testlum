@@ -13,7 +13,7 @@ public class OnKafkaEnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        final Kafkas kafkas = GlobalTestConfigurationProvider.provide().getKafkas();
+        final Kafkas kafkas = GlobalTestConfigurationProvider.getIntegrations().getKafkas();
         if (Objects.nonNull(kafkas)) {
             return kafkas.getKafka()
                     .stream().anyMatch(Kafka::isEnabled);

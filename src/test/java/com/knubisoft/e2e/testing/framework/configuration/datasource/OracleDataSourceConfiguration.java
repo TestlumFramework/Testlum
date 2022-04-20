@@ -19,7 +19,7 @@ public class OracleDataSourceConfiguration {
     @Conditional({OnOracleEnabledCondition.class})
     public Map<String, DataSource> postgresDataSource() {
         Map<String, DataSource> oracles = new HashMap<>();
-        for (Oracle dataSource : GlobalTestConfigurationProvider.provide().getOracles().getOracle()) {
+        for (Oracle dataSource : GlobalTestConfigurationProvider.getIntegrations().getOracles().getOracle()) {
             if (dataSource.isEnabled()) {
                 oracles.put(dataSource.getAlias(), getHikariDataSource(dataSource));
             }

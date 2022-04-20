@@ -40,26 +40,30 @@
                 <x:element name="parallelExecution" type="x:boolean"/>
                 <x:element name="parallelExecutionLimit" type="x:int"/>
                 <x:element name="ui" type="tns:ui" minOccurs="0"/>
-                <x:choice maxOccurs="unbounded">
-                    <x:element name="apis" type="tns:apis" minOccurs="0"/>
-                    <x:element name="postgreses" type="tns:postgreses" minOccurs="0"/>
-                    <x:element name="clickhouses" type="tns:clickhouses" minOccurs="0"/>
-                    <x:element name="mysqls" type="tns:mysqls" minOccurs="0"/>
-                    <x:element name="oracles" type="tns:oracles" minOccurs="0"/>
-                    <x:element name="redises" type="tns:redises" minOccurs="0"/>
-                    <x:element name="mongos" type="tns:mongos" minOccurs="0"/>
-                    <x:element name="s3s" type="tns:s3s" minOccurs="0"/>
-                    <x:element name="sqss" type="tns:sqss" minOccurs="0"/>
-                    <x:element name="kafkas" type="tns:kafkas" minOccurs="0"/>
-                    <x:element name="rabbitmqs" type="tns:rabbitmqs" minOccurs="0"/>
-                    <x:element name="dynamos" type="tns:dynamos" minOccurs="0"/>
-                    <x:element name="elasticsearches" type="tns:elasticsearches" minOccurs="0"/>
-                    <x:element name="sendgrids" type="tns:sendgrids" minOccurs="0"/>
-                    <x:element name="seses" type="tns:seses" minOccurs="0"/>
-                </x:choice>
+                <x:element name="integrations" type="tns:integrations" minOccurs="0"/>
             </x:sequence>
         </x:complexType>
     </x:element>
+
+    <x:complexType name="integrations">
+        <x:all>
+            <x:element name="apis" type="tns:apis" minOccurs="0"/>
+            <x:element name="postgreses" type="tns:postgreses" minOccurs="0"/>
+            <x:element name="clickhouses" type="tns:clickhouses" minOccurs="0"/>
+            <x:element name="mysqls" type="tns:mysqls" minOccurs="0"/>
+            <x:element name="oracles" type="tns:oracles" minOccurs="0"/>
+            <x:element name="redises" type="tns:redises" minOccurs="0"/>
+            <x:element name="mongos" type="tns:mongos" minOccurs="0"/>
+            <x:element name="s3s" type="tns:s3s" minOccurs="0"/>
+            <x:element name="sqss" type="tns:sqss" minOccurs="0"/>
+            <x:element name="kafkas" type="tns:kafkas" minOccurs="0"/>
+            <x:element name="rabbitmqs" type="tns:rabbitmqs" minOccurs="0"/>
+            <x:element name="dynamos" type="tns:dynamos" minOccurs="0"/>
+            <x:element name="elasticsearches" type="tns:elasticsearches" minOccurs="0"/>
+            <x:element name="sendgrids" type="tns:sendgrids" minOccurs="0"/>
+            <x:element name="seses" type="tns:seses" minOccurs="0"/>
+        </x:all>
+    </x:complexType>
 
     <x:complexType name="ui">
         <x:sequence>
@@ -135,19 +139,4 @@
         <x:attribute name="enable" type="x:boolean" use="required"/>
         <x:attribute name="enableOrder" type="x:boolean" default="true"/>
     </x:complexType>
-
-    <x:complexType name="hikari">
-        <x:sequence>
-            <x:element name="connectionTimeout" type="x:int"/>
-            <x:element name="idleTimeout" type="x:int"/>
-            <x:element name="maxLifetime" type="x:int"/>
-            <x:element name="maximumPoolSize" type="x:int"/>
-            <x:element name="minimumIdle" type="x:int"/>
-            <x:element name="connectionInitSql" type="tns:nonEmptyString"/>
-            <x:element name="connectionTestQuery" type="tns:nonEmptyString"/>
-            <x:element name="poolName" type="tns:nonEmptyString"/>
-            <x:element name="autoCommit" type="x:boolean"/>
-        </x:sequence>
-    </x:complexType>
 </x:schema>
-

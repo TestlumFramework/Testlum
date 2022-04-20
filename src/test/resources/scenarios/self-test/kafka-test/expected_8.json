@@ -1,8 +1,0 @@
-[ {
-  "key" : "456",
-  "value" : "{\n  \"data\": \"Are you\",\n  \"make\": true\n}",
-  "correlationId" : null,
-  "headers" : {
-    "name4" : "value4"
-  }
-} ]

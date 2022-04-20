@@ -1,5 +1,0 @@
-{
-  "acknowledged" : true,
-  "shards_acknowledged" : true,
-  "index" : "my-index-000001"
-}

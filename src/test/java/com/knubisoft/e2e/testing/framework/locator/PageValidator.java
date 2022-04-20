@@ -3,7 +3,7 @@ package com.knubisoft.e2e.testing.framework.locator;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.model.pages.Locator;
 import com.knubisoft.e2e.testing.model.pages.Page;
-import com.knubisoft.e2e.testing.framework.parser.XMLValidator;
+import com.knubisoft.e2e.testing.framework.validator.XMLValidator;
 
 import java.io.File;
 import java.util.HashSet;

@@ -79,6 +79,7 @@ public final class LogMessage {
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001b[0m";
+    public static final String ANSI_RED_BOLD = "\033[1;31m";
 
     public static final String ERROR_LOG = "Error ->";
     public static final String OVERVIEW_LOG = "Overview:";
@@ -104,5 +105,30 @@ public final class LogMessage {
     public static final String S3_ACTION_INFO_LOG = format(
             "Action - {}.%n%-20s Bucket - {}.%n%-20s Key - {}.%n%-20s File for action - {}", EMPTY, EMPTY, EMPTY);
     public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%30s:%n%31s%-100s";
-
+    public static final String CONFIG_FILE_NAME_INPUT_REQUIREMENTS =
+            "Use one of the options: -c={configuration-file-name} or --config={configuration-file-name}\n"
+            + "Please don't use spaces in the configuration file name. Allowed special character [._-:*#]\n"
+            + "Please don't forget to include the file extension [.xml]";
+    public static final String RESOURCES_PATH_INPUT_REQUIREMENTS =
+            "Use one of the options: -p={path-to-your-test-resources) or --path={path-to-your-test-resources)";
+    public static final String INVALID_ARGUMENTS_INPUT =
+                      "\nIncorrect input of arguments. You must pass 2 arguments:"
+                    + "\n\n1) Configuration file.\n" + CONFIG_FILE_NAME_INPUT_REQUIREMENTS
+                    + "\n\n2) Path to test resources.\n" + RESOURCES_PATH_INPUT_REQUIREMENTS
+                    + "\n\nExample: -c=config-file.xml -p=/user/folder/resources\n";
+    public static final String INVALID_CONFIG_FILE_NAME_ARGUMENT =
+                    "\n\nArgument of config file name incorrect, please follow the requirements below\n"
+                    + CONFIG_FILE_NAME_INPUT_REQUIREMENTS
+                    + "\nExample: -c=config-file.xml or --config=config-file.xml\n"
+                    + "\nYou entered ---> %s\n";
+    public static final String INVALID_PATH_TO_RESOURCES_ARGUMENT =
+                    "\n\nArgument of path to resources folder incorrect, please follow the requirements below\n"
+                    + RESOURCES_PATH_INPUT_REQUIREMENTS
+                    + "\nExample: -p=/user/folder/resources or --path=/user/folder/resources\n"
+                    + "\nYou entered ---> %s\n";
+    public static final String TEST_EXECUTION_SUMMARY_TEMPLATE =
+                    "\n\nTest run finished\n{} tests found\n{} tests skipped\n{} tests started\n{} test aborted\n"
+                    + "{} test successful\n{} test failed\n";
+    public static final String FAILED_SCENARIOS_NAME_TEMPLATE =
+                   ANSI_RED_BOLD + "Scenario %s was failed. Related exception provided below." + ANSI_RED_BOLD;
 }

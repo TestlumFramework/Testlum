@@ -19,19 +19,15 @@ public class TestResourceSettings {
     public static final String SCENARIO_FILENAME = "scenario.xml";
     public static final String ACTUAL_FILENAME = "actual.json";
     public static final String SCREENSHOT_FILENAME = "screenshot.jpg";
-    public static final String GLOBAL_CONFIG_FILENAME = "global-config";
     public static final String INIT_PATCH_FILENAME = "_init.sql";
     public static final String XML_SUFFIX = ".xml";
     public static final String SCREENSHOT_FOLDER = "/screenshots";
     public static final String FILENAME_TO_SAVE = "action_%s_" + ACTUAL_FILENAME;
     public static final String SCREENSHOT_NAME_TO_SAVE = "%s_action_%s_" + SCREENSHOT_FILENAME;
-    public static final String REPORT_TEMPLATE_PATH = "/reportTemplate/index.html";
+    public static final String REPORT_TEMPLATE_PATH = "reportTemplate/index.html";
     public static final String REPORT_PATH = "/report/index-final.html";
     public static final String JS_FOLDER = "javascript";
-
-    private static final File PROJECT_HOME = findProjectHome();
-
-    private static final TestResourceSettings INSTANCE = new TestResourceSettings();
+    public static final String SCHEMAS_FOLDER = "schema";
 
     private static final String TEST_RESOURCES_FOLDER = "/src/test/resources";
     private static final String PAGES_FOLDER = "locators/pages";
@@ -41,6 +37,8 @@ public class TestResourceSettings {
     private static final String PATCHES_FOLDER = "patches";
     private static final String CREDS_FOLDER = "credentials";
 
+    private static TestResourceSettings instance;
+
     private final File testResourcesFolder;
     private final File pagesFolder;
     private final File componentsFolder;
@@ -48,9 +46,11 @@ public class TestResourceSettings {
     private final File variationsFolder;
     private final File patchesFolder;
     private final File credentialsFolder;
+    private final File configFile;
 
-    private TestResourceSettings() {
-        this.testResourcesFolder = new File(PROJECT_HOME, TEST_RESOURCES_FOLDER);
+    private TestResourceSettings(final String configFileName, final String pathToTestResources) {
+        this.testResourcesFolder = new File(pathToTestResources);
+        this.configFile = new File(testResourcesFolder, configFileName);
         this.pagesFolder = subFolder(PAGES_FOLDER, PAGES_FOLDER_NOT_EXIST);
         this.componentsFolder = subFolder(COMPONENTS_FOLDER, COMPONENTS_FOLDER_NOT_EXIST);
         this.scenariosFolder = subFolder(SCENARIOS_FOLDER, SCENARIOS_FOLDER_NOT_EXIST);
@@ -59,13 +59,12 @@ public class TestResourceSettings {
         this.credentialsFolder = subFolder(CREDS_FOLDER, CREDENTIALS_FOLDER_NOT_EXIST);
     }
 
-    public static TestResourceSettings getInstance() {
-        return INSTANCE;
+    public static void init(final String configFileName, final String pathToTestResources) {
+        instance = new TestResourceSettings(configFileName, pathToTestResources);
     }
 
-    private static File findProjectHome() {
-        String dir = System.getProperty("user.dir");
-        return new File(dir);
+    public static TestResourceSettings getInstance() {
+        return instance;
     }
 
     private File subFolder(final String name, final String errorMessage) {

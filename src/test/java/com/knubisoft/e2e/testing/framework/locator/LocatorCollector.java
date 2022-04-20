@@ -3,11 +3,11 @@ package com.knubisoft.e2e.testing.framework.locator;
 import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.e2e.testing.framework.parser.XMLParsers;
 import com.knubisoft.e2e.testing.model.pages.Component;
 import com.knubisoft.e2e.testing.model.pages.Include;
 import com.knubisoft.e2e.testing.model.pages.Locator;
 import com.knubisoft.e2e.testing.model.pages.Page;
-import com.knubisoft.e2e.testing.framework.parser.XMLParser;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,7 +50,7 @@ public class LocatorCollector {
     private Page parseLocatorOrThrow(final File each) {
         try {
             PageValidator pageValidator = new PageValidator();
-            return XMLParser.forPageLocators().process(each, pageValidator);
+            return XMLParsers.forPageLocator().process(each, pageValidator);
         } catch (Exception e) {
             throw new DefaultFrameworkException(
                     format(UNABLE_PARSE_FILE_WITH_LOCATORS, each.getName(), e.getMessage()), e);
@@ -81,7 +81,7 @@ public class LocatorCollector {
 
     private Component parseComponent(final Include include) {
         File file = fileSearcher.search(componentsFolder, include.getComponent());
-        return XMLParser.forComponentLocators().process(file);
+        return XMLParsers.forComponentLocator().process(file);
     }
 
     private String getKeyName(final Map.Entry<File, Page> each, final Locator locator) {

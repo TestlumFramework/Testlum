@@ -4,6 +4,7 @@ import com.amazonaws.services.simpleemail.model.Message;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.util.List;
 import java.util.Locale;
@@ -66,4 +67,26 @@ public class LogUtil {
 //            log.info(LogMessage.OVERVIEW_INFO_LOG, part.getPartTitle(), data);
 //        }
 //    }
+
+    public void logTestExecutionSummary(final TestExecutionSummary testExecutionSummary) {
+        long failedScenarios = testExecutionSummary.getTestsFailedCount();
+        log.info(LogMessage.TEST_EXECUTION_SUMMARY_TEMPLATE,
+                testExecutionSummary.getTestsFoundCount(),
+                testExecutionSummary.getTestsSkippedCount(),
+                testExecutionSummary.getTestsStartedCount(),
+                testExecutionSummary.getTestsAbortedCount(),
+                testExecutionSummary.getTestsSucceededCount(),
+                failedScenarios);
+        if (failedScenarios > 0) {
+            logFailedScenariosInfo(testExecutionSummary.getFailures());
+        }
+    }
+
+    private void logFailedScenariosInfo(final List<TestExecutionSummary.Failure> failures) {
+        for (TestExecutionSummary.Failure failureScenario : failures) {
+            log.error(format(LogMessage.FAILED_SCENARIOS_NAME_TEMPLATE,
+                    failureScenario.getTestIdentifier().getDisplayName()),
+                    failureScenario.getException());
+        }
+    }
 }

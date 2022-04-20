@@ -5,9 +5,7 @@
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
-<!--    <x:include schemaLocation="shared-config.xsd"/>-->
-<!--    <x:include schemaLocation="hikari.xsd"/>-->
-    <x:include schemaLocation="global-config.xsd"/>
+    <x:include schemaLocation="shared-config.xsd"/>
 
     <x:complexType name="oracles">
         <x:choice maxOccurs="unbounded">

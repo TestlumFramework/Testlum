@@ -107,7 +107,7 @@ public class ApiClient {
     //CHECKSTYLE:ON
 
     private String createFullURL(final String url, final String alias) {
-        String apiUrl = GlobalTestConfigurationProvider.provide().getApis().getApi()
+        String apiUrl = GlobalTestConfigurationProvider.getIntegrations().getApis().getApi()
                 .stream()
                 .filter(o -> o.getAlias().equalsIgnoreCase(alias))
                 .findFirst()

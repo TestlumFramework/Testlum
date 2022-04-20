@@ -15,6 +15,7 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <start-class>com.knubisoft.e2e.runner.TestRunner</start-class>
 
         <selenium-java.version>3.141.59</selenium-java.version>
         <webdrivermanager.version>4.3.1</webdrivermanager.version>
@@ -69,6 +70,8 @@
         <elasticsearch-rest-high-level-client.version>7.13.1</elasticsearch-rest-high-level-client.version>
         <ru.yandex.clickhouse.version>0.3.1</ru.yandex.clickhouse.version>
         <sendgrid-java.version>4.4.1</sendgrid-java.version>
+        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
+        <junit-platform-launcher.version>1.8.2</junit-platform-launcher.version>
         <skipXjc>true</skipXjc>
     </properties>
 
@@ -767,9 +770,16 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>${junit-platform-launcher.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
+        <finalName>e2e</finalName>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -836,6 +846,33 @@
                             <goal>integration-test</goal>
                             <goal>verify</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>${maven-assembly-plugin.version}</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/test/resources/assembly-plugin-configuration.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>${start-class}</mainClass>
+                                </manifest>
+                            </archive>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

@@ -22,7 +22,7 @@ public class S3Configuration {
     @Bean
     public Map<String, AmazonS3> amazonS3() {
         Map<String, AmazonS3> s3Map = new HashMap<>();
-        for (S3 s3 : GlobalTestConfigurationProvider.provide().getS3S().getS3()) {
+        for (S3 s3 : GlobalTestConfigurationProvider.getIntegrations().getS3S().getS3()) {
             if (s3.isEnabled()) {
                 createS3AndPutToMap(s3Map, s3);
             }

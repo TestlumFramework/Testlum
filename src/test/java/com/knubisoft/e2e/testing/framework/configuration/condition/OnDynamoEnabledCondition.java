@@ -14,7 +14,7 @@ public class OnDynamoEnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        final Dynamos dynamos = GlobalTestConfigurationProvider.provide().getDynamos();
+        final Dynamos dynamos = GlobalTestConfigurationProvider.getIntegrations().getDynamos();
         if (Objects.nonNull(dynamos)) {
             return dynamos.getDynamo()
                     .stream().anyMatch(Dynamo::isEnabled);

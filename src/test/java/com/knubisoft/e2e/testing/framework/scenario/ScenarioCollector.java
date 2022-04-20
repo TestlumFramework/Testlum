@@ -2,10 +2,10 @@ package com.knubisoft.e2e.testing.framework.scenario;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.e2e.testing.framework.parser.XMLParsers;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.model.scenario.Include;
 import com.knubisoft.e2e.testing.model.scenario.Logout;
-import com.knubisoft.e2e.testing.framework.parser.XMLParser;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.model.scenario.Auth;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
@@ -57,8 +57,7 @@ public class ScenarioCollector {
     }
 
     private Scenario convertXmlToScenario(final File xmlFile) {
-        Scenario scenario = XMLParser.forScenarios()
-                .process(xmlFile, scenarioValidator);
+        Scenario scenario = XMLParsers.forScenario().process(xmlFile, scenarioValidator);
         updateScenario(scenario);
         return scenario;
     }
@@ -101,7 +100,7 @@ public class ScenarioCollector {
         File includedScenarioFolder = new File(scenariosFolder,
                 include.getScenario());
         File file = fileSearcher.search(includedScenarioFolder, TestResourceSettings.SCENARIO_FILENAME);
-        return XMLParser.forScenarios().process(file, scenarioValidator);
+        return XMLParsers.forScenario().process(file, scenarioValidator);
     }
 
     private void addAuthCommands(final List<AbstractCommand> updatedCommand,

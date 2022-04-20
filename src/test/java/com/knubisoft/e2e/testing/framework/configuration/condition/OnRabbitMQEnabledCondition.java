@@ -14,7 +14,7 @@ public class OnRabbitMQEnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        final Rabbitmqs rabbitmqs = GlobalTestConfigurationProvider.provide().getRabbitmqs();
+        final Rabbitmqs rabbitmqs = GlobalTestConfigurationProvider.getIntegrations().getRabbitmqs();
         if (Objects.nonNull(rabbitmqs)) {
             return rabbitmqs.getRabbitmq().stream().anyMatch(Rabbitmq::isEnabled);
         }

@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+cfgPattern='^(-c=|--config=)[a-zA-Z0-9._:*#-]+(.xml)$'
+pathPattern='^(-p=|--path=)(/|(/[a-zA-Z0-9_-]+))+$'
+
+dockerImageName=$1
+configFileName=$2
+pathToFiles=$3
+
+function main() {
+    if [[ -n "$dockerImageName" ]] && [[ $configFileName =~ $cfgPattern ]] && [[ $pathToFiles =~ $pathPattern ]];
+    then
+      run_docker_locally
+    else
+      print_error_message
+    fi
+}
+
+function run_docker_locally() {
+  local path
+  path=$(get_path)
+  docker run --rm --network=host --mount type=bind,source="$path",target="$path" "$dockerImageName" "$configFileName" "$pathToFiles"
+}
+
+function get_path() {
+    echo "$pathToFiles" | perl -pe 's/^(-p=|--path=)//'
+}
+
+function print_error_message() {
+    echo "
+    Incorrect input of arguments. You must pass 3 arguments:
+
+    1) E2E-Testing-Tool docker image name.
+
+    2) Configuration file.
+           Use one of the options: -c={configuration-file-name} or --config={configuration-file-name}
+           Please don't use spaces in the configuration file name. Allowed special character [._-:*#]
+           Please don't forget to include the file extension [.xml]
+
+    3) Path to test resources.
+           Use one of the options: -p={path-to-your-test-resources) or --path={path-to-your-test-resources)
+
+    Example: end2end -c=config-file.xml -p=/user/folder/resources
+
+             or
+
+             e2e --config=config-file.xml --path=/user/folder/resources
+    "
+    exit 1
+}
+main

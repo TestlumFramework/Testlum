@@ -57,7 +57,7 @@ services:
     ports:
       - "5433:5432"
     networks:
-      - backendtemplate
+      - e2e
     volumes:
     - ./init/postgres:/docker-entrypoint-initdb.d
 
@@ -72,7 +72,7 @@ services:
     ports:
       - "5434:5432"
     networks:
-      - backendtemplate
+      - e2e
     volumes:
     - ./init/postgres:/docker-entrypoint-initdb.d
 
@@ -88,7 +88,7 @@ services:
     ports:
       - "3306:3306"
     networks:
-      - backendtemplate
+      - e2e
     volumes:
     - ./init/mysql:/docker-entrypoint-initdb.d
 
@@ -104,7 +104,7 @@ services:
     ports:
       - "3307:3306"
     networks:
-      - backendtemplate
+      - e2e
     volumes:
     - ./init/mysql:/docker-entrypoint-initdb.d
 
@@ -121,7 +121,7 @@ services:
 #    ports:
 #      - 1521:1521
 #    networks:
-#      - backendtemplate
+#      - e2e
 
   localstack:
     container_name: localstack-e2e
@@ -131,7 +131,7 @@ services:
     ports:
       - 4566:4566
     networks:
-      - backendtemplate
+      - e2e
     volumes:
     - ./init/aws:/docker-entrypoint-initaws.d
 
@@ -141,7 +141,7 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - backendtemplate
+      - e2e
 
   dynamodb-one:
     image: amazon/dynamodb-local
@@ -191,7 +191,7 @@ services:
     ports:
       - "6360:6379"
     networks:
-      - backendtemplate
+      - e2e
 
   rabbitmqone:
     container_name: rabbitmq-one
@@ -204,7 +204,7 @@ services:
       - "5672:5672"
       - "15672:15672"
     networks:
-      - backendtemplate
+      - e2e
 
   rabbitmqtwo:
     container_name: rabbitmq-two
@@ -217,7 +217,7 @@ services:
       - "5673:5672"
       - "15673:15672"
     networks:
-      - backendtemplate
+      - e2e
 
   mongodbone:
     image: mongo:4.2.3-bionic
@@ -232,7 +232,7 @@ services:
       - mongodb:/data/db
       - mongoconfig:/data/configdb
     networks:
-      - backendtemplate
+      - e2e
 
   mongodbtwo:
     image: mongo:4.2.3-bionic
@@ -244,7 +244,7 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=username
       - MONGO_INITDB_ROOT_PASSWORD=password
     networks:
-      - backendtemplate
+      - e2e
 
   zookeeperone:
     image: 'bitnami/zookeeper:latest'
@@ -254,7 +254,7 @@ services:
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
     networks:
-      - backendtemplate
+      - e2e
 
   zookeepertwo:
     image: 'bitnami/zookeeper:latest'
@@ -264,7 +264,7 @@ services:
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
     networks:
-      - backendtemplate
+      - e2e
 
   kafkaone:
     image: 'bitnami/kafka:latest'
@@ -280,7 +280,7 @@ services:
     depends_on:
       - zookeeperone
     networks:
-      - backendtemplate
+      - e2e
 
   kafkatwo:
     image: 'bitnami/kafka:latest'
@@ -296,10 +296,10 @@ services:
     depends_on:
       - zookeepertwo
     networks:
-      - backendtemplate
+      - e2e
 
 networks:
-  backendtemplate:
+  e2e:
     driver: bridge
 
 volumes:

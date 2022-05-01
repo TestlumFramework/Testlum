@@ -5,13 +5,7 @@ import lombok.Getter;
 import java.io.File;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.COMPONENTS_FOLDER_NOT_EXIST;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.CREDENTIALS_FOLDER_NOT_EXIST;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.FOLDER_LOCATION_ERROR_MESSAGE;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.PAGES_FOLDER_NOT_EXIST;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.PATCHES_FOLDER_NOT_EXIST;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCENARIOS_FOLDER_NOT_EXIST;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.VARIATIONS_FOLDER_NOT_EXIST;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.*;
 
 @Getter
 public class TestResourceSettings {
@@ -36,6 +30,7 @@ public class TestResourceSettings {
     private static final String VARIATIONS_FOLDER = "variations";
     private static final String PATCHES_FOLDER = "patches";
     private static final String CREDS_FOLDER = "credentials";
+    public static final String SHELL_FOLDER = "shell";
 
     private static TestResourceSettings instance;
 
@@ -47,10 +42,12 @@ public class TestResourceSettings {
     private final File patchesFolder;
     private final File credentialsFolder;
     private final File configFile;
+    private final File shellFolder;
 
     private TestResourceSettings(final String configFileName, final String pathToTestResources) {
         this.testResourcesFolder = new File(pathToTestResources);
         this.configFile = new File(testResourcesFolder, configFileName);
+        this.shellFolder = subFolder(SHELL_FOLDER, SHELL_FOLDER_NOT_EXIST);
         this.pagesFolder = subFolder(PAGES_FOLDER, PAGES_FOLDER_NOT_EXIST);
         this.componentsFolder = subFolder(COMPONENTS_FOLDER, COMPONENTS_FOLDER_NOT_EXIST);
         this.scenariosFolder = subFolder(SCENARIOS_FOLDER, SCENARIOS_FOLDER_NOT_EXIST);

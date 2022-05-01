@@ -8,6 +8,8 @@
 
 package com.knubisoft.e2e.testing.model.scenario;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -16,19 +18,18 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for postgresResult complex type.
+ * <p>Java class for shell complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="postgresResult"&gt;
+ * &lt;complexType name="shell"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/e2e/testing/model/scenario}abstractCommand"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="query" type="{http://www.knubisoft.com/e2e/testing/model/scenario}variableQuery"/&gt;
+ *         &lt;element name="shellFile" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="file" type="{http://www.knubisoft.com/e2e/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="databaseName" use="required" type="{http://www.knubisoft.com/e2e/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -37,42 +38,45 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "postgresResult", propOrder = {
-    "query"
+@XmlType(name = "shell", propOrder = {
+    "shellFile"
 })
-public class PostgresResult
+public class Shell
     extends AbstractCommand
 {
 
     @XmlElement(required = true)
-    protected String query;
+    protected List<String> shellFile;
     @XmlAttribute(name = "file")
     protected String file;
-    @XmlAttribute(name = "databaseName", required = true)
-    protected String databaseName;
 
     /**
-     * Gets the value of the query property.
+     * Gets the value of the shellFile property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getQuery() {
-        return query;
-    }
-
-    /**
-     * Sets the value of the query property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the shellFile property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getShellFile().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link String }
+     * 
+     * 
      */
-    public void setQuery(String value) {
-        this.query = value;
+    public List<String> getShellFile() {
+        if (shellFile == null) {
+            shellFile = new ArrayList<String>();
+        }
+        return this.shellFile;
     }
 
     /**
@@ -97,30 +101,6 @@ public class PostgresResult
      */
     public void setFile(String value) {
         this.file = value;
-    }
-
-    /**
-     * Gets the value of the databaseName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDatabaseName() {
-        return databaseName;
-    }
-
-    /**
-     * Sets the value of the databaseName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDatabaseName(String value) {
-        this.databaseName = value;
     }
 
 }

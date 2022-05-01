@@ -1,0 +1,94 @@
+package com.knubisoft.e2e.testing.framework.interpreter;
+
+import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
+import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
+import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.e2e.testing.framework.report.CommandResult;
+import com.knubisoft.e2e.testing.framework.util.FileSearcher;
+import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
+import com.knubisoft.e2e.testing.model.scenario.Shell;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.SystemUtils;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
+
+import static com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings.SHELL_FOLDER;
+
+@Slf4j
+@InterpreterForClass(Shell.class)
+public class ShellInterpreter extends AbstractInterpreter<Shell> {
+
+    private static final String EXEC_WINDOWS_COMMAND = "cmd.exe /c dir %s";
+    private static final String EXEC_LINUX_COMMAND = "sh %s";
+    private static final String EXPECTED_RESULT = "{\"expectedCode\": %d}";
+
+    public ShellInterpreter(final InterpreterDependencies dependencies) {
+        super(dependencies);
+    }
+
+    @Override
+    @SneakyThrows
+    protected void acceptImpl(final Shell shell, final CommandResult result) {
+        List<String> shellFiles = shell.getShellFile();
+        shellFiles.forEach(shellFile -> {
+            File shellFileByPath = getShellFileByPath(shellFile);
+            try {
+                Process process = SystemUtils.IS_OS_WINDOWS
+                        ? Runtime.getRuntime().exec(String.format(EXEC_WINDOWS_COMMAND,
+                        shellFileByPath.getAbsolutePath()))
+                        : Runtime.getRuntime().exec(String.format(EXEC_LINUX_COMMAND,
+                        shellFileByPath.getAbsolutePath()));
+                StreamHelper streamHelper =
+                        new StreamHelper(process.getInputStream(), System.out::println);
+                Executors.newSingleThreadExecutor().submit(streamHelper);
+                int expectedCode = process.waitFor();
+                processExpectedAndActual(expectedCode, shell);
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private File getShellFileByPath(final String filePath) {
+        FileSearcher fileSearcher = dependencies.getFileSearcher();
+        File shellFolder = TestResourceSettings.getInstance().getShellFolder();
+        return fileSearcher.search(shellFolder, filePath);
+    }
+
+    private void processExpectedAndActual(final int expectedCode, final Shell shell) {
+        CompareBuilder compare = newCompare()
+            .withActual(PrettifyStringJson.getJSONResult(
+                    String.format(EXPECTED_RESULT, expectedCode)))
+            .withExpectedFile(shell.getFile());
+        compare.exec();
+    }
+
+    private static class StreamHelper implements Runnable {
+
+        private final InputStream inputStream;
+        private final Consumer<String> consumer;
+
+        public StreamHelper(final InputStream inputStream, final Consumer<String> consumer) {
+            this.inputStream = inputStream;
+            this.consumer = consumer;
+        }
+
+        @Override
+        public void run() {
+            new BufferedReader(new InputStreamReader(inputStream)).lines()
+                    .forEach(consumer);
+        }
+    }
+}

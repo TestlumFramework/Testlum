@@ -37,7 +37,7 @@ public class TestResourceSettings {
     private static final String VARIATIONS_FOLDER = "variations";
     private static final String PATCHES_FOLDER = "patches";
     private static final String CREDS_FOLDER = "credentials";
-    public static final String SHELL_FOLDER = "shell";
+    private static final String SHELL_FOLDER = "shell";
 
     private static TestResourceSettings instance;
 

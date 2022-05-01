@@ -17,14 +17,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-
-import static com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings.SHELL_FOLDER;
 
 @Slf4j
 @InterpreterForClass(Shell.class)
@@ -43,22 +38,24 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
     protected void acceptImpl(final Shell shell, final CommandResult result) {
         List<String> shellFiles = shell.getShellFile();
         shellFiles.forEach(shellFile -> {
-            File shellFileByPath = getShellFileByPath(shellFile);
             try {
-                Process process = SystemUtils.IS_OS_WINDOWS
-                        ? Runtime.getRuntime().exec(String.format(EXEC_WINDOWS_COMMAND,
-                        shellFileByPath.getAbsolutePath()))
-                        : Runtime.getRuntime().exec(String.format(EXEC_LINUX_COMMAND,
-                        shellFileByPath.getAbsolutePath()));
-                StreamHelper streamHelper =
-                        new StreamHelper(process.getInputStream(), System.out::println);
+                Process process = getProcessor(shellFile);
+                StreamHelper streamHelper = new StreamHelper(process.getInputStream(), System.out::println);
                 Executors.newSingleThreadExecutor().submit(streamHelper);
-                int expectedCode = process.waitFor();
-                processExpectedAndActual(expectedCode, shell);
+                processExpectedAndActual(process.waitFor(), shell);
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    private Process getProcessor(final String shellFile) throws IOException {
+        File shellFileByPath = getShellFileByPath(shellFile);
+        return SystemUtils.IS_OS_WINDOWS
+                ? Runtime.getRuntime().exec(String.format(EXEC_WINDOWS_COMMAND,
+                shellFileByPath.getAbsolutePath()))
+                : Runtime.getRuntime().exec(String.format(EXEC_LINUX_COMMAND,
+                shellFileByPath.getAbsolutePath()));
     }
 
     private File getShellFileByPath(final String filePath) {
@@ -80,7 +77,7 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
         private final InputStream inputStream;
         private final Consumer<String> consumer;
 
-        public StreamHelper(final InputStream inputStream, final Consumer<String> consumer) {
+        StreamHelper(final InputStream inputStream, final Consumer<String> consumer) {
             this.inputStream = inputStream;
             this.consumer = consumer;
         }

@@ -5,7 +5,14 @@ import lombok.Getter;
 import java.io.File;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.*;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.COMPONENTS_FOLDER_NOT_EXIST;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.CREDENTIALS_FOLDER_NOT_EXIST;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.FOLDER_LOCATION_ERROR_MESSAGE;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.PAGES_FOLDER_NOT_EXIST;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.PATCHES_FOLDER_NOT_EXIST;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCENARIOS_FOLDER_NOT_EXIST;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SHELL_FOLDER_NOT_EXIST;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.VARIATIONS_FOLDER_NOT_EXIST;
 
 @Getter
 public class TestResourceSettings {

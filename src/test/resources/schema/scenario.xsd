@@ -31,6 +31,7 @@
     <x:include schemaLocation="invoke.xsd"/>
     <x:include schemaLocation="http.xsd"/>
     <x:include schemaLocation="logout.xsd"/>
+    <x:include schemaLocation="csv.xsd"/>
 
     <x:annotation>
         <x:appinfo>
@@ -79,6 +80,8 @@
                     <x:element name="ses" type="tns:ses"/>
                     <x:element name="dynamo" type="tns:dynamo"/>
 
+                    <x:element name="csv" type="tns:csvCommands"/>
+
                     <x:element name="var" type="tns:var"/>
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="invoke" type="tns:invoke"/>
@@ -104,6 +107,8 @@
                     <x:element name="postgres" type="tns:postgres"/>
                     <x:element name="mysql" type="tns:mysql"/>
 
+                    <x:element name="csv" type="tns:csvCommands"/>
+
                     <x:element name="var" type="tns:var"/>
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="invoke" type="tns:invoke"/>
@@ -128,6 +133,8 @@
                     <x:element name="postgres" type="tns:postgres"/>
                     <x:element name="mysql" type="tns:mysql"/>
                     <x:element name="wait" type="tns:wait"/>
+
+                    <x:element name="csv" type="tns:csvCommands"/>
 
                 </x:choice>
                 <x:attribute name="times" type="tns:nonEmptyString" use="required"/>

@@ -13,24 +13,24 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for response complex type.
+ * <p>Java class for csvCommands complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="response"&gt;
+ * &lt;complexType name="csvCommands"&gt;
  *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/e2e/testing/model/scenario}abstractCommand"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="header" type="{http://www.knubisoft.com/e2e/testing/model/scenario}header" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="csvFile" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="code" type="{http://www.knubisoft.com/e2e/testing/model/scenario}code" default="200" /&gt;
  *       &lt;attribute name="file" type="{http://www.knubisoft.com/e2e/testing/model/scenario}nonEmptyString" /&gt;
- *     &lt;/restriction&gt;
+ *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -38,72 +38,45 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "response", propOrder = {
-    "header"
+@XmlType(name = "csvCommands", propOrder = {
+    "csvFile"
 })
-public class Response {
+public class CsvCommands
+    extends AbstractCommand
+{
 
-    protected List<Header> header;
-    @XmlAttribute(name = "code")
-    protected Integer code;
+    @XmlElement(required = true)
+    protected List<String> csvFile;
     @XmlAttribute(name = "file")
     protected String file;
 
     /**
-     * Gets the value of the header property.
+     * Gets the value of the csvFile property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the header property.
+     * This is why there is not a <CODE>set</CODE> method for the csvFile property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getHeader().add(newItem);
+     *    getCsvFile().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Header }
+     * {@link String }
      * 
      * 
      */
-    public List<Header> getHeader() {
-        if (header == null) {
-            header = new ArrayList<Header>();
+    public List<String> getCsvFile() {
+        if (csvFile == null) {
+            csvFile = new ArrayList<String>();
         }
-        return this.header;
-    }
-
-    /**
-     * Gets the value of the code property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public int getCode() {
-        if (code == null) {
-            return  200;
-        } else {
-            return code;
-        }
-    }
-
-    /**
-     * Sets the value of the code property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setCode(Integer value) {
-        this.code = value;
+        return this.csvFile;
     }
 
     /**

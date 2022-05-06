@@ -2,7 +2,6 @@ package com.knubisoft.e2e.testing.framework.interpreter;
 
 import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.e2e.testing.framework.db.StorageOperation.StorageOperationResult;
 import com.knubisoft.e2e.testing.framework.db.source.ListSource;
 import com.knubisoft.e2e.testing.framework.db.source.Source;
 import com.knubisoft.e2e.testing.framework.db.sql.PostgresSqlOperation;
@@ -11,7 +10,6 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependenci
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
-import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.e2e.testing.model.scenario.CsvCommands;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +40,7 @@ public class CsvInterpreter extends AbstractInterpreter<CsvCommands> {
             File csv = getCsvFileByPath(csvFile);
             List<String> commands = convertFileToString(csv);
             Source source = getSource(commands);
-            StorageOperationResult operationResult = postgresSqlOperation
-                    .apply(source, csvCommands.getAlias());
-            compare(operationResult, csvCommands, result);
+            postgresSqlOperation.apply(source, csvCommands.getAlias());
         });
     }
 
@@ -88,19 +84,5 @@ public class CsvInterpreter extends AbstractInterpreter<CsvCommands> {
             return DelimiterConstant.EMPTY;
         }
         return String.format(SQL_VALUES, String.join(DelimiterConstant.EMPTY, line));
-    }
-
-    private void compare(final StorageOperationResult operationResult, final CsvCommands csvCommands,
-                         final CommandResult result) {
-        String actualPostgres = toString(operationResult.getRaw());
-        CompareBuilder compare = newCompare()
-                .withActual(actualPostgres)
-                .withExpectedFile(csvCommands.getFile());
-
-        result.setExpected(PrettifyStringJson.getJSONResult(compare.getExpected()));
-        result.setActual(PrettifyStringJson.getJSONResult(actualPostgres));
-
-        compare.exec();
-        setContextBody(actualPostgres);
     }
 }

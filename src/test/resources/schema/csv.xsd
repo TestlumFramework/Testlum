@@ -13,7 +13,6 @@
                 <x:sequence>
                     <x:element name="csvFile" type="x:string" minOccurs="1" maxOccurs="unbounded"/>
                 </x:sequence>
-                <x:attribute name="file" type="tns:nonEmptyString"/>
                 <x:attribute name="alias" type="tns:nonEmptyString"/>
             </x:extension>
         </x:complexContent>

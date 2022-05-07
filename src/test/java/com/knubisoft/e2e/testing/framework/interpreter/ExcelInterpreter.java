@@ -9,7 +9,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependenci
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
-import com.knubisoft.e2e.testing.model.scenario.CsvCommands;
+import com.knubisoft.e2e.testing.model.scenario.ExcelCommands;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,29 +17,29 @@ import java.io.File;
 import java.util.List;
 
 @Slf4j
-@InterpreterForClass(CsvCommands.class)
-public class CsvInterpreter extends AbstractInterpreter<CsvCommands> {
+@InterpreterForClass(ExcelCommands.class)
+public class ExcelInterpreter extends AbstractInterpreter<ExcelCommands> {
 
     @Autowired(required = false)
     private PostgresSqlOperation postgresSqlOperation;
 
-    public CsvInterpreter(final InterpreterDependencies dependencies) {
+    public ExcelInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
     }
 
     @Override
-    protected void acceptImpl(final CsvCommands csvCommands, final CommandResult result) {
-        csvCommands.getCsvFile().forEach(csvFile -> {
-            File csv = getCsvFileByPath(csvFile);
-            List<String> commands = CsvFormatter.convertFileToString(csv);
+    protected void acceptImpl(final ExcelCommands excelCommands, final CommandResult result) {
+        excelCommands.getExcelFile().forEach(excelFile -> {
+            File excel = getCsvFileByPath(excelFile);
+            List<String> commands = CsvFormatter.convertFileToString(excel);
             Source source = CsvFormatter.getSource(commands);
-            postgresSqlOperation.apply(source, csvCommands.getAlias());
+            postgresSqlOperation.apply(source, excelCommands.getAlias());
         });
     }
 
     public File getCsvFileByPath(final String pathToFile) {
         FileSearcher fileSearcher = dependencies.getFileSearcher();
-        File csvFolder = TestResourceSettings.getInstance().getCsvFolder();
-        return fileSearcher.search(csvFolder, pathToFile);
+        File excelFolder = TestResourceSettings.getInstance().getExcelFolder();
+        return fileSearcher.search(excelFolder, pathToFile);
     }
 }

@@ -11,7 +11,8 @@
     <x:complexContent>
       <x:extension base="tns:abstractCommand">
         <x:sequence>
-          <x:element name="shellFile" type="x:string" minOccurs="1" maxOccurs="unbounded"/>
+          <x:element name="shellFile" type="x:string" minOccurs="0" maxOccurs="unbounded"/>
+          <x:element name="shellCommand" type="x:string" minOccurs="0" maxOccurs="unbounded"/>
         </x:sequence>
         <x:attribute name="file" type="tns:nonEmptyString"/>
       </x:extension>

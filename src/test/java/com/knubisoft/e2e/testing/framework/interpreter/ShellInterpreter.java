@@ -36,20 +36,42 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
     @Override
     @SneakyThrows
     protected void acceptImpl(final Shell shell, final CommandResult result) {
+        List<String> shellCommands = shell.getShellCommand();
         List<String> shellFiles = shell.getShellFile();
-        shellFiles.forEach(shellFile -> {
+
+        execShellCommand(shellCommands, shell);
+        execShellFiles(shellFiles, shell);
+    }
+
+    private void execShellCommand(final List<String> shellCommands, final Shell shell) {
+        shellCommands.forEach(shellCommand -> {
             try {
-                Process process = getProcessor(shellFile);
-                StreamHelper streamHelper = new StreamHelper(process.getInputStream(), System.out::println);
-                Executors.newSingleThreadExecutor().submit(streamHelper);
-                processExpectedAndActual(process.waitFor(), shell);
+                Process process = Runtime.getRuntime().exec(shellCommand);
+                execShell(process, shell);
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         });
     }
 
-    private Process getProcessor(final String shellFile) throws IOException {
+    private void execShellFiles(final List<String> shellFiles, final Shell shell) {
+        shellFiles.forEach(shellFile -> {
+            try {
+                Process process = getProcessorForFile(shellFile);
+                execShell(process, shell);
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private void execShell(final Process process, final Shell shell) throws InterruptedException {
+        StreamHelper streamHelper = new StreamHelper(process.getInputStream(), System.out::println);
+        Executors.newSingleThreadExecutor().submit(streamHelper);
+        processExpectedAndActual(process.waitFor(), shell);
+    }
+
+    private Process getProcessorForFile(final String shellFile) throws IOException {
         File shellFileByPath = getShellFileByPath(shellFile);
         return SystemUtils.IS_OS_WINDOWS
                 ? Runtime.getRuntime().exec(String.format(EXEC_WINDOWS_COMMAND,

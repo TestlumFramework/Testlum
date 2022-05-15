@@ -993,6 +993,10 @@
                             <excludes>
                                 <exclude>**/com/knubisoft/e2e/testing/model/**/*.java
                                 </exclude>
+                                <exclude>**/com/knubisoft/e2e/testing/framework/interpreter/CsvInterpreter.java
+                                </exclude>
+                                <exclude>**/com/knubisoft/e2e/testing/framework/interpreter/ExcelInterpreter.java
+                                </exclude>
                             </excludes>
                         </configuration>
                         <executions>

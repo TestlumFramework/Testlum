@@ -39,36 +39,39 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
         List<String> shellCommands = shell.getShellCommand();
         List<String> shellFiles = shell.getShellFile();
 
-        execShellCommand(shellCommands, shell);
-        execShellFiles(shellFiles, shell);
+        execShellCommand(shellCommands, shell, result);
+        execShellFiles(shellFiles, shell, result);
     }
 
-    private void execShellCommand(final List<String> shellCommands, final Shell shell) {
+    private void execShellCommand(final List<String> shellCommands, final Shell shell,
+                                  final CommandResult result) {
         shellCommands.forEach(shellCommand -> {
             try {
                 Process process = Runtime.getRuntime().exec(shellCommand);
-                execShell(process, shell);
+                execShell(process, shell, result);
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         });
     }
 
-    private void execShellFiles(final List<String> shellFiles, final Shell shell) {
+    private void execShellFiles(final List<String> shellFiles, final Shell shell,
+                                final CommandResult result) {
         shellFiles.forEach(shellFile -> {
             try {
                 Process process = getProcessorForFile(shellFile);
-                execShell(process, shell);
+                execShell(process, shell, result);
             } catch (IOException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
         });
     }
 
-    private void execShell(final Process process, final Shell shell) throws InterruptedException {
+    private void execShell(final Process process, final Shell shell, final CommandResult result)
+            throws InterruptedException {
         StreamHelper streamHelper = new StreamHelper(process.getInputStream(), System.out::println);
         Executors.newSingleThreadExecutor().submit(streamHelper);
-        processExpectedAndActual(process.waitFor(), shell);
+        processExpectedAndActual(process.waitFor(), shell, result);
     }
 
     private Process getProcessorForFile(final String shellFile) throws IOException {
@@ -86,12 +89,16 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
         return fileSearcher.search(shellFolder, filePath);
     }
 
-    private void processExpectedAndActual(final int expectedCode, final Shell shell) {
+    private void processExpectedAndActual(final int expectedCode, final Shell shell,
+                                          final CommandResult result) {
+        String actual = PrettifyStringJson.getJSONResult(String.format(EXPECTED_RESULT, expectedCode));
         CompareBuilder compare = newCompare()
-            .withActual(PrettifyStringJson.getJSONResult(
-                    String.format(EXPECTED_RESULT, expectedCode)))
+            .withActual(actual)
             .withExpectedFile(shell.getFile());
         compare.exec();
+
+        result.setActual(actual);
+        result.setExpected(shell.getFile());
     }
 
     private static class StreamHelper implements Runnable {

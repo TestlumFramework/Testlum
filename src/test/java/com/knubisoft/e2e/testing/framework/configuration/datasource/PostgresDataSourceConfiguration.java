@@ -49,6 +49,7 @@ public class PostgresDataSourceConfiguration {
                                           final Postgres dataSource) {
         hikariDataSourceOriginal.setDriverClassName(dataSource.getJdbcDriver());
         hikariDataSourceOriginal.setJdbcUrl(dataSource.getConnectionUrl());
+        hikariDataSourceOriginal.setSchema(dataSource.getSchema());
         hikariDataSourceOriginal.setUsername(dataSource.getUsername());
         hikariDataSourceOriginal.setPassword(dataSource.getPassword());
     }

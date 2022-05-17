@@ -66,7 +66,7 @@ public class ApiClient {
             responseHeaders.put(each.getName(), each.getValue());
         }
         HttpEntity entity = response.getEntity();
-        Object responseBody = entity == null ? StringUtils.EMPTY : httpEntityToString(entity);
+        Object responseBody = entity == null ? StringUtils.EMPTY : httpEntityToResponseBody(entity);
         return new ApiResponse(response.getStatusLine().getStatusCode(),
                 responseHeaders, responseBody);
     }
@@ -132,7 +132,7 @@ public class ApiClient {
     }
 
     @SneakyThrows
-    private Object httpEntityToString(final HttpEntity httpEntity) {
+    private Object httpEntityToResponseBody(final HttpEntity httpEntity) {
         Header contentType = httpEntity.getContentType();
         if (contentType.getValue().equals(MediaType.APPLICATION_JSON_VALUE)) {
             return new JSONParser().parse(EntityUtils.toString(httpEntity));

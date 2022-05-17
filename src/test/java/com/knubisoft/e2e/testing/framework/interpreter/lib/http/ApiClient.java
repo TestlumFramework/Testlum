@@ -2,6 +2,7 @@ package com.knubisoft.e2e.testing.framework.interpreter.lib.http;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -20,6 +21,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.simple.parser.JSONParser;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -64,7 +66,7 @@ public class ApiClient {
             responseHeaders.put(each.getName(), each.getValue());
         }
         HttpEntity entity = response.getEntity();
-        String responseBody = entity == null ? StringUtils.EMPTY : EntityUtils.toString(entity);
+        Object responseBody = entity == null ? StringUtils.EMPTY : httpEntityToString(entity);
         return new ApiResponse(response.getStatusLine().getStatusCode(),
                 responseHeaders, responseBody);
     }
@@ -127,5 +129,14 @@ public class ApiClient {
                                           final HttpEntity body) {
         request.setEntity(body);
         return request;
+    }
+
+    @SneakyThrows
+    private Object httpEntityToString(final HttpEntity httpEntity) {
+        Header contentType = httpEntity.getContentType();
+        if (contentType.getValue().equals(MediaType.APPLICATION_JSON_VALUE)) {
+            return new JSONParser().parse(EntityUtils.toString(httpEntity));
+        }
+        return EntityUtils.toString(httpEntity);
     }
 }

@@ -2,6 +2,7 @@ package com.knubisoft.e2e.testing.framework.db.sql.executor.impl;
 
 
 import com.knubisoft.e2e.testing.framework.db.sql.executor.AbstractSqlExecutor;
+import lombok.SneakyThrows;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
 public class PostgresExecutor extends AbstractSqlExecutor {
@@ -19,7 +21,7 @@ public class PostgresExecutor extends AbstractSqlExecutor {
     private static final String ALTER_TABLE_ENABLE_TRIGGER_ALL = "ALTER TABLE %s ENABLE TRIGGER ALL";
     private static final String TRUNCATE_TABLE_AND_RESTART_SEQUENCE = "TRUNCATE %s RESTART IDENTITY CASCADE";
     private static final String SELECT_POSTGRES_TABLE_NAMES = "SELECT tablename FROM pg_tables "
-            + "WHERE schemaname = 'public' AND tablename != 'flyway_schema_history';";
+            + "WHERE schemaname = '%s' AND tablename != 'flyway_schema_history';";
 
     private static final List<String> TRUNCATE_QUERIES = Arrays.asList(
             ALTER_TABLE_DISABLE_TRIGGER_ALL,
@@ -38,12 +40,14 @@ public class PostgresExecutor extends AbstractSqlExecutor {
                 .collect(Collectors.toList());
     }
 
+    @SneakyThrows
     @Override
     public void truncate() {
-        List<String> tables = template.queryForList(SELECT_POSTGRES_TABLE_NAMES, String.class);
+        final String schemaName = template.getDataSource().getConnection().getSchema();
+        List<String> tables = template.queryForList(format(SELECT_POSTGRES_TABLE_NAMES, schemaName), String.class);
         for (String table : tables) {
             for (String query : TRUNCATE_QUERIES) {
-                requireNonNull(template).execute(String.format(query, table));
+                requireNonNull(template).execute(format(query, table));
             }
         }
     }

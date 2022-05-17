@@ -46,7 +46,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         result.put("url", url);
         result.put("method", method.name());
         ApiResponse expected = getExpected(sendgridInfo);
-        result.setExpected(expected.getBody());
+        result.setExpected(expected.getBody().toString());
         result.put("expected_code", expected.getCode());
         Response actual = getActual(sendgridInfo, method, sendgrid.getAlias());
         result.setActual(actual.getBody());
@@ -78,7 +78,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     private void compare(final ApiResponse expected, final Response actual) {
         HttpValidator httpValidator = new HttpValidator(this);
         httpValidator.validateCode(expected.getCode(), actual.getStatusCode());
-        httpValidator.validateBody(expected.getBody(), actual.getBody());
+        httpValidator.validateBody(expected.getBody().toString(), actual.getBody());
         httpValidator.validateHeaders(expected.getHeaders(), actual.getHeaders());
         httpValidator.rethrowOnErrors();
     }

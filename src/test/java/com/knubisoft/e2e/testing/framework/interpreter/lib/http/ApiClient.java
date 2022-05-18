@@ -2,6 +2,7 @@ package com.knubisoft.e2e.testing.framework.interpreter.lib.http;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.e2e.testing.framework.util.HttpUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -133,8 +134,7 @@ public class ApiClient {
 
     @SneakyThrows
     private Object httpEntityToResponseBody(final HttpEntity httpEntity) {
-        Header contentType = httpEntity.getContentType();
-        if (contentType.getValue().equals(MediaType.APPLICATION_JSON_VALUE)) {
+        if (HttpUtil.checkIfContentTypeIsJson(httpEntity.getContentType())) {
             return new JSONParser().parse(EntityUtils.toString(httpEntity));
         }
         return EntityUtils.toString(httpEntity);

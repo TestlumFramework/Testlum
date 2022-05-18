@@ -55,7 +55,7 @@ services:
       POSTGRES_PASSWORD: playground
       POSTGRES_DB: playground_db
     ports:
-      - "5433:5432"
+      - "5434:5432"
     networks:
       - e2e
     volumes:
@@ -70,7 +70,7 @@ services:
       POSTGRES_PASSWORD: cloud
       POSTGRES_DB: cloud_db
     ports:
-      - "5434:5432"
+      - "5435:5432"
     networks:
       - e2e
     volumes:

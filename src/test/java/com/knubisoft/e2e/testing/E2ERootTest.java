@@ -62,7 +62,7 @@ public class E2ERootTest {
     public void beforeAll() {
         new TestContextManager(getClass()).prepareTestInstance(this);
         FileRemover.clearActualFiles(TestResourceSettings.getInstance().getScenariosFolder());
-        cleanDatabases();
+//        cleanDatabases();
     }
 
     @DisplayName("Execution of test scenarios:")

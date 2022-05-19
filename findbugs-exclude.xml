@@ -92,4 +92,14 @@
         <Class name="com.knubisoft.e2e.testing.framework.util.ArgumentsUtils"/>
         <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
     </Match>
+
+    <Match>
+        <Class name="com.knubisoft.e2e.testing.framework.db.sql.executor.impl.PostgresExecutor"/>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.e2e.testing.framework.db.sql.executor.impl.PostgresExecutor"/>
+        <Bug pattern="ODR_OPEN_DATABASE_RESOURCE"/>
+    </Match>
 </FindBugsFilter>

@@ -83,7 +83,7 @@ public abstract class AbstractSqlExecutor {
                     connection.prepareStatement(query), keyHolder);
         } else {
             requireNonNull(template).update(connection ->
-                    connection.prepareStatement(query, new String[]{PK_NAME}), keyHolder);
+                    connection.prepareStatement(query/*, new String[]{PK_NAME}*/), keyHolder);
         }
     }
 

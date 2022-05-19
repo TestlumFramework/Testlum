@@ -7,9 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
@@ -30,14 +27,6 @@ public class MySqlExecutor extends AbstractSqlExecutor {
 
     public MySqlExecutor(final DataSource dataSource) {
         super(dataSource);
-    }
-
-    @Override
-    protected List<Number> getAffectedKeys(final List<Map<String, Object>> keyList) {
-        return keyList.stream().map(e -> e.get("GENERATED_KEY"))
-                .filter(Objects::nonNull)
-                .map(v -> (Number) v)
-                .collect(Collectors.toList());
     }
 
     public void truncate(final String schemaName) {

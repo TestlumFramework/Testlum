@@ -9,6 +9,7 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import java.util.List;
 import java.util.Locale;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.TESTS_RUN_FAILED;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.SPACE;
@@ -69,6 +70,14 @@ public class LogUtil {
 //    }
 
     public void logTestExecutionSummary(final TestExecutionSummary testExecutionSummary) {
+        if (testExecutionSummary.getTestsFoundCount() == 0 && !testExecutionSummary.getFailures().isEmpty()) {
+            testExecutionSummary.getFailures().forEach(e -> log.error(TESTS_RUN_FAILED, e.getException()));
+        } else {
+            logTestsStatistics(testExecutionSummary);
+        }
+    }
+
+    private void logTestsStatistics(final TestExecutionSummary testExecutionSummary) {
         long failedScenarios = testExecutionSummary.getTestsFailedCount();
         log.info(LogMessage.TEST_EXECUTION_SUMMARY_TEMPLATE,
                 testExecutionSummary.getTestsFoundCount(),
@@ -78,15 +87,8 @@ public class LogUtil {
                 testExecutionSummary.getTestsSucceededCount(),
                 failedScenarios);
         if (failedScenarios > 0) {
-            logFailedScenariosInfo(testExecutionSummary.getFailures());
-        }
-    }
-
-    private void logFailedScenariosInfo(final List<TestExecutionSummary.Failure> failures) {
-        for (TestExecutionSummary.Failure failureScenario : failures) {
-            log.error(format(LogMessage.FAILED_SCENARIOS_NAME_TEMPLATE,
-                    failureScenario.getTestIdentifier().getDisplayName()),
-                    failureScenario.getException());
+            testExecutionSummary.getFailures().forEach(e -> log.error(format(LogMessage.FAILED_SCENARIOS_NAME_TEMPLATE,
+                            e.getTestIdentifier().getDisplayName()), e.getException()));
         }
     }
 }

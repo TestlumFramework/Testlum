@@ -7,16 +7,12 @@ import lombok.SneakyThrows;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
 public class PostgresExecutor extends AbstractSqlExecutor {
 
-    private static final String PK_NAME = "id";
     private static final String ALTER_TABLE_DISABLE_TRIGGER_ALL = "ALTER TABLE \"%s\" DISABLE TRIGGER ALL";
     private static final String ALTER_TABLE_ENABLE_TRIGGER_ALL = "ALTER TABLE \"%s\" ENABLE TRIGGER ALL";
     private static final String TRUNCATE_TABLE_AND_RESTART_SEQUENCE = "TRUNCATE \"%s\" RESTART IDENTITY CASCADE";
@@ -30,14 +26,6 @@ public class PostgresExecutor extends AbstractSqlExecutor {
 
     public PostgresExecutor(final DataSource dataSource) {
         super(dataSource);
-    }
-
-    @Override
-    protected List<Number> getAffectedKeys(final List<Map<String, Object>> keyList) {
-        return keyList.stream().map(e -> e.get(PK_NAME))
-                .filter(Objects::nonNull)
-                .map(v -> (Number) v)
-                .collect(Collectors.toList());
     }
 
     @SneakyThrows

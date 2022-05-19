@@ -4,9 +4,6 @@ import com.knubisoft.e2e.testing.framework.db.sql.executor.AbstractSqlExecutor;
 
 import javax.sql.DataSource;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 
@@ -18,14 +15,6 @@ public class ClickhouseExecutor extends AbstractSqlExecutor {
 
     public ClickhouseExecutor(final DataSource dataSource) {
         super(dataSource);
-    }
-
-    @Override
-    protected List<Number> getAffectedKeys(final List<Map<String, Object>> keyList) {
-        return keyList.stream().map(e -> e.get("GENERATED_KEY"))
-                .filter(Objects::nonNull)
-                .map(v -> (Number) v)
-                .collect(Collectors.toList());
     }
 
     @Override

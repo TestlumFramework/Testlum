@@ -51,13 +51,13 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         result.put("url", url);
         result.put("method", httpMethod.name());
         ApiResponse actual = getActual(httpInfo, url, httpMethod, http.getAlias());
-        result.setActual(PrettifyStringJson.getJSONResult(actual.getBody()));
+        result.setActual(PrettifyStringJson.getJSONResult(actual.getBody().toString()));
         result.put("actual_code", actual.getCode());
         CompareBuilder compare = newCompare()
                 .withActual(actual)
                 .withExpectedFile(httpInfo.getResponse().getFile());
         compare.exec();
-        setContextBody(actual.getBody());
+        setContextBody(actual.getBody().toString());
     }
 
     protected ApiResponse getActual(final HttpInfo httpInfo,

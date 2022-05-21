@@ -94,12 +94,12 @@
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.e2e.testing.framework.interpreter.ShellInterpreter$StreamHelper"/>
-        <Bug pattern="DM_DEFAULT_ENCODING"/>
+        <Class name="com.knubisoft.e2e.testing.framework.db.sql.executor.impl.PostgresExecutor"/>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.e2e.testing.framework.interpreter.ShellInterpreter"/>
-        <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>
+        <Class name="com.knubisoft.e2e.testing.framework.db.sql.executor.impl.PostgresExecutor"/>
+        <Bug pattern="ODR_OPEN_DATABASE_RESOURCE"/>
     </Match>
 </FindBugsFilter>

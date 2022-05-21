@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -23,6 +24,7 @@ import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,6 +92,11 @@ public final class HttpUtil {
                 .filter(p -> Objects.nonNull(p.getElasticSearchRequest()))
                 .findFirst()
                 .orElseThrow(() -> new DefaultFrameworkException(INCORRECT_HTTP_PROCESSING));
+    }
+
+    public boolean checkIfContentTypeIsJson(final Header contentTypeHeader) {
+        return contentTypeHeader.getValue().equals(MediaType.APPLICATION_JSON_VALUE)
+                || contentTypeHeader.getValue().equals(MediaType.APPLICATION_JSON_UTF8_VALUE);
     }
 
     //CHECKSTYLE:OFF

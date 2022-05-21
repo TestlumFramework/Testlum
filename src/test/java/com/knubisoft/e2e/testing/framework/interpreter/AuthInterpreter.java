@@ -95,7 +95,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
         final String credentials = getCredentialsFromFile(auth);
         final ApiResponse response = sendPostRequest(credentials, LOGIN_FIRST_STEP_URL, auth.getAlias());
         if (response.getCode() != STATUS_CODE) {
-            throw new DefaultFrameworkException(response.getBody());
+            throw new DefaultFrameworkException(response.getBody().toString());
         }
         return getJpathValue(JsonPath.parse(response.getBody()), TOKEN_JPATH);
     }
@@ -114,7 +114,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
                 twoFACode, TWO_FA_TOKEN_TYPE);
         final ApiResponse response = sendPostRequest(query, LOGIN_SECOND_STEP_URL, alias);
         if (response.getCode() != STATUS_CODE) {
-            throw new DefaultFrameworkException(response.getBody());
+            throw new DefaultFrameworkException(response.getBody().toString());
         }
         return getJpathValue(JsonPath.parse(response.getBody()), TOKEN_JPATH);
     }

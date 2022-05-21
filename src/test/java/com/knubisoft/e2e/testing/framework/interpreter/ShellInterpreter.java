@@ -46,13 +46,18 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
     private void execShellCommand(final List<String> shellCommands, final Shell shell,
                                   final CommandResult result) {
         shellCommands.forEach(shellCommand -> {
-            try {
-                Process process = Runtime.getRuntime().exec(shellCommand);
-                execShell(process, shell, result);
-            } catch (IOException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            execShellOrThrow(shellCommand, shell, result);
         });
+    }
+
+    private void execShellOrThrow(final String shellCommand, final Shell shell,
+                                  final CommandResult result) {
+        try {
+            Process process = Runtime.getRuntime().exec(shellCommand);
+            execShell(process, shell, result);
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void execShellFiles(final List<String> shellFiles, final Shell shell,

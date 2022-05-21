@@ -62,27 +62,30 @@ public class CsvInterpreter extends AbstractInterpreter<CsvCommands> {
         List<String> queries = commands.stream().map(command -> {
             String tableName = getTableName(command);
             String values = getValues(command);
-            if (tableName.isEmpty() || values.isEmpty()) {
-                throw new IllegalArgumentException("The syntax of query isn't correct.");
+            if (!tableName.isEmpty() && !values.isEmpty()) {
+                return String.format(SQL_INSERT, tableName, values);
             }
-            return String.format(SQL_INSERT, tableName, values);
+            throw new IllegalArgumentException("The syntax of query isn't correct.");
         }).collect(Collectors.toList());
         return new ListSource(queries);
     }
 
     private String getTableName(final String command) {
-        return command.split(DelimiterConstant.HASH)[0] != null
-                ? command.split(DelimiterConstant.HASH)[0]
+        return command.split(DelimiterConstant.COMA)[0] != null && !command.isEmpty()
+                ? command.split(DelimiterConstant.COMA)[0]
                 : DelimiterConstant.EMPTY;
     }
 
     private String getValues(final String values) {
-        String line = values.split(DelimiterConstant.HASH)[1] != null
-                ? values.split(DelimiterConstant.HASH)[1]
-                : DelimiterConstant.EMPTY;
-        if (line.isEmpty()) {
-            return DelimiterConstant.EMPTY;
+        StringBuilder builder = new StringBuilder();
+        String[] splitValues = values.split(DelimiterConstant.COMA);
+        for (int i = 1; i < splitValues.length; i++) {
+            if (i == splitValues.length - 1) {
+                builder.append(splitValues[i]);
+            } else {
+                builder.append(splitValues[i]).append(DelimiterConstant.COMA);
+            }
         }
-        return String.format(SQL_VALUES, String.join(DelimiterConstant.EMPTY, line));
+        return String.format(SQL_VALUES, builder.toString());
     }
 }

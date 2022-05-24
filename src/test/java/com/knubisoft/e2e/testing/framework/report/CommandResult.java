@@ -13,7 +13,6 @@ public class CommandResult {
 
     private String expected;
     private String actual;
-    private String locatorId;
 
     private boolean success;
     private String cause;

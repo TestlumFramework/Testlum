@@ -11,21 +11,20 @@ package com.knubisoft.e2e.testing.model.scenario;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for commandWithLocator complex type.
+ * <p>Java class for allValues complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="commandWithLocator"&gt;
+ * &lt;complexType name="allValues"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/e2e/testing/model/scenario}abstractCommand"&gt;
- *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/e2e/testing/model/scenario}scenarioLocator" /&gt;
- *     &lt;/extension&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;attribute name="type" use="required" type="{http://www.knubisoft.com/e2e/testing/model/scenario}typeForAllValues" /&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -33,42 +32,34 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "commandWithLocator")
-@XmlSeeAlso({
-    Click.class,
-    Input.class,
-    DropDown.class,
-    Assert.class
-})
-public abstract class CommandWithLocator
-    extends AbstractCommand
-{
+@XmlType(name = "allValues")
+public class AllValues {
 
-    @XmlAttribute(name = "locatorId", required = true)
-    protected String locatorId;
+    @XmlAttribute(name = "type", required = true)
+    protected TypeForAllValues type;
 
     /**
-     * Gets the value of the locatorId property.
+     * Gets the value of the type property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link TypeForAllValues }
      *     
      */
-    public String getLocatorId() {
-        return locatorId;
+    public TypeForAllValues getType() {
+        return type;
     }
 
     /**
-     * Sets the value of the locatorId property.
+     * Sets the value of the type property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link TypeForAllValues }
      *     
      */
-    public void setLocatorId(String value) {
-        this.locatorId = value;
+    public void setType(TypeForAllValues value) {
+        this.type = value;
     }
 
 }

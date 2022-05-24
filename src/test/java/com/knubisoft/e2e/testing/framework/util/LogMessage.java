@@ -69,6 +69,7 @@ public final class LogMessage {
     public static final String UNKNOWN_METHOD = "Unknown method %s";
     public static final String PAGES_FOLDER_NOT_EXIST = "Pages folder does not exist";
     public static final String COMPONENTS_FOLDER_NOT_EXIST = "Components folder does not exist";
+    public static final String SHELL_FOLDER_NOT_EXIST = "Shell folder does not exist";
     public static final String SCENARIOS_FOLDER_NOT_EXIST = "Scenarios folder does not exist";
     public static final String VARIATIONS_FOLDER_NOT_EXIST = "Variations folder does not exist";
     public static final String PATCHES_FOLDER_NOT_EXIST = "Patches folder does not exist";

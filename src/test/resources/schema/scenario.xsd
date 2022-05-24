@@ -31,6 +31,7 @@
     <x:include schemaLocation="invoke.xsd"/>
     <x:include schemaLocation="http.xsd"/>
     <x:include schemaLocation="logout.xsd"/>
+    <x:include schemaLocation="shell.xsd"/>
 
     <x:annotation>
         <x:appinfo>
@@ -82,6 +83,7 @@
                     <x:element name="var" type="tns:var"/>
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="invoke" type="tns:invoke"/>
+                    <x:element name="shell" type="tns:shell"/>
                 </x:choice>
             </x:sequence>
             <x:attribute name="onlyThis" type="x:boolean" default="false"/>

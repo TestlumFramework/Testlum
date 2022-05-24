@@ -17,21 +17,20 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for elasticSearchResponse complex type.
+ * <p>Java class for shell complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="elasticSearchResponse"&gt;
+ * &lt;complexType name="shell"&gt;
  *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/e2e/testing/model/scenario}abstractCommand"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="header" type="{http://www.knubisoft.com/e2e/testing/model/scenario}header" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element name="warning" type="{http://www.knubisoft.com/e2e/testing/model/scenario}elasticSearchResponseWarning" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="shellFile" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="shellCommand" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="code" type="{http://www.knubisoft.com/e2e/testing/model/scenario}code" default="200" /&gt;
- *       &lt;attribute name="file" type="{http://www.knubisoft.com/e2e/testing/model/scenario}expected" /&gt;
- *     &lt;/restriction&gt;
+ *       &lt;attribute name="file" type="{http://www.knubisoft.com/e2e/testing/model/scenario}nonEmptyString" /&gt;
+ *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -39,103 +38,75 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "elasticSearchResponse", propOrder = {
-    "header",
-    "warning"
+@XmlType(name = "shell", propOrder = {
+    "shellFile",
+    "shellCommand"
 })
-public class ElasticSearchResponse {
+public class Shell
+    extends AbstractCommand
+{
 
-    protected List<Header> header;
-    protected List<ElasticSearchResponseWarning> warning;
-    @XmlAttribute(name = "code")
-    protected Integer code;
+    protected List<String> shellFile;
+    protected List<String> shellCommand;
     @XmlAttribute(name = "file")
     protected String file;
 
     /**
-     * Gets the value of the header property.
+     * Gets the value of the shellFile property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the header property.
+     * This is why there is not a <CODE>set</CODE> method for the shellFile property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getHeader().add(newItem);
+     *    getShellFile().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Header }
+     * {@link String }
      * 
      * 
      */
-    public List<Header> getHeader() {
-        if (header == null) {
-            header = new ArrayList<Header>();
+    public List<String> getShellFile() {
+        if (shellFile == null) {
+            shellFile = new ArrayList<String>();
         }
-        return this.header;
+        return this.shellFile;
     }
 
     /**
-     * Gets the value of the warning property.
+     * Gets the value of the shellCommand property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the warning property.
+     * This is why there is not a <CODE>set</CODE> method for the shellCommand property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getWarning().add(newItem);
+     *    getShellCommand().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link ElasticSearchResponseWarning }
+     * {@link String }
      * 
      * 
      */
-    public List<ElasticSearchResponseWarning> getWarning() {
-        if (warning == null) {
-            warning = new ArrayList<ElasticSearchResponseWarning>();
+    public List<String> getShellCommand() {
+        if (shellCommand == null) {
+            shellCommand = new ArrayList<String>();
         }
-        return this.warning;
-    }
-
-    /**
-     * Gets the value of the code property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public int getCode() {
-        if (code == null) {
-            return  200;
-        } else {
-            return code;
-        }
-    }
-
-    /**
-     * Sets the value of the code property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setCode(Integer value) {
-        this.code = value;
+        return this.shellCommand;
     }
 
     /**

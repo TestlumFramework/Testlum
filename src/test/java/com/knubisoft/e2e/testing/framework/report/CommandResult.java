@@ -4,7 +4,6 @@ import lombok.Data;
 
 import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Map;
 
 @Data
 public class CommandResult {

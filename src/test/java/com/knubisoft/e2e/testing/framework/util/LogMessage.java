@@ -135,5 +135,21 @@ public final class LogMessage {
     public static final String SUCCESS_QUERY = "Query completed successfully";
     public static final String TESTS_RUN_FAILED = "Test run failed";
     public static final String DROP_DOWN_OPERATION = "%s from drop down by %s, value for drop down method %s";
-    public static final String JS_EXECUTION_OPERATION = "File name [%s]\n Commands: \n%s";
+    public static final String JS_OPERATION_INFO = "File name [%s]%n Commands: %n%s";
+    public static final String NAVIGATE_NOT_SUPPORTED = "Navigate command %s not supported";
+    public static final String DROP_DOWN_NOT_SUPPORTED = "Drop down by method by %s not supported";
+    public static final String JS_EXECUTION_OPERATION = "JavaScript execution operation";
+    public static final String JS_FILE_UNREADABLE = "The .js file by path ./javascript/%s unreadable";
+    public static final String JS_FILE_NOT_FOUND = "Can't find the .js file [%s] in the resources folder";
+    public static final String CLICK_METHOD = "Click method";
+    public static final String CLICK_LOCATOR = "Click operation locator";
+    public static final String INPUT_LOCATOR = "Input operation locator";
+    public static final String ASSERT_LOCATOR = "Assert operation locator";
+    public static final String DROP_DOWN_LOCATOR = "Drop down operation locator";
+    public static final String DROP_DOWN_ONE_VALUE = "Process drop down one value";
+    public static final String ASSERT_ATTRIBUTE = "Assert attribute";
+    public static final String ASSERT_ACTUAL = "Assert operation actual";
+    public static final String ASSERT_EXPECTED = "Assert operation expected";
+    public static final String NAVIGATE_URL = "Navigate url";
+    public static final String NAVIGATE = "Navigate";
 }

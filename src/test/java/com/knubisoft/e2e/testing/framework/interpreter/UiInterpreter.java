@@ -1,5 +1,6 @@
 package com.knubisoft.e2e.testing.framework.interpreter;
 
+import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractSeleniumInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
@@ -41,13 +42,30 @@ import java.util.function.Predicate;
 
 import static com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings.JS_FOLDER;
 import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_ACTUAL;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_ATTRIBUTE;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_EXPECTED;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_LOCATOR;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BY_URL_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLICK_LOCATOR;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLICK_METHOD;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_LOCATOR;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_NOT_SUPPORTED;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_ONE_VALUE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_OPERATION;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.INPUT_LOCATOR;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_EXECUTION_OPERATION;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_FILE_NOT_FOUND;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_FILE_UNREADABLE;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_OPERATION_INFO;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_NOT_SUPPORTED;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_URL;
 import static com.knubisoft.e2e.testing.model.scenario.ClickMethod.JS;
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.NEW_LINE;
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.SPACE;
+import static com.knubisoft.e2e.testing.model.scenario.ClickMethod.SELENIUM;
 import static java.lang.String.format;
 
 
@@ -55,11 +73,11 @@ import static java.lang.String.format;
 @InterpreterForClass(Ui.class)
 public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
-    private final Map<Predicate<AbstractCommand>, BiConsumer<AbstractCommand, CommandResult>> uiCommands;
+    private final Map<UiCommandPredicate, UiCommand> uiCommands;
 
     public UiInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
-        Map<Predicate<AbstractCommand>, BiConsumer<AbstractCommand, CommandResult>> commands = new HashMap<>();
+        Map<UiCommandPredicate, UiCommand> commands = new HashMap<>();
         commands.put(ui -> ui instanceof Click, (ui, result) -> click((Click) ui, result));
         commands.put(ui -> ui instanceof Input, (ui, result) -> input((Input) ui, result));
         commands.put(ui -> ui instanceof Navigate, (ui, result) -> navigate((Navigate) ui, result));
@@ -71,15 +89,14 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     @Override
     protected void acceptImpl(final Ui o, final CommandResult result) {
-        o.getClickOrInputOrNavigate()
-                .forEach(command -> uiCommands.keySet().stream()
-                        .filter(key -> key.test(command))
-                        .map(uiCommands::get)
-                        .forEach(method -> method.accept(command, result)));
+        o.getClickOrInputOrNavigate().forEach(command -> uiCommands.keySet().stream()
+                .filter(key -> key.test(command))
+                .map(uiCommands::get)
+                .forEach(method -> method.accept(command, result)));
     }
 
     private void click(final Click click, final CommandResult result) {
-        result.put("Click operation locator", click.getLocatorId());
+        result.put(CLICK_LOCATOR, click.getLocatorId());
         WebElement webElement = getWebElement(click.getLocatorId());
         ExplicitWaitUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
         highlightElementIfRequired(click.isHighlight(), webElement);
@@ -89,10 +106,10 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     private void clickWithMethod(final ClickMethod method, final WebElement element, final CommandResult result) {
         if (method != null && method.equals(JS)) {
-            result.put("Click method", "js");
+            result.put(CLICK_METHOD, JS.value());
             executeJsScript(element, result);
         } else {
-            result.put("Click method", "selenium");
+            result.put(CLICK_METHOD, SELENIUM.value());
             element.click();
         }
     }
@@ -107,7 +124,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         WebDriver driver = dependencies.getWebDriver();
         String filePath = o.getFile();
         String command = readCommands(filePath);
-        result.put("JavaScript execution operation", format(JS_EXECUTION_OPERATION, filePath, command));
+        result.put(JS_EXECUTION_OPERATION, format(JS_OPERATION_INFO, filePath, command));
 
         JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
         javascriptExecutor.executeScript(command);
@@ -119,8 +136,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
             List<String> commands = Files.readAllLines(jsFile.toPath());
             return String.join(EMPTY, commands);
         } catch (IOException e) {
-            throw new RuntimeException("Can't read the file by path ./javascript/"
-                    + filePath);
+            throw new DefaultFrameworkException(format(JS_FILE_UNREADABLE, filePath));
         }
     }
 
@@ -131,12 +147,12 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
             File fromDir = new File(Objects.requireNonNull(resource).toURI());
             return fileSearcher.search(fromDir, filePath);
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Can't find the file in the resources folder");
+            throw new DefaultFrameworkException(format(JS_FILE_NOT_FOUND, filePath));
         }
     }
 
     private void input(final Input input, final CommandResult result) {
-        result.put("Input operation locator", input.getLocatorId());
+        result.put(INPUT_LOCATOR, input.getLocatorId());
         WebElement webElement = getWebElement(input.getLocatorId());
         highlightElementIfRequired(input.isHighlight(), webElement);
         send(input, webElement, result);
@@ -153,7 +169,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     private void navigate(final Navigate navigate, final CommandResult result) {
         NavigateCommand navigateCommand = navigate.getCommand();
-        result.put("navigate", navigateCommand.value());
+        result.put(NAVIGATE, navigateCommand.value());
         switch (navigateCommand) {
             case BACK: dependencies.getWebDriver().navigate().back();
                 break;
@@ -161,12 +177,13 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
                 break;
             case TO: navigateTo(navigate.getPath(), result);
                 break;
+            default: throw new DefaultFrameworkException(format(NAVIGATE_NOT_SUPPORTED, navigateCommand.value()));
         }
     }
 
     private void navigateTo(final String path, final CommandResult result) {
         String url = inject(dependencies.getGlobalTestConfiguration().getUi().getBaseUrl() + path);
-        result.put("navigate url", url);
+        result.put(NAVIGATE_URL, url);
         log.info(BY_URL_LOG, url);
         dependencies.getWebDriver().navigate().to(url);
     }
@@ -174,8 +191,8 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     private void assertValues(final Assert aAssert, final CommandResult result) {
         String actual = getActualValue(aAssert, result);
         String expected = getExpectedValue(aAssert);
-        result.put("Assert operation actual", actual);
-        result.put("Assert operation expected", expected);
+        result.put(ASSERT_ACTUAL, actual);
+        result.put(ASSERT_EXPECTED, expected);
         newCompare()
                 .withActual(actual)
                 .withExpected(expected)
@@ -183,8 +200,8 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private String getActualValue(final Assert aAssert, final CommandResult result) {
-        result.put("Assert operation locator", aAssert.getLocatorId());
-        result.put("Assert attribute", aAssert.getAttribute().value());
+        result.put(ASSERT_LOCATOR, aAssert.getLocatorId());
+        result.put(ASSERT_ATTRIBUTE, aAssert.getAttribute().value());
         WebElement webElement = getWebElement(aAssert.getLocatorId());
         String value = webElement.getAttribute(aAssert.getAttribute().value());
         return value
@@ -200,7 +217,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     private void dropDown(final DropDown dropDown, final CommandResult result) {
         String locatorId = dropDown.getLocatorId();
-        result.put("Drop down operation locator", locatorId);
+        result.put(DROP_DOWN_LOCATOR, locatorId);
         Select select = getSelectElement(locatorId);
         OneValue oneValue = dropDown.getOneValue();
         if (oneValue != null) {
@@ -214,7 +231,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         TypeForOneValue type = oneValue.getType();
         SelectOrDeselectBy method = oneValue.getBy();
         String value = oneValue.getValue();
-        result.put("Process drop down one value", format(DROP_DOWN_OPERATION, type.name(), method.name(), value));
+        result.put(DROP_DOWN_ONE_VALUE, format(DROP_DOWN_OPERATION, type.value(), method.value(), value));
         if (type == TypeForOneValue.SELECT) {
             selectByMethod(select, method, value);
         } else {
@@ -231,6 +248,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
                 break;
             case VALUE: select.selectByValue(value);
                 break;
+            default: throw new DefaultFrameworkException(format(DROP_DOWN_NOT_SUPPORTED, method.value()));
         }
     }
 
@@ -242,6 +260,10 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
                 break;
             case VALUE: select.deselectByValue(value);
                 break;
+            default: throw new DefaultFrameworkException(format(DROP_DOWN_NOT_SUPPORTED, method.value()));
         }
     }
+
+    private interface UiCommandPredicate extends Predicate<AbstractCommand> { }
+    private interface UiCommand extends BiConsumer<AbstractCommand, CommandResult> { }
 }

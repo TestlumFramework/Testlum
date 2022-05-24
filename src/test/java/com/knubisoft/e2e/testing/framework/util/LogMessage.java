@@ -134,4 +134,6 @@ public final class LogMessage {
                    ANSI_RED_BOLD + "Scenario %s was failed. Related exception provided below." + ANSI_RED_BOLD;
     public static final String SUCCESS_QUERY = "Query completed successfully";
     public static final String TESTS_RUN_FAILED = "Test run failed";
+    public static final String DROP_DOWN_OPERATION = "%s from drop down by %s, value for drop down method %s";
+    public static final String JS_EXECUTION_OPERATION = "File name [%s]\n Commands: \n%s";
 }

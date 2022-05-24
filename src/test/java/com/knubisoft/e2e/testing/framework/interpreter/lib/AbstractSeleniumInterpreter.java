@@ -13,6 +13,7 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.Select;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -79,6 +80,10 @@ public abstract class AbstractSeleniumInterpreter<T extends AbstractCommand> ext
         Locator locator = dependencies.getGlobalLocators().getLocator(locatorId);
         WebDriver webDriver = dependencies.getWebDriver();
         return dependencies.getWebElementFinder().find(locator, webDriver);
+    }
+
+    protected Select getSelectElement(final String locatorId) {
+        return new Select(getWebElement(locatorId));
     }
 
     private void copyScreenshotFileToFolder(final File screenshot, final File screenshotsFolder) throws IOException {

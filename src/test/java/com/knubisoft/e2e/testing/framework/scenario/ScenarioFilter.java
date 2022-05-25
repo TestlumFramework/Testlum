@@ -3,8 +3,11 @@ package com.knubisoft.e2e.testing.framework.scenario;
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.model.global_config.FilterTags;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.experimental.UtilityClass;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -15,14 +18,20 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class ScenarioFilter {
 
-    public Set<ScenarioCollector.MappingResult> filterScenarios(final Set<ScenarioCollector.MappingResult> original) {
-        Set<ScenarioCollector.MappingResult> filtered = filterParsedScenarios(original);
-        filtered = filterScenariosIfOnlyThis(filtered);
-        filtered = filterAndSortByTags(filtered);
+    public FiltrationResult filterScenarios(final Set<ScenarioCollector.MappingResult> original) {
+        Set<ScenarioCollector.MappingResult> invalidScenarios = getNonParsedScenarios(original);
+        if (invalidScenarios.size() == original.size()) {
+            return new FiltrationResult(Collections.emptySet(), invalidScenarios, true);
+        }
+        return new FiltrationResult(filterValidScenarios(original), invalidScenarios, false);
+    }
 
-        Set<ScenarioCollector.MappingResult> result = getNonParsedScenarios(original);
-        result.addAll(filtered);
-        return result;
+    private Set<ScenarioCollector.MappingResult> filterValidScenarios(
+            final Set<ScenarioCollector.MappingResult> original) {
+        Set<ScenarioCollector.MappingResult> validScenarios = filterParsedScenarios(original);
+        validScenarios = filterScenariosIfOnlyThis(validScenarios);
+        validScenarios = filterAndSortByTags(validScenarios);
+        return validScenarios;
     }
 
     private Set<ScenarioCollector.MappingResult> filterParsedScenarios(
@@ -91,5 +100,13 @@ public class ScenarioFilter {
 
     private boolean isScenarioParsed(final ScenarioCollector.MappingResult entry) {
         return Objects.nonNull(entry.scenario);
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class FiltrationResult {
+        private Set<ScenarioCollector.MappingResult> validScenarios;
+        private Set<ScenarioCollector.MappingResult> invalidScenarios;
+        private boolean onlyInvalidScenarios;
     }
 }

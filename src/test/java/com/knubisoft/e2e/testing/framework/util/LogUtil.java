@@ -3,6 +3,8 @@ package com.knubisoft.e2e.testing.framework.util;
 import com.amazonaws.services.simpleemail.model.Message;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.model.ScenarioArguments;
+import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
+import com.knubisoft.e2e.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.e2e.testing.model.scenario.Overview;
 import com.knubisoft.e2e.testing.model.scenario.OverviewPart;
 import lombok.experimental.UtilityClass;
@@ -15,6 +17,8 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BROWSER_VERSION_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.COMMENT_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.OVERVIEW_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SUBSTEP_LOG;
@@ -112,8 +116,12 @@ public class LogUtil {
         }
     }
 
-    public void logSubstep(final InterpreterDependencies dependencies, final Object action) {
+    public void logSubstep(final InterpreterDependencies dependencies, final AbstractCommand action) {
         log.info(SUBSTEP_LOG, dependencies.getPosition().getAndIncrement(), action.getClass().getSimpleName());
+        log.info(COMMENT_LOG, action.getComment());
+        if (action instanceof CommandWithLocator){
+            log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());
+        }
     }
 
 }

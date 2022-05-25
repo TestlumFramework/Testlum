@@ -7,6 +7,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.ExplicitWaitUtil;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
+import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.framework.util.SeleniumUtil;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.model.scenario.Assert;
@@ -90,9 +91,10 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     @Override
     protected void acceptImpl(final Ui o, final CommandResult result) {
+        //LogUtil.logSubstep(dependencies, o);
         o.getClickOrInputOrNavigate().forEach(command -> uiCommands.keySet().stream()
                 .filter(key -> key.test(command))
-                .map(uiCommands::get)
+                .map(uiCommands::get).peek(s -> LogUtil.logSubstep(dependencies, command))
                 .forEach(method -> method.accept(command, result)));
     }
 

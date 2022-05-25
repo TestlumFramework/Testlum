@@ -119,7 +119,7 @@ public class LogUtil {
     public void logSubstep(final InterpreterDependencies dependencies, final AbstractCommand action) {
         log.info(SUBSTEP_LOG, dependencies.getPosition().getAndIncrement(), action.getClass().getSimpleName());
         log.info(COMMENT_LOG, action.getComment());
-        if (action instanceof CommandWithLocator){
+        if (action instanceof CommandWithLocator) {
             log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());
         }
     }

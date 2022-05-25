@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+
 @Slf4j
 @InterpreterForClass(Kafka.class)
 public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
@@ -66,6 +68,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                                    final int actionNumber,
                                    final Object action,
                                    final String alias) {
+        log.info(ALIAS_LOG, alias);
         if (action instanceof SendKafkaMessage) {
             sendMessage((SendKafkaMessage) action, actionNumber, result, alias);
         } else {

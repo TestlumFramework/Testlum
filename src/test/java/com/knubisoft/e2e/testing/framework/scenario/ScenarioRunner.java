@@ -7,9 +7,9 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.CommandToInterpreterMap;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterScanner;
+import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.ScenarioArguments;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
-import com.knubisoft.e2e.testing.model.scenario.Overview;
 import com.knubisoft.e2e.testing.framework.WebDriverFactory;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.report.ScenarioResult;
@@ -26,11 +26,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXCEPTION_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTE_SCENARIO_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTION_STOP_SIGNAL_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.FUNCTION_FOR_COMMAND_NOT_FOUND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.MISSING_CONSTRUCTOR;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.OVERVIEW_LOG;
 
 
 @Slf4j
@@ -46,11 +45,9 @@ public class ScenarioRunner {
     private CommandToInterpreterMap cmdToInterpreterMap;
 
     public ScenarioResult run() {
-        log.info("--------------------------------------------------");
-        log.info(EXECUTE_SCENARIO_LOG, scenarioArguments.getFile().getAbsolutePath());
         prepare();
-        logOverview();
         prepareReport();
+        LogUtil.logOverview(scenarioResult.getOverview(), scenarioArguments, SCENARIO_ID_GENERATOR);
         runScenarioCommands();
         return scenarioResult;
     }
@@ -114,6 +111,7 @@ public class ScenarioRunner {
             execute(command, result);
         } finally {
             result.setExecutionTime(stopWatch.getTime());
+            log.info(EXECUTION_TIME_LOG, result.getExecutionTime());
         }
         callback.onCommandExecuted(result);
     }
@@ -155,7 +153,7 @@ public class ScenarioRunner {
         String ex = result.getCause();
         if (ex != null) {
             log.error("----------------    EXCEPTION    -----------------");
-            log.error(EXCEPTION_LOG, ex);
+            log.error(EXCEPTION_LOG, scenarioResult.getName(), ex);
             log.error("--------------------------------------------------");
             fillReportException(ex);
             if (stopScenarioOnFailure) {
@@ -190,23 +188,6 @@ public class ScenarioRunner {
             return instance;
         } catch (Exception e) {
             throw new DefaultFrameworkException(MISSING_CONSTRUCTOR, value);
-        }
-    }
-
-    private void logOverview() {
-        Overview overview = scenarioArguments.getScenario().getOverview();
-        if (overview != null) {
-            log.info(OVERVIEW_LOG);
-            logIfExist(overview.getDescription(), overview.getDeveloper(), overview.getJira());
-            overview.getLink().stream().filter(StringUtils::isNotBlank).forEach(log::info);
-        }
-    }
-
-    private void logIfExist(final String... msg) {
-        for (String each : msg) {
-            if (each != null) {
-                log.info(each);
-            }
         }
     }
 

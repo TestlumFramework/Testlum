@@ -24,6 +24,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+
 @Slf4j
 @InterpreterForClass(S3.class)
 public class S3Interpreter extends AbstractInterpreter<S3> {
@@ -37,6 +39,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
 
     @Override
     protected void acceptImpl(final S3 s3, final CommandResult result) {
+        log.info(ALIAS_LOG, s3.getAlias());
         String bucket = inject(s3.getAlias());
         String key = inject(s3.getKey());
 

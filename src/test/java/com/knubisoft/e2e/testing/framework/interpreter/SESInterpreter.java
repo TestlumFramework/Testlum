@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+
 @Slf4j
 @InterpreterForClass(Ses.class)
 public class SESInterpreter extends AbstractInterpreter<Ses> {
@@ -35,6 +37,7 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
 
     @Override
     protected void acceptImpl(final Ses ses, final CommandResult result) {
+        log.info(ALIAS_LOG, ses.getAlias());
         log.info(LogMessage.SES_DESTINATION_AND_SOURCE_LOG, ses.getDestination(), ses.getSource());
         verify(ses);
         sendEmail(ses);

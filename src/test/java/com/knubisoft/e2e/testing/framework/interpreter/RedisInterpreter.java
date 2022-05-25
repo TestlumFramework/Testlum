@@ -9,10 +9,14 @@ import com.knubisoft.e2e.testing.framework.db.source.ListSource;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.model.scenario.Redis;
 import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+
+@Slf4j
 @InterpreterForClass(Redis.class)
 public class RedisInterpreter extends AbstractInterpreter<Redis> {
 
@@ -38,6 +42,7 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
     }
 
     protected String getActual(final Redis redis, final CommandResult result) {
+        log.info(ALIAS_LOG, redis.getAlias());
         final List<String> sqls = getRedisQueryList(redis);
         result.put("sqls", sqls);
         final StorageOperation.StorageOperationResult apply = redisOperation.apply(new ListSource(sqls),

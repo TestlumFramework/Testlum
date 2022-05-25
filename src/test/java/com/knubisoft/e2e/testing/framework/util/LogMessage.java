@@ -77,23 +77,30 @@ public final class LogMessage {
     public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
     public static final String TEST_BY_PATH_DISABLED = "Test by path %s is disabled";
 
+    public static final String TABLE_FORMAT = "%-20s|%-70s";
+
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001b[0m";
     public static final String ANSI_RED_BOLD = "\033[1;31m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_CYAN = "\u001b[36m";
 
     public static final String ERROR_LOG = "Error ->";
     public static final String OVERVIEW_LOG = "Overview:";
-    public static final String POSITION_COMMAND_LOG = "%2s. %-8s";
-    public static final String COMMENT_LOG = "Comment: {}";
+    public static final String POSITION_COMMAND_LOG = ANSI_YELLOW
+            + "--------- Scenario step #%d - %s ---------" + ANSI_RESET;
+    public static final String SUBSTEP_LOG = ANSI_CYAN + "-------substep #{} - {}-------" + ANSI_RESET;
+    public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
-    public static final String EXECUTE_SCENARIO_LOG = ANSI_GREEN + "Execute for scenario" + ANSI_RESET + " {}";
+    public static final String SCENARIO_NUMBER_AND_PATH_LOG = ANSI_GREEN
+            + "================== Execute for scenario #{} {} - {} ==================" + ANSI_RESET;
 
     public static final String CANNOT_FIND_PROFILE = "Cannot find active profile option. "
             + "Please set profile to VM options.";
     public static final String EXECUTION_STOP_SIGNAL_LOG = "Execution has been stopped because of StopSignal";
-    public static final String EXCEPTION_LOG = ANSI_RED + "Exception ->" + ANSI_RESET + " {}";
-    public static final String AUTHENTICATE_WITH_CREDENTIALS_COMMENT = "Authenticate with credentials %s";
+    public static final String EXCEPTION_LOG = ANSI_RED + "Exception on scenario {}->" + ANSI_RESET + " {}";
+    public static final String AUTHENTICATE_WITH_CREDENTIALS_COMMENT = "Authenticate with credentials {}";
     public static final String FAILED_VARIABLE_WITH_PATH_LOG = "Failed [variable] {} [comment] {}";
     public static final String TEMPLATE_LOG = "[Value in contextOf] = {}";
     public static final String BY_URL_LOG = "By URL [{}]";
@@ -152,4 +159,17 @@ public final class LogMessage {
     public static final String ASSERT_EXPECTED = "Assert operation expected";
     public static final String NAVIGATE_URL = "Navigate url";
     public static final String NAVIGATE = "Navigate";
+
+    public static final String PATCH_PATH_LOG = format(TABLE_FORMAT, "Migration patch ",
+            "{}, path - src/test/resources/patches/{}");
+    public static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
+    public static final String EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Time ", "{} ms");
+    public static final String WAIT_INFO_LOG = "Time - {}. Unit - {}.";
+    public static final String LOCATOR_LOG = format(TABLE_FORMAT, "Locator", "{}");
+    public static final String VARIATION_LOG = "Variation - {}";
+    public static final String BROWSER_VERSION_LOG = "Browser version - {}";
+    public static final String HTTP_STATUS_CODE = format(TABLE_FORMAT, "Status code", "{} {}");
+    public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
+    public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "Method", "{}");
+    public static final String OVERVIEW_INFO_LOG = "{}: {}";
 }

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
@@ -45,6 +46,7 @@ public class OracleInterpreter extends AbstractInterpreter<Oracle> {
     }
 
     protected String getActual(final Oracle oracle, final CommandResult result) {
+        log.info(ALIAS_LOG, oracle.getAlias());
         List<String> sqls = getSqlList(oracle);
         result.put("sqls", sqls);
         StorageOperation.StorageOperationResult applyOracle = oracleOperation.apply(new ListSource(sqls),

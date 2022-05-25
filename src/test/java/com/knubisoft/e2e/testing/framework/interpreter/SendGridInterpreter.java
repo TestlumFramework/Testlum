@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+
 @Slf4j
 @InterpreterForClass(Sendgrid.class)
 public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
@@ -39,6 +41,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     //CHECKSTYLE:OFF
     @Override
     protected void acceptImpl(final Sendgrid sendgrid, final CommandResult result) {
+        log.info(ALIAS_LOG, sendgrid.getAlias());
         SendGridUtil.SendGridMethodMetadata metadata = SendGridUtil.getSendgridMethodMetadata(sendgrid);
         SendgridInfo sendgridInfo = metadata.getHttpInfo();
         Method method = metadata.getHttpMethod();

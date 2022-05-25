@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+
 @Slf4j
 @InterpreterForClass(Rabbit.class)
 public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
@@ -54,6 +56,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                                       final int actionNumber,
                                       final Object action,
                                       final String alias) {
+        log.info(ALIAS_LOG, alias);
         if (action instanceof SendRmqMessage) {
             sendMessage((SendRmqMessage) action, actionNumber, result, alias);
         } else {

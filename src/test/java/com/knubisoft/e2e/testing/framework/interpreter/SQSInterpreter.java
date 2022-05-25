@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+
 @Slf4j
 @InterpreterForClass(Sqs.class)
 public class SQSInterpreter extends AbstractInterpreter<Sqs> {
@@ -38,6 +40,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     //CHECKSTYLE:OFF
     private void runSqsOperation(final Sqs sqs, final String queue,
                                  final CommandResult result, final String alias) {
+        log.info(ALIAS_LOG, alias);
         if (sqs.getSend() != null) {
             result.put("action", "send");
             sendMessage(queue, sqs.getSend(), result, alias);

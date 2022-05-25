@@ -25,7 +25,9 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ERROR_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.HTTP_METHOD_LOG;
 
 @Slf4j
 @InterpreterForClass(Http.class)
@@ -47,6 +49,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         HttpUtil.HttpMethodMetadata metadata = HttpUtil.getHttpMethodMetadata(http);
         HttpInfo httpInfo = metadata.getHttpInfo();
         HttpMethod httpMethod = metadata.getHttpMethod();
+        log.info(HTTP_METHOD_LOG,httpMethod.name());
         String url = inject(httpInfo.getUrl());
         result.put("url", url);
         result.put("method", httpMethod.name());
@@ -64,6 +67,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                                     final String url,
                                     final HttpMethod httpMethod,
                                     final String alias) {
+        log.info(ALIAS_LOG, alias);
         Map<String, String> headers = getHeaders(httpInfo);
         boolean isJson = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .equalsIgnoreCase(MediaType.APPLICATION_JSON_VALUE);
@@ -101,6 +105,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         }
         HttpInfoWithBody commandWithBody = (HttpInfoWithBody) httpInfo;
         Body body = commandWithBody.getBody();
+        log.info("Body: " + body.toString());
         return HttpUtil.extractBody(body, isJson, this, dependencies);
     }
 }

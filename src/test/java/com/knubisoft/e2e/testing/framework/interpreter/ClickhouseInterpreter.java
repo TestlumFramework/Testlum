@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+
 @Slf4j
 @InterpreterForClass(Clickhouse.class)
 public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
@@ -41,6 +43,7 @@ public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
     }
 
     protected String getActual(final Clickhouse clickhouse, final CommandResult result) {
+        log.info(ALIAS_LOG, clickhouse.getAlias());
         List<String> sqls = getSqlList(clickhouse);
         LogUtil.logAllQueries(sqls);
         result.put("sqls", sqls);

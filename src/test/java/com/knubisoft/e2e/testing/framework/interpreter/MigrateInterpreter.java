@@ -20,8 +20,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ERROR_DURING_DB_MIGRATION_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAME_FOR_MIGRATION_MUST_PRESENT;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.PATCH_PATH_LOG;
 
 @Slf4j
 @InterpreterForClass(Migrate.class)
@@ -41,6 +43,7 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
         if (StringUtils.isBlank(storageName)) {
             throw new DefaultFrameworkException(NAME_FOR_MIGRATION_MUST_PRESENT);
         }
+        log.info(ALIAS_LOG, migrate.getAlias());
         migrate(migrate, storageName, migrate.getAlias(), result);
     }
 
@@ -67,6 +70,7 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
 
     private FileSource createFileSource(final File patchesFolder,
                                         final String patchFileName) {
+        log.info(PATCH_PATH_LOG, patchFileName, patchFileName);
         File patch = new File(patchesFolder, patchFileName);
         return new FileSource(patch);
     }

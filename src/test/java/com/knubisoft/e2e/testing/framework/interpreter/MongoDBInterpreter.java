@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+
 @Slf4j
 @InterpreterForClass(Mongo.class)
 public class MongoDBInterpreter extends AbstractInterpreter<Mongo> {
@@ -40,6 +42,7 @@ public class MongoDBInterpreter extends AbstractInterpreter<Mongo> {
     }
 
     private String getActual(final Mongo mongo, final CommandResult result) {
+        log.info(ALIAS_LOG, mongo.getAlias());
         List<String> sqls = getMongoQueryList(mongo);
         result.put("sqls", sqls);
         ListSource listSource = new ListSource(sqls);

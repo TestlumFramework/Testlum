@@ -61,6 +61,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_OPERATION_I
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_NOT_SUPPORTED;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_URL;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.VALUE_LOG;
 import static com.knubisoft.e2e.testing.model.scenario.ClickMethod.JS;
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.NEW_LINE;
@@ -163,7 +164,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         String injected = inject(input.getValue());
         String text = SeleniumUtil.resolveSendKeysType(injected, dependencies.getFileSearcher(), element);
         result.put("value", text);
-        log.info(text);
+        log.info(VALUE_LOG, text);
         element.sendKeys(text);
     }
 

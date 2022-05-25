@@ -32,6 +32,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+
 @Slf4j
 @InterpreterForClass(Elasticsearch.class)
 public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch> {
@@ -60,6 +62,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     protected Object getActual(final ElasticSearchRequest elasticSearchRequest,
                                final HttpMethod httpMethod,
                                final String alias) {
+        log.info(ALIAS_LOG, alias);
         Request request = buildRequest(elasticSearchRequest, httpMethod);
         log.info(LogMessage.ELASTICSEARCH_METHOD_AND_URL_LOG, request.getMethod(), request.getEndpoint());
         try {

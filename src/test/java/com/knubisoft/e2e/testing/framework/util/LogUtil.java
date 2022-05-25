@@ -1,6 +1,10 @@
 package com.knubisoft.e2e.testing.framework.util;
 
 import com.amazonaws.services.simpleemail.model.Message;
+import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
+import com.knubisoft.e2e.testing.model.ScenarioArguments;
+import com.knubisoft.e2e.testing.model.scenario.Overview;
+import com.knubisoft.e2e.testing.model.scenario.OverviewPart;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -8,8 +12,14 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.BROWSER_VERSION_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.OVERVIEW_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SUBSTEP_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.TESTS_RUN_FAILED;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.VARIATION_LOG;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.SPACE;
@@ -20,12 +30,22 @@ public class LogUtil {
 
     private static final String REGEX_NEW_LINE = "[\\r\\n]";
 
-//    public void logScenarioOverview(final Overview overview) {
-//        logOverviewPartInfo(OverviewPart.NAME, overview.getName());
-//        logOverviewPartInfo(OverviewPart.DESCRIPTION, overview.getDescription());
-//        logOverviewPartInfo(OverviewPart.JIRA, overview.getJira());
-//        logOverviewPartInfo(OverviewPart.DEVELOPER, overview.getDeveloper());
-//    }
+    public void logOverview(final Overview overview, final ScenarioArguments scenarioArguments,
+                            final AtomicInteger atomicInteger) {
+        log.info(EMPTY);
+        log.info(SCENARIO_NUMBER_AND_PATH_LOG, atomicInteger, overview.getName(),
+                scenarioArguments.getFile().getAbsolutePath());
+        log.info(OVERVIEW_LOG);
+        logOverviewPartInfo(OverviewPart.DESCRIPTION, overview.getDescription());
+        logOverviewPartInfo(OverviewPart.JIRA, overview.getJira());
+        logOverviewPartInfo(OverviewPart.DEVELOPER, overview.getDeveloper());
+        if (scenarioArguments.isContainsUiSteps()) {
+            if (StringUtils.isNotBlank(scenarioArguments.getScenario().getVariations())) {
+                log.info(VARIATION_LOG, scenarioArguments.getScenario().getVariations());
+            }
+            log.info(BROWSER_VERSION_LOG, scenarioArguments.getBrowserVersion());
+        }
+    }
 
     public void logAllQueries(final List<String> queries) {
         queries.forEach(query -> log.info(
@@ -63,11 +83,11 @@ public class LogUtil {
         }
     }
 
-//    private void logOverviewPartInfo(final OverviewPart part, final String data) {
-//        if (StringUtils.isNotBlank(data)) {
-//            log.info(LogMessage.OVERVIEW_INFO_LOG, part.getPartTitle(), data);
-//        }
-//    }
+    private void logOverviewPartInfo(final OverviewPart part, final String data) {
+        if (StringUtils.isNotBlank(data)) {
+            log.info(LogMessage.OVERVIEW_INFO_LOG, part.getPartTitle(), data);
+        }
+    }
 
     public void logTestExecutionSummary(final TestExecutionSummary testExecutionSummary) {
         if (testExecutionSummary.getTestsFoundCount() == 0 && !testExecutionSummary.getFailures().isEmpty()) {
@@ -91,4 +111,9 @@ public class LogUtil {
                             e.getTestIdentifier().getDisplayName()), e.getException()));
         }
     }
+
+    public void logSubstep(final InterpreterDependencies dependencies, final Object action) {
+        log.info(SUBSTEP_LOG, dependencies.getPosition().getAndIncrement(), action.getClass().getSimpleName());
+    }
+
 }

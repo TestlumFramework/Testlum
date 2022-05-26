@@ -120,9 +120,9 @@ public class E2ERootTest {
         return new AssumptionViolatedException(message);
     }
 
-    @AfterAll
-    @SneakyThrows
-    public void afterAll() {
-        reportGenerator.generateReport();
-    }
+//    @AfterAll
+//    @SneakyThrows
+//    public void afterAll() {
+//        reportGenerator.generateReport();
+//    }
 }

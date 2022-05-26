@@ -4,7 +4,8 @@ public enum OverviewPart {
     NAME("Name"),
     DESCRIPTION("Description"),
     JIRA("Jira"),
-    DEVELOPER("Developer");
+    DEVELOPER("Developer"),
+    LINK("Link");
 
     private final String partTitle;
 

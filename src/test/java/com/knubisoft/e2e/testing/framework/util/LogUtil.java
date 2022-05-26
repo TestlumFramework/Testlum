@@ -44,6 +44,9 @@ public class LogUtil {
         logOverviewPartInfo(OverviewPart.DESCRIPTION, overview.getDescription());
         logOverviewPartInfo(OverviewPart.JIRA, overview.getJira());
         logOverviewPartInfo(OverviewPart.DEVELOPER, overview.getDeveloper());
+        for (String link: overview.getLink()) {
+            logOverviewPartInfo(OverviewPart.LINK, link);
+        }
         logUiInfo(scenarioArguments);
     }
 

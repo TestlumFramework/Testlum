@@ -99,7 +99,11 @@ public final class LogMessage {
     public static final String CANNOT_FIND_PROFILE = "Cannot find active profile option. "
             + "Please set profile to VM options.";
     public static final String EXECUTION_STOP_SIGNAL_LOG = "Execution has been stopped because of StopSignal";
-    public static final String EXCEPTION_LOG = ANSI_RED + "Exception on scenario {}->" + ANSI_RESET + " {}";
+    public static final String EXCEPTION_LOG = ANSI_RED
+            + "----------------    EXCEPTION    -----------------\n"
+            + "Exception on scenario {}->"
+            + ANSI_RESET + " {}\n"
+            + "--------------------------------------------------";
     public static final String AUTHENTICATE_WITH_CREDENTIALS_COMMENT = "Authenticate with credentials {}";
     public static final String FAILED_VARIABLE_WITH_PATH_LOG = "Failed [variable] {} [comment] {}";
     public static final String TEMPLATE_LOG = "[Value in contextOf] = {}";

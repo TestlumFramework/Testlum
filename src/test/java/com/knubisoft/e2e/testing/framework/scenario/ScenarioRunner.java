@@ -47,7 +47,7 @@ public class ScenarioRunner {
     public ScenarioResult run() {
         prepare();
         prepareReport();
-        LogUtil.logOverview(scenarioResult.getOverview(), scenarioArguments, SCENARIO_ID_GENERATOR);
+        LogUtil.logOverview(scenarioArguments, SCENARIO_ID_GENERATOR);
         runScenarioCommands();
         return scenarioResult;
     }
@@ -152,9 +152,7 @@ public class ScenarioRunner {
     private void handleException(final CommandResult result) {
         String ex = result.getCause();
         if (ex != null) {
-            log.error("----------------    EXCEPTION    -----------------");
             log.error(EXCEPTION_LOG, scenarioResult.getName(), ex);
-            log.error("--------------------------------------------------");
             fillReportException(ex);
             if (stopScenarioOnFailure) {
                 throw new StopSignalException();

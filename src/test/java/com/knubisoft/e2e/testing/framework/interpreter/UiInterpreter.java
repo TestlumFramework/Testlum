@@ -93,7 +93,8 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     protected void acceptImpl(final Ui o, final CommandResult result) {
         o.getClickOrInputOrNavigate().forEach(command -> uiCommands.keySet().stream()
                 .filter(key -> key.test(command))
-                .map(uiCommands::get).peek(s -> LogUtil.logSubstep(dependencies, command))
+                .map(uiCommands::get)
+                .peek(s -> LogUtil.logSubstep(dependencies, command))
                 .forEach(method -> method.accept(command, result)));
     }
 

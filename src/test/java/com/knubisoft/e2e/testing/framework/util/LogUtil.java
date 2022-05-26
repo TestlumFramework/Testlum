@@ -34,8 +34,9 @@ public class LogUtil {
 
     private static final String REGEX_NEW_LINE = "[\\r\\n]";
 
-    public void logOverview(final Overview overview, final ScenarioArguments scenarioArguments,
+    public void logOverview(final ScenarioArguments scenarioArguments,
                             final AtomicInteger atomicInteger) {
+        Overview overview = scenarioArguments.getScenario().getOverview();
         log.info(EMPTY);
         log.info(SCENARIO_NUMBER_AND_PATH_LOG, atomicInteger, overview.getName(),
                 scenarioArguments.getFile().getAbsolutePath());
@@ -43,12 +44,7 @@ public class LogUtil {
         logOverviewPartInfo(OverviewPart.DESCRIPTION, overview.getDescription());
         logOverviewPartInfo(OverviewPart.JIRA, overview.getJira());
         logOverviewPartInfo(OverviewPart.DEVELOPER, overview.getDeveloper());
-        if (scenarioArguments.isContainsUiSteps()) {
-            if (StringUtils.isNotBlank(scenarioArguments.getScenario().getVariations())) {
-                log.info(VARIATION_LOG, scenarioArguments.getScenario().getVariations());
-            }
-            log.info(BROWSER_VERSION_LOG, scenarioArguments.getBrowserVersion());
-        }
+        logUiInfo(scenarioArguments);
     }
 
     public void logAllQueries(final List<String> queries) {
@@ -90,6 +86,15 @@ public class LogUtil {
     private void logOverviewPartInfo(final OverviewPart part, final String data) {
         if (StringUtils.isNotBlank(data)) {
             log.info(LogMessage.OVERVIEW_INFO_LOG, part.getPartTitle(), data);
+        }
+    }
+
+    private void logUiInfo(final ScenarioArguments scenarioArguments) {
+        if (scenarioArguments.isContainsUiSteps()) {
+            if (StringUtils.isNotBlank(scenarioArguments.getScenario().getVariations())) {
+                log.info(VARIATION_LOG, scenarioArguments.getScenario().getVariations());
+            }
+            log.info(BROWSER_VERSION_LOG, scenarioArguments.getBrowserVersion());
         }
     }
 

@@ -152,4 +152,5 @@ public final class LogMessage {
     public static final String ASSERT_EXPECTED = "Assert operation expected";
     public static final String NAVIGATE_URL = "Navigate url";
     public static final String NAVIGATE = "Navigate";
+    public static final String WAIT_COMMAND = "Wait command";
 }

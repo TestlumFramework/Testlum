@@ -6,6 +6,7 @@
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
     <x:include schemaLocation="shared.xsd"/>
+    <x:include schemaLocation="wait.xsd"/>
 
     <x:complexType name="ui">
         <x:complexContent>
@@ -17,6 +18,7 @@
                     <x:element name="assert" type="tns:assert"/>
                     <x:element name="dropDown" type="tns:dropDown"/>
                     <x:element name="javascript" type="tns:javascript"/>
+                    <x:element name="wait" type="tns:wait"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>
@@ -137,6 +139,7 @@
             <x:enumeration value="outerHTML"/>
             <x:enumeration value="class"/>
             <x:enumeration value="id"/>
+            <x:enumeration value="xpath"/>
         </x:restriction>
     </x:simpleType>
 

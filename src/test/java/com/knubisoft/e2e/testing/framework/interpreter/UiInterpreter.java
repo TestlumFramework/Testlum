@@ -9,6 +9,7 @@ import com.knubisoft.e2e.testing.framework.util.ExplicitWaitUtil;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.framework.util.SeleniumUtil;
+import com.knubisoft.e2e.testing.framework.util.WaitUtil;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.model.scenario.Assert;
 import com.knubisoft.e2e.testing.model.scenario.Click;
@@ -22,6 +23,8 @@ import com.knubisoft.e2e.testing.model.scenario.OneValue;
 import com.knubisoft.e2e.testing.model.scenario.SelectOrDeselectBy;
 import com.knubisoft.e2e.testing.model.scenario.TypeForOneValue;
 import com.knubisoft.e2e.testing.model.scenario.Ui;
+import com.knubisoft.e2e.testing.model.scenario.Wait;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -62,6 +65,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_OPERATION_I
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_NOT_SUPPORTED;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_URL;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.WAIT_COMMAND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.VALUE_LOG;
 import static com.knubisoft.e2e.testing.model.scenario.ClickMethod.JS;
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.EMPTY;
@@ -86,6 +90,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         commands.put(ui -> ui instanceof Assert, (ui, result) -> assertValues((Assert) ui, result));
         commands.put(ui -> ui instanceof DropDown, (ui, result) -> dropDown((DropDown) ui, result));
         commands.put(ui -> ui instanceof Javascript, (ui, result) -> execJsCommands((Javascript) ui, result));
+        commands.put(ui -> ui instanceof Wait, (ui, result) -> wait((Wait) ui, result));
         this.uiCommands = Collections.unmodifiableMap(commands);
     }
 
@@ -265,6 +270,13 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
                 break;
             default: throw new DefaultFrameworkException(format(DROP_DOWN_NOT_SUPPORTED, method.value()));
         }
+    }
+
+    @SneakyThrows
+    private void wait(final Wait wait, final CommandResult result) {
+        long time = wait.getTime().longValue();
+        result.put(WAIT_COMMAND, time);
+        WaitUtil.getTimeUnit(wait.getUnit(), result).sleep(time);
     }
 
     private interface UiCommandPredicate extends Predicate<AbstractCommand> { }

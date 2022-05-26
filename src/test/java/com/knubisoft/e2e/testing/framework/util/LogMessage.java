@@ -176,4 +176,5 @@ public final class LogMessage {
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "Method", "{}");
     public static final String OVERVIEW_INFO_LOG = "{}: {}";
+    public static final String WAIT_COMMAND = "Wait command";
 }

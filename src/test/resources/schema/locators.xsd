@@ -6,14 +6,6 @@
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
           jaxb:version="2.1">
 
-    <x:annotation>
-        <x:appinfo>
-            <jaxb:bindings
-                node="/x:schema/x:complexType[@name='locator']//x:choice">
-            </jaxb:bindings>
-        </x:appinfo>
-    </x:annotation>
-
     <x:complexType name="locators">
         <x:choice>
             <x:element name="locator" type="tns:locator" maxOccurs="unbounded"/>

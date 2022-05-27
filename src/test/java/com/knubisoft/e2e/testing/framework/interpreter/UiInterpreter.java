@@ -12,8 +12,10 @@ import com.knubisoft.e2e.testing.framework.util.SeleniumUtil;
 import com.knubisoft.e2e.testing.framework.util.WaitUtil;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.model.scenario.Assert;
+import com.knubisoft.e2e.testing.model.scenario.Clear;
 import com.knubisoft.e2e.testing.model.scenario.Click;
 import com.knubisoft.e2e.testing.model.scenario.ClickMethod;
+import com.knubisoft.e2e.testing.model.scenario.CloseSecondTab;
 import com.knubisoft.e2e.testing.model.scenario.DropDown;
 import com.knubisoft.e2e.testing.model.scenario.Input;
 import com.knubisoft.e2e.testing.model.scenario.Javascript;
@@ -36,6 +38,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -51,8 +54,12 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_ATTRIBU
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_EXPECTED;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_LOCATOR;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BY_URL_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLEAR_ACTION;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLEAR_ACTION_LOCATOR;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLICK_LOCATOR;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLICK_METHOD;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLOSE_TAB_ACTION;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLOSE_TAB_INFO;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_LOCATOR;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_NOT_SUPPORTED;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_ONE_VALUE;
@@ -65,6 +72,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_OPERATION_I
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_NOT_SUPPORTED;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_URL;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SECOND_TAB_NOT_FOUND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.WAIT_COMMAND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.VALUE_LOG;
 import static com.knubisoft.e2e.testing.model.scenario.ClickMethod.JS;
@@ -90,7 +98,9 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         commands.put(ui -> ui instanceof Assert, (ui, result) -> assertValues((Assert) ui, result));
         commands.put(ui -> ui instanceof DropDown, (ui, result) -> dropDown((DropDown) ui, result));
         commands.put(ui -> ui instanceof Javascript, (ui, result) -> execJsCommands((Javascript) ui, result));
+        commands.put(ui -> ui instanceof Clear, (ui, result) -> clear((Clear) ui, result));
         commands.put(ui -> ui instanceof Wait, (ui, result) -> wait((Wait) ui, result));
+        commands.put(ui -> ui instanceof CloseSecondTab, (ui, result) -> closeSecondTab((CloseSecondTab) ui, result));
         this.uiCommands = Collections.unmodifiableMap(commands);
     }
 
@@ -270,6 +280,28 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
                 break;
             default: throw new DefaultFrameworkException(format(DROP_DOWN_NOT_SUPPORTED, method.value()));
         }
+    }
+
+    private void clear(final Clear clear, final CommandResult result) {
+        String locatorId = clear.getLocatorId();
+        result.put(CLEAR_ACTION, format(CLEAR_ACTION_LOCATOR, locatorId));
+        WebElement element = getWebElement(locatorId);
+        ExplicitWaitUtil.waitForElementVisibility(dependencies.getWebDriver(), element);
+        element.clear();
+        highlightElementIfRequired(clear.isHighlight(), element);
+        takeScreenshotIfRequired(result);
+    }
+
+    private void closeSecondTab(final CloseSecondTab closeSecondTab, final CommandResult result) {
+        result.put(CLOSE_TAB_ACTION, CLOSE_TAB_INFO);
+        WebDriver webDriver = dependencies.getWebDriver();
+        List<String> windowHandles = new ArrayList<>(webDriver.getWindowHandles());
+        if (windowHandles.size() <= 1) {
+            throw new DefaultFrameworkException(SECOND_TAB_NOT_FOUND);
+        }
+        webDriver.switchTo().window(windowHandles.get(1));
+        webDriver.close();
+        webDriver.switchTo().window(windowHandles.get(0));
     }
 
     @SneakyThrows

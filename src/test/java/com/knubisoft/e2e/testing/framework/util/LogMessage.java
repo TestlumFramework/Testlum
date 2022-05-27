@@ -177,4 +177,9 @@ public final class LogMessage {
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "Method", "{}");
     public static final String OVERVIEW_INFO_LOG = "{}: {}";
     public static final String WAIT_COMMAND = "Wait command";
+    public static final String SECOND_TAB_NOT_FOUND = "Second tab not found";
+    public static final String CLOSE_TAB_ACTION = "Close action";
+    public static final String CLEAR_ACTION = "Clear action";
+    public static final String CLEAR_ACTION_LOCATOR = "Element locator for clear %s";
+    public static final String CLOSE_TAB_INFO = "Close second tab";
 }

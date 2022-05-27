@@ -19,6 +19,8 @@
                     <x:element name="dropDown" type="tns:dropDown"/>
                     <x:element name="javascript" type="tns:javascript"/>
                     <x:element name="wait" type="tns:wait"/>
+                    <x:element name="clear" type="tns:clear"/>
+                    <x:element name="closeSecondTab" type="tns:closeSecondTab"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>
@@ -142,5 +144,19 @@
             <x:enumeration value="xpath"/>
         </x:restriction>
     </x:simpleType>
+
+    <x:complexType name="clear">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
+                <x:attribute name="highlight" type="x:boolean" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+    
+    <x:complexType name="closeSecondTab">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand"/>
+        </x:complexContent>
+    </x:complexType>
 
 </x:schema>

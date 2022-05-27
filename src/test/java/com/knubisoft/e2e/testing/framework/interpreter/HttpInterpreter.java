@@ -105,7 +105,6 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         }
         HttpInfoWithBody commandWithBody = (HttpInfoWithBody) httpInfo;
         Body body = commandWithBody.getBody();
-        log.info("Body: " + body.toString());
         return HttpUtil.extractBody(body, isJson, this, dependencies);
     }
 }

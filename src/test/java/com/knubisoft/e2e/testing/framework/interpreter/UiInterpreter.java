@@ -218,6 +218,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         result.put(ASSERT_LOCATOR, aAssert.getLocatorId());
         result.put(ASSERT_ATTRIBUTE, aAssert.getAttribute().value());
         WebElement webElement = getWebElement(aAssert.getLocatorId());
+        ExplicitWaitUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
         String value = webElement.getAttribute(aAssert.getAttribute().value());
         return value
                 .replaceAll(SPACE, EMPTY)

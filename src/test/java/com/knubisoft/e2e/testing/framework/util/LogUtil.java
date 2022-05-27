@@ -59,10 +59,10 @@ public class LogUtil {
         logOverviewPartInfo(OverviewPart.DESCRIPTION, overview.getDescription());
         logOverviewPartInfo(OverviewPart.JIRA, overview.getJira());
         logOverviewPartInfo(OverviewPart.DEVELOPER, overview.getDeveloper());
-        for (String link: overview.getLink()) {
-            logOverviewPartInfo(OverviewPart.LINK, link);
+        overview.getLink().forEach(link -> logOverviewPartInfo(OverviewPart.LINK, link));
+        if (scenarioArguments.isContainsUiSteps()) {
+            logUiInfo(scenarioArguments.getScenario().getVariations(), scenarioArguments.getBrowserVersion());
         }
-        logUiInfo(scenarioArguments);
     }
 
     public void logAllQueries(final List<String> queries, final String alias) {
@@ -108,13 +108,11 @@ public class LogUtil {
         }
     }
 
-    private void logUiInfo(final ScenarioArguments scenarioArguments) {
-        if (scenarioArguments.isContainsUiSteps()) {
-            if (StringUtils.isNotBlank(scenarioArguments.getScenario().getVariations())) {
-                log.info(VARIATION_LOG, scenarioArguments.getScenario().getVariations());
-            }
-            log.info(BROWSER_VERSION_LOG, scenarioArguments.getBrowserVersion());
+    private void logUiInfo(final String variation, final String browserVersion) {
+        if (StringUtils.isNotBlank(variation)) {
+            log.info(VARIATION_LOG, variation);
         }
+        log.info(BROWSER_VERSION_LOG, browserVersion);
     }
 
     public void logTestExecutionSummary(final TestExecutionSummary testExecutionSummary) {

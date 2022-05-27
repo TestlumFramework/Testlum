@@ -7,6 +7,7 @@ import com.knubisoft.e2e.testing.framework.db.StorageOperation;
 import com.knubisoft.e2e.testing.framework.db.source.ListSource;
 import com.knubisoft.e2e.testing.framework.db.sql.OracleOperation;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
+import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.scenario.Oracle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
@@ -46,8 +46,8 @@ public class OracleInterpreter extends AbstractInterpreter<Oracle> {
     }
 
     protected String getActual(final Oracle oracle, final CommandResult result) {
-        log.info(ALIAS_LOG, oracle.getAlias());
         List<String> sqls = getSqlList(oracle);
+        LogUtil.logAllQueries(sqls, oracle.getAlias());
         result.put("sqls", sqls);
         StorageOperation.StorageOperationResult applyOracle = oracleOperation.apply(new ListSource(sqls),
                 inject(oracle.getAlias()));

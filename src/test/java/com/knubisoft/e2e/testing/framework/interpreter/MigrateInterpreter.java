@@ -70,7 +70,7 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
 
     private FileSource createFileSource(final File patchesFolder,
                                         final String patchFileName) {
-        log.info(PATCH_PATH_LOG, patchFileName, patchFileName);
+        log.info(PATCH_PATH_LOG, patchFileName);
         File patch = new File(patchesFolder, patchFileName);
         return new FileSource(patch);
     }

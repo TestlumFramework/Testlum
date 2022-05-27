@@ -17,9 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
-import static java.lang.String.format;
-
 @Slf4j
 @InterpreterForClass(Postgres.class)
 public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
@@ -41,15 +38,13 @@ public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
 
         result.setExpected(PrettifyStringJson.getJSONResult(compare.getExpected()));
         result.setActual(PrettifyStringJson.getJSONResult(actualPostgres));
-        log.info(result.getActual().replaceAll("\n ", format("%-20s", "\n") + "|"));
         compare.exec();
         setContextBody(actualPostgres);
     }
 
     protected String getActual(final Postgres postgres, final CommandResult result) {
-        log.info(ALIAS_LOG, postgres.getAlias());
         List<String> queries = getSqlList(postgres);
-        LogUtil.logAllQueries(queries);
+        LogUtil.logAllQueries(queries, postgres.getAlias());
         result.put("queries", new ArrayList<>(queries));
         StorageOperation.StorageOperationResult applyPostgres =
                 postgresSqlOperation.apply(new ListSource(queries), inject(postgres.getAlias()));

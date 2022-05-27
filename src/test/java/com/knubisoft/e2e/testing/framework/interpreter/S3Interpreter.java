@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.scenario.S3;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
@@ -30,6 +31,9 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 @InterpreterForClass(S3.class)
 public class S3Interpreter extends AbstractInterpreter<S3> {
 
+    private static final String UPLOAD_ACTION = "upload";
+    private static final String DOWNLOAD_ACTION = "download";
+
     @Autowired(required = false)
     private Map<String, AmazonS3> amazonS3;
 
@@ -51,14 +55,15 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     //CHECKSTYLE:OFF
     private void exec(final S3 s3, final String bucket, final String key, final CommandResult result) {
         if (s3.getUpload() != null) {
-            result.put("action", "upload");
+            result.put("action", UPLOAD_ACTION);
             final String fileName = inject(s3.getUpload());
             final File file = this.dependencies.getFileSearcher().search(fileName);
             result.put("fileName", fileName);
+            LogUtil.logS3ActionInfo(UPLOAD_ACTION, bucket, key, fileName);
             this.amazonS3.get(bucket).createBucket(bucket);
             this.amazonS3.get(bucket).putObject(bucket, key, file);
         } else if (s3.getDownload() != null) {
-            result.put("action", "download");
+            result.put("action", DOWNLOAD_ACTION);
             setContextBody(downloadAndCompareFile(bucket, key, inject(s3.getDownload()), result));
         } else {
             throw new DefaultFrameworkException(LogMessage.INCORRECT_S3_PROCESSING);
@@ -70,6 +75,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                                           final String key,
                                           final String fileName,
                                           final CommandResult result) {
+        LogUtil.logS3ActionInfo(DOWNLOAD_ACTION, bucket, key, fileName);
         File expectedFile = this.dependencies.getFileSearcher().search(fileName);
         InputStream expectedStream = FileUtils.openInputStream(expectedFile);
         String expected = IOUtils.toString(expectedStream, StandardCharsets.UTF_8);

@@ -3,6 +3,7 @@ package com.knubisoft.e2e.testing.framework.interpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.scenario.ElasticSearchRequestWithBody;
 import com.knubisoft.e2e.testing.model.scenario.Elasticsearch;
 import com.knubisoft.e2e.testing.model.scenario.Header;
@@ -10,7 +11,6 @@ import com.knubisoft.e2e.testing.model.scenario.Param;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.HttpUtil;
 import com.knubisoft.e2e.testing.framework.util.HttpValidator;
-import com.knubisoft.e2e.testing.framework.util.LogMessage;
 import com.knubisoft.e2e.testing.model.scenario.Body;
 import com.knubisoft.e2e.testing.model.scenario.ElasticSearchRequest;
 import com.knubisoft.e2e.testing.model.scenario.ElasticSearchResponse;
@@ -32,7 +32,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 
 @Slf4j
 @InterpreterForClass(Elasticsearch.class)
@@ -62,9 +61,8 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     protected Object getActual(final ElasticSearchRequest elasticSearchRequest,
                                final HttpMethod httpMethod,
                                final String alias) {
-        log.info(ALIAS_LOG, alias);
+        LogUtil.logHttpInfo(alias, httpMethod.name(), elasticSearchRequest.getUrl());
         Request request = buildRequest(elasticSearchRequest, httpMethod);
-        log.info(LogMessage.ELASTICSEARCH_METHOD_AND_URL_LOG, request.getMethod(), request.getEndpoint());
         try {
             return restClient.get(alias).performRequest(request);
         } catch (ResponseException responseException) {
@@ -128,6 +126,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         setRequestOptions(headers, request);
 
         HttpEntity body = getBody(elasticSearchRequest);
+        LogUtil.logBodyContent(body);
         request.setEntity(body);
         return request;
     }

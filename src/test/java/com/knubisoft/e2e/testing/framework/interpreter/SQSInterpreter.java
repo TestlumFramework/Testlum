@@ -6,6 +6,7 @@ import com.amazonaws.services.sqs.model.ReceiveMessageResult;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.scenario.Sqs;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
@@ -22,6 +23,9 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 @Slf4j
 @InterpreterForClass(Sqs.class)
 public class SQSInterpreter extends AbstractInterpreter<Sqs> {
+
+    private static final String SEND_ACTION = "send";
+    private static final String RECEIVE_ACTION = "receive";
 
     @Autowired(required = false)
     private Map<String, AmazonSQS> amazonSQS;
@@ -42,10 +46,10 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                                  final CommandResult result, final String alias) {
         log.info(ALIAS_LOG, alias);
         if (sqs.getSend() != null) {
-            result.put("action", "send");
+            result.put("action", SEND_ACTION);
             sendMessage(queue, sqs.getSend(), result, alias);
         } else if (sqs.getReceive() != null) {
-            result.put("action", "receive");
+            result.put("action", RECEIVE_ACTION);
             setContextBody(receiveAndCompareMessage(queue, sqs.getReceive(), result, alias));
         } else {
             throw new DefaultFrameworkException(LogMessage.INCORRECT_SQS_PROCESSING);
@@ -57,6 +61,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                                               final CommandResult result, final String alias) {
         final String queueUrl = createQueueIfNotExists(queue, alias);
         final String message = receiveMessage(queueUrl, alias);
+        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, queue, message);
         compareMessage(fileOrContent, result, message);
         return message;
     }
@@ -84,6 +89,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                              final CommandResult result,
                              final String alias) {
         String message = inject(getContentIfFile(fileOrContent));
+        LogUtil.logBrokerActionInfo(SEND_ACTION, queue, fileOrContent);
         result.setActual(message);
         String queueUrl = createQueueIfNotExists(queue, alias);
         this.amazonSQS.get(alias).sendMessage(queueUrl, message);

@@ -4,6 +4,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.http.ApiResponse;
+import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.scenario.Header;
 import com.knubisoft.e2e.testing.model.scenario.Sendgrid;
 import com.knubisoft.e2e.testing.model.scenario.SendgridWithBody;
@@ -25,8 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
-
 @Slf4j
 @InterpreterForClass(Sendgrid.class)
 public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
@@ -41,7 +40,6 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     //CHECKSTYLE:OFF
     @Override
     protected void acceptImpl(final Sendgrid sendgrid, final CommandResult result) {
-        log.info(ALIAS_LOG, sendgrid.getAlias());
         SendGridUtil.SendGridMethodMetadata metadata = SendGridUtil.getSendgridMethodMetadata(sendgrid);
         SendgridInfo sendgridInfo = metadata.getHttpInfo();
         Method method = metadata.getHttpMethod();
@@ -71,10 +69,12 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
     @SneakyThrows
     private Response getActual(final SendgridInfo sendgridInfo, final Method method, final String alias) {
+        LogUtil.logHttpInfo(alias, method.name(), sendgridInfo.getUrl());
         Request request = new Request();
         request.setMethod(method);
         request.setEndpoint(sendgridInfo.getUrl());
         request.setBody(getBody(sendgridInfo));
+        LogUtil.logBody(request.getBody());
         return sendGrid.get(alias).api(request);
     }
 

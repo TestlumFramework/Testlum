@@ -246,7 +246,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     private void processOneValueFromDropDown(final OneValue oneValue, final Select select, final CommandResult result) {
         TypeForOneValue type = oneValue.getType();
         SelectOrDeselectBy method = oneValue.getBy();
-        String value = oneValue.getValue();
+        String value = inject(oneValue.getValue());
         result.put(DROP_DOWN_ONE_VALUE, format(DROP_DOWN_OPERATION, type.value(), method.value(), value));
         if (type == TypeForOneValue.SELECT) {
             selectByMethod(select, method, value);

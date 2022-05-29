@@ -47,7 +47,7 @@ public class ScenarioRunner {
     public ScenarioResult run() {
         prepare();
         prepareReport();
-        LogUtil.logOverview(scenarioArguments, SCENARIO_ID_GENERATOR);
+        LogUtil.logScenarioDetails(scenarioArguments, SCENARIO_ID_GENERATOR);
         runScenarioCommands();
         return scenarioResult;
     }

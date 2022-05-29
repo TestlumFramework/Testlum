@@ -19,13 +19,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.RECEIVE_ACTION;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SEND_ACTION;
 
 @Slf4j
 @InterpreterForClass(Sqs.class)
 public class SQSInterpreter extends AbstractInterpreter<Sqs> {
-
-    private static final String SEND_ACTION = "send";
-    private static final String RECEIVE_ACTION = "receive";
 
     @Autowired(required = false)
     private Map<String, AmazonSQS> amazonSQS;

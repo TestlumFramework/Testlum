@@ -59,7 +59,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         result.put("key", o.getName());
         result.put("value", value);
         context.set(o.getName(), value);
-        LogUtil.logVarInfo(o, value);
+        LogUtil.logVarInfo(o.getName(), value);
     }
 
     //CHECKSTYLE:OFF

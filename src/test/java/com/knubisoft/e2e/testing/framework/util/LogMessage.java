@@ -11,6 +11,9 @@ public final class LogMessage {
 
     public static final String TABLE_FORMAT = "%-20s|%-70s";
 
+    public static final String SEND_ACTION = "send";
+    public static final String RECEIVE_ACTION = "receive";
+
     public static final String HTTP_CODE_EXPECTED_BUT_WAS = " Http code should be [%s] but was [%s]";
     public static final String HTTP_HEADERS_EXPECTED_BUT_WAS = " Http headers should be [%s] but was [%s]";
     public static final String HTTP_BODY_EXPECTED_BUT_WAS = " Http body should be [%s] but was [%s]";
@@ -88,14 +91,13 @@ public final class LogMessage {
     public static final String ANSI_CYAN = "\u001b[36m";
 
     public static final String ERROR_LOG = "Error ->";
-    public static final String OVERVIEW_LOG = "Overview:";
     public static final String POSITION_COMMAND_LOG = ANSI_YELLOW
             + "--------- Scenario step #%d - %s ---------" + ANSI_RESET;
-    public static final String SUBSTEP_LOG = ANSI_CYAN + "-------UI action #{} - {}-------" + ANSI_RESET;
+    public static final String UI_COMMAND_LOG = ANSI_CYAN + "------- UI command #{} - {} -------" + ANSI_RESET;
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
     public static final String SCENARIO_NUMBER_AND_PATH_LOG = ANSI_GREEN
-            + "================== Execute for scenario #{} {} - {} ==================" + ANSI_RESET;
+            + "================== Execute for scenario #{} - {} ==================" + ANSI_RESET;
 
     public static final String CANNOT_FIND_PROFILE = "Cannot find active profile option. "
             + "Please set profile to VM options.";

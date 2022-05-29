@@ -1,14 +1,12 @@
 package com.knubisoft.e2e.testing.framework.util;
 
 import com.amazonaws.services.simpleemail.model.Message;
-import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.model.ScenarioArguments;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.e2e.testing.model.scenario.Overview;
 import com.knubisoft.e2e.testing.model.scenario.OverviewPart;
 import com.knubisoft.e2e.testing.model.scenario.Ses;
-import com.knubisoft.e2e.testing.model.scenario.Var;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -31,10 +29,9 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.DESTINATION_LO
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAME_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.OVERVIEW_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SOURCE_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.SUBSTEP_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.VALUE_LOG;
@@ -49,20 +46,24 @@ public class LogUtil {
 
     private static final String REGEX_NEW_LINE = "[\\r\\n]";
 
-    public void logOverview(final ScenarioArguments scenarioArguments,
-                            final AtomicInteger atomicInteger) {
+    public void logScenarioDetails(final ScenarioArguments scenarioArguments,
+                                   final AtomicInteger atomicInteger) {
         Overview overview = scenarioArguments.getScenario().getOverview();
         log.info(EMPTY);
-        log.info(SCENARIO_NUMBER_AND_PATH_LOG, atomicInteger, overview.getName(),
+        log.info(SCENARIO_NUMBER_AND_PATH_LOG, atomicInteger,
                 scenarioArguments.getFile().getAbsolutePath());
-        log.info(OVERVIEW_LOG);
+        logOverview(overview);
+        if (scenarioArguments.isContainsUiSteps()) {
+            logUiInfo(scenarioArguments.getScenario().getVariations(), scenarioArguments.getBrowserVersion());
+        }
+    }
+
+    private void logOverview(final Overview overview) {
+        logOverviewPartInfo(OverviewPart.NAME, overview.getName());
         logOverviewPartInfo(OverviewPart.DESCRIPTION, overview.getDescription());
         logOverviewPartInfo(OverviewPart.JIRA, overview.getJira());
         logOverviewPartInfo(OverviewPart.DEVELOPER, overview.getDeveloper());
         overview.getLink().forEach(link -> logOverviewPartInfo(OverviewPart.LINK, link));
-        if (scenarioArguments.isContainsUiSteps()) {
-            logUiInfo(scenarioArguments.getScenario().getVariations(), scenarioArguments.getBrowserVersion());
-        }
     }
 
     public void logAllQueries(final List<String> queries, final String alias) {
@@ -90,7 +91,7 @@ public class LogUtil {
         } else {
             message.append("Message body is empty");
         }
-        log.info(BODY_LOG, message.toString());
+        log.info(BODY_LOG, message);
     }
 
     private void appendBodyContentIfNotBlank(final String data, final String title, final StringBuilder sb) {
@@ -138,8 +139,8 @@ public class LogUtil {
         }
     }
 
-    public void logSubstep(final InterpreterDependencies dependencies, final AbstractCommand action) {
-        log.info(SUBSTEP_LOG, dependencies.getPosition().incrementAndGet(), action.getClass().getSimpleName());
+    public void logUICommand(final int position, final AbstractCommand action) {
+        log.info(UI_COMMAND_LOG, position, action.getClass().getSimpleName());
         log.info(COMMENT_LOG, action.getComment());
         if (action instanceof CommandWithLocator) {
             log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());
@@ -152,8 +153,8 @@ public class LogUtil {
         log.info(DESTINATION_LOG, ses.getDestination());
     }
 
-    public void logVarInfo(final Var var, final String value) {
-        log.info(NAME_LOG, var.getName());
+    public void logVarInfo(final String name, final String value) {
+        log.info(NAME_LOG, name);
         log.info(VALUE_LOG, value);
     }
 

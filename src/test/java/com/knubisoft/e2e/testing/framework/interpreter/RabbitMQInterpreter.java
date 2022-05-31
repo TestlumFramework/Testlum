@@ -56,7 +56,13 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                                       final int actionNumber,
                                       final Object action,
                                       final String alias) {
-        log.info(ALIAS_LOG, alias);
+        log.info(ALIAS_LOG, alias,
+                dependencies.getGlobalTestConfiguration().getIntegrations().getRabbitmqs().getRabbitmq()
+                .stream().filter(a -> a.getAlias().equalsIgnoreCase(alias))
+                .findFirst().get().getHost() + ":"
+                        + dependencies.getGlobalTestConfiguration().getIntegrations().getRabbitmqs().getRabbitmq()
+                        .stream().filter(a -> a.getAlias().equalsIgnoreCase(alias))
+                        .findFirst().get().getPort());
         if (action instanceof SendRmqMessage) {
             sendMessage((SendRmqMessage) action, actionNumber, result, alias);
         } else {

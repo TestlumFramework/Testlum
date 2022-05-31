@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTION_STOP_SIGNAL_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.FUNCTION_FOR_COMMAND_NOT_FOUND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.MISSING_CONSTRUCTOR;
 
@@ -111,7 +110,7 @@ public class ScenarioRunner {
             execute(command, result);
         } finally {
             result.setExecutionTime(stopWatch.getTime());
-            log.info(EXECUTION_TIME_LOG, result.getExecutionTime());
+            LogUtil.logExecutionTime(result.getExecutionTime(), command);
         }
         callback.onCommandExecuted(result);
     }

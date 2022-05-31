@@ -42,7 +42,15 @@ public class MongoDBInterpreter extends AbstractInterpreter<Mongo> {
 
     private String getActual(final Mongo mongo, final CommandResult result) {
         List<String> sqls = getMongoQueryList(mongo);
-        LogUtil.logAllQueries(sqls, mongo.getAlias());
+
+        LogUtil.logAllQueries(sqls, mongo.getAlias(),
+                dependencies.getGlobalTestConfiguration().getIntegrations().getMongos().getMongo()
+                .stream().filter(a -> a.getAlias().equalsIgnoreCase(mongo.getAlias()))
+                .findFirst().get().getHost()
+                        + ":" + dependencies.getGlobalTestConfiguration().getIntegrations().getMongos().getMongo()
+                        .stream().filter(a -> a.getAlias().equalsIgnoreCase(mongo.getAlias()))
+                        .findFirst().get().getPort());
+
         result.put("sqls", sqls);
         ListSource listSource = new ListSource(sqls);
         StorageOperation.StorageOperationResult apply = mongoOperation.apply(listSource, mongo.getAlias());

@@ -69,11 +69,14 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
     @SneakyThrows
     private Response getActual(final SendgridInfo sendgridInfo, final Method method, final String alias) {
-        LogUtil.logHttpInfo(alias, method.name(), sendgridInfo.getUrl());
         Request request = new Request();
         request.setMethod(method);
         request.setEndpoint(sendgridInfo.getUrl());
         request.setBody(getBody(sendgridInfo));
+        LogUtil.logHttpInfo(alias, method.name(), sendgridInfo.getUrl(),
+                dependencies.getGlobalTestConfiguration().getIntegrations()
+                        .getSendgrids().getSendgrid().stream().filter(a -> a.getAlias().equalsIgnoreCase(alias))
+                        .findFirst().get().getApiUrl());
         LogUtil.logBody(request.getBody());
         return sendGrid.get(alias).api(request);
     }

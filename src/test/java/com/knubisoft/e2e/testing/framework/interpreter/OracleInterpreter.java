@@ -47,7 +47,10 @@ public class OracleInterpreter extends AbstractInterpreter<Oracle> {
 
     protected String getActual(final Oracle oracle, final CommandResult result) {
         List<String> sqls = getSqlList(oracle);
-        LogUtil.logAllQueries(sqls, oracle.getAlias());
+        LogUtil.logAllQueries(sqls, oracle.getAlias(),
+                dependencies.getGlobalTestConfiguration().getIntegrations().getOracles().getOracle()
+                        .stream().filter(a -> a.getAlias().equalsIgnoreCase(oracle.getAlias()))
+                        .findFirst().get().getConnectionUrl());
         result.put("sqls", sqls);
         StorageOperation.StorageOperationResult applyOracle = oracleOperation.apply(new ListSource(sqls),
                 inject(oracle.getAlias()));

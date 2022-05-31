@@ -43,7 +43,10 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     //CHECKSTYLE:OFF
     private void runSqsOperation(final Sqs sqs, final String queue,
                                  final CommandResult result, final String alias) {
-        log.info(ALIAS_LOG, alias);
+        log.info(ALIAS_LOG, alias,
+                dependencies.getGlobalTestConfiguration().getIntegrations().getSqss().getSqs()
+                        .stream().filter(a -> a.getAlias().equalsIgnoreCase(alias))
+                        .findFirst().get().getEndpoint());
         if (sqs.getSend() != null) {
             result.put("action", SEND_ACTION);
             sendMessage(queue, sqs.getSend(), result, alias);
@@ -88,7 +91,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                              final CommandResult result,
                              final String alias) {
         String message = inject(getContentIfFile(fileOrContent));
-        LogUtil.logBrokerActionInfo(SEND_ACTION, queue, fileOrContent);
+        LogUtil.logBrokerActionInfo(SEND_ACTION, queue, message);
         result.setActual(message);
         String queueUrl = createQueueIfNotExists(queue, alias);
         this.amazonSQS.get(alias).sendMessage(queueUrl, message);

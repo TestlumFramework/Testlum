@@ -44,7 +44,10 @@ public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
 
     protected String getActual(final Postgres postgres, final CommandResult result) {
         List<String> queries = getSqlList(postgres);
-        LogUtil.logAllQueries(queries, postgres.getAlias());
+        LogUtil.logAllQueries(queries, postgres.getAlias(),
+                dependencies.getGlobalTestConfiguration().getIntegrations().getPostgreses().getPostgres()
+                .stream().filter(a -> a.getAlias().equalsIgnoreCase(postgres.getAlias()))
+                .findFirst().get().getConnectionUrl());
         result.put("queries", new ArrayList<>(queries));
         StorageOperation.StorageOperationResult applyPostgres =
                 postgresSqlOperation.apply(new ListSource(queries), inject(postgres.getAlias()));

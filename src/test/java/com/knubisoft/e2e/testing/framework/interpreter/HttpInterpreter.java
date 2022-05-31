@@ -65,7 +65,10 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                                     final String url,
                                     final HttpMethod httpMethod,
                                     final String alias) {
-        LogUtil.logHttpInfo(alias, httpMethod.name(), url);
+        LogUtil.logHttpInfo(alias, httpMethod.name(), url,
+                dependencies.getGlobalTestConfiguration().getIntegrations().getApis().getApi()
+                        .stream().filter(a -> a.getAlias().equalsIgnoreCase(alias))
+                        .findFirst().get().getUrl());
         Map<String, String> headers = getHeaders(httpInfo);
         boolean isJson = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .equalsIgnoreCase(MediaType.APPLICATION_JSON_VALUE);

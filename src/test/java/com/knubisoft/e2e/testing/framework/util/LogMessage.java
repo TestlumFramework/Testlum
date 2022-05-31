@@ -173,9 +173,8 @@ public final class LogMessage {
     public static final String NAVIGATE_URL = "Navigate url";
     public static final String NAVIGATE = "Navigate";
 
-    public static final String PATCH_PATH_LOG = format(TABLE_FORMAT, "Migration patch ",
-            "src/test/resources/patches/{}");
-    public static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
+    public static final String PATCH_PATH_LOG = format(TABLE_FORMAT, "Migration patch ", "{}");
+    public static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{} ({})");
     public static final String EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Execution time ", "{} ms");
     public static final String WAIT_INFO_LOG = format(TABLE_FORMAT, "Wait time & unit", "{} {}");
     public static final String LOCATOR_LOG = format(TABLE_FORMAT, "Locator", "{}");
@@ -192,4 +191,6 @@ public final class LogMessage {
     public static final String CLEAR_ACTION_LOCATOR = "Element locator for clear %s";
     public static final String CLOSE_TAB_INFO = "Close second tab";
     public static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
+    public static final String UI_EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Step execution time", "{} ms");
+    public static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
 }

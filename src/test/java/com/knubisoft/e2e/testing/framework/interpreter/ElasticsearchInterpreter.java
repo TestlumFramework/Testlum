@@ -61,7 +61,11 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     protected Object getActual(final ElasticSearchRequest elasticSearchRequest,
                                final HttpMethod httpMethod,
                                final String alias) {
-        LogUtil.logHttpInfo(alias, httpMethod.name(), elasticSearchRequest.getUrl());
+        LogUtil.logHttpInfo(alias, httpMethod.name(), elasticSearchRequest.getUrl(),
+                elasticSearchRequest.getHost() + ":"
+                        + dependencies.getGlobalTestConfiguration().getIntegrations().getElasticsearches()
+                        .getElasticsearch().stream().filter(a -> a.getAlias().equalsIgnoreCase(alias))
+                        .findFirst().get().getPort());
         Request request = buildRequest(elasticSearchRequest, httpMethod);
         try {
             return restClient.get(alias).performRequest(request);

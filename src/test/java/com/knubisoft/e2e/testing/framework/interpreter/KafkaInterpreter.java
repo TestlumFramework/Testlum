@@ -68,7 +68,9 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                                    final int actionNumber,
                                    final Object action,
                                    final String alias) {
-        log.info(ALIAS_LOG, alias);
+        log.info(ALIAS_LOG, alias, dependencies.getGlobalTestConfiguration().getIntegrations().getKafkas().getKafka()
+                .stream().filter(a -> a.getAlias().equalsIgnoreCase(alias))
+                .findFirst().get().getBootstrapAddress());
         if (action instanceof SendKafkaMessage) {
             sendMessage((SendKafkaMessage) action, actionNumber, result, alias);
         } else {

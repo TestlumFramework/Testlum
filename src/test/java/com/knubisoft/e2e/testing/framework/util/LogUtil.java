@@ -7,6 +7,7 @@ import com.knubisoft.e2e.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.e2e.testing.model.scenario.Overview;
 import com.knubisoft.e2e.testing.model.scenario.OverviewPart;
 import com.knubisoft.e2e.testing.model.scenario.Ses;
+import com.knubisoft.e2e.testing.model.scenario.Ui;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -23,9 +24,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BODY_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BROWSER_VERSION_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.BY_URL_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.COMMENT_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DESTINATION_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ENDPOINT_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAME_LOG;
@@ -34,6 +36,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.SOURCE_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.TESTS_RUN_FAILED;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_EXECUTION_TIME_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.VALUE_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.VARIATION_LOG;
 import static java.lang.String.format;
@@ -66,8 +69,8 @@ public class LogUtil {
         overview.getLink().forEach(link -> logOverviewPartInfo(OverviewPart.LINK, link));
     }
 
-    public void logAllQueries(final List<String> queries, final String alias) {
-        log.info(ALIAS_LOG, alias);
+    public void logAllQueries(final List<String> queries, final String alias, final String url) {
+        log.info(ALIAS_LOG, alias, url);
         queries.forEach(query -> log.info(
                 format(TABLE_FORMAT, "Query", query.replaceAll("\\s{2,}", SPACE))));
     }
@@ -76,7 +79,9 @@ public class LogUtil {
         log.info(LogMessage.BROKER_ACTION_INFO_LOG,
                 action.toUpperCase(Locale.ROOT),
                 queue,
-                content.replaceAll(REGEX_NEW_LINE, format("%n%-41s|", EMPTY)));
+                StringUtils.isNotBlank(content)
+                        ? PrettifyStringJson.getJSONResult(content)
+                                .replaceAll(REGEX_NEW_LINE, format("%n%-41s|", EMPTY)) : content);
     }
 
     public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {
@@ -147,8 +152,8 @@ public class LogUtil {
         }
     }
 
-    public void logSesInfo(final Ses ses) {
-        log.info(ALIAS_LOG, ses.getAlias());
+    public void logSesInfo(final Ses ses, final String url) {
+        log.info(ALIAS_LOG, ses.getAlias(), url);
         log.info(SOURCE_LOG, ses.getSource());
         log.info(DESTINATION_LOG, ses.getDestination());
     }
@@ -158,15 +163,19 @@ public class LogUtil {
         log.info(VALUE_LOG, value);
     }
 
-    public void logHttpInfo(final String alias, final String method, final String url) {
-        log.info(ALIAS_LOG, alias);
+    public void logHttpInfo(final String alias, final String method, final String endpoint, final String url) {
+        log.info(ALIAS_LOG, alias, url);
         log.info(HTTP_METHOD_LOG, method);
-        log.info(BY_URL_LOG, url);
+        log.info(ENDPOINT_LOG, endpoint);
 
     }
 
     public void logBody(final String body) {
-        log.info(BODY_LOG, body.replaceAll(REGEX_NEW_LINE, format("%n%-41s|", EMPTY)));
+        if (StringUtils.isNotBlank(body)) {
+            log.info(BODY_LOG,
+                PrettifyStringJson.getJSONResult(body)
+                .replaceAll(REGEX_NEW_LINE, format("%n%-41s|", EMPTY)));
+        }
     }
 
     public void logBodyContent(final HttpEntity body) {
@@ -176,6 +185,14 @@ public class LogUtil {
             } catch (IOException e) {
                 log.error("Can`t get HttpEntity content", e);
             }
+        }
+    }
+
+    public void logExecutionTime(final long time, final AbstractCommand command) {
+        if (command instanceof Ui) {
+            log.info(UI_EXECUTION_TIME_LOG, time);
+        } else {
+            log.info(EXECUTION_TIME_LOG, time);
         }
     }
 

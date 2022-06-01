@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.HTTP_STATUS_CODE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.UNKNOWN_METHOD;
 import static java.lang.String.format;
 
@@ -68,6 +69,8 @@ public class ApiClient {
         }
         HttpEntity entity = response.getEntity();
         Object responseBody = entity == null ? StringUtils.EMPTY : httpEntityToResponseBody(entity);
+        log.info(HTTP_STATUS_CODE, response.getStatusLine().getStatusCode(),
+                response.getStatusLine().getReasonPhrase());
         return new ApiResponse(response.getStatusLine().getStatusCode(),
                 responseHeaders, responseBody);
     }

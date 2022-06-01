@@ -24,13 +24,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.RECEIVE_ACTION;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SEND_ACTION;
+
 @Slf4j
 @InterpreterForClass(Rabbit.class)
 public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
 
     private static final String CORRELATION_ID = "correlationId";
-    private static final String SEND_ACTION = "send";
-    private static final String RECEIVE_ACTION = "receive";
 
     @Autowired(required = false)
     private Map<String, RabbitTemplate> rabbitTemplate;
@@ -54,6 +56,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                                       final int actionNumber,
                                       final Object action,
                                       final String alias) {
+        log.info(ALIAS_LOG, alias);
         if (action instanceof SendRmqMessage) {
             sendMessage((SendRmqMessage) action, actionNumber, result, alias);
         } else {

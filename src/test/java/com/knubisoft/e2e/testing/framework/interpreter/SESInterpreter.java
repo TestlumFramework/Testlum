@@ -14,7 +14,6 @@ import com.knubisoft.e2e.testing.model.scenario.Ses;
 import com.knubisoft.e2e.testing.model.scenario.SesMessage;
 import com.knubisoft.e2e.testing.model.scenario.SesTextContent;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
-import com.knubisoft.e2e.testing.framework.util.LogMessage;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.scenario.SesBody;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +34,7 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
 
     @Override
     protected void acceptImpl(final Ses ses, final CommandResult result) {
-        log.info(LogMessage.SES_DESTINATION_AND_SOURCE_LOG, ses.getDestination(), ses.getSource());
+        LogUtil.logSesInfo(ses);
         verify(ses);
         sendEmail(ses);
     }

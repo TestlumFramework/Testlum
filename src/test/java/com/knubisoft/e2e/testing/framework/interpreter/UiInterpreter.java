@@ -7,6 +7,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.ExplicitWaitUtil;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
+import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.framework.util.SeleniumUtil;
 import com.knubisoft.e2e.testing.framework.util.WaitUtil;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
@@ -27,6 +28,7 @@ import com.knubisoft.e2e.testing.model.scenario.Ui;
 import com.knubisoft.e2e.testing.model.scenario.Wait;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.StopWatch;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -63,6 +65,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_LOCA
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_NOT_SUPPORTED;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_ONE_VALUE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_OPERATION;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.INPUT_LOCATOR;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_EXECUTION_OPERATION;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_FILE_NOT_FOUND;
@@ -72,7 +75,9 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_NOT_SUPPORTED;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_URL;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SECOND_TAB_NOT_FOUND;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND_EXEC_TIME;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.WAIT_COMMAND;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.VALUE_LOG;
 import static com.knubisoft.e2e.testing.model.scenario.ClickMethod.JS;
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.NEW_LINE;
@@ -107,7 +112,21 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         o.getClickOrInputOrNavigate().forEach(command -> uiCommands.keySet().stream()
                 .filter(key -> key.test(command))
                 .map(uiCommands::get)
-                .forEach(method -> method.accept(command, result)));
+                .peek(s -> LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), command))
+                .forEach(method -> uiCommandExec(command, result, method)));
+    }
+
+    private void uiCommandExec(final AbstractCommand command, final CommandResult result,
+                                      final UiInterpreter.UiCommand method) {
+        StopWatch stopWatch = StopWatch.createStarted();
+        try {
+            method.accept(command, result);
+        } finally {
+            long execTime = stopWatch.getTime();
+            stopWatch.stop();
+            result.put(UI_COMMAND_EXEC_TIME, execTime);
+            log.info(EXECUTION_TIME_LOG, execTime);
+        }
     }
 
     private void click(final Click click, final CommandResult result) {
@@ -178,7 +197,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         String injected = inject(input.getValue());
         String text = SeleniumUtil.resolveSendKeysType(injected, dependencies.getFileSearcher(), element);
         result.put("value", text);
-        log.info(text);
+        log.info(VALUE_LOG, text);
         element.sendKeys(text);
     }
 

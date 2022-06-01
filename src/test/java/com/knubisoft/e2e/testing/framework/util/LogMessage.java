@@ -9,13 +9,19 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LogMessage {
 
+    public static final String TABLE_FORMAT = "%-20s|%-70s";
+
+    public static final String SEND_ACTION = "send";
+    public static final String RECEIVE_ACTION = "receive";
+
     public static final String HTTP_CODE_EXPECTED_BUT_WAS = " Http code should be [%s] but was [%s]";
     public static final String HTTP_HEADERS_EXPECTED_BUT_WAS = " Http headers should be [%s] but was [%s]";
     public static final String HTTP_BODY_EXPECTED_BUT_WAS = " Http body should be [%s] but was [%s]";
     public static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";
     public static final String INCORRECT_S3_PROCESSING = "Incorrect S3 processing";
     public static final String INCORRECT_SQS_PROCESSING = "Incorrect SQS processing";
-    public static final String SES_DESTINATION_AND_SOURCE_LOG = format("Destination -> {}.%n%-20s Source -> {}", EMPTY);
+    public static final String DESTINATION_LOG = format(TABLE_FORMAT, "Destination", "{}");
+    public static final String SOURCE_LOG = format(TABLE_FORMAT, "Source", "{}");
     public static final String ELASTICSEARCH_METHOD_AND_URL_LOG = "Elasticsearch {} request. URL - {}";
     public static final String COMPARISON_FOR_STEP_WAS_SKIPPED = "Comparison for step [%s] was skipped";
     public static final String NAME_FOR_MIGRATION_MUST_PRESENT = "Data storage name for migration must present";
@@ -83,29 +89,41 @@ public final class LogMessage {
     public static final String ANSI_RED_BOLD = "\033[1;31m";
 
     public static final String ERROR_LOG = "Error ->";
-    public static final String OVERVIEW_LOG = "Overview:";
-    public static final String POSITION_COMMAND_LOG = "%2s. %-8s";
-    public static final String COMMENT_LOG = "Comment: {}";
+    public static final String POSITION_COMMAND_LOG = ANSI_YELLOW
+            + "--------- Scenario step #%d - %s ---------" + ANSI_RESET;
+    public static final String UI_COMMAND_LOG = ANSI_CYAN + "------- UI command #{} - {} -------" + ANSI_RESET;
+    public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
-    public static final String EXECUTE_SCENARIO_LOG = ANSI_GREEN + "Execute for scenario" + ANSI_RESET + " {}";
+    public static final String SCENARIO_NUMBER_AND_PATH_LOG = ANSI_GREEN
+            + "================== Execute for scenario #{} - {} ==================" + ANSI_RESET;
 
     public static final String CANNOT_FIND_PROFILE = "Cannot find active profile option. "
             + "Please set profile to VM options.";
     public static final String EXECUTION_STOP_SIGNAL_LOG = "Execution has been stopped because of StopSignal";
-    public static final String EXCEPTION_LOG = ANSI_RED + "Exception ->" + ANSI_RESET + " {}";
-    public static final String AUTHENTICATE_WITH_CREDENTIALS_COMMENT = "Authenticate with credentials %s";
+    public static final String EXCEPTION_LOG = ANSI_RED
+            + "----------------    EXCEPTION    -----------------\n"
+            + "Exception on scenario {}->"
+            + ANSI_RESET + " {}\n"
+            + "--------------------------------------------------";
+    public static final String AUTHENTICATE_WITH_CREDENTIALS_COMMENT = "Authenticate with credentials {}";
     public static final String FAILED_VARIABLE_WITH_PATH_LOG = "Failed [variable] {} [comment] {}";
-    public static final String TEMPLATE_LOG = "[Value in contextOf] = {}";
-    public static final String BY_URL_LOG = "By URL [{}]";
+
+    public static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
+    public static final String BY_URL_LOG = format(TABLE_FORMAT, "URL", "{}");
     public static final String RETHROWN_ERRORS_LOG = "Errors:%n %s";
     public static final String FAILED_VISITING_PATH_LOG = "Failed to visit path {}";
     public static final String REPEAT_COMMENT = "Repeat following steps";
-    public static final String QUERY_LOG_TEMPLATE = "%10s %-100s";
-    public static final String BROKER_ACTION_INFO_LOG = format(
-            "Action - {}.%n%-20s Queue - {}.%n%-20s Content - {}", EMPTY, EMPTY);
-    public static final String S3_ACTION_INFO_LOG = format(
-            "Action - {}.%n%-20s Bucket - {}.%n%-20s Key - {}.%n%-20s File for action - {}", EMPTY, EMPTY, EMPTY);
-    public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%30s:%n%31s%-100s";
+
+    public static final String BROKER_ACTION_INFO_LOG = format(TABLE_FORMAT,
+            "Action", "{}") + format("%n%19s| ", EMPTY) + format(TABLE_FORMAT, "Queue", "{}")
+            + format("%n%19s| ", EMPTY) + format(TABLE_FORMAT, "Content", "{}");
+    public static final String S3_ACTION_INFO_LOG = format(TABLE_FORMAT,
+            "Action", "{}") + format("%n%19s| ", EMPTY) + format(TABLE_FORMAT,
+            "Bucket", "{}") + format("%n%19s| ", EMPTY) + format(TABLE_FORMAT,
+            "Key", "{}") + format("%n%19s| ", EMPTY) + format(TABLE_FORMAT,
+            "File for action", "{}");
+
+    public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
     public static final String CONFIG_FILE_NAME_INPUT_REQUIREMENTS =
             "Use one of the options: -c={configuration-file-name} or --config={configuration-file-name}\n"
             + "Please don't use spaces in the configuration file name. Allowed special character [._-:*#]\n"
@@ -152,6 +170,18 @@ public final class LogMessage {
     public static final String ASSERT_EXPECTED = "Assert operation expected";
     public static final String NAVIGATE_URL = "Navigate url";
     public static final String NAVIGATE = "Navigate";
+
+    public static final String PATCH_PATH_LOG = format(TABLE_FORMAT, "Migration patch ", "{}");
+    public static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
+    public static final String EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Execution time ", "{} ms");
+    public static final String WAIT_INFO_LOG = format(TABLE_FORMAT, "Wait time & unit", "{} {}");
+    public static final String LOCATOR_LOG = format(TABLE_FORMAT, "Locator", "{}");
+    public static final String VARIATION_LOG = "Variation - {}";
+    public static final String BROWSER_VERSION_LOG = "Browser version: {}";
+    public static final String HTTP_STATUS_CODE = format(TABLE_FORMAT, "Status code", "{} {}");
+    public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
+    public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "Method", "{}");
+    public static final String OVERVIEW_INFO_LOG = "{}: {}";
     public static final String WAIT_COMMAND = "Wait command";
     public static final String SECOND_TAB_NOT_FOUND = "Second tab not found";
     public static final String CLOSE_TAB_ACTION = "Close action";
@@ -159,4 +189,8 @@ public final class LogMessage {
     public static final String CLEAR_ACTION_LOCATOR = "Element locator for clear %s";
     public static final String CLOSE_TAB_INFO = "Close second tab";
     public static final String DRIVER_INITIALIZER_NOT_FOUND = "Driver initializer not found";
+    public static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
+    public static final String UI_EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Step execution time", "{} ms");
+    public static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
+    public static final String UI_COMMAND_EXEC_TIME = "Ui command execution time";
 }

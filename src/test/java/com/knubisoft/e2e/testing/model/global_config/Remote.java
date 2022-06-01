@@ -15,16 +15,15 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for api complex type.
+ * <p>Java class for remote complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="api"&gt;
+ * &lt;complexType name="remote"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/e2e/testing/model/global-config}nonEmptyString" /&gt;
- *       &lt;attribute name="url" use="required" type="{http://www.knubisoft.com/e2e/testing/model/global-config}url" /&gt;
+ *       &lt;attribute name="url" use="required" type="{http://www.knubisoft.com/e2e/testing/model/global-config}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -33,37 +32,11 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "api")
-public class Api {
+@XmlType(name = "remote")
+public class Remote {
 
-    @XmlAttribute(name = "alias", required = true)
-    protected String alias;
     @XmlAttribute(name = "url", required = true)
     protected String url;
-
-    /**
-     * Gets the value of the alias property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getAlias() {
-        return alias;
-    }
-
-    /**
-     * Sets the value of the alias property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setAlias(String value) {
-        this.alias = value;
-    }
 
     /**
      * Gets the value of the url property.

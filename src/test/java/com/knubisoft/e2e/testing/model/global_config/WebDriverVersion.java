@@ -15,16 +15,18 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for api complex type.
+ * <p>Java class for webDriverVersion complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="api"&gt;
+ * &lt;complexType name="webDriverVersion"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/e2e/testing/model/global-config}nonEmptyString" /&gt;
- *       &lt;attribute name="url" use="required" type="{http://www.knubisoft.com/e2e/testing/model/global-config}url" /&gt;
+ *       &lt;sequence minOccurs="0"&gt;
+ *         &lt;element name="version" type="{http://www.knubisoft.com/e2e/testing/model/global-config}nonEmptyString"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="useLatest" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -33,60 +35,53 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "api")
-public class Api {
+@XmlType(name = "webDriverVersion", propOrder = {
+    "version"
+})
+public class WebDriverVersion {
 
-    @XmlAttribute(name = "alias", required = true)
-    protected String alias;
-    @XmlAttribute(name = "url", required = true)
-    protected String url;
+    protected String version;
+    @XmlAttribute(name = "useLatest", required = true)
+    protected boolean useLatest;
 
     /**
-     * Gets the value of the alias property.
+     * Gets the value of the version property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getAlias() {
-        return alias;
+    public String getVersion() {
+        return version;
     }
 
     /**
-     * Sets the value of the alias property.
+     * Sets the value of the version property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setAlias(String value) {
-        this.alias = value;
+    public void setVersion(String value) {
+        this.version = value;
     }
 
     /**
-     * Gets the value of the url property.
+     * Gets the value of the useLatest property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
      */
-    public String getUrl() {
-        return url;
+    public boolean isUseLatest() {
+        return useLatest;
     }
 
     /**
-     * Sets the value of the url property.
+     * Sets the value of the useLatest property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
      */
-    public void setUrl(String value) {
-        this.url = value;
+    public void setUseLatest(boolean value) {
+        this.useLatest = value;
     }
 
 }

@@ -109,8 +109,10 @@ public class ScenarioRunner {
         try {
             execute(command, result);
         } finally {
-            result.setExecutionTime(stopWatch.getTime());
-            LogUtil.logExecutionTime(result.getExecutionTime(), command);
+            long execTime = stopWatch.getTime();
+            stopWatch.stop();
+            result.setExecutionTime(execTime);
+            LogUtil.logExecutionTime(execTime, command);
         }
         callback.onCommandExecuted(result);
     }

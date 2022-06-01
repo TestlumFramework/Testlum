@@ -75,6 +75,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_NOT_SUPPORTED;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_URL;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SECOND_TAB_NOT_FOUND;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND_EXEC_TIME;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.WAIT_COMMAND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.VALUE_LOG;
 import static com.knubisoft.e2e.testing.model.scenario.ClickMethod.JS;
@@ -121,7 +122,10 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         try {
             method.accept(command, result);
         } finally {
-            log.info(EXECUTION_TIME_LOG, stopWatch.getTime());
+            long execTime = stopWatch.getTime();
+            stopWatch.stop();
+            result.put(UI_COMMAND_EXEC_TIME, execTime);
+            log.info(EXECUTION_TIME_LOG, execTime);
         }
     }
 

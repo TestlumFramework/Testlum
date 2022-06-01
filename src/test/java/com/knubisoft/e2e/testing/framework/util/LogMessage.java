@@ -193,4 +193,5 @@ public final class LogMessage {
     public static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
     public static final String UI_EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Step execution time", "{} ms");
     public static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
+    public static final String UI_COMMAND_EXEC_TIME = "Ui command execution time";
 }

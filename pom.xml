@@ -18,7 +18,7 @@
         <start-class>com.knubisoft.e2e.runner.TestRunner</start-class>
 
         <selenium-java.version>3.141.59</selenium-java.version>
-        <webdrivermanager.version>4.3.1</webdrivermanager.version>
+        <webdrivermanager.version>5.2.0</webdrivermanager.version>
         <org.spring.boot.version>2.4.3</org.spring.boot.version>
         <org.spring.version>5.3.4</org.spring.version>
         <io.jsonwebtoken.version>0.11.2</io.jsonwebtoken.version>

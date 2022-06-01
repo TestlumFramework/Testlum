@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ERROR_DURING_DB_MIGRATION_LOG;
@@ -44,7 +43,7 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
         if (StringUtils.isBlank(storageName)) {
             throw new DefaultFrameworkException(NAME_FOR_MIGRATION_MUST_PRESENT);
         }
-        log.info(ALIAS_LOG, migrate.getAlias(), EMPTY);
+        log.info(ALIAS_LOG, migrate.getAlias());
         migrate(migrate, storageName, migrate.getAlias(), result);
     }
 

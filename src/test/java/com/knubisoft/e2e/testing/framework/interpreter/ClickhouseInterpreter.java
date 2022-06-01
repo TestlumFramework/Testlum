@@ -42,10 +42,7 @@ public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
 
     protected String getActual(final Clickhouse clickhouse, final CommandResult result) {
         List<String> sqls = getSqlList(clickhouse);
-        LogUtil.logAllQueries(sqls, clickhouse.getAlias(),
-                dependencies.getGlobalTestConfiguration().getIntegrations().getClickhouses().getClickhouse()
-                        .stream().filter(a -> a.getAlias().equalsIgnoreCase(clickhouse.getAlias()))
-                        .findFirst().get().getConnectionUrl());
+        LogUtil.logAllQueries(sqls, clickhouse.getAlias());
         result.put("sqls", sqls);
         StorageOperation.StorageOperationResult applyClickhouse = clickhouseOperation.apply(new ListSource(sqls),
                 clickhouse.getAlias());

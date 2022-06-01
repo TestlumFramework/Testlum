@@ -43,10 +43,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     //CHECKSTYLE:OFF
     private void runSqsOperation(final Sqs sqs, final String queue,
                                  final CommandResult result, final String alias) {
-        log.info(ALIAS_LOG, alias,
-                dependencies.getGlobalTestConfiguration().getIntegrations().getSqss().getSqs()
-                        .stream().filter(a -> a.getAlias().equalsIgnoreCase(alias))
-                        .findFirst().get().getEndpoint());
+        log.info(ALIAS_LOG, alias);
         if (sqs.getSend() != null) {
             result.put("action", SEND_ACTION);
             sendMessage(queue, sqs.getSend(), result, alias);

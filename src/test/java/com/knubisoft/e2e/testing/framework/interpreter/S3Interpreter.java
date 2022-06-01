@@ -43,10 +43,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
 
     @Override
     protected void acceptImpl(final S3 s3, final CommandResult result) {
-        log.info(ALIAS_LOG, s3.getAlias(),
-                dependencies.getGlobalTestConfiguration().getIntegrations().getS3S().getS3()
-                        .stream().filter(a -> a.getAlias().equalsIgnoreCase(s3.getAlias()))
-                        .findFirst().get().getEndpoint());
+        log.info(ALIAS_LOG, s3.getAlias());
         String bucket = inject(s3.getAlias());
         String key = inject(s3.getKey());
 

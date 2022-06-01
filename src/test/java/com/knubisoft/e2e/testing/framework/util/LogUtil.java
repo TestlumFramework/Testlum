@@ -69,8 +69,8 @@ public class LogUtil {
         overview.getLink().forEach(link -> logOverviewPartInfo(OverviewPart.LINK, link));
     }
 
-    public void logAllQueries(final List<String> queries, final String alias, final String url) {
-        log.info(ALIAS_LOG, alias, url);
+    public void logAllQueries(final List<String> queries, final String alias) {
+        log.info(ALIAS_LOG, alias);
         queries.forEach(query -> log.info(
                 format(TABLE_FORMAT, "Query", query.replaceAll("\\s{2,}", SPACE))));
     }
@@ -152,8 +152,8 @@ public class LogUtil {
         }
     }
 
-    public void logSesInfo(final Ses ses, final String url) {
-        log.info(ALIAS_LOG, ses.getAlias(), url);
+    public void logSesInfo(final Ses ses) {
+        log.info(ALIAS_LOG, ses.getAlias());
         log.info(SOURCE_LOG, ses.getSource());
         log.info(DESTINATION_LOG, ses.getDestination());
     }
@@ -163,8 +163,8 @@ public class LogUtil {
         log.info(VALUE_LOG, value);
     }
 
-    public void logHttpInfo(final String alias, final String method, final String endpoint, final String url) {
-        log.info(ALIAS_LOG, alias, url);
+    public void logHttpInfo(final String alias, final String method, final String endpoint) {
+        log.info(ALIAS_LOG, alias);
         log.info(HTTP_METHOD_LOG, method);
         log.info(ENDPOINT_LOG, endpoint);
 

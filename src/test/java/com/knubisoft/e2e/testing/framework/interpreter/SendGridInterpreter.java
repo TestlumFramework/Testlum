@@ -73,10 +73,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         request.setMethod(method);
         request.setEndpoint(sendgridInfo.getUrl());
         request.setBody(getBody(sendgridInfo));
-        LogUtil.logHttpInfo(alias, method.name(), sendgridInfo.getUrl(),
-                dependencies.getGlobalTestConfiguration().getIntegrations()
-                        .getSendgrids().getSendgrid().stream().filter(a -> a.getAlias().equalsIgnoreCase(alias))
-                        .findFirst().get().getApiUrl());
+        LogUtil.logHttpInfo(alias, method.name(), sendgridInfo.getUrl());
         LogUtil.logBody(request.getBody());
         return sendGrid.get(alias).api(request);
     }

@@ -42,13 +42,7 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
 
     protected String getActual(final Redis redis, final CommandResult result) {
         final List<String> sqls = getRedisQueryList(redis);
-        LogUtil.logAllQueries(sqls, redis.getAlias(),
-                dependencies.getGlobalTestConfiguration().getIntegrations().getRedises().getRedis()
-                        .stream().filter(a -> a.getAlias().equalsIgnoreCase(redis.getAlias()))
-                        .findFirst().get().getHost() + ":"
-                        + dependencies.getGlobalTestConfiguration().getIntegrations().getRedises().getRedis()
-                        .stream().filter(a -> a.getAlias().equalsIgnoreCase(redis.getAlias()))
-                        .findFirst().get().getPort());
+        LogUtil.logAllQueries(sqls, redis.getAlias());
         result.put("sqls", sqls);
         final StorageOperation.StorageOperationResult apply = redisOperation.apply(new ListSource(sqls),
                 redis.getAlias());

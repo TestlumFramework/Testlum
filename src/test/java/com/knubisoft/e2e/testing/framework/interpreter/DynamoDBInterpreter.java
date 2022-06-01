@@ -42,10 +42,7 @@ public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
 
     protected String getActual(final Dynamo ddb, final CommandResult result) {
         List<String> queries = getDynamoQueryList(ddb);
-        LogUtil.logAllQueries(queries, ddb.getAlias(),
-                dependencies.getGlobalTestConfiguration().getIntegrations().getDynamos().getDynamo()
-                        .stream().filter(a -> a.getAlias().equalsIgnoreCase(ddb.getAlias()))
-                        .findFirst().get().getEndpoint());
+        LogUtil.logAllQueries(queries, ddb.getAlias());
         result.put("sqls", queries);
         StorageOperation.StorageOperationResult apply = dynamoDBOperation
                 .apply(new ListSource(queries), ddb.getAlias());

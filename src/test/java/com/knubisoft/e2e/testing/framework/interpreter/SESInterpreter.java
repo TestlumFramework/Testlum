@@ -34,10 +34,7 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
 
     @Override
     protected void acceptImpl(final Ses ses, final CommandResult result) {
-        LogUtil.logSesInfo(ses,
-                dependencies.getGlobalTestConfiguration().getIntegrations().getSeses().getSes()
-                .stream().filter(a -> a.getAlias().equalsIgnoreCase(ses.getAlias()))
-                .findFirst().get().getEndpoint());
+        LogUtil.logSesInfo(ses);
         verify(ses);
         sendEmail(ses);
     }

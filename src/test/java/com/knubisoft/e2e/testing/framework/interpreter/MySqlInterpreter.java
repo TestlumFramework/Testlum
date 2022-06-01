@@ -47,10 +47,7 @@ public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
 
     protected String getActual(final Mysql mySql, final CommandResult result) {
         List<String> sqls = getSqlList(mySql);
-        LogUtil.logAllQueries(sqls, mySql.getAlias(),
-                dependencies.getGlobalTestConfiguration().getIntegrations().getMysqls().getMysql()
-                        .stream().filter(a -> a.getAlias().equalsIgnoreCase(mySql.getAlias()))
-                        .findFirst().get().getConnectionUrl());
+        LogUtil.logAllQueries(sqls, mySql.getAlias());
         result.put("sqls", sqls);
         StorageOperation.StorageOperationResult applyMySql = mySqlOperation.apply(new ListSource(sqls),
                 inject(mySql.getAlias()));

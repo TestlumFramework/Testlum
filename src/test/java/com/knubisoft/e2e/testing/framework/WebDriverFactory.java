@@ -1,17 +1,20 @@
 package com.knubisoft.e2e.testing.framework;
 
-import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.constant.SeleniumConstant;
-import com.knubisoft.e2e.testing.model.global_config.BrowserSettings;
-import com.knubisoft.e2e.testing.model.global_config.Options;
-import io.github.bonigarcia.wdm.WebDriverManager;
+import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.e2e.testing.framework.util.WebDriverUtil;
+import com.knubisoft.e2e.testing.model.global_config.AbstractBrowser;
+import com.knubisoft.e2e.testing.model.global_config.Chrome;
+import com.knubisoft.e2e.testing.model.global_config.Edge;
+import com.knubisoft.e2e.testing.model.global_config.Firefox;
+import com.knubisoft.e2e.testing.model.global_config.Opera;
+import com.knubisoft.e2e.testing.model.global_config.Safari;
+import com.knubisoft.e2e.testing.model.global_config.WebDriverOptions;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -24,91 +27,90 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.logging.Level;
+
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.DRIVER_INITIALIZER_NOT_FOUND;
 
 @UtilityClass
 public class WebDriverFactory {
 
-    private static final String CHROME = "Chrome";
-    private static final String FIREFOX = "Firefox";
-    private static final String OPERA = "Opera";
-    private static final String EDGE = "Edge";
-
-    private static final Map<String, WebDriverInitializer<? extends WebDriver>> DRIVER_INITIALIZER_MAP;
+    private static final Map<WebBrowserPredicate, WebDriverInitializer> DRIVER_INITIALIZER_MAP;
 
     static {
-        final Map<String, WebDriverInitializer<? extends WebDriver>> map = new HashMap<>(4);
+        final Map<WebBrowserPredicate, WebDriverInitializer> map = new HashMap<>(5);
 
-        map.put(CHROME, new ChromeDriverInitializer());
-        map.put(FIREFOX, new FirefoxDriverInitializer());
-        map.put(OPERA, new OperaDriverInitializer());
-        map.put(EDGE, new EdgeDriverInitializer());
+        map.put(browser -> browser instanceof Chrome, new ChromeDriverInitializer());
+        map.put(browser -> browser instanceof Firefox, new FirefoxDriverInitializer());
+        map.put(browser -> browser instanceof Opera, new OperaDriverInitializer());
+        map.put(browser -> browser instanceof Safari, new EdgeDriverInitializer());
+        map.put(browser -> browser instanceof Edge, new EdgeDriverInitializer());
 
         DRIVER_INITIALIZER_MAP = Collections.unmodifiableMap(map);
     }
 
-    public WebDriver create(final String browserVersionElement,
-                            final BrowserSettings browserSettings) {
-        String[] nameAndVersion = browserVersionElement.split(DelimiterConstant.DOUBLE_UNDERSCORE, 2);
-        WebDriverInitializer<? extends WebDriver> driverInitializer = DRIVER_INITIALIZER_MAP.get(nameAndVersion[0]);
-        if (SystemInfo.USE_SELENIUM_HUB) {
-            return driverInitializer.initRemote(nameAndVersion[1], browserSettings);
-        } else {
-            return driverInitializer.init(nameAndVersion[1], browserSettings);
-        }
+    public WebDriver create(final AbstractBrowser webBrowser) {
+        WebDriverInitializer driverInitializer = getWebDriverInitializer(webBrowser);
+        return WebDriverUtil.isLocalRunMode() ? driverInitializer.initDocker(webBrowser)
+                : driverInitializer.initRemote(webBrowser);
     }
 
-    private List<String> toOptions(final BrowserSettings browserSettings) {
-        List<String> result = new ArrayList<>();
-        Options options = browserSettings.getOptions();
-        if (options != null && options.getOption().stream().noneMatch(String::isEmpty)) {
-            result.addAll(options.getOption());
-        }
-        return result;
+    private WebDriverInitializer getWebDriverInitializer(final AbstractBrowser webBrowser) {
+        return DRIVER_INITIALIZER_MAP.keySet().stream()
+                .filter(key -> key.test(webBrowser))
+                .map(DRIVER_INITIALIZER_MAP::get)
+                .findFirst().orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
     }
 
-    private void manageWindowSize(final RemoteWebDriver driver) {
-        Dimension dimension = new Dimension(SeleniumConstant.SCREEN_WIDTH, SeleniumConstant.SCREEN_HEIGHT);
-        driver.manage().window().setSize(dimension);
-        driver.manage().window().maximize();
-        driver.get(GlobalTestConfigurationProvider.provide().getUi().getBaseUrl());
+    private interface WebDriverInitializer {
+        WebDriver init(AbstractBrowser webBrowser);
+
+        WebDriver initRemote(AbstractBrowser webBrowser);
+
+        WebDriver initDocker(AbstractBrowser webBrowser);
     }
 
-    private interface WebDriverInitializer<T extends RemoteWebDriver> {
-        T init(String version, BrowserSettings browserSettings);
-
-        RemoteWebDriver initRemote(String version, BrowserSettings browserSettings);
-    }
-
-    private static class ChromeDriverInitializer implements WebDriverInitializer<ChromeDriver> {
+    private static class ChromeDriverInitializer implements WebDriverInitializer {
         @Override
-        public ChromeDriver init(final String version, final BrowserSettings browserSettings) {
-            WebDriverManager.chromedriver().browserVersion(version).setup();
-            DesiredCapabilities cap = getCapabilitiesAndConfigureDriver(browserSettings);
-            ChromeDriver chromeDriver = new ChromeDriver(cap);
-            manageWindowSize(chromeDriver);
+        public WebDriver init(final AbstractBrowser webBrowser) {
+            WebDriverUtil.setUpDriver(WebDriverUtil.Browser.CHROME, webBrowser.getWebDriverVersion());
+            ChromeOptions chromeOptions = getChromeOptions(webBrowser.getWebDriverOptions());
+            ChromeDriver chromeDriver = new ChromeDriver(chromeOptions);
+            WebDriverUtil.manageWindowSize(chromeDriver);
             return chromeDriver;
         }
 
         @SneakyThrows
         @Override
-        public RemoteWebDriver initRemote(final String version, final BrowserSettings browserSettings) {
-            WebDriverManager.chromedriver().browserVersion(version).setup();
-            DesiredCapabilities cap = getCapabilitiesAndConfigureDriver(browserSettings);
-            RemoteWebDriver webDriver = new RemoteWebDriver(new URL(SeleniumConstant.REMOTE_URL), cap);
-            manageWindowSize(webDriver);
+        public WebDriver initRemote(final AbstractBrowser webBrowser) {
+            DesiredCapabilities cap = getCapabilitiesAndConfigureDriver(webBrowser);
+            WebDriver webDriver = new RemoteWebDriver(new URL(SeleniumConstant.REMOTE_URL), cap);
+            WebDriverUtil.manageWindowSize(webDriver);
             return webDriver;
         }
 
+        @Override
+        public WebDriver initDocker(AbstractBrowser webBrowser) {
+            WebDriver driver = WebDriverUtil.setUpLocallyInDocker(WebDriverUtil.Browser.CHROME, "latest");
+            WebDriverUtil.manageWindowSize(driver);
+            return driver;
+        }
+
+        private ChromeOptions getChromeOptions(final WebDriverOptions webDriverOptions) {
+            ChromeOptions chromeOptions = new ChromeOptions();
+            List<String> options = WebDriverUtil.getOptions(webDriverOptions);
+            chromeOptions.addArguments(options);
+            return chromeOptions;
+        }
+
         @NotNull
-        private DesiredCapabilities getCapabilitiesAndConfigureDriver(final BrowserSettings browserSettings) {
+        private DesiredCapabilities getCapabilitiesAndConfigureDriver(final AbstractBrowser webBrowser) {
             final ChromeOptions options = new ChromeOptions();
-            final List<String> optionsList = toOptions(browserSettings);
+            final List<String> optionsList = WebDriverUtil.getOptions(webBrowser.getWebDriverOptions());
             if (CollectionUtils.isNotEmpty(optionsList)) {
                 options.addArguments(optionsList.toArray(new String[0]));
             }
@@ -127,35 +129,39 @@ public class WebDriverFactory {
         }
     }
 
-    private static class FirefoxDriverInitializer implements WebDriverInitializer<FirefoxDriver> {
+    private static class FirefoxDriverInitializer implements WebDriverInitializer {
         @Override
-        public FirefoxDriver init(final String version, final BrowserSettings browserSettings) {
-            WebDriverManager.firefoxdriver().browserVersion(version).setup();
-            DesiredCapabilities cap = getCapabilitiesAndConfigureDriver(browserSettings);
+        public WebDriver init(final AbstractBrowser webBrowser) {
+            WebDriverUtil.setUpDriver(WebDriverUtil.Browser.FIREFOX, webBrowser.getWebDriverVersion());
+            DesiredCapabilities cap = getCapabilitiesAndConfigureDriver(webBrowser);
             FirefoxDriver firefoxDriver = new FirefoxDriver(cap);
-            manageWindowSize(firefoxDriver);
+            WebDriverUtil.manageWindowSize(firefoxDriver);
             return firefoxDriver;
         }
 
         @SneakyThrows
         @Override
-        public RemoteWebDriver initRemote(final String version, final BrowserSettings browserSettings) {
-            WebDriverManager.firefoxdriver().browserVersion(version).setup();
-            DesiredCapabilities cap = getCapabilitiesAndConfigureDriver(browserSettings);
-            RemoteWebDriver webDriver = new RemoteWebDriver(new URL(SeleniumConstant.REMOTE_URL), cap);
-            manageWindowSize(webDriver);
+        public WebDriver initRemote(final AbstractBrowser webBrowser) {
+            DesiredCapabilities cap = getCapabilitiesAndConfigureDriver(webBrowser);
+            WebDriver webDriver = new RemoteWebDriver(new URL(SeleniumConstant.REMOTE_URL), cap);
+            WebDriverUtil.manageWindowSize(webDriver);
             return webDriver;
         }
 
         @NotNull
-        private DesiredCapabilities getCapabilitiesAndConfigureDriver(final BrowserSettings browserSettings) {
+        private DesiredCapabilities getCapabilitiesAndConfigureDriver(final AbstractBrowser webBrowser) {
             FirefoxOptions options = new FirefoxOptions();
-            List<String> optionsList = toOptions(browserSettings);
+            List<String> optionsList = WebDriverUtil.getOptions(webBrowser.getWebDriverOptions());
             if (CollectionUtils.isNotEmpty(optionsList)) {
                 options.addArguments(optionsList.toArray(new String[0]));
             }
             DesiredCapabilities cap = getDesiredCapabilities(options);
             return cap;
+        }
+
+        @Override
+        public WebDriver initDocker(AbstractBrowser webBrowser) {
+            return null;
         }
 
         @NotNull
@@ -169,29 +175,41 @@ public class WebDriverFactory {
         }
     }
 
-    private static class OperaDriverInitializer implements WebDriverInitializer<FirefoxDriver> {
+    private static class OperaDriverInitializer implements WebDriverInitializer {
 
         @Override
-        public FirefoxDriver init(final String version, final BrowserSettings browserSettings) {
+        public WebDriver init(final AbstractBrowser webBrowser) {
             throw new NotImplementedException();
         }
 
         @Override
-        public RemoteWebDriver initRemote(final String version, final BrowserSettings browserSettings) {
+        public WebDriver initRemote(final AbstractBrowser webBrowser) {
             throw new NotImplementedException();
+        }
+
+        @Override
+        public WebDriver initDocker(AbstractBrowser webBrowser) {
+            return null;
+        }
+    }
+
+    private static class EdgeDriverInitializer implements WebDriverInitializer {
+
+        @Override
+        public WebDriver init(final AbstractBrowser webBrowser) {
+            throw new NotImplementedException();
+        }
+
+        @Override
+        public WebDriver initRemote(final AbstractBrowser webBrowser) {
+            throw new NotImplementedException();
+        }
+
+        @Override
+        public WebDriver initDocker(AbstractBrowser webBrowser) {
+            return null;
         }
     }
 
-    private static class EdgeDriverInitializer implements WebDriverInitializer<FirefoxDriver> {
-
-        @Override
-        public FirefoxDriver init(final String version, final BrowserSettings browserSettings) {
-            throw new NotImplementedException();
-        }
-
-        @Override
-        public RemoteWebDriver initRemote(final String version, final BrowserSettings browserSettings) {
-            throw new NotImplementedException();
-        }
-    }
+    private interface WebBrowserPredicate extends Predicate<AbstractBrowser> { }
 }

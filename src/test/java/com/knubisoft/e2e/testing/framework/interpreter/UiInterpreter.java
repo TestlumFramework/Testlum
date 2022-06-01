@@ -194,6 +194,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
                 break;
             default: throw new DefaultFrameworkException(format(NAVIGATE_NOT_SUPPORTED, navigateCommand.value()));
         }
+        takeScreenshotIfRequired(result);
     }
 
     private void navigateTo(final String path, final CommandResult result) {
@@ -212,6 +213,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
                 .withActual(actual)
                 .withExpected(expected)
                 .exec();
+        takeScreenshotIfRequired(result);
     }
 
     private String getActualValue(final Assert aAssert, final CommandResult result) {

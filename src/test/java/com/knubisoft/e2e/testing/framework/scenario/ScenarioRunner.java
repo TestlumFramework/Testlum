@@ -229,7 +229,7 @@ public class ScenarioRunner {
 
     private InterpreterDependencies createDependenciesWithUI() {
         return new InterpreterDependencies(
-                WebDriverFactory.create(scenarioArguments.getBrowserVersion(), scenarioArguments.getBrowserSettings()),
+                WebDriverFactory.create(scenarioArguments.getWebBrowser()),
                 ctx,
                 scenarioArguments.getFile(),
                 new ScenarioContext(scenarioArguments.getVariation()),

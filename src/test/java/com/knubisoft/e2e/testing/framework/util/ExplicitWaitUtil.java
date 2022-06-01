@@ -10,7 +10,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 @UtilityClass
 public final class ExplicitWaitUtil {
     private static final int TIME_TO_WAIT = GlobalTestConfigurationProvider.provide()
-            .getUi().getBrowserSettings().getSeleniumExplicitWaitTime();
+            .getUi().getWebDriverSettings().getWebElementAutowait().getSeconds();
 
     public void waitForElementVisibility(final WebDriver driver, final WebElement element) {
         WebDriverWait wait = new WebDriverWait(driver, TIME_TO_WAIT);

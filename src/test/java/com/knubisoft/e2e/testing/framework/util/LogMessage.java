@@ -158,4 +158,5 @@ public final class LogMessage {
     public static final String CLEAR_ACTION = "Clear action";
     public static final String CLEAR_ACTION_LOCATOR = "Element locator for clear %s";
     public static final String CLOSE_TAB_INFO = "Close second tab";
+    public static final String DRIVER_INITIALIZER_NOT_FOUND = "Driver initializer not found";
 }

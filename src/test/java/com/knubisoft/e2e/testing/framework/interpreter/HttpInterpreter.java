@@ -5,6 +5,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependenci
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.http.ApiClient;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.http.ApiResponse;
+import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.scenario.Header;
 import com.knubisoft.e2e.testing.model.scenario.Http;
 import com.knubisoft.e2e.testing.model.scenario.HttpInfoWithBody;
@@ -64,10 +65,12 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                                     final String url,
                                     final HttpMethod httpMethod,
                                     final String alias) {
+        LogUtil.logHttpInfo(alias, httpMethod.name(), url);
         Map<String, String> headers = getHeaders(httpInfo);
         boolean isJson = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .equalsIgnoreCase(MediaType.APPLICATION_JSON_VALUE);
         HttpEntity body = getBody(httpInfo, isJson);
+        LogUtil.logBodyContent(body);
         try {
             return apiClient.call(httpMethod, url, headers, body, alias);
         } catch (IOException e) {

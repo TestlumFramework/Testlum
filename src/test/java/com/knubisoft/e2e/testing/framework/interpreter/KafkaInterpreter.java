@@ -33,13 +33,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.RECEIVE_ACTION;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SEND_ACTION;
+
 @Slf4j
 @InterpreterForClass(Kafka.class)
 public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
     private static final String CORRELATION_ID = "correlationId";
-    private static final String SEND_ACTION = "send";
-    private static final String RECEIVE_ACTION = "receive";
     private static final int NUM_PARTITIONS = 1;
 
     @Autowired(required = false)
@@ -66,6 +68,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                                    final int actionNumber,
                                    final Object action,
                                    final String alias) {
+        log.info(ALIAS_LOG, alias);
         if (action instanceof SendKafkaMessage) {
             sendMessage((SendKafkaMessage) action, actionNumber, result, alias);
         } else {

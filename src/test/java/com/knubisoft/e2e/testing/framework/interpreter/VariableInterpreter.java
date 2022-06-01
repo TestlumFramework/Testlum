@@ -5,6 +5,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.scenario.PostgresResult;
 import com.knubisoft.e2e.testing.model.scenario.Var;
 import com.knubisoft.e2e.testing.framework.db.StorageOperation;
@@ -29,7 +30,6 @@ import java.util.Objects;
 
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.FAILED_VARIABLE_WITH_PATH_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.TEMPLATE_LOG;
 import static java.lang.String.format;
 
 @Slf4j
@@ -59,7 +59,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         result.put("key", o.getName());
         result.put("value", value);
         context.set(o.getName(), value);
-        log.info(TEMPLATE_LOG, value);
+        LogUtil.logVarInfo(o.getName(), value);
     }
 
     //CHECKSTYLE:OFF

@@ -4,6 +4,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.http.ApiResponse;
+import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.scenario.Header;
 import com.knubisoft.e2e.testing.model.scenario.Sendgrid;
 import com.knubisoft.e2e.testing.model.scenario.SendgridWithBody;
@@ -72,6 +73,8 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         request.setMethod(method);
         request.setEndpoint(sendgridInfo.getUrl());
         request.setBody(getBody(sendgridInfo));
+        LogUtil.logHttpInfo(alias, method.name(), sendgridInfo.getUrl());
+        LogUtil.logBody(request.getBody());
         return sendGrid.get(alias).api(request);
     }
 

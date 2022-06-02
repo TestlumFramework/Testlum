@@ -17,6 +17,8 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,6 +27,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BODY_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BROWSER_VERSION_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.COMMENT_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.CONTENT_FORMAT;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTION_TIME_LOG;
@@ -32,6 +35,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.HTTP_METHOD_LO
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAME_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SHELL_FILE_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SOURCE_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.TABLE_FORMAT;
@@ -81,7 +85,7 @@ public class LogUtil {
                 queue,
                 StringUtils.isNotBlank(content)
                         ? PrettifyStringJson.getJSONResult(content)
-                                .replaceAll(REGEX_NEW_LINE, format("%n%-41s|", EMPTY)) : content);
+                                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT) : content);
     }
 
     public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {
@@ -174,7 +178,7 @@ public class LogUtil {
         if (StringUtils.isNotBlank(body)) {
             log.info(BODY_LOG,
                 PrettifyStringJson.getJSONResult(body)
-                .replaceAll(REGEX_NEW_LINE, format("%n%-41s|", EMPTY)));
+                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
     }
 
@@ -193,6 +197,15 @@ public class LogUtil {
             log.info(UI_EXECUTION_TIME_LOG, time);
         } else {
             log.info(EXECUTION_TIME_LOG, time);
+        }
+    }
+
+    public void logShellFile(final Path path) {
+        try {
+            log.info(SHELL_FILE_LOG, new String(Files.readAllBytes(path), StandardCharsets.UTF_8)
+                    .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+        } catch (IOException e) {
+            log.error("Can`t get shell file content", e);
         }
     }
 

@@ -10,6 +10,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 public final class LogMessage {
 
     public static final String TABLE_FORMAT = "%-20s|%-70s";
+    public static final String CONTENT_FORMAT = format("%n%-41s|", EMPTY);
 
     public static final String SEND_ACTION = "send";
     public static final String RECEIVE_ACTION = "receive";
@@ -195,4 +196,6 @@ public final class LogMessage {
     public static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
     public static final String UI_COMMAND_EXEC_TIME = "Ui command execution time";
     public static final String COMMAND_TYPE_LOG = format(TABLE_FORMAT, "Command type", "{}");
+    public static final String SHELL_FILE_LOG = format(TABLE_FORMAT, "Shell file", "{}");
+    public static final String SHELL_COMMAND_LOG = format(TABLE_FORMAT, "Shell command", "{}");
 }

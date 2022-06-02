@@ -12,6 +12,8 @@ public final class LogMessage {
     public static final String TABLE_FORMAT = "%-20s|%-70s";
     public static final String CONTENT_FORMAT = format("%n%-41s|", EMPTY);
 
+    public static final String REGEX_NEW_LINE = "[\\r\\n]";
+
     public static final String SEND_ACTION = "send";
     public static final String RECEIVE_ACTION = "receive";
 

@@ -6,7 +6,6 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependenci
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
-import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.e2e.testing.model.scenario.Shell;
 import lombok.SneakyThrows;
@@ -15,9 +14,14 @@ import org.apache.commons.lang3.SystemUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.CONTENT_FORMAT;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.REGEX_NEW_LINE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SHELL_COMMAND_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SHELL_FILE_LOG;
 
 @Slf4j
 @InterpreterForClass(Shell.class)
@@ -78,7 +82,8 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
 
     private Process getProcessorForFile(final String shellFile) throws IOException {
         File shellFileByPath = getShellFileByPath(shellFile);
-        LogUtil.logShellFile(shellFileByPath.toPath());
+        log.info(SHELL_FILE_LOG, new String(Files.readAllBytes(shellFileByPath.toPath()), StandardCharsets.UTF_8)
+                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         return SystemUtils.IS_OS_WINDOWS
                 ? Runtime.getRuntime().exec(String.format(EXEC_WINDOWS_COMMAND,
                 shellFileByPath.getAbsolutePath()))

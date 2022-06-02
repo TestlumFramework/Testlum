@@ -17,8 +17,6 @@ import org.apache.http.HttpEntity;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,8 +32,8 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTION_TIME
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAME_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.REGEX_NEW_LINE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.SHELL_FILE_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SOURCE_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.TABLE_FORMAT;
@@ -50,8 +48,6 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
 @UtilityClass
 @Slf4j
 public class LogUtil {
-
-    private static final String REGEX_NEW_LINE = "[\\r\\n]";
 
     public void logScenarioDetails(final ScenarioArguments scenarioArguments,
                                    final AtomicInteger atomicInteger) {
@@ -195,12 +191,6 @@ public class LogUtil {
         } else {
             log.info(EXECUTION_TIME_LOG, time);
         }
-    }
-
-    @SneakyThrows
-    public void logShellFile(final Path path) {
-        log.info(SHELL_FILE_LOG, new String(Files.readAllBytes(path), StandardCharsets.UTF_8)
-                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
 }

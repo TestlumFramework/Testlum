@@ -61,6 +61,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLICK_LOCATOR;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLICK_METHOD;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLOSE_TAB_ACTION;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLOSE_TAB_INFO;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.COMMAND_TYPE_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_LOCATOR;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_NOT_SUPPORTED;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_ONE_VALUE;
@@ -78,6 +79,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.SECOND_TAB_NOT
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND_EXEC_TIME;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.WAIT_COMMAND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.VALUE_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.WAIT_INFO_LOG;
 import static com.knubisoft.e2e.testing.model.scenario.ClickMethod.JS;
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.NEW_LINE;
@@ -203,6 +205,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     private void navigate(final Navigate navigate, final CommandResult result) {
         NavigateCommand navigateCommand = navigate.getCommand();
+        log.info(COMMAND_TYPE_LOG, navigateCommand.name());
         result.put(NAVIGATE, navigateCommand.value());
         switch (navigateCommand) {
             case BACK: dependencies.getWebDriver().navigate().back();
@@ -260,6 +263,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         if (oneValue != null) {
             processOneValueFromDropDown(oneValue, select, result);
         } else {
+            log.info(COMMAND_TYPE_LOG, "DESELECT ALL");
             select.deselectAll();
         }
     }
@@ -268,6 +272,8 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         TypeForOneValue type = oneValue.getType();
         SelectOrDeselectBy method = oneValue.getBy();
         String value = inject(oneValue.getValue());
+        log.info(COMMAND_TYPE_LOG, type.name());
+        log.info(VALUE_LOG, value);
         result.put(DROP_DOWN_ONE_VALUE, format(DROP_DOWN_OPERATION, type.value(), method.value(), value));
         if (type == TypeForOneValue.SELECT) {
             selectByMethod(select, method, value);
@@ -326,6 +332,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     @SneakyThrows
     private void wait(final Wait wait, final CommandResult result) {
         long time = wait.getTime().longValue();
+        log.info(WAIT_INFO_LOG, time, wait.getUnit());
         result.put(WAIT_COMMAND, time);
         WaitUtil.getTimeUnit(wait.getUnit(), result).sleep(time);
     }

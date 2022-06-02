@@ -53,7 +53,7 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
         try {
             log.info(SHELL_COMMAND_LOG, shellCommand);
             Process process = Runtime.getRuntime().exec(shellCommand);
-            execShell(process, shell, result);
+            processExpectedAndActual(process.waitFor(), shell, result);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -70,15 +70,10 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
                                       final CommandResult result) {
         try {
             Process process = getProcessorForFile(shellFile);
-            execShell(process, shell, result);
+            processExpectedAndActual(process.waitFor(), shell, result);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void execShell(final Process process, final Shell shell, final CommandResult result)
-            throws InterruptedException {
-        processExpectedAndActual(process.waitFor(), shell, result);
     }
 
     private Process getProcessorForFile(final String shellFile) throws IOException {

@@ -8,6 +8,7 @@ import com.knubisoft.e2e.testing.model.scenario.Overview;
 import com.knubisoft.e2e.testing.model.scenario.OverviewPart;
 import com.knubisoft.e2e.testing.model.scenario.Ses;
 import com.knubisoft.e2e.testing.model.scenario.Ui;
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -15,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -182,13 +182,10 @@ public class LogUtil {
         }
     }
 
+    @SneakyThrows
     public void logBodyContent(final HttpEntity body) {
         if (body != null) {
-            try {
-                logBody(IOUtils.toString(body.getContent(), StandardCharsets.UTF_8.name()));
-            } catch (IOException e) {
-                log.error("Can`t get HttpEntity content", e);
-            }
+            logBody(IOUtils.toString(body.getContent(), StandardCharsets.UTF_8.name()));
         }
     }
 
@@ -200,13 +197,10 @@ public class LogUtil {
         }
     }
 
+    @SneakyThrows
     public void logShellFile(final Path path) {
-        try {
-            log.info(SHELL_FILE_LOG, new String(Files.readAllBytes(path), StandardCharsets.UTF_8)
-                    .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
-        } catch (IOException e) {
-            log.error("Can`t get shell file content", e);
-        }
+        log.info(SHELL_FILE_LOG, new String(Files.readAllBytes(path), StandardCharsets.UTF_8)
+                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
 }

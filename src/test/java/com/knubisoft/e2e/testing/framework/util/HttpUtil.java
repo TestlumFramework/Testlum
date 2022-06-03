@@ -95,8 +95,11 @@ public final class HttpUtil {
     }
 
     public boolean checkIfContentTypeIsJson(final Header contentTypeHeader) {
-        return contentTypeHeader.getValue().equals(MediaType.APPLICATION_JSON_VALUE)
-                || contentTypeHeader.getValue().equals(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        if (contentTypeHeader != null) {
+            return contentTypeHeader.getValue().equals(MediaType.APPLICATION_JSON_VALUE)
+                    || contentTypeHeader.getValue().equals(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        }
+        return false;
     }
 
     //CHECKSTYLE:OFF

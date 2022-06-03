@@ -8,6 +8,7 @@ import com.knubisoft.e2e.testing.model.scenario.Overview;
 import com.knubisoft.e2e.testing.model.scenario.OverviewPart;
 import com.knubisoft.e2e.testing.model.scenario.Ses;
 import com.knubisoft.e2e.testing.model.scenario.Ui;
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -15,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
@@ -25,12 +25,14 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BODY_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BROWSER_VERSION_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.COMMENT_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.CONTENT_FORMAT;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAME_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.REGEX_NEW_LINE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SOURCE_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND_LOG;
@@ -46,8 +48,6 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
 @UtilityClass
 @Slf4j
 public class LogUtil {
-
-    private static final String REGEX_NEW_LINE = "[\\r\\n]";
 
     public void logScenarioDetails(final ScenarioArguments scenarioArguments,
                                    final AtomicInteger atomicInteger) {
@@ -81,7 +81,7 @@ public class LogUtil {
                 queue,
                 StringUtils.isNotBlank(content)
                         ? PrettifyStringJson.getJSONResult(content)
-                                .replaceAll(REGEX_NEW_LINE, format("%n%-41s|", EMPTY)) : content);
+                                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT) : content);
     }
 
     public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {
@@ -174,17 +174,14 @@ public class LogUtil {
         if (StringUtils.isNotBlank(body)) {
             log.info(BODY_LOG,
                 PrettifyStringJson.getJSONResult(body)
-                .replaceAll(REGEX_NEW_LINE, format("%n%-41s|", EMPTY)));
+                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
     }
 
+    @SneakyThrows
     public void logBodyContent(final HttpEntity body) {
         if (body != null) {
-            try {
-                logBody(IOUtils.toString(body.getContent(), StandardCharsets.UTF_8.name()));
-            } catch (IOException e) {
-                log.error("Can`t get HttpEntity content", e);
-            }
+            logBody(IOUtils.toString(body.getContent(), StandardCharsets.UTF_8.name()));
         }
     }
 

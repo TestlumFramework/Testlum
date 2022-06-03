@@ -12,14 +12,16 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SystemUtils;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.function.Consumer;
+
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.CONTENT_FORMAT;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.REGEX_NEW_LINE;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SHELL_COMMAND_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SHELL_FILE_LOG;
 
 @Slf4j
 @InterpreterForClass(Shell.class)
@@ -53,8 +55,9 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
     private void execShellCommandOrThrow(final String shellCommand, final Shell shell,
                                   final CommandResult result) {
         try {
+            log.info(SHELL_COMMAND_LOG, shellCommand);
             Process process = Runtime.getRuntime().exec(shellCommand);
-            execShell(process, shell, result);
+            processExpectedAndActual(process.waitFor(), shell, result);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -71,21 +74,16 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
                                       final CommandResult result) {
         try {
             Process process = getProcessorForFile(shellFile);
-            execShell(process, shell, result);
+            processExpectedAndActual(process.waitFor(), shell, result);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void execShell(final Process process, final Shell shell, final CommandResult result)
-            throws InterruptedException {
-        StreamHelper streamHelper = new StreamHelper(process.getInputStream(), System.out::println);
-        Executors.newSingleThreadExecutor().submit(streamHelper);
-        processExpectedAndActual(process.waitFor(), shell, result);
-    }
-
     private Process getProcessorForFile(final String shellFile) throws IOException {
         File shellFileByPath = getShellFileByPath(shellFile);
+        log.info(SHELL_FILE_LOG, new String(Files.readAllBytes(shellFileByPath.toPath()), StandardCharsets.UTF_8)
+                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         return SystemUtils.IS_OS_WINDOWS
                 ? Runtime.getRuntime().exec(String.format(EXEC_WINDOWS_COMMAND,
                 shellFileByPath.getAbsolutePath()))
@@ -109,22 +107,5 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
 
         result.setActual(actual);
         result.setExpected(shell.getFile());
-    }
-
-    private static class StreamHelper implements Runnable {
-
-        private final InputStream inputStream;
-        private final Consumer<String> consumer;
-
-        StreamHelper(final InputStream inputStream, final Consumer<String> consumer) {
-            this.inputStream = inputStream;
-            this.consumer = consumer;
-        }
-
-        @Override
-        public void run() {
-            new BufferedReader(new InputStreamReader(inputStream)).lines()
-                    .forEach(consumer);
-        }
     }
 }

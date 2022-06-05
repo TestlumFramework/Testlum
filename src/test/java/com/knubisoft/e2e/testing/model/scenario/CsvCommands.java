@@ -18,19 +18,18 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for clickhouse complex type.
+ * <p>Java class for csvCommands complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="clickhouse"&gt;
+ * &lt;complexType name="csvCommands"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/e2e/testing/model/scenario}abstractCommand"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="query" type="{http://www.knubisoft.com/e2e/testing/model/scenario}nonEmptyString" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="csvFile" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/e2e/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="file" use="required" type="{http://www.knubisoft.com/e2e/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="alias" type="{http://www.knubisoft.com/e2e/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -39,33 +38,31 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "clickhouse", propOrder = {
-    "query"
+@XmlType(name = "csvCommands", propOrder = {
+    "csvFile"
 })
-public class Clickhouse
+public class CsvCommands
     extends AbstractCommand
 {
 
     @XmlElement(required = true)
-    protected List<String> query;
-    @XmlAttribute(name = "alias", required = true)
+    protected List<String> csvFile;
+    @XmlAttribute(name = "alias")
     protected String alias;
-    @XmlAttribute(name = "file", required = true)
-    protected String file;
 
     /**
-     * Gets the value of the query property.
+     * Gets the value of the csvFile property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the query property.
+     * This is why there is not a <CODE>set</CODE> method for the csvFile property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getQuery().add(newItem);
+     *    getCsvFile().add(newItem);
      * </pre>
      * 
      * 
@@ -75,11 +72,11 @@ public class Clickhouse
      * 
      * 
      */
-    public List<String> getQuery() {
-        if (query == null) {
-            query = new ArrayList<String>();
+    public List<String> getCsvFile() {
+        if (csvFile == null) {
+            csvFile = new ArrayList<String>();
         }
-        return this.query;
+        return this.csvFile;
     }
 
     /**
@@ -104,30 +101,6 @@ public class Clickhouse
      */
     public void setAlias(String value) {
         this.alias = value;
-    }
-
-    /**
-     * Gets the value of the file property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getFile() {
-        return file;
-    }
-
-    /**
-     * Sets the value of the file property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setFile(String value) {
-        this.file = value;
     }
 
 }

@@ -32,7 +32,8 @@
         <com.jayway.json-path.version>2.5.0</com.jayway.json-path.version>
         <org.apache.commons.version>3.12.0</org.apache.commons.version>
         <org.apache.httpcomponents.client.version>4.5.13</org.apache.httpcomponents.client.version>
-        <com.google.guava>30.1-jre</com.google.guava>
+        <org.apache.poi.version>4.0.0</org.apache.poi.version>
+        <org.apache.poi.version>4.0.0</org.apache.poi.version><com.google.guava>30.1-jre</com.google.guava>
         <commons-dbutils.version>1.7</commons-dbutils.version>
         <org.junit.jupiter.version>5.8.0</org.junit.jupiter.version>
         <org.junit.version>4.12</org.junit.version>
@@ -682,6 +683,38 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${org.apache.commons.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${org.apache.poi.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-compress</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-collections4</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${org.apache.poi.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-compress</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

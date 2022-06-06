@@ -18,8 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 
 @Slf4j
 @InterpreterForClass(CsvCommands.class)
@@ -41,7 +44,7 @@ public class CsvInterpreter extends AbstractInterpreter<CsvCommands> {
             List<String> commands = convertFileToString(csv);
             return getSource(commands);
         }).collect(Collectors.toList());
-        postgresSqlOperation.apply(sources, csvCommands.getAlias());
+        applyPatches(csvCommands, result, sources);
     }
 
     private File getCsvFileByPath(final String pathToFile) {
@@ -75,10 +78,17 @@ public class CsvInterpreter extends AbstractInterpreter<CsvCommands> {
     }
 
     private String getValues(final String values) {
-        String subColumns = values.substring(values.indexOf(DelimiterConstant.COMMA));
+        String subColumns = values.substring(values.indexOf(DelimiterConstant.COMMA) + 1);
         if (StringUtils.isBlank(subColumns)) {
             throw new IllegalArgumentException("Please, fill some values to create a SQL statement");
         }
         return subColumns;
+    }
+
+    private void applyPatches(final CsvCommands csvCommands, final CommandResult result,
+                              final List<Source> sources) {
+        log.info(ALIAS_LOG, csvCommands.getAlias());
+        result.put("patches", new ArrayList<>(sources));
+        postgresSqlOperation.apply(sources, csvCommands.getAlias());
     }
 }

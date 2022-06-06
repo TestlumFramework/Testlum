@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+
 @Slf4j
 @InterpreterForClass(ExcelCommands.class)
 public class ExcelInterpreter extends AbstractInterpreter<ExcelCommands> {
@@ -43,14 +45,17 @@ public class ExcelInterpreter extends AbstractInterpreter<ExcelCommands> {
     @Override
     protected void acceptImpl(final ExcelCommands excelCommands, final CommandResult result) {
         excelCommands.getExcelFile().forEach(excelFile -> {
-            applyExcelQueriesOrThrow(excelFile, excelCommands);
+            applyExcelQueriesOrThrow(excelFile, excelCommands, result);
         });
     }
 
-    private void applyExcelQueriesOrThrow(final String excelFile, final ExcelCommands excelCommands) {
+    private void applyExcelQueriesOrThrow(final String excelFile, final ExcelCommands excelCommands,
+                                          final CommandResult result) {
         try {
             List<String> queries = getQueries(excelFile);
+            log.info(ALIAS_LOG, excelCommands.getAlias());
             postgresSqlOperation.apply(new ListSource(queries), excelCommands.getAlias());
+            result.put("patches", new ArrayList<>(queries));
         } catch (Exception ioe) {
             throw new RuntimeException("Can't create workbook class. Please, check "
                     + "if the extension of the file is correct (.xls or .xlsx)");

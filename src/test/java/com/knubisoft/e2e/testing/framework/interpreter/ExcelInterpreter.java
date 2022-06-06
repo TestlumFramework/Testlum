@@ -117,7 +117,7 @@ public class ExcelInterpreter extends AbstractInterpreter<ExcelCommands> {
         if (row.getCell(0) != null) {
             return getCellValue(row.getCell(0));
         }
-        return DelimiterConstant.EMPTY;
+        throw new IllegalArgumentException("Please, fill any exist table in the xls/x file");
     }
 
     private String getCellValue(final Cell cell) {

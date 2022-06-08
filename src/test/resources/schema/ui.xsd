@@ -21,6 +21,7 @@
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="clear" type="tns:clear"/>
                     <x:element name="closeSecondTab" type="tns:closeSecondTab"/>
+                    <x:element name="scroll" type="tns:scroll"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>
@@ -159,4 +160,84 @@
         </x:complexContent>
     </x:complexType>
 
+    <x:complexType name="scroll">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice>
+                    <x:element name="vertical" type="tns:vertical"/>
+                    <x:element name="horizontal" type="tns:horizontal"/>
+                    <x:element name="toElement" type="tns:toElement"/>
+                    <x:element name="verticalAndHorizontal" type="tns:verticalAndHorizontal"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="vertical">
+        <x:choice>
+            <x:element name="scrollByValue" type="tns:verticalByValue"/>
+            <x:element name="scrollToTopOrBottom" type="tns:scrollToTopOrBottom"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="verticalByValue">
+        <x:attribute name="direction" type="tns:scrollVerticalDir" use="required"/>
+        <x:attribute name="by" type="tns:scrollBy" use="required"/>
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="scrollVerticalDir">
+        <x:restriction base="x:string">
+            <x:enumeration value="up"/>
+            <x:enumeration value="down"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="scrollBy">
+        <x:restriction base="x:string">
+            <x:enumeration value="by pixels"/>
+            <x:enumeration value="by percent"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="scrollToTopOrBottom">
+        <x:restriction base="x:string">
+            <x:enumeration value="to the top"/>
+            <x:enumeration value="to the bottom"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="horizontal">
+        <x:attribute name="direction" type="tns:scrollHorizontalDir" use="required"/>
+        <x:attribute name="by" type="tns:scrollBy" use="required"/>
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="scrollHorizontalDir">
+        <x:restriction base="x:string">
+            <x:enumeration value="left"/>
+            <x:enumeration value="right"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="toElement">
+        <x:attribute name="by" type="tns:scrollToElementBy" use="required"/>
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="scrollToElementBy">
+        <x:restriction base="x:string">
+            <x:enumeration value="by text"/>
+            <x:enumeration value="by xpath"/>
+            <x:enumeration value="by Id"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="verticalAndHorizontal">
+        <x:attribute name="by" type="tns:scrollBy" use="required"/>
+        <x:attribute name="hDirection" type="tns:scrollHorizontalDir" use="required"/>
+        <x:attribute name="horizontalValue" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="vDirection" type="tns:scrollVerticalDir" use="required"/>
+        <x:attribute name="verticalValue" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
 </x:schema>

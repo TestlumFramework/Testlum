@@ -161,6 +161,7 @@ public final class LogMessage {
     public static final String JS_OPERATION_INFO = "File name [%s]%n Commands: %n%s";
     public static final String NAVIGATE_NOT_SUPPORTED = "Navigate command %s not supported";
     public static final String DROP_DOWN_NOT_SUPPORTED = "Drop down by method by %s not supported";
+    public static final String SCROLL_TO_ELEMENT_NOT_SUPPORTED = "Scroll to the element by %s not supported";
     public static final String JS_EXECUTION_OPERATION = "JavaScript execution operation";
     public static final String JS_FILE_UNREADABLE = "The .js file by path ./javascript/%s unreadable";
     public static final String JS_FILE_NOT_FOUND = "Can't find the .js file [%s] in the resources folder";
@@ -200,4 +201,15 @@ public final class LogMessage {
     public static final String COMMAND_TYPE_LOG = format(TABLE_FORMAT, "Command type", "{}");
     public static final String SHELL_FILE_LOG = format(TABLE_FORMAT, "Shell file", "{}");
     public static final String SHELL_COMMAND_LOG = format(TABLE_FORMAT, "Shell command", "{}");
+    public static final String SCROLL_DIRECTION_LOG = format(TABLE_FORMAT, "Direction", "{}");
+    public static final String SCROLL_BY_LOG = format(TABLE_FORMAT, "Scroll by", "{}");
+    public static final String SCROLL_TYPE_LOG = format(TABLE_FORMAT, "Scroll type", "{}");
+
+    public static final String SCROLL_ACTION = "Scroll action";
+    public static final String SCROLL_TO_ELEMENT_INFO = "Scroll %s, by %s, by value %s";
+    public static final String SCROLL_TO_DIRECTION_INFO = "Scroll %s, to %s, by %s, by value %s";
+    public static final String SCROLL_TOP_OR_BOTTOM_INFO = "Scroll %s, to %s";
+    public static final String SCROLL_V_AND_H_INFO = "Scroll %s, by %s, horizontal: to %s, by value %s, "
+            + "vertical: to %s, by value %s";
+
 }

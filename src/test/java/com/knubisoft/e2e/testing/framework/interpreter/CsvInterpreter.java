@@ -39,12 +39,16 @@ public class CsvInterpreter extends AbstractInterpreter<CsvCommands> {
 
     @Override
     protected void acceptImpl(final CsvCommands csvCommands, final CommandResult result) {
-        List<Source> sources = csvCommands.getCsvFile().stream().map(csvFile -> {
-            File csv = getCsvFileByPath(csvFile);
-            List<String> commands = convertFileToString(csv);
-            return getSource(commands);
-        }).collect(Collectors.toList());
+        List<Source> sources = csvCommands.getCsvFile().stream()
+                .map(this::getSource)
+                .collect(Collectors.toList());
         applyPatches(csvCommands, result, sources);
+    }
+
+    private Source getSource(final String csvFile) {
+        File csv = getCsvFileByPath(csvFile);
+        List<String> commands = readAllLines(csv);
+        return getSource(commands);
     }
 
     private File getCsvFileByPath(final String pathToFile) {
@@ -53,7 +57,7 @@ public class CsvInterpreter extends AbstractInterpreter<CsvCommands> {
         return fileSearcher.search(csvFolder, pathToFile);
     }
 
-    private List<String> convertFileToString(final File csvFile) {
+    private List<String> readAllLines(final File csvFile) {
         try {
             return Files.readAllLines(csvFile.toPath());
         } catch (IOException e) {

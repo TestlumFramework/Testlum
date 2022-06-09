@@ -1,5 +1,6 @@
 package com.knubisoft.e2e.testing.framework.interpreter;
 
+import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractSeleniumInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -102,7 +103,6 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_TOP_OR_
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_TO_DIRECTION_INFO;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_TO_ELEMENT_INFO;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_TO_ELEMENT_NOT_SUPPORTED;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_TYPE_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_V_AND_H_INFO;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SECOND_TAB_NOT_FOUND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND_EXEC_TIME;
@@ -187,7 +187,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         javascriptExecutor.executeScript(script, element);
     }
 
-    private void executeJsScriptWithoutWebEl(final CommandResult result, final String script) {
+    private void executeJsScript(final CommandResult result, final String script) {
         JavascriptExecutor javascriptExecutor = (JavascriptExecutor) dependencies.getWebDriver();
         takeScreenshotIfRequired(result);
         javascriptExecutor.executeScript(script);
@@ -373,34 +373,24 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private void scroll(final Scroll scroll, final CommandResult result) {
-        Vertical vertical = scroll.getVertical();
         Horizontal horizontal = scroll.getHorizontal();
         ToElement toElement = scroll.getToElement();
-        VerticalAndHorizontal verticalAndHorizontal = scroll.getVerticalAndHorizontal();
-        if (vertical != null) {
-            log.info(SCROLL_TYPE_LOG, vertical.getClass().getSimpleName());
-            scrollVertical(vertical, result);
+        if (scroll.getVertical() != null) {
+            scrollVertical(scroll.getVertical(), result);
         } else if (horizontal != null) {
-            result.put(SCROLL_ACTION, format(SCROLL_TO_DIRECTION_INFO, horizontal.getClass().getSimpleName(),
-                    horizontal.getDirection().value(),
-                    horizontal.getBy().value(), horizontal.getValue()));
-            log.info(SCROLL_TYPE_LOG, horizontal.getClass().getSimpleName());
             scrollHorizontal(horizontal, result);
         } else if (toElement != null) {
-            result.put(SCROLL_ACTION, format(SCROLL_TO_ELEMENT_INFO, toElement.getClass().getSimpleName(),
-                    toElement.getBy().value(), toElement.getValue()));
-            log.info(SCROLL_TYPE_LOG, toElement.getClass().getSimpleName());
+            result.put(SCROLL_ACTION, format(SCROLL_TO_ELEMENT_INFO, toElement.getBy().value(), toElement.getValue()));
+            log.info(SCROLL_BY_LOG, toElement.getBy().name());
             scrollToElement(toElement.getBy(), result, toElement.getValue());
         } else {
-            log.info(SCROLL_TYPE_LOG, verticalAndHorizontal.getClass().getSimpleName());
-            scrollVerticalAndHorizontal(verticalAndHorizontal, result);
+            scrollVerticalAndHorizontal(scroll.getVerticalAndHorizontal(), result);
         }
     }
 
     private void scrollToElement(final ScrollToElementBy by, final CommandResult result, final String value) {
         WebDriver driver = dependencies.getWebDriver();
         WebElement element = null;
-        log.info(SCROLL_BY_LOG, by.name());
         log.info(VALUE_LOG, value);
         switch (by) {
             case BY_ID: element = getWebElement(value);
@@ -415,72 +405,72 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private void scrollHorizontal(final Horizontal horizontal, final CommandResult result) {
-        executeJsScriptWithoutWebEl(result, format(SCROLL_HORIZONTAL_SCRIPT_FORMAT,
-                scrollHorizontalByValue(horizontal.getDirection(), horizontal.getValue(), horizontal.getBy())));
+        result.put(SCROLL_ACTION, format(SCROLL_TO_DIRECTION_INFO, horizontal.getDirection().value(),
+                horizontal.getBy().value(), horizontal.getValue()));
+        executeJsScript(result, format(SCROLL_HORIZONTAL_SCRIPT_FORMAT,
+                scrollHorizontalByValueScript(horizontal.getDirection(), horizontal.getValue(), horizontal.getBy())));
     }
 
     private void scrollVertical(final Vertical vertical, final CommandResult result) {
         VerticalByValue verticalByValue = vertical.getScrollByValue();
         if (verticalByValue != null) {
-            result.put(SCROLL_ACTION, format(SCROLL_TO_DIRECTION_INFO, vertical.getClass().getSimpleName(),
-                    verticalByValue.getDirection().value(), verticalByValue.getBy().value(),
-                    verticalByValue.getValue()));
-            executeJsScriptWithoutWebEl(result, format(SCROLL_VERTICAL_SCRIPT_FORMAT,
-                    scrollVerticalByValue(verticalByValue.getDirection(),
+            result.put(SCROLL_ACTION, format(SCROLL_TO_DIRECTION_INFO, verticalByValue.getDirection().value(),
+                    verticalByValue.getBy().value(), verticalByValue.getValue()));
+            executeJsScript(result, format(SCROLL_VERTICAL_SCRIPT_FORMAT,
+                    scrollVerticalByValueScript(verticalByValue.getDirection(),
                             verticalByValue.getValue(), verticalByValue.getBy())));
         } else {
-            result.put(SCROLL_ACTION, format(SCROLL_TOP_OR_BOTTOM_INFO, vertical.getClass().getSimpleName(),
-                    vertical.getScrollToTopOrBottom().value()));
+            result.put(SCROLL_ACTION, format(SCROLL_TOP_OR_BOTTOM_INFO, vertical.getScrollToTopOrBottom().value()));
             scrollToTopOrBottom(result, vertical.getScrollToTopOrBottom());
         }
     }
 
     private void scrollVerticalAndHorizontal(final VerticalAndHorizontal verticalAndHorizontal,
                                              final CommandResult result) {
-        result.put(SCROLL_ACTION, format(SCROLL_V_AND_H_INFO, verticalAndHorizontal.getClass().getSimpleName(),
-                verticalAndHorizontal.getBy().value(), verticalAndHorizontal.getHDirection().value(),
-                verticalAndHorizontal.getHorizontalValue(), verticalAndHorizontal.getVDirection().value(),
-                verticalAndHorizontal.getVerticalValue()));
-        String horizontal = scrollHorizontalByValue(verticalAndHorizontal.getHDirection(),
+        result.put(SCROLL_ACTION, format(SCROLL_V_AND_H_INFO, verticalAndHorizontal.getBy().value(),
+                verticalAndHorizontal.getHDirection().value(), verticalAndHorizontal.getHorizontalValue(),
+                verticalAndHorizontal.getVDirection().value(), verticalAndHorizontal.getVerticalValue()));
+        String horizontal = scrollHorizontalByValueScript(verticalAndHorizontal.getHDirection(),
                 verticalAndHorizontal.getHorizontalValue(), verticalAndHorizontal.getBy());
-        String vertical = scrollVerticalByValue(verticalAndHorizontal.getVDirection(),
+        String vertical = scrollVerticalByValueScript(verticalAndHorizontal.getVDirection(),
                 verticalAndHorizontal.getVerticalValue(), verticalAndHorizontal.getBy());
-        executeJsScriptWithoutWebEl(result, format(SCROLL_VERTICAL_AND_HORIZONTAL_FORMAT, horizontal, vertical));
+        executeJsScript(result, format(SCROLL_VERTICAL_AND_HORIZONTAL_FORMAT, horizontal, vertical));
     }
 
-    private String scrollHorizontalByValue(final ScrollHorizontalDir horizontal, final String value,
+    private String scrollHorizontalByValueScript(final ScrollHorizontalDir horizontal, final String value,
                                            final ScrollBy by) {
         log.info(SCROLL_DIRECTION_LOG, horizontal.name());
         log.info(VALUE_LOG, value);
         if (horizontal.equals(ScrollHorizontalDir.LEFT)) {
-            return scrollBy(by, "-" + value, SCROLL_HORIZONTAL_PERCENT);
+            return scrollByValueFormatter(by, DelimiterConstant.DASH + value, SCROLL_HORIZONTAL_PERCENT);
         }
-        return scrollBy(by, value, SCROLL_HORIZONTAL_PERCENT);
+        return scrollByValueFormatter(by, value, SCROLL_HORIZONTAL_PERCENT);
     }
 
-    private String scrollVerticalByValue(final ScrollVerticalDir vertical, final String value, final ScrollBy by) {
+    private String scrollVerticalByValueScript(final ScrollVerticalDir vertical,
+                                               final String value, final ScrollBy by) {
         log.info(SCROLL_DIRECTION_LOG, vertical.name());
         log.info(VALUE_LOG, value);
         if (vertical.equals(ScrollVerticalDir.UP)) {
-            return scrollBy(by, "-" + value, SCROLL_VERTICAL_PERCENT);
+            return scrollByValueFormatter(by, DelimiterConstant.DASH + value, SCROLL_VERTICAL_PERCENT);
         }
-        return scrollBy(by, value, SCROLL_VERTICAL_PERCENT);
+        return scrollByValueFormatter(by, value, SCROLL_VERTICAL_PERCENT);
     }
 
     private void scrollToTopOrBottom(final CommandResult result, final ScrollToTopOrBottom topOrBottom) {
         log.info(SCROLL_DIRECTION_LOG, topOrBottom.name());
         switch (topOrBottom) {
             case TO_THE_TOP:
-                executeJsScriptWithoutWebEl(result, SCROLL_TO_TOP_SCRIPT);
+                executeJsScript(result, SCROLL_TO_TOP_SCRIPT);
                 break;
             case TO_THE_BOTTOM:
-                executeJsScriptWithoutWebEl(result, SCROLL_TO_BOTTOM_SCRIPT);
+                executeJsScript(result, SCROLL_TO_BOTTOM_SCRIPT);
                 break;
             default: throw new DefaultFrameworkException(format(SCROLL_TO_ELEMENT_NOT_SUPPORTED, topOrBottom.value()));
         }
     }
 
-    private String scrollBy(final ScrollBy by, final String value, final String dirPercentScript) {
+    private String scrollByValueFormatter(final ScrollBy by, final String value, final String dirPercentScript) {
         log.info(SCROLL_BY_LOG, by.name());
         if (by.equals(ScrollBy.BY_PERCENT)) {
             float percent = Float.parseFloat(value) / percentage;

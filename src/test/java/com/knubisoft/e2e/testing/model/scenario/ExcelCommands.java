@@ -18,19 +18,18 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for oracle complex type.
+ * <p>Java class for excelCommands complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="oracle"&gt;
+ * &lt;complexType name="excelCommands"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/e2e/testing/model/scenario}abstractCommand"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="query" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="excelFile" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/e2e/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="file" use="required" type="{http://www.knubisoft.com/e2e/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="alias" type="{http://www.knubisoft.com/e2e/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -39,33 +38,31 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "oracle", propOrder = {
-    "query"
+@XmlType(name = "excelCommands", propOrder = {
+    "excelFile"
 })
-public class Oracle
+public class ExcelCommands
     extends AbstractCommand
 {
 
     @XmlElement(required = true)
-    protected List<String> query;
-    @XmlAttribute(name = "alias", required = true)
+    protected List<String> excelFile;
+    @XmlAttribute(name = "alias")
     protected String alias;
-    @XmlAttribute(name = "file", required = true)
-    protected String file;
 
     /**
-     * Gets the value of the query property.
+     * Gets the value of the excelFile property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the query property.
+     * This is why there is not a <CODE>set</CODE> method for the excelFile property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getQuery().add(newItem);
+     *    getExcelFile().add(newItem);
      * </pre>
      * 
      * 
@@ -75,11 +72,11 @@ public class Oracle
      * 
      * 
      */
-    public List<String> getQuery() {
-        if (query == null) {
-            query = new ArrayList<String>();
+    public List<String> getExcelFile() {
+        if (excelFile == null) {
+            excelFile = new ArrayList<String>();
         }
-        return this.query;
+        return this.excelFile;
     }
 
     /**
@@ -104,30 +101,6 @@ public class Oracle
      */
     public void setAlias(String value) {
         this.alias = value;
-    }
-
-    /**
-     * Gets the value of the file property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getFile() {
-        return file;
-    }
-
-    /**
-     * Sets the value of the file property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setFile(String value) {
-        this.file = value;
     }
 
 }

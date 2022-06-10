@@ -48,7 +48,7 @@ public class CsvInterpreter extends AbstractInterpreter<CsvCommands> {
     private Source getSource(final String csvFile) {
         File csv = getCsvFileByPath(csvFile);
         List<String> commands = readAllLines(csv);
-        return getSource(commands);
+        return prepareSource(commands);
     }
 
     private File getCsvFileByPath(final String pathToFile) {
@@ -65,7 +65,7 @@ public class CsvInterpreter extends AbstractInterpreter<CsvCommands> {
         }
     }
 
-    private Source getSource(final List<String> commands) {
+    private Source prepareSource(final List<String> commands) {
         List<String> queries = commands.stream()
                 .map(command ->
                         String.format(SQL_INSERT, getTableName(command), getValues(command)))

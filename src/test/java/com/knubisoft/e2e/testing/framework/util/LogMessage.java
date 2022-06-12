@@ -86,11 +86,14 @@ public final class LogMessage {
     public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
     public static final String TEST_BY_PATH_DISABLED = "Test by path %s is disabled";
     public static final String EXCEL_FOLDER_NOT_EXIST = "Excel folder does not exist";
+    public static final String CSV_FOLDER_NOT_EXIST = "CSV folder does not exist";
 
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001b[0m";
     public static final String ANSI_RED_BOLD = "\033[1;31m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_CYAN = "\u001b[36m";
 
     public static final String ERROR_LOG = "Error ->";
     public static final String POSITION_COMMAND_LOG = ANSI_YELLOW
@@ -181,7 +184,7 @@ public final class LogMessage {
     public static final String WAIT_INFO_LOG = format(TABLE_FORMAT, "Wait time & unit", "{} {}");
     public static final String LOCATOR_LOG = format(TABLE_FORMAT, "Locator", "{}");
     public static final String VARIATION_LOG = "Variation - {}";
-    public static final String BROWSER_VERSION_LOG = "Browser version: {}";
+    public static final String BROWSER_NAME_LOG = "Browser: {}";
     public static final String HTTP_STATUS_CODE = format(TABLE_FORMAT, "Status code", "{} {}");
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "Method", "{}");
@@ -200,4 +203,5 @@ public final class LogMessage {
     public static final String COMMAND_TYPE_LOG = format(TABLE_FORMAT, "Command type", "{}");
     public static final String SHELL_FILE_LOG = format(TABLE_FORMAT, "Shell file", "{}");
     public static final String SHELL_COMMAND_LOG = format(TABLE_FORMAT, "Shell command", "{}");
+    public static final String BROWSER_INFO_TEMPLATE = "%s (version: %s)";
 }

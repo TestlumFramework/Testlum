@@ -31,7 +31,7 @@ public abstract class AbstractSeleniumInterpreter<T extends AbstractCommand> ext
     }
 
     protected void takeScreenshotIfRequired(final CommandResult result) {
-        if (dependencies.getGlobalTestConfiguration().getUi().getWebDriverSettings()
+        if (dependencies.getGlobalTestConfiguration().getUi().getBrowserSettings()
                 .getTakeScreenshotOfEachUiCommand().isEnable()) {
             File screenshot = ((TakesScreenshot) dependencies.getWebDriver()).getScreenshotAs(OutputType.FILE);
             File screenshotsFolder = new File(dependencies.getFile().getParent()

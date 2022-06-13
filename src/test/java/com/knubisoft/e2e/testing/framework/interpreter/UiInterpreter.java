@@ -18,30 +18,22 @@ import com.knubisoft.e2e.testing.model.scenario.Click;
 import com.knubisoft.e2e.testing.model.scenario.ClickMethod;
 import com.knubisoft.e2e.testing.model.scenario.CloseSecondTab;
 import com.knubisoft.e2e.testing.model.scenario.DropDown;
-import com.knubisoft.e2e.testing.model.scenario.Horizontal;
 import com.knubisoft.e2e.testing.model.scenario.Input;
 import com.knubisoft.e2e.testing.model.scenario.Javascript;
 import com.knubisoft.e2e.testing.model.scenario.Navigate;
 import com.knubisoft.e2e.testing.model.scenario.NavigateCommand;
 import com.knubisoft.e2e.testing.model.scenario.OneValue;
 import com.knubisoft.e2e.testing.model.scenario.Scroll;
-import com.knubisoft.e2e.testing.model.scenario.ScrollBy;
-import com.knubisoft.e2e.testing.model.scenario.ScrollHorizontalDir;
-import com.knubisoft.e2e.testing.model.scenario.ScrollToElementBy;
-import com.knubisoft.e2e.testing.model.scenario.ScrollToTopOrBottom;
-import com.knubisoft.e2e.testing.model.scenario.ScrollVerticalDir;
+import com.knubisoft.e2e.testing.model.scenario.ScrollDirection;
+import com.knubisoft.e2e.testing.model.scenario.ScrollMeasure;
+import com.knubisoft.e2e.testing.model.scenario.ScrollTo;
 import com.knubisoft.e2e.testing.model.scenario.SelectOrDeselectBy;
-import com.knubisoft.e2e.testing.model.scenario.ToElement;
 import com.knubisoft.e2e.testing.model.scenario.TypeForOneValue;
 import com.knubisoft.e2e.testing.model.scenario.Ui;
-import com.knubisoft.e2e.testing.model.scenario.Vertical;
-import com.knubisoft.e2e.testing.model.scenario.VerticalAndHorizontal;
-import com.knubisoft.e2e.testing.model.scenario.VerticalByValue;
 import com.knubisoft.e2e.testing.model.scenario.Wait;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
-import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -63,12 +55,7 @@ import java.util.function.Predicate;
 
 import static com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings.JS_FOLDER;
 import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
-import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.SCROLL_HORIZONTAL_PERCENT;
-import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.SCROLL_HORIZONTAL_SCRIPT_FORMAT;
-import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.SCROLL_TO_BOTTOM_SCRIPT;
 import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.SCROLL_TO_ELEMENT_SCRIPT;
-import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.SCROLL_TO_TOP_SCRIPT;
-import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.SCROLL_VERTICAL_AND_HORIZONTAL_FORMAT;
 import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.SCROLL_VERTICAL_PERCENT;
 import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.SCROLL_VERTICAL_SCRIPT_FORMAT;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_ACTUAL;
@@ -97,13 +84,8 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_NOT_SUPPORTED;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_URL;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_ACTION;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_BY_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_DIRECTION_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_TOP_OR_BOTTOM_INFO;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_TO_DIRECTION_INFO;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_TO_ELEMENT_INFO;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_TO_ELEMENT_NOT_SUPPORTED;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_V_AND_H_INFO;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_INFO;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_TO_INFO;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SECOND_TAB_NOT_FOUND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND_EXEC_TIME;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.WAIT_COMMAND;
@@ -137,6 +119,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         commands.put(ui -> ui instanceof Wait, (ui, result) -> wait((Wait) ui, result));
         commands.put(ui -> ui instanceof CloseSecondTab, (ui, result) -> closeSecondTab((CloseSecondTab) ui, result));
         commands.put(ui -> ui instanceof Scroll, (ui, result) -> scroll((Scroll) ui, result));
+        commands.put(ui -> ui instanceof ScrollTo, (ui, result) -> scrollTo((ScrollTo) ui, result));
         this.uiCommands = Collections.unmodifiableMap(commands);
     }
 
@@ -373,112 +356,36 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private void scroll(final Scroll scroll, final CommandResult result) {
-        Horizontal horizontal = scroll.getHorizontal();
-        ToElement toElement = scroll.getToElement();
-        if (scroll.getVertical() != null) {
-            scrollVertical(scroll.getVertical(), result);
-        } else if (horizontal != null) {
-            scrollHorizontal(horizontal, result);
-        } else if (toElement != null) {
-            result.put(SCROLL_ACTION, format(SCROLL_TO_ELEMENT_INFO, toElement.getBy().value(), toElement.getValue()));
-            log.info(SCROLL_BY_LOG, toElement.getBy().name());
-            scrollToElement(toElement.getBy(), result, toElement.getValue());
-        } else {
-            scrollVerticalAndHorizontal(scroll.getVerticalAndHorizontal(), result);
+        ScrollDirection direction = scroll.getDirection();
+        ScrollMeasure measure = scroll.getMeasure();
+        String value = scroll.getValue();
+        result.put(SCROLL_ACTION, format(SCROLL_INFO, direction.value(), measure.value(), value));
+        executeJsScript(result, format(SCROLL_VERTICAL_SCRIPT_FORMAT, scrollScript(direction, value, measure)));
+    }
+
+    private String scrollScript(final ScrollDirection direction,
+                                               final String value, final ScrollMeasure measure) {
+        LogUtil.logScrollInfo(direction.name(), measure.value(), value);
+        if (direction.equals(ScrollDirection.UP)) {
+            return scrollMeasureFormatter(measure, DelimiterConstant.DASH + value);
         }
+        return scrollMeasureFormatter(measure, value);
     }
 
-    private void scrollToElement(final ScrollToElementBy by, final CommandResult result, final String value) {
-        WebDriver driver = dependencies.getWebDriver();
-        WebElement element = null;
-        log.info(VALUE_LOG, value);
-        switch (by) {
-            case BY_ID: element = getWebElement(value);
-                break;
-            case BY_TEXT: element = driver.findElement(By.linkText(value));
-                break;
-            case BY_XPATH: element = driver.findElement(By.xpath(value));
-            break;
-            default: throw new DefaultFrameworkException(format(SCROLL_TO_ELEMENT_NOT_SUPPORTED, by.value()));
-        }
-        executeJsScript(element, result, SCROLL_TO_ELEMENT_SCRIPT);
-    }
-
-    private void scrollHorizontal(final Horizontal horizontal, final CommandResult result) {
-        result.put(SCROLL_ACTION, format(SCROLL_TO_DIRECTION_INFO, horizontal.getDirection().value(),
-                horizontal.getBy().value(), horizontal.getValue()));
-        executeJsScript(result, format(SCROLL_HORIZONTAL_SCRIPT_FORMAT,
-                scrollHorizontalByValueScript(horizontal.getDirection(), horizontal.getValue(), horizontal.getBy())));
-    }
-
-    private void scrollVertical(final Vertical vertical, final CommandResult result) {
-        VerticalByValue verticalByValue = vertical.getScrollByValue();
-        if (verticalByValue != null) {
-            result.put(SCROLL_ACTION, format(SCROLL_TO_DIRECTION_INFO, verticalByValue.getDirection().value(),
-                    verticalByValue.getBy().value(), verticalByValue.getValue()));
-            executeJsScript(result, format(SCROLL_VERTICAL_SCRIPT_FORMAT,
-                    scrollVerticalByValueScript(verticalByValue.getDirection(),
-                            verticalByValue.getValue(), verticalByValue.getBy())));
-        } else {
-            result.put(SCROLL_ACTION, format(SCROLL_TOP_OR_BOTTOM_INFO, vertical.getScrollToTopOrBottom().value()));
-            scrollToTopOrBottom(result, vertical.getScrollToTopOrBottom());
-        }
-    }
-
-    private void scrollVerticalAndHorizontal(final VerticalAndHorizontal verticalAndHorizontal,
-                                             final CommandResult result) {
-        result.put(SCROLL_ACTION, format(SCROLL_V_AND_H_INFO, verticalAndHorizontal.getBy().value(),
-                verticalAndHorizontal.getHDirection().value(), verticalAndHorizontal.getHorizontalValue(),
-                verticalAndHorizontal.getVDirection().value(), verticalAndHorizontal.getVerticalValue()));
-        String horizontal = scrollHorizontalByValueScript(verticalAndHorizontal.getHDirection(),
-                verticalAndHorizontal.getHorizontalValue(), verticalAndHorizontal.getBy());
-        String vertical = scrollVerticalByValueScript(verticalAndHorizontal.getVDirection(),
-                verticalAndHorizontal.getVerticalValue(), verticalAndHorizontal.getBy());
-        executeJsScript(result, format(SCROLL_VERTICAL_AND_HORIZONTAL_FORMAT, horizontal, vertical));
-    }
-
-    private String scrollHorizontalByValueScript(final ScrollHorizontalDir horizontal, final String value,
-                                           final ScrollBy by) {
-        log.info(SCROLL_DIRECTION_LOG, horizontal.name());
-        log.info(VALUE_LOG, value);
-        if (horizontal.equals(ScrollHorizontalDir.LEFT)) {
-            return scrollByValueFormatter(by, DelimiterConstant.DASH + value, SCROLL_HORIZONTAL_PERCENT);
-        }
-        return scrollByValueFormatter(by, value, SCROLL_HORIZONTAL_PERCENT);
-    }
-
-    private String scrollVerticalByValueScript(final ScrollVerticalDir vertical,
-                                               final String value, final ScrollBy by) {
-        log.info(SCROLL_DIRECTION_LOG, vertical.name());
-        log.info(VALUE_LOG, value);
-        if (vertical.equals(ScrollVerticalDir.UP)) {
-            return scrollByValueFormatter(by, DelimiterConstant.DASH + value, SCROLL_VERTICAL_PERCENT);
-        }
-        return scrollByValueFormatter(by, value, SCROLL_VERTICAL_PERCENT);
-    }
-
-    private void scrollToTopOrBottom(final CommandResult result, final ScrollToTopOrBottom topOrBottom) {
-        log.info(SCROLL_DIRECTION_LOG, topOrBottom.name());
-        switch (topOrBottom) {
-            case TO_THE_TOP:
-                executeJsScript(result, SCROLL_TO_TOP_SCRIPT);
-                break;
-            case TO_THE_BOTTOM:
-                executeJsScript(result, SCROLL_TO_BOTTOM_SCRIPT);
-                break;
-            default: throw new DefaultFrameworkException(format(SCROLL_TO_ELEMENT_NOT_SUPPORTED, topOrBottom.value()));
-        }
-    }
-
-    private String scrollByValueFormatter(final ScrollBy by, final String value, final String dirPercentScript) {
-        log.info(SCROLL_BY_LOG, by.name());
-        if (by.equals(ScrollBy.BY_PERCENT)) {
+    private String scrollMeasureFormatter(final ScrollMeasure measure, final String value) {
+        if (measure.equals(ScrollMeasure.PERCENT)) {
             float percent = Float.parseFloat(value) / percentage;
-            return format(dirPercentScript, percent);
+            return format(SCROLL_VERTICAL_PERCENT, percent);
         }
         return value;
     }
 
+    private void scrollTo(final ScrollTo scrollTo, final CommandResult result) {
+        String locatorId = scrollTo.getLocatorId();
+        WebElement element = getWebElement(locatorId);
+        result.put(SCROLL_ACTION, format(SCROLL_TO_INFO, locatorId));
+        executeJsScript(element, result, SCROLL_TO_ELEMENT_SCRIPT);
+    }
 
     private interface UiCommandPredicate extends Predicate<AbstractCommand> { }
     private interface UiCommand extends BiConsumer<AbstractCommand, CommandResult> { }

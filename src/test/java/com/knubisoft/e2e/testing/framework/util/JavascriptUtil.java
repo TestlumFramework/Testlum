@@ -5,7 +5,6 @@ import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.model.scenario.ScrollDirection;
 import com.knubisoft.e2e.testing.model.scenario.ScrollMeasure;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -18,7 +17,6 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Objects;
 
-import static com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings.JS_FOLDER;
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.SCROLL_VERTICAL_PERCENT;
 import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.SCROLL_VERTICAL_SCRIPT_FORMAT;
@@ -28,7 +26,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_TO_ELEM
 import static java.lang.String.format;
 
 @UtilityClass
-@Slf4j
+
 public class JavascriptUtil {
     private static final int MAX_PERCENTS_VALUE = 100;
 

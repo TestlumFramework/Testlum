@@ -38,17 +38,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
@@ -74,8 +69,6 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_OPER
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.INPUT_LOCATOR;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_EXECUTION_OPERATION;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_FILE_NOT_FOUND;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_FILE_UNREADABLE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_OPERATION_INFO;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_NOT_SUPPORTED;
@@ -162,30 +155,11 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     private void execJsCommands(final Javascript o, final CommandResult result) {
         String filePath = o.getFile();
-        String command = readCommands(filePath);
-        result.put(JS_EXECUTION_OPERATION, format(JS_OPERATION_INFO, filePath, command));
-        JavascriptUtil.executeJsScript(command, dependencies.getWebDriver());
-    }
-
-    private String readCommands(final String filePath) {
-        try {
-            File jsFile = getJsFileByPath(filePath);
-            List<String> commands = Files.readAllLines(jsFile.toPath());
-            return String.join(EMPTY, commands);
-        } catch (IOException e) {
-            throw new DefaultFrameworkException(format(JS_FILE_UNREADABLE, filePath));
-        }
-    }
-
-    private File getJsFileByPath(final String filePath) {
         FileSearcher fileSearcher = dependencies.getFileSearcher();
         URL resource = getClass().getClassLoader().getResource(JS_FOLDER);
-        try {
-            File fromDir = new File(Objects.requireNonNull(resource).toURI());
-            return fileSearcher.search(fromDir, filePath);
-        } catch (URISyntaxException e) {
-            throw new DefaultFrameworkException(format(JS_FILE_NOT_FOUND, filePath));
-        }
+        String command = JavascriptUtil.readCommands(filePath, resource, fileSearcher);
+        result.put(JS_EXECUTION_OPERATION, format(JS_OPERATION_INFO, filePath, command));
+        JavascriptUtil.executeJsScript(command, dependencies.getWebDriver());
     }
 
     private void input(final Input input, final CommandResult result) {

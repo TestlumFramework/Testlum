@@ -7,6 +7,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.ExplicitWaitUtil;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
+import com.knubisoft.e2e.testing.framework.util.JavascriptUtil;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.framework.util.SeleniumUtil;
 import com.knubisoft.e2e.testing.framework.util.WaitUtil;
@@ -22,6 +23,10 @@ import com.knubisoft.e2e.testing.model.scenario.Javascript;
 import com.knubisoft.e2e.testing.model.scenario.Navigate;
 import com.knubisoft.e2e.testing.model.scenario.NavigateCommand;
 import com.knubisoft.e2e.testing.model.scenario.OneValue;
+import com.knubisoft.e2e.testing.model.scenario.Scroll;
+import com.knubisoft.e2e.testing.model.scenario.ScrollDirection;
+import com.knubisoft.e2e.testing.model.scenario.ScrollMeasure;
+import com.knubisoft.e2e.testing.model.scenario.ScrollTo;
 import com.knubisoft.e2e.testing.model.scenario.SelectOrDeselectBy;
 import com.knubisoft.e2e.testing.model.scenario.TypeForOneValue;
 import com.knubisoft.e2e.testing.model.scenario.Ui;
@@ -29,27 +34,22 @@ import com.knubisoft.e2e.testing.model.scenario.Wait;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import static com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings.JS_FOLDER;
 import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
+import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.SCROLL_TO_ELEMENT_SCRIPT;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_ACTUAL;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_ATTRIBUTE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_EXPECTED;
@@ -69,12 +69,13 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_OPER
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.INPUT_LOCATOR;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_EXECUTION_OPERATION;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_FILE_NOT_FOUND;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_FILE_UNREADABLE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_OPERATION_INFO;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_NOT_SUPPORTED;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_URL;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_ACTION;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_INFO;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_TO_INFO;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SECOND_TAB_NOT_FOUND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND_EXEC_TIME;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.WAIT_COMMAND;
@@ -106,6 +107,8 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         commands.put(ui -> ui instanceof Clear, (ui, result) -> clear((Clear) ui, result));
         commands.put(ui -> ui instanceof Wait, (ui, result) -> wait((Wait) ui, result));
         commands.put(ui -> ui instanceof CloseSecondTab, (ui, result) -> closeSecondTab((CloseSecondTab) ui, result));
+        commands.put(ui -> ui instanceof Scroll, (ui, result) -> scroll((Scroll) ui, result));
+        commands.put(ui -> ui instanceof ScrollTo, (ui, result) -> scrollTo((ScrollTo) ui, result));
         this.uiCommands = Collections.unmodifiableMap(commands);
     }
 
@@ -143,48 +146,20 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     private void clickWithMethod(final ClickMethod method, final WebElement element, final CommandResult result) {
         if (method != null && method.equals(JS)) {
             result.put(CLICK_METHOD, JS.value());
-            executeJsScript(element, result);
+            JavascriptUtil.executeJsScript(element, CLICK_SCRIPT, dependencies.getWebDriver());
         } else {
             result.put(CLICK_METHOD, SELENIUM.value());
             element.click();
         }
     }
 
-    private void executeJsScript(final WebElement element, final CommandResult result) {
-        JavascriptExecutor javascriptExecutor = (JavascriptExecutor) dependencies.getWebDriver();
-        takeScreenshotIfRequired(result);
-        javascriptExecutor.executeScript(CLICK_SCRIPT, element);
-    }
-
     private void execJsCommands(final Javascript o, final CommandResult result) {
-        WebDriver driver = dependencies.getWebDriver();
         String filePath = o.getFile();
-        String command = readCommands(filePath);
-        result.put(JS_EXECUTION_OPERATION, format(JS_OPERATION_INFO, filePath, command));
-
-        JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
-        javascriptExecutor.executeScript(command);
-    }
-
-    private String readCommands(final String filePath) {
-        try {
-            File jsFile = getJsFileByPath(filePath);
-            List<String> commands = Files.readAllLines(jsFile.toPath());
-            return String.join(EMPTY, commands);
-        } catch (IOException e) {
-            throw new DefaultFrameworkException(format(JS_FILE_UNREADABLE, filePath));
-        }
-    }
-
-    private File getJsFileByPath(final String filePath) {
         FileSearcher fileSearcher = dependencies.getFileSearcher();
         URL resource = getClass().getClassLoader().getResource(JS_FOLDER);
-        try {
-            File fromDir = new File(Objects.requireNonNull(resource).toURI());
-            return fileSearcher.search(fromDir, filePath);
-        } catch (URISyntaxException e) {
-            throw new DefaultFrameworkException(format(JS_FILE_NOT_FOUND, filePath));
-        }
+        String command = JavascriptUtil.readCommands(filePath, resource, fileSearcher);
+        result.put(JS_EXECUTION_OPERATION, format(JS_OPERATION_INFO, filePath, command));
+        JavascriptUtil.executeJsScript(command, dependencies.getWebDriver());
     }
 
     private void input(final Input input, final CommandResult result) {
@@ -333,6 +308,24 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         log.info(WAIT_INFO_LOG, time, wait.getUnit());
         result.put(WAIT_COMMAND, time);
         WaitUtil.getTimeUnit(wait.getUnit(), result).sleep(time);
+    }
+
+    private void scroll(final Scroll scroll, final CommandResult result) {
+        ScrollDirection direction = scroll.getDirection();
+        ScrollMeasure measure = scroll.getMeasure();
+        String value = scroll.getValue().toString();
+        result.put(SCROLL_ACTION, format(SCROLL_INFO, direction.value(), measure.value(), value));
+        takeScreenshotIfRequired(result);
+        JavascriptUtil.executeJsScript(JavascriptUtil.getScrollScript(direction, value, measure),
+                dependencies.getWebDriver());
+    }
+
+    private void scrollTo(final ScrollTo scrollTo, final CommandResult result) {
+        String locatorId = scrollTo.getLocatorId();
+        WebElement element = getWebElement(locatorId);
+        result.put(SCROLL_ACTION, format(SCROLL_TO_INFO, locatorId));
+        takeScreenshotIfRequired(result);
+        JavascriptUtil.executeJsScript(element, SCROLL_TO_ELEMENT_SCRIPT, dependencies.getWebDriver());
     }
 
     private interface UiCommandPredicate extends Predicate<AbstractCommand> { }

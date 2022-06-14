@@ -163,7 +163,7 @@ public final class LogMessage {
     public static final String JS_OPERATION_INFO = "File name [%s]%n Commands: %n%s";
     public static final String NAVIGATE_NOT_SUPPORTED = "Navigate command %s not supported";
     public static final String DROP_DOWN_NOT_SUPPORTED = "Drop down by method by %s not supported";
-    public static final String SCROLL_TO_ELEMENT_NOT_SUPPORTED = "Scroll to the element by %s not supported";
+    public static final String SCROLL_TO_ELEMENT_NOT_SUPPORTED = "Scroll to the element by %s percents not supported";
     public static final String JS_EXECUTION_OPERATION = "JavaScript execution operation";
     public static final String JS_FILE_UNREADABLE = "The .js file by path ./javascript/%s unreadable";
     public static final String JS_FILE_NOT_FOUND = "Can't find the .js file [%s] in the resources folder";

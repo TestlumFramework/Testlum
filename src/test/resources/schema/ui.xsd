@@ -164,7 +164,7 @@
     <x:complexType name="scroll">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
-                <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="value" type="x:nonNegativeInteger" use="required"/>
                 <x:attribute name="direction" type="tns:scrollDirection" default="down"/>
                 <x:attribute name="measure" type="tns:scrollMeasure" default="pixel"/>
             </x:extension>

@@ -7,20 +7,24 @@
 
     <x:include schemaLocation="shared-config.xsd"/>
 
-    <x:complexType name="sendgrids">
+    <x:complexType name="kafkaIntegration">
         <x:choice maxOccurs="unbounded">
-            <x:element name="sendgrid" type="tns:sendgrid"/>
+            <x:element name="kafka" type="tns:kafka"/>
         </x:choice>
     </x:complexType>
 
-
-    <x:complexType name="sendgrid">
+    <x:complexType name="kafka">
         <x:sequence>
-            <x:element name="apiUrl" type="tns:nonEmptyString"/>
-            <x:element name="apiKey" type="tns:nonEmptyString"/>
+            <x:element name="bootstrapAddress" type="tns:nonEmptyString"/>
+            <x:element name="autoOffsetReset" type="tns:nonEmptyString"/>
+            <x:element name="maxPollRecords" type="x:int"/>
+            <x:element name="maxPollIntervalMs" type="x:int"/>
+            <x:element name="clientId" type="tns:nonEmptyString"/>
+            <x:element name="groupId" type="tns:nonEmptyString"/>
         </x:sequence>
         <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
+
 </x:schema>
 

@@ -7,18 +7,19 @@
 
     <x:include schemaLocation="shared-config.xsd"/>
 
-    <x:complexType name="sqss">
+    <x:complexType name="mongoIntegration">
         <x:choice maxOccurs="unbounded">
-            <x:element name="sqs" type="tns:sqs"/>
+            <x:element name="mongo" type="tns:mongo"/>
         </x:choice>
     </x:complexType>
 
-    <x:complexType name="sqs">
+    <x:complexType name="mongo">
         <x:sequence>
-            <x:element name="region" type="tns:nonEmptyString"/>
-            <x:element name="endpoint" type="tns:nonEmptyString"/>
-            <x:element name="accessKeyId" type="tns:nonEmptyString"/>
-            <x:element name="secretAccessKey" type="tns:nonEmptyString"/>
+            <x:element name="authenticationDatabase" type="tns:nonEmptyString"/>
+            <x:element name="username" type="tns:nonEmptyString"/>
+            <x:element name="password" type="tns:nonEmptyString"/>
+            <x:element name="host" type="tns:nonEmptyString"/>
+            <x:element name="port" type="x:int"/>
         </x:sequence>
         <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>

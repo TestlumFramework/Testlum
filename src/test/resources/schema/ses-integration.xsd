@@ -7,21 +7,19 @@
 
     <x:include schemaLocation="shared-config.xsd"/>
 
-    <x:complexType name="postgreses">
+    <x:complexType name="sesIntegration">
         <x:choice maxOccurs="unbounded">
-            <x:element name="postgres" type="tns:postgres"/>
+            <x:element name="ses" type="tns:ses"/>
         </x:choice>
     </x:complexType>
 
 
-    <x:complexType name="postgres">
+    <x:complexType name="ses">
         <x:sequence>
-            <x:element name="jdbcDriver" type="tns:nonEmptyString"/>
-            <x:element name="username" type="tns:nonEmptyString"/>
-            <x:element name="password" type="tns:nonEmptyString"/>
-            <x:element name="connectionUrl" type="tns:nonEmptyString"/>
-            <x:element name="schema" type="tns:nonEmptyString"/>
-            <x:element name="hikari" type="tns:hikari"/>
+            <x:element name="region" type="tns:nonEmptyString"/>
+            <x:element name="endpoint" type="tns:nonEmptyString"/>
+            <x:element name="accessKeyId" type="tns:nonEmptyString"/>
+            <x:element name="secretAccessKey" type="tns:nonEmptyString"/>
         </x:sequence>
         <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>

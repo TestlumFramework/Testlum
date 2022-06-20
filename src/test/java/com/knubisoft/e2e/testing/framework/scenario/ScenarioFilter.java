@@ -1,13 +1,13 @@
 package com.knubisoft.e2e.testing.framework.scenario;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.model.global_config.RunScriptsByTag;
 import com.knubisoft.e2e.testing.model.global_config.TagValue;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,6 +17,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.NO_ACTIVE_SCENARIOS_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.NO_ENABLE_TAGS_LOG;
+
+@Slf4j
 @UtilityClass
 public class ScenarioFilter {
 
@@ -76,7 +80,8 @@ public class ScenarioFilter {
                 .map(TagValue::getTag).collect(Collectors.toList());
         if (tags.isEnable()) {
             if (enabledTags.isEmpty()) {
-                throw new DefaultFrameworkException("There are no active tags in runScriptByTag");
+                log.error(NO_ENABLE_TAGS_LOG);
+                return Collections.emptySet();
             }
             Set<ScenarioCollector.MappingResult> filtered = filterByTags(original, enabledTags);
             return sortByTags(filtered, enabledTags);
@@ -90,7 +95,8 @@ public class ScenarioFilter {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
         if (filtered.isEmpty()){
-            throw new DefaultFrameworkException("There are no active scenarios by enabled tags");
+            log.error(NO_ACTIVE_SCENARIOS_LOG);
+            return Collections.emptySet();
         }
         return filtered;
     }

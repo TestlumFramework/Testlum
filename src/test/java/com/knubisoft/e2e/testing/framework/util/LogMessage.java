@@ -114,6 +114,10 @@ public final class LogMessage {
             + "--------------------------------------------------";
     public static final String AUTHENTICATE_WITH_CREDENTIALS_COMMENT = "Authenticate with credentials {}";
     public static final String FAILED_VARIABLE_WITH_PATH_LOG = "Failed [variable] {} [comment] {}";
+    public static final String NO_ACTIVE_SCENARIOS_LOG = ANSI_RED + "There are no active scenarios by enabled tags"
+            + ANSI_RESET;
+    public static final String NO_ENABLE_TAGS_LOG = ANSI_RED + "There are no enable tags in runScriptByTag"
+            + ANSI_RESET;
 
     public static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
     public static final String BY_URL_LOG = format(TABLE_FORMAT, "URL", "{}");

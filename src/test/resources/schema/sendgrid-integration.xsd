@@ -7,19 +7,17 @@
 
     <x:include schemaLocation="shared-config.xsd"/>
 
-    <x:complexType name="seses">
+    <x:complexType name="sendgridIntegration">
         <x:choice maxOccurs="unbounded">
-            <x:element name="ses" type="tns:ses"/>
+            <x:element name="sendgrid" type="tns:sendgrid"/>
         </x:choice>
     </x:complexType>
 
 
-    <x:complexType name="ses">
+    <x:complexType name="sendgrid">
         <x:sequence>
-            <x:element name="region" type="tns:nonEmptyString"/>
-            <x:element name="endpoint" type="tns:nonEmptyString"/>
-            <x:element name="accessKeyId" type="tns:nonEmptyString"/>
-            <x:element name="secretAccessKey" type="tns:nonEmptyString"/>
+            <x:element name="apiUrl" type="tns:nonEmptyString"/>
+            <x:element name="apiKey" type="tns:nonEmptyString"/>
         </x:sequence>
         <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>

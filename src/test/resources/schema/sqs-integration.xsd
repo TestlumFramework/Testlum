@@ -7,21 +7,18 @@
 
     <x:include schemaLocation="shared-config.xsd"/>
 
-    <x:complexType name="rabbitmqs">
+    <x:complexType name="sqsIntegration">
         <x:choice maxOccurs="unbounded">
-            <x:element name="rabbitmq" type="tns:rabbitmq"/>
+            <x:element name="sqs" type="tns:sqs"/>
         </x:choice>
     </x:complexType>
 
-    <x:complexType name="rabbitmq">
+    <x:complexType name="sqs">
         <x:sequence>
-            <x:element name="host" type="tns:nonEmptyString"/>
-            <x:element name="port" type="x:int"/>
-            <x:element name="username" type="tns:nonEmptyString"/>
-            <x:element name="password" type="tns:nonEmptyString"/>
-            <x:element name="apiPort" type="x:int"/>
-            <x:element name="virtualHost" type="tns:nonEmptyString"/>
-            <x:element name="enabledMetrics" type="x:boolean"/>
+            <x:element name="region" type="tns:nonEmptyString"/>
+            <x:element name="endpoint" type="tns:nonEmptyString"/>
+            <x:element name="accessKeyId" type="tns:nonEmptyString"/>
+            <x:element name="secretAccessKey" type="tns:nonEmptyString"/>
         </x:sequence>
         <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>

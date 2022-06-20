@@ -24,7 +24,8 @@ import java.util.Map;
 @Configuration
 @Conditional({OnDynamoEnabledCondition.class})
 public class DynamoDBConfiguration {
-    private final List<Dynamo> dynamoList = GlobalTestConfigurationProvider.getIntegrations().getDynamos().getDynamo();
+    private final List<Dynamo> dynamoList =
+            GlobalTestConfigurationProvider.getIntegrations().getDynamoIntegration().getDynamo();
 
     @Bean
     public Map<String, DynamoDbClient> dynamodb() {

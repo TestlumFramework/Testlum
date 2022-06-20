@@ -28,14 +28,14 @@ public class RabbitMQConfiguration {
     private static final String API_PATH = "/api";
     private static final String COLON = ":";
 
-    private final List<Rabbitmq> rabbitmqs = GlobalTestConfigurationProvider
-            .getIntegrations().getRabbitmqs().getRabbitmq();
+    private final List<Rabbitmq> rabbitmqIntegration = GlobalTestConfigurationProvider
+            .getIntegrations().getRabbitmqIntegration().getRabbitmq();
 
     @Bean("rabbitMqClient")
     public Map<String, Client> client() throws
             MalformedURLException, URISyntaxException {
         final Map<String, Client> clients = new HashMap<>();
-        for (Rabbitmq rabbitmq : rabbitmqs) {
+        for (Rabbitmq rabbitmq : rabbitmqIntegration) {
             if (rabbitmq.isEnabled()) {
                 ClientParameters clientParameters = createClientParameters(rabbitmq);
                 clients.put(rabbitmq.getAlias(), new Client(clientParameters));
@@ -74,7 +74,7 @@ public class RabbitMQConfiguration {
     @Bean
     public Map<String, ConnectionFactory> connectionFactory() {
         Map<String, ConnectionFactory> connectionFactoryMap = new HashMap<>();
-        for (Rabbitmq rabbitmq : rabbitmqs) {
+        for (Rabbitmq rabbitmq : rabbitmqIntegration) {
             if (rabbitmq.isEnabled()) {
                 CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
                 connectionFactoryMap.put(rabbitmq.getAlias(), configureConnectionFactory(rabbitmq, connectionFactory));

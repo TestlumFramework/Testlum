@@ -46,7 +46,7 @@ public class RabbitMQOperation implements StorageOperation {
     }
 
     private Rabbitmq findByName(final String name) {
-        for (Rabbitmq rabbitmq : globalConfiguration.getIntegrations().getRabbitmqs().getRabbitmq()) {
+        for (Rabbitmq rabbitmq : globalConfiguration.getIntegrations().getRabbitmqIntegration().getRabbitmq()) {
             if (rabbitmq.getAlias().equals(name)) {
                 return rabbitmq;
             }

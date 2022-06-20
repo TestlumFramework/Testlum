@@ -21,7 +21,7 @@ public class ClickhouseDataSourceConfiguration {
     public Map<String, DataSource> dataSource() {
         final Map<String, DataSource> dataSourceMap = new HashMap<>();
         for (Clickhouse clickhouse
-                : GlobalTestConfigurationProvider.getIntegrations().getClickhouses().getClickhouse()) {
+                : GlobalTestConfigurationProvider.getIntegrations().getClickhouseIntegration().getClickhouse()) {
             ClickHouseProperties properties = clickHouseProperties(clickhouse);
             String url = clickhouse.getConnectionUrl();
             dataSourceMap.put(clickhouse.getAlias(), new ClickHouseDataSource(url, properties));

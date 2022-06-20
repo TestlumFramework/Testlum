@@ -19,8 +19,8 @@ public class GlobalTestConfigurationProvider {
         return GLOBAL_TEST_CONFIGURATION;
     }
 
-    public static List<AbstractBrowser> getBrowserVersions() {
-        return getBrowserSettings().getBrowserVersions().getChromeOrFirefoxOrSafari();
+    public static List<AbstractBrowser> getBrowsers() {
+        return getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari();
     }
 
     public static BrowserSettings getBrowserSettings() {

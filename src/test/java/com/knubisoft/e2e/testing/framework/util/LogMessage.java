@@ -203,5 +203,8 @@ public final class LogMessage {
     public static final String COMMAND_TYPE_LOG = format(TABLE_FORMAT, "Command type", "{}");
     public static final String SHELL_FILE_LOG = format(TABLE_FORMAT, "Shell file", "{}");
     public static final String SHELL_COMMAND_LOG = format(TABLE_FORMAT, "Shell command", "{}");
-    public static final String BROWSER_INFO_TEMPLATE = "%s (version: %s)";
+    public static final String RUN_MODE_NOT_SUPPORTED = "Advanced run mode not supported";
+    public static final String NOT_ENABLED_BROWSERS = "At least 1 browser must be enabled";
+    public static final String BROWSER_VERSION_INVALID = "You didn't specify any browser version, please set the "
+            + "'latestVersion' option to true or specify the version manually";
 }

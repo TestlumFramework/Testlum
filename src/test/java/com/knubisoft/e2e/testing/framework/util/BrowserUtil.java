@@ -1,13 +1,14 @@
 package com.knubisoft.e2e.testing.framework.util;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 
 import com.knubisoft.e2e.testing.model.global_config.AbstractBrowser;
-import com.knubisoft.e2e.testing.model.global_config.BrowserVersion;
 
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -17,18 +18,16 @@ import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.BROWSER_INFO_TEMPLATE;
-import static java.lang.String.format;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.NOT_ENABLED_BROWSERS;
 
 @UtilityClass
 public class BrowserUtil {
 
-    private static final String NOT_ENABLED_BROWSERS = "At least 1 browser must be enabled";
     private static final int TIME_TO_WAIT = GlobalTestConfigurationProvider.provide()
             .getUi().getBrowserSettings().getWebElementAutowait().getSeconds();
 
     public List<AbstractBrowser> filterEnabledBrowsers() {
-        List<AbstractBrowser> filteredResult = GlobalTestConfigurationProvider.getBrowserVersions().stream()
+        List<AbstractBrowser> filteredResult = GlobalTestConfigurationProvider.getBrowsers().stream()
                 .filter(AbstractBrowser::isEnable)
                 .collect(Collectors.toList());
         if (filteredResult.isEmpty()) {
@@ -37,24 +36,23 @@ public class BrowserUtil {
         return filteredResult;
     }
 
-    public boolean useLatest(final BrowserVersion browserVersion) {
-        if (StringUtils.isBlank(browserVersion.getVersion()) && !browserVersion.isLatestVersion()) {
-            return true;
-        }
-        return browserVersion.isLatestVersion();
-    }
-
-    public String getBrowserInfo(final AbstractBrowser browser) {
-        BrowserVersion browserVersion = browser.getBrowserVersion();
-        String version = useLatest(browserVersion) ? "latest" : browserVersion.getVersion();
-        return format(BROWSER_INFO_TEMPLATE, browser.getClass().getSimpleName(), version);
-    }
-
     public void waitForElementVisibility(final WebDriver driver, final WebElement element) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIME_TO_WAIT));
         wait.until(ExpectedConditions.visibilityOf(element));
     }
 
+    public void manageWindowSize(final AbstractBrowser browser, final WebDriver webDriver) {
+        String browserWindowSize = browser.getBrowserWindowSize();
+        if (StringUtils.isNotEmpty(browser.getBrowserWindowSize())) {
+            String[] size = browserWindowSize.split(DelimiterConstant.X);
+            int width = Integer.parseInt(size[0]);
+            int height = Integer.parseInt(size[1]);
+            webDriver.manage().window().setSize(new Dimension(width, height));
+        }
+        if (browser.isMaximizedBrowserWindow()) {
+            webDriver.manage().window().maximize();
+        }
+    }
     public void waitForElementToBeClickable(final WebDriver driver, final WebElement element) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIME_TO_WAIT));
         ElementHighlighter.highlight(element, driver);
@@ -74,5 +72,17 @@ public class BrowserUtil {
     public void waitForElementToBeSelected(final WebDriver driver, final WebElement element) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIME_TO_WAIT));
         wait.until(ExpectedConditions.elementToBeSelected(element));
+    }
+
+    public String getBrowserInfo(final AbstractBrowser browser) {
+//        StringBuilder browserInfo = new StringBuilder(browser.getClass().getSimpleName());
+//        if (StringUtils.isNotEmpty(browserVersion)) {
+//            browserInfo.append(StringUtils.SPACE).append("version: ").append(browserVersion);
+//        }
+//        if (StringUtils.isNotEmpty(driverVersion)) {
+//            browserInfo.append(StringUtils.SPACE).append("driver version: ").append(driverVersion);
+//        }
+//        return String.valueOf(browserInfo);
+        return "";
     }
 }

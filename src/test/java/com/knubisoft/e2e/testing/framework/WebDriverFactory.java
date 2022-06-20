@@ -4,16 +4,17 @@ import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfiguration
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.util.BrowserUtil;
 import com.knubisoft.e2e.testing.model.global_config.AbstractBrowser;
+import com.knubisoft.e2e.testing.model.global_config.BrowserInDocker;
 import com.knubisoft.e2e.testing.model.global_config.BrowserOptionsArguments;
-import com.knubisoft.e2e.testing.model.global_config.BrowserVersion;
 import com.knubisoft.e2e.testing.model.global_config.Capabilities;
 import com.knubisoft.e2e.testing.model.global_config.Chrome;
 import com.knubisoft.e2e.testing.model.global_config.Edge;
 import com.knubisoft.e2e.testing.model.global_config.Firefox;
-import com.knubisoft.e2e.testing.model.global_config.LocallyRunModeType;
+import com.knubisoft.e2e.testing.model.global_config.LocalBrowser;
 import com.knubisoft.e2e.testing.model.global_config.Opera;
-import com.knubisoft.e2e.testing.model.global_config.RunMode;
+import com.knubisoft.e2e.testing.model.global_config.RemoteBrowser;
 import com.knubisoft.e2e.testing.model.global_config.Safari;
+import com.knubisoft.e2e.testing.model.global_config.ScreenRecording;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.managers.ChromeDriverManager;
 import io.github.bonigarcia.wdm.managers.EdgeDriverManager;
@@ -22,6 +23,7 @@ import io.github.bonigarcia.wdm.managers.OperaDriverManager;
 import io.github.bonigarcia.wdm.managers.SafariDriverManager;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -44,7 +46,6 @@ import static org.openqa.selenium.remote.CapabilityType.BROWSER_VERSION;
 @UtilityClass
 public class WebDriverFactory {
 
-    private static final String LATEST = "latest";
     private static final String URL_FOR_TESTING = GlobalTestConfigurationProvider.provide().getUi().getBaseUrl();
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;
 
@@ -63,56 +64,65 @@ public class WebDriverFactory {
                 .filter(key -> key.test(browser))
                 .map(DRIVER_INITIALIZER_MAP::get)
                 .map(webDriverFunction -> webDriverFunction.apply(browser))
-                .peek(driver -> {
-                    if (browser.isMaximizedBrowserWindow()) {
-                        driver.manage().window().maximize();
-                    }
-                })
+                .peek(driver -> BrowserUtil.manageWindowSize(browser, driver))
                 .findFirst().orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
         webDriver.get(URL_FOR_TESTING);
         return webDriver;
     }
 
     private WebDriver getWebDriver(final AbstractBrowser browser,
-                                  final MutableCapabilities browserOptions,
-                                  final WebDriverManager webDriverManager) {
-        RunMode runMode = browser.getRunMode();
-        if (runMode.getLocallyRunMode() != null) {
-            return getDriverLocally(browser, webDriverManager, browserOptions);
+                                   final MutableCapabilities browserOptions,
+                                   final WebDriverManager driverManager) {
+        setCapabilities(browser, browserOptions);
+        RemoteBrowser remoteBrowserSettings = browser.getBrowserType().getRemoteBrowser();
+        BrowserInDocker browserInDockerSettings = browser.getBrowserType().getBrowserInDocker();
+        if (remoteBrowserSettings != null) {
+            return getRemoteDriver(remoteBrowserSettings, browserOptions);
         }
-        return getRemoteDriver(browser.getBrowserVersion(), browserOptions,
-                runMode.getRemoteRunMode().getRemoteBrowserUrl());
+        if (browserInDockerSettings != null) {
+            return StringUtils.isNotEmpty(browser.getBrowserWindowSize())
+                    ? getBrowserInDocker(browserInDockerSettings, browserOptions, driverManager.browserInDocker()
+                    .dockerScreenResolution(browser.getBrowserWindowSize()))
+                    : getBrowserInDocker(browserInDockerSettings, browserOptions, driverManager.browserInDocker());
+        }
+        return getLocalDriver(browser.getBrowserType().getLocalBrowser(), browserOptions, driverManager);
     }
 
-    private WebDriver getDriverLocally(final AbstractBrowser browser,
-                                       final WebDriverManager webDriverManager,
-                                       final MutableCapabilities browserOptions) {
-        BrowserVersion browserVersion = browser.getBrowserVersion();
-        boolean useLatest = BrowserUtil.useLatest(browserVersion);
-        if (browser.getRunMode().getLocallyRunMode().getType() == LocallyRunModeType.LOCALLY_IN_DOCKER) {
-            return useLatest ? webDriverManager.capabilities(browserOptions)
-                            .browserVersion(LATEST).browserInDocker()
-                            .create()
-                    : webDriverManager.capabilities(browserOptions)
-                            .browserVersion(browserVersion.getVersion())
-                            .browserInDocker()
-                            .create();
+    private WebDriver getLocalDriver(final LocalBrowser localBrowserSettings,
+                                     final MutableCapabilities browserOptions,
+                                     final WebDriverManager driverManager) {
+        String driverVersion = localBrowserSettings.getDriverVersion();
+        if (StringUtils.isNotEmpty(localBrowserSettings.getDriverVersion())) {
+            driverManager.driverVersion(driverVersion);
         }
-        return useLatest ? webDriverManager.capabilities(browserOptions).create()
-                : webDriverManager.capabilities(browserOptions).browserVersion(browserVersion.getVersion()).create();
+        return driverManager.capabilities(browserOptions).create();
     }
+
+    private WebDriver getBrowserInDocker(final BrowserInDocker browserInDockerSettings,
+                                         final MutableCapabilities browserOptions,
+                                         final WebDriverManager driverManager) {
+        String dockerNetwork = browserInDockerSettings.getDockerNetwork();
+        ScreenRecording screenRecordingSettings = browserInDockerSettings.getScreenRecording();
+        driverManager.capabilities(browserOptions).browserVersion(browserInDockerSettings.getBrowserVersion());
+        if (StringUtils.isNotEmpty(dockerNetwork)) {
+            driverManager.dockerNetwork(dockerNetwork);
+        }
+        if (screenRecordingSettings != null && screenRecordingSettings.isEnable()) {
+            driverManager.enableRecording().dockerRecordingOutput(screenRecordingSettings.getOutputFolder());
+        }
+        return browserInDockerSettings.isEnableVNC() ? driverManager.enableVnc().create() : driverManager.create();
+    }
+
 
     @SneakyThrows
-    private WebDriver getRemoteDriver(final BrowserVersion browserVersion, final MutableCapabilities browserOptions,
-                                      final String remoteUrl) {
-        if (BrowserUtil.useLatest(browserVersion)) {
-            return new RemoteWebDriver(new URL(remoteUrl), browserOptions);
-        }
-        browserOptions.setCapability(BROWSER_VERSION, browserVersion.getVersion());
-        return new RemoteWebDriver(new URL(remoteUrl), browserOptions);
+    private WebDriver getRemoteDriver(final RemoteBrowser remoteBrowserSettings,
+                                      final MutableCapabilities browserOptions) {
+        browserOptions.setCapability(BROWSER_VERSION, remoteBrowserSettings.getBrowserVersion());
+        return new RemoteWebDriver(new URL(remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
     }
 
-    private void setCapabilities(final Capabilities capabilities, final MutableCapabilities driverOptions) {
+    private void setCapabilities(final AbstractBrowser browser, final MutableCapabilities driverOptions) {
+        Capabilities capabilities = browser.getCapabilities();
         if (capabilities != null) {
             capabilities.getCapability()
                     .forEach(cap -> driverOptions.setCapability(cap.getCapabilityName(), cap.getValue()));
@@ -132,8 +142,7 @@ public class WebDriverFactory {
 
         private ChromeOptions getChromeOptions(final Chrome browser) {
             ChromeOptions chromeOptions = new ChromeOptions();
-            chromeOptions.setHeadless(browser.isSetHeadless());
-            setCapabilities(browser.getCapabilities(), chromeOptions);
+            chromeOptions.setHeadless(browser.isHeadlessMode());
             BrowserOptionsArguments browserOptionsArguments = browser.getChromeOptionsArguments();
             if (browserOptionsArguments != null) {
                 chromeOptions.addArguments(browserOptionsArguments.getArgument());
@@ -151,8 +160,7 @@ public class WebDriverFactory {
 
         private FirefoxOptions getFirefoxOptions(final Firefox browser) {
             FirefoxOptions firefoxOptions = new FirefoxOptions();
-            firefoxOptions.setHeadless(browser.isSetHeadless());
-            setCapabilities(browser.getCapabilities(), firefoxOptions);
+            firefoxOptions.setHeadless(browser.isHeadlessMode());
             BrowserOptionsArguments browserOptionsArguments = browser.getFirefoxOptionsArguments();
             if (browserOptionsArguments != null) {
                 firefoxOptions.addArguments(browserOptionsArguments.getArgument());
@@ -170,8 +178,7 @@ public class WebDriverFactory {
 
         private EdgeOptions getEdgeOptions(final Edge browser) {
             EdgeOptions edgeOptions = new EdgeOptions();
-            edgeOptions.setHeadless(browser.isSetHeadless());
-            setCapabilities(browser.getCapabilities(), edgeOptions);
+            edgeOptions.setHeadless(browser.isHeadlessMode());
             BrowserOptionsArguments browserOptionsArguments = browser.getEdgeOptionsArguments();
             if (browserOptionsArguments != null) {
                 edgeOptions.addArguments(browserOptionsArguments.getArgument());
@@ -184,13 +191,7 @@ public class WebDriverFactory {
 
         @Override
         public WebDriver init(final Safari browser) {
-            return getWebDriver(browser, getSafariOptions(browser), new SafariDriverManager());
-        }
-
-        private SafariOptions getSafariOptions(final Safari browser) {
-            SafariOptions safariOptions = new SafariOptions();
-            setCapabilities(browser.getCapabilities(), safariOptions);
-            return safariOptions;
+            return getWebDriver(browser, new SafariOptions(), new SafariDriverManager());
         }
     }
 
@@ -203,7 +204,6 @@ public class WebDriverFactory {
 
         private OperaOptions getOperaOptions(final Opera browser) {
             OperaOptions operaOptions = new OperaOptions();
-            setCapabilities(browser.getCapabilities(), operaOptions);
             BrowserOptionsArguments browserOptionsArguments = browser.getOperaOptionsArguments();
             if (browserOptionsArguments != null) {
                 operaOptions.addArguments(browserOptionsArguments.getArgument());

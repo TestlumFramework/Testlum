@@ -3,7 +3,6 @@ package com.knubisoft.e2e.testing.framework.scenario;
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.model.global_config.RunScriptsByTag;
 import com.knubisoft.e2e.testing.model.global_config.TagValue;
-import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
@@ -25,18 +24,16 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.NO_ENABLE_TAGS
 public class ScenarioFilter {
 
     public FiltrationResult filterScenarios(final Set<ScenarioCollector.MappingResult> original) {
-        Set<ScenarioCollector.MappingResult> activeScenarios = original.stream().filter(ScenarioFilter::filterIsActive)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
         Set<ScenarioCollector.MappingResult> invalidScenarios = getNonParsedScenarios(original);
         if (invalidScenarios.size() == original.size()) {
             return new FiltrationResult(Collections.emptySet(), invalidScenarios, true);
         }
-        return new FiltrationResult(filterValidScenarios(activeScenarios), invalidScenarios, false);
+        return new FiltrationResult(filterValidScenarios(original), invalidScenarios, false);
     }
 
     private Set<ScenarioCollector.MappingResult> filterValidScenarios(
             final Set<ScenarioCollector.MappingResult> original) {
-        Set<ScenarioCollector.MappingResult> parsedScenarios = filterParsedScenarios(original);
+        Set<ScenarioCollector.MappingResult> parsedScenarios = filterIsActive(filterParsedScenarios(original));
         Set<ScenarioCollector.MappingResult> validScenarios = filterScenariosIfOnlyThis(parsedScenarios);
         if (validScenarios.isEmpty()){
             validScenarios = filterAndSortByTags(parsedScenarios);
@@ -65,12 +62,10 @@ public class ScenarioFilter {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    private boolean filterIsActive(final ScenarioCollector.MappingResult entry) {
-        Scenario scenario = entry.scenario;
-        if (scenario != null){
-            return scenario.isActive();
-        }
-        return false;
+    private Set<ScenarioCollector.MappingResult> filterIsActive(Set<ScenarioCollector.MappingResult> original) {
+        return original.stream()
+                .filter(e -> e.scenario.isActive())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private Set<ScenarioCollector.MappingResult> filterAndSortByTags(

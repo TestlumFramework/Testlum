@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BODY_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.BROWSER_VERSION_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.BROWSER_NAME_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.COMMENT_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.CONTENT_FORMAT;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DESTINATION_LOG;
@@ -59,7 +59,8 @@ public class LogUtil {
                 scenarioArguments.getFile().getAbsolutePath());
         logOverview(overview);
         if (scenarioArguments.isContainsUiSteps()) {
-            logUiInfo(scenarioArguments.getScenario().getVariations(), scenarioArguments.getBrowserVersion());
+            logUiInfo(scenarioArguments.getScenario().getVariations(),
+                    BrowserUtil.getBrowserInfo(scenarioArguments.getBrowser()));
         }
     }
 
@@ -120,7 +121,7 @@ public class LogUtil {
         if (StringUtils.isNotBlank(variation)) {
             log.info(VARIATION_LOG, variation);
         }
-        log.info(BROWSER_VERSION_LOG, browserVersion);
+        log.info(BROWSER_NAME_LOG, browserVersion);
     }
 
     public void logTestExecutionSummary(final TestExecutionSummary testExecutionSummary) {

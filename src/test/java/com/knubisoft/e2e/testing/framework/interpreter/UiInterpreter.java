@@ -5,7 +5,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractSeleniumInter
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
-import com.knubisoft.e2e.testing.framework.util.ExplicitWaitUtil;
+import com.knubisoft.e2e.testing.framework.util.BrowserUtil;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.JavascriptUtil;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
@@ -137,7 +137,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     private void click(final Click click, final CommandResult result) {
         result.put(CLICK_LOCATOR, click.getLocatorId());
         WebElement webElement = getWebElement(click.getLocatorId());
-        ExplicitWaitUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
+        BrowserUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
         highlightElementIfRequired(click.isHighlight(), webElement);
         takeScreenshotIfRequired(result);
         clickWithMethod(click.getMethod(), webElement, result);
@@ -191,6 +191,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
                 break;
             default: throw new DefaultFrameworkException(format(NAVIGATE_NOT_SUPPORTED, navigateCommand.value()));
         }
+        takeScreenshotIfRequired(result);
     }
 
     private void navigateTo(final String path, final CommandResult result) {
@@ -209,13 +210,14 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
                 .withActual(actual)
                 .withExpected(expected)
                 .exec();
+        takeScreenshotIfRequired(result);
     }
 
     private String getActualValue(final Assert aAssert, final CommandResult result) {
         result.put(ASSERT_LOCATOR, aAssert.getLocatorId());
         result.put(ASSERT_ATTRIBUTE, aAssert.getAttribute().value());
         WebElement webElement = getWebElement(aAssert.getLocatorId());
-        ExplicitWaitUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
+        BrowserUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
         String value = webElement.getAttribute(aAssert.getAttribute().value());
         return value
                 .replaceAll(SPACE, EMPTY)
@@ -284,7 +286,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         String locatorId = clear.getLocatorId();
         result.put(CLEAR_ACTION, format(CLEAR_ACTION_LOCATOR, locatorId));
         WebElement element = getWebElement(locatorId);
-        ExplicitWaitUtil.waitForElementVisibility(dependencies.getWebDriver(), element);
+        BrowserUtil.waitForElementVisibility(dependencies.getWebDriver(), element);
         element.clear();
         highlightElementIfRequired(clear.isHighlight(), element);
         takeScreenshotIfRequired(result);

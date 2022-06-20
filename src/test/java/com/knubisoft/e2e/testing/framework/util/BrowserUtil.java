@@ -74,15 +74,8 @@ public class BrowserUtil {
         wait.until(ExpectedConditions.elementToBeSelected(element));
     }
 
+    //TODO add version and browser type
     public String getBrowserInfo(final AbstractBrowser browser) {
-//        StringBuilder browserInfo = new StringBuilder(browser.getClass().getSimpleName());
-//        if (StringUtils.isNotEmpty(browserVersion)) {
-//            browserInfo.append(StringUtils.SPACE).append("version: ").append(browserVersion);
-//        }
-//        if (StringUtils.isNotEmpty(driverVersion)) {
-//            browserInfo.append(StringUtils.SPACE).append("driver version: ").append(driverVersion);
-//        }
-//        return String.valueOf(browserInfo);
-        return "";
+        return browser.getClass().getSimpleName();
     }
 }

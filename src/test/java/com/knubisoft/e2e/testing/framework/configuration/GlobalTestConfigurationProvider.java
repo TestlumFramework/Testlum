@@ -1,11 +1,14 @@
 package com.knubisoft.e2e.testing.framework.configuration;
 
 import com.knubisoft.e2e.testing.framework.parser.XMLParsers;
+import com.knubisoft.e2e.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.e2e.testing.model.global_config.BrowserSettings;
 import com.knubisoft.e2e.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.e2e.testing.model.global_config.Integrations;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GlobalTestConfigurationProvider {
@@ -14,6 +17,10 @@ public class GlobalTestConfigurationProvider {
 
     public static GlobalTestConfiguration provide() {
         return GLOBAL_TEST_CONFIGURATION;
+    }
+
+    public static List<AbstractBrowser> getBrowsers() {
+        return getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari();
     }
 
     public static BrowserSettings getBrowserSettings() {

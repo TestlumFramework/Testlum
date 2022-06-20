@@ -24,7 +24,8 @@ public class AliasPostgresAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Postgres postgres : GlobalTestConfigurationProvider.getIntegrations().getPostgreses().getPostgres()) {
+        for (Postgres postgres
+                : GlobalTestConfigurationProvider.getIntegrations().getPostgresIntegration().getPostgres()) {
             if (postgres.isEnabled()) {
                 aliasMap.put(POSTGRES + UNDERSCORE + postgres.getAlias(), getMetadataPostgres(postgres));
             }

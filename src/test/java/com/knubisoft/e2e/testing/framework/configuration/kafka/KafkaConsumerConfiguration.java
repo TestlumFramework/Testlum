@@ -29,7 +29,7 @@ public class KafkaConsumerConfiguration {
     @Bean
     public Map<String, KafkaConsumer<String, String>> kafkaConsumer() {
         final Map<String, KafkaConsumer<String, String>> consumerMap = new HashMap<>();
-        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().getKafkas().getKafka()) {
+        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().getKafkaIntegration().getKafka()) {
             if (kafka.isEnabled()) {
                 createConsumerAndPutIntoMap(consumerMap, kafka);
             }

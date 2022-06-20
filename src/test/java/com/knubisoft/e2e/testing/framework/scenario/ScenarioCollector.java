@@ -1,6 +1,5 @@
 package com.knubisoft.e2e.testing.framework.scenario;
 
-import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.parser.XMLParsers;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
@@ -11,7 +10,6 @@ import com.knubisoft.e2e.testing.model.scenario.Auth;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,20 +17,17 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
 
 @Slf4j
 public class ScenarioCollector {
 
     private final File rootTestResources;
-    private final Pattern pattern;
     private final FileSearcher fileSearcher;
     private final ScenarioValidator scenarioValidator;
 
     public ScenarioCollector() {
         TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
         this.rootTestResources = resourceSettings.getTestResourcesFolder();
-        this.pattern = Pattern.compile(GlobalTestConfigurationProvider.provide().getFilterDirectoryPattern());
         this.fileSearcher = new FileSearcher(rootTestResources, false);
         this.scenarioValidator = new ScenarioValidator(fileSearcher);
     }
@@ -126,15 +121,10 @@ public class ScenarioCollector {
         if (file.isDirectory()) {
             walk(file, scenarios);
         } else {
-            if (file.getName().equals(TestResourceSettings.SCENARIO_FILENAME) && matchesPathPattern(file)) {
+            if (file.getName().equals(TestResourceSettings.SCENARIO_FILENAME)) {
                 scenarios.add(file);
             }
         }
-    }
-
-    private boolean matchesPathPattern(final File file) {
-        String pathFromRoot = file.getPath().replace(rootTestResources.getPath(), StringUtils.EMPTY);
-        return pattern.matcher(pathFromRoot).matches();
     }
 
     public static class Result {

@@ -127,17 +127,11 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         }
 
         public CompareBuilder withActual(final String actual) {
-            if (dependencies.getGlobalTestConfiguration().isDebugMode()) {
-                log.info("CONTENT OF ACTUAL FILE: {}" + actual);
-            }
             this.supplierActual = () -> String.valueOf(actual);
             return this;
         }
 
         public CompareBuilder withExpected(final String expected) {
-            if (dependencies.getGlobalTestConfiguration().isDebugMode()) {
-                log.info("CONTENT OF FOUND EXPECTED FILE: {}", expected);
-            }
             this.expected = String.valueOf(expected);
             return this;
         }

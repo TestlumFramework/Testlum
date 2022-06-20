@@ -18,13 +18,13 @@ public class MysqlDataSourceConfiguration {
 
     @Bean("mySqlDataSource")
     public Map<String, DataSource> mysqlDataSource() {
-        Map<String, DataSource> mysqls = new HashMap<>();
-        for (Mysql dataSource : GlobalTestConfigurationProvider.getIntegrations().getMysqls().getMysql()) {
+        Map<String, DataSource> mysqlIntegration = new HashMap<>();
+        for (Mysql dataSource : GlobalTestConfigurationProvider.getIntegrations().getMysqlIntegration().getMysql()) {
             if (dataSource.isEnabled()) {
-                mysqls.put(dataSource.getAlias(), getHikariDataSource(dataSource));
+                mysqlIntegration.put(dataSource.getAlias(), getHikariDataSource(dataSource));
             }
         }
-        return mysqls;
+        return mysqlIntegration;
     }
 
     private DataSource getHikariDataSource(final Mysql dataSource) {

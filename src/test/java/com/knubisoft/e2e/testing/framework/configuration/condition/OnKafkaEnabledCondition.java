@@ -2,7 +2,7 @@ package com.knubisoft.e2e.testing.framework.configuration.condition;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.model.global_config.Kafka;
-import com.knubisoft.e2e.testing.model.global_config.Kafkas;
+import com.knubisoft.e2e.testing.model.global_config.KafkaIntegration;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -13,9 +13,10 @@ public class OnKafkaEnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        final Kafkas kafkas = GlobalTestConfigurationProvider.getIntegrations().getKafkas();
-        if (Objects.nonNull(kafkas)) {
-            return kafkas.getKafka()
+        final KafkaIntegration kafkaIntegration =
+                GlobalTestConfigurationProvider.getIntegrations().getKafkaIntegration();
+        if (Objects.nonNull(kafkaIntegration)) {
+            return kafkaIntegration.getKafka()
                     .stream().anyMatch(Kafka::isEnabled);
         }
         return false;

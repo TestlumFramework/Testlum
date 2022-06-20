@@ -24,7 +24,7 @@ public class AliasRedisAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Redis redis : GlobalTestConfigurationProvider.getIntegrations().getRedises().getRedis()) {
+        for (Redis redis : GlobalTestConfigurationProvider.getIntegrations().getRedisIntegration().getRedis()) {
             if (redis.isEnabled()) {
                 aliasMap.put(REDIS + UNDERSCORE + redis.getAlias(), getMetadataRedis(redis));
             }

@@ -2,7 +2,7 @@ package com.knubisoft.e2e.testing.framework.configuration.condition;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.model.global_config.Clickhouse;
-import com.knubisoft.e2e.testing.model.global_config.Clickhouses;
+import com.knubisoft.e2e.testing.model.global_config.ClickhouseIntegration;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -14,10 +14,10 @@ public class OnClickhouseEnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        final Clickhouses clickhouses = GlobalTestConfigurationProvider.getIntegrations().getClickhouses();
-        if (Objects.nonNull(clickhouses)) {
-            return clickhouses
-                    .getClickhouse().stream().anyMatch(Clickhouse::isEnabled);
+        final ClickhouseIntegration clickhouseIntegration =
+                GlobalTestConfigurationProvider.getIntegrations().getClickhouseIntegration();
+        if (Objects.nonNull(clickhouseIntegration)) {
+            return clickhouseIntegration.getClickhouse().stream().anyMatch(Clickhouse::isEnabled);
         }
         return false;
     }

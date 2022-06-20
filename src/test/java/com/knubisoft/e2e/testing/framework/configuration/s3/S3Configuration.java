@@ -21,13 +21,13 @@ public class S3Configuration {
 
     @Bean
     public Map<String, AmazonS3> amazonS3() {
-        Map<String, AmazonS3> s3Map = new HashMap<>();
-        for (S3 s3 : GlobalTestConfigurationProvider.getIntegrations().getS3S().getS3()) {
+        Map<String, AmazonS3> s3Integration = new HashMap<>();
+        for (S3 s3 : GlobalTestConfigurationProvider.getIntegrations().getS3Integration().getS3()) {
             if (s3.isEnabled()) {
-                createS3AndPutToMap(s3Map, s3);
+                createS3AndPutToMap(s3Integration, s3);
             }
         }
-        return s3Map;
+        return s3Integration;
     }
 
     private void createS3AndPutToMap(final Map<String, AmazonS3> s3Map, final S3 s3) {

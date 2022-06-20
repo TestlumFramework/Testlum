@@ -30,6 +30,11 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:complexType name="tagValue">
+        <x:attribute name="tag" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="enable" type="x:boolean" use="required"/>
+    </x:complexType>
+
     <x:complexType name="hikari">
         <x:sequence>
             <x:element name="connectionTimeout" type="x:int"/>

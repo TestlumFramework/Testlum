@@ -108,8 +108,6 @@ public class E2ERootTest {
         Scenario scenario = scenarioArguments.getScenario();
         if (scenario == null) {
             throw scenarioArguments.getException();
-        } else if (!scenario.isActive()) {
-            throw assumptionViolatedException(scenarioArguments.getPath(), scenario);
         }
     }
 

@@ -1,7 +1,9 @@
 package com.knubisoft.e2e.testing.framework.scenario;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.e2e.testing.model.global_config.FilterTags;
+import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.e2e.testing.model.global_config.RunScriptsByTag;
+import com.knubisoft.e2e.testing.model.global_config.TagValue;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,18 +21,22 @@ import java.util.stream.Collectors;
 public class ScenarioFilter {
 
     public FiltrationResult filterScenarios(final Set<ScenarioCollector.MappingResult> original) {
+        Set<ScenarioCollector.MappingResult> activeScenarios = original.stream().filter(ScenarioFilter::filterIsActive)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
         Set<ScenarioCollector.MappingResult> invalidScenarios = getNonParsedScenarios(original);
         if (invalidScenarios.size() == original.size()) {
             return new FiltrationResult(Collections.emptySet(), invalidScenarios, true);
         }
-        return new FiltrationResult(filterValidScenarios(original), invalidScenarios, false);
+        return new FiltrationResult(filterValidScenarios(activeScenarios), invalidScenarios, false);
     }
 
     private Set<ScenarioCollector.MappingResult> filterValidScenarios(
             final Set<ScenarioCollector.MappingResult> original) {
-        Set<ScenarioCollector.MappingResult> validScenarios = filterParsedScenarios(original);
-        validScenarios = filterScenariosIfOnlyThis(validScenarios);
-        validScenarios = filterAndSortByTags(validScenarios);
+        Set<ScenarioCollector.MappingResult> parsedScenarios = filterParsedScenarios(original);
+        Set<ScenarioCollector.MappingResult> validScenarios = filterScenariosIfOnlyThis(parsedScenarios);
+        if (validScenarios.isEmpty()){
+            validScenarios = filterAndSortByTags(parsedScenarios);
+        }
         return validScenarios;
     }
 
@@ -50,43 +56,53 @@ public class ScenarioFilter {
 
     private Set<ScenarioCollector.MappingResult> filterScenariosIfOnlyThis(
             final Set<ScenarioCollector.MappingResult> original) {
-        Set<ScenarioCollector.MappingResult> filtered = original.stream()
-                .filter(ScenarioFilter::filterIsActive)
+        return original.stream()
+                .filter(e -> e.scenario.isOnlyThis())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-        return filtered.isEmpty() ? original : filtered;
     }
 
     private boolean filterIsActive(final ScenarioCollector.MappingResult entry) {
         Scenario scenario = entry.scenario;
-        return scenario.isActive() && scenario.isOnlyThis();
+        if (scenario != null){
+            return scenario.isActive();
+        }
+        return false;
     }
 
     private Set<ScenarioCollector.MappingResult> filterAndSortByTags(
             final Set<ScenarioCollector.MappingResult> original) {
-        FilterTags tags = GlobalTestConfigurationProvider.provide().getFilterTags();
+        RunScriptsByTag tags = GlobalTestConfigurationProvider.provide().getRunScriptsByTag();
+        List<String> enabledTags = tags.getValue().stream().filter(TagValue::isEnable)
+                .map(TagValue::getTag).collect(Collectors.toList());
         if (tags.isEnable()) {
-            Set<ScenarioCollector.MappingResult> filtered = filterByTags(original, tags);
-            return tags.isEnableOrder() ? sortByTags(filtered, tags) : filtered;
+            if (enabledTags.isEmpty()) {
+                throw new DefaultFrameworkException("There are no active tags in runScriptByTag");
+            }
+            Set<ScenarioCollector.MappingResult> filtered = filterByTags(original, enabledTags);
+            return sortByTags(filtered, enabledTags);
         }
         return original;
     }
 
     private Set<ScenarioCollector.MappingResult> filterByTags(final Set<ScenarioCollector.MappingResult> original,
-                                                              final FilterTags tags) {
-        Set<ScenarioCollector.MappingResult> filtered = original.stream().filter(m -> isMatchesTestTags(m, tags))
+                                                              final List<String> enabledTags) {
+        Set<ScenarioCollector.MappingResult> filtered = original.stream().filter(m -> isMatchesTestTags(m, enabledTags))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        return filtered.isEmpty() ? original : filtered;
+        if (filtered.isEmpty()){
+            throw new DefaultFrameworkException("There are no active scenarios by enabled tags");
+        }
+        return filtered;
     }
 
-    private boolean isMatchesTestTags(final ScenarioCollector.MappingResult entry, final FilterTags tags) {
+    private boolean isMatchesTestTags(final ScenarioCollector.MappingResult entry, final List<String> enabledTags) {
         List<String> scenarioTags = entry.scenario.getTags().getTag();
-        return scenarioTags.stream().anyMatch(tags.getValue()::contains);
+        return scenarioTags.stream().anyMatch(enabledTags::contains);
     }
 
     private Set<ScenarioCollector.MappingResult> sortByTags(final Set<ScenarioCollector.MappingResult> original,
-                                                            final FilterTags tags) {
-        return original.stream().sorted(Comparator.comparing(e -> getScenarioTagOrderIndex(e, tags.getValue())))
+                                                            final List<String> enabledTags) {
+        return original.stream().sorted(Comparator.comparing(e -> getScenarioTagOrderIndex(e, enabledTags)))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 

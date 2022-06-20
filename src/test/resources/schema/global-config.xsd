@@ -36,7 +36,7 @@
                 <x:element name="localStorageAuthorizationKey" type="tns:nonEmptyString"/>
                 <x:element name="filterDirectoryPattern" type="tns:nonEmptyString"/>
                 <x:element name="debugMode" type="x:boolean"/>
-                <x:element name="filterTags" type="tns:filterTags"/>
+                <x:element name="runScriptsByTag" type="tns:runScriptsByTag"/>
                 <x:element name="parallelExecution" type="x:boolean"/>
                 <x:element name="parallelExecutionLimit" type="x:int"/>
                 <x:element name="ui" type="tns:ui" minOccurs="0"/>
@@ -132,11 +132,10 @@
         </x:choice>
     </x:complexType>
 
-    <x:complexType name="filterTags">
+    <x:complexType name="runScriptsByTag">
         <x:choice>
-            <x:element name="value" type="tns:nonEmptyString" maxOccurs="unbounded"/>
+            <x:element name="value" type="tns:tagValue" maxOccurs="unbounded"/>
         </x:choice>
         <x:attribute name="enable" type="x:boolean" use="required"/>
-        <x:attribute name="enableOrder" type="x:boolean" default="true"/>
     </x:complexType>
 </x:schema>

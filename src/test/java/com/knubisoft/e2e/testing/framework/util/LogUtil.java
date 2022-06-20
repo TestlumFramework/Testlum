@@ -34,6 +34,8 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAME_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.REGEX_NEW_LINE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_BY_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_DIRECTION_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SOURCE_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.TABLE_FORMAT;
@@ -192,6 +194,12 @@ public class LogUtil {
         } else {
             log.info(EXECUTION_TIME_LOG, time);
         }
+    }
+
+    public void logScrollInfo(final String direction, final String measure, final String value) {
+        log.info(SCROLL_DIRECTION_LOG, direction);
+        log.info(SCROLL_BY_LOG, measure);
+        log.info(VALUE_LOG, value);
     }
 
 }

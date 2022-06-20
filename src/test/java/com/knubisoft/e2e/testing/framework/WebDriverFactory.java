@@ -46,6 +46,7 @@ import static org.openqa.selenium.remote.CapabilityType.BROWSER_VERSION;
 @UtilityClass
 public class WebDriverFactory {
 
+    private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
     private static final String URL_FOR_TESTING = GlobalTestConfigurationProvider.provide().getUi().getBaseUrl();
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;
 
@@ -82,7 +83,7 @@ public class WebDriverFactory {
         if (browserInDockerSettings != null) {
             return StringUtils.isNotEmpty(browser.getBrowserWindowSize())
                     ? getBrowserInDocker(browserInDockerSettings, browserOptions, driverManager.browserInDocker()
-                    .dockerScreenResolution(browser.getBrowserWindowSize()))
+                    .dockerScreenResolution(browser.getBrowserWindowSize() + DEFAULT_DOCKER_SCREEN_COLORS_DEPTH))
                     : getBrowserInDocker(browserInDockerSettings, browserOptions, driverManager.browserInDocker());
         }
         return getLocalDriver(browser.getBrowserType().getLocalBrowser(), browserOptions, driverManager);

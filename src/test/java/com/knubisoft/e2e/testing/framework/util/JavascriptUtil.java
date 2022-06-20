@@ -47,7 +47,7 @@ public class JavascriptUtil {
             return format(SCROLL_VERTICAL_SCRIPT_FORMAT,
                     scrollMeasureFormatter(measure, DelimiterConstant.DASH + value));
         }
-        return format(SCROLL_VERTICAL_SCRIPT_FORMAT,scrollMeasureFormatter(measure, value));
+        return format(SCROLL_VERTICAL_SCRIPT_FORMAT, scrollMeasureFormatter(measure, value));
     }
 
     private String scrollMeasureFormatter(final ScrollMeasure measure, final String value) {

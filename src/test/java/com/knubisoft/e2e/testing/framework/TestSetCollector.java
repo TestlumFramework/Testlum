@@ -5,7 +5,9 @@ import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.parser.CSVParser;
 import com.knubisoft.e2e.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.e2e.testing.framework.scenario.ScenarioFilter;
+import com.knubisoft.e2e.testing.framework.util.BrowserUtil;
 import com.knubisoft.e2e.testing.model.ScenarioArguments;
+import com.knubisoft.e2e.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.e2e.testing.model.global_config.BrowserSettings;
 import com.knubisoft.e2e.testing.model.global_config.Ui;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
@@ -49,12 +51,12 @@ public class TestSetCollector {
     }
 
     private List<Arguments> getScenarioArguments(final Set<ScenarioCollector.MappingResult> scenarios) {
-        List<String> browserVersions = GlobalTestConfigurationProvider.getBrowserSettings().getVersions().getVersion();
+        List<AbstractBrowser> webBrowserVersions = BrowserUtil.filterEnabledBrowsers();
         List<ScenarioArguments> scenarioArgumentsList = new ArrayList<>();
         scenarios.forEach(entry -> {
             if (scenarioContainsUISteps(entry.scenario)) {
-                browserVersions.forEach(version ->
-                        addScenarioArgumentsWithUIConfiguration(entry, version, scenarioArgumentsList));
+                webBrowserVersions.forEach(webBrowser ->
+                        addScenarioArgumentsWithUIConfiguration(entry, webBrowser, scenarioArgumentsList));
             } else {
                 scenarioArgumentsList.add(getArgumentsWithoutUIConfigurations(entry));
             }
@@ -63,15 +65,15 @@ public class TestSetCollector {
     }
 
     private void addScenarioArgumentsWithUIConfiguration(final ScenarioCollector.MappingResult entry,
-                                                final String browserVersion,
+                                                final AbstractBrowser webBrowser,
                                                 final List<ScenarioArguments> arguments) {
         BrowserSettings browserSettings = GlobalTestConfigurationProvider.getBrowserSettings();
         if (variationsExist(entry)) {
             List<Map<String, String>> variationList = getVariationList(entry);
             variationList.forEach(variation ->
-                    arguments.add(getArgumentsWithUIConfigurations(entry, browserVersion, browserSettings, variation)));
+                    arguments.add(getArgumentsWithUIConfigurations(entry, webBrowser, browserSettings, variation)));
         } else {
-            arguments.add(getArgumentsWithUIConfigurations(entry, browserVersion, browserSettings, new HashMap<>()));
+            arguments.add(getArgumentsWithUIConfigurations(entry, webBrowser, browserSettings, new HashMap<>()));
         }
     }
 
@@ -84,7 +86,7 @@ public class TestSetCollector {
     }
 
     private ScenarioArguments getArgumentsWithUIConfigurations(final ScenarioCollector.MappingResult entry,
-                                                               final String browserVersion,
+                                                               final AbstractBrowser browser,
                                                                final BrowserSettings settings,
                                                                final Map<String, String> variation) {
         return ScenarioArguments.builder()
@@ -92,7 +94,7 @@ public class TestSetCollector {
                 .file(entry.file)
                 .scenario(entry.scenario)
                 .exception(entry.exception)
-                .browserVersion(browserVersion)
+                .browser(browser)
                 .browserSettings(settings)
                 .variation(variation)
                 .containsUiSteps(true)

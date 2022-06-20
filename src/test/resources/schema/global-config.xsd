@@ -19,6 +19,7 @@
     <x:include schemaLocation="elasticsearches.xsd"/>
     <x:include schemaLocation="sendgrids.xsd"/>
     <x:include schemaLocation="seses.xsd"/>
+    <x:include schemaLocation="ui-config.xsd"/>
     <x:include schemaLocation="shared-config.xsd"/>
 
     <x:annotation>
@@ -65,15 +66,6 @@
         </x:all>
     </x:complexType>
 
-    <x:complexType name="ui">
-        <x:sequence>
-            <x:element name="browserSettings" type="tns:browserSettings"/>
-            <x:element name="baseUrl" type="tns:url"/>
-            <x:element name="performanceWarning" type="tns:performanceWarning"/>
-        </x:sequence>
-        <x:attribute name="enabled" type="x:boolean" use="required"/>
-    </x:complexType>
-
     <x:complexType name="apis">
         <x:choice>
             <x:element name="api" type="tns:api" maxOccurs="unbounded"/>
@@ -83,53 +75,6 @@
     <x:complexType name="api">
         <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="url" type="tns:url" use="required"/>
-    </x:complexType>
-
-    <x:complexType name="browserSettings">
-        <x:annotation>
-            <x:documentation>Browser Settings Specification (headless gpu etc)</x:documentation>
-        </x:annotation>
-        <x:sequence>
-            <x:element name="localBrowserDebug" type="x:boolean"/>
-            <x:element name="screenshotsLogging" type="x:boolean"/>
-            <x:element name="seleniumExplicitWaitTime" type="x:int"/>
-            <x:element name="options" type="tns:options"/>
-            <x:element name="versions" type="tns:browserVersions"/>
-        </x:sequence>
-    </x:complexType>
-
-    <x:complexType name="options">
-        <x:annotation>
-            <x:documentation>
-                Additions browser settings:
-
-                options.addArguments("--headless",
-                "--disable-gpu",
-                "--window-size=1920,1200",
-                "--ignore-certificate-errors");
-            </x:documentation>
-        </x:annotation>
-        <x:choice>
-            <x:element name="option" type="x:string"
-                       minOccurs="0" maxOccurs="unbounded"/>
-        </x:choice>
-    </x:complexType>
-
-    <x:complexType name="performanceWarning">
-        <x:sequence>
-            <x:element name="value" type="x:byte"/>
-            <x:element name="timeUnit" type="tns:timeUnit"/>
-        </x:sequence>
-    </x:complexType>
-
-    <x:complexType name="browserVersions">
-        <x:annotation>
-            <x:documentation>Browser OS Group Specification</x:documentation>
-        </x:annotation>
-        <x:choice>
-            <x:element name="version" maxOccurs="unbounded" type="tns:browserVersionElement"
-                       minOccurs="0"/>
-        </x:choice>
     </x:complexType>
 
     <x:complexType name="runScriptsByTag">

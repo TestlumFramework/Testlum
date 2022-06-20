@@ -189,7 +189,7 @@ public final class LogMessage {
     public static final String WAIT_INFO_LOG = format(TABLE_FORMAT, "Wait time & unit", "{} {}");
     public static final String LOCATOR_LOG = format(TABLE_FORMAT, "Locator", "{}");
     public static final String VARIATION_LOG = "Variation - {}";
-    public static final String BROWSER_VERSION_LOG = "Browser version: {}";
+    public static final String BROWSER_NAME_LOG = "Browser: {}";
     public static final String HTTP_STATUS_CODE = format(TABLE_FORMAT, "Status code", "{} {}");
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "Method", "{}");
@@ -200,6 +200,7 @@ public final class LogMessage {
     public static final String CLEAR_ACTION = "Clear action";
     public static final String CLEAR_ACTION_LOCATOR = "Element locator for clear %s";
     public static final String CLOSE_TAB_INFO = "Close second tab";
+    public static final String DRIVER_INITIALIZER_NOT_FOUND = "Driver initializer not found";
     public static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
     public static final String UI_EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Step execution time", "{} ms");
     public static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
@@ -213,4 +214,8 @@ public final class LogMessage {
     public static final String SCROLL_ACTION = "Scroll action";
     public static final String SCROLL_TO_INFO = "Scroll to element with locator %s";
     public static final String SCROLL_INFO = "Scroll %s, by %s, by value %s";
+    public static final String RUN_MODE_NOT_SUPPORTED = "Advanced run mode not supported";
+    public static final String NOT_ENABLED_BROWSERS = "At least 1 browser must be enabled";
+    public static final String BROWSER_VERSION_INVALID = "You didn't specify any browser version, please set the "
+            + "'latestVersion' option to true or specify the version manually";
 }

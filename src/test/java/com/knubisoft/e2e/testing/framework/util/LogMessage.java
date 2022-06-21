@@ -210,7 +210,13 @@ public final class LogMessage {
     public static final String SHELL_COMMAND_LOG = format(TABLE_FORMAT, "Shell command", "{}");
     public static final String SCROLL_DIRECTION_LOG = format(TABLE_FORMAT, "Direction", "{}");
     public static final String SCROLL_BY_LOG = format(TABLE_FORMAT, "Scroll by", "{}");
-
+    public static final String RED_LINE = ANSI_RED
+            + "--------------------------------------------------------------------------------------------------------"
+            + ANSI_RESET;
+    public static final String INVALID_SCENARIO_LOG = RED_LINE + ANSI_RED
+            + "\n" + format("%21s", EMPTY) + format(TABLE_FORMAT, "Invalid scenario", "{}") + "\n"
+            + format("%21s", EMPTY) + format(TABLE_FORMAT, "Exception", "{}") + ANSI_RESET;
+    public static final String VALID_SCENARIOS_NOT_FOUND = ANSI_RED + "Valid scenarios are not found" + ANSI_RESET;
     public static final String SCROLL_ACTION = "Scroll action";
     public static final String SCROLL_TO_INFO = "Scroll to element with locator %s";
     public static final String SCROLL_INFO = "Scroll %s, by %s, by value %s";

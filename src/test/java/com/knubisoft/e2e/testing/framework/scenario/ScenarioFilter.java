@@ -4,31 +4,33 @@ import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfiguration
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.e2e.testing.model.global_config.TagValue;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.INVALID_SCENARIO_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NO_ACTIVE_SCENARIOS_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NO_ENABLE_TAGS_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.RED_LINE;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.VALID_SCENARIOS_NOT_FOUND;
 
 @Slf4j
 @UtilityClass
 public class ScenarioFilter {
 
-    public FiltrationResult filterScenarios(final Set<ScenarioCollector.MappingResult> original) {
+    public Set<ScenarioCollector.MappingResult> filterScenarios(final Set<ScenarioCollector.MappingResult> original) {
         Set<ScenarioCollector.MappingResult> invalidScenarios = getNonParsedScenarios(original);
+        invalidScenarios.forEach(e -> log.error(INVALID_SCENARIO_LOG, e.file.getPath(), e.exception.getMessage()));
+        log.info(RED_LINE);
         if (invalidScenarios.size() == original.size()) {
-            return new FiltrationResult(Collections.emptySet(), invalidScenarios, true);
+            throw new DefaultFrameworkException(VALID_SCENARIOS_NOT_FOUND);
         }
-        return new FiltrationResult(filterValidScenarios(original), invalidScenarios, false);
+        return filterValidScenarios(original);
     }
 
     private Set<ScenarioCollector.MappingResult> filterValidScenarios(
@@ -97,13 +99,5 @@ public class ScenarioFilter {
 
     private boolean isScenarioParsed(final ScenarioCollector.MappingResult entry) {
         return Objects.nonNull(entry.scenario);
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class FiltrationResult {
-        private Set<ScenarioCollector.MappingResult> validScenarios;
-        private Set<ScenarioCollector.MappingResult> invalidScenarios;
-        private boolean onlyInvalidScenarios;
     }
 }

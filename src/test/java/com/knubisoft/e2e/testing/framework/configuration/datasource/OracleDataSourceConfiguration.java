@@ -18,13 +18,13 @@ public class OracleDataSourceConfiguration {
     @Bean("oracleDatasource")
     @Conditional({OnOracleEnabledCondition.class})
     public Map<String, DataSource> postgresDataSource() {
-        Map<String, DataSource> oracles = new HashMap<>();
-        for (Oracle dataSource : GlobalTestConfigurationProvider.getIntegrations().getOracles().getOracle()) {
+        Map<String, DataSource> oracleIntegration = new HashMap<>();
+        for (Oracle dataSource : GlobalTestConfigurationProvider.getIntegrations().getOracleIntegration().getOracle()) {
             if (dataSource.isEnabled()) {
-                oracles.put(dataSource.getAlias(), getHikariDataSource(dataSource));
+                oracleIntegration.put(dataSource.getAlias(), getHikariDataSource(dataSource));
             }
         }
-        return oracles;
+        return oracleIntegration;
     }
 
     private DataSource getHikariDataSource(final Oracle dataSource) {

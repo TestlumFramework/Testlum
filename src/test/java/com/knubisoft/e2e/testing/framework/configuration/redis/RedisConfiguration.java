@@ -23,13 +23,14 @@ import java.util.stream.Collectors;
 public class RedisConfiguration {
     @Bean
     public Map<String, RedisStandaloneConfiguration> redisStandaloneConfiguration() {
-        final Map<String, RedisStandaloneConfiguration> properties = new HashMap<>();
-        for (Redis redis : GlobalTestConfigurationProvider.getIntegrations().getRedises().getRedis()) {
+        final Map<String, RedisStandaloneConfiguration> redisIntegration = new HashMap<>();
+        for (Redis redis : GlobalTestConfigurationProvider.getIntegrations().getRedisIntegration().getRedis()) {
             if (redis.isEnabled()) {
-                properties.put(redis.getAlias(), new RedisStandaloneConfiguration(redis.getHost(), redis.getPort()));
+                redisIntegration.put(redis.getAlias(),
+                        new RedisStandaloneConfiguration(redis.getHost(), redis.getPort()));
             }
         }
-        return properties;
+        return redisIntegration;
     }
 
     @Bean("redisConnectionFactory")

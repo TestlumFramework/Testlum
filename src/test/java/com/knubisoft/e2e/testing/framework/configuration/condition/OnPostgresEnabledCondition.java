@@ -2,7 +2,7 @@ package com.knubisoft.e2e.testing.framework.configuration.condition;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.model.global_config.Postgres;
-import com.knubisoft.e2e.testing.model.global_config.Postgreses;
+import com.knubisoft.e2e.testing.model.global_config.PostgresIntegration;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -14,10 +14,10 @@ public class OnPostgresEnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        final Postgreses postgreses = GlobalTestConfigurationProvider.getIntegrations().getPostgreses();
-        if (Objects.nonNull(postgreses)) {
-            return postgreses
-                    .getPostgres().stream().anyMatch(Postgres::isEnabled);
+        final PostgresIntegration postgresIntegration =
+                GlobalTestConfigurationProvider.getIntegrations().getPostgresIntegration();
+        if (Objects.nonNull(postgresIntegration)) {
+            return postgresIntegration.getPostgres().stream().anyMatch(Postgres::isEnabled);
         }
         return false;
     }

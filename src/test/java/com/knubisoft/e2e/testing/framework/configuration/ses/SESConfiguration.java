@@ -19,7 +19,7 @@ import java.util.Map;
 @Configuration
 @Conditional({OnSESEnabledCondition.class})
 public class SESConfiguration {
-    private final List<Ses> sesList = GlobalTestConfigurationProvider.getIntegrations().getSeses().getSes();
+    private final List<Ses> sesList = GlobalTestConfigurationProvider.getIntegrations().getSesIntegration().getSes();
 
     @Bean
     public Map<String, AmazonSimpleEmailService> amazonSimpleEmailService() {

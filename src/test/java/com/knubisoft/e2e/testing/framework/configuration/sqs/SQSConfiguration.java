@@ -21,13 +21,13 @@ public class SQSConfiguration {
 
     @Bean
     public Map<String, AmazonSQS> amazonSQS() {
-        final Map<String, AmazonSQS> properties = new HashMap<>();
-        for (Sqs sqs : GlobalTestConfigurationProvider.getIntegrations().getSqss().getSqs()) {
+        final Map<String, AmazonSQS> sqsIntegration = new HashMap<>();
+        for (Sqs sqs : GlobalTestConfigurationProvider.getIntegrations().getSqsIntegration().getSqs()) {
             if (sqs.isEnabled()) {
-                createSqsAndPutIntoMap(properties, sqs);
+                createSqsAndPutIntoMap(sqsIntegration, sqs);
             }
         }
-        return properties;
+        return sqsIntegration;
     }
 
     private void createSqsAndPutIntoMap(final Map<String, AmazonSQS> properties, final Sqs sqs) {

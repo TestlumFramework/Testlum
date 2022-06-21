@@ -39,7 +39,7 @@ public class KafkaOperation implements StorageOperation {
     @Override
     @SneakyThrows
     public void clearSystem() {
-        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().getKafkas().getKafka()) {
+        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().getKafkaIntegration().getKafka()) {
             if (kafka.isEnabled()) {
                 clearKafka(kafka);
             }

@@ -23,7 +23,7 @@ public class MongoConfiguration {
     @Bean
     public Map<String, MongoClient> mongoClient() {
         final Map<String, MongoClient> clients = new HashMap<>();
-        for (Mongo mongo : GlobalTestConfigurationProvider.getIntegrations().getMongos().getMongo()) {
+        for (Mongo mongo : GlobalTestConfigurationProvider.getIntegrations().getMongoIntegration().getMongo()) {
             if (mongo.isEnabled()) {
                 createMongoClientAndPutIntoMap(clients, mongo);
             }

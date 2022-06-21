@@ -5,20 +5,20 @@
           targetNamespace="http://www.knubisoft.com/e2e/testing/model/global-config"
           elementFormDefault="qualified" jaxb:version="2.1">
 
-    <x:include schemaLocation="postgreses.xsd"/>
-    <x:include schemaLocation="clickhouses.xsd"/>
-    <x:include schemaLocation="mysqls.xsd"/>
-    <x:include schemaLocation="oracles.xsd"/>
-    <x:include schemaLocation="redises.xsd"/>
-    <x:include schemaLocation="mongos.xsd"/>
-    <x:include schemaLocation="s3s.xsd"/>
-    <x:include schemaLocation="sqss.xsd"/>
-    <x:include schemaLocation="kafkas.xsd"/>
-    <x:include schemaLocation="rabbitmqs.xsd"/>
-    <x:include schemaLocation="dynamos.xsd"/>
-    <x:include schemaLocation="elasticsearches.xsd"/>
-    <x:include schemaLocation="sendgrids.xsd"/>
-    <x:include schemaLocation="seses.xsd"/>
+    <x:include schemaLocation="postgres-integration.xsd"/>
+    <x:include schemaLocation="clickhouse-integration.xsd"/>
+    <x:include schemaLocation="mysql-integration.xsd"/>
+    <x:include schemaLocation="oracle-integration.xsd"/>
+    <x:include schemaLocation="redis-integration.xsd"/>
+    <x:include schemaLocation="mongo-integration.xsd"/>
+    <x:include schemaLocation="s3-integration.xsd"/>
+    <x:include schemaLocation="sqs-integration.xsd"/>
+    <x:include schemaLocation="kafka-integration.xsd"/>
+    <x:include schemaLocation="rabbitmq-integration.xsd"/>
+    <x:include schemaLocation="dynamo-integration.xsd"/>
+    <x:include schemaLocation="elasticsearch-integration.xsd"/>
+    <x:include schemaLocation="sendgrid-integration.xsd"/>
+    <x:include schemaLocation="ses-integration.xsd"/>
     <x:include schemaLocation="ui-config.xsd"/>
     <x:include schemaLocation="shared-config.xsd"/>
 
@@ -35,11 +35,7 @@
             <x:sequence>
                 <x:element name="stopScenarioOnFailure" type="x:boolean"/>
                 <x:element name="localStorageAuthorizationKey" type="tns:nonEmptyString"/>
-                <x:element name="filterDirectoryPattern" type="tns:nonEmptyString"/>
-                <x:element name="debugMode" type="x:boolean"/>
                 <x:element name="filterTags" type="tns:filterTags"/>
-                <x:element name="parallelExecution" type="x:boolean"/>
-                <x:element name="parallelExecutionLimit" type="x:int"/>
                 <x:element name="ui" type="tns:ui" minOccurs="0"/>
                 <x:element name="integrations" type="tns:integrations" minOccurs="0"/>
             </x:sequence>
@@ -49,20 +45,20 @@
     <x:complexType name="integrations">
         <x:all>
             <x:element name="apis" type="tns:apis" minOccurs="0"/>
-            <x:element name="postgreses" type="tns:postgreses" minOccurs="0"/>
-            <x:element name="clickhouses" type="tns:clickhouses" minOccurs="0"/>
-            <x:element name="mysqls" type="tns:mysqls" minOccurs="0"/>
-            <x:element name="oracles" type="tns:oracles" minOccurs="0"/>
-            <x:element name="redises" type="tns:redises" minOccurs="0"/>
-            <x:element name="mongos" type="tns:mongos" minOccurs="0"/>
-            <x:element name="s3s" type="tns:s3s" minOccurs="0"/>
-            <x:element name="sqss" type="tns:sqss" minOccurs="0"/>
-            <x:element name="kafkas" type="tns:kafkas" minOccurs="0"/>
-            <x:element name="rabbitmqs" type="tns:rabbitmqs" minOccurs="0"/>
-            <x:element name="dynamos" type="tns:dynamos" minOccurs="0"/>
-            <x:element name="elasticsearches" type="tns:elasticsearches" minOccurs="0"/>
-            <x:element name="sendgrids" type="tns:sendgrids" minOccurs="0"/>
-            <x:element name="seses" type="tns:seses" minOccurs="0"/>
+            <x:element name="postgresIntegration" type="tns:postgresIntegration" minOccurs="0"/>
+            <x:element name="clickhouseIntegration" type="tns:clickhouseIntegration" minOccurs="0"/>
+            <x:element name="mysqlIntegration" type="tns:mysqlIntegration" minOccurs="0"/>
+            <x:element name="oracleIntegration" type="tns:oracleIntegration" minOccurs="0"/>
+            <x:element name="redisIntegration" type="tns:redisIntegration" minOccurs="0"/>
+            <x:element name="mongoIntegration" type="tns:mongoIntegration" minOccurs="0"/>
+            <x:element name="s3Integration" type="tns:s3Integration" minOccurs="0"/>
+            <x:element name="sqsIntegration" type="tns:sqsIntegration" minOccurs="0"/>
+            <x:element name="kafkaIntegration" type="tns:kafkaIntegration" minOccurs="0"/>
+            <x:element name="rabbitmqIntegration" type="tns:rabbitmqIntegration" minOccurs="0"/>
+            <x:element name="dynamoIntegration" type="tns:dynamoIntegration" minOccurs="0"/>
+            <x:element name="elasticsearchIntegration" type="tns:elasticsearchIntegration" minOccurs="0"/>
+            <x:element name="sendgridIntegration" type="tns:sendgridIntegration" minOccurs="0"/>
+            <x:element name="sesIntegration" type="tns:sesIntegration" minOccurs="0"/>
         </x:all>
     </x:complexType>
 

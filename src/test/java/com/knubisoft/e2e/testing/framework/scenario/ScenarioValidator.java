@@ -170,7 +170,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     //CHECKSTYLE:OFF
     private void validatePostgresTests(final Scenario scenario,
                                        final File xmlFile) {
-        boolean isPostgresEnabled = GlobalTestConfigurationProvider.getIntegrations().getPostgreses()
+        boolean isPostgresEnabled = GlobalTestConfigurationProvider.getIntegrations().getPostgresIntegration()
                 .getPostgres().stream().anyMatch(Postgres::isEnabled);
         if (!isPostgresEnabled) {
             for (AbstractCommand command : scenario.getCommands()) {
@@ -248,7 +248,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void checkDatabaseConnection(final PostgresResult postgresResult) {
         for (Postgres postgres
-                : GlobalTestConfigurationProvider.getIntegrations().getPostgreses().getPostgres()) {
+                : GlobalTestConfigurationProvider.getIntegrations().getPostgresIntegration().getPostgres()) {
             if ((postgres.getAlias().equals(postgresResult.getDatabaseName())
                     && !postgres.isEnabled())) {
                 throw new DefaultFrameworkException(format(FAILED_CONNECTION_TO_DATABASE,

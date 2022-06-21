@@ -2,7 +2,7 @@ package com.knubisoft.e2e.testing.framework.configuration.condition;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.model.global_config.Sqs;
-import com.knubisoft.e2e.testing.model.global_config.Sqss;
+import com.knubisoft.e2e.testing.model.global_config.SqsIntegration;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -14,9 +14,9 @@ public class OnSQSEnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        final Sqss sqss = GlobalTestConfigurationProvider.getIntegrations().getSqss();
-        if (Objects.nonNull(sqss)) {
-            return sqss.getSqs()
+        final SqsIntegration sqsIntegration = GlobalTestConfigurationProvider.getIntegrations().getSqsIntegration();
+        if (Objects.nonNull(sqsIntegration)) {
+            return sqsIntegration.getSqs()
                     .stream().anyMatch(Sqs::isEnabled);
         }
         return false;

@@ -1,7 +1,6 @@
 package com.knubisoft.e2e.testing.framework.util;
 
 import com.google.common.base.Preconditions;
-import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.exception.FileLinkingException;
 import lombok.AllArgsConstructor;
@@ -34,10 +33,6 @@ public final class FileSearcher {
         final String targetName = name.startsWith(DelimiterConstant.SLASH_SEPARATOR) ? name.substring(1) : name;
         FilenameFilter filter = (dir, file) -> file.equals(targetName);
         File result = find(fromDir, filter).orElseThrow(() -> new FileLinkingException(fromDir, root, name));
-        if (GlobalTestConfigurationProvider.provide().isDebugMode()) {
-            log.info("RESULT OF FILE SEARCHING: {}", result);
-            log.info("IS OVERRIDE PATH TO VOLUME: {}", overridePathToVolume);
-        }
         if (result.exists() && isFileAnImage(result) && overridePathToVolume) {
             log.info("Because system is running inside docker switching files to mounted directory");
             final String search = "src/test/resources";
@@ -64,9 +59,6 @@ public final class FileSearcher {
     private boolean isFileAnImage(File result) {
         String mimetype = new MimetypesFileTypeMap().getContentType(result);
         String type = mimetype.split(DelimiterConstant.SLASH_SEPARATOR)[0];
-        if (GlobalTestConfigurationProvider.provide().isDebugMode()) {
-            log.info("TYPE OF FILE RESULT: {}", type);
-        }
         if (type.equals("image")) {
             log.info("File {} is an image", result);
             return true;

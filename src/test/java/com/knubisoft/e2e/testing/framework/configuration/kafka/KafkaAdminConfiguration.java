@@ -21,7 +21,7 @@ public class KafkaAdminConfiguration {
     @Bean
     public Map<String, KafkaAdmin> kafkaAdmin() {
         final Map<String, KafkaAdmin> adminMap = new HashMap<>();
-        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().getKafkas().getKafka()) {
+        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().getKafkaIntegration().getKafka()) {
             if (kafka.isEnabled()) {
                 createAdminAndPutIntoMap(adminMap, kafka);
             }
@@ -38,7 +38,7 @@ public class KafkaAdminConfiguration {
     @Bean
     public Map<String, AdminClient> kafkaAdminClient() {
         final Map<String, AdminClient> clientMap = new HashMap<>();
-        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().getKafkas().getKafka()) {
+        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().getKafkaIntegration().getKafka()) {
             if (kafka.isEnabled()) {
                 createAdminClientAndPutIntoMap(clientMap, kafka);
             }

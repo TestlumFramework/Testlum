@@ -2,7 +2,7 @@ package com.knubisoft.e2e.testing.framework.configuration.condition;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.model.global_config.Mysql;
-import com.knubisoft.e2e.testing.model.global_config.Mysqls;
+import com.knubisoft.e2e.testing.model.global_config.MysqlIntegration;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -15,9 +15,10 @@ public class OnMysqlEnabledCondition implements Condition {
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
 
-        final Mysqls mysqls = GlobalTestConfigurationProvider.getIntegrations().getMysqls();
-        if (Objects.nonNull(mysqls)) {
-            return mysqls.getMysql()
+        final MysqlIntegration mysqlIntegration =
+                GlobalTestConfigurationProvider.getIntegrations().getMysqlIntegration();
+        if (Objects.nonNull(mysqlIntegration)) {
+            return mysqlIntegration.getMysql()
                     .stream().anyMatch(Mysql::isEnabled);
         }
         return false;

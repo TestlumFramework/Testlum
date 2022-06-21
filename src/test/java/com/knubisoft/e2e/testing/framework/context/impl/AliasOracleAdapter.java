@@ -24,7 +24,7 @@ public class AliasOracleAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Oracle oracle : GlobalTestConfigurationProvider.getIntegrations().getOracles().getOracle()) {
+        for (Oracle oracle : GlobalTestConfigurationProvider.getIntegrations().getOracleIntegration().getOracle()) {
             if (oracle.isEnabled()) {
                 aliasMap.put(ORACLE + UNDERSCORE + oracle.getAlias(), getMetadataOracle(oracle));
             }

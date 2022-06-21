@@ -7,19 +7,24 @@
 
     <x:include schemaLocation="shared-config.xsd"/>
 
-    <x:complexType name="mysqls">
+    <x:complexType name="elasticsearchIntegration">
         <x:choice maxOccurs="unbounded">
-            <x:element name="mysql" type="tns:mysql"/>
+            <x:element name="elasticsearch" type="tns:elasticsearch"/>
         </x:choice>
     </x:complexType>
 
-    <x:complexType name="mysql">
+    <x:complexType name="elasticsearch">
         <x:sequence>
-            <x:element name="jdbcDriver" type="tns:nonEmptyString"/>
+            <x:element name="host" type="tns:nonEmptyString"/>
+            <x:element name="port" type="x:int"/>
+            <x:element name="scheme" type="tns:nonEmptyString"/>
+            <x:element name="connectionTimeout" type="x:int"/>
+            <x:element name="socketTimeout" type="x:int"/>
+            <x:element name="signer" type="x:boolean"/>
+            <x:element name="serviceName" type="tns:nonEmptyString"/>
+            <x:element name="region" type="tns:nonEmptyString"/>
             <x:element name="username" type="tns:nonEmptyString"/>
             <x:element name="password" type="tns:nonEmptyString"/>
-            <x:element name="connectionUrl" type="tns:nonEmptyString"/>
-            <x:element name="hikari" type="tns:hikari"/>
         </x:sequence>
         <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>

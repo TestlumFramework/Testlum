@@ -2,7 +2,7 @@ package com.knubisoft.e2e.testing.framework.configuration.condition;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.model.global_config.Redis;
-import com.knubisoft.e2e.testing.model.global_config.Redises;
+import com.knubisoft.e2e.testing.model.global_config.RedisIntegration;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -14,9 +14,10 @@ public class OnRedisEnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        final Redises redises = GlobalTestConfigurationProvider.getIntegrations().getRedises();
-        if (Objects.nonNull(redises)) {
-            return redises.getRedis()
+        final RedisIntegration redisIntegration =
+                GlobalTestConfigurationProvider.getIntegrations().getRedisIntegration();
+        if (Objects.nonNull(redisIntegration)) {
+            return redisIntegration.getRedis()
                     .stream().anyMatch(Redis::isEnabled);
         }
         return false;

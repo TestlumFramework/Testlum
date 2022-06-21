@@ -25,7 +25,7 @@ public class AliasClickhouseAdapter implements AliasAdapter {
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
         for (Clickhouse clickhouse
-                : GlobalTestConfigurationProvider.getIntegrations().getClickhouses().getClickhouse()) {
+                : GlobalTestConfigurationProvider.getIntegrations().getClickhouseIntegration().getClickhouse()) {
             if (clickhouse.isEnabled()) {
                 aliasMap.put(CLICKHOUSE + UNDERSCORE + clickhouse.getAlias(), getMetadataPostgres(clickhouse));
             }

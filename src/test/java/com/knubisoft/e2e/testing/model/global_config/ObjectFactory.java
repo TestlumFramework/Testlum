@@ -45,11 +45,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link RunScriptsByTag }
+     * Create an instance of {@link RunScenariosByTag }
      * 
      */
-    public RunScriptsByTag createRunScriptsByTag() {
-        return new RunScriptsByTag();
+    public RunScenariosByTag createRunScenariosByTag() {
+        return new RunScenariosByTag();
     }
 
     /**

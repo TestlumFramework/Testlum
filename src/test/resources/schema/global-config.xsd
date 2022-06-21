@@ -35,7 +35,7 @@
             <x:sequence>
                 <x:element name="stopScenarioOnFailure" type="x:boolean"/>
                 <x:element name="localStorageAuthorizationKey" type="tns:nonEmptyString"/>
-                <x:element name="runScriptsByTag" type="tns:runScriptsByTag"/>
+                <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
                 <x:element name="ui" type="tns:ui" minOccurs="0"/>
                 <x:element name="integrations" type="tns:integrations" minOccurs="0"/>
             </x:sequence>
@@ -73,9 +73,9 @@
         <x:attribute name="url" type="tns:url" use="required"/>
     </x:complexType>
 
-    <x:complexType name="runScriptsByTag">
+    <x:complexType name="runScenariosByTag">
         <x:choice>
-            <x:element name="value" type="tns:tagValue" maxOccurs="unbounded"/>
+            <x:element name="tag" type="tns:tagValue" maxOccurs="unbounded"/>
         </x:choice>
         <x:attribute name="enable" type="x:boolean" use="required"/>
     </x:complexType>

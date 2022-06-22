@@ -24,6 +24,7 @@ public class ScenarioFilter {
 
     public Set<ScenarioCollector.MappingResult> filterScenarios(final Set<ScenarioCollector.MappingResult> original) {
         original.removeIf(ScenarioFilter::isScenarioNonParsed);
+        LogUtil.logLineBetween();
         if (original.isEmpty()) {
             throw new DefaultFrameworkException(VALID_SCENARIOS_NOT_FOUND);
         }

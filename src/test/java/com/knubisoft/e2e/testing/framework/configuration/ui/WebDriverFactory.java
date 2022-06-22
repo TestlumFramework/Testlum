@@ -1,6 +1,5 @@
-package com.knubisoft.e2e.testing.framework;
+package com.knubisoft.e2e.testing.framework.configuration.ui;
 
-import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.util.BrowserUtil;
 import com.knubisoft.e2e.testing.model.global_config.AbstractBrowser;
@@ -47,7 +46,6 @@ import static org.openqa.selenium.remote.CapabilityType.BROWSER_VERSION;
 public class WebDriverFactory {
 
     private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
-    private static final String URL_FOR_TESTING = GlobalTestConfigurationProvider.provide().getUi().getBaseUrl();
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;
 
     static {
@@ -67,7 +65,6 @@ public class WebDriverFactory {
                 .map(webDriverFunction -> webDriverFunction.apply(browser))
                 .peek(driver -> BrowserUtil.manageWindowSize(browser, driver))
                 .findFirst().orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
-        webDriver.get(URL_FOR_TESTING);
         return webDriver;
     }
 

@@ -215,7 +215,8 @@ public final class LogMessage {
                     + "--------------------------------------------------------------------------------------";
     public static final String INVALID_SCENARIO_LOG = ANSI_RED + LINE
             + "\n" + format("%21s", EMPTY) + format(TABLE_FORMAT, "Invalid scenario", "{}") + "\n"
-            + format("%21s", EMPTY) + format(TABLE_FORMAT, "Exception", "{}") + ANSI_RESET;
+            + format("%21s", EMPTY) + format(TABLE_FORMAT, "Exception", "{}") + "\n" + format("%21s", EMPTY)
+            + LINE + ANSI_RESET + "\n";
     public static final String VALID_SCENARIOS_NOT_FOUND = ANSI_RED + "Valid scenarios are not found" + ANSI_RESET;
     public static final String SCROLL_ACTION = "Scroll action";
     public static final String SCROLL_TO_INFO = "Scroll to element with locator %s";

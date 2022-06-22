@@ -211,9 +211,4 @@ public class LogUtil {
     public void logNonParsedScenarioInfo(final String path, final String exception) {
         log.error(INVALID_SCENARIO_LOG, path, exception);
     }
-
-    public void logLineBetween() {
-        log.info(ANSI_RED + LINE + ANSI_RESET);
-        log.info(EMPTY);
-    }
 }

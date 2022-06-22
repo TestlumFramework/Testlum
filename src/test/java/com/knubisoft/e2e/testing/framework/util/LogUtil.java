@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ANSI_GREEN;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ANSI_RED;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ANSI_RESET;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BODY_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BROWSER_NAME_LOG;
@@ -209,5 +210,10 @@ public class LogUtil {
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {
         log.error(INVALID_SCENARIO_LOG, path, exception);
+    }
+
+    public void logLineBetween() {
+        log.info(ANSI_RED + LINE + ANSI_RESET);
+        log.info(EMPTY);
     }
 }

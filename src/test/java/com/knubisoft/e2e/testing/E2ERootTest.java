@@ -71,7 +71,6 @@ public class E2ERootTest {
     @SneakyThrows
     void execution(final Named<ScenarioArguments> arguments) {
         ScenarioArguments scenarioArguments = arguments.getPayload();
-        verifyScenario(scenarioArguments);
         executeScenario(scenarioArguments);
     }
 
@@ -104,12 +103,6 @@ public class E2ERootTest {
         systemDataStoreCleaner.cleanAll(this.nameToAdapterAlias);
     }
 
-    private void verifyScenario(final ScenarioArguments scenarioArguments) throws Exception {
-        Scenario scenario = scenarioArguments.getScenario();
-        if (scenario == null) {
-            throw scenarioArguments.getException();
-        }
-    }
 
     private AssumptionViolatedException assumptionViolatedException(final String path, final Scenario scenario) {
         String message = Optional.ofNullable(scenario.getOverview())

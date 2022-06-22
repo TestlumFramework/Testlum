@@ -2,6 +2,7 @@ package com.knubisoft.e2e.testing.framework.scenario;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.e2e.testing.model.global_config.TagValue;
 import lombok.experimental.UtilityClass;
@@ -13,10 +14,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.INVALID_SCENARIO_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NO_ACTIVE_SCENARIOS_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NO_ENABLE_TAGS_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.RED_LINE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.VALID_SCENARIOS_NOT_FOUND;
 
 @Slf4j
@@ -24,38 +23,21 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.VALID_SCENARIO
 public class ScenarioFilter {
 
     public Set<ScenarioCollector.MappingResult> filterScenarios(final Set<ScenarioCollector.MappingResult> original) {
-        Set<ScenarioCollector.MappingResult> invalidScenarios = getNonParsedScenarios(original);
-        invalidScenarios.forEach(e -> log.error(INVALID_SCENARIO_LOG, e.file.getPath(), e.exception.getMessage()));
-        log.info(RED_LINE);
-        if (invalidScenarios.size() == original.size()) {
+        original.removeIf(ScenarioFilter::isScenarioNonParsed);
+        if (original.isEmpty()) {
             throw new DefaultFrameworkException(VALID_SCENARIOS_NOT_FOUND);
         }
         return filterValidScenarios(original);
     }
 
     private Set<ScenarioCollector.MappingResult> filterValidScenarios(
-            final Set<ScenarioCollector.MappingResult> original) {
-        Set<ScenarioCollector.MappingResult> validScenarios = filterParsedScenarios(original);
+            final Set<ScenarioCollector.MappingResult> validScenarios) {
         Set<ScenarioCollector.MappingResult> activeScenarios = filterIsActive(validScenarios);
         Set<ScenarioCollector.MappingResult> scenariosWithOnlyThisEnabled = filterScenariosIfOnlyThis(activeScenarios);
         RunScenariosByTag runScenariosByTag = GlobalTestConfigurationProvider.provide().getRunScenariosByTag();
         return scenariosWithOnlyThisEnabled.isEmpty() ? runScenariosByTag.isEnable()
                 ? filterByTags(activeScenarios, getEnabledTags(runScenariosByTag.getTag())) : activeScenarios
                 : scenariosWithOnlyThisEnabled;
-    }
-
-    private Set<ScenarioCollector.MappingResult> filterParsedScenarios(
-            final Set<ScenarioCollector.MappingResult> original) {
-        return original.stream()
-                .filter(ScenarioFilter::isScenarioParsed)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    private Set<ScenarioCollector.MappingResult> getNonParsedScenarios(
-            final Set<ScenarioCollector.MappingResult> original) {
-        return original.stream()
-                .filter(e -> !isScenarioParsed(e))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private Set<ScenarioCollector.MappingResult> filterScenariosIfOnlyThis(
@@ -97,7 +79,11 @@ public class ScenarioFilter {
     }
 
 
-    private boolean isScenarioParsed(final ScenarioCollector.MappingResult entry) {
-        return Objects.nonNull(entry.scenario);
+    private boolean isScenarioNonParsed(final ScenarioCollector.MappingResult entry) {
+        if (Objects.nonNull(entry.scenario)) {
+            return false;
+        }
+        LogUtil.logNonParsedScenarioInfo(entry.file.getPath(), entry.exception.getMessage());
+        return true;
     }
 }

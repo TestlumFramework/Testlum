@@ -99,6 +99,8 @@ public final class LogMessage {
     public static final String POSITION_COMMAND_LOG = ANSI_YELLOW
             + "--------- Scenario step #%d - %s ---------" + ANSI_RESET;
     public static final String UI_COMMAND_LOG = ANSI_CYAN + "------- UI command #{} - {} -------" + ANSI_RESET;
+    public static final String REPEAT_UI_COMMAND_LOG = ANSI_CYAN + "------- Repeat #{} - {} -------" + ANSI_RESET;
+    public static final String REPEAT_FINISHED_LOG = ANSI_CYAN + "------- Repeat is finished -------" + ANSI_RESET;
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
     public static final String SCENARIO_NUMBER_AND_PATH_LOG = ANSI_GREEN
@@ -225,4 +227,8 @@ public final class LogMessage {
     public static final String NOT_ENABLED_BROWSERS = "At least 1 browser must be enabled";
     public static final String BROWSER_VERSION_INVALID = "You didn't specify any browser version, please set the "
             + "'latestVersion' option to true or specify the version manually";
+
+    public static final String TIMES_LOG = format(TABLE_FORMAT, "Times to repeat", "{}");
+    public static final String REPEAT_COMMAND = "Repeat command";
+    public static final String REPEAT_INFO = "Repeat UI commands %d times";
 }

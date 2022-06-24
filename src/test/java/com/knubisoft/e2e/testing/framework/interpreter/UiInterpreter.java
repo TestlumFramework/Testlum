@@ -23,6 +23,7 @@ import com.knubisoft.e2e.testing.model.scenario.Javascript;
 import com.knubisoft.e2e.testing.model.scenario.Navigate;
 import com.knubisoft.e2e.testing.model.scenario.NavigateCommand;
 import com.knubisoft.e2e.testing.model.scenario.OneValue;
+import com.knubisoft.e2e.testing.model.scenario.RepeatUiCommand;
 import com.knubisoft.e2e.testing.model.scenario.Scroll;
 import com.knubisoft.e2e.testing.model.scenario.ScrollDirection;
 import com.knubisoft.e2e.testing.model.scenario.ScrollMeasure;
@@ -73,10 +74,14 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_OPERATION_I
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_NOT_SUPPORTED;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_URL;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.REPEAT_COMMAND;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.REPEAT_FINISHED_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.REPEAT_INFO;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_ACTION;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_INFO;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_TO_INFO;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SECOND_TAB_NOT_FOUND;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.TIMES_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND_EXEC_TIME;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.WAIT_COMMAND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.VALUE_LOG;
@@ -109,6 +114,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         commands.put(ui -> ui instanceof CloseSecondTab, (ui, result) -> closeSecondTab((CloseSecondTab) ui, result));
         commands.put(ui -> ui instanceof Scroll, (ui, result) -> scroll((Scroll) ui, result));
         commands.put(ui -> ui instanceof ScrollTo, (ui, result) -> scrollTo((ScrollTo) ui, result));
+        commands.put(ui -> ui instanceof RepeatUiCommand, (ui, result) -> repeat((RepeatUiCommand) ui, result));
         this.uiCommands = Collections.unmodifiableMap(commands);
     }
 
@@ -328,6 +334,20 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         result.put(SCROLL_ACTION, format(SCROLL_TO_INFO, locatorId));
         takeScreenshotIfRequired(result);
         JavascriptUtil.executeJsScript(element, SCROLL_TO_ELEMENT_SCRIPT, dependencies.getWebDriver());
+    }
+
+    public void repeat(final RepeatUiCommand repeat, final CommandResult result) {
+        int times = repeat.getTimes().intValue();
+        result.put(REPEAT_COMMAND, format(REPEAT_INFO, times));
+        log.info(TIMES_LOG, times);
+        for (int i = 0; i < times; i++) {
+            repeat.getClickOrInputOrNavigate().forEach(command -> uiCommands.keySet().stream()
+                    .filter(key -> key.test(command))
+                    .map(uiCommands::get)
+                    .peek(s -> LogUtil.logRepeatUICommand(dependencies.getPosition().incrementAndGet(), command))
+                    .forEach(method -> uiCommandExec(command, result, method)));
+        }
+        log.info(REPEAT_FINISHED_LOG);
     }
 
     private interface UiCommandPredicate extends Predicate<AbstractCommand> { }

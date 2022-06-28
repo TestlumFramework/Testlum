@@ -8,16 +8,13 @@ import com.knubisoft.e2e.testing.framework.report.ReportGenerator;
 import com.knubisoft.e2e.testing.framework.report.ScenarioResult;
 import com.knubisoft.e2e.testing.framework.scenario.ScenarioRunner;
 import com.knubisoft.e2e.testing.framework.util.FileRemover;
-import com.knubisoft.e2e.testing.framework.util.LogMessage;
 import com.knubisoft.e2e.testing.model.ScenarioArguments;
-import com.knubisoft.e2e.testing.model.scenario.Overview;
 import com.knubisoft.e2e.testing.framework.SystemDataStoreCleaner;
 import com.knubisoft.e2e.testing.framework.TestSetCollector;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.internal.AssumptionViolatedException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +28,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.TestContextManager;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 @SpringBootTest(classes = SpringTestContext.class)
@@ -101,14 +97,6 @@ public class E2ERootTest {
 
     private void cleanDatabases() {
         systemDataStoreCleaner.cleanAll(this.nameToAdapterAlias);
-    }
-
-
-    private AssumptionViolatedException assumptionViolatedException(final String path, final Scenario scenario) {
-        String message = Optional.ofNullable(scenario.getOverview())
-                .map(Overview::getDescription)
-                .orElse(String.format(LogMessage.TEST_BY_PATH_DISABLED, path));
-        return new AssumptionViolatedException(message);
     }
 
     @AfterAll

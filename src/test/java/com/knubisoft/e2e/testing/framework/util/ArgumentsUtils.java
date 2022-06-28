@@ -17,7 +17,8 @@ public class ArgumentsUtils {
     public static final String CONFIG_FILE_ARGUMENT_START_WITH = "^(-c=|--config=)";
     public static final String PATH_TO_TEST_RESOURCES_ARGUMENT_START_WITH = "^(-p=|--path=)";
     public static final Pattern CONFIG_FILE_PATTERN = Pattern.compile("^(-c=|--config=)[a-zA-Z0-9.\\-_:*#]+(.xml)$");
-    public static final Pattern LINUX_PATH_PATTERN = Pattern.compile("^(-p=|--path=)(/|(/[a-zA-Z0-9_-]+))+$");
+    public static final Pattern LINUX_PATH_PATTERN =
+            Pattern.compile("^(-p=|--path=)(./|/|(./[a-zA-Z0-9_-]+)|(/[a-zA-Z0-9_-]+))+$");
 
     public void validateInputArguments(final String[] args) {
         if (args.length < 2) {

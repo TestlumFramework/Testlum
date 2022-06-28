@@ -151,8 +151,8 @@ public class LogUtil {
         }
     }
 
-    public void logUICommand(final int position, final AbstractCommand action, final String command) {
-        log.info(UI_COMMAND_LOG, command, position, action.getClass().getSimpleName());
+    public void logUICommand(final int position, final AbstractCommand action) {
+        log.info(UI_COMMAND_LOG, position, action.getClass().getSimpleName());
         log.info(COMMENT_LOG, action.getComment());
         if (action instanceof CommandWithLocator) {
             log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());

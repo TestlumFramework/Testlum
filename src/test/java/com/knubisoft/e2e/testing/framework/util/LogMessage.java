@@ -98,7 +98,7 @@ public final class LogMessage {
     public static final String ERROR_LOG = "Error ->";
     public static final String POSITION_COMMAND_LOG = ANSI_YELLOW
             + "--------- Scenario step #%d - %s ---------" + ANSI_RESET;
-    public static final String UI_COMMAND_LOG = ANSI_CYAN + "------- {} #{} - {} -------" + ANSI_RESET;
+    public static final String UI_COMMAND_LOG = ANSI_CYAN + "------- UI command #{} - {} -------" + ANSI_RESET;
     public static final String REPEAT_FINISHED_LOG = ANSI_CYAN + "------- Repeat is finished -------" + ANSI_RESET;
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
@@ -228,7 +228,6 @@ public final class LogMessage {
             + "'latestVersion' option to true or specify the version manually";
 
     public static final String TIMES_LOG = format(TABLE_FORMAT, "Times to repeat", "{}");
-    public static final String UI_COMMAND = "UI command";
-    public static final String REPEAT_COMMAND = "Repeat";
+    public static final String REPEAT_COMMAND = "Repeat command";
     public static final String REPEAT_INFO = "Repeat UI commands %d times";
 }

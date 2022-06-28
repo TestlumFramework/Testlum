@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ANSI_GREEN;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.ANSI_RED;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ANSI_RESET;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BODY_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BROWSER_NAME_LOG;
@@ -58,11 +57,10 @@ public class LogUtil {
 
     public void logScenarioDetails(final ScenarioArguments scenarioArguments,
                                    final AtomicInteger atomicInteger) {
-        Overview overview = scenarioArguments.getScenario().getOverview();
         log.info(EMPTY);
         log.info(ANSI_GREEN + LINE + ANSI_RESET);
-        log.info(SCENARIO_NUMBER_AND_PATH_LOG, atomicInteger,
-                scenarioArguments.getFile().getAbsolutePath());
+        log.info(SCENARIO_NUMBER_AND_PATH_LOG, atomicInteger, scenarioArguments.getFile().getAbsolutePath());
+        Overview overview = scenarioArguments.getScenario().getOverview();
         logOverview(overview);
         if (scenarioArguments.isContainsUiSteps()) {
             logUiInfo(scenarioArguments.getScenario().getVariations(),

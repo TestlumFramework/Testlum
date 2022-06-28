@@ -47,7 +47,7 @@ public class ScenarioFilter {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    private Set<ScenarioCollector.MappingResult> filterIsActive(Set<ScenarioCollector.MappingResult> original) {
+    private Set<ScenarioCollector.MappingResult> filterIsActive(final Set<ScenarioCollector.MappingResult> original) {
         return original.stream()
                 .filter(e -> e.scenario.isActive())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
@@ -58,7 +58,7 @@ public class ScenarioFilter {
                                                               final List<String> enabledTags) {
         Set<ScenarioCollector.MappingResult> filtered = original.stream().filter(e -> isMatchesTags(e, enabledTags))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-        if (filtered.isEmpty()){
+        if (filtered.isEmpty()) {
             throw new DefaultFrameworkException(NO_ACTIVE_SCENARIOS_LOG);
         }
         return filtered;

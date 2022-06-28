@@ -8,22 +8,25 @@
 
 package com.knubisoft.e2e.testing.model.scenario;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ui complex type.
+ * <p>Java class for repeatUiCommand complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ui"&gt;
+ * &lt;complexType name="repeatUiCommand"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/e2e/testing/model/scenario}abstractCommand"&gt;
  *       &lt;choice maxOccurs="unbounded"&gt;
@@ -40,6 +43,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="scrollTo" type="{http://www.knubisoft.com/e2e/testing/model/scenario}scrollTo"/&gt;
  *         &lt;element name="repeat" type="{http://www.knubisoft.com/e2e/testing/model/scenario}repeatUiCommand"/&gt;
  *       &lt;/choice&gt;
+ *       &lt;attribute name="times" use="required" type="{http://www.w3.org/2001/XMLSchema}positiveInteger" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -48,10 +52,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ui", propOrder = {
+@XmlType(name = "repeatUiCommand", propOrder = {
     "clickOrInputOrNavigate"
 })
-public class Ui
+public class RepeatUiCommand
     extends AbstractCommand
 {
 
@@ -70,6 +74,9 @@ public class Ui
         @XmlElement(name = "repeat", type = RepeatUiCommand.class)
     })
     protected List<AbstractCommand> clickOrInputOrNavigate;
+    @XmlAttribute(name = "times", required = true)
+    @XmlSchemaType(name = "positiveInteger")
+    protected BigInteger times;
 
     /**
      * Gets the value of the clickOrInputOrNavigate property.
@@ -109,6 +116,30 @@ public class Ui
             clickOrInputOrNavigate = new ArrayList<AbstractCommand>();
         }
         return this.clickOrInputOrNavigate;
+    }
+
+    /**
+     * Gets the value of the times property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link BigInteger }
+     *     
+     */
+    public BigInteger getTimes() {
+        return times;
+    }
+
+    /**
+     * Sets the value of the times property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BigInteger }
+     *     
+     */
+    public void setTimes(BigInteger value) {
+        this.times = value;
     }
 
 }

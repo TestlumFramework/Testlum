@@ -97,7 +97,7 @@ public class ScenarioRunner {
     }
 
     private void runRepeatCommand(final Repeat repeat, final CommandCallback callback) {
-        int times = Integer.parseInt(dependencies.getScenarioContext().inject(repeat.getTimes()));
+        int times = Integer.parseInt(dependencies.getScenarioContext().inject(repeat.getTimes().toString()));
         for (int i = 0; i < times; i++) {
             repeat.getCommands().forEach(command -> runCommand(command, callback));
         }

@@ -37,7 +37,6 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.LINE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAME_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.REGEX_NEW_LINE;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.REPEAT_UI_COMMAND_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_BY_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_DIRECTION_LOG;
@@ -152,8 +151,8 @@ public class LogUtil {
         }
     }
 
-    public void logUICommand(final int position, final AbstractCommand action) {
-        log.info(UI_COMMAND_LOG, position, action.getClass().getSimpleName());
+    public void logUICommand(final int position, final AbstractCommand action, final String command) {
+        log.info(UI_COMMAND_LOG, command, position, action.getClass().getSimpleName());
         log.info(COMMENT_LOG, action.getComment());
         if (action instanceof CommandWithLocator) {
             log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());
@@ -209,13 +208,5 @@ public class LogUtil {
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {
         log.error(INVALID_SCENARIO_LOG, path, exception);
-    }
-
-    public void logRepeatUICommand(final int position, final AbstractCommand action) {
-        log.info(REPEAT_UI_COMMAND_LOG, position, action.getClass().getSimpleName());
-        log.info(COMMENT_LOG, action.getComment());
-        if (action instanceof CommandWithLocator) {
-            log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());
-        }
     }
 }

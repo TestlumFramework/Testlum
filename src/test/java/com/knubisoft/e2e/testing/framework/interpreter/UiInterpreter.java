@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 import static com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings.JS_FOLDER;
 import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
@@ -82,6 +83,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_INFO;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_TO_INFO;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SECOND_TAB_NOT_FOUND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.TIMES_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND_EXEC_TIME;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.WAIT_COMMAND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.VALUE_LOG;
@@ -120,10 +122,15 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     @Override
     protected void acceptImpl(final Ui o, final CommandResult result) {
-        o.getClickOrInputOrNavigate().forEach(command -> uiCommands.keySet().stream()
+        runCommands(o.getClickOrInputOrNavigate(), result, UI_COMMAND);
+    }
+
+    private void runCommands(final List<AbstractCommand> commandList, final CommandResult result,
+                             final String commandType) {
+        commandList.forEach(command -> uiCommands.keySet().stream()
                 .filter(key -> key.test(command))
                 .map(uiCommands::get)
-                .peek(s -> LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), command))
+                .peek(s -> LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), command, commandType))
                 .forEach(method -> uiCommandExec(command, result, method)));
     }
 
@@ -340,13 +347,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         int times = repeat.getTimes().intValue();
         result.put(REPEAT_COMMAND, format(REPEAT_INFO, times));
         log.info(TIMES_LOG, times);
-        for (int i = 0; i < times; i++) {
-            repeat.getClickOrInputOrNavigate().forEach(command -> uiCommands.keySet().stream()
-                    .filter(key -> key.test(command))
-                    .map(uiCommands::get)
-                    .peek(s -> LogUtil.logRepeatUICommand(dependencies.getPosition().incrementAndGet(), command))
-                    .forEach(method -> uiCommandExec(command, result, method)));
-        }
+        IntStream.range(0, times).forEach(e -> runCommands(repeat.getClickOrInputOrNavigate(), result, REPEAT_COMMAND));
         log.info(REPEAT_FINISHED_LOG);
     }
 

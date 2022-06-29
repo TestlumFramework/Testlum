@@ -222,10 +222,9 @@ public final class LogMessage {
     public static final String SCROLL_ACTION = "Scroll action";
     public static final String SCROLL_TO_INFO = "Scroll to element with locator %s";
     public static final String SCROLL_INFO = "Scroll %s, by %s, by value %s";
-    public static final String RUN_MODE_NOT_SUPPORTED = "Advanced run mode not supported";
     public static final String NOT_ENABLED_BROWSERS = "At least 1 browser must be enabled";
-    public static final String BROWSER_VERSION_INVALID = "You didn't specify any browser version, please set the "
-            + "'latestVersion' option to true or specify the version manually";
+    public static final String UI_DISABLED_ERROR = "Your scenarios contain UI testing steps, but your UI settings is " +
+            "disabled. Please enable UI settings in config file or exclude scenarios with UI steps.";
 
     public static final String TIMES_LOG = format(TABLE_FORMAT, "Times to repeat", "{}");
     public static final String REPEAT_COMMAND = "Repeat command";

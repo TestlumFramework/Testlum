@@ -74,6 +74,7 @@ public class ScenarioRunner {
             log.info(EXECUTION_STOP_SIGNAL_LOG);
         } finally {
             if (scenarioArguments.isContainsUiSteps()) {
+                dependencies.getWebDriver().manage().deleteAllCookies();
                 dependencies.getWebDriver().quit();
             }
         }

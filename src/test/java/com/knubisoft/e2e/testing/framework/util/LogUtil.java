@@ -58,7 +58,6 @@ public class LogUtil {
     public void logScenarioDetails(final ScenarioArguments scenarioArguments,
                                    final AtomicInteger atomicInteger) {
         log.info(EMPTY);
-        log.info(ANSI_GREEN + LINE + ANSI_RESET);
         log.info(SCENARIO_NUMBER_AND_PATH_LOG, atomicInteger, scenarioArguments.getFile().getAbsolutePath());
         Overview overview = scenarioArguments.getScenario().getOverview();
         logOverview(overview);

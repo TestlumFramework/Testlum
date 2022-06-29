@@ -1,5 +1,6 @@
 package com.knubisoft.e2e.testing.framework.configuration.ui;
 
+import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.util.BrowserUtil;
 import com.knubisoft.e2e.testing.model.global_config.AbstractBrowser;
@@ -65,6 +66,7 @@ public class WebDriverFactory {
                 .map(webDriverFunction -> webDriverFunction.apply(browser))
                 .peek(driver -> BrowserUtil.manageWindowSize(browser, driver))
                 .findFirst().orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
+        webDriver.get(GlobalTestConfigurationProvider.provide().getUi().getBaseUrl());
         return webDriver;
     }
 

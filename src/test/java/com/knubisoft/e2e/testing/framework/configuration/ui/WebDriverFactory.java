@@ -133,7 +133,7 @@ public class WebDriverFactory {
         WebDriver init(T browser);
     }
 
-    private class ChromeDriverInitializer implements WebDriverInitializer<Chrome> {
+    private static class ChromeDriverInitializer implements WebDriverInitializer<Chrome> {
 
         @Override
         public WebDriver init(final Chrome browser) {
@@ -151,7 +151,7 @@ public class WebDriverFactory {
         }
     }
 
-    private class FirefoxDriverInitializer implements WebDriverInitializer<Firefox> {
+    private static class FirefoxDriverInitializer implements WebDriverInitializer<Firefox> {
 
         @Override
         public WebDriver init(final Firefox browser) {
@@ -169,7 +169,7 @@ public class WebDriverFactory {
         }
     }
 
-    private class EdgeDriverInitializer implements WebDriverInitializer<Edge> {
+    private static class EdgeDriverInitializer implements WebDriverInitializer<Edge> {
 
         @Override
         public WebDriver init(final Edge browser) {
@@ -187,7 +187,7 @@ public class WebDriverFactory {
         }
     }
 
-    private class SafariDriverInitializer implements WebDriverInitializer<Safari> {
+    private static class SafariDriverInitializer implements WebDriverInitializer<Safari> {
 
         @Override
         public WebDriver init(final Safari browser) {
@@ -195,7 +195,7 @@ public class WebDriverFactory {
         }
     }
 
-    private class OperaDriverInitializer implements WebDriverInitializer<Opera> {
+    private static class OperaDriverInitializer implements WebDriverInitializer<Opera> {
 
         @Override
         public WebDriver init(final Opera browser) {

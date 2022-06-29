@@ -1,4 +1,4 @@
-package com.knubisoft.e2e.testing.framework;
+package com.knubisoft.e2e.testing.framework.configuration.ui;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
@@ -47,7 +47,6 @@ import static org.openqa.selenium.remote.CapabilityType.BROWSER_VERSION;
 public class WebDriverFactory {
 
     private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
-    private static final String URL_FOR_TESTING = GlobalTestConfigurationProvider.provide().getUi().getBaseUrl();
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;
 
     static {
@@ -67,7 +66,7 @@ public class WebDriverFactory {
                 .map(webDriverFunction -> webDriverFunction.apply(browser))
                 .peek(driver -> BrowserUtil.manageWindowSize(browser, driver))
                 .findFirst().orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
-        webDriver.get(URL_FOR_TESTING);
+        webDriver.get(GlobalTestConfigurationProvider.provide().getUi().getBaseUrl());
         return webDriver;
     }
 
@@ -134,7 +133,7 @@ public class WebDriverFactory {
         WebDriver init(T browser);
     }
 
-    private class ChromeDriverInitializer implements WebDriverInitializer<Chrome> {
+    private static class ChromeDriverInitializer implements WebDriverInitializer<Chrome> {
 
         @Override
         public WebDriver init(final Chrome browser) {
@@ -152,7 +151,7 @@ public class WebDriverFactory {
         }
     }
 
-    private class FirefoxDriverInitializer implements WebDriverInitializer<Firefox> {
+    private static class FirefoxDriverInitializer implements WebDriverInitializer<Firefox> {
 
         @Override
         public WebDriver init(final Firefox browser) {
@@ -170,7 +169,7 @@ public class WebDriverFactory {
         }
     }
 
-    private class EdgeDriverInitializer implements WebDriverInitializer<Edge> {
+    private static class EdgeDriverInitializer implements WebDriverInitializer<Edge> {
 
         @Override
         public WebDriver init(final Edge browser) {
@@ -188,7 +187,7 @@ public class WebDriverFactory {
         }
     }
 
-    private class SafariDriverInitializer implements WebDriverInitializer<Safari> {
+    private static class SafariDriverInitializer implements WebDriverInitializer<Safari> {
 
         @Override
         public WebDriver init(final Safari browser) {
@@ -196,7 +195,7 @@ public class WebDriverFactory {
         }
     }
 
-    private class OperaDriverInitializer implements WebDriverInitializer<Opera> {
+    private static class OperaDriverInitializer implements WebDriverInitializer<Opera> {
 
         @Override
         public WebDriver init(final Opera browser) {

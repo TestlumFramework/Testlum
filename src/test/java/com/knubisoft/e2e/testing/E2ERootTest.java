@@ -67,14 +67,9 @@ public class E2ERootTest {
     @SneakyThrows
     void execution(final Named<ScenarioArguments> arguments) {
         ScenarioArguments scenarioArguments = arguments.getPayload();
-        executeScenario(scenarioArguments);
-    }
-
-    private void executeScenario(final ScenarioArguments scenarioArguments) {
         cleanDbAndMigrateIfRequired(scenarioArguments.getScenario());
         StopWatch stopWatch = StopWatch.createStarted();
-        ScenarioRunner scenarioRunner =
-                new ScenarioRunner(scenarioArguments, ctx);
+        ScenarioRunner scenarioRunner = new ScenarioRunner(scenarioArguments, ctx);
         ctx.getAutowireCapableBeanFactory().autowireBean(scenarioRunner);
         setTestScenarioResult(stopWatch, scenarioRunner);
     }

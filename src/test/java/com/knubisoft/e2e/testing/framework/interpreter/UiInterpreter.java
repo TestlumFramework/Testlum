@@ -1,5 +1,6 @@
 package com.knubisoft.e2e.testing.framework.interpreter;
 
+import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractSeleniumInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -17,27 +18,29 @@ import com.knubisoft.e2e.testing.model.scenario.Click;
 import com.knubisoft.e2e.testing.model.scenario.ClickMethod;
 import com.knubisoft.e2e.testing.model.scenario.CloseSecondTab;
 import com.knubisoft.e2e.testing.model.scenario.DropDown;
+import com.knubisoft.e2e.testing.model.scenario.Hover;
 import com.knubisoft.e2e.testing.model.scenario.Input;
 import com.knubisoft.e2e.testing.model.scenario.Javascript;
 import com.knubisoft.e2e.testing.model.scenario.Navigate;
 import com.knubisoft.e2e.testing.model.scenario.NavigateCommand;
 import com.knubisoft.e2e.testing.model.scenario.OneValue;
 import com.knubisoft.e2e.testing.model.scenario.SelectOrDeselectBy;
+import com.knubisoft.e2e.testing.model.scenario.Selector;
 import com.knubisoft.e2e.testing.model.scenario.TypeForOneValue;
 import com.knubisoft.e2e.testing.model.scenario.Ui;
 import com.knubisoft.e2e.testing.model.scenario.Wait;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,7 +51,6 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
-import static com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings.JS_FOLDER;
 import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_ACTUAL;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_ATTRIBUTE;
@@ -69,7 +71,6 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_OPER
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.INPUT_LOCATOR;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_EXECUTION_OPERATION;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_FILE_NOT_FOUND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_FILE_UNREADABLE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_OPERATION_INFO;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE;
@@ -92,6 +93,8 @@ import static java.lang.String.format;
 @InterpreterForClass(Ui.class)
 public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
+
+    private static final String CLICK_TO_EMPTY_SPACE = "//html";
     private final Map<UiCommandPredicate, UiCommand> uiCommands;
 
     public UiInterpreter(final InterpreterDependencies dependencies) {
@@ -106,6 +109,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         commands.put(ui -> ui instanceof Clear, (ui, result) -> clear((Clear) ui, result));
         commands.put(ui -> ui instanceof Wait, (ui, result) -> wait((Wait) ui, result));
         commands.put(ui -> ui instanceof CloseSecondTab, (ui, result) -> closeSecondTab((CloseSecondTab) ui, result));
+        commands.put(ui -> ui instanceof Hover, (ui, result) -> hover((Hover) ui, result));
         this.uiCommands = Collections.unmodifiableMap(commands);
     }
 
@@ -156,14 +160,61 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         javascriptExecutor.executeScript(CLICK_SCRIPT, element);
     }
 
-    private void execJsCommands(final Javascript o, final CommandResult result) {
+    private void execJsCommands(final Javascript javascript, final CommandResult result) {
         WebDriver driver = dependencies.getWebDriver();
-        String filePath = o.getFile();
+        String filePath = javascript.getFile();
         String command = readCommands(filePath);
         result.put(JS_EXECUTION_OPERATION, format(JS_OPERATION_INFO, filePath, command));
 
         JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
         javascriptExecutor.executeScript(command);
+    }
+
+    private void hover(final Hover ui, final CommandResult result) {
+        WebDriver driver = dependencies.getWebDriver();
+        Actions actions = new Actions(driver);
+        List<WebElement> webElements = getWebElements(ui.getSelector(), new ArrayList<>(), driver);
+        executeHover(webElements, actions);
+        clickToEmptySpace(driver, ui);
+    }
+
+    private List<WebElement> getWebElements(final List<Selector> selectors, final List<WebElement> webElements,
+                                            final WebDriver driver) {
+        return collectWebElements(selectors, webElements, driver, null, 0);
+    }
+
+    private List<WebElement> collectWebElements(final List<Selector> selectors, List<WebElement> webElements,
+                                                final WebDriver driver, final WebElement currentWebElement,
+                                                final int index) {
+        if (index >= selectors.size()) {
+            return webElements;
+        }
+        String clazzName = selectors.get(index).getClazz();
+        WebElement nextWebElement = driver.findElements(By.cssSelector(clazzName))
+                .get(Integer.parseInt(selectors.get(index).getPosition()));
+        webElements.add(nextWebElement);
+        return collectWebElements(selectors, webElements, driver, nextWebElement, index + 1);
+    }
+
+    private void executeHover(final List<WebElement> webElements, final Actions actions) {
+        for (WebElement next : webElements) {
+            actions.moveToElement(next);
+            if (next.isDisplayed()) {
+                continue;
+            }
+            actions.click();
+            actions.perform();
+        }
+    }
+
+    private void clickToEmptySpace(final WebDriver driver, final Hover ui) {
+        Actions actions = new Actions(driver);
+        if (Objects.nonNull(ui.isStop()) && ui.isStop()) {
+            WebElement element = driver.findElement(By.xpath(CLICK_TO_EMPTY_SPACE));
+            actions.moveToElement(element);
+            actions.click();
+            actions.perform();
+        }
     }
 
     private String readCommands(final String filePath) {
@@ -178,13 +229,8 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     private File getJsFileByPath(final String filePath) {
         FileSearcher fileSearcher = dependencies.getFileSearcher();
-        URL resource = getClass().getClassLoader().getResource(JS_FOLDER);
-        try {
-            File fromDir = new File(Objects.requireNonNull(resource).toURI());
-            return fileSearcher.search(fromDir, filePath);
-        } catch (URISyntaxException e) {
-            throw new DefaultFrameworkException(format(JS_FILE_NOT_FOUND, filePath));
-        }
+        File javaScriptFolder = TestResourceSettings.getInstance().getJavaScriptFolder();
+        return fileSearcher.search(javaScriptFolder, filePath);
     }
 
     private void input(final Input input, final CommandResult result) {

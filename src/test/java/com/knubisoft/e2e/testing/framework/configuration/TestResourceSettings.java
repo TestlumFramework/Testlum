@@ -10,6 +10,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.CREDENTIALS_FO
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.CSV_FOLDER_NOT_EXIST;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXCEL_FOLDER_NOT_EXIST;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.FOLDER_LOCATION_ERROR_MESSAGE;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_FOLDER_NOT_EXIST;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.PAGES_FOLDER_NOT_EXIST;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.PATCHES_FOLDER_NOT_EXIST;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCENARIOS_FOLDER_NOT_EXIST;
@@ -56,6 +57,7 @@ public class TestResourceSettings {
     private final File shellFolder;
     private final File excelFolder;
     private final File csvFolder;
+    private final File javaScriptFolder;
 
     private TestResourceSettings(final String configFileName, final String pathToTestResources) {
         this.testResourcesFolder = new File(pathToTestResources);
@@ -69,6 +71,7 @@ public class TestResourceSettings {
         this.credentialsFolder = subFolder(CREDS_FOLDER, CREDENTIALS_FOLDER_NOT_EXIST);
         this.excelFolder = subFolder(EXCEL_FOLDER, EXCEL_FOLDER_NOT_EXIST);
         this.csvFolder = subFolder(CSV_FOLDER, CSV_FOLDER_NOT_EXIST);
+        this.javaScriptFolder = subFolder(JS_FOLDER, JS_FOLDER_NOT_EXIST);
     }
 
     public static void init(final String configFileName, final String pathToTestResources) {

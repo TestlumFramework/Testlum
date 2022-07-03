@@ -87,6 +87,7 @@ public final class LogMessage {
     public static final String TEST_BY_PATH_DISABLED = "Test by path %s is disabled";
     public static final String EXCEL_FOLDER_NOT_EXIST = "Excel folder does not exist";
     public static final String CSV_FOLDER_NOT_EXIST = "CSV folder does not exist";
+    public static final String JS_FOLDER_NOT_EXIST = "JS folder does not exist";
 
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_RED = "\u001B[31m";

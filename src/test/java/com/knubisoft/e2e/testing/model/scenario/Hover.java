@@ -13,23 +13,22 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for excelCommands complex type.
+ * <p>Java class for hover complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="excelCommands"&gt;
+ * &lt;complexType name="hover"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/e2e/testing/model/scenario}abstractCommand"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="excelFile" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded"/&gt;
- *       &lt;/sequence&gt;
- *       &lt;attribute name="alias" type="{http://www.knubisoft.com/e2e/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;choice maxOccurs="unbounded"&gt;
+ *         &lt;element name="selector" type="{http://www.knubisoft.com/e2e/testing/model/scenario}selector"/&gt;
+ *       &lt;/choice&gt;
+ *       &lt;attribute name="stop" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -38,69 +37,68 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "excelCommands", propOrder = {
-    "excelFile"
+@XmlType(name = "hover", propOrder = {
+    "selector"
 })
-public class ExcelCommands
+public class Hover
     extends AbstractCommand
 {
 
-    @XmlElement(required = true)
-    protected List<String> excelFile;
-    @XmlAttribute(name = "alias")
-    protected String alias;
+    protected List<Selector> selector;
+    @XmlAttribute(name = "stop")
+    protected Boolean stop;
 
     /**
-     * Gets the value of the excelFile property.
+     * Gets the value of the selector property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the excelFile property.
+     * This is why there is not a <CODE>set</CODE> method for the selector property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getExcelFile().add(newItem);
+     *    getSelector().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link String }
+     * {@link Selector }
      * 
      * 
      */
-    public List<String> getExcelFile() {
-        if (excelFile == null) {
-            excelFile = new ArrayList<String>();
+    public List<Selector> getSelector() {
+        if (selector == null) {
+            selector = new ArrayList<Selector>();
         }
-        return this.excelFile;
+        return this.selector;
     }
 
     /**
-     * Gets the value of the alias property.
+     * Gets the value of the stop property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Boolean }
      *     
      */
-    public String getAlias() {
-        return alias;
+    public Boolean isStop() {
+        return stop;
     }
 
     /**
-     * Sets the value of the alias property.
+     * Sets the value of the stop property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Boolean }
      *     
      */
-    public void setAlias(String value) {
-        this.alias = value;
+    public void setStop(Boolean value) {
+        this.stop = value;
     }
 
 }

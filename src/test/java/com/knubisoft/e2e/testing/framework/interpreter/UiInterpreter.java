@@ -190,22 +190,35 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     private WebElement getWebElement(Selector selector, final WebElement webElement) {
         if (Objects.nonNull(webElement)) {
-            return webElement.findElements(By.cssSelector(selector.getClazz()))
+            if (selector.getClazz().startsWith("#")) {
+                return webElement.findElements(By.id(selector.getClazz()))
+                        .get(Integer.parseInt(selector.getPosition()));
+            } else if (selector.getClazz().startsWith(".")) {
+                return webElement.findElements(By.cssSelector(selector.getClazz()))
+                        .get(Integer.parseInt(selector.getPosition()));
+            }
+            return webElement.findElements(By.xpath(selector.getClazz()))
                     .get(Integer.parseInt(selector.getPosition()));
         }
-        return dependencies.getWebDriver().findElements(By.cssSelector(selector.getClazz()))
+        if (selector.getClazz().startsWith("#")) {
+            return dependencies.getWebDriver().findElements(By.id(selector.getClazz()))
+                    .get(Integer.parseInt(selector.getPosition()));
+        } else if (selector.getClazz().startsWith(".")) {
+            return dependencies.getWebDriver().findElements(By.cssSelector(selector.getClazz()))
+                    .get(Integer.parseInt(selector.getPosition()));
+        }
+        return dependencies.getWebDriver().findElements(By.xpath(selector.getClazz()))
                 .get(Integer.parseInt(selector.getPosition()));
     }
 
     private void executeHover(final List<WebElement> webElements, final Actions actions) {
-        Actions actionsOnCurrentWebElement = actions;
         for (int i = 0; i < webElements.size() - 1; i++) {
             WebElement currentWebElement = webElements.get(i);
-            actionsOnCurrentWebElement = actionsOnCurrentWebElement.moveToElement(currentWebElement);
-            actionsOnCurrentWebElement.perform();
+            actions.moveToElement(currentWebElement);
+            actions.perform();
             WebElement nextWebElement = webElements.get(i + 1);
             if (!nextWebElement.isDisplayed()) {
-                nextWebElement.click();
+                currentWebElement.click();
             }
         }
     }

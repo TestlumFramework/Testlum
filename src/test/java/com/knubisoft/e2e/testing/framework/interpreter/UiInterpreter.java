@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_ACTUAL;
@@ -173,27 +174,15 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     private void hover(final Hover ui, final CommandResult result) {
         WebDriver driver = dependencies.getWebDriver();
         Actions actions = new Actions(driver);
-        List<WebElement> webElements = getWebElements(ui.getSelector(), new ArrayList<>(), driver);
+        List<WebElement> webElements = collectWebElements(ui.getSelector(), driver);
         executeHover(webElements, actions);
         clickToEmptySpace(driver, ui);
     }
 
-    private List<WebElement> getWebElements(final List<Selector> selectors, final List<WebElement> webElements,
-                                            final WebDriver driver) {
-        return collectWebElements(selectors, webElements, driver, null, 0);
-    }
-
-    private List<WebElement> collectWebElements(final List<Selector> selectors, List<WebElement> webElements,
-                                                final WebDriver driver, final WebElement currentWebElement,
-                                                final int index) {
-        if (index >= selectors.size()) {
-            return webElements;
-        }
-        String clazzName = selectors.get(index).getClazz();
-        WebElement nextWebElement = driver.findElements(By.cssSelector(clazzName))
-                .get(Integer.parseInt(selectors.get(index).getPosition()));
-        webElements.add(nextWebElement);
-        return collectWebElements(selectors, webElements, driver, nextWebElement, index + 1);
+    private List<WebElement> collectWebElements(final List<Selector> selectors, final WebDriver driver) {
+        return selectors.stream()
+                .map(selector -> driver.findElement(By.cssSelector(selector.getClazz())))
+                .collect(Collectors.toList());
     }
 
     private void executeHover(final List<WebElement> webElements, final Actions actions) {

@@ -1,6 +1,7 @@
 package com.knubisoft.e2e.testing.framework.scenario;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.e2e.testing.framework.configuration.ui.WebDriverFactory;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.exception.StopSignalException;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -10,7 +11,6 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterScanner;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.ScenarioArguments;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
-import com.knubisoft.e2e.testing.framework.WebDriverFactory;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.report.ScenarioResult;
 import com.knubisoft.e2e.testing.model.scenario.Repeat;
@@ -74,6 +74,7 @@ public class ScenarioRunner {
             log.info(EXECUTION_STOP_SIGNAL_LOG);
         } finally {
             if (scenarioArguments.isContainsUiSteps()) {
+                dependencies.getWebDriver().manage().deleteAllCookies();
                 dependencies.getWebDriver().quit();
             }
         }

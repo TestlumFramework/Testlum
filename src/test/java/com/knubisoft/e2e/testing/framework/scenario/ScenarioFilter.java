@@ -5,9 +5,11 @@ import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.e2e.testing.model.global_config.TagValue;
+import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -22,12 +24,23 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.VALID_SCENARIO
 @UtilityClass
 public class ScenarioFilter {
 
-    public Set<ScenarioCollector.MappingResult> filterScenarios(final Set<ScenarioCollector.MappingResult> original) {
+    public FiltrationResult filterScenarios(final Set<ScenarioCollector.MappingResult> original) {
         original.removeIf(ScenarioFilter::isScenarioNonParsed);
         if (original.isEmpty()) {
             throw new DefaultFrameworkException(VALID_SCENARIOS_NOT_FOUND);
         }
-        return filterValidScenarios(original);
+        Set<ScenarioCollector.MappingResult> validScenarios = filterValidScenarios(original);
+        return splitScenariosByType(validScenarios);
+    }
+
+    private FiltrationResult splitScenariosByType(final Set<ScenarioCollector.MappingResult> validScenarios) {
+        Set<ScenarioCollector.MappingResult> scenariosWithoutUiSteps = filterScenariosWithoutUiSteps(validScenarios);
+        if (validScenarios.size() == scenariosWithoutUiSteps.size()) {
+            return new FiltrationResult(Collections.emptySet(), scenariosWithoutUiSteps, true);
+        }
+        Set<ScenarioCollector.MappingResult> scenariosWithUiSteps = validScenarios.stream()
+                .filter(e -> scenarioContainsUiSteps(e.scenario)).collect(Collectors.toSet());
+        return new FiltrationResult(scenariosWithUiSteps, scenariosWithoutUiSteps, false);
     }
 
     private Set<ScenarioCollector.MappingResult> filterValidScenarios(
@@ -78,6 +91,15 @@ public class ScenarioFilter {
         return enabledTags;
     }
 
+    private Set<ScenarioCollector.MappingResult> filterScenariosWithoutUiSteps(
+            final Set<ScenarioCollector.MappingResult> scenarios) {
+        return scenarios.stream().filter(e -> !scenarioContainsUiSteps(e.scenario)).collect(Collectors.toSet());
+    }
+
+    private boolean scenarioContainsUiSteps(final Scenario scenario) {
+        return scenario.getCommands().stream()
+                .anyMatch(command -> command instanceof com.knubisoft.e2e.testing.model.scenario.Ui);
+    }
 
     private boolean isScenarioNonParsed(final ScenarioCollector.MappingResult entry) {
         if (Objects.nonNull(entry.scenario)) {

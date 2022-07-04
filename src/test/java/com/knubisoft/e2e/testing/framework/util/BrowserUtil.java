@@ -36,11 +36,6 @@ public class BrowserUtil {
         return filteredResult;
     }
 
-    public void waitForElementVisibility(final WebDriver driver, final WebElement element) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIME_TO_WAIT));
-        wait.until(ExpectedConditions.visibilityOf(element));
-    }
-
     public void manageWindowSize(final AbstractBrowser browser, final WebDriver webDriver) {
         String browserWindowSize = browser.getBrowserWindowSize();
         if (StringUtils.isNotEmpty(browser.getBrowserWindowSize())) {
@@ -53,6 +48,12 @@ public class BrowserUtil {
             webDriver.manage().window().maximize();
         }
     }
+
+    public void waitForElementVisibility(final WebDriver driver, final WebElement element) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIME_TO_WAIT));
+        wait.until(ExpectedConditions.visibilityOf(element));
+    }
+
     public void waitForElementToBeClickable(final WebDriver driver, final WebElement element) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIME_TO_WAIT));
         ElementHighlighter.highlight(element, driver);

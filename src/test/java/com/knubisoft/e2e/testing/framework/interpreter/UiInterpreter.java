@@ -37,7 +37,9 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
 import java.io.IOException;
@@ -174,31 +176,46 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     private void hover(final Hover ui, final CommandResult result) {
         WebDriver driver = dependencies.getWebDriver();
         Actions actions = new Actions(driver);
-        List<WebElement> webElements = collectWebElements(ui.getSelector(), driver);
+        List<WebElement> webElements = collectWebElements(ui.getSelector());
         executeHover(webElements, actions);
         clickToEmptySpace(driver, ui);
     }
 
-    private List<WebElement> collectWebElements(final List<Selector> selectors, final WebDriver driver) {
-        return selectors.stream()
-                .map(selector -> driver.findElement(By.cssSelector(selector.getClazz())))
-                .collect(Collectors.toList());
+    private List<WebElement> collectWebElements(final List<Selector> selectors) {
+        List<WebElement> webElements = new ArrayList<>();
+        WebElement webElement = null;
+        for (Selector selector : selectors) {
+            webElement = getWebElement(selector, webElement);
+            webElements.add(webElement);
+        }
+        return webElements;
+    }
+
+    private WebElement getWebElement(Selector selector, final WebElement webElement) {
+        if (Objects.nonNull(webElement)) {
+            return webElement.findElements(By.cssSelector(selector.getClazz()))
+                    .get(Integer.parseInt(selector.getPosition()));
+        }
+        return dependencies.getWebDriver().findElements(By.cssSelector(selector.getClazz()))
+                .get(Integer.parseInt(selector.getPosition()));
     }
 
     private void executeHover(final List<WebElement> webElements, final Actions actions) {
-        for (WebElement next : webElements) {
-            actions.moveToElement(next);
-            if (next.isDisplayed()) {
-                continue;
+        Actions actionsOnCurrentWebElement = actions;
+        for (int i = 0; i < webElements.size() - 1; i++) {
+            WebElement currentWebElement = webElements.get(i);
+            actionsOnCurrentWebElement = actionsOnCurrentWebElement.moveToElement(currentWebElement);
+            actionsOnCurrentWebElement.perform();
+            WebElement nextWebElement = webElements.get(i + 1);
+            if (!nextWebElement.isDisplayed()) {
+                nextWebElement.click();
             }
-            actions.click();
-            actions.perform();
         }
     }
 
     private void clickToEmptySpace(final WebDriver driver, final Hover ui) {
         Actions actions = new Actions(driver);
-        if (Objects.nonNull(ui.isStop()) && ui.isStop()) {
+        if (Objects.nonNull(ui.isClickByEmptySpace()) && ui.isClickByEmptySpace()) {
             WebElement element = driver.findElement(By.xpath(CLICK_TO_EMPTY_SPACE));
             actions.moveToElement(element);
             actions.click();

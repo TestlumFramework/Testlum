@@ -57,7 +57,7 @@
                 <x:choice maxOccurs="unbounded">
                     <x:element name="selector" type="tns:selector"/>
                 </x:choice>
-                <x:attribute name="stop" type="x:boolean"/>
+                <x:attribute name="clickByEmptySpace" type="x:boolean"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

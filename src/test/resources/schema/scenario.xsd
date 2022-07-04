@@ -109,6 +109,18 @@
                     <x:element name="migrate" type="tns:migrate"/>
                     <x:element name="postgres" type="tns:postgres"/>
                     <x:element name="mysql" type="tns:mysql"/>
+                    <x:element name="oracle" type="tns:oracle"/>
+                    <x:element name="mongo" type="tns:mongo"/>
+                    <x:element name="redis" type="tns:redis"/>
+                    <x:element name="rabbit" type="tns:rabbit"/>
+                    <x:element name="kafka" type="tns:kafka"/>
+                    <x:element name="s3" type="tns:s3"/>
+                    <x:element name="sqs" type="tns:sqs"/>
+                    <x:element name="clickhouse" type="tns:clickhouse"/>
+                    <x:element name="elasticsearch" type="tns:elasticsearch"/>
+                    <x:element name="sendgrid" type="tns:sendgrid"/>
+                    <x:element name="ses" type="tns:ses"/>
+                    <x:element name="dynamo" type="tns:dynamo"/>
 
                     <x:element name="var" type="tns:var"/>
                     <x:element name="wait" type="tns:wait"/>
@@ -116,8 +128,8 @@
                     <x:element name="excel" type="tns:excelCommands"/>
                     <x:element name="csv" type="tns:csvCommands"/>
                 </x:choice>
-                <x:attribute name="credentials" type="tns:nonEmptyString" use="required"/>
                 <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="credentials" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

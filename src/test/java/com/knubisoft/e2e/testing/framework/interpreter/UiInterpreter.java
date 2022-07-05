@@ -5,12 +5,14 @@ import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractSeleniumInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.e2e.testing.framework.locator.GlobalLocators;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.ExplicitWaitUtil;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.framework.util.SeleniumUtil;
 import com.knubisoft.e2e.testing.framework.util.WaitUtil;
+import com.knubisoft.e2e.testing.model.pages.Locator;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.model.scenario.Assert;
 import com.knubisoft.e2e.testing.model.scenario.Clear;
@@ -19,8 +21,10 @@ import com.knubisoft.e2e.testing.model.scenario.ClickMethod;
 import com.knubisoft.e2e.testing.model.scenario.CloseSecondTab;
 import com.knubisoft.e2e.testing.model.scenario.DropDown;
 import com.knubisoft.e2e.testing.model.scenario.Hover;
+import com.knubisoft.e2e.testing.model.scenario.Hovers;
 import com.knubisoft.e2e.testing.model.scenario.Input;
 import com.knubisoft.e2e.testing.model.scenario.Javascript;
+import com.knubisoft.e2e.testing.model.scenario.Locators;
 import com.knubisoft.e2e.testing.model.scenario.Navigate;
 import com.knubisoft.e2e.testing.model.scenario.NavigateCommand;
 import com.knubisoft.e2e.testing.model.scenario.OneValue;
@@ -50,6 +54,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_ACTUAL;
@@ -109,7 +114,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         commands.put(ui -> ui instanceof Clear, (ui, result) -> clear((Clear) ui, result));
         commands.put(ui -> ui instanceof Wait, (ui, result) -> wait((Wait) ui, result));
         commands.put(ui -> ui instanceof CloseSecondTab, (ui, result) -> closeSecondTab((CloseSecondTab) ui, result));
-        commands.put(ui -> ui instanceof Hover, (ui, result) -> hover((Hover) ui, result));
+        commands.put(ui -> ui instanceof Hovers, (ui, result) -> hover((Hovers) ui, result));
         this.uiCommands = Collections.unmodifiableMap(commands);
     }
 
@@ -170,45 +175,24 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         javascriptExecutor.executeScript(command);
     }
 
-    private void hover(final Hover ui, final CommandResult result) {
+    private void hover(final Hovers ui, final CommandResult result) {
         WebDriver driver = dependencies.getWebDriver();
         Actions actions = new Actions(driver);
-        List<WebElement> webElements = collectWebElements(ui.getSelector());
+        List<WebElement> webElements = ui.getHover().stream()
+                .map(this::getWebElement)
+                .collect(Collectors.toList());
         executeHover(webElements, actions);
-        clickToEmptySpace(driver, ui);
+        clickToEmptySpace(ui, actions);
     }
 
-    private List<WebElement> collectWebElements(final List<Selector> selectors) {
-        List<WebElement> webElements = new ArrayList<>();
-        WebElement webElement = null;
-        for (Selector selector : selectors) {
-            webElement = getWebElement(selector, webElement);
-            webElements.add(webElement);
+    private WebElement getWebElement(final Hover hover) {
+        Locator locator = dependencies.getGlobalLocators().getLocator(hover.getLocatorId());
+        if (Objects.nonNull(locator.getXpath())) {
+            return dependencies.getWebDriver().findElement(By.xpath(locator.getXpath()));
+        } else if (Objects.nonNull(locator.getId())) {
+            return dependencies.getWebDriver().findElement(By.id(locator.getId()));
         }
-        return webElements;
-    }
-
-    private WebElement getWebElement(Selector selector, final WebElement webElement) {
-        if (Objects.nonNull(webElement)) {
-            if (selector.getClazz().startsWith("#")) {
-                return webElement.findElements(By.id(selector.getClazz()))
-                        .get(Integer.parseInt(selector.getPosition()));
-            } else if (selector.getClazz().startsWith(".")) {
-                return webElement.findElements(By.cssSelector(selector.getClazz()))
-                        .get(Integer.parseInt(selector.getPosition()));
-            }
-            return webElement.findElements(By.xpath(selector.getClazz()))
-                    .get(Integer.parseInt(selector.getPosition()));
-        }
-        if (selector.getClazz().startsWith("#")) {
-            return dependencies.getWebDriver().findElements(By.id(selector.getClazz()))
-                    .get(Integer.parseInt(selector.getPosition()));
-        } else if (selector.getClazz().startsWith(".")) {
-            return dependencies.getWebDriver().findElements(By.cssSelector(selector.getClazz()))
-                    .get(Integer.parseInt(selector.getPosition()));
-        }
-        return dependencies.getWebDriver().findElements(By.xpath(selector.getClazz()))
-                .get(Integer.parseInt(selector.getPosition()));
+        return dependencies.getWebDriver().findElement(By.cssSelector(locator.getClazz()));
     }
 
     private void executeHover(final List<WebElement> webElements, final Actions actions) {
@@ -223,10 +207,9 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         }
     }
 
-    private void clickToEmptySpace(final WebDriver driver, final Hover ui) {
-        Actions actions = new Actions(driver);
-        if (Objects.nonNull(ui.isClickByEmptySpace()) && ui.isClickByEmptySpace()) {
-            WebElement element = driver.findElement(By.xpath(CLICK_TO_EMPTY_SPACE));
+    private void clickToEmptySpace(final Hovers ui, final Actions actions) {
+        if (Objects.nonNull(ui.isClickToEmptySpace()) && ui.isClickToEmptySpace()) {
+            WebElement element = dependencies.getWebDriver().findElement(By.xpath(CLICK_TO_EMPTY_SPACE));
             actions.moveToElement(element);
             actions.click();
             actions.perform();

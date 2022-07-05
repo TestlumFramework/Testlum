@@ -229,4 +229,6 @@ public final class LogMessage {
     public static final String TIMES_LOG = format(TABLE_FORMAT, "Times to repeat", "{}");
     public static final String REPEAT_COMMAND = "Repeat command";
     public static final String REPEAT_INFO = "Repeat UI commands %d times";
+
+    public static final String CREDENTIALS_LOG = format(TABLE_FORMAT, "Credentials", "{}");
 }

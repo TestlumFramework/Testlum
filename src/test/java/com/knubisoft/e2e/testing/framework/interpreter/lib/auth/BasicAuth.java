@@ -23,6 +23,7 @@ import org.springframework.http.HttpMethod;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -30,18 +31,19 @@ import java.util.Map;
 
 import static com.knubisoft.e2e.testing.framework.constant.AuthorizationConstant.HEADER_AUTHORIZATION;
 import static com.knubisoft.e2e.testing.framework.constant.AuthorizationConstant.HEADER_BASIC;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ERROR_LOG;
 
 
 @Slf4j
-public class BasicAuth implements AuthStrategy{
+public class BasicAuth implements AuthStrategy {
     private static final int STATUS_CODE = 200;
     @Autowired
     private ApiClient apiClient;
 
 
     @Override
-    public void login(InterpreterDependencies dependencies, final Auth auth) {
+    public void login(final InterpreterDependencies dependencies, final Auth auth) {
         String url = dependencies.getGlobalTestConfiguration().getAuth().getBasic().getUrl();
         String credentials = encodedCredentials(auth, dependencies);
         ApiResponse response = sendGetRequest(credentials, url, auth.getAlias(), dependencies);
@@ -55,7 +57,8 @@ public class BasicAuth implements AuthStrategy{
         String credentials = getCredentialsFromFile(auth, dependencies);
         final ObjectNode node = new ObjectMapper().readValue(credentials, ObjectNode.class);
         credentials = (node.get("username") + ":" + node.get("password")).replaceAll("\"", "");
-        return Base64.getEncoder().encodeToString(credentials.getBytes());
+        log.info(CREDENTIALS_LOG, credentials);
+        return Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
     }
 
     private String getCredentialsFromFile(final Auth auth, final InterpreterDependencies dependencies) {
@@ -105,7 +108,7 @@ public class BasicAuth implements AuthStrategy{
         }
     }
 
-    private Map<String, String> getHeaders(final HttpInfo httpInfo, InterpreterDependencies dependencies) {
+    private Map<String, String> getHeaders(final HttpInfo httpInfo, final InterpreterDependencies dependencies) {
         Map<String, String> headers = new LinkedHashMap<>();
         InterpreterDependencies.Authorization authorization = dependencies.getAuthorization();
         fillHeadersMap(httpInfo, headers, authorization);

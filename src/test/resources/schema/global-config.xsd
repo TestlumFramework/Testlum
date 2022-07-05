@@ -37,7 +37,7 @@
                 <x:element name="localStorageAuthorizationKey" type="tns:nonEmptyString"/>
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
                 <x:element name="ui" type="tns:ui" minOccurs="0"/>
-                <x:element name="auth" type="tns:auth"/>
+                <x:element name="auth" type="tns:auth" minOccurs="0"/>
                 <x:element name="integrations" type="tns:integrations" minOccurs="0"/>
             </x:sequence>
         </x:complexType>

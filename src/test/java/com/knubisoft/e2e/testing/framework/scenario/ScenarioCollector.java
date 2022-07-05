@@ -59,7 +59,7 @@ public class ScenarioCollector {
 
     private void updateScenario(final Scenario scenario) {
         List<AbstractCommand> updatedCommands = updateCommands(scenario.getCommands());
-        updatedCommands = updateCommands(updatedCommands);
+//        updatedCommands = updateCommands(updatedCommands);
         scenario.getCommands().clear();
         scenario.getCommands().addAll(updatedCommands);
     }
@@ -103,6 +103,7 @@ public class ScenarioCollector {
         Auth auth = new Auth();
         auth.setComment(authCommand.getComment());
         auth.setCredentials(authCommand.getCredentials());
+        auth.setAlias(authCommand.getAlias());
         updatedCommand.add(auth);
         updatedCommand.addAll(authCommand.getCommands());
         updatedCommand.add(new Logout());

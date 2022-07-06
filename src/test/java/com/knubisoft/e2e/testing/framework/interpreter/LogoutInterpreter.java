@@ -43,7 +43,7 @@ public class LogoutInterpreter extends AbstractInterpreter<Logout> {
 
     }
 
-    private void clearLocalStorage(final WebDriver driver, ClearLocalStorage clearLocalStorage) {
+    private void clearLocalStorage(final WebDriver driver, final ClearLocalStorage clearLocalStorage) {
         if (clearLocalStorage != null && clearLocalStorage.isEnabled()) {
             log.info(CLEAR_LOCAL_STORAGE, clearLocalStorage.getLocalStorageKey());
             WebStorage webStorage = (WebStorage) driver;
@@ -52,7 +52,7 @@ public class LogoutInterpreter extends AbstractInterpreter<Logout> {
 
     }
 
-    private void clearCookies(final WebDriver driver, boolean clearCookies) {
+    private void clearCookies(final WebDriver driver, final boolean clearCookies) {
         log.info(CLEAR_COOKIES, clearCookies);
         if (clearCookies) {
             driver.manage().deleteAllCookies();

@@ -82,14 +82,10 @@
     </x:complexType>
 
     <x:complexType name="auth">
-        <x:sequence>
-            <x:element name="clearLocalStorage" type="tns:clearLocalStorage" minOccurs="0"/>
-            <x:choice>
-                <x:element name="basic" type="tns:basic"/>
-            </x:choice>
-        </x:sequence>
+        <x:choice>
+            <x:element name="basic" type="tns:basic"/>
+        </x:choice>
         <x:attribute name="autoLogout" type="x:boolean" default="true"/>
-        <x:attribute name="clearCookies" type="x:boolean" default="true"/>
     </x:complexType>
 
     <x:complexType name="basic">

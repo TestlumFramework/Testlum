@@ -11,6 +11,7 @@ import com.knubisoft.e2e.testing.framework.util.JavascriptUtil;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.framework.util.SeleniumUtil;
 import com.knubisoft.e2e.testing.framework.util.WaitUtil;
+import com.knubisoft.e2e.testing.framework.util.WebElementFinder;
 import com.knubisoft.e2e.testing.model.pages.Locator;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.model.scenario.Assert;
@@ -184,22 +185,14 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     private void hover(final Hovers ui, final CommandResult result) {
         WebDriver driver = dependencies.getWebDriver();
+        WebElementFinder webElementFinder = new WebElementFinder();
         Actions actions = new Actions(driver);
         List<WebElement> webElements = ui.getHover().stream()
-                .map(this::getWebElement)
+                .map(e -> webElementFinder.find(dependencies.getGlobalLocators()
+                                .getLocator(e.getLocatorId()), driver))
                 .collect(Collectors.toList());
         executeHover(webElements, actions);
         moveToEmptySpace(ui, actions);
-    }
-
-    private WebElement getWebElement(final Hover hover) {
-        Locator locator = dependencies.getGlobalLocators().getLocator(hover.getLocatorId());
-        if (Objects.nonNull(locator.getXpath())) {
-            return dependencies.getWebDriver().findElement(By.xpath(locator.getXpath()));
-        } else if (Objects.nonNull(locator.getId())) {
-            return dependencies.getWebDriver().findElement(By.id(locator.getId()));
-        }
-        return dependencies.getWebDriver().findElement(By.cssSelector(locator.getClazz()));
     }
 
     private void executeHover(final List<WebElement> webElements, final Actions actions) {

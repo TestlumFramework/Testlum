@@ -57,7 +57,7 @@
                 <x:choice>
                     <x:element name="hover" type="tns:hover" maxOccurs="unbounded" minOccurs="1"/>
                 </x:choice>
-                <x:attribute name="clickToEmptySpace" type="x:boolean"/>
+                <x:attribute name="moveToEmptySpace" type="x:boolean"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

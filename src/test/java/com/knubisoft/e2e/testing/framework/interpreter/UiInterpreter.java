@@ -96,7 +96,7 @@ import static java.lang.String.format;
 public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
 
-    private static final String CLICK_TO_EMPTY_SPACE = "//html";
+    private static final String MOVE_TO_EMPTY_SPACE = "//html";
     private final Map<UiCommandPredicate, UiCommand> uiCommands;
 
     public UiInterpreter(final InterpreterDependencies dependencies) {
@@ -179,7 +179,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
                 .map(this::getWebElement)
                 .collect(Collectors.toList());
         executeHover(webElements, actions);
-        clickToEmptySpace(ui, actions);
+        moveToEmptySpace(ui, actions);
     }
 
     private WebElement getWebElement(final Hover hover) {
@@ -200,11 +200,10 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         }
     }
 
-    private void clickToEmptySpace(final Hovers ui, final Actions actions) {
-        if (Objects.nonNull(ui.isClickToEmptySpace()) && ui.isClickToEmptySpace()) {
-            WebElement element = dependencies.getWebDriver().findElement(By.xpath(CLICK_TO_EMPTY_SPACE));
+    private void moveToEmptySpace(final Hovers ui, final Actions actions) {
+        if (Objects.nonNull(ui.isMoveToEmptySpace()) && ui.isMoveToEmptySpace()) {
+            WebElement element = dependencies.getWebDriver().findElement(By.xpath(MOVE_TO_EMPTY_SPACE));
             actions.moveToElement(element);
-            actions.click();
             actions.perform();
         }
     }

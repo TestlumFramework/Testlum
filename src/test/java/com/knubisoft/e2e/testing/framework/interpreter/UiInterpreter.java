@@ -193,14 +193,10 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private void executeHover(final List<WebElement> webElements, final Actions actions) {
-        for (int i = 0; i < webElements.size() - 1; i++) {
+        for (int i = 0; i < webElements.size(); i++) {
             WebElement currentWebElement = webElements.get(i);
             actions.moveToElement(currentWebElement);
             actions.perform();
-            WebElement nextWebElement = webElements.get(i + 1);
-            if (!nextWebElement.isDisplayed()) {
-                currentWebElement.click();
-            }
         }
     }
 

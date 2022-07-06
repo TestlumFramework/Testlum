@@ -104,7 +104,8 @@ public class ScenarioCollector {
         Auth auth = new Auth();
         auth.setComment(authCommand.getComment());
         auth.setCredentials(authCommand.getCredentials());
-        auth.setAlias(authCommand.getAlias());
+        auth.setApiAlias(authCommand.getApiAlias());
+        auth.setLoginEndpoint(authCommand.getLoginEndpoint());
         updatedCommand.add(auth);
         updatedCommand.addAll(authCommand.getCommands());
         if (GlobalTestConfigurationProvider.provide().getAuth().isAutoLogout()) {

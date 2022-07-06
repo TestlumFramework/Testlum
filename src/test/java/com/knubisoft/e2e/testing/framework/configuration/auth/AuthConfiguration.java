@@ -4,8 +4,6 @@ import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfiguration
 import com.knubisoft.e2e.testing.framework.configuration.condition.OnAuthEnabledCondition;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.auth.AuthStrategy;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.auth.BasicAuth;
-import com.knubisoft.e2e.testing.framework.interpreter.lib.auth.BasicLogout;
-import com.knubisoft.e2e.testing.framework.interpreter.lib.auth.LogoutStrategy;
 import com.knubisoft.e2e.testing.model.global_config.Auth;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -23,12 +21,4 @@ public class AuthConfiguration {
         return null;
     }
 
-    @Bean
-    LogoutStrategy getLogoutStrategy() {
-        final Auth auth = GlobalTestConfigurationProvider.provide().getAuth();
-        if (auth.getBasic() != null) {
-            return new BasicLogout();
-        }
-        return null;
-    }
 }

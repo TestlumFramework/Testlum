@@ -48,4 +48,9 @@
             <x:element name="autoCommit" type="x:boolean"/>
         </x:sequence>
     </x:complexType>
+
+    <x:complexType name="clearLocalStorage">
+        <x:attribute name="enabled" type="x:boolean"/>
+        <x:attribute name="localStorageKey" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
 </x:schema>

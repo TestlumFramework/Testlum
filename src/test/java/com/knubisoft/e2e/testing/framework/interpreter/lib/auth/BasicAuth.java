@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -50,6 +51,13 @@ public class BasicAuth implements AuthStrategy {
         if (response.getCode() != STATUS_CODE) {
             throw new DefaultFrameworkException(response.getBody().toString());
         }
+    }
+
+    @Override
+    public void logout(final InterpreterDependencies dependencies) {
+        InterpreterDependencies.Authorization authorization = new InterpreterDependencies.Authorization();
+        authorization.setHeaders(Collections.emptyMap());
+        dependencies.setAuthorization(authorization);
     }
 
     @SneakyThrows

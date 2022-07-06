@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
+import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.model.scenario.Auth;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.CREDENTIALS_LO
 public class BasicAuth implements AuthStrategy {
 
     @Override
-    public void login(final InterpreterDependencies dependencies, final Auth auth) {
+    public void login(final InterpreterDependencies dependencies, final Auth auth, final CommandResult result) {
         String credentials = encodedCredentials(auth, dependencies);
         setAuthHeaders(dependencies, credentials);
     }

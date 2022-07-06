@@ -82,10 +82,8 @@
     </x:complexType>
 
     <x:complexType name="auth">
-        <x:choice>
-            <x:element name="authStrategy" type="tns:authStrategies"/>
-        </x:choice>
         <x:attribute name="autoLogout" type="x:boolean" default="true"/>
+        <x:attribute name="authStrategy" type="tns:authStrategies" use="required"/>
     </x:complexType>
 
     <x:simpleType name="authStrategies">

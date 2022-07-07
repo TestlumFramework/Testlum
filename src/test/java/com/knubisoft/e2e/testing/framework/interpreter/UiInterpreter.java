@@ -34,9 +34,11 @@ import com.knubisoft.e2e.testing.model.scenario.Ui;
 import com.knubisoft.e2e.testing.model.scenario.Wait;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.html5.WebStorage;
 import org.openqa.selenium.support.ui.Select;
 
 import java.net.URL;
@@ -121,7 +123,10 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     @Override
     protected void acceptImpl(final Ui o, final CommandResult result) {
+        LogUtil.logUiAttributes(o.isClearCookiesAfterExecution(), o.getClearLocalStorageByKey());
         runCommands(o.getClickOrInputOrNavigate(), result);
+        clearLocalStorage(dependencies.getWebDriver(), o.getClearLocalStorageByKey());
+        clearCookies(dependencies.getWebDriver(), o.isClearCookiesAfterExecution());
     }
 
     private void runCommands(final List<AbstractCommand> commandList, final CommandResult result) {
@@ -347,6 +352,19 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         log.info(TIMES_LOG, times);
         IntStream.range(0, times).forEach(e -> runCommands(repeat.getClickOrInputOrNavigate(), result));
         log.info(REPEAT_FINISHED_LOG);
+    }
+
+    private void clearLocalStorage(final WebDriver driver, final String key) {
+        if (StringUtils.isNotBlank(key)) {
+            WebStorage webStorage = (WebStorage) driver;
+            webStorage.getLocalStorage().removeItem(key);
+        }
+    }
+
+    private void clearCookies(final WebDriver driver, final boolean clearCookies) {
+        if (clearCookies) {
+            driver.manage().deleteAllCookies();
+        }
     }
 
     private interface UiCommandPredicate extends Predicate<AbstractCommand> { }

@@ -229,4 +229,7 @@ public final class LogMessage {
     public static final String TIMES_LOG = format(TABLE_FORMAT, "Times to repeat", "{}");
     public static final String REPEAT_COMMAND = "Repeat command";
     public static final String REPEAT_INFO = "Repeat UI commands %d times";
+
+    public static final String LOCAL_STORAGE_KEY = format(TABLE_FORMAT, "Local storage key", "{}");
+    public static final String CLEAR_COOKIES_AFTER = format(TABLE_FORMAT, "Clear cookies after", "{}");
 }

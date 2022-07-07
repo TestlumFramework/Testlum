@@ -25,6 +25,8 @@
                     <x:element name="scrollTo" type="tns:scrollTo"/>
                     <x:element name="repeat" type="tns:repeatUiCommand"/>
                 </x:choice>
+                <x:attribute name="clearCookiesAfterExecution" type="x:boolean" use="required"/>
+                <x:attribute name="clearLocalStorageByKey" type="tns:nonEmptyString"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

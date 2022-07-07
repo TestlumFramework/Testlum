@@ -21,7 +21,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
 
     @Override
     protected void acceptImpl(final Auth auth, final CommandResult result) {
-        authStrategy.login(dependencies, auth, result);
+        authStrategy.authenticate(dependencies, auth, result);
     }
 
 }

@@ -2,14 +2,12 @@ package com.knubisoft.e2e.testing.framework.interpreter.lib.auth;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.model.scenario.Auth;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
@@ -26,7 +24,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.CREDENTIALS_LO
 public class BasicAuth implements AuthStrategy {
 
     @Override
-    public void login(final InterpreterDependencies dependencies, final Auth auth, final CommandResult result) {
+    public void authenticate(final InterpreterDependencies dependencies, final Auth auth, final CommandResult result) {
         String credentials = encodedCredentials(auth, dependencies);
         setAuthHeaders(dependencies, credentials);
     }
@@ -40,17 +38,11 @@ public class BasicAuth implements AuthStrategy {
 
     @SneakyThrows
     private String encodedCredentials(final Auth auth, final InterpreterDependencies dependencies) {
-        String credentials = getCredentialsFromFile(auth, dependencies);
+        String credentials = getCredentialsFromFile(dependencies.getFileSearcher(), auth.getCredentials());
         DocumentContext context = JsonPath.parse(credentials);
         credentials = context.read(USERNAME_JPATH) + ":" + context.read(PASSWORD_JPATH);
         log.info(CREDENTIALS_LOG, credentials);
         return Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
-    }
-
-    private String getCredentialsFromFile(final Auth auth, final InterpreterDependencies dependencies) {
-        File credentialsFolder = TestResourceSettings.getInstance().getCredentialsFolder();
-        return dependencies.getFileSearcher()
-                .searchFileAndReadToString(credentialsFolder, auth.getCredentials());
     }
 
     private void setAuthHeaders(final InterpreterDependencies dependencies, final String credentials) {

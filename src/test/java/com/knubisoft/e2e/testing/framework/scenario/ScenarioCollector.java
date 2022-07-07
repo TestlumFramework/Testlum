@@ -60,7 +60,6 @@ public class ScenarioCollector {
 
     private void updateScenario(final Scenario scenario) {
         List<AbstractCommand> updatedCommands = updateCommands(scenario.getCommands());
-//        updatedCommands = updateCommands(updatedCommands);
         scenario.getCommands().clear();
         scenario.getCommands().addAll(updatedCommands);
     }

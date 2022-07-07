@@ -1,7 +1,7 @@
 package com.knubisoft.e2e.testing.framework.interpreter.lib.auth;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
@@ -18,6 +18,8 @@ import java.util.Map;
 
 import static com.knubisoft.e2e.testing.framework.constant.AuthorizationConstant.HEADER_AUTHORIZATION;
 import static com.knubisoft.e2e.testing.framework.constant.AuthorizationConstant.HEADER_BASIC;
+import static com.knubisoft.e2e.testing.framework.constant.AuthorizationConstant.PASSWORD_JPATH;
+import static com.knubisoft.e2e.testing.framework.constant.AuthorizationConstant.USERNAME_JPATH;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.CREDENTIALS_LOG;
 
 @Slf4j
@@ -39,8 +41,8 @@ public class BasicAuth implements AuthStrategy {
     @SneakyThrows
     private String encodedCredentials(final Auth auth, final InterpreterDependencies dependencies) {
         String credentials = getCredentialsFromFile(auth, dependencies);
-        final ObjectNode node = new ObjectMapper().readValue(credentials, ObjectNode.class);
-        credentials = (node.get("username") + ":" + node.get("password")).replaceAll("\"", "");
+        DocumentContext context = JsonPath.parse(credentials);
+        credentials = context.read(USERNAME_JPATH) + ":" + context.read(PASSWORD_JPATH);
         log.info(CREDENTIALS_LOG, credentials);
         return Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
     }

@@ -12,7 +12,6 @@ import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.framework.util.SeleniumUtil;
 import com.knubisoft.e2e.testing.framework.util.WaitUtil;
 import com.knubisoft.e2e.testing.framework.util.WebElementFinder;
-import com.knubisoft.e2e.testing.model.pages.Locator;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.model.scenario.Assert;
 import com.knubisoft.e2e.testing.model.scenario.Clear;
@@ -20,7 +19,6 @@ import com.knubisoft.e2e.testing.model.scenario.Click;
 import com.knubisoft.e2e.testing.model.scenario.ClickMethod;
 import com.knubisoft.e2e.testing.model.scenario.CloseSecondTab;
 import com.knubisoft.e2e.testing.model.scenario.DropDown;
-import com.knubisoft.e2e.testing.model.scenario.Hover;
 import com.knubisoft.e2e.testing.model.scenario.Hovers;
 import com.knubisoft.e2e.testing.model.scenario.Input;
 import com.knubisoft.e2e.testing.model.scenario.Javascript;
@@ -392,7 +390,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private void clearLocalStorage(final WebDriver driver, final String key) {
-        if (StringUtils.isNotBlank(key)) {
+        if (StringUtils.isNotEmpty(key)) {
             WebStorage webStorage = (WebStorage) driver;
             webStorage.getLocalStorage().removeItem(key);
         }

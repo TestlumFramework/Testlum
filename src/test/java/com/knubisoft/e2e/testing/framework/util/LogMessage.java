@@ -233,4 +233,6 @@ public final class LogMessage {
     public static final String CREDENTIALS_LOG = format(TABLE_FORMAT, "Credentials", "{}");
     public static final String AUTH_WAS_NOT_DEFINED = "Authentication strategy was not defined in global-confige file";
 
+    public static final String LOCAL_STORAGE_KEY = format(TABLE_FORMAT, "Local storage key", "{}");
+    public static final String CLEAR_COOKIES_AFTER = format(TABLE_FORMAT, "Clear cookies after", "{}");
 }

@@ -1,5 +1,6 @@
 package com.knubisoft.e2e.testing.framework.scenario;
 
+import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.parser.XMLParsers;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
@@ -59,7 +60,6 @@ public class ScenarioCollector {
 
     private void updateScenario(final Scenario scenario) {
         List<AbstractCommand> updatedCommands = updateCommands(scenario.getCommands());
-        updatedCommands = updateCommands(updatedCommands);
         scenario.getCommands().clear();
         scenario.getCommands().addAll(updatedCommands);
     }
@@ -103,9 +103,13 @@ public class ScenarioCollector {
         Auth auth = new Auth();
         auth.setComment(authCommand.getComment());
         auth.setCredentials(authCommand.getCredentials());
+        auth.setApiAlias(authCommand.getApiAlias());
+        auth.setLoginEndpoint(authCommand.getLoginEndpoint());
         updatedCommand.add(auth);
         updatedCommand.addAll(authCommand.getCommands());
-        updatedCommand.add(new Logout());
+        if (GlobalTestConfigurationProvider.provide().getAuth().isAutoLogout()) {
+            updatedCommand.add(new Logout());
+        }
     }
 
     private void walk(final File root, final List<File> scenarios) {

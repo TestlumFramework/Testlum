@@ -16,11 +16,11 @@ public class LogoutInterpreter extends AbstractInterpreter<Logout> {
 
     public LogoutInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
-        this.authStrategy = AuthFactory.create();
+        this.authStrategy = AuthFactory.create(dependencies);
     }
 
     @Override
     protected void acceptImpl(final Logout o, final CommandResult result) {
-        authStrategy.logout(dependencies);
+        authStrategy.logout();
     }
 }

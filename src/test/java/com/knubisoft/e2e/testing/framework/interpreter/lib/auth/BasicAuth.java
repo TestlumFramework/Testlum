@@ -6,6 +6,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependenci
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.AuthUtil;
 import com.knubisoft.e2e.testing.model.scenario.Auth;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,16 +23,18 @@ import static com.knubisoft.e2e.testing.framework.constant.AuthorizationConstant
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.CREDENTIALS_LOG;
 
 @Slf4j
+@RequiredArgsConstructor
 public class BasicAuth implements AuthStrategy {
+    private final InterpreterDependencies dependencies;
 
     @Override
-    public void authenticate(final InterpreterDependencies dependencies, final Auth auth, final CommandResult result) {
+    public void authenticate(final Auth auth, final CommandResult result) {
         String credentials = encodedCredentials(auth, dependencies);
         setAuthHeaders(dependencies, credentials);
     }
 
     @Override
-    public void logout(final InterpreterDependencies dependencies) {
+    public void logout() {
         InterpreterDependencies.Authorization authorization = new InterpreterDependencies.Authorization();
         authorization.setHeaders(Collections.emptyMap());
         dependencies.setAuthorization(authorization);

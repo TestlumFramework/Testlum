@@ -16,12 +16,12 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
 
     public AuthInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
-        this.authStrategy = AuthFactory.create();
+        this.authStrategy = AuthFactory.create(dependencies);
     }
 
     @Override
     protected void acceptImpl(final Auth auth, final CommandResult result) {
-        authStrategy.authenticate(dependencies, auth, result);
+        authStrategy.authenticate(auth, result);
     }
 
 }

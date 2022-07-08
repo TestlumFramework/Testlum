@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BODY_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BROWSER_NAME_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLEAR_COOKIES_AFTER;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.COMMENT_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.CONTENT_FORMAT;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DESTINATION_LOG;
@@ -31,6 +32,7 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.INVALID_SCENARIO_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.LOCAL_STORAGE_KEY;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAME_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.REGEX_NEW_LINE;
@@ -204,5 +206,10 @@ public class LogUtil {
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {
         log.error(INVALID_SCENARIO_LOG, path, exception);
+    }
+
+    public void logUiAttributes(final boolean isClearCookies, final String storageKey) {
+        log.info(CLEAR_COOKIES_AFTER, isClearCookies);
+        log.info(LOCAL_STORAGE_KEY, storageKey);
     }
 }

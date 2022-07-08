@@ -11,6 +11,8 @@ import com.knubisoft.e2e.testing.framework.util.JavascriptUtil;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.framework.util.SeleniumUtil;
 import com.knubisoft.e2e.testing.framework.util.WaitUtil;
+import com.knubisoft.e2e.testing.framework.util.WebElementFinder;
+import com.knubisoft.e2e.testing.model.pages.Locator;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.model.scenario.Assert;
 import com.knubisoft.e2e.testing.model.scenario.Clear;
@@ -18,6 +20,8 @@ import com.knubisoft.e2e.testing.model.scenario.Click;
 import com.knubisoft.e2e.testing.model.scenario.ClickMethod;
 import com.knubisoft.e2e.testing.model.scenario.CloseSecondTab;
 import com.knubisoft.e2e.testing.model.scenario.DropDown;
+import com.knubisoft.e2e.testing.model.scenario.Hover;
+import com.knubisoft.e2e.testing.model.scenario.Hovers;
 import com.knubisoft.e2e.testing.model.scenario.Input;
 import com.knubisoft.e2e.testing.model.scenario.Javascript;
 import com.knubisoft.e2e.testing.model.scenario.Navigate;
@@ -35,8 +39,10 @@ import com.knubisoft.e2e.testing.model.scenario.Wait;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
 import java.net.URL;
@@ -45,8 +51,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings.JS_FOLDER;
@@ -99,6 +107,7 @@ import static java.lang.String.format;
 @InterpreterForClass(Ui.class)
 public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
+    private static final String MOVE_TO_EMPTY_SPACE = "//html";
     private final Map<UiCommandPredicate, UiCommand> uiCommands;
 
     public UiInterpreter(final InterpreterDependencies dependencies) {
@@ -116,6 +125,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         commands.put(ui -> ui instanceof Scroll, (ui, result) -> scroll((Scroll) ui, result));
         commands.put(ui -> ui instanceof ScrollTo, (ui, result) -> scrollTo((ScrollTo) ui, result));
         commands.put(ui -> ui instanceof RepeatUiCommand, (ui, result) -> repeat((RepeatUiCommand) ui, result));
+        commands.put(ui -> ui instanceof Hovers, (ui, result) -> hover((Hovers) ui, result));
         this.uiCommands = Collections.unmodifiableMap(commands);
     }
 
@@ -171,6 +181,33 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         String command = JavascriptUtil.readCommands(filePath, resource, fileSearcher);
         result.put(JS_EXECUTION_OPERATION, format(JS_OPERATION_INFO, filePath, command));
         JavascriptUtil.executeJsScript(command, dependencies.getWebDriver());
+    }
+
+    private void hover(final Hovers ui, final CommandResult result) {
+        WebDriver driver = dependencies.getWebDriver();
+        WebElementFinder webElementFinder = new WebElementFinder();
+        Actions actions = new Actions(driver);
+        List<WebElement> webElements = ui.getHover().stream()
+                .map(e -> webElementFinder.find(dependencies.getGlobalLocators()
+                                .getLocator(e.getLocatorId()), driver))
+                .collect(Collectors.toList());
+        executeHover(webElements, actions);
+        moveToEmptySpace(ui, actions);
+    }
+
+    private void executeHover(final List<WebElement> webElements, final Actions actions) {
+        for (WebElement currentWebElement : webElements) {
+            actions.moveToElement(currentWebElement);
+            actions.perform();
+        }
+    }
+
+    private void moveToEmptySpace(final Hovers ui, final Actions actions) {
+        if (Objects.nonNull(ui.isMoveToEmptySpace()) && ui.isMoveToEmptySpace()) {
+            WebElement element = dependencies.getWebDriver().findElement(By.xpath(MOVE_TO_EMPTY_SPACE));
+            actions.moveToElement(element);
+            actions.perform();
+        }
     }
 
     private void input(final Input input, final CommandResult result) {

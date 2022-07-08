@@ -230,6 +230,11 @@ public final class LogMessage {
     public static final String REPEAT_COMMAND = "Repeat command";
     public static final String REPEAT_INFO = "Repeat UI commands %d times";
 
+    public static final String CREDENTIALS_LOG = format(TABLE_FORMAT, "Credentials", "{}");
+    public static final String DRIVER_HAS_NOT_BEEN_INITIALIZED = "Driver has not been initialized";
+    public static final String CLEAR_COOKIES = format(TABLE_FORMAT, "Clear cookies", "{}");
+    public static final String CLEAR_LOCAL_STORAGE = format(TABLE_FORMAT, "Clear local storage", "{}");
+
     public static final String LOCAL_STORAGE_KEY = format(TABLE_FORMAT, "Local storage key", "{}");
     public static final String CLEAR_COOKIES_AFTER = format(TABLE_FORMAT, "Clear cookies after", "{}");
 }

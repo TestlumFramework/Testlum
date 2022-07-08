@@ -48,4 +48,5 @@
             <x:element name="autoCommit" type="x:boolean"/>
         </x:sequence>
     </x:complexType>
+
 </x:schema>

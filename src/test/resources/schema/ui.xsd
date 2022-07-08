@@ -18,6 +18,7 @@
                     <x:element name="assert" type="tns:assert"/>
                     <x:element name="dropDown" type="tns:dropDown"/>
                     <x:element name="javascript" type="tns:javascript"/>
+                    <x:element name="hovers" type="tns:hovers"/>
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="clear" type="tns:clear"/>
                     <x:element name="closeSecondTab" type="tns:closeSecondTab"/>
@@ -52,6 +53,23 @@
             <x:extension base="tns:abstractCommand">
                 <x:attribute name="file" type="tns:nonEmptyString"/>
             </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="hovers">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice>
+                    <x:element name="hover" type="tns:hover" maxOccurs="unbounded" minOccurs="1"/>
+                </x:choice>
+                <x:attribute name="moveToEmptySpace" type="x:boolean"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="hover">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator"/>
         </x:complexContent>
     </x:complexType>
 

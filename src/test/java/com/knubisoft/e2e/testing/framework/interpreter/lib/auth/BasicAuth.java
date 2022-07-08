@@ -4,6 +4,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
+import com.knubisoft.e2e.testing.framework.util.AuthUtil;
 import com.knubisoft.e2e.testing.model.scenario.Auth;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,7 @@ public class BasicAuth implements AuthStrategy {
 
     @SneakyThrows
     private String encodedCredentials(final Auth auth, final InterpreterDependencies dependencies) {
-        String credentials = getCredentialsFromFile(dependencies.getFileSearcher(), auth.getCredentials());
+        String credentials = AuthUtil.getCredentialsFromFile(dependencies.getFileSearcher(), auth.getCredentials());
         DocumentContext context = JsonPath.parse(credentials);
         credentials = context.read(USERNAME_JPATH) + ":" + context.read(PASSWORD_JPATH);
         log.info(CREDENTIALS_LOG, credentials);

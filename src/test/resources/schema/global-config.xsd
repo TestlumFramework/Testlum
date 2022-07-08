@@ -84,13 +84,15 @@
     <x:complexType name="auth">
         <x:attribute name="autoLogout" type="x:boolean" default="true"/>
         <x:attribute name="authStrategy" type="tns:authStrategies" use="required"/>
+        <x:attribute name="authCustomClassName" type="tns:nonEmptyString"/>
     </x:complexType>
 
     <x:simpleType name="authStrategies">
         <x:restriction base="x:string">
             <x:enumeration value="basic"/>
-            <x:enumeration value="JWT"/>
-            <x:enumeration value="OAuth2"/>
+            <x:enumeration value="jwt"/>
+            <x:enumeration value="oauth2"/>
+            <x:enumeration value="custom"/>
         </x:restriction>
     </x:simpleType>
 

@@ -210,6 +210,8 @@ public class LogUtil {
 
     public void logUiAttributes(final boolean isClearCookies, final String storageKey) {
         log.info(CLEAR_COOKIES_AFTER, isClearCookies);
-        log.info(LOCAL_STORAGE_KEY, storageKey);
+        if (StringUtils.isNotEmpty(storageKey)) {
+            log.info(LOCAL_STORAGE_KEY, storageKey);
+        }
     }
 }

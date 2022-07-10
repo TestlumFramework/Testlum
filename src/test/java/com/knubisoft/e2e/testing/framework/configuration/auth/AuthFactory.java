@@ -5,6 +5,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependenci
 import com.knubisoft.e2e.testing.framework.interpreter.lib.auth.AuthStrategy;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.auth.BasicAuth;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.auth.DefaultStrategy;
+import com.knubisoft.e2e.testing.framework.interpreter.lib.auth.JwtAuth;
 import com.knubisoft.e2e.testing.model.global_config.Auth;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.NotImplementedException;
@@ -13,16 +14,16 @@ import org.apache.commons.lang3.NotImplementedException;
 public class AuthFactory {
     public AuthStrategy create(final InterpreterDependencies dependencies) {
         final Auth auth = GlobalTestConfigurationProvider.provide().getAuth();
+        // TODO i.doroshenko add OAUTH_2 to switch-case
         switch (auth.getAuthStrategy()) {
             case BASIC:
                 return new BasicAuth(dependencies);
             case JWT:
-            case OAUTH_2:
-                return new DefaultStrategy();
+                return new JwtAuth(dependencies);
             case CUSTOM:
                 return createCustomStrategy(auth.getAuthCustomClassName());
             default:
-                return new DefaultStrategy();
+                return new DefaultStrategy(dependencies);
         }
     }
 

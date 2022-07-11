@@ -3,6 +3,8 @@ package com.knubisoft.e2e.testing.framework.interpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.Rabbit;
 import com.knubisoft.e2e.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
@@ -12,6 +14,7 @@ import com.knubisoft.e2e.testing.model.scenario.SendRmqMessage;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
@@ -21,12 +24,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SEND_ACTION;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
 
 @Slf4j
 @InterpreterForClass(Rabbit.class)
@@ -45,32 +51,56 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
 
     @Override
     protected void acceptImpl(final Rabbit rabbit, final CommandResult result) {
-        int actionNumber = 0;
+        List<CommandResult> subCommandsResult = new LinkedList<>();
+        int actionNumber = 1;
         for (Object action : rabbit.getSendOrReceive()) {
-            runRabbitMqOperation(result, actionNumber, action, rabbit.getAlias());
+            CommandResult subCommandResult = new CommandResult();
+            subCommandResult.setId(actionNumber);
+            subCommandResult.setSuccess(true);
+            processEachAction(action, rabbit.getAlias(), subCommandResult);
+            subCommandsResult.add(subCommandResult);
             actionNumber++;
+        }
+        result.setSubCommandsResult(subCommandsResult);
+        if (subCommandsResult.stream().anyMatch(subCommand -> !subCommand.isSuccess())) {
+            ResultUtil.setExecutionResultIfSubCommandsFailed(result);
         }
     }
 
-    private void runRabbitMqOperation(final CommandResult result,
-                                      final int actionNumber,
+    private void processEachAction(final Object action,
+                                   final String alias,
+                                   final CommandResult subCommandResult) {
+        StopWatch stopWatch = StopWatch.createStarted();
+        try {
+            runRabbitMqOperation(subCommandResult, action, alias);
+        } catch (Exception e) {
+            subCommandResult.setSuccess(false);
+            subCommandResult.setException(e);
+            log.error(EXCEPTION_LOG,  e.getMessage());
+        } finally {
+            subCommandResult.setExecutionTime(stopWatch.getTime());
+            stopWatch.stop();
+        }
+    }
+
+    private void runRabbitMqOperation(final CommandResult subCommandResult,
                                       final Object action,
                                       final String alias) {
         log.info(ALIAS_LOG, alias);
         if (action instanceof SendRmqMessage) {
-            sendMessage((SendRmqMessage) action, actionNumber, result, alias);
+            SendRmqMessage sendAction = (SendRmqMessage) action;
+            ResultUtil.addRabbitMQInfoForSendAction(sendAction, alias, subCommandResult);
+            sendMessage((SendRmqMessage) action, subCommandResult, alias);
         } else {
-            receiveMessages((ReceiveRmqMessage) action, actionNumber, result, alias);
+            ReceiveRmqMessage receiveAction = (ReceiveRmqMessage) action;
+            ResultUtil.addRabbitMQInfoForReceiveAction(receiveAction, alias, subCommandResult);
+            receiveMessages((ReceiveRmqMessage) action, subCommandResult, alias);
         }
     }
 
     private void receiveMessages(final ReceiveRmqMessage receive,
-                                 final int actionNumber,
                                  final CommandResult result,
                                  final String alias) {
-        result.put("action[" + actionNumber + "]", RECEIVE_ACTION);
-        result.put("queue[" + actionNumber + "]", receive.getQueue());
-
         String message = getMessage(receive);
         LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), message);
 
@@ -87,25 +117,21 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                 .withExpected(message)
                 .withActual(actualRmqMessages);
 
-        result.setActual(toString(actualRmqMessages));
-        result.setExpected(comparator.getExpected());
+        result.setActual(PrettifyStringJson.getJSONResult(toString(actualRmqMessages)));
+        result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
 
         comparator.exec();
     }
 
     private void sendMessage(final SendRmqMessage send,
-                             final int actionNumber,
                              final CommandResult result,
                              final String alias) {
-        result.put("action[" + actionNumber + "]", SEND_ACTION);
-        result.put("routingKey[" + actionNumber + "]", send.getRoutingKey());
-        result.put("exchange[" + actionNumber + "]", send.getExchange());
-
         String message = getMessage(send);
-        LogUtil.logBrokerActionInfo(SEND_ACTION, send.getExchange(), message);
+        LogUtil.logBrokerActionInfo(SEND_ACTION, send.getRoutingKey(), message);
 
-        result.setActual(message);
+        result.put(MESSAGE_TO_SEND, message);
         createQueueIfNotExists(send.getRoutingKey(), alias);
+
         sendMessage(send, message, alias);
     }
 

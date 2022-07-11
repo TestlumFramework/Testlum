@@ -18,7 +18,7 @@ import org.junit.jupiter.params.provider.Arguments;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -60,7 +60,7 @@ public class TestSetCollector {
             variationList.forEach(variation ->
                     arguments.add(getArgumentsWithUiSteps(entry, webBrowser, variation)));
         } else {
-            arguments.add(getArgumentsWithUiSteps(entry, webBrowser, Collections.emptyMap()));
+            arguments.add(getArgumentsWithUiSteps(entry, webBrowser, new HashMap<>()));
         }
     }
 
@@ -84,6 +84,7 @@ public class TestSetCollector {
                 .file(entry.file)
                 .scenario(entry.scenario)
                 .exception(entry.exception)
+                .variation(new HashMap<>())
                 .build();
     }
 

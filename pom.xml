@@ -85,6 +85,7 @@
         <netty-codec.version>4.1.77.Final</netty-codec.version>
         <netty-codec-http.version>4.1.77.Final</netty-codec-http.version>
         <netty-reactive-streams.version>2.0.6</netty-reactive-streams.version>
+        <extent-reports.version>5.0.9</extent-reports.version>
         <skipXjc>true</skipXjc>
     </properties>
 
@@ -109,7 +110,6 @@
     </repositories>
 
     <dependencies>
-
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
@@ -771,6 +771,18 @@
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
             <version>${json-simple.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aventstack</groupId>
+            <artifactId>extentreports</artifactId>
+            <version>${extent-reports.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aventstack</groupId>
+            <artifactId>klov-reporter</artifactId>
+            <version>${extent-reports.version}</version>
         </dependency>
     </dependencies>
 

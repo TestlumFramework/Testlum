@@ -8,6 +8,8 @@ import com.knubisoft.e2e.testing.framework.db.source.ListSource;
 import com.knubisoft.e2e.testing.framework.db.sql.MySqlOperation;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
+import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.Mysql;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,19 +40,20 @@ public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
                 .withActual(actual)
                 .withExpectedFile(mySql.getFile());
 
-        result.setExpected(comparator.getExpected());
-        result.setActual(actual);
+        result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
+        result.setActual(PrettifyStringJson.getJSONResult(actual));
 
         comparator.exec();
         setContextBody(actual);
     }
 
     protected String getActual(final Mysql mySql, final CommandResult result) {
-        List<String> sqls = getSqlList(mySql);
-        LogUtil.logAllQueries(sqls, mySql.getAlias());
-        result.put("sqls", sqls);
-        StorageOperation.StorageOperationResult applyMySql = mySqlOperation.apply(new ListSource(sqls),
-                inject(mySql.getAlias()));
+        String alias = mySql.getAlias();
+        List<String> queries = getSqlList(mySql);
+        LogUtil.logAllQueries(queries, alias);
+        ResultUtil.addDatabaseMetaData(alias, queries, result);
+        StorageOperation.StorageOperationResult applyMySql = mySqlOperation.apply(new ListSource(queries),
+                inject(alias));
         return toString(applyMySql.getRaw());
     }
 

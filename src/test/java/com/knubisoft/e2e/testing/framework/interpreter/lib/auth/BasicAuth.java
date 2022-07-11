@@ -21,14 +21,19 @@ import static com.knubisoft.e2e.testing.framework.constant.AuthorizationConstant
 import static com.knubisoft.e2e.testing.framework.constant.AuthorizationConstant.PASSWORD_JPATH;
 import static com.knubisoft.e2e.testing.framework.constant.AuthorizationConstant.USERNAME_JPATH;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.CREDENTIALS_LOG;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.AUTHENTICATION_TYPE;
 
 @Slf4j
 @RequiredArgsConstructor
 public class BasicAuth implements AuthStrategy {
+
+    private static final String TYPE = "basic";
+
     private final InterpreterDependencies dependencies;
 
     @Override
     public void authenticate(final Auth auth, final CommandResult result) {
+        result.put(AUTHENTICATION_TYPE, TYPE);
         String credentials = encodedCredentials(auth, dependencies);
         setAuthHeaders(dependencies, credentials);
     }

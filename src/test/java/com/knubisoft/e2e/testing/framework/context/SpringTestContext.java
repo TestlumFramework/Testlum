@@ -1,7 +1,6 @@
 package com.knubisoft.e2e.testing.framework.context;
 
 import com.knubisoft.e2e.testing.framework.report.GlobalScenarioStatCollector;
-import com.knubisoft.e2e.testing.framework.report.ReportGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -26,10 +25,5 @@ public class SpringTestContext {
     @Bean
     public GlobalScenarioStatCollector createNewStatCollector() {
         return new GlobalScenarioStatCollector();
-    }
-
-    @Bean
-    public ReportGenerator createReportConfiguration() {
-        return new ReportGenerator();
     }
 }

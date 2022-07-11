@@ -3,7 +3,7 @@ package com.knubisoft.e2e.testing.framework.report;
 import lombok.Data;
 
 import java.util.LinkedHashMap;
-import java.util.Locale;
+import java.util.List;
 
 @Data
 public class CommandResult {
@@ -15,12 +15,16 @@ public class CommandResult {
     private String actual;
 
     private boolean success;
-    private String cause;
+    private Exception exception;
     private long executionTime;
+
+    private String base64Screenshot;
+
+    private List<CommandResult> subCommandsResult;
 
     private LinkedHashMap<String, Object> metadata = new LinkedHashMap<>();
 
     public void put(final Object key, final Object value) {
-        this.metadata.put(String.valueOf(key).toLowerCase(Locale.ROOT), value);
+        this.metadata.put(String.valueOf(key), value);
     }
 }

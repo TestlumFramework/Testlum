@@ -118,7 +118,6 @@ public class ScenarioRunner {
         callback.onCommandExecuted(result);
     }
 
-    //CHECKSTYLE:OFF
     private void execute(final AbstractCommand command, final CommandResult result) {
         try {
             getInterpreterOrThrow(command).apply(command, result);
@@ -126,11 +125,9 @@ public class ScenarioRunner {
             throw e;
         } catch (Exception e) {
             result.setSuccess(false);
-            result.setCause(e.getMessage());
-            throw new DefaultFrameworkException(e);
+            result.setException(e);
         }
     }
-    //CHECKSTYLE:ON
 
     private CommandResult prepareCommandResult(final AbstractCommand command) {
         CommandResult result = new CommandResult();
@@ -149,20 +146,18 @@ public class ScenarioRunner {
         return (AbstractInterpreter<AbstractCommand>) interpreter;
     }
 
-    //CHECKSTYLE:OFF
     @SneakyThrows
     private void handleException(final CommandResult result) {
-        String ex = result.getCause();
+        Exception ex = result.getException();
         if (ex != null) {
-            log.error(EXCEPTION_LOG, scenarioResult.getName(), ex);
-            fillReportException(ex);
+            log.error(EXCEPTION_LOG, ex.getMessage());
+            fillReportException(ex.getMessage());
             if (stopScenarioOnFailure) {
                 throw new StopSignalException();
             }
         }
     }
 
-    //CHECKSTYLE:ON
     private void fillReportException(final String ex) {
         if (scenarioResult.getCause() == null) {
             scenarioResult.setCause(ex);

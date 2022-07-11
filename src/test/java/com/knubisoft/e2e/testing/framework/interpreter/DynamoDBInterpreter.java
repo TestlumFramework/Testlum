@@ -3,6 +3,7 @@ package com.knubisoft.e2e.testing.framework.interpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.Dynamo;
 import com.knubisoft.e2e.testing.framework.db.StorageOperation;
 import com.knubisoft.e2e.testing.framework.db.dynamodb.DynamoDBOperation;
@@ -41,11 +42,12 @@ public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
     }
 
     protected String getActual(final Dynamo ddb, final CommandResult result) {
+        String alias = ddb.getAlias();
         List<String> queries = getDynamoQueryList(ddb);
-        LogUtil.logAllQueries(queries, ddb.getAlias());
-        result.put("sqls", queries);
+        LogUtil.logAllQueries(queries, alias);
+        ResultUtil.addDatabaseMetaData(alias, queries, result);
         StorageOperation.StorageOperationResult apply = dynamoDBOperation
-                .apply(new ListSource(queries), ddb.getAlias());
+                .apply(new ListSource(queries), alias);
         return JacksonMapperUtil.writeAsStringForDynamoDbOnly(apply.getRaw());
     }
 

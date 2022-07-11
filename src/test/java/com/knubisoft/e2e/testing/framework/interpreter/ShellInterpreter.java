@@ -7,6 +7,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.Shell;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,8 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
     protected void acceptImpl(final Shell shell, final CommandResult result) {
         List<String> shellCommands = shell.getShellCommand();
         List<String> shellFiles = shell.getShellFile();
+
+        ResultUtil.addShellMetaData(shellFiles, shellCommands, result);
 
         execShellCommand(shellCommands, shell, result);
         execShellFiles(shellFiles, shell, result);
@@ -100,12 +103,13 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
     private void processExpectedAndActual(final int expectedCode, final Shell shell,
                                           final CommandResult result) {
         String actual = PrettifyStringJson.getJSONResult(String.format(EXPECTED_RESULT, expectedCode));
+        String expected = PrettifyStringJson.getJSONResult(getContentIfFile(shell.getFile()));
         CompareBuilder compare = newCompare()
             .withActual(actual)
-            .withExpectedFile(shell.getFile());
+            .withExpected(expected);
         compare.exec();
 
         result.setActual(actual);
-        result.setExpected(shell.getFile());
+        result.setExpected(expected);
     }
 }

@@ -76,17 +76,18 @@ public final class LogMessage {
     public static final String UNABLE_FIND_VALUE_FOR_KEY = "Unable to find value for key %s. Available keys %s";
     public static final String FILE_NOT_EXIST = "File %s does not exist";
     public static final String UNKNOWN_METHOD = "Unknown method %s";
-    public static final String PAGES_FOLDER_NOT_EXIST = "Pages folder does not exist";
-    public static final String COMPONENTS_FOLDER_NOT_EXIST = "Components folder does not exist";
-    public static final String SHELL_FOLDER_NOT_EXIST = "Shell folder does not exist";
-    public static final String SCENARIOS_FOLDER_NOT_EXIST = "Scenarios folder does not exist";
-    public static final String VARIATIONS_FOLDER_NOT_EXIST = "Variations folder does not exist";
-    public static final String PATCHES_FOLDER_NOT_EXIST = "Patches folder does not exist";
-    public static final String CREDENTIALS_FOLDER_NOT_EXIST = "Credentials folder does not exist";
+    public static final String PAGES_FOLDER_NOT_EXIST = "[pages] folder does not exist";
+    public static final String COMPONENTS_FOLDER_NOT_EXIST = "[components] folder does not exist";
+    public static final String SHELL_FOLDER_NOT_EXIST = "[shell] folder does not exist";
+    public static final String SCENARIOS_FOLDER_NOT_EXIST = "[scenarios] folder does not exist";
+    public static final String VARIATIONS_FOLDER_NOT_EXIST = "[variations] folder does not exist";
+    public static final String PATCHES_FOLDER_NOT_EXIST = "[patches] folder does not exist";
+    public static final String CREDENTIALS_FOLDER_NOT_EXIST = "[credentials] folder does not exist";
     public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
     public static final String TEST_BY_PATH_DISABLED = "Test by path %s is disabled";
-    public static final String EXCEL_FOLDER_NOT_EXIST = "Excel folder does not exist";
-    public static final String CSV_FOLDER_NOT_EXIST = "CSV folder does not exist";
+    public static final String EXCEL_FOLDER_NOT_EXIST = "[excel] folder does not exist";
+    public static final String CSV_FOLDER_NOT_EXIST = "[csv] folder does not exist";
+    public static final String JAVASCRIPT_FOLDER_NOT_EXIST = "[javascript] folder does not exist";
 
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_RED = "\u001B[31m";
@@ -110,9 +111,8 @@ public final class LogMessage {
     public static final String EXECUTION_STOP_SIGNAL_LOG = "Execution has been stopped because of StopSignal";
     public static final String EXCEPTION_LOG = ANSI_RED
             + "----------------    EXCEPTION    -----------------\n"
-            + "Exception on scenario {}->"
-            + ANSI_RESET + " {}\n"
-            + "--------------------------------------------------";
+            + " {}\n"
+            + "--------------------------------------------------" + ANSI_RESET;
     public static final String AUTHENTICATE_WITH_CREDENTIALS_COMMENT = "Authenticate with credentials {}";
     public static final String FAILED_VARIABLE_WITH_PATH_LOG = "Failed [variable] {} [comment] {}";
     public static final String NO_ACTIVE_SCENARIOS_LOG = ANSI_RED + "There are no active scenarios by enabled tags"
@@ -172,17 +172,7 @@ public final class LogMessage {
     public static final String JS_EXECUTION_OPERATION = "JavaScript execution operation";
     public static final String JS_FILE_UNREADABLE = "The .js file by path ./javascript/%s unreadable";
     public static final String JS_FILE_NOT_FOUND = "Can't find the .js file [%s] in the resources folder";
-    public static final String CLICK_METHOD = "Click method";
-    public static final String CLICK_LOCATOR = "Click operation locator";
-    public static final String INPUT_LOCATOR = "Input operation locator";
-    public static final String ASSERT_LOCATOR = "Assert operation locator";
-    public static final String DROP_DOWN_LOCATOR = "Drop down operation locator";
     public static final String DROP_DOWN_ONE_VALUE = "Process drop down one value";
-    public static final String ASSERT_ATTRIBUTE = "Assert attribute";
-    public static final String ASSERT_ACTUAL = "Assert operation actual";
-    public static final String ASSERT_EXPECTED = "Assert operation expected";
-    public static final String NAVIGATE_URL = "Navigate url";
-    public static final String NAVIGATE = "Navigate";
 
     public static final String PATCH_PATH_LOG = format(TABLE_FORMAT, "Migration patch ", "{}");
     public static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");

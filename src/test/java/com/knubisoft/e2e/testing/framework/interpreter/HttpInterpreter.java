@@ -6,6 +6,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.http.ApiClient;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.http.ApiResponse;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.Header;
 import com.knubisoft.e2e.testing.model.scenario.Http;
 import com.knubisoft.e2e.testing.model.scenario.HttpInfoWithBody;
@@ -48,15 +49,14 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         HttpUtil.HttpMethodMetadata metadata = HttpUtil.getHttpMethodMetadata(http);
         HttpInfo httpInfo = metadata.getHttpInfo();
         HttpMethod httpMethod = metadata.getHttpMethod();
+        ResultUtil.addHttpMetaData(http.getAlias(), httpInfo, httpMethod.name(), result);
         String url = inject(httpInfo.getUrl());
-        result.put("url", url);
-        result.put("method", httpMethod.name());
         ApiResponse actual = getActual(httpInfo, url, httpMethod, http.getAlias());
-        result.setActual(PrettifyStringJson.getJSONResult(actual.getBody().toString()));
-        result.put("actual_code", actual.getCode());
         CompareBuilder compare = newCompare()
                 .withActual(actual)
                 .withExpectedFile(httpInfo.getResponse().getFile());
+        result.setActual(PrettifyStringJson.getJSONResult(toString(actual)));
+        result.setExpected(PrettifyStringJson.getJSONResult(compare.getExpected()));
         compare.exec();
         setContextBody(actual.getBody().toString());
     }

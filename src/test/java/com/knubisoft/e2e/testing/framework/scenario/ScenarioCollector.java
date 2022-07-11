@@ -119,7 +119,9 @@ public class ScenarioCollector {
     private void addRepeatCommands(final List<AbstractCommand> updatedCommand,
                                    final Repeat repeatCommand) {
         int times = repeatCommand.getTimes().intValue();
-        IntStream.range(0, times).forEach(e -> updatedCommand.addAll(repeatCommand.getCommands()));
+        for (int i = 0; i < times; i++) {
+           repeatCommand.getCommands().forEach(command -> addAbstractCommand(updatedCommand, command));
+        }
     }
 
     private void walk(final File root, final List<File> scenarios) {

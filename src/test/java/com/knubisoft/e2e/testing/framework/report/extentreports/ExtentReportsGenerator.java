@@ -224,7 +224,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
         if (stepExecutionInfo.isSuccess()) {
             extentTest.pass(MarkupHelper.createLabel(SUCCESS_SCENARIO_MESSAGE, ExtentColor.GREEN));
         } else {
-            extentTest.fail(MarkupHelper.createLabel(stepExecutionInfo.getException().getMessage(), ExtentColor.RED));
+            extentTest.fail(stepExecutionInfo.getException().getMessage());
         }
         extentTest.info(format(STEP_EXECUTION_TIME_TEMPLATE, stepExecutionInfo.getExecutionTime()));
     }

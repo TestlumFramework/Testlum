@@ -99,6 +99,7 @@ public final class LogMessage {
     public static final String POSITION_COMMAND_LOG = ANSI_YELLOW
             + "--------- Scenario step #%d - %s ---------" + ANSI_RESET;
     public static final String UI_COMMAND_LOG = ANSI_CYAN + "------- UI command #{} - {} -------" + ANSI_RESET;
+    public static final String REPEAT_FINISHED_LOG = ANSI_CYAN + "------- Repeat is finished -------" + ANSI_RESET;
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
     public static final String SCENARIO_NUMBER_AND_PATH_LOG = ANSI_GREEN
@@ -114,6 +115,10 @@ public final class LogMessage {
             + "--------------------------------------------------";
     public static final String AUTHENTICATE_WITH_CREDENTIALS_COMMENT = "Authenticate with credentials {}";
     public static final String FAILED_VARIABLE_WITH_PATH_LOG = "Failed [variable] {} [comment] {}";
+    public static final String NO_ACTIVE_SCENARIOS_LOG = ANSI_RED + "There are no active scenarios by enabled tags"
+            + ANSI_RESET;
+    public static final String NO_ENABLE_TAGS_LOG = ANSI_RED + "There are no enable tags in runScriptByTag"
+            + ANSI_RESET;
 
     public static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
     public static final String BY_URL_LOG = format(TABLE_FORMAT, "URL", "{}");
@@ -206,7 +211,14 @@ public final class LogMessage {
     public static final String SHELL_COMMAND_LOG = format(TABLE_FORMAT, "Shell command", "{}");
     public static final String SCROLL_DIRECTION_LOG = format(TABLE_FORMAT, "Direction", "{}");
     public static final String SCROLL_BY_LOG = format(TABLE_FORMAT, "Scroll by", "{}");
-
+    public static final String LINE =
+            "-----------------------------------------------------------------------------------------------------"
+                    + "--------------------------------------------------------------------------------------";
+    public static final String INVALID_SCENARIO_LOG = ANSI_RED + LINE
+            + "\n" + format("%21s", EMPTY) + format(TABLE_FORMAT, "Invalid scenario", "{}") + "\n"
+            + format("%21s", EMPTY) + format(TABLE_FORMAT, "Exception", "{}") + "\n" + format("%21s", EMPTY)
+            + LINE + ANSI_RESET + "\n";
+    public static final String VALID_SCENARIOS_NOT_FOUND = ANSI_RED + "Valid scenarios are not found" + ANSI_RESET;
     public static final String SCROLL_ACTION = "Scroll action";
     public static final String SCROLL_TO_INFO = "Scroll to element with locator %s";
     public static final String SCROLL_INFO = "Scroll %s, by %s, by value %s";
@@ -214,4 +226,8 @@ public final class LogMessage {
     public static final String NOT_ENABLED_BROWSERS = "At least 1 browser must be enabled";
     public static final String BROWSER_VERSION_INVALID = "You didn't specify any browser version, please set the "
             + "'latestVersion' option to true or specify the version manually";
+
+    public static final String TIMES_LOG = format(TABLE_FORMAT, "Times to repeat", "{}");
+    public static final String REPEAT_COMMAND = "Repeat command";
+    public static final String REPEAT_INFO = "Repeat UI commands %d times";
 }

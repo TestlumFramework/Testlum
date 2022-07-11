@@ -32,22 +32,11 @@ public class TestSetCollector {
 
     public Stream<Arguments> collect() {
         ScenarioCollector.Result result = new ScenarioCollector().collect();
-        ScenarioFilter.FiltrationResult filteredScenarios = ScenarioFilter.filterScenarios(result.get());
-        if (filteredScenarios.isOnlyInvalidScenarios()) {
-            return getScenarioArgumentsWithoutUIConfiguration(filteredScenarios.getInvalidScenarios()).stream();
-        }
-        return processFilteredScenarios(filteredScenarios);
-    }
-
-    private Stream<Arguments> processFilteredScenarios(final ScenarioFilter.FiltrationResult filteredScenarios) {
-        List<Arguments> result = uiDisabled()
-                ? getScenarioArgumentsWithoutUIConfiguration(filteredScenarios.getValidScenarios())
-                : getScenarioArguments(filteredScenarios.getValidScenarios());
-        Set<ScenarioCollector.MappingResult> invalidScenarios = filteredScenarios.getInvalidScenarios();
-        if (!invalidScenarios.isEmpty()) {
-            result.addAll(getScenarioArgumentsWithoutUIConfiguration(invalidScenarios));
-        }
-        return result.stream();
+        Set<ScenarioCollector.MappingResult> filteredScenarios = ScenarioFilter.filterScenarios(result.get());
+        List<Arguments> processed = uiDisabled()
+                ? getScenarioArgumentsWithoutUIConfiguration(filteredScenarios)
+                : getScenarioArguments(filteredScenarios);
+        return processed.stream();
     }
 
     private List<Arguments> getScenarioArguments(final Set<ScenarioCollector.MappingResult> scenarios) {

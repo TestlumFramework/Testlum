@@ -8,6 +8,7 @@ import com.knubisoft.e2e.testing.model.scenario.Include;
 import com.knubisoft.e2e.testing.model.scenario.Logout;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.model.scenario.Auth;
+import com.knubisoft.e2e.testing.model.scenario.Repeat;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.IntStream;
 
 @Slf4j
 public class ScenarioCollector {
@@ -78,6 +80,8 @@ public class ScenarioCollector {
             addAuthCommands(updatedCommand, (Auth) command);
         } else if (command instanceof Include) {
             addIncludeCommands(updatedCommand, command);
+        } else if (command instanceof Repeat) {
+            addRepeatCommands(updatedCommand, (Repeat) command);
         } else {
             updatedCommand.add(command);
         }
@@ -110,6 +114,12 @@ public class ScenarioCollector {
         if (GlobalTestConfigurationProvider.provide().getAuth().isAutoLogout()) {
             updatedCommand.add(new Logout());
         }
+    }
+
+    private void addRepeatCommands(final List<AbstractCommand> updatedCommand,
+                                   final Repeat repeatCommand) {
+        int times = repeatCommand.getTimes().intValue();
+        IntStream.range(0, times).forEach(e -> updatedCommand.addAll(repeatCommand.getCommands()));
     }
 
     private void walk(final File root, final List<File> scenarios) {

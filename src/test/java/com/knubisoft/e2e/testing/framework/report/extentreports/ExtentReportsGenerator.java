@@ -66,24 +66,11 @@ public class ExtentReportsGenerator implements ReportGenerator {
         String projectName = extentReportsConfig.getProjectName();
         HtmlReportGenerator htmlReportGeneratorSettings = extentReportsConfig.getHtmlReportGenerator();
         KlovServerReportGenerator klovServerGeneratorSettings = extentReportsConfig.getKlovServerReportGenerator();
-        checkIfReportersEnabledAndAttach(htmlReportGeneratorSettings,
-                klovServerGeneratorSettings,
-                extentReports,
-                projectName);
-    }
-
-    private void checkIfReportersEnabledAndAttach(final HtmlReportGenerator htmlReportGenerator,
-                                                  final KlovServerReportGenerator klovServerReportGenerator,
-                                                  final ExtentReports extentReports,
-                                                  final String projectName) {
-        if (!htmlReportGenerator.isEnable() && !Objects.requireNonNull(klovServerReportGenerator).isEnable()) {
-            throw new DefaultFrameworkException("At least one report generator must be enabled");
-        }
-        if (htmlReportGenerator.isEnable()) {
+        if (htmlReportGeneratorSettings.isEnable()) {
             attachSparkReporter(extentReports, projectName);
         }
-        if (Objects.requireNonNull(klovServerReportGenerator).isEnable()) {
-            attachKlovServerReporter(extentReports, klovServerReportGenerator, projectName);
+        if (klovServerGeneratorSettings != null && klovServerGeneratorSettings.isEnable()) {
+            attachKlovServerReporter(extentReports, klovServerGeneratorSettings, projectName);
         }
     }
 

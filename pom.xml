@@ -38,7 +38,7 @@
         <commons-codec.version>1.15</commons-codec.version>
         <commons-dbutils.version>1.7</commons-dbutils.version>
         <org.junit.jupiter.version>5.8.0</org.junit.jupiter.version>
-        <org.junit.version>4.12</org.junit.version>
+        <org.junit.version>4.13.2</org.junit.version>
         <lombok.version>1.18.18</lombok.version>
         <imagination.comparator.version>1.4</imagination.comparator.version>
         <org.slf4j.api.version>1.7.30</org.slf4j.api.version>

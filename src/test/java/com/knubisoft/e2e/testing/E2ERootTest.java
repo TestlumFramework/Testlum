@@ -1,22 +1,18 @@
 package com.knubisoft.e2e.testing;
 
-import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.e2e.testing.framework.context.SpringTestContext;
 import com.knubisoft.e2e.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.e2e.testing.framework.report.ReportGenerator;
-import com.knubisoft.e2e.testing.framework.report.ReportGeneratorFactory;
 import com.knubisoft.e2e.testing.framework.report.ScenarioResult;
 import com.knubisoft.e2e.testing.framework.scenario.ScenarioRunner;
 import com.knubisoft.e2e.testing.framework.util.FileRemover;
 import com.knubisoft.e2e.testing.model.ScenarioArguments;
 import com.knubisoft.e2e.testing.framework.SystemDataStoreCleaner;
 import com.knubisoft.e2e.testing.framework.TestSetCollector;
-import com.knubisoft.e2e.testing.model.global_config.Report;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,7 +30,6 @@ import org.springframework.test.context.TestContextManager;
 import java.util.stream.Stream;
 
 @SpringBootTest(classes = SpringTestContext.class)
-@Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class E2ERootTest {
     @Autowired
@@ -48,6 +43,9 @@ public class E2ERootTest {
 
     @Autowired
     private GlobalScenarioStatCollector globalScenarioStatCollector;
+
+    @Autowired
+    private ReportGenerator reportGenerator;
 
     public static Stream<Arguments> prepareTestData() {
         return new TestSetCollector().collect();
@@ -96,10 +94,6 @@ public class E2ERootTest {
 
     @AfterAll
     public void afterAll() {
-        Report report = GlobalTestConfigurationProvider.provide().getReport();
-        if (report.isEnabled()) {
-            ReportGenerator reportGenerator = ReportGeneratorFactory.create(report);
-            reportGenerator.generateReport(globalScenarioStatCollector);
-        }
+        reportGenerator.generateReport(globalScenarioStatCollector);
     }
 }

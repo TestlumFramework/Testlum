@@ -12,7 +12,6 @@
         <x:choice>
             <x:element name="extentReports" type="tns:extentReports"/>
         </x:choice>
-        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
 </x:schema>

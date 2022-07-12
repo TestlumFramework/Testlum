@@ -13,7 +13,6 @@ import com.knubisoft.e2e.testing.model.ScenarioArguments;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.report.ScenarioResult;
-import com.knubisoft.e2e.testing.model.scenario.Repeat;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -82,25 +81,10 @@ public class ScenarioRunner {
 
     private void runCommands(final List<AbstractCommand> commands) {
         for (AbstractCommand command : commands) {
-            runCommand(command, result -> {
+            execCommand(command, result -> {
                 scenarioResult.getCommands().add(result);
                 handleException(result);
             });
-        }
-    }
-
-    private void runCommand(final AbstractCommand command, final CommandCallback callback) {
-        if (command instanceof Repeat) {
-            runRepeatCommand((Repeat) command, callback);
-        } else {
-            execCommand(command, callback);
-        }
-    }
-
-    private void runRepeatCommand(final Repeat repeat, final CommandCallback callback) {
-        int times = Integer.parseInt(dependencies.getScenarioContext().inject(repeat.getTimes().toString()));
-        for (int i = 0; i < times; i++) {
-            repeat.getCommands().forEach(command -> runCommand(command, callback));
         }
     }
 

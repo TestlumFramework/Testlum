@@ -142,7 +142,7 @@
                     <x:element name="include" type="tns:include"/>
 <!--                    <x:element name="auth" type="tns:auth"/>-->
                     <x:element name="repeat" type="tns:repeat"/>
-<!--                    <x:element name="ui" type="tns:ui"/>-->
+                    <x:element name="ui" type="tns:ui"/>
                     <x:element name="http" type="tns:http"/>
                     <x:element name="migrate" type="tns:migrate"/>
                     <x:element name="postgres" type="tns:postgres"/>

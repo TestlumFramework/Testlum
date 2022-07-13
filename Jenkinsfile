@@ -7,8 +7,7 @@ pipeline {
         gitParameter(name: 'PULL_REQUESTS_TOOL',
                      type: 'PT_PULL_REQUEST',
                      defaultValue: 'master',
-                     sortMode: 'DESCENDING_SMART'
-                     useRepository: '.*e2e-testing-tool.git')
+                     sortMode: 'DESCENDING_SMART')
         gitParameter(branchFilter: 'origin/(.*)',
                      defaultValue: 'master',
                      name: 'BRANCH_SCENARIOS',

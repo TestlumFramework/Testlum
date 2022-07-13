@@ -41,7 +41,7 @@ pipeline {
     stage('checkout ci tool') {
       steps {
         dir("tool") {
-            git branch: CHANGE_BRANCH, url: GIT_URL, credentialsId: GIT_CREDENTIALS_ID
+            git branch: CHANGE_BRANCH, url: URL_TESTING_TOOL, credentialsId: GIT_CREDENTIALS_ID
             sh 'mkdir -p e2e-testing-scenarios'
             sh 'mkdir -p ${SITE}'
         }

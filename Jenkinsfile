@@ -46,12 +46,9 @@ pipeline {
       steps {
         dir("tool") {
             checkout([$class: 'GitSCM',
-            branches: [[name: "pr/${params.PULL_REQUESTS_TOOL}/head"]],
-            doGenerateSubmoduleConfigurations: false,
-            extensions: [],
+            branches: [[name: "origin/pr/${pullRequestId}/from"]],
             gitTool: 'Default',
-            submoduleCfg: [],
-            userRemoteConfigs: [[refspec: '+refs/pull/*:refs/remotes/origin/pr/*', url: URL_TESTING_TOOL, credentialsId: GIT_CREDENTIALS_ID]]])
+            userRemoteConfigs: [[refspec: '+refs/pull-requests/*:refs/remotes/origin/pr/*', url: URL_TESTING_TOOL, credentialsId: GIT_CREDENTIALS_ID]]])
             sh 'mkdir -p e2e-testing-scenarios'
             sh 'mkdir -p ${SITE}'
         }

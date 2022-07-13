@@ -4,10 +4,6 @@ pipeline {
         ansiColor('vga')
     }
     parameters {
-        gitParameter(name: 'PULL_REQUESTS_TOOL',
-                     type: 'PT_PULL_REQUEST',
-                     defaultValue: 'master',
-                     sortMode: 'DESCENDING_SMART')
         gitParameter(branchFilter: 'origin/(.*)',
                      defaultValue: 'master',
                      name: 'BRANCH_SCENARIOS',
@@ -45,10 +41,7 @@ pipeline {
     stage('checkout ci tool') {
       steps {
         dir("tool") {
-            checkout([$class: 'GitSCM',
-            branches: [[name: "origin/pr/${pullRequestId}/from"]],
-            gitTool: 'Default',
-            userRemoteConfigs: [[refspec: '+refs/pull-requests/*:refs/remotes/origin/pr/*', url: URL_TESTING_TOOL, credentialsId: GIT_CREDENTIALS_ID]]])
+            git branch: CHANGE_BRANCH, url: GIT_URL, credentialsId: GIT_CREDENTIALS_ID
             sh 'mkdir -p e2e-testing-scenarios'
             sh 'mkdir -p ${SITE}'
         }

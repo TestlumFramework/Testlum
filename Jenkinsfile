@@ -1,7 +1,8 @@
 pipeline {
     agent any
-     options {
-        ansiColor('vga')
+    options {
+        ansiColor('gnome-terminal')
+        disableConcurrentBuilds()
     }
     parameters {
         gitParameter(branchFilter: 'origin/(.*)',

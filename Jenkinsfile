@@ -90,13 +90,13 @@ pipeline {
             sh "docker rmi ${SERVICE}:${TAG}"
         }
     }
-    // stage('down site') {
-    //     steps {
-    //         dir("site") {
-    //             sh "docker-compose down"
-    //         }
-    //     }
-    // }
+    stage('down site') {
+        steps {
+            dir("site") {
+                sh "docker-compose down"
+            }
+        }
+    }
 
   }
 }

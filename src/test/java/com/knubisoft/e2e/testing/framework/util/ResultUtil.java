@@ -2,6 +2,7 @@ package com.knubisoft.e2e.testing.framework.util;
 
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
+import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.model.scenario.ElasticSearchRequest;
 import com.knubisoft.e2e.testing.model.scenario.Header;
 import com.knubisoft.e2e.testing.model.scenario.Hovers;
@@ -105,25 +106,35 @@ public class ResultUtil {
     private static final String HEADER_TEMPLATE = "%s: %s";
     private static final String MOVE_TO_EMPTY_SPACE = "Move to empty space after execution";
     private static final String HOVER_NUMBER_TEMPLATE = "Hover #%d";
+    private static final String COMMANDS_FOR_REPEAT = "Commands for repeat";
+    private static final String STEP_FAILED = "Step failed";
 
     public CommandResult createCommandResultForUiSubCommand(final int number, final String name, final String comment) {
-        CommandResult subCommandResult = new CommandResult();
-        subCommandResult.setId(number);
+        CommandResult subCommandResult = createNewCommandResultInstance(number);
         subCommandResult.setCommandKey(name);
         subCommandResult.setComment(comment);
+        return subCommandResult;
+    }
+
+    public CommandResult createNewCommandResultInstance(final int number) {
+        CommandResult subCommandResult = new CommandResult();
+        subCommandResult.setId(number);
         subCommandResult.setSuccess(true);
         return subCommandResult;
     }
 
     public void setExecutionResultIfSubCommandsFailed(final CommandResult result) {
-        Exception exception = result.getSubCommandsResult()
-                .stream()
-                .filter(subCommand -> !subCommand.isSuccess())
-                .findFirst()
-                .map(CommandResult::getException)
-                .orElseGet(DefaultFrameworkException::new);
-        result.setSuccess(false);
-        result.setException(exception);
+        List<CommandResult> subCommandsResult = result.getSubCommandsResult();
+        if (subCommandsResult.stream().anyMatch(step -> !step.isSuccess())) {
+            Exception exception = subCommandsResult
+                    .stream()
+                    .filter(subCommand -> !subCommand.isSuccess())
+                    .findFirst()
+                    .map(CommandResult::getException)
+                    .orElseGet(() -> new DefaultFrameworkException(STEP_FAILED));
+            result.setSuccess(false);
+            result.setException(exception);
+        }
     }
 
     public void addDatabaseMetaData(final String databaseAlias,
@@ -156,10 +167,10 @@ public class ResultUtil {
                                 final HttpInfo httpInfo,
                                 final String httpMethodName,
                                 final CommandResult commandResult) {
-        List<Header> headers = httpInfo.getHeader();
         commandResult.put(API_ALIAS, alias);
         commandResult.put(ENDPOINT, httpInfo.getUrl());
         commandResult.put(HTTP_METHOD, httpMethodName);
+        List<Header> headers = httpInfo.getHeader();
         if (!headers.isEmpty()) {
             addHeaders(headers, commandResult);
         }
@@ -169,10 +180,10 @@ public class ResultUtil {
                                                 final ElasticSearchRequest elasticSearchRequest,
                                                 final String httpMethodName,
                                                 final CommandResult commandResult) {
-        List<Header> headers = elasticSearchRequest.getHeader();
         commandResult.put(ALIAS, alias);
         commandResult.put(ENDPOINT, elasticSearchRequest.getUrl());
         commandResult.put(HTTP_METHOD, httpMethodName);
+        List<Header> headers = elasticSearchRequest.getHeader();
         if (!headers.isEmpty()) {
             addHeaders(headers, commandResult);
         }
@@ -183,10 +194,10 @@ public class ResultUtil {
                                     final SendgridInfo sendgridInfo,
                                     final String httpMethodName,
                                     final CommandResult commandResult) {
-        List<Header> headers = sendgridInfo.getHeader();
         commandResult.put(ALIAS, alias);
         commandResult.put(ENDPOINT, sendgridInfo.getUrl());
         commandResult.put(HTTP_METHOD, httpMethodName);
+        List<Header> headers = sendgridInfo.getHeader();
         if (!headers.isEmpty()) {
             addHeaders(headers, commandResult);
         }
@@ -218,7 +229,7 @@ public class ResultUtil {
 
         result.setCommandKey(RECEIVE);
         result.setComment(COMMENT_FOR_RABBIT_RECEIVE_ACTION);
-        addMessageBrokerGeneralMetaData(alias, RECEIVE, QUEUE, receiveAction.getQueue(),result);
+        addMessageBrokerGeneralMetaData(alias, RECEIVE, QUEUE, receiveAction.getQueue(), result);
         result.put(HEADERS_STATUS, receiveAction.isHeaders() ? ENABLE : DISABLE);
         result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
     }
@@ -303,6 +314,11 @@ public class ResultUtil {
                     String hoverNumber = format(HOVER_NUMBER_TEMPLATE, number.getAndIncrement());
                     result.put(hoverNumber, Arrays.asList(hover.getLocatorId(), hovers.getComment()));
                 });
+    }
+
+    public void addCommandsForRepeat(final List<AbstractCommand> commandsForRepeat, final CommandResult result) {
+        result.put(COMMANDS_FOR_REPEAT, commandsForRepeat.stream()
+                        .map(command -> command.getClass().getSimpleName()).collect(Collectors.toList()));
     }
 
     private void addKafkaAdditionalMetaDataForSendAction(final SendKafkaMessage sendAction,

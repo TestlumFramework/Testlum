@@ -141,9 +141,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
                 .peek(s -> LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), command))
                 .forEach(method -> processEachCommand(command, method, subCommandsResult)));
         result.setSubCommandsResult(subCommandsResult);
-        if (subCommandsResult.stream().anyMatch(subCommand -> !subCommand.isSuccess())) {
-            ResultUtil.setExecutionResultIfSubCommandsFailed(result);
-        }
+        ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
     private void processEachCommand(final AbstractCommand command, final UiInterpreter.UiCommand method,
@@ -164,7 +162,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         } catch (Exception e) {
             result.setSuccess(false);
             result.setException(e);
-            log.error(EXCEPTION_LOG,  e.getMessage());
+            log.error(EXCEPTION_LOG, e.getMessage());
         } finally {
             long execTime = stopWatch.getTime();
             stopWatch.stop();
@@ -386,8 +384,10 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         result.put(NUMBER_OF_REPETITIONS, times);
         log.info(TIMES_LOG, times);
         List<CommandResult> subCommandsResult = new LinkedList<>();
+        List<AbstractCommand> commandsForRepeat = repeat.getClickOrInputOrNavigate();
+        ResultUtil.addCommandsForRepeat(commandsForRepeat, result);
         IntStream.range(0, times)
-                .forEach(e -> runCommands(repeat.getClickOrInputOrNavigate(), result, subCommandsResult));
+                .forEach(e -> runCommands(commandsForRepeat, result, subCommandsResult));
         log.info(REPEAT_FINISHED_LOG);
     }
 

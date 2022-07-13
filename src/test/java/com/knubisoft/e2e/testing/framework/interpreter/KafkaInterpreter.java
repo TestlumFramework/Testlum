@@ -66,17 +66,13 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         int actionNumber = 1;
         for (Object action : kafka.getSendOrReceive()) {
-            CommandResult subCommandResult = new CommandResult();
-            subCommandResult.setId(actionNumber);
-            subCommandResult.setSuccess(true);
+            CommandResult subCommandResult = ResultUtil.createNewCommandResultInstance(actionNumber);
             processEachAction(action, kafka.getAlias(), subCommandResult);
             subCommandsResult.add(subCommandResult);
             actionNumber++;
         }
         result.setSubCommandsResult(subCommandsResult);
-        if (subCommandsResult.stream().anyMatch(subCommand -> !subCommand.isSuccess())) {
-            ResultUtil.setExecutionResultIfSubCommandsFailed(result);
-        }
+        ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
     private void processEachAction(final Object action,
@@ -88,7 +84,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         } catch (Exception e) {
             subCommandResult.setSuccess(false);
             subCommandResult.setException(e);
-            log.error(EXCEPTION_LOG,  e.getMessage());
+            log.error(EXCEPTION_LOG, e.getMessage());
         } finally {
             subCommandResult.setExecutionTime(stopWatch.getTime());
             stopWatch.stop();

@@ -13,11 +13,11 @@ import java.util.Objects;
 @UtilityClass
 public class ReportGeneratorFactory {
 
-    public ReportGenerator create(Report report) {
+    public ReportGenerator create(final Report report) {
         if (Objects.nonNull(report.getExtentReports())) {
             checkExtentReportsGenerators(report.getExtentReports());
             return new ExtentReportsGenerator();
-        }
+        } //add a new branch if another implementation is needed
         throw new UnsupportedOperationException("Report generator type is not supported");
     }
 
@@ -25,7 +25,7 @@ public class ReportGeneratorFactory {
         HtmlReportGenerator htmlReportGenerator = extentReports.getHtmlReportGenerator();
         KlovServerReportGenerator klovServerReportGenerator = extentReports.getKlovServerReportGenerator();
         if (!htmlReportGenerator.isEnable()) {
-            if (klovServerReportGenerator == null || !klovServerReportGenerator.isEnable()) {
+            if (Objects.isNull(klovServerReportGenerator) || !klovServerReportGenerator.isEnable()) {
                 throw new DefaultFrameworkException("At least one report generator must be enabled");
             }
         }

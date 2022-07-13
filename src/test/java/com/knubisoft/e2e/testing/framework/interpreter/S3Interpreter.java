@@ -8,7 +8,6 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
-import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.S3;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;

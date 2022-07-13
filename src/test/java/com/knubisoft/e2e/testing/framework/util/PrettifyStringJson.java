@@ -10,8 +10,9 @@ import org.apache.commons.lang3.StringUtils;
 @UtilityClass
 public class PrettifyStringJson {
 
+    //use this method only to add value to CommandResult
     public String getJSONResult(final String json) {
-        if (StringUtils.isEmpty(json)){
+        if (StringUtils.isEmpty(json)) {
             return getPrettyJSON("null");
         }
         return getPrettyJSON(json);

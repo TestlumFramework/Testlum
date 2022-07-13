@@ -4,7 +4,6 @@ import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfiguration
 import com.knubisoft.e2e.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.e2e.testing.framework.report.ReportGenerator;
 import com.knubisoft.e2e.testing.framework.report.ReportGeneratorFactory;
-import com.knubisoft.e2e.testing.model.global_config.Report;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

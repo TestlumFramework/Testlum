@@ -72,7 +72,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     private Response getActual(final SendgridInfo sendgridInfo,
                                final Method method,
                                final String alias,
-                               CommandResult result) {
+                               final CommandResult result) {
         String body = getBody(sendgridInfo);
         Request request = new Request();
         request.setMethod(method);

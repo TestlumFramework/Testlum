@@ -9,7 +9,6 @@ import com.knubisoft.e2e.testing.framework.util.ImageCompressor;
 import com.knubisoft.e2e.testing.model.pages.Locator;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
-import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;

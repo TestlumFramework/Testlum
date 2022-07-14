@@ -9,6 +9,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
+import com.knubisoft.e2e.testing.framework.util.DataSearcher;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.model.scenario.CsvCommands;
 import lombok.extern.slf4j.Slf4j;
@@ -52,9 +53,10 @@ public class CsvInterpreter extends AbstractInterpreter<CsvCommands> {
     }
 
     private File getCsvFileByPath(final String pathToFile) {
-        FileSearcher fileSearcher = dependencies.getFileSearcher();
-        File csvFolder = TestResourceSettings.getInstance().getCsvFolder();
-        return fileSearcher.search(csvFolder, pathToFile);
+//        FileSearcher fileSearcher = dependencies.getFileSearcher();
+//        File csvFolder = TestResourceSettings.getInstance().getCsvFolder();
+//        return fileSearcher.search(csvFolder, pathToFile);
+        return DataSearcher.fileByNameAndExtension(pathToFile);
     }
 
     private List<String> readAllLines(final File csvFile) {

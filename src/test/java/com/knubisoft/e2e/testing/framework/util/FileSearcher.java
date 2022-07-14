@@ -80,12 +80,6 @@ public final class FileSearcher {
     }
 
     @SneakyThrows
-    public String searchFileAndReadToString(final String name) {
-        Preconditions.checkNotNull(fromDir);
-        return FileUtils.readFileToString(search(fromDir, name), StandardCharsets.UTF_8);
-    }
-
-    @SneakyThrows
     public String searchFileAndReadToString(final File fromDir, final String name) {
         Preconditions.checkNotNull(fromDir);
         return FileUtils.readFileToString(search(fromDir, name), StandardCharsets.UTF_8);

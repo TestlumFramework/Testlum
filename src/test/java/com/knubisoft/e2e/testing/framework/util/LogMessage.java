@@ -25,7 +25,6 @@ public final class LogMessage {
     public static final String INCORRECT_SQS_PROCESSING = "Incorrect SQS processing";
     public static final String DESTINATION_LOG = format(TABLE_FORMAT, "Destination", "{}");
     public static final String SOURCE_LOG = format(TABLE_FORMAT, "Source", "{}");
-    public static final String ELASTICSEARCH_METHOD_AND_URL_LOG = "Elasticsearch {} request. URL - {}";
     public static final String COMPARISON_FOR_STEP_WAS_SKIPPED = "Comparison for step [%s] was skipped";
     public static final String NAME_FOR_MIGRATION_MUST_PRESENT = "Data storage name for migration must present";
     public static final String SLOW_COMMAND_PROCESSING = "Slow command processing detected. "
@@ -52,15 +51,6 @@ public final class LogMessage {
     public static final String FUNCTION_FOR_COMMAND_NOT_FOUND = "Function for class %s not found. "
             + "Please register algorithm for interpreter";
 
-    public static final String FILE_NOT_FOUND_WITH_CREDS = "File with credentials for authentication "
-            + "not found by path: %s";
-
-    public static final String UNABLE_AUTHENTICATE_WITH_CREDS = "Unable to authenticate with credentials%n"
-            + "Email:%s%n"
-            + "Password:%s%n"
-            + "=========================%n"
-            + "Exception%n%s%n";
-
     public static final String UNABLE_FIND_FILE_IN_ROOT_FOLDER = "Unable to find file by key [%1$s] "
             + "Initial scan folder [%2$s] with strategy recursive walk to root folder [%3$s]";
 
@@ -78,15 +68,8 @@ public final class LogMessage {
     public static final String UNKNOWN_METHOD = "Unknown method %s";
     public static final String PAGES_FOLDER_NOT_EXIST = "Pages folder does not exist";
     public static final String COMPONENTS_FOLDER_NOT_EXIST = "Components folder does not exist";
-    public static final String SHELL_FOLDER_NOT_EXIST = "Shell folder does not exist";
     public static final String SCENARIOS_FOLDER_NOT_EXIST = "Scenarios folder does not exist";
-    public static final String VARIATIONS_FOLDER_NOT_EXIST = "Variations folder does not exist";
-    public static final String PATCHES_FOLDER_NOT_EXIST = "Patches folder does not exist";
-    public static final String CREDENTIALS_FOLDER_NOT_EXIST = "Credentials folder does not exist";
     public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
-    public static final String TEST_BY_PATH_DISABLED = "Test by path %s is disabled";
-    public static final String EXCEL_FOLDER_NOT_EXIST = "Excel folder does not exist";
-    public static final String CSV_FOLDER_NOT_EXIST = "CSV folder does not exist";
 
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_RED = "\u001B[31m";
@@ -124,7 +107,6 @@ public final class LogMessage {
     public static final String BY_URL_LOG = format(TABLE_FORMAT, "URL", "{}");
     public static final String RETHROWN_ERRORS_LOG = "Errors:%n %s";
     public static final String FAILED_VISITING_PATH_LOG = "Failed to visit path {}";
-    public static final String REPEAT_COMMENT = "Repeat following steps";
 
     public static final String BROKER_ACTION_INFO_LOG = format(TABLE_FORMAT,
             "Action", "{}") + format("%n%19s| ", EMPTY) + format(TABLE_FORMAT, "Queue", "{}")

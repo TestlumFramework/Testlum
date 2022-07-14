@@ -226,4 +226,5 @@ public final class LogMessage {
 
     public static final String LOCAL_STORAGE_KEY = format(TABLE_FORMAT, "Local storage key", "{}");
     public static final String CLEAR_COOKIES_AFTER = format(TABLE_FORMAT, "Clear cookies after", "{}");
+    public static final String EXECUTION_RESULT = "All scenarios passed successfully - {}";
 }

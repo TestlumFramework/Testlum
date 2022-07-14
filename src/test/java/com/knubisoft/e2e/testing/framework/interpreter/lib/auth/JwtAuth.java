@@ -1,7 +1,6 @@
 package com.knubisoft.e2e.testing.framework.interpreter.lib.auth;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.AuthUtil;
@@ -13,9 +12,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.AUTHENTICATION_TYPE;
+
 @Slf4j
 public class JwtAuth extends AbstractAuthStrategy {
 
+    private static final String TYPE = "JWT";
     private static final String BEARER_PREFIX = "Bearer ";
     private final InterpreterDependencies interpreterDependencies;
 
@@ -28,7 +30,7 @@ public class JwtAuth extends AbstractAuthStrategy {
     public void authenticate(final Auth auth, final CommandResult result) {
         String body = prepareBody(auth);
         String token = getJwtToken(body, auth);
-        result.put("Auth-type", BEARER_PREFIX.replaceAll(DelimiterConstant.SPACE, DelimiterConstant.EMPTY));
+        result.put(AUTHENTICATION_TYPE, TYPE);
         login(token, BEARER_PREFIX);
     }
 

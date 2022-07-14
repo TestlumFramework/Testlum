@@ -11,6 +11,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.DataSearcher;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.CsvCommands;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.platform.commons.util.StringUtils;
@@ -19,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,10 +40,14 @@ public class CsvInterpreter extends AbstractInterpreter<CsvCommands> {
 
     @Override
     protected void acceptImpl(final CsvCommands csvCommands, final CommandResult result) {
-        List<Source> sources = csvCommands.getCsvFile().stream()
+        String alias = csvCommands.getAlias();
+        List<String> csvFiles = csvCommands.getCsvFile();
+        ResultUtil.addMigrateMetaData(ResultUtil.POSTGRES, alias, csvFiles, result);
+        List<Source> sources = csvFiles.stream()
                 .map(this::getSource)
                 .collect(Collectors.toList());
-        applyPatches(csvCommands, result, sources);
+        log.info(ALIAS_LOG, alias);
+        postgresSqlOperation.apply(sources, alias);
     }
 
     private Source getSource(final String csvFile) {
@@ -89,12 +93,5 @@ public class CsvInterpreter extends AbstractInterpreter<CsvCommands> {
             throw new IllegalArgumentException("Please, fill some values to create a SQL statement");
         }
         return subColumns;
-    }
-
-    private void applyPatches(final CsvCommands csvCommands, final CommandResult result,
-                              final List<Source> sources) {
-        log.info(ALIAS_LOG, csvCommands.getAlias());
-        result.put("patches", new ArrayList<>(sources));
-        postgresSqlOperation.apply(sources, csvCommands.getAlias());
     }
 }

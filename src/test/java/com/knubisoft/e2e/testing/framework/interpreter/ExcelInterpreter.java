@@ -9,6 +9,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependenci
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.ExcelCommands;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -44,18 +45,19 @@ public class ExcelInterpreter extends AbstractInterpreter<ExcelCommands> {
 
     @Override
     protected void acceptImpl(final ExcelCommands excelCommands, final CommandResult result) {
-        excelCommands.getExcelFile().forEach(excelFile -> {
-            applyExcelQueriesOrThrow(excelFile, excelCommands, result);
+        String alias = excelCommands.getAlias();
+        List<String> excelFiles = excelCommands.getExcelFile();
+        ResultUtil.addMigrateMetaData(ResultUtil.POSTGRES, alias, excelFiles, result);
+        excelFiles.forEach(excelFile -> {
+            applyExcelQueriesOrThrow(excelFile, alias);
         });
     }
 
-    private void applyExcelQueriesOrThrow(final String excelFile, final ExcelCommands excelCommands,
-                                          final CommandResult result) {
+    private void applyExcelQueriesOrThrow(final String excelFile, final String alias) {
         try {
             List<String> queries = getQueries(excelFile);
-            log.info(ALIAS_LOG, excelCommands.getAlias());
-            postgresSqlOperation.apply(new ListSource(queries), excelCommands.getAlias());
-            result.put("patches", new ArrayList<>(queries));
+            log.info(ALIAS_LOG, alias);
+            postgresSqlOperation.apply(new ListSource(queries), alias);
         } catch (Exception ioe) {
             throw new RuntimeException("Can't create workbook class. Please, check "
                     + "if the extension of the file is correct (.xls or .xlsx)");

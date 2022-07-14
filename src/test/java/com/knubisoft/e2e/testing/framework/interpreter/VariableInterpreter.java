@@ -6,6 +6,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.PostgresResult;
 import com.knubisoft.e2e.testing.model.scenario.Var;
 import com.knubisoft.e2e.testing.framework.db.StorageOperation;
@@ -30,6 +31,12 @@ import java.util.Objects;
 
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.FAILED_VARIABLE_WITH_PATH_LOG;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.CONSTANT;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.EXPRESSION;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.JSON_PATH;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.NO_EXPRESSION;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.POSTGRES_QUERY;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.XPATH;
 import static java.lang.String.format;
 
 @Slf4j
@@ -56,37 +63,33 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     private void setContextVariable(final Var o, final CommandResult result) {
         ScenarioContext context = dependencies.getScenarioContext();
         String value = getValueForContext(o, context, result);
-        result.put("key", o.getName());
-        result.put("value", value);
         context.set(o.getName(), value);
         LogUtil.logVarInfo(o.getName(), value);
     }
 
     //CHECKSTYLE:OFF
     private String getValueForContext(final Var o, final ScenarioContext context, final CommandResult result) {
+        String value;
         if (o.getJpath() != null) {
-            result.put("type", "json path");
-            result.put("expression", o.getJpath());
             DocumentContext contextBody = JsonPath.parse(context.getBody());
-            return contextBody.read(o.getJpath()).toString();
+            value = contextBody.read(o.getJpath()).toString();
+            ResultUtil.addVariableMetaData(JSON_PATH, o.getName(), o.getJpath(), value, result);
         } else if (o.getXpath() != null) {
-            result.put("type", "xml path");
-            result.put("expression", o.getXpath());
             WebDriver webDriver = dependencies.getWebDriver();
-            return webDriver.findElement(By.xpath(o.getXpath())).getText();
+            value = webDriver.findElement(By.xpath(o.getXpath())).getText();
+            ResultUtil.addVariableMetaData(XPATH, o.getName(), o.getXpath(), value, result);
         } else if (o.getPostgresResult() != null) {
-            result.put("type", "postgres query");
-            result.put("expression", o.getPostgresResult().getQuery());
-            return getActualPostgresResult(o.getPostgresResult(), result);
+            value = getActualPostgresResult(o.getPostgresResult(), result);
+            ResultUtil.addVariableMetaData(POSTGRES_QUERY,
+                    o.getName(), o.getPostgresResult().getQuery(), value, result);
         } else if (o.getExpression() != null) {
-            result.put("type", "expression");
-            result.put("expression", o.getExpression());
-            return getExpressionResult(o.getExpression());
+            value = getExpressionResult(o.getExpression());
+            ResultUtil.addVariableMetaData(EXPRESSION, o.getName(), o.getExpression(), value, result);
         } else {
-            result.put("type", "constant");
-            result.put("expression", "no expression");
-            return inject(o.getValue());
+            value = inject(o.getValue());
+            ResultUtil.addVariableMetaData(CONSTANT, o.getName(), NO_EXPRESSION, value, result);
         }
+        return value;
     }
 
     private String getExpressionResult(final String expression) {

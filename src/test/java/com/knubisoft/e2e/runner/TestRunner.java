@@ -17,7 +17,7 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 public class TestRunner {
 
     public static void main(final String[] args) {
-//        ArgumentsUtils.validateInputArguments(args);
+        ArgumentsUtils.validateInputArguments(args);
         String configFileName = ArgumentsUtils.getConfigurationFileName(args[0]);
         String pathToTestResources = ArgumentsUtils.getPathToTestResources(args[1]);
         TestResourceSettings.init(configFileName, pathToTestResources);

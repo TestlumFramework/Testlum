@@ -10,6 +10,7 @@ import com.amazonaws.services.simpleemail.model.VerifyEmailAddressRequest;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.Ses;
 import com.knubisoft.e2e.testing.model.scenario.SesMessage;
 import com.knubisoft.e2e.testing.model.scenario.SesTextContent;
@@ -35,6 +36,7 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
     @Override
     protected void acceptImpl(final Ses ses, final CommandResult result) {
         LogUtil.logSesInfo(ses);
+        ResultUtil.addSesMetaData(ses, result);
         verify(ses);
         sendEmail(ses);
     }

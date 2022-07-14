@@ -9,11 +9,11 @@ import com.knubisoft.e2e.testing.framework.db.sql.PostgresSqlOperation;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.Postgres;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,11 +43,12 @@ public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
     }
 
     protected String getActual(final Postgres postgres, final CommandResult result) {
+        String alias = postgres.getAlias();
         List<String> queries = getSqlList(postgres);
-        LogUtil.logAllQueries(queries, postgres.getAlias());
-        result.put("queries", new ArrayList<>(queries));
+        LogUtil.logAllQueries(queries, alias);
+        ResultUtil.addDatabaseMetaData(alias, queries, result);
         StorageOperation.StorageOperationResult applyPostgres =
-                postgresSqlOperation.apply(new ListSource(queries), inject(postgres.getAlias()));
+                postgresSqlOperation.apply(new ListSource(queries), inject(alias));
         return toString(applyPostgres.getRaw());
     }
 

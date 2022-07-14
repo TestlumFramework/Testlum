@@ -15,10 +15,10 @@ public class WaitUtil {
     public TimeUnit getTimeUnit(final Unit unit, final CommandResult result) {
         switch (unit) {
             case MILLIS:
-                result.put("unit", "milliseconds");
+                result.put("Unit", "milliseconds");
                 return TimeUnit.MILLISECONDS;
             case SECONDS:
-                result.put("unit", "seconds");
+                result.put("Unit", "seconds");
                 return TimeUnit.SECONDS;
             default:
                 throw new DefaultFrameworkException(UNKNOWN_TYPE, unit.value());

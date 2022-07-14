@@ -32,7 +32,7 @@ public final class CSVParser {
         TestResourceSettings settings = TestResourceSettings.getInstance();
         File file = new FileSearcher(
                 settings.getTestResourcesFolder(),
-                settings.getVariationsFolder(), false).search(variationFileName);
+               null, false).fileByNameAndExtension(variationFileName);
         FileInputStream fileInputStream = new FileInputStream(file);
 
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);

@@ -47,20 +47,16 @@ import static java.lang.String.format;
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private final FileSearcher fileSearcher;
-    private final File patchesFolder;
-    private final TestResourceSettings testResourceSettings;
 
 
     public ScenarioValidator(final FileSearcher fileSearcher) {
         this.fileSearcher = fileSearcher;
-        this.testResourceSettings = TestResourceSettings.getInstance();
-        this.patchesFolder = testResourceSettings.getPatchesFolder();
 
         Map<AbstractCommandPredicate, AbstractCommandValidator> validatorMap = new HashMap<>();
 
         validatorMap.put(o -> o instanceof Auth, (xmlFile, command) -> {
             Auth auth = (Auth) command;
-            validateFileExistence(testResourceSettings.getCredentialsFolder(), auth.getCredentials());
+            validateFileExistence(auth.getCredentials());
         });
 
         validatorMap.put(o -> o instanceof Http, (xmlFile, command) -> {
@@ -91,32 +87,32 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         validatorMap.put(o -> o instanceof com.knubisoft.e2e.testing.model.scenario.Postgres, (xmlFile, command) -> {
             com.knubisoft.e2e.testing.model.scenario.Postgres postgres =
                     (com.knubisoft.e2e.testing.model.scenario.Postgres) command;
-            validateFileExistence(xmlFile, postgres.getFile());
+            validateFileExistence(postgres.getFile());
         });
 
         validatorMap.put(o -> o instanceof Mysql, (xmlFile, command) -> {
             Mysql mysql = (Mysql) command;
-            validateFileExistence(xmlFile, mysql.getFile());
+            validateFileExistence(mysql.getFile());
         });
 
         validatorMap.put(o -> o instanceof Oracle, (xmlFile, command) -> {
             Oracle oracle = (Oracle) command;
-            validateFileExistence(xmlFile, oracle.getFile());
+            validateFileExistence(oracle.getFile());
         });
 
         validatorMap.put(o -> o instanceof Redis, (xmlFile, command) -> {
             Redis redis = (Redis) command;
-            validateFileExistence(xmlFile, redis.getFile());
+            validateFileExistence(redis.getFile());
         });
 
         validatorMap.put(o -> o instanceof Mongo, (xmlFile, command) -> {
             Mongo mongo = (Mongo) command;
-            validateFileExistence(xmlFile, mongo.getFile());
+            validateFileExistence(mongo.getFile());
         });
 
         validatorMap.put(o -> o instanceof Dynamo, (xmlFile, command) -> {
             Dynamo dynamo = (Dynamo) command;
-            validateFileExistence(xmlFile, dynamo.getFile());
+            validateFileExistence(dynamo.getFile());
         });
     }
 
@@ -129,9 +125,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         validatePostgresTests(scenario, xmlFile);
     }
 
-    private void validateFileExistence(final File xmlFile, final String commandFile) {
+    private void validateFileExistence(final String commandFile) {
         if (org.springframework.util.StringUtils.hasText(commandFile)) {
-            fileSearcher.search(xmlFile, commandFile);
+            fileSearcher.fileByNameAndExtension(commandFile);
         }
     }
 
@@ -156,7 +152,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateExistsPatches(final Migrate migrate) {
         List<String> patches = migrate.getPatches();
-        patches.forEach(each -> fileSearcher.search(testResourceSettings.getPatchesFolder(), each));
+        patches.forEach(fileSearcher::fileByNameAndExtension);
     }
 
     private void validateHttpCommand(final Http http, final File xmlFile) {
@@ -310,12 +306,12 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private boolean arePatchesMutating(final Migrate migrate) {
         return migrate.getPatches()
                 .stream()
-                .map(each -> createFileSource(patchesFolder, each))
+                .map(each -> createFileSource(each))
                 .anyMatch(i -> isQueryContainsMutatingAction(i.getQueries()));
     }
 
-    private FileSource createFileSource(final File patchesFolder, final String patchFileName) {
-        return new FileSource(new File(patchesFolder, patchFileName));
+    private FileSource createFileSource(final String patchFileName) {
+        return new FileSource(fileSearcher.fileByNameAndExtension(patchFileName));
     }
 
     private boolean isHttpContainsMutatingAction(final Http command) {

@@ -78,6 +78,7 @@ public final class LogMessage {
     public static final String EXCEL_FOLDER_NOT_EXIST = "[excel] folder does not exist";
     public static final String CSV_FOLDER_NOT_EXIST = "[csv] folder does not exist";
     public static final String JAVASCRIPT_FOLDER_NOT_EXIST = "[javascript] folder does not exist";
+    public static final String DATA_FOLDER_NOT_EXIST = "[data] folder does not exist";
 
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_RED = "\u001B[31m";

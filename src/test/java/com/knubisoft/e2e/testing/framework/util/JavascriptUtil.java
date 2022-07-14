@@ -1,6 +1,5 @@
 package com.knubisoft.e2e.testing.framework.util;
 
-import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.model.scenario.ScrollDirection;
@@ -60,7 +59,7 @@ public class JavascriptUtil {
 
     public String readCommands(final String filePath, final FileSearcher fileSearcher) {
         try {
-            File jsFile = fileSearcher.search(TestResourceSettings.getInstance().getJavascriptFolder(), filePath);
+            File jsFile = fileSearcher.fileByNameAndExtension(filePath);
             List<String> commands = Files.readAllLines(jsFile.toPath());
             return String.join(EMPTY, commands);
         } catch (IOException e) {

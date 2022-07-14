@@ -1,6 +1,5 @@
 package com.knubisoft.e2e.testing.framework.interpreter;
 
-import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.db.source.ListSource;
 import com.knubisoft.e2e.testing.framework.db.sql.PostgresSqlOperation;
@@ -89,8 +88,7 @@ public class ExcelInterpreter extends AbstractInterpreter<ExcelCommands> {
 
     private File getExcelFileByPath(final String pathToFile) {
         FileSearcher fileSearcher = dependencies.getFileSearcher();
-        File excelFolder = TestResourceSettings.getInstance().getExcelFolder();
-        return fileSearcher.search(excelFolder, pathToFile);
+        return fileSearcher.fileByNameAndExtension(pathToFile);
     }
 
     private void populateQueries(final Sheet sheet, final List<String> queries) {

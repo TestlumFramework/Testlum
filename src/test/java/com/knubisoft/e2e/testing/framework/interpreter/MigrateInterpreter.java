@@ -1,6 +1,5 @@
 package com.knubisoft.e2e.testing.framework.interpreter;
 
-import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
@@ -62,15 +61,13 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     }
 
     private List<Source> createSourceList(final List<String> patches) {
-        File patchesFolder = TestResourceSettings.getInstance().getPatchesFolder();
         return patches.stream()
-                .map(each -> createFileSource(patchesFolder, each))
+                .map(this::createFileSource)
                 .collect(Collectors.toList());
     }
 
-    private FileSource createFileSource(final File patchesFolder,
-                                        final String patchFileName) {
-        File patch = new File(patchesFolder, patchFileName);
+    private FileSource createFileSource(final String patchFileName) {
+        File patch = dependencies.getFileSearcher().fileByNameAndExtension(patchFileName);
         log.info(PATCH_PATH_LOG, patch.getAbsolutePath());
         return new FileSource(patch);
     }

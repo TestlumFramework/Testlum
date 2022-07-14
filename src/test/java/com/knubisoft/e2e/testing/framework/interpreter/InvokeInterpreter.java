@@ -27,7 +27,7 @@ public class InvokeInterpreter extends AbstractInterpreter<Invoke> {
     @Override
     protected void acceptImpl(final Invoke o, final CommandResult result) {
         if (o.getClassFunction() != null) {
-            result.put("function", o.getClassFunction());
+            result.put("Function", o.getClassFunction());
             acceptClassFunction(o, result);
         } else if (o.getTarget() != null) {
             throw new UnsupportedOperationException("TODO");

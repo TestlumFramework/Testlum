@@ -8,6 +8,8 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependenci
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
+import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.Clickhouse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,19 +35,20 @@ public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
                 .withActual(actual)
                 .withExpectedFile(clickhouse.getFile());
 
-        result.setExpected(comparator.getExpected());
-        result.setActual(actual);
+        result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
+        result.setActual(PrettifyStringJson.getJSONResult(actual));
 
         comparator.exec();
         setContextBody(actual);
     }
 
     protected String getActual(final Clickhouse clickhouse, final CommandResult result) {
-        List<String> sqls = getSqlList(clickhouse);
-        LogUtil.logAllQueries(sqls, clickhouse.getAlias());
-        result.put("sqls", sqls);
-        StorageOperation.StorageOperationResult applyClickhouse = clickhouseOperation.apply(new ListSource(sqls),
-                clickhouse.getAlias());
+        String alias = clickhouse.getAlias();
+        List<String> queries = getSqlList(clickhouse);
+        LogUtil.logAllQueries(queries, alias);
+        ResultUtil.addDatabaseMetaData(alias, queries, result);
+        StorageOperation.StorageOperationResult applyClickhouse = clickhouseOperation.apply(new ListSource(queries),
+                alias);
         return toString(applyClickhouse.getRaw());
     }
 

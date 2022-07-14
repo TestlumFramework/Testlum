@@ -9,13 +9,13 @@ import com.knubisoft.e2e.testing.framework.db.source.FileSource;
 import com.knubisoft.e2e.testing.framework.db.source.Source;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.Migrate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,21 +39,21 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     @Override
     protected void acceptImpl(final Migrate migrate, final CommandResult result) {
         String storageName = migrate.getName().name();
-        result.put("name", storageName);
+        String alias = migrate.getAlias();
+        List<String> patches = migrate.getPatches();
+        ResultUtil.addMigrateMetaData(storageName, alias, patches, result);
         if (StringUtils.isBlank(storageName)) {
             throw new DefaultFrameworkException(NAME_FOR_MIGRATION_MUST_PRESENT);
         }
-        log.info(ALIAS_LOG, migrate.getAlias());
-        migrate(migrate, storageName, migrate.getAlias(), result);
+        log.info(ALIAS_LOG, alias);
+        migrate(patches, storageName, alias);
     }
 
-    private void migrate(final Migrate migrate,
+    private void migrate(final List<String> patches,
                          final String storageName,
-                         final String databaseName,
-                         final CommandResult result) {
+                         final String databaseName) {
         try {
-            List<Source> sourceList = createSourceList(migrate);
-            result.put("patches", new ArrayList<>(sourceList));
+            List<Source> sourceList = createSourceList(patches);
             applyPatches(sourceList, storageName, databaseName);
         } catch (Exception e) {
             log.error(ERROR_DURING_DB_MIGRATION_LOG, e);
@@ -61,9 +61,9 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
         }
     }
 
-    private List<Source> createSourceList(final Migrate migrate) {
+    private List<Source> createSourceList(final List<String> patches) {
         File patchesFolder = TestResourceSettings.getInstance().getPatchesFolder();
-        return migrate.getPatches().stream()
+        return patches.stream()
                 .map(each -> createFileSource(patchesFolder, each))
                 .collect(Collectors.toList());
     }

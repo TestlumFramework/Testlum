@@ -5,6 +5,8 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependenci
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.http.ApiResponse;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
+import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.Header;
 import com.knubisoft.e2e.testing.model.scenario.Sendgrid;
 import com.knubisoft.e2e.testing.model.scenario.SendgridWithBody;
@@ -26,6 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.ACTUAL_CODE;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.CONTENT_TO_SEND;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.EXPECTED_CODE;
+
 @Slf4j
 @InterpreterForClass(Sendgrid.class)
 public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
@@ -37,26 +43,21 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         super(dependencies);
     }
 
-    //CHECKSTYLE:OFF
     @Override
     protected void acceptImpl(final Sendgrid sendgrid, final CommandResult result) {
+        String alias = sendgrid.getAlias();
         SendGridUtil.SendGridMethodMetadata metadata = SendGridUtil.getSendgridMethodMetadata(sendgrid);
         SendgridInfo sendgridInfo = metadata.getHttpInfo();
         Method method = metadata.getHttpMethod();
-        String url = inject(sendgridInfo.getUrl());
-        result.put("url", url);
-        result.put("method", method.name());
+        ResultUtil.addSendGridMetaData(alias, sendgridInfo, method.name(), result);
         ApiResponse expected = getExpected(sendgridInfo);
-        result.setExpected(expected.getBody().toString());
-        result.put("expected_code", expected.getCode());
-        Response actual = getActual(sendgridInfo, method, sendgrid.getAlias());
-        result.setActual(actual.getBody());
-        result.put("actual_code", actual.getStatusCode());
-        compare(expected, actual);
+        Response actual = getActual(sendgridInfo, method, alias, result);
+        result.setExpected(PrettifyStringJson.getJSONResult(toString(expected.getBody())));
+        result.setActual(PrettifyStringJson.getJSONResult(toString(actual.getBody())));
+        compare(expected, actual, result);
         setContextBody(actual.getBody());
     }
 
-    //CHECKSTYLE:ON
     protected ApiResponse getExpected(final SendgridInfo sendgridInfo) {
         com.knubisoft.e2e.testing.model.scenario.Response response = sendgridInfo.getResponse();
         Map<String, String> headers = getHeaders(sendgridInfo);
@@ -68,17 +69,26 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     }
 
     @SneakyThrows
-    private Response getActual(final SendgridInfo sendgridInfo, final Method method, final String alias) {
+    private Response getActual(final SendgridInfo sendgridInfo,
+                               final Method method,
+                               final String alias,
+                               final CommandResult result) {
+        String body = getBody(sendgridInfo);
         Request request = new Request();
         request.setMethod(method);
         request.setEndpoint(sendgridInfo.getUrl());
-        request.setBody(getBody(sendgridInfo));
+        request.setBody(body);
+        result.put(CONTENT_TO_SEND, PrettifyStringJson.getJSONResult(body));
         LogUtil.logHttpInfo(alias, method.name(), sendgridInfo.getUrl());
         LogUtil.logBody(request.getBody());
         return sendGrid.get(alias).api(request);
     }
 
-    private void compare(final ApiResponse expected, final Response actual) {
+    private void compare(final ApiResponse expected, final Response actual, final CommandResult result) {
+        int expectedCode = expected.getCode();
+        int actualCode = actual.getStatusCode();
+        result.put(EXPECTED_CODE, expectedCode);
+        result.put(ACTUAL_CODE, actualCode);
         HttpValidator httpValidator = new HttpValidator(this);
         httpValidator.validateCode(expected.getCode(), actual.getStatusCode());
         httpValidator.validateBody(expected.getBody().toString(), actual.getBody());

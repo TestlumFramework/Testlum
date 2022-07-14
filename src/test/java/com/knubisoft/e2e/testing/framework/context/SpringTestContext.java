@@ -1,7 +1,9 @@
 package com.knubisoft.e2e.testing.framework.context;
 
+import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.e2e.testing.framework.report.ReportGenerator;
+import com.knubisoft.e2e.testing.framework.report.ReportGeneratorFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +31,7 @@ public class SpringTestContext {
     }
 
     @Bean
-    public ReportGenerator createReportConfiguration() {
-        return new ReportGenerator();
+    public ReportGenerator reportGenerator() {
+        return ReportGeneratorFactory.create(GlobalTestConfigurationProvider.provide().getReport());
     }
 }

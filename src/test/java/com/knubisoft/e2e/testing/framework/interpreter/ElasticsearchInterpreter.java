@@ -4,6 +4,8 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
+import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.ElasticSearchRequestWithBody;
 import com.knubisoft.e2e.testing.model.scenario.Elasticsearch;
 import com.knubisoft.e2e.testing.model.scenario.Header;
@@ -50,15 +52,14 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         HttpUtil.ESHttpMethodMetadata esHttpMethodMetadata = HttpUtil.getESHttpMethodMetadata(elasticsearch);
         ElasticSearchRequest elasticSearchRequest = esHttpMethodMetadata.getElasticSearchRequest();
         HttpMethod httpMethod = esHttpMethodMetadata.getHttpMethod();
-
-        Object actual = getActual(elasticSearchRequest, httpMethod, elasticsearch.getAlias());
-        Object expected = getExpected(elasticSearchRequest);
-
-        compare(expected, actual);
+        ResultUtil.addElasticsearchMetaData(elasticsearch.getAlias(), elasticSearchRequest, httpMethod.name(), result);
+        Response actual = getActual(elasticSearchRequest, httpMethod, elasticsearch.getAlias());
+        ElasticSearchResponse expected = elasticSearchRequest.getResponse();
+        compare(expected, actual, result);
     }
 
     @SneakyThrows
-    protected Object getActual(final ElasticSearchRequest elasticSearchRequest,
+    protected Response getActual(final ElasticSearchRequest elasticSearchRequest,
                                final HttpMethod httpMethod,
                                final String alias) {
         LogUtil.logHttpInfo(alias, httpMethod.name(), elasticSearchRequest.getUrl());
@@ -75,27 +76,26 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         return elasticSearchRequest.getResponse();
     }
 
-    protected void compare(final Object expectedObject,
-                           final Object actualObject) {
-        ElasticSearchResponse expected = (ElasticSearchResponse) expectedObject;
-        Response actual = (Response) actualObject;
-
+    protected void compare(final ElasticSearchResponse expected, final Response actual, final CommandResult result) {
         HttpValidator httpValidator = new HttpValidator(this);
         httpValidator.validateCode(expected.getCode(), actual.getStatusLine().getStatusCode());
         validateIfEmptyHeader(expected, actual, httpValidator);
-        validateBodyIfFile(expected, actual, httpValidator);
+        validateBodyIfFile(expected, actual, httpValidator, result);
         httpValidator.rethrowOnErrors();
     }
 
     @SneakyThrows
     private void validateBodyIfFile(final ElasticSearchResponse expectedResponse,
                                     final Response actual,
-                                    final HttpValidator httpValidator) {
+                                    final HttpValidator httpValidator,
+                                    final CommandResult result) {
         String expectedFile = expectedResponse.getFile();
         if (expectedFile != null) {
             String actualBody = EntityUtils.toString(actual.getEntity());
             setContextBody(actualBody);
             String expectedBody = dependencies.getFileSearcher().searchFileToString(expectedFile);
+            result.setActual(PrettifyStringJson.getJSONResult(actualBody));
+            result.setExpected(PrettifyStringJson.getJSONResult(expectedBody));
             httpValidator.validateBody(expectedBody, actualBody);
         }
     }

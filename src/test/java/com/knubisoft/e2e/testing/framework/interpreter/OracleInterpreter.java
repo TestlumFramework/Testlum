@@ -8,6 +8,8 @@ import com.knubisoft.e2e.testing.framework.db.source.ListSource;
 import com.knubisoft.e2e.testing.framework.db.sql.OracleOperation;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
+import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.Oracle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,19 +40,20 @@ public class OracleInterpreter extends AbstractInterpreter<Oracle> {
                 .withActual(actual)
                 .withExpectedFile(oracle.getFile());
 
-        result.setActual(actual);
-        result.setExpected(comparator.getExpected());
+        result.setActual(PrettifyStringJson.getJSONResult(actual));
+        result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
 
         comparator.exec();
         setContextBody(actual);
     }
 
     protected String getActual(final Oracle oracle, final CommandResult result) {
-        List<String> sqls = getSqlList(oracle);
-        LogUtil.logAllQueries(sqls, oracle.getAlias());
-        result.put("sqls", sqls);
-        StorageOperation.StorageOperationResult applyOracle = oracleOperation.apply(new ListSource(sqls),
-                inject(oracle.getAlias()));
+        String alias = oracle.getAlias();
+        List<String> queries = getSqlList(oracle);
+        LogUtil.logAllQueries(queries, oracle.getAlias());
+        ResultUtil.addDatabaseMetaData(alias, queries, result);
+        StorageOperation.StorageOperationResult applyOracle = oracleOperation.apply(new ListSource(queries),
+                inject(alias));
         return toString(applyOracle.getRaw());
     }
 

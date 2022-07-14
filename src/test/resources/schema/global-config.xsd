@@ -20,6 +20,7 @@
     <x:include schemaLocation="sendgrid-integration.xsd"/>
     <x:include schemaLocation="ses-integration.xsd"/>
     <x:include schemaLocation="ui-config.xsd"/>
+    <x:include schemaLocation="report.xsd"/>
     <x:include schemaLocation="shared-config.xsd"/>
 
     <x:annotation>
@@ -36,6 +37,7 @@
                 <x:element name="stopScenarioOnFailure" type="x:boolean"/>
                 <x:element name="localStorageAuthorizationKey" type="tns:nonEmptyString"/>
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
+                <x:element name="report" type="tns:report"/>
                 <x:element name="ui" type="tns:ui" minOccurs="0"/>
                 <x:element name="auth" type="tns:auth"/>
                 <x:element name="integrations" type="tns:integrations" minOccurs="0"/>

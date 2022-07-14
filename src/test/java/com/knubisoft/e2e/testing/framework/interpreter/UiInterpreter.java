@@ -9,9 +9,9 @@ import com.knubisoft.e2e.testing.framework.util.BrowserUtil;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.JavascriptUtil;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.framework.util.SeleniumUtil;
 import com.knubisoft.e2e.testing.framework.util.WaitUtil;
-import com.knubisoft.e2e.testing.framework.util.WebElementFinder;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.model.scenario.Assert;
 import com.knubisoft.e2e.testing.model.scenario.Clear;
@@ -45,10 +45,10 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.html5.WebStorage;
 import org.openqa.selenium.support.ui.Select;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -57,49 +57,43 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings.JS_FOLDER;
 import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
 import static com.knubisoft.e2e.testing.framework.constant.JavascriptConstant.SCROLL_TO_ELEMENT_SCRIPT;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_ACTUAL;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_ATTRIBUTE;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_EXPECTED;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.ASSERT_LOCATOR;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.BY_URL_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLEAR_ACTION;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLEAR_ACTION_LOCATOR;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLICK_LOCATOR;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLICK_METHOD;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLOSE_TAB_ACTION;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLOSE_TAB_INFO;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.COMMAND_TYPE_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_LOCATOR;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_NOT_SUPPORTED;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_ONE_VALUE;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.DROP_DOWN_OPERATION;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTION_TIME_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.INPUT_LOCATOR;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_EXECUTION_OPERATION;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.JS_OPERATION_INFO;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_NOT_SUPPORTED;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAVIGATE_URL;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.REPEAT_COMMAND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.REPEAT_FINISHED_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.REPEAT_INFO;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_ACTION;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_INFO;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_TO_INFO;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SECOND_TAB_NOT_FOUND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.TIMES_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND_EXEC_TIME;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.WAIT_COMMAND;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.VALUE_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.WAIT_INFO_LOG;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.ALL_VALUES_DESELECT;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.ASSERT_ATTRIBUTE;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.ASSERT_LOCATOR;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.CLEAR_COOKIES_AFTER_EXECUTION;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.CLEAR_LOCAL_STORAGE_BY_KEY;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.CLEAR_LOCATOR;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.CLICK_LOCATOR;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.CLICK_METHOD;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.CLOSE_COMMAND;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.DROP_DOWN_FOR;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.DROP_DOWN_LOCATOR;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.INPUT_LOCATOR;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.INPUT_VALUE;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.JS_FILE;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.NAVIGATE_TYPE;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.NAVIGATE_URL;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.NUMBER_OF_REPETITIONS;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.SCROLL_LOCATOR;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.SECOND_TAB;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.TIME;
 import static com.knubisoft.e2e.testing.model.scenario.ClickMethod.JS;
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.NEW_LINE;
 import static com.knubisoft.e2e.testing.framework.constant.DelimiterConstant.SPACE;
-import static com.knubisoft.e2e.testing.model.scenario.ClickMethod.SELENIUM;
 import static java.lang.String.format;
 
 
@@ -113,6 +107,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     public UiInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
         Map<UiCommandPredicate, UiCommand> commands = new HashMap<>();
+        commands.put(ui -> ui instanceof RepeatUiCommand, (ui, result) -> repeat((RepeatUiCommand) ui, result));
         commands.put(ui -> ui instanceof Click, (ui, result) -> click((Click) ui, result));
         commands.put(ui -> ui instanceof Input, (ui, result) -> input((Input) ui, result));
         commands.put(ui -> ui instanceof Navigate, (ui, result) -> navigate((Navigate) ui, result));
@@ -124,7 +119,6 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         commands.put(ui -> ui instanceof CloseSecondTab, (ui, result) -> closeSecondTab((CloseSecondTab) ui, result));
         commands.put(ui -> ui instanceof Scroll, (ui, result) -> scroll((Scroll) ui, result));
         commands.put(ui -> ui instanceof ScrollTo, (ui, result) -> scrollTo((ScrollTo) ui, result));
-        commands.put(ui -> ui instanceof RepeatUiCommand, (ui, result) -> repeat((RepeatUiCommand) ui, result));
         commands.put(ui -> ui instanceof Hovers, (ui, result) -> hover((Hovers) ui, result));
         this.uiCommands = Collections.unmodifiableMap(commands);
     }
@@ -132,28 +126,47 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     @Override
     protected void acceptImpl(final Ui o, final CommandResult result) {
         LogUtil.logUiAttributes(o.isClearCookiesAfterExecution(), o.getClearLocalStorageByKey());
-        runCommands(o.getClickOrInputOrNavigate(), result);
-        clearLocalStorage(dependencies.getWebDriver(), o.getClearLocalStorageByKey());
-        clearCookies(dependencies.getWebDriver(), o.isClearCookiesAfterExecution());
+        List<CommandResult> subCommandsResult = new LinkedList<>();
+        runCommands(o.getClickOrInputOrNavigate(), result, subCommandsResult);
+        clearLocalStorage(dependencies.getWebDriver(), o.getClearLocalStorageByKey(), result);
+        clearCookies(dependencies.getWebDriver(), o.isClearCookiesAfterExecution(), result);
     }
 
-    private void runCommands(final List<AbstractCommand> commandList, final CommandResult result) {
+    private void runCommands(final List<AbstractCommand> commandList,
+                             final CommandResult result,
+                             final List<CommandResult> subCommandsResult) {
         commandList.forEach(command -> uiCommands.keySet().stream()
                 .filter(key -> key.test(command))
                 .map(uiCommands::get)
                 .peek(s -> LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), command))
-                .forEach(method -> uiCommandExec(command, result, method)));
+                .forEach(method -> processEachCommand(command, method, subCommandsResult)));
+        result.setSubCommandsResult(subCommandsResult);
+        ResultUtil.setExecutionResultIfSubCommandsFailed(result);
+    }
+
+    private void processEachCommand(final AbstractCommand command, final UiInterpreter.UiCommand method,
+                                    final List<CommandResult> subCommandsResult) {
+        CommandResult subCommandResult = ResultUtil.createCommandResultForUiSubCommand(
+                dependencies.getPosition().intValue(),
+                command.getClass().getSimpleName(),
+                command.getComment());
+        uiCommandExec(command, subCommandResult, method);
+        subCommandsResult.add(subCommandResult);
     }
 
     private void uiCommandExec(final AbstractCommand command, final CommandResult result,
-                                      final UiInterpreter.UiCommand method) {
+                               final UiInterpreter.UiCommand method) {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
             method.accept(command, result);
+        } catch (Exception e) {
+            result.setSuccess(false);
+            result.setException(e);
+            log.error(EXCEPTION_LOG, e.getMessage());
         } finally {
             long execTime = stopWatch.getTime();
             stopWatch.stop();
-            result.put(UI_COMMAND_EXEC_TIME, execTime);
+            result.setExecutionTime(execTime);
             log.info(EXECUTION_TIME_LOG, execTime);
         }
     }
@@ -169,45 +182,39 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     private void clickWithMethod(final ClickMethod method, final WebElement element, final CommandResult result) {
         if (method != null && method.equals(JS)) {
-            result.put(CLICK_METHOD, JS.value());
+            result.put(CLICK_METHOD, "javascript");
             JavascriptUtil.executeJsScript(element, CLICK_SCRIPT, dependencies.getWebDriver());
         } else {
-            result.put(CLICK_METHOD, SELENIUM.value());
+            result.put(CLICK_METHOD, "selenium");
             element.click();
         }
     }
 
     private void execJsCommands(final Javascript o, final CommandResult result) {
-        String filePath = o.getFile();
+        String fileName = o.getFile();
+        result.put(JS_FILE, fileName);
         FileSearcher fileSearcher = dependencies.getFileSearcher();
-        URL resource = getClass().getClassLoader().getResource(JS_FOLDER);
-        String command = JavascriptUtil.readCommands(filePath, resource, fileSearcher);
-        result.put(JS_EXECUTION_OPERATION, format(JS_OPERATION_INFO, filePath, command));
+        String command = JavascriptUtil.readCommands(fileName, fileSearcher);
         JavascriptUtil.executeJsScript(command, dependencies.getWebDriver());
     }
 
-    private void hover(final Hovers ui, final CommandResult result) {
+    private void hover(final Hovers hovers, final CommandResult result) {
+        ResultUtil.addHoversMetaData(hovers, result);
         WebDriver driver = dependencies.getWebDriver();
-        WebElementFinder webElementFinder = new WebElementFinder();
         Actions actions = new Actions(driver);
-        List<WebElement> webElements = ui.getHover().stream()
-                .map(e -> webElementFinder.find(dependencies.getGlobalLocators()
-                                .getLocator(e.getLocatorId()), driver))
+        List<WebElement> webElements = hovers.getHover().stream()
+                .map(hover -> getWebElement(hover.getLocatorId()))
                 .collect(Collectors.toList());
-        executeHover(webElements, actions);
-        moveToEmptySpace(ui, actions);
-    }
-
-    private void executeHover(final List<WebElement> webElements, final Actions actions) {
-        for (WebElement currentWebElement : webElements) {
-            actions.moveToElement(currentWebElement);
+        webElements.forEach(webElement -> {
+            actions.moveToElement(webElement);
             actions.perform();
-        }
+        });
+        moveToEmptySpace(hovers.isMoveToEmptySpace(), actions, driver);
     }
 
-    private void moveToEmptySpace(final Hovers ui, final Actions actions) {
-        if (Objects.nonNull(ui.isMoveToEmptySpace()) && ui.isMoveToEmptySpace()) {
-            WebElement element = dependencies.getWebDriver().findElement(By.xpath(MOVE_TO_EMPTY_SPACE));
+    private void moveToEmptySpace(final Boolean isMoveToEmptySpace, final Actions actions, final WebDriver webDriver) {
+        if (Objects.nonNull(isMoveToEmptySpace) && isMoveToEmptySpace) {
+            WebElement element = webDriver.findElement(By.xpath(MOVE_TO_EMPTY_SPACE));
             actions.moveToElement(element);
             actions.perform();
         }
@@ -217,22 +224,18 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         result.put(INPUT_LOCATOR, input.getLocatorId());
         WebElement webElement = getWebElement(input.getLocatorId());
         highlightElementIfRequired(input.isHighlight(), webElement);
-        send(input, webElement, result);
-        takeScreenshotIfRequired(result);
-    }
-
-    private void send(final Input input, final WebElement element, final CommandResult result) {
         String injected = inject(input.getValue());
-        String text = SeleniumUtil.resolveSendKeysType(injected, dependencies.getFileSearcher(), element);
-        result.put("value", text);
-        log.info(VALUE_LOG, text);
-        element.sendKeys(text);
+        String value = SeleniumUtil.resolveSendKeysType(injected, dependencies.getFileSearcher(), webElement);
+        result.put(INPUT_VALUE, value);
+        log.info(VALUE_LOG, value);
+        webElement.sendKeys(value);
+        takeScreenshotIfRequired(result);
     }
 
     private void navigate(final Navigate navigate, final CommandResult result) {
         NavigateCommand navigateCommand = navigate.getCommand();
         log.info(COMMAND_TYPE_LOG, navigateCommand.name());
-        result.put(NAVIGATE, navigateCommand.value());
+        result.put(NAVIGATE_TYPE, navigateCommand.value());
         switch (navigateCommand) {
             case BACK: dependencies.getWebDriver().navigate().back();
                 break;
@@ -253,10 +256,12 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private void assertValues(final Assert aAssert, final CommandResult result) {
-        String actual = getActualValue(aAssert, result);
-        String expected = getExpectedValue(aAssert);
-        result.put(ASSERT_ACTUAL, actual);
-        result.put(ASSERT_EXPECTED, expected);
+        result.put(ASSERT_LOCATOR, aAssert.getLocatorId());
+        result.put(ASSERT_ATTRIBUTE, aAssert.getAttribute().value());
+        String actual = getActualValue(aAssert);
+        String expected = aAssert.getContent().replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
+        result.setActual(actual);
+        result.setExpected(expected);
         newCompare()
                 .withActual(actual)
                 .withExpected(expected)
@@ -264,19 +269,11 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         takeScreenshotIfRequired(result);
     }
 
-    private String getActualValue(final Assert aAssert, final CommandResult result) {
-        result.put(ASSERT_LOCATOR, aAssert.getLocatorId());
-        result.put(ASSERT_ATTRIBUTE, aAssert.getAttribute().value());
+    private String getActualValue(final Assert aAssert) {
         WebElement webElement = getWebElement(aAssert.getLocatorId());
         BrowserUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
         String value = webElement.getAttribute(aAssert.getAttribute().value());
         return value
-                .replaceAll(SPACE, EMPTY)
-                .replaceAll(NEW_LINE, EMPTY);
-    }
-
-    private String getExpectedValue(final Assert aAssert) {
-        return aAssert.getContent()
                 .replaceAll(SPACE, EMPTY)
                 .replaceAll(NEW_LINE, EMPTY);
     }
@@ -289,7 +286,8 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         if (oneValue != null) {
             processOneValueFromDropDown(oneValue, select, result);
         } else {
-            log.info(COMMAND_TYPE_LOG, "DESELECT ALL");
+            log.info(COMMAND_TYPE_LOG, ALL_VALUES_DESELECT);
+            result.put(DROP_DOWN_FOR, ALL_VALUES_DESELECT);
             select.deselectAll();
         }
     }
@@ -298,9 +296,9 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         TypeForOneValue type = oneValue.getType();
         SelectOrDeselectBy method = oneValue.getBy();
         String value = inject(oneValue.getValue());
-        log.info(COMMAND_TYPE_LOG, type.name());
+        ResultUtil.addDropDownForOneValueMetaData(type.value(), method.value(), value, result);
+        log.info(COMMAND_TYPE_LOG, type.value());
         log.info(VALUE_LOG, value);
-        result.put(DROP_DOWN_ONE_VALUE, format(DROP_DOWN_OPERATION, type.value(), method.value(), value));
         if (type == TypeForOneValue.SELECT) {
             selectByMethod(select, method, value);
         } else {
@@ -335,7 +333,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     private void clear(final Clear clear, final CommandResult result) {
         String locatorId = clear.getLocatorId();
-        result.put(CLEAR_ACTION, format(CLEAR_ACTION_LOCATOR, locatorId));
+        result.put(CLEAR_LOCATOR, locatorId);
         WebElement element = getWebElement(locatorId);
         BrowserUtil.waitForElementVisibility(dependencies.getWebDriver(), element);
         element.clear();
@@ -344,7 +342,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private void closeSecondTab(final CloseSecondTab closeSecondTab, final CommandResult result) {
-        result.put(CLOSE_TAB_ACTION, CLOSE_TAB_INFO);
+        result.put(CLOSE_COMMAND, SECOND_TAB);
         WebDriver webDriver = dependencies.getWebDriver();
         List<String> windowHandles = new ArrayList<>(webDriver.getWindowHandles());
         if (windowHandles.size() <= 1) {
@@ -358,8 +356,8 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     @SneakyThrows
     private void wait(final Wait wait, final CommandResult result) {
         long time = wait.getTime().longValue();
+        result.put(TIME, time);
         log.info(WAIT_INFO_LOG, time, wait.getUnit());
-        result.put(WAIT_COMMAND, time);
         WaitUtil.getTimeUnit(wait.getUnit(), result).sleep(time);
     }
 
@@ -367,7 +365,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         ScrollDirection direction = scroll.getDirection();
         ScrollMeasure measure = scroll.getMeasure();
         String value = scroll.getValue().toString();
-        result.put(SCROLL_ACTION, format(SCROLL_INFO, direction.value(), measure.value(), value));
+        ResultUtil.addScrollMetaData(direction.value(), measure.value(), value, result);
         takeScreenshotIfRequired(result);
         JavascriptUtil.executeJsScript(JavascriptUtil.getScrollScript(direction, value, measure),
                 dependencies.getWebDriver());
@@ -376,27 +374,33 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     private void scrollTo(final ScrollTo scrollTo, final CommandResult result) {
         String locatorId = scrollTo.getLocatorId();
         WebElement element = getWebElement(locatorId);
-        result.put(SCROLL_ACTION, format(SCROLL_TO_INFO, locatorId));
+        result.put(SCROLL_LOCATOR, locatorId);
         takeScreenshotIfRequired(result);
         JavascriptUtil.executeJsScript(element, SCROLL_TO_ELEMENT_SCRIPT, dependencies.getWebDriver());
     }
 
     public void repeat(final RepeatUiCommand repeat, final CommandResult result) {
         int times = repeat.getTimes().intValue();
-        result.put(REPEAT_COMMAND, format(REPEAT_INFO, times));
+        result.put(NUMBER_OF_REPETITIONS, times);
         log.info(TIMES_LOG, times);
-        IntStream.range(0, times).forEach(e -> runCommands(repeat.getClickOrInputOrNavigate(), result));
+        List<CommandResult> subCommandsResult = new LinkedList<>();
+        List<AbstractCommand> commandsForRepeat = repeat.getClickOrInputOrNavigate();
+        ResultUtil.addCommandsForRepeat(commandsForRepeat, result);
+        IntStream.range(0, times)
+                .forEach(e -> runCommands(commandsForRepeat, result, subCommandsResult));
         log.info(REPEAT_FINISHED_LOG);
     }
 
-    private void clearLocalStorage(final WebDriver driver, final String key) {
+    private void clearLocalStorage(final WebDriver driver, final String key, final CommandResult result) {
         if (StringUtils.isNotEmpty(key)) {
+            result.put(CLEAR_LOCAL_STORAGE_BY_KEY, key);
             WebStorage webStorage = (WebStorage) driver;
             webStorage.getLocalStorage().removeItem(key);
         }
     }
 
-    private void clearCookies(final WebDriver driver, final boolean clearCookies) {
+    private void clearCookies(final WebDriver driver, final boolean clearCookies, final CommandResult result) {
+        result.put(CLEAR_COOKIES_AFTER_EXECUTION, clearCookies);
         if (clearCookies) {
             driver.manage().deleteAllCookies();
         }

@@ -13,7 +13,6 @@ import com.knubisoft.e2e.testing.framework.SystemDataStoreCleaner;
 import com.knubisoft.e2e.testing.framework.TestSetCollector;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -31,7 +30,6 @@ import org.springframework.test.context.TestContextManager;
 import java.util.stream.Stream;
 
 @SpringBootTest(classes = SpringTestContext.class)
-@Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class E2ERootTest {
     @Autowired
@@ -95,8 +93,7 @@ public class E2ERootTest {
     }
 
     @AfterAll
-    @SneakyThrows
     public void afterAll() {
-        reportGenerator.generateReport();
+        reportGenerator.generateReport(globalScenarioStatCollector);
     }
 }

@@ -8,6 +8,8 @@ import com.knubisoft.e2e.testing.framework.db.redis.RedisOperation;
 import com.knubisoft.e2e.testing.framework.db.source.ListSource;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
+import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
+import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.Redis;
 import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
@@ -33,19 +35,20 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
                 .withActual(actual)
                 .withExpectedFile(redis.getFile());
 
-        result.setActual(actual);
-        result.setExpected(comparator.getExpected());
+        result.setActual(PrettifyStringJson.getJSONResult(actual));
+        result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
 
         comparator.exec();
         setContextBody(actual);
     }
 
     protected String getActual(final Redis redis, final CommandResult result) {
-        final List<String> sqls = getRedisQueryList(redis);
-        LogUtil.logAllQueries(sqls, redis.getAlias());
-        result.put("sqls", sqls);
-        final StorageOperation.StorageOperationResult apply = redisOperation.apply(new ListSource(sqls),
-                redis.getAlias());
+        String alias = redis.getAlias();
+        final List<String> queries = getRedisQueryList(redis);
+        LogUtil.logAllQueries(queries, redis.getAlias());
+        ResultUtil.addDatabaseMetaData(alias, queries, result);
+        final StorageOperation.StorageOperationResult apply = redisOperation.apply(new ListSource(queries),
+                alias);
         return toString(apply.getRaw());
     }
 

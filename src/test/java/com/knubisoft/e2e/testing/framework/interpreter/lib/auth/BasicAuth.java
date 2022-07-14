@@ -16,9 +16,13 @@ import static com.knubisoft.e2e.testing.framework.constant.AuthorizationConstant
 import static com.knubisoft.e2e.testing.framework.constant.AuthorizationConstant.PASSWORD_JPATH;
 import static com.knubisoft.e2e.testing.framework.constant.AuthorizationConstant.USERNAME_JPATH;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.CREDENTIALS_LOG;
+import static com.knubisoft.e2e.testing.framework.util.ResultUtil.AUTHENTICATION_TYPE;
 
 @Slf4j
 public class BasicAuth extends AbstractAuthStrategy {
+
+    private static final String TYPE = "basic";
+
     private final InterpreterDependencies dependencies;
 
     public BasicAuth(final InterpreterDependencies dependencies) {
@@ -28,6 +32,7 @@ public class BasicAuth extends AbstractAuthStrategy {
 
     @Override
     public void authenticate(final Auth auth, final CommandResult result) {
+        result.put(AUTHENTICATION_TYPE, TYPE);
         String credentials = encodedCredentials(auth, dependencies);
         login(credentials, HEADER_BASIC);
     }

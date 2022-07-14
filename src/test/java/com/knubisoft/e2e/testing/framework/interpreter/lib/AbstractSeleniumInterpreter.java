@@ -7,8 +7,8 @@ import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.ElementHighlighter;
 import com.knubisoft.e2e.testing.framework.util.ImageCompressor;
 import com.knubisoft.e2e.testing.model.pages.Locator;
+import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
-import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -41,25 +41,14 @@ public abstract class AbstractSeleniumInterpreter<T extends AbstractCommand> ext
         }
     }
 
+    @SneakyThrows
     private void putScreenshotToResult(final CommandResult result, final File screenshot) {
         final MultipartFile image = ImageCompressor.compress(screenshot);
         if (Objects.nonNull(image)) {
-            byte[] fileContent = getFileContentBytes(image);
-            String encodedString = Base64.getEncoder().encodeToString(fileContent);
-            result.put("screenshot", encodedString);
+            byte[] screenshotContent = FileUtils.readFileToByteArray(screenshot);
+            String encodedScreenshot = Base64.getEncoder().encodeToString(screenshotContent);
+            result.setBase64Screenshot(encodedScreenshot);
         }
-    }
-
-    @NotNull
-    private byte[] getFileContentBytes(final MultipartFile image) {
-        byte[] fileContent;
-        try {
-            fileContent = image.getBytes();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new DefaultFrameworkException(e);
-        }
-        return fileContent;
     }
 
     private void tryToCopyScreenshotFileToFolder(final File screenshot, final File screenshotsFolder) {

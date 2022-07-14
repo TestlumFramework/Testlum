@@ -13,7 +13,6 @@ import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTION_RESULT;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
 @Slf4j
@@ -28,6 +27,7 @@ public class TestRunner {
         TestResourceSettings.init(configFileName, pathToTestResources);
         TestExecutionSummary testExecutionSummary = runTests();
         setExecutionResult(testExecutionSummary);
+        System.out.println(System.getProperty(SUCCESS_PROPERTY_KEY));
     }
 
     private static TestExecutionSummary runTests() {
@@ -45,8 +45,7 @@ public class TestRunner {
     }
 
     private static void setExecutionResult(final TestExecutionSummary testExecutionSummary) {
-        String executionResult = testExecutionSummary.getFailures().isEmpty()
-                ? System.setProperty(SUCCESS_PROPERTY_KEY, "true") : System.setProperty(SUCCESS_PROPERTY_KEY, "false");
-        log.info(EXECUTION_RESULT, executionResult);
+        boolean success = testExecutionSummary.getFailures().isEmpty();
+        System.setProperty(SUCCESS_PROPERTY_KEY, String.valueOf(success));
     }
 }

@@ -64,8 +64,6 @@ public final class LogMessage {
     public static final String UNABLE_PARSE_FILE_WITH_LOCATORS = "Unable to parse file %s with locators. Error: %s";
     public static final String MISSING_CONSTRUCTOR = "Missing constructor for class %s";
     public static final String UNABLE_FIND_VALUE_FOR_KEY = "Unable to find value for key %s. Available keys %s";
-    public static final String FILE_NOT_EXIST = "File %s does not exist in the [data] folder and its "
-            + "subfolders by path %s";
 
     public static final String UNKNOWN_METHOD = "Unknown method %s";
     public static final String PAGES_FOLDER_NOT_EXIST = "[pages] folder does not exist";
@@ -83,6 +81,8 @@ public final class LogMessage {
 
     public static final String DUPLICATE_FILENAME = ANSI_RED + "The [data] folder and its subfolders contain "
             + "files with duplicate filenames - %s. Every file should have a unique name" + ANSI_RESET;
+    public static final String FILE_NOT_EXIST = ANSI_RED + "File %s does not exist in the [data] folder and its "
+            + "subfolders by path %s" + ANSI_RESET;
     public static final String ERROR_LOG = "Error ->";
     public static final String POSITION_COMMAND_LOG = ANSI_YELLOW
             + "--------- Scenario step #%d - %s ---------" + ANSI_RESET;

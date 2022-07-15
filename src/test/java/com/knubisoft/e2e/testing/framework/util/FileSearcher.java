@@ -11,67 +11,44 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
-import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.DUPLICATE_FILENAME;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.FILE_NOT_EXIST;
 
 @AllArgsConstructor
 @Getter
 @Slf4j
 public final class FileSearcher {
 
-    private static final Map<String, File> DATA_FILES;
+    private static final Map<String, File> DATA_FOLDER_FILES;
     static {
-        Map<String, File> files = getDataFileset();
-        DATA_FILES = Collections.unmodifiableMap(files);
+        DATA_FOLDER_FILES = collectFilesFromDataFolder();
     }
 
     private final File root;
     private final File fromDir;
-    private final boolean overridePathToVolume;
 
-    public FileSearcher(final File root, final boolean overridePathToVolume) {
-        this(root, null, overridePathToVolume);
+    public FileSearcher(final File root) {
+        this(root, null);
     }
 
     public File search(final File fromDir, final String name) {
         final String targetName = name.startsWith(DelimiterConstant.SLASH_SEPARATOR) ? name.substring(1) : name;
         FilenameFilter filter = (dir, file) -> file.equals(targetName);
-        File result = find(fromDir, filter).orElseThrow(() -> new FileLinkingException(fromDir, root, name));
-        if (overridePathToVolume) {
-            return pathToVolume(result);
-        }
-        return result;
+        return find(fromDir, filter).orElseThrow(() -> new FileLinkingException(fromDir, root, name));
     }
 
     public File search(final String name) {
         Preconditions.checkNotNull(fromDir);
         return search(fromDir, name);
-    }
-
-    private File pathToVolume(final File result) {
-        if (result.exists() && isFileAnImage(result)) {
-            final String search = "src/test/resources";
-            int idx = result.getAbsolutePath().indexOf(search) + search.length();
-            File mounted = new File("/opt/src/test/resources", result.getAbsolutePath().substring(idx));
-            if (!mounted.exists()) {
-                throw new RuntimeException("File not found. Checked paths " + result.getAbsolutePath() + "  and  "
-                        + mounted.getAbsolutePath());
-            }
-            return mounted;
-        }
-        return result;
-    }
-
-    private boolean isFileAnImage(final File result) {
-        String mimetype = new MimetypesFileTypeMap().getContentType(result);
-        String type = mimetype.split(DelimiterConstant.SLASH_SEPARATOR)[0];
-        return "image".equals(type);
     }
 
 
@@ -87,35 +64,31 @@ public final class FileSearcher {
     }
 
     @SneakyThrows
-    public String searchFileAndReadToString(final String name) {
-        return FileUtils.readFileToString(fileByNameAndExtension(name), StandardCharsets.UTF_8);
-    }
-
-    @SneakyThrows
     public String searchFileToString(final String name) {
         Preconditions.checkNotNull(fromDir);
         return FileUtils.readFileToString(search(fromDir, name), StandardCharsets.UTF_8);
     }
 
     public File fileByNameAndExtension(final String fileName) {
-        File file = DATA_FILES.get(fileName);
-        if (!file.exists()) {
-            throw new FileLinkingException(TestResourceSettings.getInstance().getDataFolder(),
-                    TestResourceSettings.getInstance().getTestResourcesFolder(), fileName);
+        final String targetName = fileName.startsWith(DelimiterConstant.SLASH_SEPARATOR)
+                ? fileName.substring(1) : fileName;
+        File file = DATA_FOLDER_FILES.get(targetName);
+        if (Objects.isNull(file)) {
+            throw new DefaultFrameworkException(FILE_NOT_EXIST, fileName,
+                    TestResourceSettings.getInstance().getDataFolder().getAbsolutePath());
         }
         return file;
     }
 
-    private static Map<String, File> getDataFileset() {
-        Map<String, File> map = new HashMap<>();
-       FileUtils.listFiles(TestResourceSettings.getInstance().getDataFolder(), null, true)
-               .forEach(o -> {
-                   if (map.containsKey(o.getName())) {
-                       throw new DefaultFrameworkException("There are the same filename in data subdirectories");
-                   } else {
-                       map.put(o.getName(), o);
-                   }
-               });
-       return map;
+    private static Map<String, File> collectFilesFromDataFolder() {
+        Map<String, File> files = new HashMap<>();
+        FileUtils.listFiles(TestResourceSettings.getInstance().getDataFolder(), null, true)
+                .forEach(file -> {
+                    files.computeIfPresent(file.getName(), (key, value) -> {
+                        throw new DefaultFrameworkException(DUPLICATE_FILENAME, file.getName());
+                    });
+                    files.put(file.getName(), file);
+                });
+        return Collections.unmodifiableMap(files);
     }
 }

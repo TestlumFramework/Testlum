@@ -30,7 +30,7 @@ public class LocatorCollector {
         TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
         this.pagesFolder = resourceSettings.getPagesFolder();
         this.componentsFolder = resourceSettings.getComponentsFolder();
-        this.fileSearcher = new FileSearcher(resourceSettings.getTestResourcesFolder(), false);
+        this.fileSearcher = new FileSearcher(resourceSettings.getTestResourcesFolder());
     }
 
     public Map<String, Locator> collect() {

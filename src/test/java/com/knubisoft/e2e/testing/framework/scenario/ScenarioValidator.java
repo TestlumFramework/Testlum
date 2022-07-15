@@ -17,6 +17,7 @@ import com.knubisoft.e2e.testing.model.scenario.Elasticsearch;
 import com.knubisoft.e2e.testing.model.scenario.Http;
 import com.knubisoft.e2e.testing.model.scenario.HttpInfo;
 import com.knubisoft.e2e.testing.model.scenario.Include;
+import com.knubisoft.e2e.testing.model.scenario.Javascript;
 import com.knubisoft.e2e.testing.model.scenario.Migrate;
 import com.knubisoft.e2e.testing.model.scenario.Mongo;
 import com.knubisoft.e2e.testing.model.scenario.Mysql;
@@ -27,6 +28,8 @@ import com.knubisoft.e2e.testing.model.scenario.Repeat;
 import com.knubisoft.e2e.testing.model.scenario.Response;
 import com.knubisoft.e2e.testing.model.scenario.S3;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
+import com.knubisoft.e2e.testing.model.scenario.Shell;
+import com.knubisoft.e2e.testing.model.scenario.Ui;
 import com.knubisoft.e2e.testing.model.scenario.Var;
 import com.knubisoft.e2e.testing.model.scenario.When;
 import org.apache.commons.lang3.StringUtils;
@@ -62,6 +65,16 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         validatorMap.put(o -> o instanceof Http, (xmlFile, command) -> {
             Http http = (Http) command;
             validateHttpCommand(http, xmlFile);
+        });
+
+        validatorMap.put(o -> o instanceof Ui, (xmlFile, command) -> {
+            Ui ui = (Ui) command;
+            validateUiCommands(ui);
+        });
+
+        validatorMap.put(o -> o instanceof Shell, (xmlFile, command) -> {
+            Shell shell = (Shell) command;
+            validateShellCommand(shell);
         });
 
         validatorMap.put(o -> o instanceof Migrate, (xmlFile, command) -> {
@@ -233,7 +246,24 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateExistsPatches((Migrate) command);
         } else if (command instanceof Var) {
             validateVarCommand((Var) command);
+        } else if (command instanceof Ui) {
+            validateUiCommands((Ui) command);
+        } else if (command instanceof Shell) {
+            validateShellCommand((Shell) command);
+
         }
+    }
+
+    private void validateShellCommand(Shell command) {
+        command.getShellFile().forEach(this::validateFileExistence);
+    }
+
+    private void validateUiCommands(Ui command) {
+        command.getClickOrInputOrNavigate().forEach(o -> {
+            if (o instanceof Javascript) {
+                validateFileExistence(((Javascript) o).getFile());
+            }
+        });
     }
 
     private void validateVarCommand(final Var command) {
@@ -306,7 +336,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private boolean arePatchesMutating(final Migrate migrate) {
         return migrate.getPatches()
                 .stream()
-                .map(each -> createFileSource(each))
+                .map(this::createFileSource)
                 .anyMatch(i -> isQueryContainsMutatingAction(i.getQueries()));
     }
 

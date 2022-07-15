@@ -30,7 +30,7 @@ public class ScenarioCollector {
     public ScenarioCollector() {
         TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
         this.rootTestResources = resourceSettings.getTestResourcesFolder();
-        this.fileSearcher = new FileSearcher(rootTestResources, false);
+        this.fileSearcher = new FileSearcher(rootTestResources);
         this.scenarioValidator = new ScenarioValidator(fileSearcher);
     }
 

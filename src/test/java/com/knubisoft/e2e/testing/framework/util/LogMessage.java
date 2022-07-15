@@ -64,20 +64,14 @@ public final class LogMessage {
     public static final String UNABLE_PARSE_FILE_WITH_LOCATORS = "Unable to parse file %s with locators. Error: %s";
     public static final String MISSING_CONSTRUCTOR = "Missing constructor for class %s";
     public static final String UNABLE_FIND_VALUE_FOR_KEY = "Unable to find value for key %s. Available keys %s";
-    public static final String FILE_NOT_EXIST = "File %s does not exist";
+    public static final String FILE_NOT_EXIST = "File %s does not exist in the [data] folder and its "
+            + "subfolders by path %s";
+
     public static final String UNKNOWN_METHOD = "Unknown method %s";
     public static final String PAGES_FOLDER_NOT_EXIST = "[pages] folder does not exist";
     public static final String COMPONENTS_FOLDER_NOT_EXIST = "[components] folder does not exist";
-    public static final String SHELL_FOLDER_NOT_EXIST = "[shell] folder does not exist";
     public static final String SCENARIOS_FOLDER_NOT_EXIST = "[scenarios] folder does not exist";
-    public static final String VARIATIONS_FOLDER_NOT_EXIST = "[variations] folder does not exist";
-    public static final String PATCHES_FOLDER_NOT_EXIST = "[patches] folder does not exist";
-    public static final String CREDENTIALS_FOLDER_NOT_EXIST = "[credentials] folder does not exist";
     public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
-    public static final String TEST_BY_PATH_DISABLED = "Test by path %s is disabled";
-    public static final String EXCEL_FOLDER_NOT_EXIST = "[excel] folder does not exist";
-    public static final String CSV_FOLDER_NOT_EXIST = "[csv] folder does not exist";
-    public static final String JAVASCRIPT_FOLDER_NOT_EXIST = "[javascript] folder does not exist";
     public static final String DATA_FOLDER_NOT_EXIST = "[data] folder does not exist";
 
     public static final String ANSI_GREEN = "\u001B[32m";
@@ -87,6 +81,8 @@ public final class LogMessage {
     public static final String ANSI_YELLOW = "\u001B[33m";
     public static final String ANSI_CYAN = "\u001b[36m";
 
+    public static final String DUPLICATE_FILENAME = ANSI_RED + "The [data] folder and its subfolders contain "
+            + "files with duplicate filenames - %s. Every file should have a unique name" + ANSI_RESET;
     public static final String ERROR_LOG = "Error ->";
     public static final String POSITION_COMMAND_LOG = ANSI_YELLOW
             + "--------- Scenario step #%d - %s ---------" + ANSI_RESET;

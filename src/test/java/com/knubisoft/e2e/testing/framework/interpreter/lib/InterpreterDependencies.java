@@ -2,7 +2,6 @@ package com.knubisoft.e2e.testing.framework.interpreter.lib;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
-import com.knubisoft.e2e.testing.framework.SystemInfo;
 import com.knubisoft.e2e.testing.framework.locator.GlobalLocators;
 import com.knubisoft.e2e.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
@@ -47,10 +46,7 @@ public class InterpreterDependencies {
         this.position = position;
         this.webElementFinder = new WebElementFinder();
         this.globalLocators = GlobalLocators.getInstance();
-
-        boolean overridePathToVolume = SystemInfo.USE_SELENIUM_HUB;
-        this.fileSearcher = new FileSearcher(TestResourceSettings.getInstance().getTestResourcesFolder(),
-                file, overridePathToVolume);
+        this.fileSearcher = new FileSearcher(TestResourceSettings.getInstance().getTestResourcesFolder(), file);
     }
 
     public InterpreterDependencies(final ApplicationContext context,
@@ -61,10 +57,7 @@ public class InterpreterDependencies {
         this.file = file;
         this.scenarioContext = scenarioContext;
         this.position = position;
-
-        boolean overridePathToVolume = SystemInfo.USE_SELENIUM_HUB;
-        this.fileSearcher = new FileSearcher(TestResourceSettings.getInstance().getTestResourcesFolder(),
-                file, overridePathToVolume);
+        this.fileSearcher = new FileSearcher(TestResourceSettings.getInstance().getTestResourcesFolder(), file);
     }
 
     @Data

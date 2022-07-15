@@ -67,3 +67,5 @@ WORKDIR /e2e/
 COPY --from=maven-build /e2e/${JAR_FILE} app.jar
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
+
+RUN echo $?

@@ -15,9 +15,9 @@ RUN apt-get update -y \
 	&& rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 #Version numbers
-ARG CHROME_DRIVER_VERSION=100.0.4896.60
+ARG CHROME_DRIVER_VERSION=102.0.5005.61
 ARG FIREFOX_DRIVER_VERSION=0.31.0
-ARG FIREFOX_VERSION=99.0.1
+ARG FIREFOX_VERSION=102.0.1
 
 # Google Chrome
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \

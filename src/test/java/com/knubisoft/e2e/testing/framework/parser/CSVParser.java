@@ -1,6 +1,5 @@
 package com.knubisoft.e2e.testing.framework.parser;
 
-import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.opencsv.CSVReader;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +28,7 @@ public final class CSVParser {
     //CHECKSTYLE:OFF
     @SneakyThrows
     private List<String[]> readVariationsFile(final String variationFileName) {
-        TestResourceSettings settings = TestResourceSettings.getInstance();
-        File file = new FileSearcher(
-                settings.getTestResourcesFolder(),
-               null).fileByNameAndExtension(variationFileName);
+        File file = FileSearcher.searchFileFromDataFolder(variationFileName);
         FileInputStream fileInputStream = new FileInputStream(file);
 
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, StandardCharsets.UTF_8);

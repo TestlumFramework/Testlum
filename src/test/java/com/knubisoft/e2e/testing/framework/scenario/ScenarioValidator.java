@@ -49,11 +49,8 @@ import static java.lang.String.format;
 
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
-    private final FileSearcher fileSearcher;
 
-
-    public ScenarioValidator(final FileSearcher fileSearcher) {
-        this.fileSearcher = fileSearcher;
+    public ScenarioValidator() {
 
         Map<AbstractCommandPredicate, AbstractCommandValidator> validatorMap = new HashMap<>();
 
@@ -140,7 +137,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateFileExistence(final String commandFile) {
         if (org.springframework.util.StringUtils.hasText(commandFile)) {
-            fileSearcher.fileByNameAndExtension(commandFile);
+            FileSearcher.searchFileFromDataFolder(commandFile);
         }
     }
 
@@ -148,31 +145,31 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         Stream.of(elasticsearch.getPost(), elasticsearch.getGet(), elasticsearch.getPut(), elasticsearch.getDelete())
                 .filter(Objects::nonNull)
                 .filter(v -> org.springframework.util.StringUtils.hasText(v.getResponse().getFile()))
-                .forEach(v -> fileSearcher.search(xmlFile, v.getResponse().getFile()));
+                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v.getResponse().getFile()));
     }
 
     private void validateWhenCommand(final File xmlFile, final When when) {
         Stream.of(when.getRequest(), when.getThen())
                 .filter(org.springframework.util.StringUtils::hasText)
-                .forEach(v -> fileSearcher.search(xmlFile, v));
+                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
     }
 
     private void validateS3Command(final File xmlFile, final S3 s3) {
         Stream.of(s3.getDownload(), s3.getUpload())
                 .filter(org.springframework.util.StringUtils::hasText)
-                .forEach(v -> fileSearcher.search(xmlFile, v));
+                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
     }
 
     private void validateExistsPatches(final Migrate migrate) {
         List<String> patches = migrate.getPatches();
-        patches.forEach(fileSearcher::fileByNameAndExtension);
+        patches.forEach(FileSearcher::searchFileFromDataFolder);
     }
 
     private void validateHttpCommand(final Http http, final File xmlFile) {
         HttpInfo httpInfo = HttpUtil.getHttpMethodMetadata(http).getHttpInfo();
         Response response = httpInfo.getResponse();
         if (response != null && response.getFile() != null) {
-            fileSearcher.search(xmlFile, response.getFile());
+            FileSearcher.searchFileFromDir(xmlFile, response.getFile());
         }
     }
 
@@ -296,7 +293,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         if (StringUtils.isNotEmpty(include.getScenario())) {
             File includedScenarioFolder = new File(TestResourceSettings.getInstance().getScenariosFolder(),
                     include.getScenario());
-            File includedFile = fileSearcher.search(includedScenarioFolder, TestResourceSettings.SCENARIO_FILENAME);
+            File includedFile = FileSearcher.searchFileFromDir(includedScenarioFolder,
+                    TestResourceSettings.SCENARIO_FILENAME);
             if (includedFile.equals(xmlFile)) {
                 throw new DefaultFrameworkException(SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF);
             }
@@ -306,7 +304,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validatePostgresCommand(final com.knubisoft.e2e.testing.model.scenario.Postgres postgres,
                                          final File xmlFile) {
         if (!postgres.getFile().isEmpty() && postgres.getFile() != null) {
-            fileSearcher.search(xmlFile, postgres.getFile());
+            FileSearcher.searchFileFromDir(xmlFile, postgres.getFile());
         }
     }
 
@@ -341,7 +339,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private FileSource createFileSource(final String patchFileName) {
-        return new FileSource(fileSearcher.fileByNameAndExtension(patchFileName));
+        return new FileSource(FileSearcher.searchFileFromDataFolder(patchFileName));
     }
 
     private boolean isHttpContainsMutatingAction(final Http command) {

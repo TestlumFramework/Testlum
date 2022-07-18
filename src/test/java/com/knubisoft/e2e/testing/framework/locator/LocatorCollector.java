@@ -24,13 +24,11 @@ public class LocatorCollector {
 
     private final File pagesFolder;
     private final File componentsFolder;
-    private final FileSearcher fileSearcher;
 
     public LocatorCollector() {
         TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
         this.pagesFolder = resourceSettings.getPagesFolder();
         this.componentsFolder = resourceSettings.getComponentsFolder();
-        this.fileSearcher = new FileSearcher(resourceSettings.getTestResourcesFolder());
     }
 
     public Map<String, Locator> collect() {
@@ -80,7 +78,7 @@ public class LocatorCollector {
     }
 
     private Component parseComponent(final Include include) {
-        File file = fileSearcher.search(componentsFolder, include.getComponent());
+        File file = FileSearcher.searchFileFromDir(componentsFolder, include.getComponent());
         return XMLParsers.forComponentLocator().process(file);
     }
 

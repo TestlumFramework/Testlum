@@ -3,6 +3,7 @@ package com.knubisoft.e2e.testing.framework.interpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.e2e.testing.framework.util.ResultUtil;
@@ -93,7 +94,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         if (expectedFile != null) {
             String actualBody = EntityUtils.toString(actual.getEntity());
             setContextBody(actualBody);
-            String expectedBody = dependencies.getFileSearcher().searchFileToString(expectedFile);
+            String expectedBody = FileSearcher.searchFileToString(expectedFile, dependencies.getFile());
             result.setActual(PrettifyStringJson.getJSONResult(actualBody));
             result.setExpected(PrettifyStringJson.getJSONResult(expectedBody));
             httpValidator.validateBody(expectedBody, actualBody);

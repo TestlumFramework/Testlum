@@ -1,6 +1,7 @@
 package com.knubisoft.e2e.testing.framework.interpreter.lib;
 
 import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
 import com.knubisoft.e2e.testing.framework.exception.ComparisonException;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
@@ -91,7 +92,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     protected String getContentIfFile(final String fileOrContent) {
         try {
             if (fileOrContent.endsWith(".json")) {
-                return dependencies.getFileSearcher().searchFileToString(fileOrContent);
+                return FileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
             }
         } catch (FileLinkingException e) {
             // pass
@@ -138,7 +139,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
 
         public CompareBuilder withExpectedFile(final String fileName) {
             if (fileName != null) {
-                File file = dependencies.getFileSearcher().search(fileName);
+                File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
                 return tryToUseExpectedFile(file);
             }
             return this;

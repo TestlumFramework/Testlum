@@ -65,7 +65,7 @@ public final class SendGridUtil {
                                   final AbstractInterpreter<?> interpreter,
                                   final InterpreterDependencies dependencies) throws IOException {
         String fileName = body.getFrom().getFile();
-        File from = dependencies.getFileSearcher().search(fileName);
+        File from = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
         String content = FileUtils.readFileToString(from, StandardCharsets.UTF_8);
         return interpreter.inject(content);
     }

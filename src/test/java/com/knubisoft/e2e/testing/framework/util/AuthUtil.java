@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 @UtilityClass
 public class AuthUtil {
     @SneakyThrows
-    public String getCredentialsFromFile(final FileSearcher fileSearcher, final String fileName) {
-        return FileUtils.readFileToString(fileSearcher.fileByNameAndExtension(fileName), StandardCharsets.UTF_8);
+    public String getCredentialsFromFile(final String fileName) {
+        return FileUtils.readFileToString(FileSearcher.searchFileFromDataFolder(fileName), StandardCharsets.UTF_8);
     }
 }

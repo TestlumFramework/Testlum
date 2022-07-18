@@ -5,9 +5,8 @@ import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.exception.FileLinkingException;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
@@ -23,32 +22,20 @@ import java.util.Optional;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DUPLICATE_FILENAME;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.FILE_NOT_EXIST;
 
-@AllArgsConstructor
-@Getter
+@UtilityClass
 @Slf4j
 public final class FileSearcher {
-
     private static final Map<String, File> DATA_FOLDER_FILES;
     static {
         DATA_FOLDER_FILES = collectFilesFromDataFolder();
     }
+    private final File root = TestResourceSettings.getInstance().getTestResourcesFolder();
 
-    private final File root;
-    private final File fromDir;
 
-    public FileSearcher(final File root) {
-        this(root, null);
-    }
-
-    public File search(final File fromDir, final String name) {
+    public File searchFileFromDir(final File fromDir, final String name) {
         final String targetName = name.startsWith(DelimiterConstant.SLASH_SEPARATOR) ? name.substring(1) : name;
         FilenameFilter filter = (dir, file) -> file.equals(targetName);
         return find(fromDir, filter).orElseThrow(() -> new FileLinkingException(fromDir, root, name));
-    }
-
-    public File search(final String name) {
-        Preconditions.checkNotNull(fromDir);
-        return search(fromDir, name);
     }
 
 
@@ -64,12 +51,12 @@ public final class FileSearcher {
     }
 
     @SneakyThrows
-    public String searchFileToString(final String name) {
+    public String searchFileToString(final String name, final File fromDir) {
         Preconditions.checkNotNull(fromDir);
-        return FileUtils.readFileToString(search(fromDir, name), StandardCharsets.UTF_8);
+        return FileUtils.readFileToString(searchFileFromDir(fromDir, name), StandardCharsets.UTF_8);
     }
 
-    public File fileByNameAndExtension(final String fileName) {
+    public File searchFileFromDataFolder(final String fileName) {
         final String targetName = fileName.startsWith(DelimiterConstant.SLASH_SEPARATOR)
                 ? fileName.substring(1) : fileName;
         File file = DATA_FOLDER_FILES.get(targetName);

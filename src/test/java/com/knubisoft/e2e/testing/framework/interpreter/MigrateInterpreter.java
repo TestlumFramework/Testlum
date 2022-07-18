@@ -8,6 +8,7 @@ import com.knubisoft.e2e.testing.framework.db.source.FileSource;
 import com.knubisoft.e2e.testing.framework.db.source.Source;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
+import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.Migrate;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +68,7 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     }
 
     private FileSource createFileSource(final String patchFileName) {
-        File patch = dependencies.getFileSearcher().fileByNameAndExtension(patchFileName);
+        File patch = FileSearcher.searchFileFromDataFolder(patchFileName);
         log.info(PATCH_PATH_LOG, patch.getAbsolutePath());
         return new FileSource(patch);
     }

@@ -19,7 +19,7 @@ pipeline {
     environment {
         SERVICE = "testing-tool"
         SITE = "site-sample"
-        TAG = "${CHANGE_BRANCH}"
+        TAG = "${GIT_COMMIT}"
         SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/ee/site-sample.git"
         URL_TESTING_TOOL = "ssh://git@bitbucket.knubisoft.com:7999/ee/e2e-testing-tool.git"
         URL_TESTING_TOOL_SCENARIOS = "ssh://git@bitbucket.knubisoft.com:7999/ee/e2e-testing-scenarios.git"
@@ -89,6 +89,7 @@ pipeline {
     stage('docker cleanup') {
         steps {
             sh "docker rmi ${SERVICE}:${TAG}"
+            sh 'docker rmi $(docker images -f "dangling=true" -q) || true'
         }
     }
     // stage('down site') {
@@ -98,5 +99,16 @@ pipeline {
     //         }
     //     }
     // }
+  }
+  post {
+    always {
+        def notifyBitbucket(String state) {
+        if('SUCCESS' == state || 'FAILED' == state) {
+        // Set result of currentBuild !Important!
+            currentBuild.result = state
+        }
+        notifyBitbucket commitSha1: '', considerUnstableAsSuccess: true, credentialsId: '63182d10-165b-4df2-92e6-def3579471d0', disableInprogressNotification: false, ignoreUnverifiedSSLPeer: false, includeBuildNumberInKey: false, prependParentProjectKey: false, projectKey: '', stashServerBaseUrl: 'https://bitbucket.knubisoft.com'
+        }
+    }
   }
 }

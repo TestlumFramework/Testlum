@@ -19,7 +19,7 @@ pipeline {
     environment {
         SERVICE = "testing-tool"
         SITE = "site-sample"
-        TAG = "latest"
+        TAG = "${CHANGE_BRANCH}"
         SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/ee/site-sample.git"
         URL_TESTING_TOOL = "ssh://git@bitbucket.knubisoft.com:7999/ee/e2e-testing-tool.git"
         URL_TESTING_TOOL_SCENARIOS = "ssh://git@bitbucket.knubisoft.com:7999/ee/e2e-testing-scenarios.git"

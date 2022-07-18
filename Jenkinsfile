@@ -85,14 +85,6 @@ pipeline {
             }
         }
     }
-    stage('docker cleanup') {
-        steps {
-            always {
-            sh "docker rmi ${SERVICE}:${TAG}"
-            sh 'docker rmi $(docker images -f "dangling=true" -q) || true'
-            }
-        }
-    }
     // stage('down site') {
     //     steps {
     //         dir("site") {
@@ -104,6 +96,8 @@ pipeline {
   post {
     always {
         script {
+            sh "docker rmi ${SERVICE}:${TAG}"
+            sh 'docker rmi $(docker images -f "dangling=true" -q) || true'
             currentBuild.result = currentBuild.result ?: 'SUCCESS'
             notifyBitbucket()
         }

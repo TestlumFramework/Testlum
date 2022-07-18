@@ -104,10 +104,10 @@ pipeline {
         }
     }
     success {
-        slackSend color: "good", message: "*SUCCESS* ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+        slackSend color: "good", message: "*SUCCESS* \n Job name: ${env.JOB_NAME} \n Build number: ${env.BUILD_NUMBER} \n Build url: (<${env.BUILD_URL}|Open>)"
     }
     failure {
-        slackSend color: "danger", message: "*FAILURE* ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+        slackSend color: "danger", message: "*FAILURE* \n Job name: ${env.JOB_NAME} \n Build number: ${env.BUILD_NUMBER} \n Build url: (<${env.BUILD_URL}|Open>)"
     }
   }
 }

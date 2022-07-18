@@ -102,12 +102,9 @@ pipeline {
   }
   post {
     always {
-        def notifyBitbucket(String state) {
-        if('SUCCESS' == state || 'FAILED' == state) {
-        // Set result of currentBuild !Important!
-            currentBuild.result = state
-        }
-        notifyBitbucket commitSha1: '', considerUnstableAsSuccess: true, credentialsId: '63182d10-165b-4df2-92e6-def3579471d0', disableInprogressNotification: false, ignoreUnverifiedSSLPeer: false, includeBuildNumberInKey: false, prependParentProjectKey: false, projectKey: '', stashServerBaseUrl: 'https://bitbucket.knubisoft.com'
+        script {
+            currentBuild.result = currentBuild.result ?: 'SUCCESS'
+            notifyBitbucket()
         }
     }
   }

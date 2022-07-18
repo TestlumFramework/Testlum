@@ -37,6 +37,7 @@ pipeline {
             cleanWs()
             sh "env"
             sh "mkdir tool site"
+            slackSend color: "warning", message: "Build Started: ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
         }
     }
     stage('checkout ci tool') {
@@ -101,6 +102,12 @@ pipeline {
             currentBuild.result = currentBuild.result ?: 'SUCCESS'
             notifyBitbucket()
         }
+    }
+    success {
+        slackSend color: "good", message: "*SUCCESS* ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+    }
+    failure {
+        slackSend color: "danger", message: "*FAILURE* ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
     }
   }
 }

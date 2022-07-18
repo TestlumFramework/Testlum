@@ -87,9 +87,11 @@ pipeline {
         }
     }
     stage('docker cleanup') {
-        steps {
-            sh "docker rmi ${SERVICE}:${TAG}"
-            sh 'docker rmi $(docker images -f "dangling=true" -q) || true'
+        always {
+            steps {
+                sh "docker rmi ${SERVICE}:${TAG}"
+                sh 'docker rmi $(docker images -f "dangling=true" -q) || true'
+            }
         }
     }
     // stage('down site') {

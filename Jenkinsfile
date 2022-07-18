@@ -87,10 +87,10 @@ pipeline {
         }
     }
     stage('docker cleanup') {
-        always {
-            steps {
-                sh "docker rmi ${SERVICE}:${TAG}"
-                sh 'docker rmi $(docker images -f "dangling=true" -q) || true'
+        steps {
+            always {
+            sh "docker rmi ${SERVICE}:${TAG}"
+            sh 'docker rmi $(docker images -f "dangling=true" -q) || true'
             }
         }
     }

@@ -25,12 +25,14 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.FILE_NOT_EXIST
 @UtilityClass
 @Slf4j
 public final class FileSearcher {
-    private final File root = TestResourceSettings.getInstance().getTestResourcesFolder();
+    private static final File TEST_RESOURCES_FOLDER = TestResourceSettings.getInstance().getTestResourcesFolder();
+    private static final Map<String, File> DATA_FOLDER_FILES = collectFilesFromDataFolder();
 
     public File searchFileFromDir(final File fromDir, final String name) {
-        final String targetName = name.startsWith(DelimiterConstant.SLASH_SEPARATOR) ? name.substring(1) : name;
+        final String targetName = name.startsWith(DelimiterConstant.SLASH_SEPARATOR)
+                ? name.substring(1) : name;
         FilenameFilter filter = (dir, file) -> file.equals(targetName);
-        return find(fromDir, filter).orElseThrow(() -> new FileLinkingException(fromDir, root, name));
+        return find(fromDir, filter).orElseThrow(() -> new FileLinkingException(fromDir, TEST_RESOURCES_FOLDER, name));
     }
 
     @SneakyThrows
@@ -42,7 +44,7 @@ public final class FileSearcher {
     public File searchFileFromDataFolder(final String fileName) {
         final String targetName = fileName.startsWith(DelimiterConstant.SLASH_SEPARATOR)
                 ? fileName.substring(1) : fileName;
-        File file = collectFilesFromDataFolder().get(targetName);
+        File file = DATA_FOLDER_FILES.get(targetName);
         if (Objects.isNull(file)) {
             throw new DefaultFrameworkException(FILE_NOT_EXIST, fileName,
                     TestResourceSettings.getInstance().getDataFolder().getAbsolutePath());
@@ -51,7 +53,7 @@ public final class FileSearcher {
     }
 
     private Optional<File> find(final File fromDir, final FilenameFilter filter) {
-        if (root.equals(fromDir)) {
+        if (TEST_RESOURCES_FOLDER.equals(fromDir)) {
             return Optional.empty();
         }
         File[] files = fromDir.listFiles(filter);

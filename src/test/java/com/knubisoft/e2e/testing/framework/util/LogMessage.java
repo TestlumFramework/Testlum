@@ -25,7 +25,6 @@ public final class LogMessage {
     public static final String INCORRECT_SQS_PROCESSING = "Incorrect SQS processing";
     public static final String DESTINATION_LOG = format(TABLE_FORMAT, "Destination", "{}");
     public static final String SOURCE_LOG = format(TABLE_FORMAT, "Source", "{}");
-    public static final String ELASTICSEARCH_METHOD_AND_URL_LOG = "Elasticsearch {} request. URL - {}";
     public static final String COMPARISON_FOR_STEP_WAS_SKIPPED = "Comparison for step [%s] was skipped";
     public static final String NAME_FOR_MIGRATION_MUST_PRESENT = "Data storage name for migration must present";
     public static final String SLOW_COMMAND_PROCESSING = "Slow command processing detected. "
@@ -52,15 +51,6 @@ public final class LogMessage {
     public static final String FUNCTION_FOR_COMMAND_NOT_FOUND = "Function for class %s not found. "
             + "Please register algorithm for interpreter";
 
-    public static final String FILE_NOT_FOUND_WITH_CREDS = "File with credentials for authentication "
-            + "not found by path: %s";
-
-    public static final String UNABLE_AUTHENTICATE_WITH_CREDS = "Unable to authenticate with credentials%n"
-            + "Email:%s%n"
-            + "Password:%s%n"
-            + "=========================%n"
-            + "Exception%n%s%n";
-
     public static final String UNABLE_FIND_FILE_IN_ROOT_FOLDER = "Unable to find file by key [%1$s] "
             + "Initial scan folder [%2$s] with strategy recursive walk to root folder [%3$s]";
 
@@ -74,20 +64,13 @@ public final class LogMessage {
     public static final String UNABLE_PARSE_FILE_WITH_LOCATORS = "Unable to parse file %s with locators. Error: %s";
     public static final String MISSING_CONSTRUCTOR = "Missing constructor for class %s";
     public static final String UNABLE_FIND_VALUE_FOR_KEY = "Unable to find value for key %s. Available keys %s";
-    public static final String FILE_NOT_EXIST = "File %s does not exist";
+
     public static final String UNKNOWN_METHOD = "Unknown method %s";
     public static final String PAGES_FOLDER_NOT_EXIST = "[pages] folder does not exist";
     public static final String COMPONENTS_FOLDER_NOT_EXIST = "[components] folder does not exist";
-    public static final String SHELL_FOLDER_NOT_EXIST = "[shell] folder does not exist";
     public static final String SCENARIOS_FOLDER_NOT_EXIST = "[scenarios] folder does not exist";
-    public static final String VARIATIONS_FOLDER_NOT_EXIST = "[variations] folder does not exist";
-    public static final String PATCHES_FOLDER_NOT_EXIST = "[patches] folder does not exist";
-    public static final String CREDENTIALS_FOLDER_NOT_EXIST = "[credentials] folder does not exist";
     public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
-    public static final String TEST_BY_PATH_DISABLED = "Test by path %s is disabled";
-    public static final String EXCEL_FOLDER_NOT_EXIST = "[excel] folder does not exist";
-    public static final String CSV_FOLDER_NOT_EXIST = "[csv] folder does not exist";
-    public static final String JAVASCRIPT_FOLDER_NOT_EXIST = "[javascript] folder does not exist";
+    public static final String DATA_FOLDER_NOT_EXIST = "[data] folder does not exist";
 
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_RED = "\u001B[31m";
@@ -96,6 +79,10 @@ public final class LogMessage {
     public static final String ANSI_YELLOW = "\u001B[33m";
     public static final String ANSI_CYAN = "\u001b[36m";
 
+    public static final String DUPLICATE_FILENAME = ANSI_RED + "The [data] folder and its subfolders contain "
+            + "files with duplicate filenames - %s. Every file should have a unique name" + ANSI_RESET;
+    public static final String FILE_NOT_EXIST = ANSI_RED + "File %s does not exist in the [data] folder and its "
+            + "subfolders by path %s" + ANSI_RESET;
     public static final String ERROR_LOG = "Error ->";
     public static final String POSITION_COMMAND_LOG = ANSI_YELLOW
             + "--------- Scenario step #%d - %s ---------" + ANSI_RESET;

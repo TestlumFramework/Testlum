@@ -50,9 +50,7 @@ public class JwtAuth extends AbstractAuthStrategy {
 
     @SneakyThrows
     private String prepareBody(final Auth auth) {
-        return AuthUtil.getCredentialsFromFile(
-                interpreterDependencies.getFileSearcher(), auth.getCredentials()
-        );
+        return AuthUtil.getCredentialsFromFile(auth.getCredentials());
     }
 
     private HttpHeaders getHeaders() {

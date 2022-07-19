@@ -130,7 +130,7 @@ public final class HttpUtil {
     private HttpEntity injectMultipartFile(final Body body,
                                            final InterpreterDependencies dependencies) {
         Multipart multipart = body.getMultipart();
-        File from = dependencies.getFileSearcher().search(multipart.getPath());
+        File from = FileSearcher.searchFileFromDir(dependencies.getFile(), multipart.getPath());
 
         return MultipartEntityBuilder.create()
                 .setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
@@ -142,7 +142,7 @@ public final class HttpUtil {
                                       final AbstractInterpreter<?> interpreter,
                                       final InterpreterDependencies dependencies) throws IOException {
         String fileName = body.getFrom().getFile();
-        File from = dependencies.getFileSearcher().search(fileName);
+        File from = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
         String content = FileUtils.readFileToString(from, StandardCharsets.UTF_8);
         String injectedContent = interpreter.inject(content);
         return new StringEntity(injectedContent, ContentType.APPLICATION_JSON);

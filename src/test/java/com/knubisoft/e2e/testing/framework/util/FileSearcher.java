@@ -1,75 +1,59 @@
 package com.knubisoft.e2e.testing.framework.util;
 
 import com.google.common.base.Preconditions;
+import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.exception.FileLinkingException;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
-import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
-@AllArgsConstructor
-@Getter
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.DUPLICATE_FILENAME;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.FILE_NOT_EXIST;
+
+@UtilityClass
 @Slf4j
 public final class FileSearcher {
+    private static final File TEST_RESOURCES_FOLDER = TestResourceSettings.getInstance().getTestResourcesFolder();
+    private static final Map<String, File> DATA_FOLDER_FILES = collectFilesFromDataFolder();
 
-    private final File root;
-    private final File fromDir;
-    private final boolean overridePathToVolume;
-
-    public FileSearcher(final File root, final boolean overridePathToVolume) {
-        this(root, null, overridePathToVolume);
-    }
-
-    //CHECKSTYLE:OFF
-    public File search(final File fromDir, final String name) {
-        final String targetName = name.startsWith(DelimiterConstant.SLASH_SEPARATOR) ? name.substring(1) : name;
+    public File searchFileFromDir(final File fromDir, final String name) {
+        final String targetName = name.startsWith(DelimiterConstant.SLASH_SEPARATOR)
+                ? name.substring(1) : name;
         FilenameFilter filter = (dir, file) -> file.equals(targetName);
-        File result = find(fromDir, filter).orElseThrow(() -> new FileLinkingException(fromDir, root, name));
-        if (result.exists() && isFileAnImage(result) && overridePathToVolume) {
-            log.info("Because system is running inside docker switching files to mounted directory");
-            final String search = "src/test/resources";
-            int idx = result.getAbsolutePath().indexOf(search) + search.length();
-            File mounted = new File("/opt/src/test/resources", result.getAbsolutePath().substring(idx));
-            log.info("Original location: " + result.getAbsolutePath() + " new location " + mounted.getAbsolutePath());
-
-            if (!result.exists() && !mounted.exists()) {
-                throw new RuntimeException("File not found. Checked paths " +
-                        result.getAbsolutePath() +
-                        "  and  " +
-                        mounted.getAbsolutePath());
-            }
-            result = mounted;
-        }
-        return result;
+        return find(fromDir, filter).orElseThrow(() -> new FileLinkingException(fromDir, TEST_RESOURCES_FOLDER, name));
     }
 
-    public File search(final String name) {
+    @SneakyThrows
+    public String searchFileToString(final String name, final File fromDir) {
         Preconditions.checkNotNull(fromDir);
-        return search(fromDir, name);
+        return FileUtils.readFileToString(searchFileFromDir(fromDir, name), StandardCharsets.UTF_8);
     }
 
-    private boolean isFileAnImage(File result) {
-        String mimetype = new MimetypesFileTypeMap().getContentType(result);
-        String type = mimetype.split(DelimiterConstant.SLASH_SEPARATOR)[0];
-        if (type.equals("image")) {
-            log.info("File {} is an image", result);
-            return true;
+    public File searchFileFromDataFolder(final String fileName) {
+        final String targetName = fileName.startsWith(DelimiterConstant.SLASH_SEPARATOR)
+                ? fileName.substring(1) : fileName;
+        File file = DATA_FOLDER_FILES.get(targetName);
+        if (Objects.isNull(file)) {
+            throw new DefaultFrameworkException(FILE_NOT_EXIST, fileName,
+                    TestResourceSettings.getInstance().getDataFolder().getAbsolutePath());
         }
-        return false;
+        return file;
     }
-
-    //CHECKSTYLE:ON
 
     private Optional<File> find(final File fromDir, final FilenameFilter filter) {
-        if (root.equals(fromDir)) {
+        if (TEST_RESOURCES_FOLDER.equals(fromDir)) {
             return Optional.empty();
         }
         File[] files = fromDir.listFiles(filter);
@@ -79,21 +63,15 @@ public final class FileSearcher {
         return find(fromDir.getParentFile(), filter);
     }
 
-    @SneakyThrows
-    public String searchFileAndReadToString(final String name) {
-        Preconditions.checkNotNull(fromDir);
-        return FileUtils.readFileToString(search(fromDir, name), StandardCharsets.UTF_8);
-    }
-
-    @SneakyThrows
-    public String searchFileAndReadToString(final File fromDir, final String name) {
-        Preconditions.checkNotNull(fromDir);
-        return FileUtils.readFileToString(search(fromDir, name), StandardCharsets.UTF_8);
-    }
-
-    @SneakyThrows
-    public String searchFileToString(final String name) {
-        Preconditions.checkNotNull(fromDir);
-        return FileUtils.readFileToString(search(fromDir, name), StandardCharsets.UTF_8);
+    private static Map<String, File> collectFilesFromDataFolder() {
+        Map<String, File> files = new HashMap<>();
+        FileUtils.listFiles(TestResourceSettings.getInstance().getDataFolder(), null, true)
+                .forEach(file -> {
+                    files.computeIfPresent(file.getName(), (key, value) -> {
+                        throw new DefaultFrameworkException(DUPLICATE_FILENAME, file.getName());
+                    });
+                    files.put(file.getName(), file);
+                });
+        return Collections.unmodifiableMap(files);
     }
 }

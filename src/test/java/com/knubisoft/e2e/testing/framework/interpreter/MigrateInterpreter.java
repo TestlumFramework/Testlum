@@ -1,6 +1,5 @@
 package com.knubisoft.e2e.testing.framework.interpreter;
 
-import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
@@ -9,6 +8,7 @@ import com.knubisoft.e2e.testing.framework.db.source.FileSource;
 import com.knubisoft.e2e.testing.framework.db.source.Source;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
+import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.Migrate;
 import lombok.extern.slf4j.Slf4j;
@@ -62,15 +62,13 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     }
 
     private List<Source> createSourceList(final List<String> patches) {
-        File patchesFolder = TestResourceSettings.getInstance().getPatchesFolder();
         return patches.stream()
-                .map(each -> createFileSource(patchesFolder, each))
+                .map(this::createFileSource)
                 .collect(Collectors.toList());
     }
 
-    private FileSource createFileSource(final File patchesFolder,
-                                        final String patchFileName) {
-        File patch = new File(patchesFolder, patchFileName);
+    private FileSource createFileSource(final String patchFileName) {
+        File patch = FileSearcher.searchFileFromDataFolder(patchFileName);
         log.info(PATCH_PATH_LOG, patch.getAbsolutePath());
         return new FileSource(patch);
     }

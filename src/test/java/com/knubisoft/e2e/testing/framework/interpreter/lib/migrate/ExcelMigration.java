@@ -1,16 +1,13 @@
-package com.knubisoft.e2e.testing.framework.interpreter;
+package com.knubisoft.e2e.testing.framework.interpreter.lib.migrate;
 
 import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.db.source.ListSource;
 import com.knubisoft.e2e.testing.framework.db.sql.PostgresSqlOperation;
-import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
-import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
-import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.ResultUtil;
-import com.knubisoft.e2e.testing.model.scenario.ExcelCommands;
+import com.knubisoft.e2e.testing.model.scenario.Migrate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -30,8 +27,7 @@ import java.util.Objects;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 
 @Slf4j
-@InterpreterForClass(ExcelCommands.class)
-public class ExcelInterpreter extends AbstractInterpreter<ExcelCommands> {
+public class ExcelMigration {
 
     private static final String SQL_INSERT = "INSERT INTO %s VALUES (%s);";
     private static final String XLSX_EXTENSION = ".xlsx";
@@ -39,14 +35,9 @@ public class ExcelInterpreter extends AbstractInterpreter<ExcelCommands> {
     @Autowired(required = false)
     private PostgresSqlOperation postgresSqlOperation;
 
-    public ExcelInterpreter(final InterpreterDependencies dependencies) {
-        super(dependencies);
-    }
-
-    @Override
-    protected void acceptImpl(final ExcelCommands excelCommands, final CommandResult result) {
+    protected void acceptImpl(final Migrate excelCommands, final CommandResult result) {
         String alias = excelCommands.getAlias();
-        List<String> excelFiles = excelCommands.getExcelFile();
+        List<String> excelFiles = excelCommands.getData();
         ResultUtil.addMigrateMetaData(ResultUtil.POSTGRES, alias, excelFiles, result);
         excelFiles.forEach(excelFile -> {
             applyExcelQueriesOrThrow(excelFile, alias);

@@ -1,9 +1,6 @@
-package com.knubisoft.e2e.testing.framework.interpreter;
+package com.knubisoft.e2e.testing.framework.interpreter.lib.migrate;
 
 import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
-import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
-import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
-import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.e2e.testing.framework.db.source.FileSource;
 import com.knubisoft.e2e.testing.framework.db.source.Source;
@@ -26,17 +23,10 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.NAME_FOR_MIGRA
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.PATCH_PATH_LOG;
 
 @Slf4j
-@InterpreterForClass(Migrate.class)
-public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
+public class PatchesMigration {
+    @Autowired(required = false)
+    private NameToAdapterAlias nameToAdapterAlias;
 
-//    @Autowired(required = false)
-//    private NameToAdapterAlias nameToAdapterAlias;
-
-    public MigrateInterpreter(final InterpreterDependencies dependencies) {
-        super(dependencies);
-    }
-
-    @Override
     protected void acceptImpl(final Migrate migrate, final CommandResult result) {
         String storageName = migrate.getName().name();
         String alias = migrate.getAlias();
@@ -78,10 +68,10 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     private void applyPatches(final List<Source> patches,
                               final String storageName,
                               final String databaseName) {
-//        if (!patches.isEmpty()) {
-//            NameToAdapterAlias.Metadata metadata = nameToAdapterAlias
-//                    .getByNameOrThrow(storageName + UNDERSCORE + databaseName);
-//            metadata.getStorageOperation().apply(patches, databaseName);
-//        }
+        if (!patches.isEmpty()) {
+            NameToAdapterAlias.Metadata metadata = nameToAdapterAlias
+                    .getByNameOrThrow(storageName + UNDERSCORE + databaseName);
+            metadata.getStorageOperation().apply(patches, databaseName);
+        }
     }
 }

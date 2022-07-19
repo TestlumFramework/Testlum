@@ -1,17 +1,14 @@
-package com.knubisoft.e2e.testing.framework.interpreter;
+package com.knubisoft.e2e.testing.framework.interpreter.lib.migrate;
 
 import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.db.source.ListSource;
 import com.knubisoft.e2e.testing.framework.db.source.Source;
 import com.knubisoft.e2e.testing.framework.db.sql.PostgresSqlOperation;
-import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
-import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
-import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.ResultUtil;
-import com.knubisoft.e2e.testing.model.scenario.CsvCommands;
+import com.knubisoft.e2e.testing.model.scenario.Migrate;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,22 +22,16 @@ import java.util.stream.Collectors;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
 
 @Slf4j
-@InterpreterForClass(CsvCommands.class)
-public class CsvInterpreter extends AbstractInterpreter<CsvCommands> {
+public class CsvMigration {
 
     private static final String SQL_INSERT = "INSERT INTO %s VALUES (%s);";
 
     @Autowired(required = false)
     private PostgresSqlOperation postgresSqlOperation;
 
-    public CsvInterpreter(final InterpreterDependencies dependencies) {
-        super(dependencies);
-    }
-
-    @Override
-    protected void acceptImpl(final CsvCommands csvCommands, final CommandResult result) {
+    protected void acceptImpl(final Migrate csvCommands, final CommandResult result) {
         String alias = csvCommands.getAlias();
-        List<String> csvFiles = csvCommands.getCsvFile();
+        List<String> csvFiles = csvCommands.getData();
         ResultUtil.addMigrateMetaData(ResultUtil.POSTGRES, alias, csvFiles, result);
         List<Source> sources = csvFiles.stream()
                 .map(this::getSource)

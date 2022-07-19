@@ -1,12 +1,16 @@
 package com.knubisoft.e2e.testing.framework.interpreter.lib.auth;
 
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.e2e.testing.framework.constant.AuthorizationConstant;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.AuthUtil;
 import com.knubisoft.e2e.testing.model.scenario.Auth;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -40,8 +44,9 @@ public class JwtAuth extends AbstractAuthStrategy {
         HttpEntity<String> request = new HttpEntity<>(body, headers);
 
         RestTemplate restTemplate = new RestTemplate();
-        return restTemplate.postForObject(getBaseApiUrl(auth) + auth.getLoginEndpoint(),
-                request, String.class);
+        DocumentContext parse = JsonPath.parse(restTemplate.postForObject(getBaseApiUrl(auth) + auth.getLoginEndpoint(),
+                request, String.class));
+        return parse.read(AuthorizationConstant.CONTENT_KEY_TOKEN);
     }
 
     @SneakyThrows

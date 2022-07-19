@@ -6,6 +6,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.auth.AuthStrategy;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.auth.BasicAuth;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.auth.DefaultStrategy;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.auth.JwtAuth;
+import com.knubisoft.e2e.testing.framework.interpreter.lib.auth.OAuth2Auth;
 import com.knubisoft.e2e.testing.model.global_config.Auth;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.NotImplementedException;
@@ -18,6 +19,8 @@ public class AuthFactory {
         switch (auth.getAuthStrategy()) {
             case BASIC:
                 return new BasicAuth(dependencies);
+            case OAUTH_2:
+                return new OAuth2Auth(dependencies);
             case JWT:
                 return new JwtAuth(dependencies);
             case CUSTOM:

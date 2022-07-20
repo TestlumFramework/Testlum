@@ -208,6 +208,9 @@ public final class LogMessage {
     public static final String REPEAT_INFO = "Repeat UI commands %d times";
 
     public static final String CREDENTIALS_LOG = format(TABLE_FORMAT, "Credentials", "{}");
+    public static final String INVALID_CREDENTIALS_LOG = format(TABLE_FORMAT, "Invalid credentials", "{}");
+    public static final String SERVER_BAD_GATEWAY_RESPONSE_LOG = format(TABLE_FORMAT, "Server is shutdown", "{}");
+    public static final String SERVER_ERROR_RESPONSE_LOG = format(TABLE_FORMAT, "Request failed", "{}");
     public static final String AUTH_WAS_NOT_DEFINED = "Authentication strategy has not been defined in the "
             + "configuration file. Usage example: <auth strategy=“basic”.../>";
 

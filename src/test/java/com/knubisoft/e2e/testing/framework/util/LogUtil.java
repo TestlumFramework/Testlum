@@ -3,6 +3,7 @@ package com.knubisoft.e2e.testing.framework.util;
 import com.amazonaws.services.simpleemail.model.Message;
 import com.knubisoft.e2e.testing.model.ScenarioArguments;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
+import com.knubisoft.e2e.testing.model.scenario.Auth;
 import com.knubisoft.e2e.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.e2e.testing.model.scenario.Overview;
 import com.knubisoft.e2e.testing.model.scenario.OverviewPart;
@@ -15,6 +16,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
+import org.springframework.web.client.HttpClientErrorException;
+import software.amazon.awssdk.http.HttpStatusCode;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -27,10 +30,12 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.BROWSER_NAME_L
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.CLEAR_COOKIES_AFTER;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.COMMENT_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.CONTENT_FORMAT;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.HTTP_METHOD_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.INVALID_CREDENTIALS_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.INVALID_SCENARIO_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.LOCAL_STORAGE_KEY;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.LOCATOR_LOG;
@@ -39,6 +44,8 @@ import static com.knubisoft.e2e.testing.framework.util.LogMessage.REGEX_NEW_LINE
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_BY_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCROLL_DIRECTION_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.SERVER_ERROR_RESPONSE_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SOURCE_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.UI_COMMAND_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.TABLE_FORMAT;
@@ -212,6 +219,22 @@ public class LogUtil {
         log.info(CLEAR_COOKIES_AFTER, isClearCookies);
         if (StringUtils.isNotEmpty(storageKey)) {
             log.info(LOCAL_STORAGE_KEY, storageKey);
+        }
+    }
+
+    public void logAuthInfo(final Auth auth) {
+        log.info(ALIAS_LOG, auth.getApiAlias());
+        log.info(ENDPOINT_LOG, auth.getLoginEndpoint());
+        log.info(CREDENTIALS_LOG, auth.getCredentials());
+    }
+
+    public void logResponseStatusError(final HttpClientErrorException exception) {
+        if (HttpStatusCode.NOT_FOUND == exception.getRawStatusCode()) {
+            log.info(INVALID_CREDENTIALS_LOG, exception.getRawStatusCode());
+        } else if (HttpStatusCode.BAD_GATEWAY == exception.getRawStatusCode()) {
+            log.info(SERVER_BAD_GATEWAY_RESPONSE_LOG, exception.getRawStatusCode());
+        } else {
+            log.info(SERVER_ERROR_RESPONSE_LOG, exception.getRawStatusCode());
         }
     }
 }

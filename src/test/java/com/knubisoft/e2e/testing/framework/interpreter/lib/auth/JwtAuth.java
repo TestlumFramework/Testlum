@@ -8,6 +8,7 @@ import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.AuthUtil;
+import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.scenario.Auth;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -16,14 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import software.amazon.awssdk.http.HttpStatusCode;
 
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.CREDENTIALS_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.ENDPOINT_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.INVALID_CREDENTIALS_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.SERVER_ERROR_RESPONSE_LOG;
 import static com.knubisoft.e2e.testing.framework.util.ResultUtil.AUTHENTICATION_TYPE;
 import static java.util.Objects.nonNull;
 
@@ -37,17 +31,15 @@ public class JwtAuth extends AbstractAuthStrategy {
 
     @Override
     public void authenticate(final Auth auth, final CommandResult result) {
-        log.info(ALIAS_LOG, auth.getApiAlias());
-        log.info(ENDPOINT_LOG, auth.getLoginEndpoint());
-        log.info(CREDENTIALS_LOG, auth.getCredentials());
+        LogUtil.logAuthInfo(auth);
         String body = prepareBody(auth);
-        String token = getJwtToken(body, auth, result);
+        String token = getJwtToken(body, auth);
         result.put(AUTHENTICATION_TYPE, AuthorizationConstant.HEADER_JWT);
         login(token, AuthorizationConstant.HEADER_BEARER);
     }
 
     @SneakyThrows
-    private String getJwtToken(final String body, final Auth auth, final CommandResult result) {
+    private String getJwtToken(final String body, final Auth auth) {
         HttpHeaders headers = getHeaders();
         HttpEntity<String> request = new HttpEntity<>(body, headers);
         String response = doRequest(auth, request);
@@ -83,18 +75,8 @@ public class JwtAuth extends AbstractAuthStrategy {
             return restTemplate.postForObject(getBaseApiUrl(auth) + auth.getLoginEndpoint(),
                     request, String.class);
         } catch (HttpClientErrorException exception) {
-            handleError(exception);
+            LogUtil.logResponseStatusError(exception);
         }
         return DelimiterConstant.EMPTY;
-    }
-
-    private void handleError(final HttpClientErrorException exception) {
-        if (HttpStatusCode.NOT_FOUND == exception.getRawStatusCode()) {
-            log.info(INVALID_CREDENTIALS_LOG, exception.getRawStatusCode());
-        } else if (HttpStatusCode.BAD_GATEWAY == exception.getRawStatusCode()) {
-            log.info(SERVER_BAD_GATEWAY_RESPONSE_LOG, exception.getRawStatusCode());
-        } else {
-            log.info(SERVER_ERROR_RESPONSE_LOG, exception.getRawStatusCode());
-        }
     }
 }

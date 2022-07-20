@@ -5,6 +5,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.AuthUtil;
+import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.scenario.Auth;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -23,26 +24,23 @@ public class BasicAuth extends AbstractAuthStrategy {
 
     private static final String TYPE = "basic";
 
-    private final InterpreterDependencies dependencies;
-
     public BasicAuth(final InterpreterDependencies dependencies) {
         super(dependencies);
-        this.dependencies = dependencies;
     }
 
     @Override
     public void authenticate(final Auth auth, final CommandResult result) {
         result.put(AUTHENTICATION_TYPE, TYPE);
-        String credentials = encodedCredentials(auth, dependencies);
+        String credentials = encodedCredentials(auth);
         login(credentials, HEADER_BASIC);
     }
 
     @SneakyThrows
-    private String encodedCredentials(final Auth auth, final InterpreterDependencies dependencies) {
+    private String encodedCredentials(final Auth auth) {
         String credentials = AuthUtil.getCredentialsFromFile(auth.getCredentials());
         DocumentContext context = JsonPath.parse(credentials);
         credentials = context.read(USERNAME_JPATH) + ":" + context.read(PASSWORD_JPATH);
-        log.info(CREDENTIALS_LOG, credentials);
+        LogUtil.logAuthInfo(auth);
         return Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
     }
 }

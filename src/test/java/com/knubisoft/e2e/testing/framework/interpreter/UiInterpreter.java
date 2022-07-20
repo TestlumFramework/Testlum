@@ -173,7 +173,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     private void click(final Click click, final CommandResult result) {
         result.put(CLICK_LOCATOR, click.getLocatorId());
         WebElement webElement = getWebElement(click.getLocatorId());
-        BrowserUtil.waitForElementToBeClickable(dependencies.getWebDriver(), webElement);
+        BrowserUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
         highlightElementIfRequired(click.isHighlight(), webElement);
         takeScreenshotIfRequired(result);
         clickWithMethod(click.getMethod(), webElement, result);

@@ -18,6 +18,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import software.amazon.awssdk.http.HttpStatusCode;
 
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.CREDENTIALS_LOG;
+import static com.knubisoft.e2e.testing.framework.util.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.INVALID_CREDENTIALS_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SERVER_ERROR_RESPONSE_LOG;
@@ -36,6 +39,9 @@ public class JwtAuth extends AbstractAuthStrategy {
 
     @Override
     public void authenticate(final Auth auth, final CommandResult result) {
+        log.info(ALIAS_LOG, auth.getApiAlias());
+        log.info(ENDPOINT_LOG, auth.getLoginEndpoint());
+        log.info(CREDENTIALS_LOG, auth.getCredentials());
         String body = prepareBody(auth);
         String token = getJwtToken(body, auth, result);
         result.put(AUTHENTICATION_TYPE, TYPE);

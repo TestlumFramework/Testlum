@@ -2,11 +2,7 @@ package com.knubisoft.e2e.testing.framework.interpreter.lib.migrate;
 
 import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.db.source.ListSource;
-import com.knubisoft.e2e.testing.framework.db.sql.PostgresSqlOperation;
-import com.knubisoft.e2e.testing.framework.report.CommandResult;
-import com.knubisoft.e2e.testing.framework.util.FileSearcher;
-import com.knubisoft.e2e.testing.framework.util.ResultUtil;
-import com.knubisoft.e2e.testing.model.scenario.Migrate;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -14,62 +10,36 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+import static com.knubisoft.e2e.testing.framework.constant.MigrationConstant.SQL_INSERT;
+import static com.knubisoft.e2e.testing.framework.constant.MigrationConstant.XLSX_EXTENSION;
 
 @Slf4j
+@UtilityClass
 public class ExcelMigration {
 
-    private static final String SQL_INSERT = "INSERT INTO %s VALUES (%s);";
-    private static final String XLSX_EXTENSION = ".xlsx";
-
-    @Autowired(required = false)
-    private PostgresSqlOperation postgresSqlOperation;
-
-    protected void acceptImpl(final Migrate excelCommands, final CommandResult result) {
-        String alias = excelCommands.getAlias();
-        List<String> excelFiles = excelCommands.getData();
-        ResultUtil.addMigrateMetaData(ResultUtil.POSTGRES, alias, excelFiles, result);
-        excelFiles.forEach(excelFile -> {
-            applyExcelQueriesOrThrow(excelFile, alias);
-        });
-    }
-
-    private void applyExcelQueriesOrThrow(final String excelFile, final String alias) {
-        try {
-            List<String> queries = getQueries(excelFile);
-            log.info(ALIAS_LOG, alias);
-            postgresSqlOperation.apply(new ListSource(queries), alias);
-        } catch (Exception ioe) {
-            throw new RuntimeException("Can't create workbook class. Please, check "
-                    + "if the extension of the file is correct (.xls or .xlsx)");
-        }
-    }
-
-    private List<String> getQueries(final String excelFile) {
+    public ListSource getSource(final File excelFile) {
         Workbook workbook = getWorkbook(excelFile);
         List<String> queries = new ArrayList<>();
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             populateQueries(workbook.getSheetAt(i), queries);
         }
-        return queries;
+        return new ListSource(queries);
     }
 
-    private Workbook getWorkbook(final String excelFile) {
-        File file = FileSearcher.searchFileFromDataFolder(excelFile);
+    private Workbook getWorkbook(final File excelFile) {
         try {
-            if (file.toString().endsWith(XLSX_EXTENSION)) {
-                return new XSSFWorkbook(new FileInputStream(file));
+            if (excelFile.toString().endsWith(XLSX_EXTENSION)) {
+                return new XSSFWorkbook(Files.newInputStream(excelFile.toPath()));
             }
-            return new HSSFWorkbook(new FileInputStream(file));
+            return new HSSFWorkbook(Files.newInputStream(excelFile.toPath()));
         } catch (IOException exception) {
             throw new RuntimeException("Can't find the file or can't signature of the excel "
                     + "file isn't correct. Please, create your excel file from an application "

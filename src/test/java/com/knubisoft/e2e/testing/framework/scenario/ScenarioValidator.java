@@ -29,6 +29,7 @@ import com.knubisoft.e2e.testing.model.scenario.Response;
 import com.knubisoft.e2e.testing.model.scenario.S3;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
 import com.knubisoft.e2e.testing.model.scenario.Shell;
+import com.knubisoft.e2e.testing.model.scenario.StorageName;
 import com.knubisoft.e2e.testing.model.scenario.Ui;
 import com.knubisoft.e2e.testing.model.scenario.Var;
 import com.knubisoft.e2e.testing.model.scenario.When;
@@ -43,6 +44,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static com.knubisoft.e2e.testing.framework.constant.MigrationConstant.CSV_EXTENSION;
+import static com.knubisoft.e2e.testing.framework.constant.MigrationConstant.XLSX_EXTENSION;
+import static com.knubisoft.e2e.testing.framework.constant.MigrationConstant.XLS_EXTENSION;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.FAILED_CONNECTION_TO_DATABASE;
 import static com.knubisoft.e2e.testing.framework.util.LogMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF;
 import static java.lang.String.format;
@@ -161,8 +165,24 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateExistsPatches(final Migrate migrate) {
-        List<String> patches = migrate.getPatches();
-        patches.forEach(FileSearcher::searchFileFromDataFolder);
+        List<String> patches = migrate.getData();
+        StorageName name = migrate.getName();
+        patches.forEach(patch -> validateMigrationByExtension(patch, name));
+    }
+
+    private void validateMigrationByExtension(final String patch, final StorageName name) {
+        FileSearcher.searchFileFromDataFolder(patch);
+        if (patch.endsWith(XLSX_EXTENSION) || patch.endsWith(CSV_EXTENSION) || patch.endsWith(XLS_EXTENSION)) {
+            switch (name) {
+                case REDIS:
+                case MONGODB:
+                case CLICKHOUSE:
+                    throw new DefaultFrameworkException("Migration for " + name
+                            + " is unsupported from .csv and .xls/x files");
+                default:
+                    break;
+            }
+        }
     }
 
     private void validateHttpCommand(final Http http, final File xmlFile) {
@@ -332,7 +352,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     //CHECKSTYLE:ON
 
     private boolean arePatchesMutating(final Migrate migrate) {
-        return migrate.getPatches()
+        return migrate.getData()
                 .stream()
                 .map(this::createFileSource)
                 .anyMatch(i -> isQueryContainsMutatingAction(i.getQueries()));

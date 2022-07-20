@@ -43,7 +43,8 @@ public class JwtAuth extends AbstractAuthStrategy {
         HttpEntity<String> request = new HttpEntity<>(body, headers);
 
         RestTemplate restTemplate = new RestTemplate();
-        DocumentContext context = JsonPath.parse(restTemplate.postForObject(getBaseApiUrl(auth) + auth.getLoginEndpoint(),
+        DocumentContext context = JsonPath.parse(restTemplate.postForObject(getBaseApiUrl(auth)
+                        + auth.getLoginEndpoint(),
                 request, String.class));
         return context.read(AuthorizationConstant.CONTENT_KEY_TOKEN);
     }

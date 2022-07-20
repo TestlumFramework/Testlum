@@ -3,14 +3,9 @@ package com.knubisoft.e2e.testing.framework.interpreter.lib.migrate;
 import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.db.source.ListSource;
 import com.knubisoft.e2e.testing.framework.db.source.Source;
-import com.knubisoft.e2e.testing.framework.db.sql.PostgresSqlOperation;
-import com.knubisoft.e2e.testing.framework.report.CommandResult;
-import com.knubisoft.e2e.testing.framework.util.FileSearcher;
-import com.knubisoft.e2e.testing.framework.util.ResultUtil;
-import com.knubisoft.e2e.testing.model.scenario.Migrate;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.platform.commons.util.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,30 +13,14 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.e2e.testing.framework.util.LogMessage.ALIAS_LOG;
+import static com.knubisoft.e2e.testing.framework.constant.MigrationConstant.SQL_INSERT;
 
 @Slf4j
+@UtilityClass
 public class CsvMigration {
 
-    private static final String SQL_INSERT = "INSERT INTO %s VALUES (%s);";
-
-    @Autowired(required = false)
-    private PostgresSqlOperation postgresSqlOperation;
-
-    protected void acceptImpl(final Migrate csvCommands, final CommandResult result) {
-        String alias = csvCommands.getAlias();
-        List<String> csvFiles = csvCommands.getData();
-        ResultUtil.addMigrateMetaData(ResultUtil.POSTGRES, alias, csvFiles, result);
-        List<Source> sources = csvFiles.stream()
-                .map(this::getSource)
-                .collect(Collectors.toList());
-        log.info(ALIAS_LOG, alias);
-        postgresSqlOperation.apply(sources, alias);
-    }
-
-    private Source getSource(final String csvFile) {
-        File csv = FileSearcher.searchFileFromDataFolder(csvFile);
-        List<String> commands = readAllLines(csv);
+    public Source getSource(final File csvFile) {
+        List<String> commands = readAllLines(csvFile);
         return prepareSource(commands);
     }
 

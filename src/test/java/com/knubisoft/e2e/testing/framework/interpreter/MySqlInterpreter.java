@@ -17,14 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.lang.String.format;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-
 @Slf4j
 @InterpreterForClass(Mysql.class)
 public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
-
-    private static final String SQL_LOG_TEMPLATE = "%10s %-100s";
 
     @Autowired(required = false)
     private MySqlOperation mySqlOperation;
@@ -58,11 +53,8 @@ public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
     }
 
     private List<String> getSqlList(final Mysql mySql) {
-        List<String> queriesMySql = mySql.getQuery().stream()
+        return mySql.getQuery().stream()
                 .map(this::inject)
                 .collect(Collectors.toList());
-
-        queriesMySql.forEach(it -> log.info(format(SQL_LOG_TEMPLATE, EMPTY, it)));
-        return queriesMySql;
     }
 }

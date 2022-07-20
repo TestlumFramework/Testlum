@@ -19,7 +19,7 @@ pipeline {
     environment {
         SERVICE = "testing-tool"
         SITE = "site-sample"
-        TAG = "latest"
+        TAG = "${GIT_COMMIT}"
         SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/ee/site-sample.git"
         URL_TESTING_TOOL = "ssh://git@bitbucket.knubisoft.com:7999/ee/e2e-testing-tool.git"
         URL_TESTING_TOOL_SCENARIOS = "ssh://git@bitbucket.knubisoft.com:7999/ee/e2e-testing-scenarios.git"
@@ -37,6 +37,7 @@ pipeline {
             cleanWs()
             sh "env"
             sh "mkdir tool site"
+            slackSend color: "warning", message: "Build Started: ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
         }
     }
     stage('checkout ci tool') {
@@ -44,7 +45,6 @@ pipeline {
         dir("tool") {
             git branch: CHANGE_BRANCH, url: URL_TESTING_TOOL, credentialsId: GIT_CREDENTIALS_ID
             sh 'mkdir -p e2e-testing-scenarios'
-            sh 'mkdir -p ${SITE}'
         }
       }
     }
@@ -81,14 +81,9 @@ pipeline {
     stage('run test tool') {
         steps {
             dir("tool") {
-                sh 'docker run --rm --network=host --mount type=bind,source="$(pwd)"/e2e-testing-scenarios,target=/e2e-testing-scenarios ${SERVICE}:latest -c=config-jenkins.xml -p=/e2e-testing-scenarios/JENKINS_resources'
+                sh 'docker run --rm --network=host --mount type=bind,source="$(pwd)"/e2e-testing-scenarios,target=/e2e-testing-scenarios ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/e2e-testing-scenarios/JENKINS_resources'
                 // sh "java -jar ./target/e2e-testing-tool.jar -c=config-jenkins.xml -p=./e2e-testing-scenarios/JENKINS_resources"
             }
-        }
-    }
-    stage('docker cleanup') {
-        steps {
-            sh "docker rmi ${SERVICE}:${TAG}"
         }
     }
     // stage('down site') {
@@ -98,5 +93,21 @@ pipeline {
     //         }
     //     }
     // }
+  }
+  post {
+    always {
+        script {
+            sh "docker rmi ${SERVICE}:${TAG}"
+            sh 'docker rmi $(docker images -f "dangling=true" -q) || true'
+            currentBuild.result = currentBuild.result ?: 'SUCCESS'
+            notifyBitbucket()
+        }
+    }
+    success {
+        slackSend color: "good", message: "*SUCCESS* \n Job name: ${env.JOB_NAME} \n Build number: ${env.BUILD_NUMBER} \n Build url: (<${env.BUILD_URL}|Open>)"
+    }
+    failure {
+        slackSend color: "danger", message: "*FAILURE* \n Job name: ${env.JOB_NAME} \n Build number: ${env.BUILD_NUMBER} \n Build url: (<${env.BUILD_URL}|Open>)"
+    }
   }
 }

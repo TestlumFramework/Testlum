@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.S3;
@@ -55,7 +56,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         if (s3.getUpload() != null) {
             ResultUtil.addS3GeneralMetaData(bucket, UPLOAD_ACTION, key, bucket, result);
             final String fileName = inject(s3.getUpload());
-            final File file = this.dependencies.getFileSearcher().search(fileName);
+            final File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
             result.put("File name", fileName);
             LogUtil.logS3ActionInfo(UPLOAD_ACTION, bucket, key, fileName);
             this.amazonS3.get(bucket).createBucket(bucket);
@@ -74,7 +75,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                                           final String fileName,
                                           final CommandResult result) {
         LogUtil.logS3ActionInfo(DOWNLOAD_ACTION, bucket, key, fileName);
-        File expectedFile = this.dependencies.getFileSearcher().search(fileName);
+        File expectedFile = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
         InputStream expectedStream = FileUtils.openInputStream(expectedFile);
         String expected = IOUtils.toString(expectedStream, StandardCharsets.UTF_8);
         String actual = downloadFile(bucket, key).orElse(null);

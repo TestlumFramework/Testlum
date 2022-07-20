@@ -1,6 +1,5 @@
 package com.knubisoft.e2e.testing.framework.interpreter.lib.migrate;
 
-import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.db.source.ListSource;
 import com.knubisoft.e2e.testing.framework.db.source.Source;
@@ -41,15 +40,9 @@ public class CsvMigration {
     }
 
     private Source getSource(final String csvFile) {
-        File csv = getCsvFileByPath(csvFile);
+        File csv = FileSearcher.searchFileFromDataFolder(csvFile);
         List<String> commands = readAllLines(csv);
         return prepareSource(commands);
-    }
-
-    private File getCsvFileByPath(final String pathToFile) {
-        FileSearcher fileSearcher = dependencies.getFileSearcher();
-        File csvFolder = TestResourceSettings.getInstance().getCsvFolder();
-        return fileSearcher.search(csvFolder, pathToFile);
     }
 
     private List<String> readAllLines(final File csvFile) {

@@ -1,6 +1,5 @@
 package com.knubisoft.e2e.testing.framework.interpreter.lib.migrate;
 
-import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.db.source.ListSource;
 import com.knubisoft.e2e.testing.framework.db.sql.PostgresSqlOperation;
@@ -65,7 +64,7 @@ public class ExcelMigration {
     }
 
     private Workbook getWorkbook(final String excelFile) {
-        File file = getExcelFileByPath(excelFile);
+        File file = FileSearcher.searchFileFromDataFolder(excelFile);
         try {
             if (file.toString().endsWith(XLSX_EXTENSION)) {
                 return new XSSFWorkbook(new FileInputStream(file));
@@ -76,12 +75,6 @@ public class ExcelMigration {
                     + "file isn't correct. Please, create your excel file from an application "
                     + "or from google.");
         }
-    }
-
-    private File getExcelFileByPath(final String pathToFile) {
-        FileSearcher fileSearcher = dependencies.getFileSearcher();
-        File excelFolder = TestResourceSettings.getInstance().getExcelFolder();
-        return fileSearcher.search(excelFolder, pathToFile);
     }
 
     private void populateQueries(final Sheet sheet, final List<String> queries) {

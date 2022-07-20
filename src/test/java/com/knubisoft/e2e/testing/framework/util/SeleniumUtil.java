@@ -9,9 +9,9 @@ import java.io.File;
 public final class SeleniumUtil {
     private static final String FILE_PATH_PREFIX = "file:";
 
-    public String resolveSendKeysType(final String value, final FileSearcher searcher, final WebElement element) {
+    public String resolveSendKeysType(final String value, final WebElement element, final File fromDir) {
         if (value.startsWith(FILE_PATH_PREFIX)) {
-            File file = searcher.search(value.substring(FILE_PATH_PREFIX.length()));
+            File file = FileSearcher.searchFileFromDir(fromDir, value.substring(FILE_PATH_PREFIX.length()));
             return file.getPath();
         }
         element.clear();

@@ -39,7 +39,7 @@ public class BasicAuth extends AbstractAuthStrategy {
 
     @SneakyThrows
     private String encodedCredentials(final Auth auth, final InterpreterDependencies dependencies) {
-        String credentials = AuthUtil.getCredentialsFromFile(dependencies.getFileSearcher(), auth.getCredentials());
+        String credentials = AuthUtil.getCredentialsFromFile(auth.getCredentials());
         DocumentContext context = JsonPath.parse(credentials);
         credentials = context.read(USERNAME_JPATH) + ":" + context.read(PASSWORD_JPATH);
         log.info(CREDENTIALS_LOG, credentials);

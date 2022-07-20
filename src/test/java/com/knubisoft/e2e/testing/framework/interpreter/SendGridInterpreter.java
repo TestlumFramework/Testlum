@@ -4,6 +4,7 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.http.ApiResponse;
+import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.e2e.testing.framework.util.ResultUtil;
@@ -64,7 +65,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         if (response.getFile() == null) {
             return new ApiResponse(response.getCode(), headers, StringUtils.EMPTY);
         }
-        String body = dependencies.getFileSearcher().searchFileToString(response.getFile());
+        String body = FileSearcher.searchFileToString(response.getFile(), dependencies.getFile());
         return new ApiResponse(response.getCode(), headers, body);
     }
 

@@ -24,14 +24,12 @@ import java.util.TreeSet;
 public class ScenarioCollector {
 
     private final File rootTestResources;
-    private final FileSearcher fileSearcher;
     private final ScenarioValidator scenarioValidator;
 
     public ScenarioCollector() {
         TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
         this.rootTestResources = resourceSettings.getTestResourcesFolder();
-        this.fileSearcher = new FileSearcher(rootTestResources, false);
-        this.scenarioValidator = new ScenarioValidator(fileSearcher);
+        this.scenarioValidator = new ScenarioValidator();
     }
 
     public Result collect() {
@@ -97,7 +95,7 @@ public class ScenarioCollector {
         File scenariosFolder = TestResourceSettings.getInstance().getScenariosFolder();
         File includedScenarioFolder = new File(scenariosFolder,
                 include.getScenario());
-        File file = fileSearcher.search(includedScenarioFolder, TestResourceSettings.SCENARIO_FILENAME);
+        File file = FileSearcher.searchFileFromDir(includedScenarioFolder, TestResourceSettings.SCENARIO_FILENAME);
         return XMLParsers.forScenario().process(file, scenarioValidator);
     }
 

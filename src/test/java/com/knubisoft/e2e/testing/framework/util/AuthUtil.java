@@ -1,15 +1,15 @@
 package com.knubisoft.e2e.testing.framework.util;
 
-import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.io.FileUtils;
 
-import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 @UtilityClass
 public class AuthUtil {
-    public String getCredentialsFromFile(final FileSearcher fileSearcher, final String fileName) {
-        File credentialsFolder = TestResourceSettings.getInstance().getCredentialsFolder();
-        return fileSearcher
-                .searchFileAndReadToString(credentialsFolder, fileName);
+    @SneakyThrows
+    public String getCredentialsFromFile(final String fileName) {
+        return FileUtils.readFileToString(FileSearcher.searchFileFromDataFolder(fileName), StandardCharsets.UTF_8);
     }
 }

@@ -30,8 +30,6 @@ import static java.util.Objects.nonNull;
 @Slf4j
 public class JwtAuth extends AbstractAuthStrategy {
 
-    private static final String TYPE = "JWT";
-    private static final String BEARER_PREFIX = "Bearer ";
 
     public JwtAuth(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -44,8 +42,8 @@ public class JwtAuth extends AbstractAuthStrategy {
         log.info(CREDENTIALS_LOG, auth.getCredentials());
         String body = prepareBody(auth);
         String token = getJwtToken(body, auth, result);
-        result.put(AUTHENTICATION_TYPE, TYPE);
-        login(token, BEARER_PREFIX);
+        result.put(AUTHENTICATION_TYPE, AuthorizationConstant.HEADER_JWT);
+        login(token, AuthorizationConstant.HEADER_BEARER);
     }
 
     @SneakyThrows

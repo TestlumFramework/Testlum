@@ -72,7 +72,7 @@ pipeline {
     stage('build test tool') {
         steps {
             dir("tool") {
-                sh "docker build -t ${SERVICE}:${TAG} ."
+                sh "docker build -f Dockerfile.jenkins -t ${SERVICE}:${TAG} ."
                 // sh "mvn clean install  -DskipTests"
             }
 

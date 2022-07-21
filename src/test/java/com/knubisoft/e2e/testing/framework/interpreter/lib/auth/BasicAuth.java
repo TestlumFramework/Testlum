@@ -7,7 +7,6 @@ import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.AuthUtil;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.scenario.Auth;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
@@ -32,7 +31,6 @@ public class BasicAuth extends AbstractAuthStrategy {
         login(credentials, HEADER_BASIC);
     }
 
-    @SneakyThrows
     private String encodedCredentials(final Auth auth) {
         String credentials = AuthUtil.getCredentialsFromFile(auth.getCredentials());
         DocumentContext context = JsonPath.parse(credentials);

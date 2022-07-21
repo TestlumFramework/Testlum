@@ -11,16 +11,23 @@ import com.knubisoft.e2e.testing.model.global_config.Auth;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.NotImplementedException;
 
+import static java.util.Objects.nonNull;
+
 @UtilityClass
 public class AuthFactory {
     public AuthStrategy create(final InterpreterDependencies dependencies) {
         final Auth auth = GlobalTestConfigurationProvider.provide().getAuth();
-        // TODO i.doroshenko add OAUTH_2 to switch-case
         switch (auth.getAuthStrategy()) {
             case BASIC:
                 return new BasicAuth(dependencies);
             case OAUTH_2:
-                return new OAuth2Auth(dependencies);
+                if (nonNull(GlobalTestConfigurationProvider.provide().getAuth().getOauth2())) {
+                    return new OAuth2Auth(dependencies);
+                }
+                throw new RuntimeException("You have to set a mandatory tag " + System.lineSeparator()
+                        + "<auth>" + System.lineSeparator()
+                        + "<oauth2 clientId='' clientSecret='' tokenAccessUri=''/>" + System.lineSeparator()
+                        + "</auth>");
             case JWT:
                 return new JwtAuth(dependencies);
             case CUSTOM:

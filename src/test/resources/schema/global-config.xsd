@@ -84,9 +84,18 @@
     </x:complexType>
 
     <x:complexType name="auth">
+        <x:choice>
+            <x:element name="oauth2" type="tns:oauth2" minOccurs="0" maxOccurs="1"/>
+        </x:choice>
         <x:attribute name="autoLogout" type="x:boolean" default="true"/>
         <x:attribute name="authStrategy" type="tns:authStrategies" default="default"/>
         <x:attribute name="authCustomClassName" type="tns:nonEmptyString"/>
+    </x:complexType>
+
+    <x:complexType name="oauth2">
+        <x:attribute name="clientId" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="clientSecret" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="tokenAccessUri" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
     <x:simpleType name="authStrategies">

@@ -10,7 +10,6 @@ import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.AuthUtil;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.scenario.Auth;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -38,7 +37,6 @@ public class JwtAuth extends AbstractAuthStrategy {
         login(token, AuthorizationConstant.HEADER_BEARER);
     }
 
-    @SneakyThrows
     private String getJwtToken(final String body, final Auth auth) {
         HttpHeaders headers = getHeaders();
         HttpEntity<String> request = new HttpEntity<>(body, headers);
@@ -50,7 +48,6 @@ public class JwtAuth extends AbstractAuthStrategy {
         return DelimiterConstant.EMPTY;
     }
 
-    @SneakyThrows
     private String prepareBody(final Auth auth) {
         return AuthUtil.getCredentialsFromFile(auth.getCredentials());
     }

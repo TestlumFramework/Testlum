@@ -167,23 +167,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateExistsPatches(final Migrate migrate) {
         List<String> patches = migrate.getData();
         StorageName name = migrate.getName();
-        patches.forEach(patch -> validateMigrationByExtension(patch, name));
+        patches.forEach(patch -> MigrationValidator.validateMigrationByExtension(patch, name));
     }
 
-    private void validateMigrationByExtension(final String patch, final StorageName name) {
-        FileSearcher.searchFileFromDataFolder(patch);
-        if (patch.endsWith(XLSX_EXTENSION) || patch.endsWith(CSV_EXTENSION) || patch.endsWith(XLS_EXTENSION)) {
-            switch (name) {
-                case REDIS:
-                case MONGODB:
-                case CLICKHOUSE:
-                    throw new DefaultFrameworkException("Migration for " + name
-                            + " is unsupported from .csv and .xls/x files");
-                default:
-                    break;
-            }
-        }
-    }
 
     private void validateHttpCommand(final Http http, final File xmlFile) {
         HttpInfo httpInfo = HttpUtil.getHttpMethodMetadata(http).getHttpInfo();

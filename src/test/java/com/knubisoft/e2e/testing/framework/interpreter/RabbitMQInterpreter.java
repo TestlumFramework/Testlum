@@ -3,6 +3,7 @@ package com.knubisoft.e2e.testing.framework.interpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.Rabbit;
@@ -196,13 +197,13 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     private String getMessage(final SendRmqMessage send) {
         return send.getFile() == null
                 ? send.getBody()
-                : dependencies.getFileSearcher().searchFileToString(send.getFile());
+                : FileSearcher.searchFileToString(send.getFile(), dependencies.getFile());
     }
 
     private String getMessage(final ReceiveRmqMessage receive) {
         return receive.getFile() == null
                 ? receive.getMessage()
-                : dependencies.getFileSearcher().searchFileToString(receive.getFile());
+                : FileSearcher.searchFileToString(receive.getFile(), dependencies.getFile());
     }
 
     private void createQueueIfNotExists(final String queue,

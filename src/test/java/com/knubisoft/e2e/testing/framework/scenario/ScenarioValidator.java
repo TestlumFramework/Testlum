@@ -17,6 +17,7 @@ import com.knubisoft.e2e.testing.model.scenario.Elasticsearch;
 import com.knubisoft.e2e.testing.model.scenario.Http;
 import com.knubisoft.e2e.testing.model.scenario.HttpInfo;
 import com.knubisoft.e2e.testing.model.scenario.Include;
+import com.knubisoft.e2e.testing.model.scenario.Javascript;
 import com.knubisoft.e2e.testing.model.scenario.Migrate;
 import com.knubisoft.e2e.testing.model.scenario.Mongo;
 import com.knubisoft.e2e.testing.model.scenario.Mysql;
@@ -27,6 +28,8 @@ import com.knubisoft.e2e.testing.model.scenario.Repeat;
 import com.knubisoft.e2e.testing.model.scenario.Response;
 import com.knubisoft.e2e.testing.model.scenario.S3;
 import com.knubisoft.e2e.testing.model.scenario.Scenario;
+import com.knubisoft.e2e.testing.model.scenario.Shell;
+import com.knubisoft.e2e.testing.model.scenario.Ui;
 import com.knubisoft.e2e.testing.model.scenario.Var;
 import com.knubisoft.e2e.testing.model.scenario.When;
 import org.apache.commons.lang3.StringUtils;
@@ -46,26 +49,29 @@ import static java.lang.String.format;
 
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
-    private final FileSearcher fileSearcher;
-    private final File patchesFolder;
-    private final TestResourceSettings testResourceSettings;
 
-
-    public ScenarioValidator(final FileSearcher fileSearcher) {
-        this.fileSearcher = fileSearcher;
-        this.testResourceSettings = TestResourceSettings.getInstance();
-        this.patchesFolder = testResourceSettings.getPatchesFolder();
+    public ScenarioValidator() {
 
         Map<AbstractCommandPredicate, AbstractCommandValidator> validatorMap = new HashMap<>();
 
         validatorMap.put(o -> o instanceof Auth, (xmlFile, command) -> {
             Auth auth = (Auth) command;
-            validateFileExistence(testResourceSettings.getCredentialsFolder(), auth.getCredentials());
+            validateFileExistence(auth.getCredentials());
         });
 
         validatorMap.put(o -> o instanceof Http, (xmlFile, command) -> {
             Http http = (Http) command;
             validateHttpCommand(http, xmlFile);
+        });
+
+        validatorMap.put(o -> o instanceof Ui, (xmlFile, command) -> {
+            Ui ui = (Ui) command;
+            validateUiCommands(ui);
+        });
+
+        validatorMap.put(o -> o instanceof Shell, (xmlFile, command) -> {
+            Shell shell = (Shell) command;
+            validateShellCommand(shell);
         });
 
         validatorMap.put(o -> o instanceof Migrate, (xmlFile, command) -> {
@@ -91,32 +97,32 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         validatorMap.put(o -> o instanceof com.knubisoft.e2e.testing.model.scenario.Postgres, (xmlFile, command) -> {
             com.knubisoft.e2e.testing.model.scenario.Postgres postgres =
                     (com.knubisoft.e2e.testing.model.scenario.Postgres) command;
-            validateFileExistence(xmlFile, postgres.getFile());
+            validateFileExistence(postgres.getFile());
         });
 
         validatorMap.put(o -> o instanceof Mysql, (xmlFile, command) -> {
             Mysql mysql = (Mysql) command;
-            validateFileExistence(xmlFile, mysql.getFile());
+            validateFileExistence(mysql.getFile());
         });
 
         validatorMap.put(o -> o instanceof Oracle, (xmlFile, command) -> {
             Oracle oracle = (Oracle) command;
-            validateFileExistence(xmlFile, oracle.getFile());
+            validateFileExistence(oracle.getFile());
         });
 
         validatorMap.put(o -> o instanceof Redis, (xmlFile, command) -> {
             Redis redis = (Redis) command;
-            validateFileExistence(xmlFile, redis.getFile());
+            validateFileExistence(redis.getFile());
         });
 
         validatorMap.put(o -> o instanceof Mongo, (xmlFile, command) -> {
             Mongo mongo = (Mongo) command;
-            validateFileExistence(xmlFile, mongo.getFile());
+            validateFileExistence(mongo.getFile());
         });
 
         validatorMap.put(o -> o instanceof Dynamo, (xmlFile, command) -> {
             Dynamo dynamo = (Dynamo) command;
-            validateFileExistence(xmlFile, dynamo.getFile());
+            validateFileExistence(dynamo.getFile());
         });
     }
 
@@ -129,9 +135,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         validatePostgresTests(scenario, xmlFile);
     }
 
-    private void validateFileExistence(final File xmlFile, final String commandFile) {
+    private void validateFileExistence(final String commandFile) {
         if (org.springframework.util.StringUtils.hasText(commandFile)) {
-            fileSearcher.search(xmlFile, commandFile);
+            FileSearcher.searchFileFromDataFolder(commandFile);
         }
     }
 
@@ -139,31 +145,31 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         Stream.of(elasticsearch.getPost(), elasticsearch.getGet(), elasticsearch.getPut(), elasticsearch.getDelete())
                 .filter(Objects::nonNull)
                 .filter(v -> org.springframework.util.StringUtils.hasText(v.getResponse().getFile()))
-                .forEach(v -> fileSearcher.search(xmlFile, v.getResponse().getFile()));
+                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v.getResponse().getFile()));
     }
 
     private void validateWhenCommand(final File xmlFile, final When when) {
         Stream.of(when.getRequest(), when.getThen())
                 .filter(org.springframework.util.StringUtils::hasText)
-                .forEach(v -> fileSearcher.search(xmlFile, v));
+                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
     }
 
     private void validateS3Command(final File xmlFile, final S3 s3) {
         Stream.of(s3.getDownload(), s3.getUpload())
                 .filter(org.springframework.util.StringUtils::hasText)
-                .forEach(v -> fileSearcher.search(xmlFile, v));
+                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
     }
 
     private void validateExistsPatches(final Migrate migrate) {
         List<String> patches = migrate.getPatches();
-        patches.forEach(each -> fileSearcher.search(testResourceSettings.getPatchesFolder(), each));
+        patches.forEach(FileSearcher::searchFileFromDataFolder);
     }
 
     private void validateHttpCommand(final Http http, final File xmlFile) {
         HttpInfo httpInfo = HttpUtil.getHttpMethodMetadata(http).getHttpInfo();
         Response response = httpInfo.getResponse();
         if (response != null && response.getFile() != null) {
-            fileSearcher.search(xmlFile, response.getFile());
+            FileSearcher.searchFileFromDir(xmlFile, response.getFile());
         }
     }
 
@@ -237,7 +243,24 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateExistsPatches((Migrate) command);
         } else if (command instanceof Var) {
             validateVarCommand((Var) command);
+        } else if (command instanceof Ui) {
+            validateUiCommands((Ui) command);
+        } else if (command instanceof Shell) {
+            validateShellCommand((Shell) command);
+
         }
+    }
+
+    private void validateShellCommand(Shell command) {
+        command.getShellFile().forEach(this::validateFileExistence);
+    }
+
+    private void validateUiCommands(Ui command) {
+        command.getClickOrInputOrNavigate().forEach(o -> {
+            if (o instanceof Javascript) {
+                validateFileExistence(((Javascript) o).getFile());
+            }
+        });
     }
 
     private void validateVarCommand(final Var command) {
@@ -270,7 +293,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         if (StringUtils.isNotEmpty(include.getScenario())) {
             File includedScenarioFolder = new File(TestResourceSettings.getInstance().getScenariosFolder(),
                     include.getScenario());
-            File includedFile = fileSearcher.search(includedScenarioFolder, TestResourceSettings.SCENARIO_FILENAME);
+            File includedFile = FileSearcher.searchFileFromDir(includedScenarioFolder,
+                    TestResourceSettings.SCENARIO_FILENAME);
             if (includedFile.equals(xmlFile)) {
                 throw new DefaultFrameworkException(SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF);
             }
@@ -280,7 +304,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validatePostgresCommand(final com.knubisoft.e2e.testing.model.scenario.Postgres postgres,
                                          final File xmlFile) {
         if (!postgres.getFile().isEmpty() && postgres.getFile() != null) {
-            fileSearcher.search(xmlFile, postgres.getFile());
+            FileSearcher.searchFileFromDir(xmlFile, postgres.getFile());
         }
     }
 
@@ -310,12 +334,12 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private boolean arePatchesMutating(final Migrate migrate) {
         return migrate.getPatches()
                 .stream()
-                .map(each -> createFileSource(patchesFolder, each))
+                .map(this::createFileSource)
                 .anyMatch(i -> isQueryContainsMutatingAction(i.getQueries()));
     }
 
-    private FileSource createFileSource(final File patchesFolder, final String patchFileName) {
-        return new FileSource(new File(patchesFolder, patchFileName));
+    private FileSource createFileSource(final String patchFileName) {
+        return new FileSource(FileSearcher.searchFileFromDataFolder(patchFileName));
     }
 
     private boolean isHttpContainsMutatingAction(final Http command) {

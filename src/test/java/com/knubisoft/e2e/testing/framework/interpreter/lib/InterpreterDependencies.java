@@ -1,11 +1,8 @@
 package com.knubisoft.e2e.testing.framework.interpreter.lib;
 
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
-import com.knubisoft.e2e.testing.framework.SystemInfo;
 import com.knubisoft.e2e.testing.framework.locator.GlobalLocators;
 import com.knubisoft.e2e.testing.framework.scenario.ScenarioContext;
-import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.WebElementFinder;
 import com.knubisoft.e2e.testing.model.global_config.GlobalTestConfiguration;
 import lombok.AllArgsConstructor;
@@ -27,7 +24,6 @@ public class InterpreterDependencies {
     private final ApplicationContext context;
     private final File file;
     private final ScenarioContext scenarioContext;
-    private final FileSearcher fileSearcher;
     private final AtomicInteger position;
     private WebDriver webDriver;
     private WebElementFinder webElementFinder;
@@ -47,10 +43,6 @@ public class InterpreterDependencies {
         this.position = position;
         this.webElementFinder = new WebElementFinder();
         this.globalLocators = GlobalLocators.getInstance();
-
-        boolean overridePathToVolume = SystemInfo.USE_SELENIUM_HUB;
-        this.fileSearcher = new FileSearcher(TestResourceSettings.getInstance().getTestResourcesFolder(),
-                file, overridePathToVolume);
     }
 
     public InterpreterDependencies(final ApplicationContext context,
@@ -61,10 +53,6 @@ public class InterpreterDependencies {
         this.file = file;
         this.scenarioContext = scenarioContext;
         this.position = position;
-
-        boolean overridePathToVolume = SystemInfo.USE_SELENIUM_HUB;
-        this.fileSearcher = new FileSearcher(TestResourceSettings.getInstance().getTestResourcesFolder(),
-                file, overridePathToVolume);
     }
 
     @Data

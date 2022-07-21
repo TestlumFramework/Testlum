@@ -81,7 +81,7 @@ pipeline {
     stage('run test tool') {
         steps {
             dir("tool") {
-                sh 'docker run --rm --network=host --mount type=bind,source="$(pwd)"/e2e-testing-scenarios,target=/e2e-testing-scenarios ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/e2e-testing-scenarios/JENKINS_resources'
+                sh 'docker run -u $(id -u):$(id -g) --rm --network=host --mount type=bind,source="$(pwd)"/e2e-testing-scenarios,target=/e2e-testing-scenarios ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/e2e-testing-scenarios/JENKINS_resources'
                 // sh "java -jar ./target/e2e-testing-tool.jar -c=config-jenkins.xml -p=./e2e-testing-scenarios/JENKINS_resources"
             }
         }

@@ -3,6 +3,7 @@ package com.knubisoft.e2e.testing.framework.interpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.e2e.testing.framework.util.ResultUtil;
 import com.knubisoft.e2e.testing.model.scenario.KafkaHeader;
@@ -212,13 +213,13 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     private String getValue(final SendKafkaMessage send) {
         return send.getFile() == null
                 ? send.getValue()
-                : dependencies.getFileSearcher().searchFileToString(send.getFile());
+                : FileSearcher.searchFileToString(send.getFile(), dependencies.getFile());
     }
 
     private String getValue(final ReceiveKafkaMessage receive) {
         return receive.getFile() == null
                 ? receive.getValue()
-                : dependencies.getFileSearcher().searchFileToString(receive.getFile());
+                : FileSearcher.searchFileToString(receive.getFile(), dependencies.getFile());
     }
 
     private void createTopicIfNotExists(final String topic, final String alias) {

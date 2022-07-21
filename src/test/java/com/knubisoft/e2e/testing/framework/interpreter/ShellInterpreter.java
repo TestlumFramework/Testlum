@@ -1,6 +1,5 @@
 package com.knubisoft.e2e.testing.framework.interpreter;
 
-import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
@@ -84,7 +83,7 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
     }
 
     private Process getProcessorForFile(final String shellFile) throws IOException {
-        File shellFileByPath = getShellFileByPath(shellFile);
+        File shellFileByPath = FileSearcher.searchFileFromDataFolder(shellFile);
         log.info(SHELL_FILE_LOG, new String(Files.readAllBytes(shellFileByPath.toPath()), StandardCharsets.UTF_8)
                 .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         return SystemUtils.IS_OS_WINDOWS
@@ -92,12 +91,6 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
                 shellFileByPath.getAbsolutePath()))
                 : Runtime.getRuntime().exec(String.format(EXEC_LINUX_COMMAND,
                 shellFileByPath.getAbsolutePath()));
-    }
-
-    private File getShellFileByPath(final String filePath) {
-        FileSearcher fileSearcher = dependencies.getFileSearcher();
-        File shellFolder = TestResourceSettings.getInstance().getShellFolder();
-        return fileSearcher.search(shellFolder, filePath);
     }
 
     private void processExpectedAndActual(final int expectedCode, final Shell shell,

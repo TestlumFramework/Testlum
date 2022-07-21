@@ -1,54 +1,58 @@
 package com.knubisoft.e2e.testing.framework.interpreter.lib.auth;
 
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import com.knubisoft.e2e.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.e2e.testing.framework.constant.AuthorizationConstant;
+import com.knubisoft.e2e.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.AuthUtil;
+import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.model.scenario.Auth;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static com.knubisoft.e2e.testing.framework.util.ResultUtil.AUTHENTICATION_TYPE;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 public class JwtAuth extends AbstractAuthStrategy {
 
-    private static final String TYPE = "JWT";
-    private static final String BEARER_PREFIX = "Bearer ";
-    private final InterpreterDependencies interpreterDependencies;
 
     public JwtAuth(final InterpreterDependencies dependencies) {
         super(dependencies);
-        this.interpreterDependencies = dependencies;
     }
 
     @Override
     public void authenticate(final Auth auth, final CommandResult result) {
+        LogUtil.logAuthInfo(auth);
         String body = prepareBody(auth);
         String token = getJwtToken(body, auth);
-        result.put(AUTHENTICATION_TYPE, TYPE);
-        login(token, BEARER_PREFIX);
+        result.put(AUTHENTICATION_TYPE, AuthorizationConstant.HEADER_JWT);
+        login(token, AuthorizationConstant.HEADER_BEARER);
     }
 
     @SneakyThrows
     private String getJwtToken(final String body, final Auth auth) {
         HttpHeaders headers = getHeaders();
         HttpEntity<String> request = new HttpEntity<>(body, headers);
-
-        RestTemplate restTemplate = new RestTemplate();
-        return restTemplate.postForObject(getBaseApiUrl(auth) + auth.getLoginEndpoint(),
-                request, String.class);
+        String response = doRequest(auth, request);
+        if (nonNull(response) && !response.isEmpty()) {
+            DocumentContext context = JsonPath.parse(response);
+            return context.read(AuthorizationConstant.CONTENT_KEY_TOKEN);
+        }
+        return DelimiterConstant.EMPTY;
     }
 
     @SneakyThrows
     private String prepareBody(final Auth auth) {
-        return AuthUtil.getCredentialsFromFile(
-                interpreterDependencies.getFileSearcher(), auth.getCredentials()
-        );
+        return AuthUtil.getCredentialsFromFile(auth.getCredentials());
     }
 
     private HttpHeaders getHeaders() {
@@ -63,5 +67,16 @@ public class JwtAuth extends AbstractAuthStrategy {
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Alias doesn't exist."))
                 .getUrl();
+    }
+
+    private String doRequest(final Auth auth, final HttpEntity<String> request) {
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            return restTemplate.postForObject(getBaseApiUrl(auth) + auth.getLoginEndpoint(),
+                    request, String.class);
+        } catch (HttpClientErrorException exception) {
+            LogUtil.logResponseStatusError(exception);
+        }
+        return DelimiterConstant.EMPTY;
     }
 }

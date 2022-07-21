@@ -1,7 +1,7 @@
 version: "3.4"
 services:
   mongodb:
-    image: mongo:latest
+    image: mongo:5.0.9
     container_name: mongo_klov
     ports:
       - 27017:27017
@@ -13,3 +13,5 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017
     ports:
       - 1010:80
+    depends_on:
+      - mongodb

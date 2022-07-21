@@ -6,7 +6,6 @@ import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterDependenci
 import com.knubisoft.e2e.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.framework.util.BrowserUtil;
-import com.knubisoft.e2e.testing.framework.util.FileSearcher;
 import com.knubisoft.e2e.testing.framework.util.JavascriptUtil;
 import com.knubisoft.e2e.testing.framework.util.LogUtil;
 import com.knubisoft.e2e.testing.framework.util.ResultUtil;
@@ -193,8 +192,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     private void execJsCommands(final Javascript o, final CommandResult result) {
         String fileName = o.getFile();
         result.put(JS_FILE, fileName);
-        FileSearcher fileSearcher = dependencies.getFileSearcher();
-        String command = JavascriptUtil.readCommands(fileName, fileSearcher);
+        String command = JavascriptUtil.readCommands(fileName);
         JavascriptUtil.executeJsScript(command, dependencies.getWebDriver());
     }
 
@@ -225,7 +223,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         WebElement webElement = getWebElement(input.getLocatorId());
         highlightElementIfRequired(input.isHighlight(), webElement);
         String injected = inject(input.getValue());
-        String value = SeleniumUtil.resolveSendKeysType(injected, dependencies.getFileSearcher(), webElement);
+        String value = SeleniumUtil.resolveSendKeysType(injected, webElement, dependencies.getFile());
         result.put(INPUT_VALUE, value);
         log.info(VALUE_LOG, value);
         webElement.sendKeys(value);

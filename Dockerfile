@@ -2,7 +2,7 @@ FROM maven:3.8.5-openjdk-8 as maven-build
 
 WORKDIR /e2e/
 COPY . .
-RUN mvn clean install -DskipTests
+RUN mvn clean install -DskipTests -Pquality-checking
 
 FROM openjdk:8
 

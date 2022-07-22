@@ -27,7 +27,7 @@ public class TestRunner {
         TestResourceSettings.init(configFileName, pathToTestResources);
         TestExecutionSummary testExecutionSummary = runTests();
         if (SystemInfo.TESTING_IN_PIPELINE) {
-            ResultUtil.SetFullTestCycleExecutionResult(testExecutionSummary);
+            ResultUtil.writeFullTestCycleExecutionResult(testExecutionSummary);
         }
     }
 

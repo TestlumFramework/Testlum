@@ -21,10 +21,12 @@ import com.knubisoft.e2e.testing.model.scenario.SesMessage;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
-import java.io.FileWriter;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -115,7 +117,7 @@ public class ResultUtil {
     private static final String STEP_FAILED = "Step failed";
     private static final String FAILED = "failed";
     private static final String SUCCESSFULLY = "successfully";
-    private static final String EXECUTION_RESULT_FILENAME = "/scenarios_execution_result.txt";
+    private static final String EXECUTION_RESULT_FILENAME = "scenarios_execution_result.txt";
 
     public CommandResult createCommandResultForUiSubCommand(final int number, final String name, final String comment) {
         CommandResult subCommandResult = createNewCommandResultInstance(number);
@@ -262,10 +264,10 @@ public class ResultUtil {
     }
 
     public void addS3GeneralMetaData(final String alias,
-                              final String action,
-                              final String key,
-                              final String bucket,
-                              final CommandResult result) {
+                                     final String action,
+                                     final String key,
+                                     final String bucket,
+                                     final CommandResult result) {
         result.put(ALIAS, alias);
         result.put(ACTION, action);
         result.put(BUCKET, bucket);
@@ -319,14 +321,14 @@ public class ResultUtil {
         }
         AtomicInteger number = new AtomicInteger(1);
         hovers.getHover().forEach(hover -> {
-                    String hoverNumber = format(HOVER_NUMBER_TEMPLATE, number.getAndIncrement());
-                    result.put(hoverNumber, Arrays.asList(hover.getLocatorId(), hovers.getComment()));
-                });
+            String hoverNumber = format(HOVER_NUMBER_TEMPLATE, number.getAndIncrement());
+            result.put(hoverNumber, Arrays.asList(hover.getLocatorId(), hovers.getComment()));
+        });
     }
 
     public void addCommandsForRepeat(final List<AbstractCommand> commandsForRepeat, final CommandResult result) {
         result.put(COMMANDS_FOR_REPEAT, commandsForRepeat.stream()
-                        .map(command -> command.getClass().getSimpleName()).collect(Collectors.toList()));
+                .map(command -> command.getClass().getSimpleName()).collect(Collectors.toList()));
     }
 
     private void addKafkaAdditionalMetaDataForSendAction(final SendKafkaMessage sendAction,
@@ -370,15 +372,11 @@ public class ResultUtil {
     }
 
     @SneakyThrows
-    public static void SetFullTestCycleExecutionResult(TestExecutionSummary testExecutionSummary) {
-        String fileName = TestResourceSettings.getInstance().getTestResourcesFolder() + EXECUTION_RESULT_FILENAME;
-        FileWriter fileWriter = new FileWriter(fileName);
-        if (CollectionUtils.isNotEmpty(testExecutionSummary.getFailures())
-                || testExecutionSummary.getTestsAbortedCount() > 0) {
-            fileWriter.write(FAILED);
-        } else {
-            fileWriter.write(SUCCESSFULLY);
-        }
-        fileWriter.close();
+    public static void writeFullTestCycleExecutionResult(final TestExecutionSummary testExecutionSummary) {
+        File executionResultFile = new File(TestResourceSettings.getInstance().getTestResourcesFolder(),
+                EXECUTION_RESULT_FILENAME);
+        String result = CollectionUtils.isNotEmpty(testExecutionSummary.getFailures())
+                || testExecutionSummary.getTestsAbortedCount() > 0 ? FAILED : SUCCESSFULLY;
+        FileUtils.write(executionResultFile, result, StandardCharsets.UTF_8);
     }
 }

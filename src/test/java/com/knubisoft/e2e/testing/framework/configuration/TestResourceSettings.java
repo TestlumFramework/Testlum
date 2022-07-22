@@ -22,8 +22,6 @@ public class TestResourceSettings {
     public static final String SCREENSHOT_FOLDER = "/screenshots";
     public static final String FILENAME_TO_SAVE = "action_%s_" + ACTUAL_FILENAME;
     public static final String SCREENSHOT_NAME_TO_SAVE = "%s_action_%s_" + SCREENSHOT_FILENAME;
-    public static final String REPORT_TEMPLATE_PATH = "reportTemplate/index.html";
-    public static final String REPORT_PATH = "/report/index-final.html";
     public static final String SCHEMAS_FOLDER = "schema";
 
     private static final String TEST_RESOURCES_FOLDER = "/src/test/resources";

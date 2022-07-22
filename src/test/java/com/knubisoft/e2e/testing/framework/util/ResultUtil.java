@@ -1,5 +1,6 @@
 package com.knubisoft.e2e.testing.framework.util;
 
+import com.knubisoft.e2e.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.e2e.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.e2e.testing.framework.report.CommandResult;
 import com.knubisoft.e2e.testing.model.scenario.AbstractCommand;
@@ -17,9 +18,13 @@ import com.knubisoft.e2e.testing.model.scenario.SendgridInfo;
 import com.knubisoft.e2e.testing.model.scenario.Ses;
 import com.knubisoft.e2e.testing.model.scenario.SesBody;
 import com.knubisoft.e2e.testing.model.scenario.SesMessage;
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
+import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -108,6 +113,9 @@ public class ResultUtil {
     private static final String HOVER_NUMBER_TEMPLATE = "Hover #%d";
     private static final String COMMANDS_FOR_REPEAT = "Commands for repeat";
     private static final String STEP_FAILED = "Step failed";
+    private static final String FAILED = "failed";
+    private static final String SUCCESSFULLY = "successfully";
+    private static final String EXECUTION_RESULT_FILENAME = "/scenarios_execution_result.txt";
 
     public CommandResult createCommandResultForUiSubCommand(final int number, final String name, final String comment) {
         CommandResult subCommandResult = createNewCommandResultInstance(number);
@@ -359,5 +367,18 @@ public class ResultUtil {
         commandResult.put(ADDITIONAL_HEADERS, headers.stream()
                 .map(header ->
                         format(HEADER_TEMPLATE, header.getName(), header.getData())).collect(Collectors.toList()));
+    }
+
+    @SneakyThrows
+    public static void SetFullTestCycleExecutionResult(TestExecutionSummary testExecutionSummary) {
+        String fileName = TestResourceSettings.getInstance().getTestResourcesFolder() + EXECUTION_RESULT_FILENAME;
+        FileWriter fileWriter = new FileWriter(fileName);
+        if (CollectionUtils.isNotEmpty(testExecutionSummary.getFailures())
+                || testExecutionSummary.getTestsAbortedCount() > 0) {
+            fileWriter.write(FAILED);
+        } else {
+            fileWriter.write(SUCCESSFULLY);
+        }
+        fileWriter.close();
     }
 }

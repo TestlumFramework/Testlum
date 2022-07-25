@@ -20,9 +20,9 @@ pipeline {
         SERVICE = "testing-tool"
         SITE = "site-sample"
         TAG = "${GIT_COMMIT}"
-        SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/ee/site-sample.git"
-        URL_TESTING_TOOL = "ssh://git@bitbucket.knubisoft.com:7999/ee/e2e-testing-tool.git"
-        URL_TESTING_TOOL_SCENARIOS = "ssh://git@bitbucket.knubisoft.com:7999/ee/e2e-testing-scenarios.git"
+        SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/cott/site-sample.git"
+        URL_TESTING_TOOL = "ssh://git@bitbucket.knubisoft.com:7999/cott/cost-optimization-testing-tool.git"
+        URL_TESTING_TOOL_SCENARIOS = "ssh://git@bitbucket.knubisoft.com:7999/cott/cott-test-resources.git"
         GIT_CREDENTIALS_ID = "bitbucket"
         HOST='jenkins@192.168.0.7'
         PORT='22'

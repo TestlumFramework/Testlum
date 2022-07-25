@@ -9,7 +9,7 @@ pipeline {
                      defaultValue: 'master',
                      name: 'BRANCH_SCENARIOS',
                      type: 'PT_BRANCH',
-                     useRepository: '.*e2e-testing-scenarios.git') 
+                     useRepository: '.*cott-test-resources.git') 
         gitParameter(branchFilter: 'origin/(.*)',
                      defaultValue: 'master',
                      name: 'BRANCH_SITE',
@@ -20,9 +20,9 @@ pipeline {
         SERVICE = "testing-tool"
         SITE = "site-sample"
         TAG = "${GIT_COMMIT}"
-        SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/ee/site-sample.git"
-        URL_TESTING_TOOL = "ssh://git@bitbucket.knubisoft.com:7999/ee/e2e-testing-tool.git"
-        URL_TESTING_TOOL_SCENARIOS = "ssh://git@bitbucket.knubisoft.com:7999/ee/e2e-testing-scenarios.git"
+        SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/cott/site-sample.git"
+        URL_TESTING_TOOL = "ssh://git@bitbucket.knubisoft.com:7999/cott/cost-optimization-testing-tool.git"
+        URL_TESTING_TOOL_SCENARIOS = "ssh://git@bitbucket.knubisoft.com:7999/cott/cott-test-resources.git"
         GIT_CREDENTIALS_ID = "bitbucket"
         HOST='jenkins@192.168.0.7'
         PORT='22'
@@ -44,13 +44,13 @@ pipeline {
       steps {
         dir("tool") {
             git branch: CHANGE_BRANCH, url: URL_TESTING_TOOL, credentialsId: GIT_CREDENTIALS_ID
-            sh 'mkdir -p e2e-testing-scenarios'
+            sh 'mkdir -p cott-test-resources'
         }
       }
     }
     stage('checkout ci tool scenarios') {
         steps {
-            dir("tool/e2e-testing-scenarios") {
+            dir("tool/cott-test-resources") {
                 git branch: "${params.BRANCH_SCENARIOS}", url: URL_TESTING_TOOL_SCENARIOS, credentialsId: GIT_CREDENTIALS_ID
             }
         }
@@ -81,9 +81,9 @@ pipeline {
     stage('run test tool') {
         steps {
             dir("tool") {
-                sh 'docker run -u $(id -u):$(id -g) --rm --network=host -v "$(pwd)"/e2e-testing-scenarios:/e2e/e2e-testing-scenarios ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/e2e/e2e-testing-scenarios/JENKINS_resources'
-                sh "cat e2e-testing-scenarios/JENKINS_resources/scenarios_execution_result.txt | awk '/successfully/{ exit 0 }/failed/{ exit 1 }'"
-                // sh "java -jar ./target/e2e-testing-tool.jar -c=config-jenkins.xml -p=./e2e-testing-scenarios/JENKINS_resources"
+                sh 'docker run -u $(id -u):$(id -g) --rm --network=host -v "$(pwd)"/cott-test-resources:/cott/cott-test-resources ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/cott/cott-test-resources/JENKINS_resources'
+                sh "cat cott-test-resources/JENKINS_resources/scenarios_execution_result.txt | awk '/successfully/{ exit 0 }/failed/{ exit 1 }'"
+                // sh "java -jar ./target/e2e-testing-tool.jar -c=config-jenkins.xml -p=./cott-test-resources/JENKINS_resources"
             }
         }
     }

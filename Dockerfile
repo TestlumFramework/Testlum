@@ -1,6 +1,6 @@
 FROM maven:3.8.5-openjdk-8 as maven-build
 
-WORKDIR /e2e/
+WORKDIR /cott/
 COPY . .
 RUN mvn clean install -DskipTests -Pquality-checking
 
@@ -60,10 +60,10 @@ RUN apt-get update -qqy \
 	&& apt-get -qqy install xvfb \
 	&& rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
-ARG JAR_FILE=target/e2e-testing-tool.jar
+ARG JAR_FILE=target/cott-with-dependencies.jar
 
-WORKDIR /e2e/
+WORKDIR /cott/
 
-COPY --from=maven-build /e2e/${JAR_FILE} app.jar
+COPY --from=maven-build /cott/${JAR_FILE} cott.jar
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "cott.jar"]

@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.knubisoft</groupId>
-    <artifactId>e2e-testing-tool</artifactId>
+    <artifactId>cost-optimization-testing-tool</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>e2e-testing-tool</name>
+    <name>cost-optimization-testing-tool</name>
 
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -15,7 +15,7 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <start-class>com.knubisoft.e2e.runner.TestRunner</start-class>
+        <start-class>com.knubisoft.cott.runner.TestRunner</start-class>
 
         <selenium-java.version>4.0.0</selenium-java.version>
         <webdrivermanager.version>5.2.0</webdrivermanager.version>
@@ -914,7 +914,7 @@
     </dependencyManagement>
 
     <build>
-        <finalName>e2e</finalName>
+        <finalName>cott</finalName>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -1078,7 +1078,7 @@
                             <logViolationsToConsole>true</logViolationsToConsole>
                             <failsOnError>true</failsOnError>
                             <linkXRef>false</linkXRef>
-                            <excludes>**/com/knubisoft/e2e/testing/model/**/*</excludes>
+                            <excludes>**/com/knubisoft/cott/testing/model/**/*</excludes>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
                         </configuration>
                         <executions>
@@ -1126,7 +1126,7 @@
                             <minimumTokens>50</minimumTokens>
                             <targetJdk>${java.version}</targetJdk>
                             <excludes>
-                                <exclude>**/com/knubisoft/e2e/testing/model/**/*.java
+                                <exclude>**/com/knubisoft/cott/testing/model/**/*.java
                                 </exclude>
                             </excludes>
                         </configuration>

@@ -37,7 +37,7 @@ pipeline {
             cleanWs()
             sh "env"
             sh "mkdir tool site"
-            slackSend color: "warning", message: "Build Started: ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+            sh "curl -s -X POST https://api.telegram.org/bot1846108211:AAH7Qm_y__ARQXh4q_fXiLEjnMhJyQ-eeok/sendMessage -d chat_id=-1001593036618 -d text='Build Started\xE2\x9C\x8A: ${env.JOB_NAME} \n PR: ${env.BRANCH_NAME} \n Parameters: \n BRANCH_TOOL: ${CHANGE_BRANCH} \n BRANCH_SITE: ${env.BRANCH_SITE} \n BRANCH_SCENARIOS: ${env.BRANCH_SCENARIOS} \n BUILD_URL: ${env.BUILD_URL}'"
         }
     }
     stage('checkout ci tool') {
@@ -103,10 +103,10 @@ pipeline {
         }
     }
     success {
-        slackSend color: "good", message: "*SUCCESS* \n Job name: ${env.JOB_NAME} \n Build number: ${env.BUILD_NUMBER} \n Build url: (<${env.BUILD_URL}|Open>)"
+        sh "curl -s -X POST https://api.telegram.org/bot1846108211:AAH7Qm_y__ARQXh4q_fXiLEjnMhJyQ-eeok/sendMessage -d chat_id=-1001593036618 -d text='*SUCCESS* \xE2\x9C\x85 \n PR: ${env.BRANCH_NAME} \n Parameters: \n BRANCH_TOOL: ${CHANGE_BRANCH} \n BRANCH_SITE: ${env.BRANCH_SITE} \n BRANCH_SCENARIOS: ${env.BRANCH_SCENARIOS} \n BUILD_URL: ${env.BUILD_URL}'"
     }
     failure {
-        slackSend color: "danger", message: "*FAILURE* \n Job name: ${env.JOB_NAME} \n Build number: ${env.BUILD_NUMBER} \n Build url: (<${env.BUILD_URL}|Open>)"
+        sh "curl -s -X POST https://api.telegram.org/bot1846108211:AAH7Qm_y__ARQXh4q_fXiLEjnMhJyQ-eeok/sendMessage -d chat_id=-1001593036618 -d text='*FAILURE* \xE2\x9B\x94 \n PR: ${env.BRANCH_NAME} \n Parameters: \n BRANCH_TOOL: ${CHANGE_BRANCH} \n BRANCH_SITE: ${env.BRANCH_SITE} \n BRANCH_SCENARIOS: ${env.BRANCH_SCENARIOS} \n BUILD_URL: ${env.BUILD_URL}'"
     }
   }
 }

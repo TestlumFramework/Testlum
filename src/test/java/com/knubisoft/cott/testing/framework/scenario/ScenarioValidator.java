@@ -29,6 +29,7 @@ import com.knubisoft.cott.testing.model.scenario.Response;
 import com.knubisoft.cott.testing.model.scenario.S3;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
 import com.knubisoft.cott.testing.model.scenario.Shell;
+import com.knubisoft.cott.testing.model.scenario.StorageName;
 import com.knubisoft.cott.testing.model.scenario.Ui;
 import com.knubisoft.cott.testing.model.scenario.Var;
 import com.knubisoft.cott.testing.model.scenario.When;
@@ -161,8 +162,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateExistsPatches(final Migrate migrate) {
-        List<String> patches = migrate.getPatches();
-        patches.forEach(FileSearcher::searchFileFromDataFolder);
+        List<String> patches = migrate.getDataset();
+        StorageName name = migrate.getName();
+        patches.forEach(patch -> MigrationValidator.validateMigrationByExtension(patch, name));
     }
 
     private void validateHttpCommand(final Http http, final File xmlFile) {
@@ -332,7 +334,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     //CHECKSTYLE:ON
 
     private boolean arePatchesMutating(final Migrate migrate) {
-        return migrate.getPatches()
+        return migrate.getDataset()
                 .stream()
                 .map(this::createFileSource)
                 .anyMatch(i -> isQueryContainsMutatingAction(i.getQueries()));

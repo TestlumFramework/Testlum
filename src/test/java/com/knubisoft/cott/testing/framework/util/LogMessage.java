@@ -216,4 +216,7 @@ public final class LogMessage {
 
     public static final String LOCAL_STORAGE_KEY = format(TABLE_FORMAT, "Local storage key", "{}");
     public static final String CLEAR_COOKIES_AFTER = format(TABLE_FORMAT, "Clear cookies after", "{}");
+
+    public static final String UNSUPPORTED_MIGRATION_FORMAT = "Unsupported data file format was found "
+            + "in <migration> tag. For %s allowed extensions are: %s, %s";
 }

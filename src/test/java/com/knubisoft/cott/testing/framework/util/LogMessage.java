@@ -219,4 +219,6 @@ public final class LogMessage {
 
     public static final String UNSUPPORTED_MIGRATION_FORMAT = "Unsupported data file format was found "
             + "in <migration> tag. For %s allowed extensions are: %s, %s";
+
+    public static final String DB_NOT_SUPPORTED = "Database by name %s not supported";
 }

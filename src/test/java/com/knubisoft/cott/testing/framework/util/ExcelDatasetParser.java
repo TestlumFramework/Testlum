@@ -1,9 +1,8 @@
-package com.knubisoft.cott.testing.framework.interpreter.lib.migration;
+package com.knubisoft.cott.testing.framework.util;
 
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.db.source.ListSource;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -21,9 +20,8 @@ import java.util.Objects;
 import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.SQL_INSERT;
 import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.XLSX_EXTENSION;
 
-@Slf4j
 @UtilityClass
-public class ExcelMigration {
+public class ExcelDatasetParser {
 
     public ListSource getSource(final File excelFile) {
         Workbook workbook = getWorkbook(excelFile);

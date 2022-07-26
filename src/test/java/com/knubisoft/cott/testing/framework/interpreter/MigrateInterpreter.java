@@ -7,8 +7,8 @@ import com.knubisoft.cott.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.cott.testing.framework.db.source.FileSource;
 import com.knubisoft.cott.testing.framework.db.source.Source;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.interpreter.lib.migration.CsvMigration;
-import com.knubisoft.cott.testing.framework.interpreter.lib.migration.ExcelMigration;
+import com.knubisoft.cott.testing.framework.util.CsvDatasetParser;
+import com.knubisoft.cott.testing.framework.util.ExcelDatasetParser;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.CSV_EXTENSION;
@@ -44,50 +45,51 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     protected void acceptImpl(final Migrate migrate, final CommandResult result) {
         String storageName = migrate.getName().name();
         String alias = migrate.getAlias();
-        List<String> patches = migrate.getDataset();
-        ResultUtil.addMigrateMetaData(storageName, alias, patches, result);
+        List<String> datasets = migrate.getDataset();
+        ResultUtil.addMigrateMetaData(storageName, alias, datasets, result);
         if (StringUtils.isBlank(storageName)) {
             throw new DefaultFrameworkException(NAME_FOR_MIGRATION_MUST_PRESENT);
         }
         log.info(ALIAS_LOG, alias);
-        patches.forEach(patch -> migrate(FileSearcher.searchFileFromDataFolder(patch), storageName, alias));
+        migrate(datasets, storageName, alias);
     }
 
-    private void migrate(final File patch,
+    private void migrate(final List<String> datasets,
                          final String storageName,
                          final String databaseName) {
         try {
-            log.info(PATCH_PATH_LOG, patch.getAbsolutePath());
-            Source source = getSpecificSource(patch);
-            applyPatches(source, storageName, databaseName);
+            List<Source> sourceList = createSourceList(datasets);
+            applyPatches(sourceList, storageName, databaseName);
         } catch (Exception e) {
             log.error(ERROR_DURING_DB_MIGRATION_LOG, e);
             throw new DefaultFrameworkException(e);
         }
     }
 
-    private Source getSpecificSource(final File patch) {
-        String fileName = patch.getName();
-        if (fileName.endsWith(XLSX_EXTENSION) || fileName.endsWith(XLS_EXTENSION)) {
-            return ExcelMigration.getSource(patch);
-        } else if (fileName.endsWith(CSV_EXTENSION)) {
-            return CsvMigration.getSource(patch);
-        }
-        return getSource(patch);
+    private List<Source> createSourceList(final List<String> datasets) {
+        return datasets.stream()
+                .map(this::createFileSource)
+                .collect(Collectors.toList());
     }
 
+    private Source createFileSource(final String datasetName) {
+        File dataset = FileSearcher.searchFileFromDataFolder(datasetName);
+        log.info(PATCH_PATH_LOG, dataset.getAbsolutePath());
+        if (datasetName.endsWith(XLSX_EXTENSION) || datasetName.endsWith(XLS_EXTENSION)) {
+            return ExcelDatasetParser.getSource(dataset);
+        } else if (datasetName.endsWith(CSV_EXTENSION)) {
+            return CsvDatasetParser.getSource(dataset);
+        }
+        return new FileSource(dataset);
+    }
 
-    private void applyPatches(final Source patches,
+    private void applyPatches(final List<Source> patches,
                               final String storageName,
                               final String databaseName) {
-        if (patches != null) {
+        if (!patches.isEmpty()) {
             NameToAdapterAlias.Metadata metadata = nameToAdapterAlias
                     .getByNameOrThrow(storageName + UNDERSCORE + databaseName);
             metadata.getStorageOperation().apply(patches, databaseName);
         }
-    }
-
-    private FileSource getSource(final File patch) {
-        return new FileSource(patch);
     }
 }

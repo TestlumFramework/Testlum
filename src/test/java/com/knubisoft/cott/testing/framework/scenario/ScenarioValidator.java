@@ -77,7 +77,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
         validatorMap.put(o -> o instanceof Migrate, (xmlFile, command) -> {
             Migrate migrate = (Migrate) command;
-            validateExistsPatches(migrate);
+            validateExistsDatasets(migrate);
         });
 
         validatorMap.put(o -> o instanceof Elasticsearch, (xmlFile, command) -> {
@@ -161,10 +161,10 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
     }
 
-    private void validateExistsPatches(final Migrate migrate) {
-        List<String> patches = migrate.getDataset();
+    private void validateExistsDatasets(final Migrate migrate) {
+        List<String> datasets = migrate.getDataset();
         StorageName name = migrate.getName();
-        patches.forEach(patch -> MigrationValidator.validateMigrationByExtension(patch, name));
+        datasets.forEach(dataset -> DatasetValidator.validateDatasetByExtension(dataset, name));
     }
 
     private void validateHttpCommand(final Http http, final File xmlFile) {
@@ -242,7 +242,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         } else if (command instanceof com.knubisoft.cott.testing.model.scenario.Postgres) {
             validatePostgresCommand((com.knubisoft.cott.testing.model.scenario.Postgres) command, xmlFile);
         } else if (command instanceof Migrate) {
-            validateExistsPatches((Migrate) command);
+            validateExistsDatasets((Migrate) command);
         } else if (command instanceof Var) {
             validateVarCommand((Var) command);
         } else if (command instanceof Ui) {

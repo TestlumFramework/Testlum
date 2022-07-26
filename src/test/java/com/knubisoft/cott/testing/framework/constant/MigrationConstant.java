@@ -8,7 +8,8 @@ public class MigrationConstant {
     public static final String CSV_EXTENSION = ".csv";
     public static final String JSON_EXTENSION = ".json";
     public static final String BSON_EXTENSION = ".bson";
-    public static final String RDB_EXTENSION = ".rdb";
+    public static final String TXT_EXTENSION = ".txt";
     public static final String PARTIQL_EXTENSION = ".partiql";
     public static final String SQL_EXTENSION = ".sql";
+
 }

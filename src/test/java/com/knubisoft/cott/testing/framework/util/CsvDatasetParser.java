@@ -1,10 +1,9 @@
-package com.knubisoft.cott.testing.framework.interpreter.lib.migration;
+package com.knubisoft.cott.testing.framework.util;
 
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.db.source.ListSource;
 import com.knubisoft.cott.testing.framework.db.source.Source;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -15,9 +14,8 @@ import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.SQL_INSERT;
 
-@Slf4j
 @UtilityClass
-public class CsvMigration {
+public class CsvDatasetParser {
 
     public Source getSource(final File csvFile) {
         List<String> commands = readAllLines(csvFile);

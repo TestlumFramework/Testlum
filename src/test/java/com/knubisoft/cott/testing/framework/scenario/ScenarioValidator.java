@@ -340,8 +340,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .anyMatch(i -> isQueryContainsMutatingAction(i.getQueries()));
     }
 
-    private FileSource createFileSource(final String patchFileName) {
-        return new FileSource(FileSearcher.searchFileFromDataFolder(patchFileName));
+    private FileSource createFileSource(final String datasetFileName) {
+        return new FileSource(FileSearcher.searchFileFromDataFolder(datasetFileName));
     }
 
     private boolean isHttpContainsMutatingAction(final Http command) {

@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.util;
 
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.db.source.ListSource;
-import com.knubisoft.cott.testing.framework.db.source.Source;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,7 +16,7 @@ import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.SQ
 @UtilityClass
 public class CsvDatasetParser {
 
-    public Source getSource(final File csvFile) {
+    public ListSource getSource(final File csvFile) {
         List<String> commands = readAllLines(csvFile);
         return prepareSource(commands);
     }
@@ -30,7 +29,7 @@ public class CsvDatasetParser {
         }
     }
 
-    private Source prepareSource(final List<String> commands) {
+    private ListSource prepareSource(final List<String> commands) {
         List<String> queries = commands.stream()
                 .map(command ->
                         String.format(SQL_INSERT, getTableName(command), getValues(command)))

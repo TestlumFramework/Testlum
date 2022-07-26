@@ -41,6 +41,8 @@ public class DatasetValidator {
         }
     }
 
+    //CHECKSTYLE:ON
+
     private boolean checkIfNotExcelOrCsvFIle(final String datasetFileName) {
         return !(datasetFileName.endsWith(XLSX_EXTENSION) || datasetFileName.endsWith(CSV_EXTENSION)
                 || datasetFileName.endsWith(XLS_EXTENSION));

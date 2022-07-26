@@ -7,8 +7,6 @@ import com.knubisoft.cott.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.cott.testing.framework.db.source.FileSource;
 import com.knubisoft.cott.testing.framework.db.source.Source;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.util.CsvDatasetParser;
-import com.knubisoft.cott.testing.framework.util.ExcelDatasetParser;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
@@ -22,9 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
-import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.CSV_EXTENSION;
-import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.XLSX_EXTENSION;
-import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.XLS_EXTENSION;
 import static com.knubisoft.cott.testing.framework.util.LogMessage.ALIAS_LOG;
 import static com.knubisoft.cott.testing.framework.util.LogMessage.ERROR_DURING_DB_MIGRATION_LOG;
 import static com.knubisoft.cott.testing.framework.util.LogMessage.NAME_FOR_MIGRATION_MUST_PRESENT;
@@ -72,14 +67,9 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
                 .collect(Collectors.toList());
     }
 
-    private Source createSource(final String datasetName) {
+    private FileSource createSource(final String datasetName) {
         File dataset = FileSearcher.searchFileFromDataFolder(datasetName);
         log.info(DATASET_PATH_LOG, dataset.getAbsolutePath());
-        if (datasetName.endsWith(XLSX_EXTENSION) || datasetName.endsWith(XLS_EXTENSION)) {
-            return ExcelDatasetParser.getSource(dataset);
-        } else if (datasetName.endsWith(CSV_EXTENSION)) {
-            return CsvDatasetParser.getSource(dataset);
-        }
         return new FileSource(dataset);
     }
 

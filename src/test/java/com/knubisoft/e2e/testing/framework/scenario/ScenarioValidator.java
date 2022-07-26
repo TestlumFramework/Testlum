@@ -165,7 +165,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateExistsPatches(final Migrate migrate) {
-        List<String> patches = migrate.getData();
+        List<String> patches = migrate.getDataset();
         StorageName name = migrate.getName();
         patches.forEach(patch -> MigrationValidator.validateMigrationByExtension(patch, name));
     }
@@ -338,7 +338,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     //CHECKSTYLE:ON
 
     private boolean arePatchesMutating(final Migrate migrate) {
-        return migrate.getData()
+        return migrate.getDataset()
                 .stream()
                 .map(this::createFileSource)
                 .anyMatch(i -> isQueryContainsMutatingAction(i.getQueries()));

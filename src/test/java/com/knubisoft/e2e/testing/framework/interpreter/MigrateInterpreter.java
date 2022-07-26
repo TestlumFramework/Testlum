@@ -44,7 +44,7 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     protected void acceptImpl(final Migrate migrate, final CommandResult result) {
         String storageName = migrate.getName().name();
         String alias = migrate.getAlias();
-        List<String> patches = migrate.getData();
+        List<String> patches = migrate.getDataset();
         ResultUtil.addMigrateMetaData(storageName, alias, patches, result);
         if (StringUtils.isBlank(storageName)) {
             throw new DefaultFrameworkException(NAME_FOR_MIGRATION_MUST_PRESENT);

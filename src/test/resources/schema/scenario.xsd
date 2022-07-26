@@ -32,8 +32,6 @@
     <x:include schemaLocation="http.xsd"/>
     <x:include schemaLocation="logout.xsd"/>
     <x:include schemaLocation="shell.xsd"/>
-    <x:include schemaLocation="csv.xsd"/>
-    <x:include schemaLocation="excel.xsd"/>
 
     <x:annotation>
         <x:appinfo>
@@ -86,8 +84,6 @@
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="invoke" type="tns:invoke"/>
                     <x:element name="shell" type="tns:shell"/>
-                    <x:element name="csv" type="tns:csvCommands"/>
-                    <x:element name="excel" type="tns:excelCommands"/>
                 </x:choice>
             </x:sequence>
             <x:attribute name="onlyThis" type="x:boolean" default="false"/>
@@ -125,8 +121,6 @@
                     <x:element name="var" type="tns:var"/>
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="invoke" type="tns:invoke"/>
-                    <x:element name="excel" type="tns:excelCommands"/>
-                    <x:element name="csv" type="tns:csvCommands"/>
                 </x:choice>
                 <x:attribute name="apiAlias" type="tns:nonEmptyString" use="required"/>
                 <x:attribute name="credentials" type="tns:nonEmptyString" use="required"/>
@@ -163,8 +157,6 @@
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="invoke" type="tns:invoke"/>
                     <x:element name="shell" type="tns:shell"/>
-                    <x:element name="csv" type="tns:csvCommands"/>
-                    <x:element name="excel" type="tns:excelCommands"/>
                 </x:choice>
                 <x:attribute name="times" type="x:positiveInteger" use="required"/>
             </x:extension>

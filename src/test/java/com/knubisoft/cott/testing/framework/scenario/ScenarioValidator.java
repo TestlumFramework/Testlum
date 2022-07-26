@@ -29,6 +29,7 @@ import com.knubisoft.cott.testing.model.scenario.Response;
 import com.knubisoft.cott.testing.model.scenario.S3;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
 import com.knubisoft.cott.testing.model.scenario.Shell;
+import com.knubisoft.cott.testing.model.scenario.StorageName;
 import com.knubisoft.cott.testing.model.scenario.Ui;
 import com.knubisoft.cott.testing.model.scenario.Var;
 import com.knubisoft.cott.testing.model.scenario.When;
@@ -76,7 +77,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
         validatorMap.put(o -> o instanceof Migrate, (xmlFile, command) -> {
             Migrate migrate = (Migrate) command;
-            validateExistsPatches(migrate);
+            validateExistsDatasets(migrate);
         });
 
         validatorMap.put(o -> o instanceof Elasticsearch, (xmlFile, command) -> {
@@ -160,9 +161,10 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
     }
 
-    private void validateExistsPatches(final Migrate migrate) {
-        List<String> patches = migrate.getPatches();
-        patches.forEach(FileSearcher::searchFileFromDataFolder);
+    private void validateExistsDatasets(final Migrate migrate) {
+        List<String> datasets = migrate.getDataset();
+        StorageName name = migrate.getName();
+        datasets.forEach(dataset -> DatasetValidator.validateDatasetByExtension(dataset, name));
     }
 
     private void validateHttpCommand(final Http http, final File xmlFile) {
@@ -240,7 +242,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         } else if (command instanceof com.knubisoft.cott.testing.model.scenario.Postgres) {
             validatePostgresCommand((com.knubisoft.cott.testing.model.scenario.Postgres) command, xmlFile);
         } else if (command instanceof Migrate) {
-            validateExistsPatches((Migrate) command);
+            validateExistsDatasets((Migrate) command);
         } else if (command instanceof Var) {
             validateVarCommand((Var) command);
         } else if (command instanceof Ui) {
@@ -332,14 +334,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     //CHECKSTYLE:ON
 
     private boolean arePatchesMutating(final Migrate migrate) {
-        return migrate.getPatches()
+        return migrate.getDataset()
                 .stream()
                 .map(this::createFileSource)
                 .anyMatch(i -> isQueryContainsMutatingAction(i.getQueries()));
     }
 
-    private FileSource createFileSource(final String patchFileName) {
-        return new FileSource(FileSearcher.searchFileFromDataFolder(patchFileName));
+    private FileSource createFileSource(final String datasetFileName) {
+        return new FileSource(FileSearcher.searchFileFromDataFolder(datasetFileName));
     }
 
     private boolean isHttpContainsMutatingAction(final Http command) {

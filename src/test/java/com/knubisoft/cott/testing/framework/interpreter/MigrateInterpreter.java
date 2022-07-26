@@ -23,7 +23,7 @@ import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UN
 import static com.knubisoft.cott.testing.framework.util.LogMessage.ALIAS_LOG;
 import static com.knubisoft.cott.testing.framework.util.LogMessage.ERROR_DURING_DB_MIGRATION_LOG;
 import static com.knubisoft.cott.testing.framework.util.LogMessage.NAME_FOR_MIGRATION_MUST_PRESENT;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.PATCH_PATH_LOG;
+import static com.knubisoft.cott.testing.framework.util.LogMessage.DATASET_PATH_LOG;
 
 @Slf4j
 @InterpreterForClass(Migrate.class)
@@ -40,46 +40,46 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     protected void acceptImpl(final Migrate migrate, final CommandResult result) {
         String storageName = migrate.getName().name();
         String alias = migrate.getAlias();
-        List<String> patches = migrate.getPatches();
-        ResultUtil.addMigrateMetaData(storageName, alias, patches, result);
+        List<String> datasets = migrate.getDataset();
+        ResultUtil.addMigrateMetaData(storageName, alias, datasets, result);
         if (StringUtils.isBlank(storageName)) {
             throw new DefaultFrameworkException(NAME_FOR_MIGRATION_MUST_PRESENT);
         }
         log.info(ALIAS_LOG, alias);
-        migrate(patches, storageName, alias);
+        migrate(datasets, storageName, alias);
     }
 
-    private void migrate(final List<String> patches,
+    private void migrate(final List<String> datasets,
                          final String storageName,
                          final String databaseName) {
         try {
-            List<Source> sourceList = createSourceList(patches);
-            applyPatches(sourceList, storageName, databaseName);
+            List<Source> sourceList = createSourceList(datasets);
+            applyDatasets(sourceList, storageName, databaseName);
         } catch (Exception e) {
             log.error(ERROR_DURING_DB_MIGRATION_LOG, e);
             throw new DefaultFrameworkException(e);
         }
     }
 
-    private List<Source> createSourceList(final List<String> patches) {
-        return patches.stream()
-                .map(this::createFileSource)
+    private List<Source> createSourceList(final List<String> datasets) {
+        return datasets.stream()
+                .map(this::createSource)
                 .collect(Collectors.toList());
     }
 
-    private FileSource createFileSource(final String patchFileName) {
-        File patch = FileSearcher.searchFileFromDataFolder(patchFileName);
-        log.info(PATCH_PATH_LOG, patch.getAbsolutePath());
-        return new FileSource(patch);
+    private FileSource createSource(final String datasetName) {
+        File dataset = FileSearcher.searchFileFromDataFolder(datasetName);
+        log.info(DATASET_PATH_LOG, dataset.getAbsolutePath());
+        return new FileSource(dataset);
     }
 
-    private void applyPatches(final List<Source> patches,
+    private void applyDatasets(final List<Source> datasets,
                               final String storageName,
                               final String databaseName) {
-        if (!patches.isEmpty()) {
+        if (!datasets.isEmpty()) {
             NameToAdapterAlias.Metadata metadata = nameToAdapterAlias
                     .getByNameOrThrow(storageName + UNDERSCORE + databaseName);
-            metadata.getStorageOperation().apply(patches, databaseName);
+            metadata.getStorageOperation().apply(datasets, databaseName);
         }
     }
 }

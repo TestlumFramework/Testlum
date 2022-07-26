@@ -1,29 +1,38 @@
 package com.knubisoft.cott.testing.framework.db.source;
 
-import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.util.LogMessage;
+import com.knubisoft.cott.testing.framework.util.CsvDatasetParser;
+import com.knubisoft.cott.testing.framework.util.ExcelDatasetParser;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
+
+import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.CSV_EXTENSION;
+import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.XLSX_EXTENSION;
+import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.XLS_EXTENSION;
 
 public class FileSource implements Source {
 
-    private final StringsSource stringSource;
+    private final ListSource listSource;
 
     @SneakyThrows
     public FileSource(final File file) {
-        if (!file.exists()) {
-            throw new DefaultFrameworkException(LogMessage.FILE_NOT_EXIST, file);
+        final String datasetName = file.getName();
+        if (file.getName().endsWith(XLSX_EXTENSION) || datasetName.endsWith(XLS_EXTENSION)) {
+            this.listSource = ExcelDatasetParser.getSource(file);
+        } else if (datasetName.endsWith(CSV_EXTENSION)) {
+            this.listSource = CsvDatasetParser.getSource(file);
+        } else {
+            String queries = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+            this.listSource = new ListSource(Arrays.asList(queries.split(QUERY_DELIMITER)));
         }
-        String queries = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-        this.stringSource = new StringsSource(queries);
     }
 
     @Override
     public List<String> getQueries() {
-        return stringSource.getQueries();
+        return listSource.getQueries();
     }
 }

@@ -161,7 +161,7 @@ public final class LogMessage {
     public static final String JS_FILE_NOT_FOUND = "Can't find the .js file [%s] in the resources folder";
     public static final String DROP_DOWN_ONE_VALUE = "Process drop down one value";
 
-    public static final String PATCH_PATH_LOG = format(TABLE_FORMAT, "Migration patch ", "{}");
+    public static final String DATASET_PATH_LOG = format(TABLE_FORMAT, "Migration dataset", "{}");
     public static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
     public static final String EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Execution time ", "{} ms");
     public static final String WAIT_INFO_LOG = format(TABLE_FORMAT, "Wait time & unit", "{} {}");
@@ -216,4 +216,9 @@ public final class LogMessage {
 
     public static final String LOCAL_STORAGE_KEY = format(TABLE_FORMAT, "Local storage key", "{}");
     public static final String CLEAR_COOKIES_AFTER = format(TABLE_FORMAT, "Clear cookies after", "{}");
+
+    public static final String UNSUPPORTED_MIGRATION_FORMAT = "Unsupported data file format was found "
+            + "in <migration> tag. For %s allowed extensions are: %s, %s";
+
+    public static final String DB_NOT_SUPPORTED = "Database by name %s not supported";
 }

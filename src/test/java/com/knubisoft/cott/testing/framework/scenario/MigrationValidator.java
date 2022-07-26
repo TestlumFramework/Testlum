@@ -19,7 +19,8 @@ public class MigrationValidator {
     //CHECKSTYLE:OFF
     public void validateMigrationByExtension(final String patch, final StorageName name) {
         FileSearcher.searchFileFromDataFolder(patch);
-        boolean commonExtensions = patch.endsWith(XLSX_EXTENSION) || patch.endsWith(CSV_EXTENSION) || patch.endsWith(XLS_EXTENSION);
+        boolean commonExtensions = patch.endsWith(XLSX_EXTENSION) || patch.endsWith(CSV_EXTENSION)
+                || patch.endsWith(XLS_EXTENSION);
         switch (name) {
             case CLICKHOUSE:
             case POSTGRES:

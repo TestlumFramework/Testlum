@@ -161,7 +161,7 @@ public final class LogMessage {
     public static final String JS_FILE_NOT_FOUND = "Can't find the .js file [%s] in the resources folder";
     public static final String DROP_DOWN_ONE_VALUE = "Process drop down one value";
 
-    public static final String PATCH_PATH_LOG = format(TABLE_FORMAT, "Migration patch ", "{}");
+    public static final String DATASET_PATH_LOG = format(TABLE_FORMAT, "Migration dataset", "{}");
     public static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
     public static final String EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Execution time ", "{} ms");
     public static final String WAIT_INFO_LOG = format(TABLE_FORMAT, "Wait time & unit", "{} {}");

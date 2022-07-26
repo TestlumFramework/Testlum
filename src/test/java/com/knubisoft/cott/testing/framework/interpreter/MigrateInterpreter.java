@@ -28,7 +28,7 @@ import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.XL
 import static com.knubisoft.cott.testing.framework.util.LogMessage.ALIAS_LOG;
 import static com.knubisoft.cott.testing.framework.util.LogMessage.ERROR_DURING_DB_MIGRATION_LOG;
 import static com.knubisoft.cott.testing.framework.util.LogMessage.NAME_FOR_MIGRATION_MUST_PRESENT;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.PATCH_PATH_LOG;
+import static com.knubisoft.cott.testing.framework.util.LogMessage.DATASET_PATH_LOG;
 
 @Slf4j
 @InterpreterForClass(Migrate.class)
@@ -59,7 +59,7 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
                          final String databaseName) {
         try {
             List<Source> sourceList = createSourceList(datasets);
-            applyPatches(sourceList, storageName, databaseName);
+            applyDatasets(sourceList, storageName, databaseName);
         } catch (Exception e) {
             log.error(ERROR_DURING_DB_MIGRATION_LOG, e);
             throw new DefaultFrameworkException(e);
@@ -68,13 +68,13 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
 
     private List<Source> createSourceList(final List<String> datasets) {
         return datasets.stream()
-                .map(this::createFileSource)
+                .map(this::createSource)
                 .collect(Collectors.toList());
     }
 
-    private Source createFileSource(final String datasetName) {
+    private Source createSource(final String datasetName) {
         File dataset = FileSearcher.searchFileFromDataFolder(datasetName);
-        log.info(PATCH_PATH_LOG, dataset.getAbsolutePath());
+        log.info(DATASET_PATH_LOG, dataset.getAbsolutePath());
         if (datasetName.endsWith(XLSX_EXTENSION) || datasetName.endsWith(XLS_EXTENSION)) {
             return ExcelDatasetParser.getSource(dataset);
         } else if (datasetName.endsWith(CSV_EXTENSION)) {
@@ -83,13 +83,13 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
         return new FileSource(dataset);
     }
 
-    private void applyPatches(final List<Source> patches,
+    private void applyDatasets(final List<Source> datasets,
                               final String storageName,
                               final String databaseName) {
-        if (!patches.isEmpty()) {
+        if (!datasets.isEmpty()) {
             NameToAdapterAlias.Metadata metadata = nameToAdapterAlias
                     .getByNameOrThrow(storageName + UNDERSCORE + databaseName);
-            metadata.getStorageOperation().apply(patches, databaseName);
+            metadata.getStorageOperation().apply(datasets, databaseName);
         }
     }
 }

@@ -11,7 +11,7 @@
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:choice minOccurs="1" maxOccurs="unbounded">
-                    <x:element name="patches" type="tns:nonEmptyString" minOccurs="1" maxOccurs="1"/>
+                    <x:element name="dataset" type="tns:nonEmptyString" minOccurs="1" maxOccurs="1"/>
                 </x:choice>
                 <x:attribute name="name" type="tns:storageName" default="POSTGRES"/>
                 <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>

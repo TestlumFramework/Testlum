@@ -36,7 +36,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.INCORRECT_HTTP_PROCESSING;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INCORRECT_HTTP_PROCESSING;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toMap;
 

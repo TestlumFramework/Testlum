@@ -1,8 +1,9 @@
 package com.knubisoft.cott.testing.framework.exception;
 
 import com.google.common.collect.Multimap;
-import com.knubisoft.cott.testing.framework.util.LogMessage;
 import lombok.RequiredArgsConstructor;
+
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.XSDISSUE_TO_STRING;
 
 public class XSDException extends RuntimeException {
 
@@ -20,7 +21,7 @@ public class XSDException extends RuntimeException {
 
         @Override
         public String toString() {
-            return String.format(LogMessage.XSDISSUE_TO_STRING, message, lineNumber, columnNumber, path);
+            return String.format(XSDISSUE_TO_STRING, message, lineNumber, columnNumber, path);
         }
     }
 }

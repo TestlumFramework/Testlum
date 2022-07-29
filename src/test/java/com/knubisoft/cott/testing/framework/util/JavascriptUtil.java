@@ -17,8 +17,8 @@ import java.util.List;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.SCROLL_VERTICAL_PERCENT;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.SCROLL_VERTICAL_SCRIPT_FORMAT;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.JS_FILE_UNREADABLE;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.SCROLL_TO_ELEMENT_NOT_SUPPORTED;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.JS_FILE_UNREADABLE;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SCROLL_TO_ELEMENT_NOT_SUPPORTED;
 import static java.lang.String.format;
 
 @UtilityClass

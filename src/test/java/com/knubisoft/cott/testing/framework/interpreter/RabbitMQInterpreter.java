@@ -29,10 +29,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.ALIAS_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.EXCEPTION_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.RECEIVE_ACTION;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.SEND_ACTION;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.RECEIVE_ACTION;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
 
 @Slf4j

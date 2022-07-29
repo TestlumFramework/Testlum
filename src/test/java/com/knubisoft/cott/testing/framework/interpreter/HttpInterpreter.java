@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.ERROR_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.ERROR_LOG;
 
 @Slf4j
 @InterpreterForClass(Http.class)

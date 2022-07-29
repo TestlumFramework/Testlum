@@ -44,8 +44,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.FAILED_CONNECTION_TO_DATABASE;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FAILED_CONNECTION_TO_DATABASE;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF;
 import static java.lang.String.format;
 
 public class ScenarioValidator implements XMLValidator<Scenario> {

@@ -5,7 +5,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependenc
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.AUTH_WAS_NOT_DEFINED;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.AUTH_WAS_NOT_DEFINED;
 
 public class DefaultStrategy extends AbstractAuthStrategy {
 

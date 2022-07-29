@@ -18,7 +18,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.NOT_ENABLED_BROWSERS;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
 
 @UtilityClass
 public class BrowserUtil {

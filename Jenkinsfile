@@ -9,7 +9,7 @@ pipeline {
                      defaultValue: 'master',
                      name: 'BRANCH_SCENARIOS',
                      type: 'PT_BRANCH',
-                     useRepository: '.*e2e-testing-scenarios.git') 
+                     useRepository: '.*cott-test-resources.git') 
         gitParameter(branchFilter: 'origin/(.*)',
                      defaultValue: 'master',
                      name: 'BRANCH_SITE',
@@ -20,9 +20,9 @@ pipeline {
         SERVICE = "testing-tool"
         SITE = "site-sample"
         TAG = "${GIT_COMMIT}"
-        SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/ee/site-sample.git"
-        URL_TESTING_TOOL = "ssh://git@bitbucket.knubisoft.com:7999/ee/e2e-testing-tool.git"
-        URL_TESTING_TOOL_SCENARIOS = "ssh://git@bitbucket.knubisoft.com:7999/ee/e2e-testing-scenarios.git"
+        SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/cott/site-sample.git"
+        URL_TESTING_TOOL = "ssh://git@bitbucket.knubisoft.com:7999/cott/cost-optimization-testing-tool.git"
+        URL_TESTING_TOOL_SCENARIOS = "ssh://git@bitbucket.knubisoft.com:7999/cott/cott-test-resources.git"
         GIT_CREDENTIALS_ID = "bitbucket"
         HOST='jenkins@192.168.0.7'
         PORT='22'
@@ -37,20 +37,20 @@ pipeline {
             cleanWs()
             sh "env"
             sh "mkdir tool site"
-            slackSend color: "warning", message: "Build Started: ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+            sh "curl -s -X POST https://api.telegram.org/bot1846108211:AAH7Qm_y__ARQXh4q_fXiLEjnMhJyQ-eeok/sendMessage -d chat_id=-1001593036618 -d text='Build Started %F0%9F%98%80 : ${env.JOB_NAME} \n PR: ${env.BRANCH_NAME} \n Parameters: \n BRANCH_TOOL: ${CHANGE_BRANCH} \n BRANCH_SITE: ${env.BRANCH_SITE} \n BRANCH_SCENARIOS: ${env.BRANCH_SCENARIOS} \n BUILD_URL: ${env.BUILD_URL}'"
         }
     }
     stage('checkout ci tool') {
       steps {
         dir("tool") {
             git branch: CHANGE_BRANCH, url: URL_TESTING_TOOL, credentialsId: GIT_CREDENTIALS_ID
-            sh 'mkdir -p e2e-testing-scenarios'
+            sh 'mkdir -p cott-test-resources'
         }
       }
     }
     stage('checkout ci tool scenarios') {
         steps {
-            dir("tool/e2e-testing-scenarios") {
+            dir("tool/cott-test-resources") {
                 git branch: "${params.BRANCH_SCENARIOS}", url: URL_TESTING_TOOL_SCENARIOS, credentialsId: GIT_CREDENTIALS_ID
             }
         }
@@ -72,7 +72,7 @@ pipeline {
     stage('build test tool') {
         steps {
             dir("tool") {
-                sh "docker build -t ${SERVICE}:${TAG} ."
+                sh "docker build -f Dockerfile.jenkins -t ${SERVICE}:${TAG} ."
                 // sh "mvn clean install  -DskipTests"
             }
 
@@ -81,8 +81,9 @@ pipeline {
     stage('run test tool') {
         steps {
             dir("tool") {
-                sh 'docker run -u $(id -u):$(id -g) --rm --network=host --mount type=bind,source="$(pwd)"/e2e-testing-scenarios,target=/e2e-testing-scenarios ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/e2e-testing-scenarios/JENKINS_resources'
-                // sh "java -jar ./target/e2e-testing-tool.jar -c=config-jenkins.xml -p=./e2e-testing-scenarios/JENKINS_resources"
+                sh 'docker run -u $(id -u):$(id -g) --rm --network=host -v "$(pwd)"/cott-test-resources:/cott/cott-test-resources ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/cott/cott-test-resources/JENKINS_resources'
+                sh "cat cott-test-resources/JENKINS_resources/scenarios_execution_result.txt | awk '/successfully/{ exit 0 }/failed/{ exit 1 }'"
+                // sh "java -jar ./target/e2e-testing-tool.jar -c=config-jenkins.xml -p=./cott-test-resources/JENKINS_resources"
             }
         }
     }
@@ -99,15 +100,13 @@ pipeline {
         script {
             sh "docker rmi ${SERVICE}:${TAG}"
             sh 'docker rmi $(docker images -f "dangling=true" -q) || true'
-            currentBuild.result = currentBuild.result ?: 'SUCCESS'
-            notifyBitbucket()
         }
     }
     success {
-        slackSend color: "good", message: "*SUCCESS* \n Job name: ${env.JOB_NAME} \n Build number: ${env.BUILD_NUMBER} \n Build url: (<${env.BUILD_URL}|Open>)"
+        sh "curl -s -X POST https://api.telegram.org/bot1846108211:AAH7Qm_y__ARQXh4q_fXiLEjnMhJyQ-eeok/sendMessage -d chat_id=-1001593036618 -d text='*SUCCESS* %E2&9C%94 \n PR: ${env.BRANCH_NAME} \n Parameters: \n BRANCH_TOOL: ${CHANGE_BRANCH} \n BRANCH_SITE: ${env.BRANCH_SITE} \n BRANCH_SCENARIOS: ${env.BRANCH_SCENARIOS} \n BUILD_URL: ${env.BUILD_URL}'"
     }
     failure {
-        slackSend color: "danger", message: "*FAILURE* \n Job name: ${env.JOB_NAME} \n Build number: ${env.BUILD_NUMBER} \n Build url: (<${env.BUILD_URL}|Open>)"
+        sh "curl -s -X POST https://api.telegram.org/bot1846108211:AAH7Qm_y__ARQXh4q_fXiLEjnMhJyQ-eeok/sendMessage -d chat_id=-1001593036618 -d text='*FAILURE* %E2%9C%96 \n PR: ${env.BRANCH_NAME} \n Parameters: \n BRANCH_TOOL: ${CHANGE_BRANCH} \n BRANCH_SITE: ${env.BRANCH_SITE} \n BRANCH_SCENARIOS: ${env.BRANCH_SCENARIOS} \n BUILD_URL: ${env.BUILD_URL}'"
     }
   }
 }

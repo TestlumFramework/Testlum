@@ -1,0 +1,15 @@
+FROM maven:3.8.5-openjdk-8 as maven-build
+
+WORKDIR /cott/
+COPY . .
+RUN mvn clean install -DskipTests -Pquality-checking
+
+FROM openjdk:8-alpine
+
+ARG JAR_FILE=target/cott-with-dependencies.jar
+
+WORKDIR /cott/
+
+COPY --from=maven-build /cott/${JAR_FILE} cott.jar
+
+ENTRYPOINT ["java", "-DTESTING_IN_PIPELINE=true", "-jar", "cott.jar"]

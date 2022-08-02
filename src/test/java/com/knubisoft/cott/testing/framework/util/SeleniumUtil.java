@@ -1,0 +1,20 @@
+package com.knubisoft.cott.testing.framework.util;
+
+import lombok.experimental.UtilityClass;
+import org.openqa.selenium.WebElement;
+
+import java.io.File;
+
+@UtilityClass
+public final class SeleniumUtil {
+    private static final String FILE_PATH_PREFIX = "file:";
+
+    public String resolveSendKeysType(final String value, final WebElement element, final File fromDir) {
+        if (value.startsWith(FILE_PATH_PREFIX)) {
+            File file = FileSearcher.searchFileFromDir(fromDir, value.substring(FILE_PATH_PREFIX.length()));
+            return file.getPath();
+        }
+        element.clear();
+        return value;
+    }
+}

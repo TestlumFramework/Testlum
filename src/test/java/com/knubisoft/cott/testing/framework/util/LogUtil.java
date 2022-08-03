@@ -29,11 +29,13 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BODY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CLEAR_COOKIES_AFTER;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMAND_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMENT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_FORMAT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.INVALID_CREDENTIALS_LOG;
@@ -41,6 +43,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.INVALID_S
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.LOCAL_STORAGE_KEY;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.NAME_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.NEW_LOG_LINE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_BY_LOG;
@@ -72,6 +75,7 @@ public class LogUtil {
             logUiInfo(scenarioArguments.getScenario().getVariations(),
                     BrowserUtil.getBrowserInfo(scenarioArguments.getBrowser()));
         }
+
     }
 
     private void logOverview(final Overview overview) {
@@ -237,5 +241,19 @@ public class LogUtil {
         } else {
             log.info(SERVER_ERROR_RESPONSE_LOG, exception.getRawStatusCode());
         }
+    }
+
+    public void logException(final Exception ex) {
+        if (StringUtils.isNotBlank(ex.getMessage())) {
+            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+        } else {
+            log.error(EXCEPTION_LOG, ex.toString());
+        }
+    }
+
+    public void logHover(final int position, final AbstractCommand action) {
+        log.info(COMMAND_LOG, position, action.getClass().getSimpleName());
+        log.info(COMMENT_LOG, action.getComment());
+        log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());
     }
 }

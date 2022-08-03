@@ -24,7 +24,6 @@ import org.springframework.context.ApplicationContext;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_STOP_SIGNAL_LOG;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FUNCTION_FOR_COMMAND_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.MISSING_CONSTRUCTOR;
@@ -134,7 +133,7 @@ public class ScenarioRunner {
     private void handleException(final CommandResult result) {
         Exception ex = result.getException();
         if (ex != null) {
-            log.error(EXCEPTION_LOG, ex.getMessage());
+            LogUtil.logException(ex);
             fillReportException(ex.getMessage());
             if (stopScenarioOnFailure) {
                 throw new StopSignalException();

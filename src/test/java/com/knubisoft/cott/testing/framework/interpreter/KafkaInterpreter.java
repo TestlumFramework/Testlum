@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMAND_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
@@ -68,6 +68,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         int actionNumber = 1;
         for (Object action : kafka.getSendOrReceive()) {
             CommandResult subCommandResult = ResultUtil.createNewCommandResultInstance(actionNumber);
+            log.info(COMMAND_LOG, dependencies.getPosition().incrementAndGet(), action.getClass().getSimpleName());
             processEachAction(action, kafka.getAlias(), subCommandResult);
             subCommandsResult.add(subCommandResult);
             actionNumber++;
@@ -85,7 +86,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         } catch (Exception e) {
             subCommandResult.setSuccess(false);
             subCommandResult.setException(e);
-            log.error(EXCEPTION_LOG, e.getMessage());
+            LogUtil.logException(e);
         } finally {
             subCommandResult.setExecutionTime(stopWatch.getTime());
             stopWatch.stop();

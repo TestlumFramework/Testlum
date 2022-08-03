@@ -6,6 +6,9 @@ import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 
+import com.knubisoft.cott.testing.model.global_config.BrowserInDocker;
+import com.knubisoft.cott.testing.model.global_config.LocalBrowser;
+import com.knubisoft.cott.testing.model.global_config.RemoteBrowser;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Dimension;
@@ -16,9 +19,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNKNOWN_BROWSER_TYPE;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_INFO;
 
 @UtilityClass
 public class BrowserUtil {
@@ -75,8 +81,18 @@ public class BrowserUtil {
         wait.until(ExpectedConditions.elementToBeSelected(element));
     }
 
-    //TODO add version and browser type
     public String getBrowserInfo(final AbstractBrowser browser) {
-        return browser.getClass().getSimpleName();
+        String browserName = browser.getClass().getSimpleName();
+        LocalBrowser localBrowser = browser.getBrowserType().getLocalBrowser();
+        BrowserInDocker browserInDocker = browser.getBrowserType().getBrowserInDocker();
+        RemoteBrowser remoteBrowser = browser.getBrowserType().getRemoteBrowser();
+        if (Objects.nonNull(localBrowser)) {
+            return String.format(BROWSER_INFO, browserName, localBrowser.getDriverVersion(), "<local browser>");
+        } else if (Objects.nonNull(browserInDocker)) {
+            return String.format(BROWSER_INFO, browserName, browserInDocker.getBrowserVersion(), "<browser in docker>");
+        } else if (Objects.nonNull(remoteBrowser)) {
+            return String.format(BROWSER_INFO, browserName, remoteBrowser.getBrowserVersion(), "<remote browser>");
+        }
+        throw new DefaultFrameworkException(UNKNOWN_BROWSER_TYPE);
     }
 }

@@ -107,4 +107,6 @@ public final class LogMessage {
 
     public static final String JS_FILE_LOG = format(TABLE_FORMAT, "JS file", "{}");
 
+    public static final String BROWSER_INFO = "name = %s, version = %s, type = %s";
+
 }

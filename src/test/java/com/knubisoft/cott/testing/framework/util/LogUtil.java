@@ -251,9 +251,9 @@ public class LogUtil {
         }
     }
 
-    public void logHover(final int position, final AbstractCommand action) {
+    public void logHover(final int position, final CommandWithLocator action) {
         log.info(COMMAND_LOG, position, action.getClass().getSimpleName());
         log.info(COMMENT_LOG, action.getComment());
-        log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());
+        log.info(LOCATOR_LOG, action.getLocatorId());
     }
 }

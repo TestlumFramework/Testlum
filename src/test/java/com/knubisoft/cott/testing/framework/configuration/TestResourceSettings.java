@@ -5,11 +5,11 @@ import lombok.Getter;
 import java.io.File;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.COMPONENTS_FOLDER_NOT_EXIST;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.DATA_FOLDER_NOT_EXIST;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.FOLDER_LOCATION_ERROR_MESSAGE;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.PAGES_FOLDER_NOT_EXIST;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.SCENARIOS_FOLDER_NOT_EXIST;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.COMPONENTS_FOLDER_NOT_EXIST;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DATA_FOLDER_NOT_EXIST;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FOLDER_LOCATION_ERROR_MESSAGE;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.PAGES_FOLDER_NOT_EXIST;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SCENARIOS_FOLDER_NOT_EXIST;
 
 @Getter
 public class TestResourceSettings {

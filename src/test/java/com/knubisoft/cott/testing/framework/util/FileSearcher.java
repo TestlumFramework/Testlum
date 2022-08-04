@@ -19,8 +19,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.DUPLICATE_FILENAME;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.FILE_NOT_EXIST;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DUPLICATE_FILENAME;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FILE_NOT_EXIST;
 
 @UtilityClass
 @Slf4j

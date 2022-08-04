@@ -7,7 +7,7 @@ import lombok.experimental.UtilityClass;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.UNKNOWN_TYPE;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNKNOWN_TYPE;
 
 @UtilityClass
 public class WaitUtil {

@@ -16,9 +16,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.NO_ACTIVE_SCENARIOS_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.NO_ENABLE_TAGS_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.VALID_SCENARIOS_NOT_FOUND;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NO_ACTIVE_SCENARIOS_LOG;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NO_ENABLE_TAGS_LOG;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VALID_SCENARIOS_NOT_FOUND;
 
 @Slf4j
 @UtilityClass

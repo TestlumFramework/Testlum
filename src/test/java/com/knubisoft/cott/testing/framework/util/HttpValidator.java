@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.util;
 
 
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.cott.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.cott.testing.framework.exception.ComparisonException;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.RETHROWN_ERRORS_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.RETHROWN_ERRORS_LOG;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
 
@@ -26,7 +27,7 @@ public final class HttpValidator {
 
     public void validateCode(final int expectedCode, final int actualCode) {
         if (expectedCode != actualCode) {
-            result.add(format(LogMessage.HTTP_CODE_EXPECTED_BUT_WAS, expectedCode, actualCode));
+            result.add(format(ExceptionMessage.HTTP_CODE_EXPECTED_BUT_WAS, expectedCode, actualCode));
             interpreter.save(valueOf(actualCode));
         }
     }
@@ -53,7 +54,7 @@ public final class HttpValidator {
                                            final Map<String, String> actualHeaderMap) {
         String expected = interpreter.toString(expectedHeaders);
         String actual = interpreter.toString(actualHeaderMap);
-        result.add(format(LogMessage.HTTP_HEADERS_EXPECTED_BUT_WAS, cut(expected), cut(actual)));
+        result.add(format(ExceptionMessage.HTTP_HEADERS_EXPECTED_BUT_WAS, cut(expected), cut(actual)));
         interpreter.save(actual);
     }
 
@@ -62,7 +63,7 @@ public final class HttpValidator {
             try {
                 TreeComparator.compare(expectedBody, actualBody);
             } catch (ComparisonException e) {
-                result.add(format(LogMessage.HTTP_BODY_EXPECTED_BUT_WAS, cut(expectedBody), cut(actualBody)));
+                result.add(format(ExceptionMessage.HTTP_BODY_EXPECTED_BUT_WAS, cut(expectedBody), cut(actualBody)));
                 interpreter.save(actualBody);
             }
         }

@@ -32,8 +32,8 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.HTTP_STATUS_CODE;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.UNKNOWN_METHOD;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_STATUS_CODE;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNKNOWN_METHOD;
 import static java.lang.String.format;
 
 @Slf4j

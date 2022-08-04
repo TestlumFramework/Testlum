@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.DRIVER_INITIALIZER_NOT_FOUND;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND;
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_VERSION;
 
 @UtilityClass

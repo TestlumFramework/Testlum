@@ -9,7 +9,7 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.WAIT_INFO_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.WAIT_INFO_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.TIME;
 
 @Slf4j

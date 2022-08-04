@@ -25,10 +25,10 @@ import java.util.function.Supplier;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.COMMENT_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.COMPARISON_FOR_STEP_WAS_SKIPPED;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.POSITION_COMMAND_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.SLOW_COMMAND_PROCESSING;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMENT_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMPARISON_FOR_STEP_WAS_SKIPPED;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.POSITION_COMMAND_LOG;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SLOW_COMMAND_PROCESSING;
 import static java.lang.String.format;
 
 @Slf4j

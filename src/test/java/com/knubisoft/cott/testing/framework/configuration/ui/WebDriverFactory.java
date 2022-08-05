@@ -74,16 +74,15 @@ public class WebDriverFactory {
                                    final MutableCapabilities browserOptions,
                                    final WebDriverManager driverManager) {
         setCapabilities(browser, browserOptions);
-        RemoteBrowser remoteBrowserSettings = browser.getBrowserType().getRemoteBrowser();
-        BrowserInDocker browserInDockerSettings = browser.getBrowserType().getBrowserInDocker();
-        if (remoteBrowserSettings != null) {
-            return getRemoteDriver(remoteBrowserSettings, browserOptions);
+        BrowserUtil.BrowserType browserType = BrowserUtil.getBrowserType(browser);
+        if (browserType == BrowserUtil.BrowserType.REMOTE) {
+            return getRemoteDriver(browser.getBrowserType().getRemoteBrowser(), browserOptions);
         }
-        if (browserInDockerSettings != null) {
-            return StringUtils.isNotEmpty(browser.getBrowserWindowSize())
-                    ? getBrowserInDocker(browserInDockerSettings, browserOptions, driverManager.browserInDocker()
-                    .dockerScreenResolution(browser.getBrowserWindowSize() + DEFAULT_DOCKER_SCREEN_COLORS_DEPTH))
-                    : getBrowserInDocker(browserInDockerSettings, browserOptions, driverManager.browserInDocker());
+        if (browserType == BrowserUtil.BrowserType.IN_DOCKER) {
+            WebDriverManager browserInDocker = StringUtils.isNotEmpty(browser.getBrowserWindowSize())
+                    ? driverManager.browserInDocker().dockerScreenResolution(browser.getBrowserWindowSize()
+                    + DEFAULT_DOCKER_SCREEN_COLORS_DEPTH) : driverManager.browserInDocker();
+            return getBrowserInDocker(browser.getBrowserType().getBrowserInDocker(), browserOptions, browserInDocker);
         }
         return getLocalDriver(browser.getBrowserType().getLocalBrowser(), browserOptions, driverManager);
     }

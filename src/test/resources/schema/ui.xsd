@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
-          targetNamespace="http://www.knubisoft.com/e2e/testing/model/scenario"
-          xmlns:tns="http://www.knubisoft.com/e2e/testing/model/scenario"
+          targetNamespace="http://www.knubisoft.com/cott/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/cott/testing/model/scenario"
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
@@ -18,6 +18,7 @@
                     <x:element name="assert" type="tns:assert"/>
                     <x:element name="dropDown" type="tns:dropDown"/>
                     <x:element name="javascript" type="tns:javascript"/>
+                    <x:element name="hovers" type="tns:hovers"/>
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="clear" type="tns:clear"/>
                     <x:element name="closeSecondTab" type="tns:closeSecondTab"/>
@@ -25,6 +26,8 @@
                     <x:element name="scrollTo" type="tns:scrollTo"/>
                     <x:element name="repeat" type="tns:repeatUiCommand"/>
                 </x:choice>
+                <x:attribute name="clearCookiesAfterExecution" type="x:boolean" default="false"/>
+                <x:attribute name="clearLocalStorageByKey" type="tns:nonEmptyString"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -50,6 +53,23 @@
             <x:extension base="tns:abstractCommand">
                 <x:attribute name="file" type="tns:nonEmptyString"/>
             </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="hovers">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice>
+                    <x:element name="hover" type="tns:hover" maxOccurs="unbounded" minOccurs="1"/>
+                </x:choice>
+                <x:attribute name="moveToEmptySpace" type="x:boolean"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="hover">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator"/>
         </x:complexContent>
     </x:complexType>
 

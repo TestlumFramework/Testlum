@@ -1,8 +1,8 @@
 FROM maven:3.8.5-openjdk-8 as maven-build
 
-WORKDIR /e2e/
+WORKDIR /cott/
 COPY . .
-RUN mvn clean install -DskipTests
+RUN mvn clean install -DskipTests -Pquality-checking
 
 FROM openjdk:8
 
@@ -15,9 +15,9 @@ RUN apt-get update -y \
 	&& rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 #Version numbers
-ARG CHROME_DRIVER_VERSION=100.0.4896.60
+ARG CHROME_DRIVER_VERSION=102.0.5005.61
 ARG FIREFOX_DRIVER_VERSION=0.31.0
-ARG FIREFOX_VERSION=99.0.1
+ARG FIREFOX_VERSION=102.0.1
 
 # Google Chrome
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
@@ -60,10 +60,10 @@ RUN apt-get update -qqy \
 	&& apt-get -qqy install xvfb \
 	&& rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
-ARG JAR_FILE=target/e2e-testing-tool.jar
+ARG JAR_FILE=target/cott-with-dependencies.jar
 
-WORKDIR /e2e/
+WORKDIR /cott/
 
-COPY --from=maven-build /e2e/${JAR_FILE} app.jar
+COPY --from=maven-build /cott/${JAR_FILE} cott.jar
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "cott.jar"]

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 cfgPattern='^(-c=|--config=)[a-zA-Z0-9._:*#-]+(.xml)$'
-pathPattern='^(-p=|--path=)(/|(/[a-zA-Z0-9_-]+))+$'
+pathPattern='^(-p=|--path=)(./|/|(./[a-zA-Z0-9_-]+)|(/[a-zA-Z0-9_-]+))+$'
 
 dockerImageName=$1
 configFileName=$2
@@ -30,7 +30,7 @@ function print_error_message() {
     echo "
     Incorrect input of arguments. You must pass 3 arguments:
 
-    1) E2E-Testing-Tool docker image name.
+    1) Cost-Optimization-Testing-Tool docker image name.
 
     2) Configuration file.
            Use one of the options: -c={configuration-file-name} or --config={configuration-file-name}
@@ -40,11 +40,11 @@ function print_error_message() {
     3) Path to test resources.
            Use one of the options: -p={path-to-your-test-resources) or --path={path-to-your-test-resources)
 
-    Example: end2end -c=config-file.xml -p=/user/folder/resources
+    Example: cott -c=config-file.xml -p=/user/folder/resources
 
              or
 
-             e2e --config=config-file.xml --path=/user/folder/resources
+             testing-tool --config=config-file.xml --path=/user/folder/resources
     "
     exit 1
 }

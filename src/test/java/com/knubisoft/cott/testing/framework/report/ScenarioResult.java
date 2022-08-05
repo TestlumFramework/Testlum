@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.report;
 
+import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.scenario.Overview;
 import com.knubisoft.cott.testing.model.scenario.Tags;
 import lombok.Data;
@@ -15,6 +16,7 @@ public class ScenarioResult {
     private Tags tags;
     private String path;
     private String name;
+    private AbstractBrowser browser;
 
     private boolean success;
     private String cause;

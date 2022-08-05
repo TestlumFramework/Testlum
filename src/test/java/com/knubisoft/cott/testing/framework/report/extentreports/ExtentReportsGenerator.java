@@ -5,25 +5,19 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
-import com.aventstack.extentreports.reporter.ExtentKlovReporter;
-import com.aventstack.extentreports.reporter.ExtentSparkReporter;
-import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.cott.testing.framework.report.ReportGenerator;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.report.ScenarioResult;
 import com.knubisoft.cott.testing.framework.report.extentreports.model.ResultForComparison;
-import com.knubisoft.cott.testing.model.global_config.HtmlReportGenerator;
-import com.knubisoft.cott.testing.model.global_config.KlovServerReportGenerator;
-import com.knubisoft.cott.testing.model.global_config.Mongodb;
+import com.knubisoft.cott.testing.framework.util.BrowserUtil;
+import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.scenario.Overview;
 import lombok.SneakyThrows;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
@@ -44,6 +38,9 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private static final String PATH_TO_SCENARIO = "Path to scenario:";
     private static final String DEVELOPER = "Developer:";
     private static final String JIRA = "Jira:";
+    private static final String BROWSER = "Browser:";
+    private static final String BROWSER_TYPE = "Browser type:";
+    private static final String BROWSER_VERSION = "Browser version:";
     private static final String LINK_TEMPLATE = "<a href='%s'>%s<a/>";
     private static final String PREFORMATTED_TEXT_TEMPLATE = "<pre>%s</pre>";
     private static final String PREFORMATTED_CODE_TEXT_TEMPLATE = "<pre><code>%s</code></pre>";
@@ -58,48 +55,15 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private static final String SCENARIO_FAILED = "Test scenario failed";
     private static final String SCENARIO_EXECUTION_TIME_TEMPLATE = "Test scenario execution time: %dms";
     private static final String STEP_EXECUTION_TIME_TEMPLATE = "Step execution time: %dms";
-    private static final String PATH_FOR_REPORT_SAVING_TEMPLATE = "%s%s_%s";
 
     @Override
     public void generateReport(final GlobalScenarioStatCollector globalScenarioStatCollector) {
         ExtentReports extentReports = new ExtentReports();
-        attachReporters(extentReports);
-        globalScenarioStatCollector.getResults()
+        ExtentReportsConfigurator.configure(extentReports);
+        globalScenarioStatCollector
+                .getResults()
                 .forEach(scenarioExecutionResult -> addScenarioExecutionResult(extentReports, scenarioExecutionResult));
         extentReports.flush();
-    }
-
-    private void attachReporters(final ExtentReports extentReports) {
-        com.knubisoft.cott.testing.model.global_config.ExtentReports extentReportsConfig =
-                GlobalTestConfigurationProvider.provide().getReport().getExtentReports();
-        String projectName = extentReportsConfig.getProjectName();
-        HtmlReportGenerator htmlReportGeneratorSettings = extentReportsConfig.getHtmlReportGenerator();
-        KlovServerReportGenerator klovServerGeneratorSettings = extentReportsConfig.getKlovServerReportGenerator();
-        if (htmlReportGeneratorSettings.isEnable()) {
-            attachSparkReporter(extentReports, projectName);
-        }
-        if (Objects.nonNull(klovServerGeneratorSettings) && klovServerGeneratorSettings.isEnable()) {
-            attachKlovServerReporter(extentReports, klovServerGeneratorSettings, projectName);
-        }
-    }
-
-    private void attachSparkReporter(final ExtentReports extentReports, final String projectName) {
-        String pathForSaving =
-                TestResourceSettings.getInstance().getTestResourcesFolder().getAbsolutePath() + "/report/";
-        String formattedPath = format(PATH_FOR_REPORT_SAVING_TEMPLATE, pathForSaving, projectName, LocalDateTime.now());
-        ExtentSparkReporter extentSparkReporter = new ExtentSparkReporter(formattedPath);
-        extentReports.attachReporter(extentSparkReporter);
-    }
-
-    private void attachKlovServerReporter(final ExtentReports extentReports,
-                                          final KlovServerReportGenerator klovServerGeneratorSettings,
-                                          final String projectName) {
-        Mongodb mongodbSettings = klovServerGeneratorSettings.getMongoDB();
-        String klovServerURL = klovServerGeneratorSettings.getKlovServer().getUrl();
-        ExtentKlovReporter extentKlovReporter = new ExtentKlovReporter(projectName);
-        extentKlovReporter.initMongoDbConnection(mongodbSettings.getHost(), mongodbSettings.getPort().intValue());
-        extentKlovReporter.initKlovServerConnection(klovServerURL);
-        extentReports.attachReporter(extentKlovReporter);
     }
 
     private void addScenarioExecutionResult(final ExtentReports extentReports, final ScenarioResult scenarioResult) {
@@ -107,6 +71,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
                 .createTest(format(SCENARIO_NAME_TEMPLATE, scenarioResult.getId(), scenarioResult.getName()));
         extentTest.assignCategory(scenarioResult.getTags().getTag().toArray(new String[0]));
         addOverviewInfo(extentTest, scenarioResult.getOverview(), scenarioResult.getPath());
+        addBrowserInfo(extentTest, scenarioResult.getBrowser());
         setExecutionResult(extentTest, scenarioResult);
         addScenarioSteps(extentTest, scenarioResult.getCommands());
     }
@@ -126,6 +91,12 @@ public class ExtentReportsGenerator implements ReportGenerator {
         extentTest.info(MarkupHelper.createLabel(overview.getDescription(), ExtentColor.ORANGE));
         extentTest.info(MarkupHelper.createTable(createTableWithOverviewInfo(overview, filePath, developerName)));
         addLinks(extentTest, overview.getLink());
+    }
+
+    private void addBrowserInfo(final ExtentTest extentTest, final AbstractBrowser browser) {
+        if (Objects.nonNull(browser)) {
+            extentTest.info(MarkupHelper.createTable(createTableWithBrowserInfo(browser)));
+        }
     }
 
     private void addDeveloper(final ExtentTest extentTest, final String developerName) {
@@ -157,6 +128,18 @@ public class ExtentReportsGenerator implements ReportGenerator {
         overviewTable[THREE][ONE] = StringUtils.isNotEmpty(jira)
                 ? format(LINK_TEMPLATE, jira, jira) : StringUtils.EMPTY;
         return overviewTable;
+    }
+
+    private String[][] createTableWithBrowserInfo(final AbstractBrowser browser) {
+        String[][] browserInfoTable = new String[THREE][TWO];
+        browserInfoTable[ZERO][ZERO] = format(BOLD_TEXT_TEMPLATE, BROWSER);
+        browserInfoTable[ZERO][ONE] = browser.getClass().getSimpleName();
+        browserInfoTable[ONE][ZERO] = format(BOLD_TEXT_TEMPLATE, BROWSER_TYPE);
+        BrowserUtil.BrowserType browserType = BrowserUtil.getBrowserType(browser);
+        browserInfoTable[ONE][ONE] = browserType.getTypeName();
+        browserInfoTable[TWO][ZERO] = format(BOLD_TEXT_TEMPLATE, BROWSER_VERSION);
+        browserInfoTable[TWO][ONE] = BrowserUtil.getBrowserVersion(browser, browserType);
+        return browserInfoTable;
     }
 
     private void addScenarioSteps(final ExtentTest extentTest, final List<CommandResult> steps) {

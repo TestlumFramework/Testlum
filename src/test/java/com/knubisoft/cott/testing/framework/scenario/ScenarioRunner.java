@@ -43,7 +43,7 @@ public class ScenarioRunner {
 
     public ScenarioResult run() {
         prepare();
-        prepareReport();
+        prepareScenarioResult();
         LogUtil.logScenarioDetails(scenarioArguments, SCENARIO_ID_GENERATOR);
         runScenarioCommands();
         return scenarioResult;
@@ -55,13 +55,14 @@ public class ScenarioRunner {
         this.cmdToInterpreterMap = createClassToInterpreterMap(dependencies);
     }
 
-    private void prepareReport() {
+    private void prepareScenarioResult() {
         Scenario scenario = scenarioArguments.getScenario();
         scenarioResult.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
         scenarioResult.setPath(StringUtils.remove(scenarioArguments.getFile().getPath(), System.getProperty("PWD")));
         scenarioResult.setName(scenario.getOverview().getName());
         scenarioResult.setOverview(scenario.getOverview());
         scenarioResult.setTags(scenario.getTags());
+        scenarioResult.setBrowser(scenarioArguments.getBrowser());
         scenarioResult.setSuccess(true);
     }
 

@@ -15,7 +15,7 @@ RUN apt-get update -y \
 	&& rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
 #Version numbers
-ARG CHROME_DRIVER_VERSION=102.0.5005.61
+ARG CHROME_DRIVER_VERSION=104.0.5112.79
 ARG FIREFOX_DRIVER_VERSION=0.31.0
 ARG FIREFOX_VERSION=102.0.1
 

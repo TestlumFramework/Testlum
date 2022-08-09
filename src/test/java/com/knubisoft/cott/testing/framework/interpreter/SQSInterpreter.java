@@ -12,7 +12,6 @@ import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.scenario.Sqs;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
-import com.knubisoft.cott.testing.framework.util.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,9 +19,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.ALIAS_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.RECEIVE_ACTION;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.SEND_ACTION;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INCORRECT_SQS_PROCESSING;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.RECEIVE_ACTION;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.QUEUE;
 
 @Slf4j
@@ -52,7 +52,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
             ResultUtil.addMessageBrokerGeneralMetaData(alias, RECEIVE_ACTION, QUEUE, queueName, result);
             setContextBody(receiveAndCompareMessage(queueName, sqs.getReceive(), result, alias));
         } else {
-            throw new DefaultFrameworkException(LogMessage.INCORRECT_SQS_PROCESSING);
+            throw new DefaultFrameworkException(INCORRECT_SQS_PROCESSING);
         }
     }
 

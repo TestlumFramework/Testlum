@@ -1,6 +1,5 @@
 package com.knubisoft.cott.testing.framework.scenario;
 
-import com.knubisoft.cott.testing.framework.util.LogMessage;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
@@ -8,6 +7,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNABLE_FIND_VALUE_FOR_KEY;
 
 @RequiredArgsConstructor
 public class ScenarioContext {
@@ -34,7 +35,7 @@ public class ScenarioContext {
         String result = contextMap.get(key);
         if (result == null) {
             throw new IllegalArgumentException(
-                    String.format(LogMessage.UNABLE_FIND_VALUE_FOR_KEY, key, contextMap));
+                    String.format(UNABLE_FIND_VALUE_FOR_KEY, key, contextMap));
         }
         return result;
     }

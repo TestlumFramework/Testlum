@@ -3,7 +3,7 @@ package com.knubisoft.cott.testing.framework.exception;
 import java.util.List;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE_WITH_LF;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.RETHROWN_ERRORS_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.RETHROWN_ERRORS_LOG;
 
 public class DefaultFrameworkException extends RuntimeException {
 

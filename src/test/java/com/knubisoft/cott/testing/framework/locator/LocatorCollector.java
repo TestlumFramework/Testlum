@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.UNABLE_PARSE_FILE_WITH_LOCATORS;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNABLE_PARSE_FILE_WITH_LOCATORS;
 import static java.lang.String.format;
 
 public class LocatorCollector {

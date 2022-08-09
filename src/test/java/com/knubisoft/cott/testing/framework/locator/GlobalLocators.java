@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.INCORRECT_NAMING_FOR_LOCATOR_ID;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.UNABLE_TO_FIND_LOCATOR_BY_PATH;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INCORRECT_NAMING_FOR_LOCATOR_ID;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNABLE_TO_FIND_LOCATOR_BY_PATH;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GlobalLocators {

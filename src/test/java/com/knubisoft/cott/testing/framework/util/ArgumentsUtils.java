@@ -6,9 +6,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.regex.Pattern;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.INVALID_ARGUMENTS_INPUT;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.INVALID_CONFIG_FILE_NAME_ARGUMENT;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.INVALID_PATH_TO_RESOURCES_ARGUMENT;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INVALID_ARGUMENTS_INPUT;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INVALID_CONFIG_FILE_NAME_ARGUMENT;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INVALID_PATH_TO_RESOURCES_ARGUMENT;
 import static java.lang.String.format;
 
 @UtilityClass

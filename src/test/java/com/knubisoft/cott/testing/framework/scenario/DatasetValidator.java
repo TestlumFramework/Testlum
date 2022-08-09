@@ -13,8 +13,8 @@ import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.SQ
 import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.TXT_EXTENSION;
 import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.XLSX_EXTENSION;
 import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.XLS_EXTENSION;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.DB_NOT_SUPPORTED;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.UNSUPPORTED_MIGRATION_FORMAT;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNSUPPORTED_MIGRATION_FORMAT;
 
 @UtilityClass
 public class DatasetValidator {

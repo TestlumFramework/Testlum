@@ -24,10 +24,9 @@ import org.springframework.context.ApplicationContext;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.EXCEPTION_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.EXECUTION_STOP_SIGNAL_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.FUNCTION_FOR_COMMAND_NOT_FOUND;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.MISSING_CONSTRUCTOR;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_STOP_SIGNAL_LOG;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FUNCTION_FOR_COMMAND_NOT_FOUND;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.MISSING_CONSTRUCTOR;
 
 
 @Slf4j
@@ -44,7 +43,7 @@ public class ScenarioRunner {
 
     public ScenarioResult run() {
         prepare();
-        prepareReport();
+        prepareScenarioResult();
         LogUtil.logScenarioDetails(scenarioArguments, SCENARIO_ID_GENERATOR);
         runScenarioCommands();
         return scenarioResult;
@@ -56,13 +55,14 @@ public class ScenarioRunner {
         this.cmdToInterpreterMap = createClassToInterpreterMap(dependencies);
     }
 
-    private void prepareReport() {
+    private void prepareScenarioResult() {
         Scenario scenario = scenarioArguments.getScenario();
         scenarioResult.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
         scenarioResult.setPath(StringUtils.remove(scenarioArguments.getFile().getPath(), System.getProperty("PWD")));
         scenarioResult.setName(scenario.getOverview().getName());
         scenarioResult.setOverview(scenario.getOverview());
         scenarioResult.setTags(scenario.getTags());
+        scenarioResult.setBrowser(scenarioArguments.getBrowser());
         scenarioResult.setSuccess(true);
     }
 
@@ -134,7 +134,7 @@ public class ScenarioRunner {
     private void handleException(final CommandResult result) {
         Exception ex = result.getException();
         if (ex != null) {
-            log.error(EXCEPTION_LOG, ex.getMessage());
+            LogUtil.logException(ex);
             fillReportException(ex.getMessage());
             if (stopScenarioOnFailure) {
                 throw new StopSignalException();

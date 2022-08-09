@@ -13,8 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.function.Supplier;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.FUNCTION_IS_NOT_INVOKE_SUPPLIER;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.UNKNOWN_OPERATION;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FUNCTION_IS_NOT_INVOKE_SUPPLIER;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNKNOWN_OPERATION;
 
 @Slf4j
 @InterpreterForClass(Invoke.class)

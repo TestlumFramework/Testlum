@@ -6,7 +6,6 @@ import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.util.ArgumentsUtils;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
@@ -14,10 +13,8 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
-
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
-@Slf4j
 public class TestRunner {
 
     public static void main(final String[] args) {
@@ -26,6 +23,7 @@ public class TestRunner {
         String pathToTestResources = ArgumentsUtils.getPathToTestResources(args[1]);
         TestResourceSettings.init(configFileName, pathToTestResources);
         TestExecutionSummary testExecutionSummary = runTests();
+        LogUtil.logTestExecutionSummary(testExecutionSummary);
         if (SystemInfo.TESTING_IN_PIPELINE) {
             ResultUtil.writeFullTestCycleExecutionResult(testExecutionSummary);
         }
@@ -40,8 +38,6 @@ public class TestRunner {
         SummaryGeneratingListener listener = new SummaryGeneratingListener();
         launcher.registerTestExecutionListeners(listener);
         launcher.execute(tests);
-        TestExecutionSummary testExecutionSummary = listener.getSummary();
-        LogUtil.logTestExecutionSummary(testExecutionSummary);
-        return testExecutionSummary;
+        return listener.getSummary();
     }
 }

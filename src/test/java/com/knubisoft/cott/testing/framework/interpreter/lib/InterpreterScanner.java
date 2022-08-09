@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.NOT_DECLARED_WITH_INTERPRETER_FOR_CLASS;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_DECLARED_WITH_INTERPRETER_FOR_CLASS;
 
 @UtilityClass
 public class InterpreterScanner {

@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.SUCCESS_QUERY;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUCCESS_QUERY;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.LF;

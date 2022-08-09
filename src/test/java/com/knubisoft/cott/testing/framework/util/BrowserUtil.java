@@ -16,9 +16,11 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.NOT_ENABLED_BROWSERS;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_INFO;
 
 @UtilityClass
 public class BrowserUtil {
@@ -75,8 +77,47 @@ public class BrowserUtil {
         wait.until(ExpectedConditions.elementToBeSelected(element));
     }
 
-    //TODO add version and browser type
     public String getBrowserInfo(final AbstractBrowser browser) {
-        return browser.getClass().getSimpleName();
+        String browserName = browser.getClass().getSimpleName();
+        BrowserType browserType = getBrowserType(browser);
+        String browserVersion = getBrowserVersion(browser, browserType);
+        return String.format(BROWSER_INFO, browserName, browserType.getTypeName(), browserVersion);
+    }
+
+    public BrowserType getBrowserType(final AbstractBrowser browser) {
+        if (Objects.nonNull(browser.getBrowserType().getRemoteBrowser())) {
+            return BrowserType.REMOTE;
+        }
+        if (Objects.nonNull(browser.getBrowserType().getBrowserInDocker())) {
+            return BrowserType.IN_DOCKER;
+        }
+        return BrowserType.LOCAL;
+    }
+
+    public String getBrowserVersion(final AbstractBrowser browser, final BrowserType browserType) {
+        if (browserType == BrowserType.REMOTE) {
+            return browser.getBrowserType().getRemoteBrowser().getBrowserVersion();
+        }
+        if (browserType == BrowserType.IN_DOCKER) {
+            return browser.getBrowserType().getBrowserInDocker().getBrowserVersion();
+        }
+        String version = browser.getBrowserType().getLocalBrowser().getDriverVersion();
+        return StringUtils.isEmpty(version) ? "no version specified (the latest version is used)" : version;
+    }
+
+    public enum BrowserType {
+        LOCAL("local browser"),
+        REMOTE("remote browser"),
+        IN_DOCKER("browser in docker");
+
+        private final String typeName;
+
+        BrowserType(final String typeName) {
+            this.typeName = typeName;
+        }
+
+        public String getTypeName() {
+            return typeName;
+        }
     }
 }

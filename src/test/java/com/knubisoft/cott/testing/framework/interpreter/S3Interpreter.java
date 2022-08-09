@@ -13,7 +13,6 @@ import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.scenario.S3;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
-import com.knubisoft.cott.testing.framework.util.LogMessage;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -27,7 +26,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.ALIAS_LOG;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INCORRECT_S3_PROCESSING;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
 
 @Slf4j
 @InterpreterForClass(S3.class)
@@ -65,7 +65,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
             ResultUtil.addS3GeneralMetaData(bucket, DOWNLOAD_ACTION, key, bucket, result);
             setContextBody(downloadAndCompareFile(bucket, key, inject(s3.getDownload()), result));
         } else {
-            throw new DefaultFrameworkException(LogMessage.INCORRECT_S3_PROCESSING);
+            throw new DefaultFrameworkException(INCORRECT_S3_PROCESSING);
         }
     }
 

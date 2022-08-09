@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.UI_DISABLED_ERROR;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UI_DISABLED_ERROR;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class TestSetCollector {

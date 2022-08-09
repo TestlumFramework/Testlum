@@ -18,10 +18,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.CONTENT_FORMAT;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.REGEX_NEW_LINE;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.SHELL_COMMAND_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.SHELL_FILE_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_FORMAT;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SHELL_COMMAND_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SHELL_FILE_LOG;
 
 @Slf4j
 @InterpreterForClass(Shell.class)

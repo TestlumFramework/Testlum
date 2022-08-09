@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
-import static com.knubisoft.cott.testing.framework.util.LogMessage.FAILED_VISITING_PATH_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_VISITING_PATH_LOG;
 
 @Slf4j
 @UtilityClass

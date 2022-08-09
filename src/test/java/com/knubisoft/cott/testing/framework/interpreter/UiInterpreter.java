@@ -58,17 +58,17 @@ import java.util.stream.IntStream;
 
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.SCROLL_TO_ELEMENT_SCRIPT;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.BY_URL_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.COMMAND_TYPE_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.DROP_DOWN_NOT_SUPPORTED;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.EXCEPTION_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.EXECUTION_TIME_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.NAVIGATE_NOT_SUPPORTED;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.REPEAT_FINISHED_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.SECOND_TAB_NOT_FOUND;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.TIMES_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.VALUE_LOG;
-import static com.knubisoft.cott.testing.framework.util.LogMessage.WAIT_INFO_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.BY_URL_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMAND_TYPE_LOG;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NAVIGATE_NOT_SUPPORTED;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.JS_FILE_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.REPEAT_FINISHED_LOG;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SECOND_TAB_NOT_FOUND;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.TIMES_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.VALUE_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.WAIT_INFO_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.ALL_VALUES_DESELECT;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.ASSERT_ATTRIBUTE;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.ASSERT_LOCATOR;
@@ -161,7 +161,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         } catch (Exception e) {
             result.setSuccess(false);
             result.setException(e);
-            log.error(EXCEPTION_LOG, e.getMessage());
+            LogUtil.logException(e);
         } finally {
             long execTime = stopWatch.getTime();
             stopWatch.stop();
@@ -192,6 +192,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     private void execJsCommands(final Javascript o, final CommandResult result) {
         String fileName = o.getFile();
         result.put(JS_FILE, fileName);
+        log.info(JS_FILE_LOG, fileName);
         String command = JavascriptUtil.readCommands(fileName);
         JavascriptUtil.executeJsScript(command, dependencies.getWebDriver());
     }
@@ -201,6 +202,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         WebDriver driver = dependencies.getWebDriver();
         Actions actions = new Actions(driver);
         List<WebElement> webElements = hovers.getHover().stream()
+                .peek(hover -> LogUtil.logHover(dependencies.getPosition().incrementAndGet(), hover))
                 .map(hover -> getWebElement(hover.getLocatorId()))
                 .collect(Collectors.toList());
         webElements.forEach(webElement -> {

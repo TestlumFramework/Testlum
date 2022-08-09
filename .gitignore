@@ -7,8 +7,6 @@ target/
 *.iml
 *.ipr
 /.mvn/
-/mvnw
-/mvnw.cmd
 /HELP.md
 .DS_store
 .java-version

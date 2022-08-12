@@ -100,9 +100,9 @@ public class RootTest {
     @AfterEach
     @SneakyThrows
     public void afterEach() {
-        DelayBetweenScenariosRuns delayBetweenScenariosRuns = GlobalTestConfigurationProvider.provide().getDelayBetweenScenariosRuns();
-        if (Objects.nonNull(delayBetweenScenariosRuns) && delayBetweenScenariosRuns.isEnabled()) {
-            TimeUnit.SECONDS.sleep(delayBetweenScenariosRuns.getSeconds().longValue());
+        DelayBetweenScenariosRuns runs = GlobalTestConfigurationProvider.provide().getDelayBetweenScenariosRuns();
+        if (Objects.nonNull(runs) && runs.isEnabled()) {
+            TimeUnit.SECONDS.sleep(runs.getSeconds().longValue());
         }
     }
 

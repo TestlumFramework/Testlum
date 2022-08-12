@@ -78,7 +78,7 @@
 
     <x:complexType name="runScenariosByTag">
         <x:choice>
-            <x:element name="tag" type="tns:tagValue" maxOccurs="unbounded"/>
+            <x:element name="tag" type="tns:tagValue" minOccurs="unbounded"/>
         </x:choice>
         <x:attribute name="enable" type="x:boolean" use="required"/>
     </x:complexType>

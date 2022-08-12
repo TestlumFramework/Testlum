@@ -35,6 +35,7 @@
         <x:complexType>
             <x:sequence>
                 <x:element name="stopScenarioOnFailure" type="x:boolean"/>
+                <x:element name="delayBetweenScenariosRuns" type="tns:delayBetweenScenariosRuns" minOccurs="0"/>
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
                 <x:element name="report" type="tns:report"/>
                 <x:element name="ui" type="tns:ui" minOccurs="0"/>
@@ -86,6 +87,11 @@
         <x:attribute name="autoLogout" type="x:boolean" default="true"/>
         <x:attribute name="authStrategy" type="tns:authStrategies" default="default"/>
         <x:attribute name="authCustomClassName" type="tns:nonEmptyString"/>
+    </x:complexType>
+
+    <x:complexType name="delayBetweenScenariosRuns">
+        <x:attribute name="seconds" type="x:positiveInteger" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
     <x:simpleType name="authStrategies">

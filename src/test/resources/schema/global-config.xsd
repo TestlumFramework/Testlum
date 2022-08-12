@@ -35,7 +35,7 @@
         <x:complexType>
             <x:sequence>
                 <x:element name="stopScenarioOnFailure" type="x:boolean"/>
-                <x:element name="delayBetweenScenariosRuns" type="tns:delayBetweenScenariosRuns" maxOccurs="0"/>
+                <x:element name="delayBetweenScenariosRuns" type="tns:delayBetweenScenariosRuns" minOccurs="0"/>
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
                 <x:element name="report" type="tns:report"/>
                 <x:element name="ui" type="tns:ui" minOccurs="0"/>
@@ -78,7 +78,7 @@
 
     <x:complexType name="runScenariosByTag">
         <x:choice>
-            <x:element name="tag" type="tns:tagValue" minOccurs="0"/>
+            <x:element name="tag" type="tns:tagValue" maxOccurs="unbounded"/>
         </x:choice>
         <x:attribute name="enable" type="x:boolean" use="required"/>
     </x:complexType>

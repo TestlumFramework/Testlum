@@ -35,7 +35,7 @@
         <x:complexType>
             <x:sequence>
                 <x:element name="stopScenarioOnFailure" type="x:boolean"/>
-                <x:element name="timeout" type="tns:timeOutBetweenScenario"/>
+                <x:element name="timeout" type="tns:delayBetweenScenariosRuns"/>
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
                 <x:element name="report" type="tns:report"/>
                 <x:element name="ui" type="tns:ui" minOccurs="0"/>
@@ -89,7 +89,7 @@
         <x:attribute name="authCustomClassName" type="tns:nonEmptyString"/>
     </x:complexType>
 
-    <x:complexType name="timeOutBetweenScenario">
+    <x:complexType name="delayBetweenScenariosRuns">
         <x:attribute name="seconds" type="x:positiveInteger" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>

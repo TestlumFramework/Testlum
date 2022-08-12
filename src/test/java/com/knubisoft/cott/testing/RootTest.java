@@ -12,7 +12,7 @@ import com.knubisoft.cott.testing.framework.report.ScenarioResult;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioRunner;
 import com.knubisoft.cott.testing.framework.util.FileRemover;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
-import com.knubisoft.cott.testing.model.global_config.TimeOutBetweenScenario;
+import com.knubisoft.cott.testing.model.global_config.DelayBetweenScenariosRuns;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.time.StopWatch;
@@ -99,8 +99,8 @@ public class RootTest {
 
     @AfterEach
     @SneakyThrows
-    public void AfterEach() {
-        TimeOutBetweenScenario timeOut = GlobalTestConfigurationProvider.provide().getTimeout();
+    public void afterEach() {
+        DelayBetweenScenariosRuns timeOut = GlobalTestConfigurationProvider.provide().getTimeout();
         if (Objects.nonNull(timeOut) && timeOut.isEnabled()) {
             TimeUnit.SECONDS.sleep(timeOut.getSeconds().longValue());
         }

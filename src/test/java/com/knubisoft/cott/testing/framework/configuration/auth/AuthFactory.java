@@ -15,6 +15,8 @@ import static java.util.Objects.nonNull;
 
 @UtilityClass
 public class AuthFactory {
+
+    //CHECKSTYLE:OFF
     public AuthStrategy create(final InterpreterDependencies dependencies) {
         final Auth auth = GlobalTestConfigurationProvider.provide().getAuth();
 
@@ -22,7 +24,7 @@ public class AuthFactory {
             case BASIC:
                 return new BasicAuth(dependencies);
             case OAUTH_2:
-                if (nonNull(GlobalTestConfigurationProvider.provide().getAuth().getOauth2())) {
+                if (nonNull(auth.getOauth2())) {
                     return new OAuth2Auth(dependencies);
                 }
                 throw new RuntimeException("You have to set a mandatory tag " + System.lineSeparator()
@@ -37,12 +39,13 @@ public class AuthFactory {
                 return new DefaultStrategy(dependencies);
         }
     }
+    //CHECKSTYLE:ON
 
     private AuthStrategy createCustomStrategy(final String className) {
         try {
             return (AuthStrategy) Class.forName(className).newInstance();
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-           throw new NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

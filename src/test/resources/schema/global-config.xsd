@@ -95,7 +95,9 @@
     <x:complexType name="oauth2">
         <x:attribute name="clientId" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="clientSecret" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="tokenAccessUri" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="authorizationUri" type="tns:url" use="required"/>
+        <x:attribute name="accessTokenUri" type="tns:url" use="required"/>
+        <x:attribute name="scope" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
     <x:complexType name="delayBetweenScenariosRuns">

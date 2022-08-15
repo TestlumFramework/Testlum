@@ -1,64 +1,103 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib.auth;
 
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.constant.AuthorizationConstant;
+import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
-import com.knubisoft.cott.testing.framework.util.AuthUtil;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
+import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.global_config.Oauth2;
 import com.knubisoft.cott.testing.model.scenario.Auth;
-import org.springframework.http.HttpEntity;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
-import org.springframework.security.oauth2.common.AuthenticationScheme;
+import org.springframework.http.RequestEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+
+import static java.util.Objects.nonNull;
 
 public class OAuth2Auth extends AbstractAuthStrategy {
 
-    public OAuth2Auth(InterpreterDependencies dependencies) {
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    public OAuth2Auth(final InterpreterDependencies dependencies) {
         super(dependencies);
     }
 
     @Override
-    public void authenticate(Auth auth, CommandResult result) {
-        String body = prepareBody(auth);
-        String token = getJwtToken(body, auth);
+    public void authenticate(final Auth auth, final CommandResult result) {
+        LogUtil.logAuthInfo(auth);
+        String token = getOAuth2Token(auth);
+        result.put(ResultUtil.AUTHENTICATION_TYPE, AuthorizationConstant.HEADER_OAUTH2);
         login(token, AuthorizationConstant.HEADER_BEARER);
     }
 
-    private String prepareBody(final Auth auth) {
-        return AuthUtil.getCredentialsFromFile(auth.getCredentials());
+    private String getOAuth2Token(final Auth auth) {
+        final Oauth2 oauth2 = GlobalTestConfigurationProvider.provide().getAuth().getOauth2();
+        String authCode = getAuthorizationCode(auth, oauth2);
+        return getAccessToken(auth, oauth2, authCode);
     }
 
-    private String getJwtToken(final String body, final Auth auth) {
-        HttpHeaders headers = getHeaders();
-        HttpEntity<String> request = new HttpEntity<>(body, headers);
+    private String getAccessToken(final Auth auth, final Oauth2 oauth2, final String authCode) {
+        RequestEntity<?> request = prepareTokenRequest(oauth2, auth, authCode);
+        String response = executeRequest(request);
 
-        OAuth2RestTemplate oAuth2RestTemplate = getOauthRestTemplate();
-        return oAuth2RestTemplate.postForObject(getBaseApiUrl(auth) + auth.getLoginEndpoint(),
-                request, String.class);
+        if (nonNull(response) && !response.isEmpty()) {
+            DocumentContext context = JsonPath.parse(response);
+            return context.read(AuthorizationConstant.CONTENT_KEY_ACCESS_TOKEN);
+        }
+        return DelimiterConstant.EMPTY;
     }
 
-    private OAuth2RestTemplate getOauthRestTemplate() {
-        AuthorizationCodeResourceDetails authorizationCodeResourceDetails = getAuthorizationCodeResourceDetails();
-        return new OAuth2RestTemplate(authorizationCodeResourceDetails);
+    public RequestEntity<?> prepareTokenRequest(final Oauth2 oauth2, final Auth auth, final String authCode) {
+        MultiValueMap<String, String> formParams = buildFormParameters(oauth2, auth, authCode);
+        HttpHeaders headers = getTokenRequestHeaders(oauth2);
+        URI uri = UriComponentsBuilder.fromUriString(oauth2.getAccessTokenUri()).build().toUri();
+        return new RequestEntity<>(formParams, headers, HttpMethod.POST, uri);
     }
 
-    private AuthorizationCodeResourceDetails getAuthorizationCodeResourceDetails() {
-        Oauth2 oauth2 = GlobalTestConfigurationProvider.provide().getAuth().getOauth2();
-        AuthorizationCodeResourceDetails authorizationCodeResourceDetails = new AuthorizationCodeResourceDetails();
-        authorizationCodeResourceDetails.setClientId(oauth2.getClientId());
-        authorizationCodeResourceDetails.setClientSecret(oauth2.getClientSecret());
-        authorizationCodeResourceDetails.setAccessTokenUri(oauth2.getTokenAccessUri());
-        authorizationCodeResourceDetails.setClientAuthenticationScheme(AuthenticationScheme.form);
-        return authorizationCodeResourceDetails;
+    private MultiValueMap<String, String> buildFormParameters(final Oauth2 oauth2,
+                                                              final Auth auth,
+                                                              final String authCode) {
+        MultiValueMap<String, String> formParameters = new LinkedMultiValueMap<>();
+        formParameters.add(AuthorizationConstant.GRANT_TYPE, AuthorizationConstant.AUTHORIZATION_CODE);
+        formParameters.add(AuthorizationConstant.CODE, authCode);
+        formParameters.add(AuthorizationConstant.REDIRECT_URI, getBaseApiUrl(auth) + auth.getLoginEndpoint());
+        formParameters.add(AuthorizationConstant.SCOPE, oauth2.getScope());
+        return formParameters;
     }
 
-    private HttpHeaders getHeaders() {
+    private HttpHeaders getTokenRequestHeaders(final Oauth2 oauth2) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBasicAuth(oauth2.getClientId(), oauth2.getClientSecret());
+        MediaType contentType = MediaType.valueOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8");
+        headers.setContentType(contentType);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8));
         return headers;
+    }
+
+    private String executeRequest(final RequestEntity<?> request) {
+        try {
+            return restTemplate.exchange(request, String.class)
+                    .getBody();
+        } catch (HttpClientErrorException ex) {
+            LogUtil.logResponseStatusError(ex);
+        }
+        return DelimiterConstant.EMPTY;
     }
 
     private String getBaseApiUrl(final Auth auth) {
@@ -67,5 +106,13 @@ public class OAuth2Auth extends AbstractAuthStrategy {
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Alias doesn't exist."))
                 .getUrl();
+    }
+
+    @SneakyThrows
+    private String getAuthorizationCode(final Auth auth, final Oauth2 oauth2) {
+        //TODO impl
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
+        System.out.print("Enter authorization code:");
+        return reader.readLine();
     }
 }

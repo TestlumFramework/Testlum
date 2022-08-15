@@ -1,5 +1,8 @@
 package com.knubisoft.cott.testing;
 
+import com.knubisoft.cott.testing.framework.SystemDataStoreCleaner;
+import com.knubisoft.cott.testing.framework.TestSetCollector;
+import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.cott.testing.framework.context.SpringTestContext;
@@ -9,12 +12,12 @@ import com.knubisoft.cott.testing.framework.report.ScenarioResult;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioRunner;
 import com.knubisoft.cott.testing.framework.util.FileRemover;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
-import com.knubisoft.cott.testing.framework.SystemDataStoreCleaner;
-import com.knubisoft.cott.testing.framework.TestSetCollector;
+import com.knubisoft.cott.testing.model.global_config.DelayBetweenScenariosRuns;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Named;
@@ -27,6 +30,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.TestContextManager;
 
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 @SpringBootTest(classes = SpringTestContext.class)
@@ -90,6 +95,15 @@ public class RootTest {
 
     private void cleanDatabases() {
         systemDataStoreCleaner.cleanAll(this.nameToAdapterAlias);
+    }
+
+    @AfterEach
+    @SneakyThrows
+    public void afterEach() {
+        DelayBetweenScenariosRuns delay = GlobalTestConfigurationProvider.provide().getDelayBetweenScenariosRuns();
+        if (Objects.nonNull(delay) && delay.isEnabled()) {
+            TimeUnit.SECONDS.sleep(delay.getSeconds().longValue());
+        }
     }
 
     @AfterAll

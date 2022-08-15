@@ -35,6 +35,7 @@
         <x:complexType>
             <x:sequence>
                 <x:element name="stopScenarioOnFailure" type="x:boolean"/>
+                <x:element name="delayBetweenScenariosRuns" type="tns:delayBetweenScenariosRuns" minOccurs="0"/>
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
                 <x:element name="report" type="tns:report"/>
                 <x:element name="ui" type="tns:ui" minOccurs="0"/>
@@ -95,6 +96,11 @@
         <x:attribute name="clientId" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="clientSecret" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="tokenAccessUri" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="delayBetweenScenariosRuns">
+        <x:attribute name="seconds" type="x:positiveInteger" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
     <x:simpleType name="authStrategies">

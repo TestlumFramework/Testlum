@@ -1,14 +1,10 @@
 target/
-!.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 .idea
 *.iws
 *.iml
 *.ipr
-/.mvn/
-/mvnw
-/mvnw.cmd
 /HELP.md
 .DS_store
 .java-version

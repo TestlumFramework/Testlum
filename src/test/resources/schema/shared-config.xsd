@@ -49,4 +49,10 @@
         </x:sequence>
     </x:complexType>
 
+
+    <x:complexType name="integration" abstract="true">
+        <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+    </x:complexType>
+
 </x:schema>

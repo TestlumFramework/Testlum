@@ -1,6 +1,7 @@
 package com.knubisoft.cott.testing.framework.scenario;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.SendGridUtil;
 import com.knubisoft.cott.testing.framework.validator.XMLValidator;
@@ -16,6 +17,7 @@ import com.knubisoft.cott.testing.model.scenario.Dynamo;
 import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
 import com.knubisoft.cott.testing.model.scenario.Http;
 import com.knubisoft.cott.testing.model.scenario.HttpInfo;
+import com.knubisoft.cott.testing.model.scenario.Include;
 import com.knubisoft.cott.testing.model.scenario.Javascript;
 import com.knubisoft.cott.testing.model.scenario.Kafka;
 import com.knubisoft.cott.testing.model.scenario.Migrate;
@@ -54,6 +56,7 @@ import java.util.stream.Stream;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ALIAS_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.API_NOT_FOUND;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF;
 import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.JSON_EXTENSION;
 
 public class ScenarioValidator implements XMLValidator<Scenario> {
@@ -61,7 +64,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
 
-    private Integrations integrations = GlobalTestConfigurationProvider.getIntegrations();
+    private final Integrations integrations = GlobalTestConfigurationProvider.getIntegrations();
 
     public ScenarioValidator() {
 
@@ -175,6 +178,11 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateSendgridCommand(xmlFile, sendgrid);
         });
 
+        validatorMap.put(o -> o instanceof Include, (xmlFile, command) -> {
+            Include include = (Include) command;
+            validateIncludeAction(include, xmlFile);
+        });
+
         this.abstractCommandValidatorsMap = Collections.unmodifiableMap(validatorMap);
     }
 
@@ -214,24 +222,31 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateRabbitCommand(final File xmlFile, final Rabbit rabbit) {
-        rabbit.getSendOrReceive().stream().filter(command -> command instanceof SendRmqMessage)
-                .filter(send -> StringUtils.hasText(((SendRmqMessage) send).getFile()))
-                .forEach(send -> FileSearcher.searchFileFromDir(xmlFile, ((SendRmqMessage) send).getFile()));
+        rabbit.getSendOrReceive().stream().map(this::getRabbitFilename).filter(StringUtils::hasText)
+                .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
+    }
 
-        rabbit.getSendOrReceive().stream().filter(command -> command instanceof ReceiveRmqMessage)
-                .filter(receive -> StringUtils.hasText(((ReceiveRmqMessage) receive).getFile()))
-                .forEach(receive -> FileSearcher.searchFileFromDir(xmlFile, ((ReceiveRmqMessage) receive).getFile()));
+    private String getRabbitFilename(final Object rabbitCommand) {
+        if (rabbitCommand instanceof SendRmqMessage) {
+            return ((SendRmqMessage) rabbitCommand).getFile();
+        } else {
+            return ((ReceiveRmqMessage) rabbitCommand).getFile();
+        }
     }
 
     private void validateKafkaCommand(final File xmlFile, final Kafka kafka) {
-        kafka.getSendOrReceive().stream().filter(command -> command instanceof SendKafkaMessage)
-                .filter(command -> StringUtils.hasText(((SendKafkaMessage) command).getFile()))
-                .forEach(command -> FileSearcher.searchFileFromDir(xmlFile, ((SendKafkaMessage) command).getFile()));
-
-        kafka.getSendOrReceive().stream().filter(command -> command instanceof ReceiveKafkaMessage)
-                .filter(receive -> StringUtils.hasText(((ReceiveKafkaMessage) receive).getFile()))
-                .forEach(receive -> FileSearcher.searchFileFromDir(xmlFile, ((ReceiveKafkaMessage) receive).getFile()));
+        kafka.getSendOrReceive().stream().map(this::getKafkaFilename).filter(StringUtils::hasText)
+                .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
     }
+
+    private String getKafkaFilename(final Object kafkaCommand) {
+        if (kafkaCommand instanceof SendKafkaMessage) {
+            return ((SendKafkaMessage) kafkaCommand).getFile();
+        } else {
+            return ((ReceiveKafkaMessage) kafkaCommand).getFile();
+        }
+    }
+
 
     private void validateWhenCommand(final File xmlFile, final When when) {
         Stream.of(when.getRequest(), when.getThen())
@@ -278,7 +293,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
-    private void validateUiCommands(Ui command) {
+    private void validateUiCommands(final Ui command) {
         command.getClickOrInputOrNavigate().forEach(o -> {
             if (o instanceof Javascript) {
                 validateFileExistenceInData(((Javascript) o).getFile());
@@ -291,6 +306,18 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         List<String> shellFiles = shell.getShellFile();
         if (!shellFiles.isEmpty()) {
             shellFiles.forEach(this::validateFileExistenceInData);
+        }
+    }
+
+        private void validateIncludeAction(final Include include, final File xmlFile) {
+        if (StringUtils.hasText(include.getScenario())) {
+            File includedScenarioFolder = new File(TestResourceSettings.getInstance().getScenariosFolder(),
+                    include.getScenario());
+            File includedFile = FileSearcher.searchFileFromDir(includedScenarioFolder,
+                    TestResourceSettings.SCENARIO_FILENAME);
+            if (includedFile.equals(xmlFile)) {
+                throw new DefaultFrameworkException(SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF);
+            }
         }
     }
 
@@ -308,39 +335,5 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> {
 
     }
-
-
-
-
-//
-//    private void validateVarCommand(final Var command) {
-//        if (command.getPostgresResult() != null) {
-//            checkDatabaseConnection(command.getPostgresResult());
-//        }
-//    }
-//
-//    private void checkDatabaseConnection(final PostgresResult postgresResult) {
-//        for (Postgres postgres
-//                : GlobalTestConfigurationProvider.getIntegrations().getPostgresIntegration().getPostgres()) {
-//            if ((postgres.getAlias().equals(postgresResult.getDatabaseName())
-//                    && !postgres.isEnabled())) {
-//                throw new DefaultFrameworkException(format(FAILED_CONNECTION_TO_DATABASE,
-//                        postgresResult.getDatabaseName()));
-//            }
-//        }
-//    }
-//
-//    private void validateIncludeAction(final Include include, final File xmlFile) {
-//        if (StringUtils.isNotEmpty(include.getScenario())) {
-//            File includedScenarioFolder = new File(TestResourceSettings.getInstance().getScenariosFolder(),
-//                    include.getScenario());
-//            File includedFile = FileSearcher.searchFileFromDir(includedScenarioFolder,
-//                    TestResourceSettings.SCENARIO_FILENAME);
-//            if (includedFile.equals(xmlFile)) {
-//                throw new DefaultFrameworkException(SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF);
-//            }
-//        }
-//    }
-//
 
 }

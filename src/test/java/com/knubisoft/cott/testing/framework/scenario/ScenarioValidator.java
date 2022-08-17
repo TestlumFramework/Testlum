@@ -12,6 +12,7 @@ import com.knubisoft.cott.testing.model.global_config.Postgres;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
+import com.knubisoft.cott.testing.model.scenario.DbResult;
 import com.knubisoft.cott.testing.model.scenario.Dynamo;
 import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
 import com.knubisoft.cott.testing.model.scenario.Http;
@@ -22,7 +23,6 @@ import com.knubisoft.cott.testing.model.scenario.Migrate;
 import com.knubisoft.cott.testing.model.scenario.Mongo;
 import com.knubisoft.cott.testing.model.scenario.Mysql;
 import com.knubisoft.cott.testing.model.scenario.Oracle;
-import com.knubisoft.cott.testing.model.scenario.PostgresResult;
 import com.knubisoft.cott.testing.model.scenario.Redis;
 import com.knubisoft.cott.testing.model.scenario.Repeat;
 import com.knubisoft.cott.testing.model.scenario.Response;
@@ -266,12 +266,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateVarCommand(final Var command) {
-        if (command.getPostgresResult() != null) {
-            checkDatabaseConnection(command.getPostgresResult());
+        if (command.getDbResult() != null) {
+            checkDatabaseConnection(command.getDbResult());
         }
     }
 
-    private void checkDatabaseConnection(final PostgresResult postgresResult) {
+    //todo: rename 'postgresResult' to 'dbResult' everywhere
+    private void checkDatabaseConnection(final DbResult postgresResult) {
         for (Postgres postgres
                 : GlobalTestConfigurationProvider.getIntegrations().getPostgresIntegration().getPostgres()) {
             if ((postgres.getAlias().equals(postgresResult.getDatabaseName())

@@ -7,7 +7,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependenc
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.model.scenario.PostgresResult;
+import com.knubisoft.cott.testing.model.scenario.DbResult;
 import com.knubisoft.cott.testing.model.scenario.Var;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.ListSource;
@@ -78,10 +78,10 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
             WebDriver webDriver = dependencies.getWebDriver();
             value = webDriver.findElement(By.xpath(o.getXpath())).getText();
             ResultUtil.addVariableMetaData(XPATH, o.getName(), o.getXpath(), value, result);
-        } else if (o.getPostgresResult() != null) {
-            value = getActualPostgresResult(o.getPostgresResult(), result);
+        } else if (o.getDbResult() != null) {
+            value = getActualPostgresResult(o.getDbResult(), result);
             ResultUtil.addVariableMetaData(POSTGRES_QUERY,
-                    o.getName(), o.getPostgresResult().getQuery(), value, result);
+                    o.getName(), o.getDbResult().getQuery(), value, result);
         } else if (o.getExpression() != null) {
             value = getExpressionResult(o.getExpression());
             ResultUtil.addVariableMetaData(EXPRESSION, o.getName(), o.getExpression(), value, result);
@@ -99,7 +99,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         return Objects.requireNonNull(exp.getValue()).toString();
     }
 
-    private String getActualPostgresResult(final PostgresResult postgresResult, final CommandResult result) {
+    private String getActualPostgresResult(final DbResult postgresResult, final CommandResult result) {
         List<String> query = new ArrayList<>(Arrays.asList(postgresResult.getQuery()));
         result.put("query", query);
         verifyQueryResult(postgresResult.getQuery(), postgresResult.getDatabaseName());

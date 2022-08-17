@@ -72,7 +72,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
         validatorMap.put(o -> o instanceof Auth, (xmlFile, command) -> {
             Auth auth = (Auth) command;
-            validateFileExistenceInData(auth.getCredentials());
+            validateFileExistenceInDataFolder(auth.getCredentials());
         });
 
         validatorMap.put(o -> o instanceof Http, (xmlFile, command) -> {
@@ -191,7 +191,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         scenario.getCommands().forEach(it -> validateCommand(it, xmlFile));
     }
 
-    private void validateFileExistenceInData(final String commandFile) {
+    private void validateFileExistenceInDataFolder(final String commandFile) {
         if (StringUtils.hasText(commandFile)) {
             FileSearcher.searchFileFromDataFolder(commandFile);
         }
@@ -296,7 +296,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateUiCommands(final Ui command) {
         command.getClickOrInputOrNavigate().forEach(o -> {
             if (o instanceof Javascript) {
-                validateFileExistenceInData(((Javascript) o).getFile());
+                validateFileExistenceInDataFolder(((Javascript) o).getFile());
             }
         });
     }
@@ -305,7 +305,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         validateFileIfExist(xmlFile, shell.getFile());
         List<String> shellFiles = shell.getShellFile();
         if (!shellFiles.isEmpty()) {
-            shellFiles.forEach(this::validateFileExistenceInData);
+            shellFiles.forEach(this::validateFileExistenceInDataFolder);
         }
     }
 

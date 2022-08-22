@@ -40,8 +40,8 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.html5.WebStorage;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
 import java.util.ArrayList;
@@ -53,19 +53,23 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.NEW_LINE;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NAVIGATE_NOT_SUPPORTED;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SECOND_TAB_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.SCROLL_TO_ELEMENT_SCRIPT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BY_URL_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMAND_TYPE_LOG;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NAVIGATE_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.JS_FILE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.REPEAT_FINISHED_LOG;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SECOND_TAB_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TIMES_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.VALUE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.WAIT_INFO_LOG;
@@ -90,9 +94,6 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.SCROLL_LOCATO
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.SECOND_TAB;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.TIME;
 import static com.knubisoft.cott.testing.model.scenario.ClickMethod.JS;
-import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
-import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.NEW_LINE;
-import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
 import static java.lang.String.format;
 
 
@@ -101,6 +102,7 @@ import static java.lang.String.format;
 public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     private static final String MOVE_TO_EMPTY_SPACE = "//html";
+    private static final Pattern HTTP_PATTERN = Pattern.compile("https?://.+");
     private final Map<UiCommandPredicate, UiCommand> uiCommands;
 
     public UiInterpreter(final InterpreterDependencies dependencies) {
@@ -249,10 +251,17 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private void navigateTo(final String path, final CommandResult result) {
-        String url = inject(dependencies.getGlobalTestConfiguration().getUi().getBaseUrl() + path);
+        String url = inject(getUrl(path));
         result.put(NAVIGATE_URL, url);
         log.info(BY_URL_LOG, url);
         dependencies.getWebDriver().navigate().to(url);
+    }
+
+    private String getUrl(final String path) {
+        if (HTTP_PATTERN.matcher(path).matches()) {
+            return path;
+        }
+        return dependencies.getGlobalTestConfiguration().getUi().getBaseUrl() + path;
     }
 
     private void assertValues(final Assert aAssert, final CommandResult result) {

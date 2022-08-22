@@ -1,0 +1,26 @@
+<scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.knubisoft.com/cott/testing/model/scenario"
+          xsi:schemaLocation="http://www.knubisoft.com/cott/testing/model/scenario scenario.xsd">
+
+    <overview>
+        <description>Simple Test Example</description>
+        <name>Name</name>
+    </overview>
+
+    <tags>
+        <tag>someTag</tag>
+    </tags>
+
+    <shell comment="Example of a 'shell' command. Successful" file="expected_1.json">
+        <shellFile>/shell-1.sh</shellFile>
+    </shell>
+
+    <wait comment="Example of a 'wait' command"
+          time="3"
+          unit="seconds"/>
+
+<!--    <ui comment="Example of ui commands">-->
+<!--        <javascript comment="Try to output the command 'console'" file="greating.js"/>-->
+<!--    </ui>-->
+
+</scenario>

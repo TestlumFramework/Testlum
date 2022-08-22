@@ -98,7 +98,7 @@
         <x:restriction base="x:string">
             <x:enumeration value="basic"/>
             <x:enumeration value="jwt"/>
-            <x:enumeration value="oauth2"/>
+<!--            <x:enumeration value="oauth2"/>-->
             <x:enumeration value="custom"/>
             <x:enumeration value="default"/>
         </x:restriction>

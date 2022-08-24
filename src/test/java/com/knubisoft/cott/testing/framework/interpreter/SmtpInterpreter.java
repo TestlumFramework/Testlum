@@ -27,8 +27,7 @@ public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
 
     @Override
     protected void acceptImpl(final Smtp smtp, final CommandResult result) {
-        String alias = smtp.getAlias();
-        JavaMailSenderImpl javaMailSender = javaMailSenderMap.get(alias);
+        JavaMailSenderImpl javaMailSender = javaMailSenderMap.get(smtp.getAlias());
         LogUtil.logSmtpInfo(smtp, javaMailSender);
         ResultUtil.addSmtpMetaData(smtp, javaMailSender, result);
         sendEmail(smtp, javaMailSender);

@@ -19,6 +19,7 @@
     <x:include schemaLocation="elasticsearch-integration.xsd"/>
     <x:include schemaLocation="sendgrid-integration.xsd"/>
     <x:include schemaLocation="ses-integration.xsd"/>
+    <x:include schemaLocation="smtp-integration.xsd"/>
     <x:include schemaLocation="ui-config.xsd"/>
     <x:include schemaLocation="report.xsd"/>
     <x:include schemaLocation="shared-config.xsd"/>
@@ -62,6 +63,7 @@
             <x:element name="elasticsearchIntegration" type="tns:elasticsearchIntegration" minOccurs="0"/>
             <x:element name="sendgridIntegration" type="tns:sendgridIntegration" minOccurs="0"/>
             <x:element name="sesIntegration" type="tns:sesIntegration" minOccurs="0"/>
+            <x:element name="smtpIntegration" type="tns:smtpIntegration" minOccurs="0"/>
         </x:all>
     </x:complexType>
 

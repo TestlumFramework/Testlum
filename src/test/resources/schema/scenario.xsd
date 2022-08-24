@@ -32,6 +32,7 @@
     <x:include schemaLocation="http.xsd"/>
     <x:include schemaLocation="logout.xsd"/>
     <x:include schemaLocation="shell.xsd"/>
+    <x:include schemaLocation="smtp.xsd"/>
 
     <x:annotation>
         <x:appinfo>
@@ -84,6 +85,7 @@
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="invoke" type="tns:invoke"/>
                     <x:element name="shell" type="tns:shell"/>
+                    <x:element name="smtp" type="tns:smtp"/>
                 </x:choice>
             </x:sequence>
             <x:attribute name="onlyThis" type="x:boolean" default="false"/>
@@ -117,6 +119,7 @@
                     <x:element name="sendgrid" type="tns:sendgrid"/>
                     <x:element name="ses" type="tns:ses"/>
                     <x:element name="dynamo" type="tns:dynamo"/>
+                    <x:element name="smtp" type="tns:smtp"/>
 
                     <x:element name="var" type="tns:var"/>
                     <x:element name="wait" type="tns:wait"/>
@@ -157,6 +160,7 @@
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="invoke" type="tns:invoke"/>
                     <x:element name="shell" type="tns:shell"/>
+                    <x:element name="smtp" type="tns:smtp"/>
                 </x:choice>
                 <x:attribute name="times" type="x:positiveInteger" use="required"/>
             </x:extension>

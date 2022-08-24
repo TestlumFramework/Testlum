@@ -79,6 +79,10 @@ public final class LogMessage {
     public static final String HTTP_STATUS_CODE = format(TABLE_FORMAT, "Status code", "{} {}");
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "Method", "{}");
+    public static final String SMTP_HOST_LOG = format(TABLE_FORMAT, "SMTP Host", "{}");
+    public static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");
+    public static final String SUBJECT_LOG = format(TABLE_FORMAT, "Subject", "{}");
+    public static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
     public static final String OVERVIEW_INFO_LOG = "{}: {}";
 
     public static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");

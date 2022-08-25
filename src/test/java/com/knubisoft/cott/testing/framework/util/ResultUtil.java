@@ -18,12 +18,14 @@ import com.knubisoft.cott.testing.model.scenario.SendgridInfo;
 import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.SesBody;
 import com.knubisoft.cott.testing.model.scenario.SesMessage;
+import com.knubisoft.cott.testing.model.scenario.Smtp;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -41,7 +43,6 @@ public class ResultUtil {
     public static final String API_ALIAS = "API alias";
     public static final String AUTHENTICATION_TYPE = "Authentication type";
     public static final String CREDENTIALS_FILE = "Credentials file";
-    public static final String POSTGRES = "POSTGRES";
     public static final String QUEUE = "Queue";
     public static final String TIME = "Time";
     public static final String MESSAGE_TO_SEND = "Message to send";
@@ -118,6 +119,8 @@ public class ResultUtil {
     private static final String FAILED = "failed";
     private static final String SUCCESSFULLY = "successfully";
     private static final String EXECUTION_RESULT_FILENAME = "scenarios_execution_result.txt";
+    private static final String SMTP_HOST = "SMTP Host";
+    private static final String SMTP_PORT = "SMTP Port";
 
     public CommandResult createCommandResultForUiSubCommand(final int number, final String name, final String comment) {
         CommandResult subCommandResult = createNewCommandResultInstance(number);
@@ -222,6 +225,18 @@ public class ResultUtil {
         result.put(SUBJECT, message.getSubject().getValue());
         result.put(TEXT, body.getText().getValue());
         result.put(HTML, body.getHtml().getValue());
+    }
+
+    public static void addSmtpMetaData(final Smtp smtp,
+                                       final JavaMailSenderImpl javaMailSender,
+                                       final CommandResult result) {
+        result.put(ALIAS, smtp.getAlias());
+        result.put(SMTP_HOST, javaMailSender.getHost());
+        result.put(SMTP_PORT, javaMailSender.getPort());
+        result.put(SOURCE, javaMailSender.getUsername());
+        result.put(DESTINATION, smtp.getRecipientEmail());
+        result.put(SUBJECT, smtp.getSubject());
+        result.put(TEXT, smtp.getText());
     }
 
     public void addRabbitMQInfoForSendAction(final SendRmqMessage sendAction,

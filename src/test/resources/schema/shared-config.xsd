@@ -14,7 +14,7 @@
 
     <x:simpleType name="url" final="restriction">
         <x:restriction base="x:string">
-            <x:pattern value="https?://.*"/>
+            <x:pattern value="https?://.+"/>
         </x:restriction>
     </x:simpleType>
 

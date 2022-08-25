@@ -16,18 +16,18 @@ public class TestResourceSettings {
 
     public static final String SCENARIO_FILENAME = "scenario.xml";
     public static final String ACTUAL_FILENAME = "actual.json";
-    public static final String SCREENSHOT_FILENAME = "screenshot.jpg";
-    public static final String XML_SUFFIX = ".xml";
-    public static final String SCREENSHOT_FOLDER = "/screenshots";
     public static final String FILENAME_TO_SAVE = "action_%s_" + ACTUAL_FILENAME;
+    public static final String SCREENSHOT_FILENAME = "screenshot.jpg";
     public static final String SCREENSHOT_NAME_TO_SAVE = "%s_action_%s_" + SCREENSHOT_FILENAME;
+    public static final String XML_SUFFIX = ".xml";
+
+    public static final String SCREENSHOT_FOLDER = "/screenshots";
     public static final String SCHEMAS_FOLDER = "schema";
     public static final String REPORT_FOLDER = "/report";
-
-    private static final String PAGES_FOLDER = "locators/pages";
-    private static final String COMPONENTS_FOLDER = "locators/component";
-    private static final String SCENARIOS_FOLDER = "scenarios";
-    private static final String DATA_FOLDER = "data";
+    public static final String LOCATORS_PAGES_FOLDER = "locators/pages";
+    public static final String LOCATORS_COMPONENTS_FOLDER = "locators/component";
+    public static final String SCENARIOS_FOLDER = "scenarios";
+    public static final String DATA_FOLDER = "data";
 
     private static TestResourceSettings instance;
 
@@ -41,8 +41,8 @@ public class TestResourceSettings {
     private TestResourceSettings(final String configFileName, final String pathToTestResources) {
         this.testResourcesFolder = new File(pathToTestResources);
         this.configFile = new File(testResourcesFolder, configFileName);
-        this.pagesFolder = subFolder(PAGES_FOLDER, PAGES_FOLDER_NOT_EXIST);
-        this.componentsFolder = subFolder(COMPONENTS_FOLDER, COMPONENTS_FOLDER_NOT_EXIST);
+        this.pagesFolder = subFolder(LOCATORS_PAGES_FOLDER, PAGES_FOLDER_NOT_EXIST);
+        this.componentsFolder = subFolder(LOCATORS_COMPONENTS_FOLDER, COMPONENTS_FOLDER_NOT_EXIST);
         this.scenariosFolder = subFolder(SCENARIOS_FOLDER, SCENARIOS_FOLDER_NOT_EXIST);
         this.dataFolder = subFolder(DATA_FOLDER, DATA_FOLDER_NOT_EXIST);
     }

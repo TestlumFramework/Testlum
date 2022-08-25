@@ -17,7 +17,7 @@
         </extentReports>
     </report>
 
-    <ui enabled="false">
+    <ui enabled="true">
         <browserSettings>
             <takeScreenshotOfEachUiCommand enable="false"/>
             <webElementAutowait seconds="3"/>
@@ -40,7 +40,7 @@
             </browsers>
         </browserSettings>
 
-        <baseUrl>http://localhost:8080</baseUrl>
+        <baseUrl>https://google.com</baseUrl>
     </ui>
 
     <auth authStrategy="default"/>

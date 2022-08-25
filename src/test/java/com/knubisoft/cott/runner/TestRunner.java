@@ -15,10 +15,10 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
-public class TestRunner {
+public class TestRunner implements COTTStarter.Runner {
 
-    public static void main(final String[] args) {
-        ArgumentsUtils.validateInputArguments(args);
+    @Override
+    public void run(final String[] args) {
         String configFileName = ArgumentsUtils.getConfigurationFileName(args[0]);
         String pathToTestResources = ArgumentsUtils.getPathToTestResources(args[1]);
         TestResourceSettings.init(configFileName, pathToTestResources);
@@ -29,7 +29,7 @@ public class TestRunner {
         }
     }
 
-    private static TestExecutionSummary runTests() {
+    private TestExecutionSummary runTests() {
         LauncherDiscoveryRequest tests = LauncherDiscoveryRequestBuilder
                 .request()
                 .selectors(selectClass(RootTest.class))

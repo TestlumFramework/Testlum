@@ -1,5 +1,6 @@
-package com.knubisoft.cott.runner;
+package com.knubisoft.cott.runner.impl;
 
+import com.knubisoft.cott.runner.Runner;
 import com.knubisoft.cott.testing.RootTest;
 import com.knubisoft.cott.testing.framework.SystemInfo;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
@@ -15,7 +16,7 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
-public class TestRunner implements COTTStarter.Runner {
+public class TestRunner implements Runner {
 
     @Override
     public void run(final String[] args) {

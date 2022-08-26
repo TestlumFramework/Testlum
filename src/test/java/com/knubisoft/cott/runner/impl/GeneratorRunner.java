@@ -1,6 +1,6 @@
-package com.knubisoft.cott.runner;
+package com.knubisoft.cott.runner.impl;
 
-import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.cott.runner.Runner;
 import com.knubisoft.cott.testing.framework.util.ArgumentsUtils;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
@@ -8,40 +8,32 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.CONFIG_EXAMPLE_FILENAME;
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.DATA_FOLDER;
-import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.LOCATORS_COMPONENTS_FOLDER;
-import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.LOCATORS_PAGES_FOLDER;
-import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.REPORT_FOLDER;
+import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.EXPECTED_EXAMPLE_FILENAME;
+import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.JS_SCRIPT_EXAMPLE_FILENAME;
+import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.REQUIRED_FOLDER_NAMES;
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.SCENARIOS_FOLDER;
+import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.SCENARIO_FILENAME;
+import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.SHELL_SCRIPT_EXAMPLE_FILENAME;
+import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.TEST_SAMPLE_PATH;
 
-public class GeneratorRunner implements COTTStarter.Runner {
+public class GeneratorRunner implements Runner {
 
-    private static final List<String> REQUIRED_FOLDER_NAMES = Arrays.asList(
-            SCENARIOS_FOLDER, LOCATORS_PAGES_FOLDER, LOCATORS_COMPONENTS_FOLDER, REPORT_FOLDER, DATA_FOLDER);
+    private static final Map<String, String> FOR_COPY_FILENAMES_TO_FOLDERS;
 
-    private static final String SCENARIO_EXAMPLE_FILENAME = TestResourceSettings.SCENARIO_FILENAME;
-    private static final String CONFIG_EXAMPLE_FILENAME = "global-config-example.xml";
-    private static final String EXPECTED_EXAMPLE_FILENAME = "expected_1.json";
-    private static final String JS_SCRIPT_EXAMPLE_FILENAME = "greating.js";
-    private static final String SHELL_SCRIPT_EXAMPLE_FILENAME = "shell-1.sh";
-    private static final String TEST_SAMPLE_PATH = "initial-sample/";
-
-    private static final Map<String, String> FOR_COPY_FILENAMES_TO_FOLDERS = prepareMap();
-
-    private static Map<String, String> prepareMap() {
-        Map<String, String> map = new HashMap<>();
+    static {
+        final Map<String, String> map = new HashMap<>(5);
         map.put(CONFIG_EXAMPLE_FILENAME, "");
-        map.put(SCENARIO_EXAMPLE_FILENAME, SCENARIOS_FOLDER);
+        map.put(SCENARIO_FILENAME, SCENARIOS_FOLDER);
         map.put(EXPECTED_EXAMPLE_FILENAME, SCENARIOS_FOLDER);
         map.put(JS_SCRIPT_EXAMPLE_FILENAME, DATA_FOLDER);
         map.put(SHELL_SCRIPT_EXAMPLE_FILENAME, DATA_FOLDER);
-        return Collections.unmodifiableMap(map);
+        FOR_COPY_FILENAMES_TO_FOLDERS = Collections.unmodifiableMap(map);
     }
 
     @Override

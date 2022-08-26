@@ -83,6 +83,9 @@ public final class LogMessage {
     public static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");
     public static final String SUBJECT_LOG = format(TABLE_FORMAT, "Subject", "{}");
     public static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
+    public static final String FROM_PHONE_NUMBER_LOG = format(TABLE_FORMAT, "'From' phone number", "{}");
+    public static final String TO_PHONE_NUMBER_LOG = format(TABLE_FORMAT, "'To' phone number", "{}");
+    public static final String MESSAGE_LOG = format(TABLE_FORMAT, "Message", "{}");
     public static final String OVERVIEW_INFO_LOG = "{}: {}";
 
     public static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");

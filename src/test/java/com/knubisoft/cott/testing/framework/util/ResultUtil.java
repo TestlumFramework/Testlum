@@ -19,6 +19,7 @@ import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.SesBody;
 import com.knubisoft.cott.testing.model.scenario.SesMessage;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
+import com.knubisoft.cott.testing.model.scenario.Twilio;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
@@ -121,6 +122,9 @@ public class ResultUtil {
     private static final String EXECUTION_RESULT_FILENAME = "scenarios_execution_result.txt";
     private static final String SMTP_HOST = "SMTP Host";
     private static final String SMTP_PORT = "SMTP Port";
+    private static final String FROM = "From";
+    private static final String TO = "To";
+    private static final String MESSAGE = "Message";
 
     public CommandResult createCommandResultForUiSubCommand(final int number, final String name, final String comment) {
         CommandResult subCommandResult = createNewCommandResultInstance(number);
@@ -237,6 +241,13 @@ public class ResultUtil {
         result.put(DESTINATION, smtp.getRecipientEmail());
         result.put(SUBJECT, smtp.getSubject());
         result.put(TEXT, smtp.getText());
+    }
+
+    public static void addTwilioMetaData(final Twilio twilio, final String twilioNumber, final CommandResult result) {
+        result.put(ALIAS, twilio.getAlias());
+        result.put(FROM, twilioNumber);
+        result.put(TO, twilio.getDestinationPhoneNumber());
+        result.put(MESSAGE, twilio.getMessage());
     }
 
     public void addRabbitMQInfoForSendAction(final SendRmqMessage sendAction,

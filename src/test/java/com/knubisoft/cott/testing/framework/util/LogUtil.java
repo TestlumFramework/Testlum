@@ -10,6 +10,7 @@ import com.knubisoft.cott.testing.model.scenario.Overview;
 import com.knubisoft.cott.testing.model.scenario.OverviewPart;
 import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
+import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.Ui;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -40,11 +41,13 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATI
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.INVALID_CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.INVALID_SCENARIO_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.LOCAL_STORAGE_KEY;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.LOCATOR_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.MESSAGE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.NAME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.NEW_LOG_LINE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
@@ -57,6 +60,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_HOST
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_PORT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SOURCE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUBJECT_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_COMMAND_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.TESTS_RUN_FAILED;
@@ -271,5 +275,11 @@ public class LogUtil {
         log.info(DESTINATION_LOG, smtp.getRecipientEmail());
         log.info(SUBJECT_LOG, smtp.getSubject());
         log.info(CONTENT_LOG, smtp.getText());
+    }
+
+    public void logTwilioInfo(final Twilio twilio, final String twilioPhoneNumber) {
+        log.info(FROM_PHONE_NUMBER_LOG, twilioPhoneNumber);
+        log.info(TO_PHONE_NUMBER_LOG, twilio.getDestinationPhoneNumber());
+        log.info(MESSAGE_LOG, twilio.getMessage());
     }
 }

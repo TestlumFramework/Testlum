@@ -38,8 +38,10 @@ import com.knubisoft.cott.testing.model.scenario.Sendgrid;
 import com.knubisoft.cott.testing.model.scenario.SendgridInfo;
 import com.knubisoft.cott.testing.model.scenario.SendgridWithBody;
 import com.knubisoft.cott.testing.model.scenario.Shell;
+import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.Sqs;
 import com.knubisoft.cott.testing.model.scenario.StorageName;
+import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.Ui;
 import com.knubisoft.cott.testing.model.scenario.When;
 import org.springframework.util.StringUtils;
@@ -181,6 +183,16 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         validatorMap.put(o -> o instanceof Include, (xmlFile, command) -> {
             Include include = (Include) command;
             validateIncludeAction(include, xmlFile);
+        });
+
+        validatorMap.put(o -> o instanceof Smtp, (xmlFile, command) -> {
+            Smtp smtp = (Smtp) command;
+            validateAlias(integrations.getSmtpIntegration().getSmtp(), smtp.getAlias());
+        });
+
+        validatorMap.put(o -> o instanceof Twilio, (xmlFile, command) -> {
+            Twilio twilio = (Twilio) command;
+            validateAlias(integrations.getTwilioIntegration().getTwilio(), twilio.getAlias());
         });
 
         this.abstractCommandValidatorsMap = Collections.unmodifiableMap(validatorMap);

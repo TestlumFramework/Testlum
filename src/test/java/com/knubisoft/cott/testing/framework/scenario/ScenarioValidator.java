@@ -204,7 +204,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateAlias(final List<? extends Integration> integrationsList, final String alias) {
-        integrationsList.stream().filter(Integration::isEnabled).filter(o -> o.getAlias().equals(alias))
+        integrationsList.stream().filter(o -> o.getAlias().equals(alias))
                 .findFirst().orElseThrow(() -> new DefaultFrameworkException(ALIAS_NOT_FOUND, alias));
     }
 

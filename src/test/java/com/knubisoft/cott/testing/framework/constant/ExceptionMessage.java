@@ -85,6 +85,11 @@ public class ExceptionMessage {
                     + RESOURCES_PATH_INPUT_REQUIREMENTS
                     + "\nExample: -p=/user/folder/resources or --path=/user/folder/resources\n"
                     + "\nYou entered ---> %s\n";
+    public static final String INVALID_PATH_TO_INITIAL_STRUCTURE_GENERATION_ARGUMENT =
+            "\n\nArgument of path to folder for initial structure incorrect, please follow the requirements below\n"
+                    + "Use one of the options: -g={path-to-initial-structure) or --generate={path-to-initial-structure)"
+                    + "\nExample: -g=/user/folder/resources or --generate=/user/folder/resources\n"
+                    + "\nYou entered ---> %s\n";
 
     public static final String TESTS_RUN_FAILED = "Test run failed";
     public static final String NAVIGATE_NOT_SUPPORTED = "Navigate command %s not supported";

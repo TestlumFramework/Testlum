@@ -15,7 +15,7 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <start-class>com.knubisoft.cott.runner.TestRunner</start-class>
+        <start-class>com.knubisoft.cott.starter.COTTStarter</start-class>
 
         <selenium-java.version>4.0.0</selenium-java.version>
         <webdrivermanager.version>5.2.0</webdrivermanager.version>
@@ -252,7 +252,8 @@
                 <exclusion>
                     <groupId>joda-time</groupId>
                     <artifactId>joda-time</artifactId>
-                </exclusion></exclusions>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -345,7 +346,8 @@
                 <exclusion>
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
-                </exclusion></exclusions>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -559,7 +561,8 @@
                 <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-core</artifactId>
-                </exclusion></exclusions>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

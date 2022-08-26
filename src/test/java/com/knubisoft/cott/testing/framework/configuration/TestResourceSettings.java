@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -37,8 +38,8 @@ public class TestResourceSettings {
     public static final String SCENARIOS_FOLDER = "scenarios";
     public static final String DATA_FOLDER = "data";
 
-    public static final List<String> REQUIRED_FOLDER_NAMES = Arrays.asList(
-            SCENARIOS_FOLDER, LOCATORS_PAGES_FOLDER, LOCATORS_COMPONENTS_FOLDER, REPORT_FOLDER, DATA_FOLDER);
+    public static final List<String> REQUIRED_FOLDER_NAMES = Collections.unmodifiableList(Arrays.asList(
+            SCENARIOS_FOLDER, LOCATORS_PAGES_FOLDER, LOCATORS_COMPONENTS_FOLDER, REPORT_FOLDER, DATA_FOLDER));
 
     private static TestResourceSettings instance;
 

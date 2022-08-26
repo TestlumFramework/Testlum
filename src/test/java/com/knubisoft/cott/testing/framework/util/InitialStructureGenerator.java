@@ -1,7 +1,5 @@
-package com.knubisoft.cott.runner.impl;
+package com.knubisoft.cott.testing.framework.util;
 
-import com.knubisoft.cott.runner.Runner;
-import com.knubisoft.cott.testing.framework.util.ArgumentsUtils;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 
@@ -22,7 +20,7 @@ import static com.knubisoft.cott.testing.framework.configuration.TestResourceSet
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.SHELL_SCRIPT_EXAMPLE_FILENAME;
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.TEST_SAMPLE_PATH;
 
-public class GeneratorRunner implements Runner {
+public class InitialStructureGenerator {
 
     private static final Map<String, String> FOR_COPY_FILENAMES_TO_FOLDERS;
 
@@ -36,13 +34,11 @@ public class GeneratorRunner implements Runner {
         FOR_COPY_FILENAMES_TO_FOLDERS = Collections.unmodifiableMap(map);
     }
 
-    @Override
-    public void run(final String[] args) {
-        String pathToInitialStructure = ArgumentsUtils.getPathToInitialStructureGeneration(args[0]);
+    public void generate(final String pathToGenerate) {
         REQUIRED_FOLDER_NAMES.forEach(name ->
-                createFolder(pathToInitialStructure, name));
+                createFolder(pathToGenerate, name));
         FOR_COPY_FILENAMES_TO_FOLDERS.forEach((fileName, folder) ->
-                copyFileToFolder(fileName, pathToInitialStructure, folder));
+                copyFileToFolder(fileName, pathToGenerate, folder));
     }
 
     @SneakyThrows

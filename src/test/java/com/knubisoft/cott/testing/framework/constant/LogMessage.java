@@ -9,7 +9,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LogMessage {
 
-    public static final String TABLE_FORMAT = "%-20s|%-70s";
+    public static final String TABLE_FORMAT = "%-23s|%-70s";
     public static final String CONTENT_FORMAT = format("%n%19s| %-20s|", EMPTY, EMPTY);
     public static final String NEW_LOG_LINE = format("%n%19s| ", EMPTY);
     public static final String REGEX_NEW_LINE = "[\\r\\n]";
@@ -86,6 +86,11 @@ public final class LogMessage {
     public static final String FROM_PHONE_NUMBER_LOG = format(TABLE_FORMAT, "'From' phone number", "{}");
     public static final String TO_PHONE_NUMBER_LOG = format(TABLE_FORMAT, "'To' phone number", "{}");
     public static final String MESSAGE_LOG = format(TABLE_FORMAT, "Message", "{}");
+    public static final String IMAGE_COMPARISON_TYPE_LOG = format(TABLE_FORMAT, "Image comparison type", "{}");
+    public static final String HIGHLIGHT_DIFFERENCES_LOG = format(TABLE_FORMAT, "Highlight differences", "{}");
+    public static final String IMAGE_FOR_COMPARISON_LOG = format(TABLE_FORMAT, "Image for comparison", "{}");
+    public static final String IMAGE_SOURCE_ATT_LOG = format(TABLE_FORMAT, "Image source attribute", "{}");
+    public static final String URL_TO_IMAGE_LOG = format(TABLE_FORMAT, "URL to actual image", "{}");
     public static final String OVERVIEW_INFO_LOG = "{}: {}";
 
     public static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
@@ -115,5 +120,6 @@ public final class LogMessage {
     public static final String JS_FILE_LOG = format(TABLE_FORMAT, "JS file", "{}");
 
     public static final String BROWSER_INFO = "%s | type = %s | version = %s";
-
+    public static final String EXTRACT_THEN_COMPARE = "Extract from web element then compare";
+    public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a screenshot then compare";
 }

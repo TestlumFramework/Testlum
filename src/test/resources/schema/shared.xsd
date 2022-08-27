@@ -74,6 +74,12 @@
         <x:attribute name="file" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
+<!--    <x:simpleType name="expectedImage">-->
+<!--        <x:restriction base="x:string">-->
+<!--            <x:pattern value="[^\s]+(.*?)\.(jpg|jpeg|png|JPG|JPEG|PNG)$"/>-->
+<!--        </x:restriction>-->
+<!--    </x:simpleType>-->
+
     <x:complexType name="param">
         <x:simpleContent>
             <x:extension base="x:string">

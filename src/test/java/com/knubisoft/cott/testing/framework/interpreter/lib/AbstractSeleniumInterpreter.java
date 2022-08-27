@@ -30,10 +30,10 @@ public abstract class AbstractSeleniumInterpreter<T extends AbstractCommand> ext
         super(dependencies);
     }
 
-    protected void takeScreenshotIfRequired(final CommandResult result) {
+    protected void takeScreenshotAndSaveIfRequired(final CommandResult result) {
         if (dependencies.getGlobalTestConfiguration().getUi().getBrowserSettings()
                 .getTakeScreenshotOfEachUiCommand().isEnable()) {
-            File screenshot = ((TakesScreenshot) dependencies.getWebDriver()).getScreenshotAs(OutputType.FILE);
+            File screenshot = takeScreenshot();
             File screenshotsFolder = new File(dependencies.getFile().getParent()
                     + TestResourceSettings.SCREENSHOT_FOLDER);
             tryToCopyScreenshotFileToFolder(screenshot, screenshotsFolder);
@@ -41,8 +41,12 @@ public abstract class AbstractSeleniumInterpreter<T extends AbstractCommand> ext
         }
     }
 
+    protected File takeScreenshot() {
+        return ((TakesScreenshot) dependencies.getWebDriver()).getScreenshotAs(OutputType.FILE);
+    }
+
     @SneakyThrows
-    private void putScreenshotToResult(final CommandResult result, final File screenshot) {
+    protected void putScreenshotToResult(final CommandResult result, final File screenshot) {
         final MultipartFile image = ImageCompressor.compress(screenshot);
         if (Objects.nonNull(image)) {
             byte[] screenshotContent = FileUtils.readFileToByteArray(screenshot);

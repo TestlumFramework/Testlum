@@ -2,8 +2,11 @@ package com.knubisoft.cott.testing.framework.util;
 
 import com.github.romankh3.image.comparison.exception.ImageComparisonException;
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
+import com.github.romankh3.image.comparison.model.ImageComparisonState;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.scenario.ImageComparison;
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FilenameUtils;
 
@@ -12,12 +15,29 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.IMAGES_DONT_MATCH;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.ADDITIONAL_INFO;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.IMAGE_ATTACHED_TO_STEP;
 import static java.lang.String.format;
 
 @UtilityClass
 public class ImageComparisonUtil {
 
-    public File saveComparisonResult(final ImageComparisonResult comparisonResult,
+    @SneakyThrows
+    public void processImageComparisonResult(final ImageComparisonResult comparisonResult,
+                                             final ImageComparison imageComparison,
+                                             final File directoryToSave,
+                                             final CommandResult result) {
+        ImageComparisonState imageComparisonState = comparisonResult.getImageComparisonState();
+        if (imageComparisonState != ImageComparisonState.MATCH) {
+            File actualImage = saveActualImage(comparisonResult, imageComparison, directoryToSave);
+            UiUtil.putScreenshotToResult(result, actualImage);
+            result.put(ADDITIONAL_INFO, IMAGE_ATTACHED_TO_STEP);
+            throw new ImageComparisonException(format(IMAGES_DONT_MATCH, imageComparisonState.name()));
+        }
+    }
+
+    private File saveActualImage(final ImageComparisonResult comparisonResult,
                                      final ImageComparison imageComparison,
                                      final File directoryToSave) throws IOException {
         String expectedImageFullName = imageComparison.getExpectedImage();

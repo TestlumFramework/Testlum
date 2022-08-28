@@ -1,14 +1,11 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
-import com.github.romankh3.image.comparison.exception.ImageComparisonException;
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
-import com.github.romankh3.image.comparison.model.ImageComparisonState;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractSeleniumInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
-import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.ImageComparator;
 import com.knubisoft.cott.testing.framework.util.ImageComparisonUtil;
@@ -16,6 +13,7 @@ import com.knubisoft.cott.testing.framework.util.JavascriptUtil;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.SeleniumUtil;
+import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.framework.util.WaitUtil;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Assert;
@@ -24,7 +22,6 @@ import com.knubisoft.cott.testing.model.scenario.Click;
 import com.knubisoft.cott.testing.model.scenario.ClickMethod;
 import com.knubisoft.cott.testing.model.scenario.CloseSecondTab;
 import com.knubisoft.cott.testing.model.scenario.DropDown;
-import com.knubisoft.cott.testing.model.scenario.ExtractFromElementAndCompare;
 import com.knubisoft.cott.testing.model.scenario.Hovers;
 import com.knubisoft.cott.testing.model.scenario.ImageComparison;
 import com.knubisoft.cott.testing.model.scenario.Input;
@@ -55,7 +52,6 @@ import org.openqa.selenium.support.ui.Select;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -73,7 +69,6 @@ import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EM
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.NEW_LINE;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.IMAGES_DONT_MATCH;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NAVIGATE_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SECOND_TAB_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
@@ -84,10 +79,8 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.JS_FILE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.REPEAT_FINISHED_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TIMES_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.URL_TO_IMAGE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.VALUE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.WAIT_INFO_LOG;
-import static com.knubisoft.cott.testing.framework.util.ResultUtil.ADDITIONAL_INFO;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.ALL_VALUES_DESELECT;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.ASSERT_ATTRIBUTE;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.ASSERT_LOCATOR;
@@ -99,7 +92,6 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLICK_METHOD;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLOSE_COMMAND;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.DROP_DOWN_FOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.DROP_DOWN_LOCATOR;
-import static com.knubisoft.cott.testing.framework.util.ResultUtil.IMAGE_ATTACHED_TO_STEP;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.INPUT_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.INPUT_VALUE;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.JS_FILE;
@@ -109,7 +101,6 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.NUMBER_OF_REP
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.SCROLL_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.SECOND_TAB;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.TIME;
-import static com.knubisoft.cott.testing.framework.util.ResultUtil.URL_TO_ACTUAL_IMAGE;
 import static com.knubisoft.cott.testing.model.scenario.ClickMethod.JS;
 import static java.lang.String.format;
 
@@ -192,8 +183,8 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     private void click(final Click click, final CommandResult result) {
         result.put(CLICK_LOCATOR, click.getLocatorId());
-        WebElement webElement = getWebElement(click.getLocatorId());
-        BrowserUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
+        WebElement webElement = findWebElement(click.getLocatorId());
+        UiUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
         highlightElementIfRequired(click.isHighlight(), webElement);
         takeScreenshotAndSaveIfRequired(result);
         clickWithMethod(click.getMethod(), webElement, result);
@@ -223,7 +214,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         Actions actions = new Actions(driver);
         List<WebElement> webElements = hovers.getHover().stream()
                 .peek(hover -> LogUtil.logHover(dependencies.getPosition().incrementAndGet(), hover))
-                .map(hover -> getWebElement(hover.getLocatorId()))
+                .map(hover -> findWebElement(hover.getLocatorId()))
                 .collect(Collectors.toList());
         webElements.forEach(webElement -> {
             actions.moveToElement(webElement);
@@ -242,7 +233,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     private void input(final Input input, final CommandResult result) {
         result.put(INPUT_LOCATOR, input.getLocatorId());
-        WebElement webElement = getWebElement(input.getLocatorId());
+        WebElement webElement = findWebElement(input.getLocatorId());
         highlightElementIfRequired(input.isHighlight(), webElement);
         String injected = inject(input.getValue());
         String value = SeleniumUtil.resolveSendKeysType(injected, webElement, dependencies.getFile());
@@ -297,8 +288,8 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private String getActualValue(final Assert aAssert) {
-        WebElement webElement = getWebElement(aAssert.getLocatorId());
-        BrowserUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
+        WebElement webElement = findWebElement(aAssert.getLocatorId());
+        UiUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
         String value = webElement.getAttribute(aAssert.getAttribute().value());
         return value
                 .replaceAll(SPACE, EMPTY)
@@ -308,7 +299,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     private void dropDown(final DropDown dropDown, final CommandResult result) {
         String locatorId = dropDown.getLocatorId();
         result.put(DROP_DOWN_LOCATOR, locatorId);
-        Select select = getSelectElement(locatorId);
+        Select select = new Select(findWebElement(locatorId));
         OneValue oneValue = dropDown.getOneValue();
         if (oneValue != null) {
             processOneValueFromDropDown(oneValue, select, result);
@@ -361,8 +352,8 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     private void clear(final Clear clear, final CommandResult result) {
         String locatorId = clear.getLocatorId();
         result.put(CLEAR_LOCATOR, locatorId);
-        WebElement element = getWebElement(locatorId);
-        BrowserUtil.waitForElementVisibility(dependencies.getWebDriver(), element);
+        WebElement element = findWebElement(locatorId);
+        UiUtil.waitForElementVisibility(dependencies.getWebDriver(), element);
         element.clear();
         highlightElementIfRequired(clear.isHighlight(), element);
         takeScreenshotAndSaveIfRequired(result);
@@ -400,7 +391,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     private void scrollTo(final ScrollTo scrollTo, final CommandResult result) {
         String locatorId = scrollTo.getLocatorId();
-        WebElement element = getWebElement(locatorId);
+        WebElement element = findWebElement(locatorId);
         result.put(SCROLL_LOCATOR, locatorId);
         takeScreenshotAndSaveIfRequired(result);
         JavascriptUtil.executeJsScript(element, SCROLL_TO_ELEMENT_SCRIPT, dependencies.getWebDriver());
@@ -410,37 +401,13 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     private void compareImages(final ImageComparison imageComparison, final CommandResult result) {
         LogUtil.logImageComparisonInfo(imageComparison);
         ResultUtil.addImageComparisonMetaData(imageComparison, result);
+        File scenarioFile = dependencies.getFile();
         BufferedImage expectedImage = ImageIO
-                .read(FileSearcher.searchFileFromDir(dependencies.getFile(), imageComparison.getExpectedImage()));
-        BufferedImage actualImage = getActualImage(imageComparison, result);
-        processImageComparisonResult(ImageComparator.compare(expectedImage, actualImage), imageComparison, result);
-    }
-
-    @SneakyThrows
-    private BufferedImage getActualImage(final ImageComparison imageComparison, final CommandResult result) {
-        ExtractFromElementAndCompare actualImageInfo = imageComparison.getExtractFromElementAndCompare();
-        if (Objects.nonNull(actualImageInfo)) {
-            WebElement element = getWebElement(actualImageInfo.getLocatorId());
-            String urlToActualImage = element.getAttribute(actualImageInfo.getImageSourceAttributeName());
-            log.info(URL_TO_IMAGE_LOG, urlToActualImage);
-            result.put(URL_TO_ACTUAL_IMAGE, urlToActualImage);
-            return ImageIO.read(new URL(urlToActualImage));
-        }
-        return ImageIO.read(takeScreenshot());
-    }
-
-    @SneakyThrows
-    private void processImageComparisonResult(final ImageComparisonResult comparisonResult,
-                                              final ImageComparison imageComparison,
-                                              final CommandResult result) {
-        ImageComparisonState imageComparisonState = comparisonResult.getImageComparisonState();
-        if (imageComparisonState != ImageComparisonState.MATCH) {
-            File actualImage = ImageComparisonUtil
-                    .saveComparisonResult(comparisonResult, imageComparison, dependencies.getFile().getParentFile());
-            putScreenshotToResult(result, actualImage);
-            result.put(ADDITIONAL_INFO, IMAGE_ATTACHED_TO_STEP);
-            throw new ImageComparisonException(format(IMAGES_DONT_MATCH, imageComparisonState.name()));
-        }
+                .read(FileSearcher.searchFileFromDir(scenarioFile, imageComparison.getExpectedImage()));
+        BufferedImage actualImage = UiUtil.getActualImage(dependencies.getWebDriver(), imageComparison, result);
+        ImageComparisonResult comparisonResult = ImageComparator.compare(expectedImage, actualImage);
+        ImageComparisonUtil
+                .processImageComparisonResult(comparisonResult, imageComparison, scenarioFile.getParentFile(), result);
     }
 
     private void repeat(final RepeatUiCommand repeat, final CommandResult result) {

@@ -8,6 +8,6 @@ public class InitialStructureGeneratorRunner implements Runner {
 
     @Override
     public void run(final String[] args) {
-        new InitialStructureGenerator().generate(ArgumentsUtils.getPathToInitialStructureGeneration(args[0]));
+        InitialStructureGenerator.generate(ArgumentsUtils.getPathToInitialStructureGeneration(args[0]));
     }
 }

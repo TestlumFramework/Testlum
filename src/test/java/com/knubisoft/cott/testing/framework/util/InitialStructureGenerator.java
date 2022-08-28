@@ -1,6 +1,7 @@
 package com.knubisoft.cott.testing.framework.util;
 
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -20,6 +21,7 @@ import static com.knubisoft.cott.testing.framework.configuration.TestResourceSet
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.SHELL_SCRIPT_EXAMPLE_FILENAME;
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.TEST_SAMPLE_PATH;
 
+@UtilityClass
 public class InitialStructureGenerator {
 
     private static final Map<String, String> FOR_COPY_FILENAMES_TO_FOLDERS;
@@ -49,7 +51,7 @@ public class InitialStructureGenerator {
 
     @SneakyThrows
     private void copyFileToFolder(final String fileName, final String path, final String folder) {
-        try (InputStream file = this.getClass().getClassLoader()
+        try (InputStream file = InitialStructureGenerator.class.getClassLoader()
                 .getResourceAsStream(TEST_SAMPLE_PATH + fileName)) {
             if (file != null) {
                 File target = Paths.get(path, folder, fileName).toFile();

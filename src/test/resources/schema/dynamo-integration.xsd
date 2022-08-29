@@ -14,15 +14,17 @@
     </x:complexType>
 
     <x:complexType name="dynamo">
-        <x:sequence>
-            <x:element name="region" type="tns:nonEmptyString"/>
-            <x:element name="endpoint" type="tns:nonEmptyString"/>
-            <x:element name="accessKeyId" type="tns:nonEmptyString"/>
-            <x:element name="secretAccessKey" type="tns:nonEmptyString"/>
-            <x:element name="sessionToken" type="tns:nonEmptyString"/>
-        </x:sequence>
-        <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:complexContent>
+            <x:extension base="tns:integration">
+                <x:sequence>
+                    <x:element name="region" type="tns:nonEmptyString"/>
+                    <x:element name="endpoint" type="tns:nonEmptyString"/>
+                    <x:element name="accessKeyId" type="tns:nonEmptyString"/>
+                    <x:element name="secretAccessKey" type="tns:nonEmptyString"/>
+                    <x:element name="sessionToken" type="tns:nonEmptyString"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
     </x:complexType>
 </x:schema>
 

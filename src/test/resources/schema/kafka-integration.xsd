@@ -14,16 +14,18 @@
     </x:complexType>
 
     <x:complexType name="kafka">
-        <x:sequence>
-            <x:element name="bootstrapAddress" type="tns:nonEmptyString"/>
-            <x:element name="autoOffsetReset" type="tns:nonEmptyString"/>
-            <x:element name="maxPollRecords" type="x:int"/>
-            <x:element name="maxPollIntervalMs" type="x:int"/>
-            <x:element name="clientId" type="tns:nonEmptyString"/>
-            <x:element name="groupId" type="tns:nonEmptyString"/>
-        </x:sequence>
-        <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:complexContent>
+            <x:extension base="tns:integration">
+                <x:sequence>
+                    <x:element name="bootstrapAddress" type="tns:nonEmptyString"/>
+                    <x:element name="autoOffsetReset" type="tns:nonEmptyString"/>
+                    <x:element name="maxPollRecords" type="x:int"/>
+                    <x:element name="maxPollIntervalMs" type="x:int"/>
+                    <x:element name="clientId" type="tns:nonEmptyString"/>
+                    <x:element name="groupId" type="tns:nonEmptyString"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
     </x:complexType>
 
 </x:schema>

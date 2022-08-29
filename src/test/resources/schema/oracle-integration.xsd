@@ -14,15 +14,17 @@
     </x:complexType>
 
     <x:complexType name="oracle">
-        <x:sequence>
-            <x:element name="jdbcDriver" type="tns:nonEmptyString"/>
-            <x:element name="username" type="tns:nonEmptyString"/>
-            <x:element name="password" type="tns:nonEmptyString"/>
-            <x:element name="connectionUrl" type="tns:nonEmptyString"/>
-            <x:element name="hikari" type="tns:hikari"/>
-        </x:sequence>
-        <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:complexContent>
+            <x:extension base="tns:integration">
+                <x:sequence>
+                    <x:element name="jdbcDriver" type="tns:nonEmptyString"/>
+                    <x:element name="username" type="tns:nonEmptyString"/>
+                    <x:element name="password" type="tns:nonEmptyString"/>
+                    <x:element name="connectionUrl" type="tns:nonEmptyString"/>
+                    <x:element name="hikari" type="tns:hikari"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
     </x:complexType>
 </x:schema>
 

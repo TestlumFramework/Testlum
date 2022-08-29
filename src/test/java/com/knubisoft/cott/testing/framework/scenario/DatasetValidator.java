@@ -36,6 +36,7 @@ public class DatasetValidator {
                 break;
             case DYNAMO:
                 checkDynamoDbDatasetExtension(datasetFileName);
+                break;
             default:
                 throw new DefaultFrameworkException(DB_NOT_SUPPORTED, name);
         }

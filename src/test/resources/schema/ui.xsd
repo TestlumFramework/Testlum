@@ -86,7 +86,7 @@
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:attribute name="command" type="tns:navigateCommand" use="required"/>
-                <x:attribute name="path" type="tns:slashStartedString"/>
+                <x:attribute name="path" type="tns:slashStartedOrUrlString"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -99,10 +99,10 @@
         </x:restriction>
     </x:simpleType>
 
-    <x:simpleType name="slashStartedString">
+    <x:simpleType name="slashStartedOrUrlString">
         <x:restriction base="x:string">
             <x:minLength value="2"/>
-            <x:pattern value="/.*"/>
+            <x:pattern value="(/[^/].+)|(https?://.+)"/>
         </x:restriction>
     </x:simpleType>
 

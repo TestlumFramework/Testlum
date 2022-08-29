@@ -9,6 +9,8 @@ import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.Overview;
 import com.knubisoft.cott.testing.model.scenario.OverviewPart;
 import com.knubisoft.cott.testing.model.scenario.Ses;
+import com.knubisoft.cott.testing.model.scenario.Smtp;
+import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.Ui;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -17,6 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.client.HttpClientErrorException;
 import software.amazon.awssdk.http.HttpStatusCode;
 
@@ -32,16 +35,19 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.CLEAR_COO
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMAND_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMENT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_FORMAT;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.INVALID_CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.INVALID_SCENARIO_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.LOCAL_STORAGE_KEY;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.LOCATOR_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.MESSAGE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.NAME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.NEW_LOG_LINE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
@@ -50,7 +56,11 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_BY
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_DIRECTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SERVER_ERROR_RESPONSE_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_HOST_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_PORT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SOURCE_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUBJECT_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_COMMAND_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.TESTS_RUN_FAILED;
@@ -255,5 +265,21 @@ public class LogUtil {
         log.info(COMMAND_LOG, position, action.getClass().getSimpleName());
         log.info(COMMENT_LOG, action.getComment());
         log.info(LOCATOR_LOG, action.getLocatorId());
+    }
+
+    public void logSmtpInfo(final Smtp smtp, final JavaMailSenderImpl javaMailSender) {
+        log.info(ALIAS_LOG, smtp.getAlias());
+        log.info(SMTP_HOST_LOG, javaMailSender.getHost());
+        log.info(SMTP_PORT_LOG, javaMailSender.getPort());
+        log.info(SOURCE_LOG, javaMailSender.getUsername());
+        log.info(DESTINATION_LOG, smtp.getRecipientEmail());
+        log.info(SUBJECT_LOG, smtp.getSubject());
+        log.info(CONTENT_LOG, smtp.getText());
+    }
+
+    public void logTwilioInfo(final Twilio twilio, final String twilioPhoneNumber) {
+        log.info(FROM_PHONE_NUMBER_LOG, twilioPhoneNumber);
+        log.info(TO_PHONE_NUMBER_LOG, twilio.getDestinationPhoneNumber());
+        log.info(MESSAGE_LOG, twilio.getMessage());
     }
 }

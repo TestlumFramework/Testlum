@@ -1,0 +1,44 @@
+<scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://www.knubisoft.com/cott/testing/model/scenario"
+          xsi:schemaLocation="http://www.knubisoft.com/cott/testing/model/scenario scenario.xsd"
+          onlyThis="true">
+
+    <overview>
+        <description>Simple Test Example</description>
+        <name>Name</name>
+    </overview>
+
+    <tags>
+        <tag>someTag</tag>
+    </tags>
+
+    <shell comment="Example of a 'shell' command" file="expected_1.json">
+        <shellFile>/shell-1.sh</shellFile>
+    </shell>
+
+    <wait comment="Example of a 'wait' command"
+          time="1" unit="seconds"/>
+
+    <ui comment="Example of ui commands">
+        <navigate comment="Example of a 'navigate' to some page"
+                  command="to" path="https://yahoo.com"/>
+
+        <wait comment="Example of a 'wait' command"
+              time="1" unit="seconds"/>
+
+        <scroll comment="Example of a 'scroll' page down to 42 percent"
+                direction="down" value="42" measure="percent"/>
+
+        <wait comment="Example of a 'wait' command"
+              time="1" unit="seconds"/>
+
+        <navigate comment="Example of a 'navigate' back to a previous page"
+                  command="back"/>
+
+        <javascript comment="Example of a JS script execution" file="greating.js"/>
+
+        <wait comment="Example of a 'wait' command"
+              time="1" unit="seconds"/>
+    </ui>
+
+</scenario>

@@ -2,19 +2,20 @@ package com.knubisoft.cott.testing.framework.interpreter;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.knubisoft.cott.testing.framework.db.StorageOperation;
+import com.knubisoft.cott.testing.framework.db.source.ListSource;
+import com.knubisoft.cott.testing.framework.db.sql.MySqlOperation;
+import com.knubisoft.cott.testing.framework.db.sql.PostgresSqlOperation;
+import com.knubisoft.cott.testing.framework.exception.IncorrectQueryForVarException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
-import com.knubisoft.cott.testing.framework.util.LogUtil;
-import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.model.scenario.PostgresResult;
-import com.knubisoft.cott.testing.model.scenario.Var;
-import com.knubisoft.cott.testing.framework.db.StorageOperation;
-import com.knubisoft.cott.testing.framework.db.source.ListSource;
-import com.knubisoft.cott.testing.framework.db.sql.PostgresSqlOperation;
-import com.knubisoft.cott.testing.framework.exception.IncorrectQueryForVarException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioContext;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
+import com.knubisoft.cott.testing.framework.util.ResultUtil;
+import com.knubisoft.cott.testing.model.scenario.DbResult;
+import com.knubisoft.cott.testing.model.scenario.Var;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -22,11 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.util.LinkedCaseInsensitiveMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
@@ -43,8 +46,13 @@ import static java.lang.String.format;
 @InterpreterForClass(Var.class)
 public class VariableInterpreter extends AbstractInterpreter<Var> {
     private static final String COUNT_ROWS_QUERY = "SELECT count(*) from (%s)result";
+    private StorageOperation sqlOperation;
+
     @Autowired(required = false)
     private PostgresSqlOperation postgresSqlOperation;
+
+    @Autowired(required = false)
+    private MySqlOperation mySqlOperation;
 
     public VariableInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -78,10 +86,15 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
             WebDriver webDriver = dependencies.getWebDriver();
             value = webDriver.findElement(By.xpath(o.getXpath())).getText();
             ResultUtil.addVariableMetaData(XPATH, o.getName(), o.getXpath(), value, result);
-        } else if (o.getPostgresResult() != null) {
-            value = getActualPostgresResult(o.getPostgresResult(), result);
+        } else if (o.getDbResult() != null) {
+            if (o.getName().equals("MYSQL")) {
+                sqlOperation = mySqlOperation;
+            } else if (o.getName().equals("POSTGRES")) {
+                sqlOperation = postgresSqlOperation;
+            }
+            value = getActualPostgresResult(o.getDbResult(), result);
             ResultUtil.addVariableMetaData(POSTGRES_QUERY,
-                    o.getName(), o.getPostgresResult().getQuery(), value, result);
+                    o.getName(), o.getDbResult().getQuery(), value, result);
         } else if (o.getExpression() != null) {
             value = getExpressionResult(o.getExpression());
             ResultUtil.addVariableMetaData(EXPRESSION, o.getName(), o.getExpression(), value, result);
@@ -99,12 +112,15 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         return Objects.requireNonNull(exp.getValue()).toString();
     }
 
-    private String getActualPostgresResult(final PostgresResult postgresResult, final CommandResult result) {
-        List<String> query = new ArrayList<>(Arrays.asList(postgresResult.getQuery()));
+    private String getActualPostgresResult(final DbResult postgresResult, final CommandResult result) {
+        String alias = postgresResult.getAlias();
+        List<String> query = new ArrayList<>(Collections.singletonList(postgresResult.getQuery()));
         result.put("query", query);
-        verifyQueryResult(postgresResult.getQuery(), postgresResult.getDatabaseName());
+        LogUtil.logAllQueries(query, alias);
+        verifyQueryResult(postgresResult.getQuery(), postgresResult.getAlias());
+        ResultUtil.addDatabaseMetaData(alias, query, result);
         StorageOperation.StorageOperationResult applyPostgres =
-                postgresSqlOperation.apply(new ListSource(query), postgresResult.getDatabaseName());
+                sqlOperation.apply(new ListSource(query), inject(alias));
         String[] queryParts = getQuery(applyPostgres).split(SPACE);
         String keyOfQueryResult = queryParts[1];
         return getContent(applyPostgres, keyOfQueryResult);
@@ -127,17 +143,24 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     private int applyQueryAndGetResult(final String newQuery, final String databaseName) {
         List<String> newQueryInList = new ArrayList<>(Arrays.asList(newQuery));
         StorageOperation.StorageOperationResult applyPostgres =
-                postgresSqlOperation.apply(new ListSource(newQueryInList), databaseName);
-        return Integer.parseInt(getContent(applyPostgres, "count"));
+                sqlOperation.apply(new ListSource(newQueryInList), databaseName);
+        String count;
+        if (sqlOperation instanceof MySqlOperation) {
+            count = "count(*)";
+        } else {
+            count = "count";
+        }
+        return Integer.parseInt(getContent(applyPostgres, count));
     }
 
     private String getContent(final StorageOperation.StorageOperationResult applyPostgres,
                               final String key) {
         ArrayList<StorageOperation.QueryResult> list =
                 (ArrayList<StorageOperation.QueryResult>) applyPostgres.getRaw();
-        ArrayList<LinkedHashMap<String, String>> content =
-                (ArrayList<LinkedHashMap<String, String>>) list.get(0).getContent();
-        return content.get(0).get(key);
+        ArrayList<LinkedCaseInsensitiveMap<String>> content =
+                (ArrayList<LinkedCaseInsensitiveMap<String>>) list.get(0).getContent();
+        Map<String, String> stringStringMap = content.get(0);
+        return String.valueOf(stringStringMap.get(key));
     }
     //CHECKSTYLE:ON
 }

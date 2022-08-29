@@ -275,10 +275,10 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void checkDatabaseConnection(final DbResult postgresResult) {
         for (Postgres postgres
                 : GlobalTestConfigurationProvider.getIntegrations().getPostgresIntegration().getPostgres()) {
-            if ((postgres.getAlias().equals(postgresResult.getDatabaseName())
+            if ((postgres.getAlias().equals(postgresResult.getAlias())
                     && !postgres.isEnabled())) {
                 throw new DefaultFrameworkException(format(FAILED_CONNECTION_TO_DATABASE,
-                        postgresResult.getDatabaseName()));
+                        postgresResult.getAlias()));
             }
         }
     }

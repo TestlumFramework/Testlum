@@ -20,6 +20,7 @@ import java.util.Map;
 @Conditional({OnPostgresEnabledCondition.class})
 @Component
 public class PostgresSqlOperation implements StorageOperation {
+
     private final Map<String, AbstractSqlExecutor> postgresExecutor;
 
     public PostgresSqlOperation(@Autowired(required = false) @Qualifier("postgresDataSource")
@@ -33,6 +34,7 @@ public class PostgresSqlOperation implements StorageOperation {
         List<String> queriesPostgres = source.getQueries();
         List<QueryResult<Object>> postgresAppliedRecords = postgresExecutor.get(databaseName)
                 .executeQueries(queriesPostgres);
+        //todo: check if it is correct
         return new StorageOperationResult(postgresAppliedRecords);
     }
 

@@ -5,7 +5,7 @@ import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.ImageComparisonState;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
-import com.knubisoft.cott.testing.model.scenario.ImageComparison;
+import com.knubisoft.cott.testing.model.scenario.Image;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FilenameUtils;
@@ -25,12 +25,12 @@ public class ImageComparisonUtil {
 
     @SneakyThrows
     public void processImageComparisonResult(final ImageComparisonResult comparisonResult,
-                                             final ImageComparison imageComparison,
+                                             final Image image,
                                              final File directoryToSave,
                                              final CommandResult result) {
         ImageComparisonState imageComparisonState = comparisonResult.getImageComparisonState();
         if (imageComparisonState != ImageComparisonState.MATCH) {
-            File actualImage = saveActualImage(comparisonResult, imageComparison, directoryToSave);
+            File actualImage = saveActualImage(comparisonResult, image, directoryToSave);
             UiUtil.putScreenshotToResult(result, actualImage);
             result.put(ADDITIONAL_INFO, IMAGE_ATTACHED_TO_STEP);
             throw new ImageComparisonException(format(IMAGES_DONT_MATCH, imageComparisonState.name()));
@@ -38,12 +38,12 @@ public class ImageComparisonUtil {
     }
 
     private File saveActualImage(final ImageComparisonResult comparisonResult,
-                                     final ImageComparison imageComparison,
+                                     final Image image,
                                      final File directoryToSave) throws IOException {
-        String expectedImageFullName = imageComparison.getExpectedImage();
+        String expectedImageFullName = image.getFile();
         String imageExtension = FilenameUtils.getExtension(expectedImageFullName);
         File fileToSave = getFileToSave(directoryToSave, expectedImageFullName);
-        if (imageComparison.isHighlightDifferences()) {
+        if (image.isHighlightDifference()) {
             ImageIO.write(comparisonResult.getResult(), imageExtension, fileToSave);
         } else {
             ImageIO.write(comparisonResult.getActual(), imageExtension, fileToSave);

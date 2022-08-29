@@ -4,8 +4,8 @@ import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfiguratio
 import com.knubisoft.cott.testing.framework.locator.GlobalLocators;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.pages.Locator;
-import com.knubisoft.cott.testing.model.scenario.ExtractFromElementAndCompare;
-import com.knubisoft.cott.testing.model.scenario.ImageComparison;
+import com.knubisoft.cott.testing.model.scenario.CompareWith;
+import com.knubisoft.cott.testing.model.scenario.Image;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -84,12 +84,12 @@ public class UiUtil {
 
     @SneakyThrows
     public BufferedImage getActualImage(final WebDriver webDriver,
-                                               final ImageComparison imageComparison,
+                                               final Image image,
                                                final CommandResult result) {
-        ExtractFromElementAndCompare actualImageInfo = imageComparison.getExtractFromElementAndCompare();
-        if (Objects.nonNull(actualImageInfo)) {
-            WebElement webElement = findWebElement(webDriver, actualImageInfo.getLocatorId());
-            return UiUtil.extractImageFromElement(webElement, actualImageInfo.getImageSourceAttributeName(), result);
+        CompareWith compareWith = image.getCompareWith();
+        if (Objects.nonNull(compareWith)) {
+            WebElement webElement = findWebElement(webDriver, compareWith.getLocator());
+            return UiUtil.extractImageFromElement(webElement, compareWith.getAttribute(), result);
         }
         return ImageIO.read(takeScreenshot(webDriver));
     }

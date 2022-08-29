@@ -23,7 +23,7 @@ import com.knubisoft.cott.testing.model.scenario.ClickMethod;
 import com.knubisoft.cott.testing.model.scenario.CloseSecondTab;
 import com.knubisoft.cott.testing.model.scenario.DropDown;
 import com.knubisoft.cott.testing.model.scenario.Hovers;
-import com.knubisoft.cott.testing.model.scenario.ImageComparison;
+import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.Input;
 import com.knubisoft.cott.testing.model.scenario.Javascript;
 import com.knubisoft.cott.testing.model.scenario.Navigate;
@@ -129,7 +129,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         commands.put(ui -> ui instanceof Scroll, (ui, result) -> scroll((Scroll) ui, result));
         commands.put(ui -> ui instanceof ScrollTo, (ui, result) -> scrollTo((ScrollTo) ui, result));
         commands.put(ui -> ui instanceof Hovers, (ui, result) -> hover((Hovers) ui, result));
-        commands.put(ui -> ui instanceof ImageComparison, (ui, result) -> compareImages((ImageComparison) ui, result));
+        commands.put(ui -> ui instanceof Image, (ui, result) -> compareImages((Image) ui, result));
         this.uiCommands = Collections.unmodifiableMap(commands);
     }
 
@@ -398,16 +398,16 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     @SneakyThrows
-    private void compareImages(final ImageComparison imageComparison, final CommandResult result) {
-        LogUtil.logImageComparisonInfo(imageComparison);
-        ResultUtil.addImageComparisonMetaData(imageComparison, result);
+    private void compareImages(final Image image, final CommandResult result) {
+        LogUtil.logImageComparisonInfo(image);
+        ResultUtil.addImageComparisonMetaData(image, result);
         File scenarioFile = dependencies.getFile();
         BufferedImage expectedImage = ImageIO
-                .read(FileSearcher.searchFileFromDir(scenarioFile, imageComparison.getExpectedImage()));
-        BufferedImage actualImage = UiUtil.getActualImage(dependencies.getWebDriver(), imageComparison, result);
+                .read(FileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
+        BufferedImage actualImage = UiUtil.getActualImage(dependencies.getWebDriver(), image, result);
         ImageComparisonResult comparisonResult = ImageComparator.compare(expectedImage, actualImage);
         ImageComparisonUtil
-                .processImageComparisonResult(comparisonResult, imageComparison, scenarioFile.getParentFile(), result);
+                .processImageComparisonResult(comparisonResult, image, scenarioFile.getParentFile(), result);
     }
 
     private void repeat(final RepeatUiCommand repeat, final CommandResult result) {

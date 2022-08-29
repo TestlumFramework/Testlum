@@ -24,7 +24,7 @@
                     <x:element name="closeSecondTab" type="tns:closeSecondTab"/>
                     <x:element name="scroll" type="tns:scroll"/>
                     <x:element name="scrollTo" type="tns:scrollTo"/>
-                    <x:element name="imageComparison" type="tns:imageComparison"/>
+                    <x:element name="image" type="tns:image"/>
                     <x:element name="repeat" type="tns:repeatUiCommand"/>
                 </x:choice>
                 <x:attribute name="clearCookiesAfterExecution" type="x:boolean" default="false"/>
@@ -213,22 +213,22 @@
     </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="imageComparison">
+    <x:complexType name="image">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:choice>
-                    <x:element name="takeScreenshotAndCompare"/>
-                    <x:element name="extractFromElementAndCompare" type="tns:extractFromElementAndCompare"/>
+                    <x:element name="compareWithFullScreen"/>
+                    <x:element name="compareWith" type="tns:compareWith"/>
                 </x:choice>
-                <x:attribute name="expectedImage" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="highlightDifferences" type="x:boolean" default="false"/>
+                <x:attribute name="file" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="highlightDifference" type="x:boolean" default="false"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="extractFromElementAndCompare">
-        <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
-        <x:attribute name="imageSourceAttributeName" type="tns:nonEmptyString" default="src"/>
+    <x:complexType name="compareWith">
+        <x:attribute name="locator" type="tns:scenarioLocator" use="required"/>
+        <x:attribute name="attribute" type="tns:nonEmptyString" default="src"/>
     </x:complexType>
 
     <x:complexType name="repeatUiCommand">
@@ -246,7 +246,7 @@
                     <x:element name="closeSecondTab" type="tns:closeSecondTab"/>
                     <x:element name="scroll" type="tns:scroll"/>
                     <x:element name="scrollTo" type="tns:scrollTo"/>
-                    <x:element name="imageComparison" type="tns:imageComparison"/>
+                    <x:element name="image" type="tns:image"/>
                     <x:element name="repeat" type="tns:repeatUiCommand"/>
                 </x:choice>
                 <x:attribute name="times" type="x:positiveInteger" use="required"/>

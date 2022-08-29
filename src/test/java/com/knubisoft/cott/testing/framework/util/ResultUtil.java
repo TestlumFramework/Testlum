@@ -4,12 +4,12 @@ import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
+import com.knubisoft.cott.testing.model.scenario.CompareWith;
 import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequest;
-import com.knubisoft.cott.testing.model.scenario.ExtractFromElementAndCompare;
 import com.knubisoft.cott.testing.model.scenario.Header;
 import com.knubisoft.cott.testing.model.scenario.Hovers;
 import com.knubisoft.cott.testing.model.scenario.HttpInfo;
-import com.knubisoft.cott.testing.model.scenario.ImageComparison;
+import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.KafkaHeaders;
 import com.knubisoft.cott.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.ReceiveRmqMessage;
@@ -134,7 +134,7 @@ public class ResultUtil {
     private static final String TO = "To";
     private static final String MESSAGE = "Message";
     private static final String IMAGE_FOR_COMPARISON = "Image for comparison";
-    private static final String HIGHLIGHT_DIFFERENCES = "Highlight differences";
+    private static final String HIGHLIGHT_DIFFERENCE = "Highlight difference";
     private static final String IMAGE_COMPARISON_TYPE = "Image comparison type";
     private static final String IMAGE_LOCATOR = "Locator to element with image";
     private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
@@ -419,14 +419,14 @@ public class ResultUtil {
         FileUtils.write(executionResultFile, result, StandardCharsets.UTF_8);
     }
 
-    public static void addImageComparisonMetaData(final ImageComparison imageComparison, final CommandResult result) {
-        result.put(IMAGE_FOR_COMPARISON, imageComparison.getExpectedImage());
-        result.put(HIGHLIGHT_DIFFERENCES, imageComparison.isHighlightDifferences());
-        ExtractFromElementAndCompare actualImageInfo = imageComparison.getExtractFromElementAndCompare();
-        if (Objects.nonNull(actualImageInfo)) {
+    public static void addImageComparisonMetaData(final Image image, final CommandResult result) {
+        result.put(IMAGE_FOR_COMPARISON, image.getFile());
+        result.put(HIGHLIGHT_DIFFERENCE, image.isHighlightDifference());
+        CompareWith compareWith = image.getCompareWith();
+        if (Objects.nonNull(compareWith)) {
             result.put(IMAGE_COMPARISON_TYPE, EXTRACT_THEN_COMPARE);
-            result.put(IMAGE_LOCATOR, actualImageInfo.getLocatorId());
-            result.put(IMAGE_SOURCE_ATT, actualImageInfo.getImageSourceAttributeName());
+            result.put(IMAGE_LOCATOR, compareWith.getLocator());
+            result.put(IMAGE_SOURCE_ATT, compareWith.getAttribute());
         } else {
             result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
         }

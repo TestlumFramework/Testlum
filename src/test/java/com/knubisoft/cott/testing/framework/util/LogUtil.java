@@ -6,8 +6,8 @@ import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
-import com.knubisoft.cott.testing.model.scenario.ExtractFromElementAndCompare;
-import com.knubisoft.cott.testing.model.scenario.ImageComparison;
+import com.knubisoft.cott.testing.model.scenario.CompareWith;
+import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.Overview;
 import com.knubisoft.cott.testing.model.scenario.OverviewPart;
 import com.knubisoft.cott.testing.model.scenario.Ses;
@@ -46,7 +46,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCES_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.IMAGE_COMPARISON_TYPE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.IMAGE_FOR_COMPARISON_LOG;
@@ -292,14 +292,14 @@ public class LogUtil {
         log.info(MESSAGE_LOG, twilio.getMessage());
     }
 
-    public static void logImageComparisonInfo(final ImageComparison imageComparison) {
-        log.info(IMAGE_FOR_COMPARISON_LOG, imageComparison.getExpectedImage());
-        log.info(HIGHLIGHT_DIFFERENCES_LOG, imageComparison.isHighlightDifferences());
-        ExtractFromElementAndCompare actualImageInfo = imageComparison.getExtractFromElementAndCompare();
-        if (Objects.nonNull(actualImageInfo)) {
+    public static void logImageComparisonInfo(final Image image) {
+        log.info(IMAGE_FOR_COMPARISON_LOG, image.getFile());
+        log.info(HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
+        CompareWith compareWith = image.getCompareWith();
+        if (Objects.nonNull(compareWith)) {
             log.info(IMAGE_COMPARISON_TYPE_LOG, EXTRACT_THEN_COMPARE);
-            log.info(LOCATOR_LOG, actualImageInfo.getLocatorId());
-            log.info(IMAGE_SOURCE_ATT_LOG, actualImageInfo.getImageSourceAttributeName());
+            log.info(LOCATOR_LOG, compareWith.getLocator());
+            log.info(IMAGE_SOURCE_ATT_LOG, compareWith.getAttribute());
         } else {
             log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_COMPARE);
         }

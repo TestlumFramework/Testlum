@@ -4,10 +4,12 @@ import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
+import com.knubisoft.cott.testing.model.scenario.CompareWith;
 import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequest;
 import com.knubisoft.cott.testing.model.scenario.Header;
 import com.knubisoft.cott.testing.model.scenario.Hovers;
 import com.knubisoft.cott.testing.model.scenario.HttpInfo;
+import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.KafkaHeaders;
 import com.knubisoft.cott.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.ReceiveRmqMessage;
@@ -32,9 +34,12 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static java.lang.String.format;
 
 @UtilityClass
@@ -77,6 +82,9 @@ public class ResultUtil {
     public static final String NUMBER_OF_REPETITIONS = "Number of repetitions";
     public static final String CLEAR_COOKIES_AFTER_EXECUTION = "Clear cookies after execution";
     public static final String CLEAR_LOCAL_STORAGE_BY_KEY = "Clear local storage by key";
+    public static final String URL_TO_ACTUAL_IMAGE = "URL to actual image";
+    public static final String ADDITIONAL_INFO = "Additional info";
+    public static final String IMAGE_ATTACHED_TO_STEP = "Actual image attached to report step";
     private static final String SCROLL_DIRECTION = "Scroll direction";
     private static final String SCROLL_MEASURE = "Scroll measure";
     private static final String DESTINATION = "Destination";
@@ -125,6 +133,11 @@ public class ResultUtil {
     private static final String FROM = "From";
     private static final String TO = "To";
     private static final String MESSAGE = "Message";
+    private static final String IMAGE_FOR_COMPARISON = "Image for comparison";
+    private static final String HIGHLIGHT_DIFFERENCE = "Highlight difference";
+    private static final String IMAGE_COMPARISON_TYPE = "Image comparison type";
+    private static final String IMAGE_LOCATOR = "Locator to element with image";
+    private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
 
     public CommandResult createCommandResultForUiSubCommand(final int number, final String name, final String comment) {
         CommandResult subCommandResult = createNewCommandResultInstance(number);
@@ -404,5 +417,18 @@ public class ResultUtil {
         String result = CollectionUtils.isNotEmpty(testExecutionSummary.getFailures())
                 || testExecutionSummary.getTestsAbortedCount() > 0 ? FAILED : SUCCESSFULLY;
         FileUtils.write(executionResultFile, result, StandardCharsets.UTF_8);
+    }
+
+    public static void addImageComparisonMetaData(final Image image, final CommandResult result) {
+        result.put(IMAGE_FOR_COMPARISON, image.getFile());
+        result.put(HIGHLIGHT_DIFFERENCE, image.isHighlightDifference());
+        CompareWith compareWith = image.getCompareWith();
+        if (Objects.nonNull(compareWith)) {
+            result.put(IMAGE_COMPARISON_TYPE, EXTRACT_THEN_COMPARE);
+            result.put(IMAGE_LOCATOR, compareWith.getLocator());
+            result.put(IMAGE_SOURCE_ATT, compareWith.getAttribute());
+        } else {
+            result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
+        }
     }
 }

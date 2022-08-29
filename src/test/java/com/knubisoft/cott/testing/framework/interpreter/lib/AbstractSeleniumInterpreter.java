@@ -1,26 +1,17 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib;
 
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
-import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.ElementHighlighter;
-import com.knubisoft.cott.testing.framework.util.ImageCompressor;
-import com.knubisoft.cott.testing.model.pages.Locator;
-import lombok.SneakyThrows;
+import com.knubisoft.cott.testing.framework.util.UiUtil;
+import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.Select;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalTime;
-import java.util.Base64;
-import java.util.Objects;
 
 import static java.lang.String.format;
 
@@ -30,24 +21,18 @@ public abstract class AbstractSeleniumInterpreter<T extends AbstractCommand> ext
         super(dependencies);
     }
 
-    protected void takeScreenshotIfRequired(final CommandResult result) {
+    protected WebElement findWebElement(final String locatorId) {
+        return UiUtil.findWebElement(dependencies.getWebDriver(), locatorId);
+    }
+
+    protected void takeScreenshotAndSaveIfRequired(final CommandResult result) {
         if (dependencies.getGlobalTestConfiguration().getUi().getBrowserSettings()
                 .getTakeScreenshotOfEachUiCommand().isEnable()) {
-            File screenshot = ((TakesScreenshot) dependencies.getWebDriver()).getScreenshotAs(OutputType.FILE);
+            File screenshot = UiUtil.takeScreenshot(dependencies.getWebDriver());
             File screenshotsFolder = new File(dependencies.getFile().getParent()
                     + TestResourceSettings.SCREENSHOT_FOLDER);
             tryToCopyScreenshotFileToFolder(screenshot, screenshotsFolder);
-            putScreenshotToResult(result, screenshot);
-        }
-    }
-
-    @SneakyThrows
-    private void putScreenshotToResult(final CommandResult result, final File screenshot) {
-        final MultipartFile image = ImageCompressor.compress(screenshot);
-        if (Objects.nonNull(image)) {
-            byte[] screenshotContent = FileUtils.readFileToByteArray(screenshot);
-            String encodedScreenshot = Base64.getEncoder().encodeToString(screenshotContent);
-            result.setBase64Screenshot(encodedScreenshot);
+            UiUtil.putScreenshotToResult(result, screenshot);
         }
     }
 
@@ -63,16 +48,6 @@ public abstract class AbstractSeleniumInterpreter<T extends AbstractCommand> ext
         if (isHighlight == null || isHighlight) {
             ElementHighlighter.highlight(element, dependencies.getWebDriver());
         }
-    }
-
-    protected WebElement getWebElement(final String locatorId) {
-        Locator locator = dependencies.getGlobalLocators().getLocator(locatorId);
-        WebDriver webDriver = dependencies.getWebDriver();
-        return dependencies.getWebElementFinder().find(locator, webDriver);
-    }
-
-    protected Select getSelectElement(final String locatorId) {
-        return new Select(getWebElement(locatorId));
     }
 
     private void copyScreenshotFileToFolder(final File screenshot, final File screenshotsFolder) throws IOException {

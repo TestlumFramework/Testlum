@@ -1,9 +1,7 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.cott.testing.framework.locator.GlobalLocators;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioContext;
-import com.knubisoft.cott.testing.framework.util.WebElementFinder;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,8 +24,6 @@ public class InterpreterDependencies {
     private final ScenarioContext scenarioContext;
     private final AtomicInteger position;
     private WebDriver webDriver;
-    private WebElementFinder webElementFinder;
-    private GlobalLocators globalLocators;
 
     private Authorization authorization;
 
@@ -41,8 +37,6 @@ public class InterpreterDependencies {
         this.file = file;
         this.scenarioContext = scenarioContext;
         this.position = position;
-        this.webElementFinder = new WebElementFinder();
-        this.globalLocators = GlobalLocators.getInstance();
     }
 
     public InterpreterDependencies(final ApplicationContext context,

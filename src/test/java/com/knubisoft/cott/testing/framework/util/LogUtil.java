@@ -6,6 +6,8 @@ import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
+import com.knubisoft.cott.testing.model.scenario.CompareWith;
+import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.Overview;
 import com.knubisoft.cott.testing.model.scenario.OverviewPart;
 import com.knubisoft.cott.testing.model.scenario.Ses;
@@ -26,6 +28,7 @@ import software.amazon.awssdk.http.HttpStatusCode;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
@@ -41,8 +44,13 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATI
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.IMAGE_COMPARISON_TYPE_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.IMAGE_FOR_COMPARISON_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.IMAGE_SOURCE_ATT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.INVALID_CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.INVALID_SCENARIO_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.LOCAL_STORAGE_KEY;
@@ -60,6 +68,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_HOST
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_PORT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SOURCE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUBJECT_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_COMMAND_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TABLE_FORMAT;
@@ -281,5 +290,18 @@ public class LogUtil {
         log.info(FROM_PHONE_NUMBER_LOG, twilioPhoneNumber);
         log.info(TO_PHONE_NUMBER_LOG, twilio.getDestinationPhoneNumber());
         log.info(MESSAGE_LOG, twilio.getMessage());
+    }
+
+    public static void logImageComparisonInfo(final Image image) {
+        log.info(IMAGE_FOR_COMPARISON_LOG, image.getFile());
+        log.info(HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
+        CompareWith compareWith = image.getCompareWith();
+        if (Objects.nonNull(compareWith)) {
+            log.info(IMAGE_COMPARISON_TYPE_LOG, EXTRACT_THEN_COMPARE);
+            log.info(LOCATOR_LOG, compareWith.getLocator());
+            log.info(IMAGE_SOURCE_ATT_LOG, compareWith.getAttribute());
+        } else {
+            log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_COMPARE);
+        }
     }
 }

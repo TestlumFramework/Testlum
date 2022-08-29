@@ -19,6 +19,7 @@ public class TestResourceSettings {
 
     public static final String SCENARIO_FILENAME = "scenario.xml";
     public static final String ACTUAL_FILENAME = "actual.json";
+    public static final String ACTUAL_IMAGE_PREFIX = "actual_image_compared_to_";
     public static final String FILENAME_TO_SAVE = "action_%s_" + ACTUAL_FILENAME;
     public static final String SCREENSHOT_FILENAME = "screenshot.jpg";
     public static final String SCREENSHOT_NAME_TO_SAVE = "%s_action_%s_" + SCREENSHOT_FILENAME;

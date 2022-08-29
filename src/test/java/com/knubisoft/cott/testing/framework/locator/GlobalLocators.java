@@ -3,28 +3,25 @@ package com.knubisoft.cott.testing.framework.locator;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.model.pages.Locator;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
+import java.util.Collections;
 import java.util.Map;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INCORRECT_NAMING_FOR_LOCATOR_ID;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNABLE_TO_FIND_LOCATOR_BY_PATH;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@UtilityClass
 public class GlobalLocators {
 
-    private static final GlobalLocators GLOBAL_LOCATORS =
-            new GlobalLocators();
-    private final Map<String, Locator> locatorMap =
-            new LocatorCollector().collect();
+    private static final Map<String, Locator> LOCATOR_MAP;
 
-    public static GlobalLocators getInstance() {
-        return GLOBAL_LOCATORS;
+    static {
+        LOCATOR_MAP = Collections.unmodifiableMap(new LocatorCollector().collect());
     }
 
     public Locator getLocator(final String name) {
-        Locator locator = locatorMap.get(name);
+        Locator locator = LOCATOR_MAP.get(name);
         if (locator == null) {
             throw defaultFrameworkException(name);
         }

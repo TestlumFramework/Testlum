@@ -18,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
+
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.AUTHENTICATION_TYPE;
 import static java.util.Objects.nonNull;
 
@@ -58,6 +60,7 @@ public class JwtAuth extends AbstractAuthStrategy {
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.ALL));
         return headers;
     }
 

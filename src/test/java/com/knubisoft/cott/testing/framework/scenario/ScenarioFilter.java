@@ -40,7 +40,7 @@ public class ScenarioFilter {
             return new FiltrationResult(Collections.emptySet(), scenariosWithoutUiSteps, true);
         }
         Set<ScenarioCollector.MappingResult> scenariosWithUiSteps =
-                filterBy(validScenarios, (e -> scenarioContainsUiSteps(e.scenario)));
+                filterBy(validScenarios, e -> scenarioContainsUiSteps(e.scenario));
         return new FiltrationResult(scenariosWithUiSteps, scenariosWithoutUiSteps, false);
     }
 

@@ -43,7 +43,7 @@ public class TestSetCollector {
     }
 
     private Stream<Arguments> getScenarioArguments(final Set<ScenarioCollector.MappingResult> scenariosWithUiSteps,
-                                                 final Set<ScenarioCollector.MappingResult> scenariosWithoutUiSteps) {
+                                                   final Set<ScenarioCollector.MappingResult> scenariosWithoutUiSteps) {
         List<AbstractBrowser> browsers = BrowserUtil.filterEnabledBrowsers();
         List<ScenarioArguments> scenarioArguments = new ArrayList<>();
         scenariosWithUiSteps.forEach(scenario ->
@@ -53,8 +53,8 @@ public class TestSetCollector {
     }
 
     private void addScenarioArgumentsWithUiSteps(final ScenarioCollector.MappingResult entry,
-                                                final AbstractBrowser webBrowser,
-                                                final List<ScenarioArguments> arguments) {
+                                                 final AbstractBrowser webBrowser,
+                                                 final List<ScenarioArguments> arguments) {
         if (variationsExist(entry)) {
             List<Map<String, String>> variationList = getVariationList(entry);
             variationList.forEach(variation ->
@@ -65,8 +65,8 @@ public class TestSetCollector {
     }
 
     private ScenarioArguments getArgumentsWithUiSteps(final ScenarioCollector.MappingResult entry,
-                                                               final AbstractBrowser browser,
-                                                               final Map<String, String> variation) {
+                                                      final AbstractBrowser browser,
+                                                      final Map<String, String> variation) {
         return ScenarioArguments.builder()
                 .path(getShortPath(entry.file))
                 .file(entry.file)

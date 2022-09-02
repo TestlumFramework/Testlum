@@ -14,6 +14,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NO_ACTIVE_SCENARIOS_LOG;
@@ -38,8 +39,8 @@ public class ScenarioFilter {
         if (validScenarios.size() == scenariosWithoutUiSteps.size()) {
             return new FiltrationResult(Collections.emptySet(), scenariosWithoutUiSteps, true);
         }
-        Set<ScenarioCollector.MappingResult> scenariosWithUiSteps = validScenarios.stream()
-                .filter(e -> scenarioContainsUiSteps(e.scenario)).collect(Collectors.toSet());
+        Set<ScenarioCollector.MappingResult> scenariosWithUiSteps =
+                filterBy(validScenarios, e -> scenarioContainsUiSteps(e.scenario));
         return new FiltrationResult(scenariosWithUiSteps, scenariosWithoutUiSteps, false);
     }
 
@@ -47,30 +48,31 @@ public class ScenarioFilter {
             final Set<ScenarioCollector.MappingResult> validScenarios) {
         Set<ScenarioCollector.MappingResult> activeScenarios = filterIsActive(validScenarios);
         Set<ScenarioCollector.MappingResult> scenariosWithOnlyThisEnabled = filterScenariosIfOnlyThis(activeScenarios);
-        RunScenariosByTag runScenariosByTag = GlobalTestConfigurationProvider.provide().getRunScenariosByTag();
-        return scenariosWithOnlyThisEnabled.isEmpty() ? runScenariosByTag.isEnable()
-                ? filterByTags(activeScenarios, getEnabledTags(runScenariosByTag.getTag())) : activeScenarios
+        return scenariosWithOnlyThisEnabled.isEmpty()
+                ? scenariosByTags(activeScenarios)
                 : scenariosWithOnlyThisEnabled;
     }
 
     private Set<ScenarioCollector.MappingResult> filterScenariosIfOnlyThis(
             final Set<ScenarioCollector.MappingResult> original) {
-        return original.stream()
-                .filter(e -> e.scenario.isOnlyThis())
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return filterBy(original, e -> e.scenario.isOnlyThis());
     }
 
     private Set<ScenarioCollector.MappingResult> filterIsActive(final Set<ScenarioCollector.MappingResult> original) {
-        return original.stream()
-                .filter(e -> e.scenario.isActive())
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        return filterBy(original, e -> e.scenario.isActive());
     }
 
+    private Set<ScenarioCollector.MappingResult> scenariosByTags(
+            final Set<ScenarioCollector.MappingResult> activeScenarios) {
+        RunScenariosByTag runScenariosByTag = GlobalTestConfigurationProvider.provide().getRunScenariosByTag();
+        return runScenariosByTag.isEnable()
+                ? filterByTags(activeScenarios, getEnabledTags(runScenariosByTag.getTag()))
+                : activeScenarios;
+    }
 
     private Set<ScenarioCollector.MappingResult> filterByTags(final Set<ScenarioCollector.MappingResult> original,
                                                               final List<String> enabledTags) {
-        Set<ScenarioCollector.MappingResult> filtered = original.stream().filter(e -> isMatchesTags(e, enabledTags))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+        Set<ScenarioCollector.MappingResult> filtered = filterBy(original, e -> isMatchesTags(e, enabledTags));
         if (filtered.isEmpty()) {
             throw new DefaultFrameworkException(NO_ACTIVE_SCENARIOS_LOG);
         }
@@ -93,7 +95,15 @@ public class ScenarioFilter {
 
     private Set<ScenarioCollector.MappingResult> filterScenariosWithoutUiSteps(
             final Set<ScenarioCollector.MappingResult> scenarios) {
-        return scenarios.stream().filter(e -> !scenarioContainsUiSteps(e.scenario)).collect(Collectors.toSet());
+        return filterBy(scenarios, e -> !scenarioContainsUiSteps(e.scenario));
+    }
+
+    private LinkedHashSet<ScenarioCollector.MappingResult> filterBy(
+            final Set<ScenarioCollector.MappingResult> scenarios,
+            final Predicate<ScenarioCollector.MappingResult> by) {
+        return scenarios.stream()
+                .filter(by)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private boolean scenarioContainsUiSteps(final Scenario scenario) {

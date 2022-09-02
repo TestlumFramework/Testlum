@@ -3,10 +3,10 @@ package com.knubisoft.cott.testing.framework.scenario;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.util.SendGridUtil;
-import com.knubisoft.cott.testing.framework.validator.XMLValidator;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.HttpUtil;
+import com.knubisoft.cott.testing.framework.util.SendGridUtil;
+import com.knubisoft.cott.testing.framework.validator.XMLValidator;
 import com.knubisoft.cott.testing.model.global_config.Integration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
@@ -169,9 +169,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         });
 
         validatorMap.put(o -> o instanceof Sqs, (xmlFile, command) -> {
-           Sqs sqs = (Sqs) command;
-           validateAlias(integrations.getSqsIntegration().getSqs(), sqs.getAlias());
-           validateSqsCommand(xmlFile, sqs);
+            Sqs sqs = (Sqs) command;
+            validateAlias(integrations.getSqsIntegration().getSqs(), sqs.getAlias());
+            validateSqsCommand(xmlFile, sqs);
         });
 
         validatorMap.put(o -> o instanceof Sendgrid, (xmlFile, command) -> {
@@ -200,7 +200,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     @Override
     public void validate(final Scenario scenario, final File xmlFile) {
-        scenario.getCommands().forEach(it -> validateCommand(it, xmlFile));
+        if (scenario.isActive()) {
+            scenario.getCommands().forEach(it -> validateCommand(it, xmlFile));
+        }
     }
 
     private void validateFileExistenceInDataFolder(final String commandFile) {
@@ -216,8 +218,11 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateAlias(final List<? extends Integration> integrationsList, final String alias) {
-        integrationsList.stream().filter(o -> o.getAlias().equals(alias))
-                .findFirst().orElseThrow(() -> new DefaultFrameworkException(ALIAS_NOT_FOUND, alias));
+        integrationsList.stream()
+                .filter(Integration::isEnabled)
+                .filter(o -> o.getAlias().equals(alias))
+                .findFirst()
+                .orElseThrow(() -> new DefaultFrameworkException(ALIAS_NOT_FOUND, alias));
     }
 
     private void validateElasticsearchCommand(final File xmlFile, final Elasticsearch elasticsearch) {
@@ -321,7 +326,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
-        private void validateIncludeAction(final Include include, final File xmlFile) {
+    private void validateIncludeAction(final Include include, final File xmlFile) {
         if (StringUtils.hasText(include.getScenario())) {
             File includedScenarioFolder = new File(TestResourceSettings.getInstance().getScenariosFolder(),
                     include.getScenario());

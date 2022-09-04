@@ -11,14 +11,12 @@
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:choice>
-                    <x:element name="value" type="tns:nonEmptyString"/>
-                    <x:element name="xpath" type="tns:nonEmptyString"/>
-                    <x:element name="jpath" type="tns:nonEmptyString"/>
                     <x:element name="dbResult" type="tns:dbResult"/>
-                    <x:element name="expression" type="tns:nonEmptyString"/>
+                    <x:element name="pageResult" type="tns:pageRequest"/>
+
                 </x:choice>
                 <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="alias" type="tns:nonEmptyString" use="optional"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -36,6 +34,19 @@
         </x:complexContent>
     </x:complexType>
 
+    <x:complexType name="pageRequest">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice>
+                    <x:element name="value" type="tns:nonEmptyString"/>
+                    <x:element name="xpath" type="tns:nonEmptyString"/>
+                    <x:element name="jpath" type="tns:nonEmptyString"/>
+                    <x:element name="expression" type="tns:nonEmptyString"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
     <x:simpleType name="variableQuery">
         <x:restriction base="x:string">
             <x:pattern value="SELECT[^\*,]+FROM.+WHERE.+"/>
@@ -47,6 +58,7 @@
             <x:enumeration value="POSTGRES"/>
             <x:enumeration value="MYSQL"/>
             <x:enumeration value="ORACLE"/>
+            <x:enumeration value="CLICKHOUSE"/>
         </x:restriction>
     </x:simpleType>
 </x:schema>

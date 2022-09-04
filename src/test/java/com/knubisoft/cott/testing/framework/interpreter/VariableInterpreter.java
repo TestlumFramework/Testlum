@@ -2,10 +2,10 @@ package com.knubisoft.cott.testing.framework.interpreter;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.knubisoft.cott.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.ListSource;
 import com.knubisoft.cott.testing.framework.db.sql.MySqlOperation;
-import com.knubisoft.cott.testing.framework.db.sql.PostgresSqlOperation;
 import com.knubisoft.cott.testing.framework.exception.IncorrectQueryForVarException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_VARIABLE_WITH_PATH_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CONSTANT;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.EXPRESSION;
@@ -47,12 +48,8 @@ import static java.lang.String.format;
 public class VariableInterpreter extends AbstractInterpreter<Var> {
     private static final String COUNT_ROWS_QUERY = "SELECT count(*) from (%s)result";
     private StorageOperation sqlOperation;
-
     @Autowired(required = false)
-    private PostgresSqlOperation postgresSqlOperation;
-
-    @Autowired(required = false)
-    private MySqlOperation mySqlOperation;
+    private NameToAdapterAlias nameToAdapterAlias;
 
     public VariableInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -78,30 +75,60 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     //CHECKSTYLE:OFF
     private String getValueForContext(final Var o, final ScenarioContext context, final CommandResult result) {
         String value;
-        if (o.getJpath() != null) {
-            DocumentContext contextBody = JsonPath.parse(context.getBody());
-            value = contextBody.read(o.getJpath()).toString();
-            ResultUtil.addVariableMetaData(JSON_PATH, o.getName(), o.getJpath(), value, result);
-        } else if (o.getXpath() != null) {
-            WebDriver webDriver = dependencies.getWebDriver();
-            value = webDriver.findElement(By.xpath(o.getXpath())).getText();
-            ResultUtil.addVariableMetaData(XPATH, o.getName(), o.getXpath(), value, result);
-        } else if (o.getDbResult() != null) {
-            if (o.getName().equals("MYSQL")) {
-                sqlOperation = mySqlOperation;
-            } else if (o.getName().equals("POSTGRES")) {
-                sqlOperation = postgresSqlOperation;
-            }
-            value = getActualPostgresResult(o.getDbResult(), result);
-            ResultUtil.addVariableMetaData(POSTGRES_QUERY,
-                    o.getName(), o.getDbResult().getQuery(), value, result);
-        } else if (o.getExpression() != null) {
-            value = getExpressionResult(o.getExpression());
-            ResultUtil.addVariableMetaData(EXPRESSION, o.getName(), o.getExpression(), value, result);
+        if (o.getDbResult() != null) {
+            value = getDBResult(o, result);
+        } else if (o.getPageResult().getJpath() != null) {
+            value = getJpathRes(o, context, result);
+        } else if (o.getPageResult().getXpath() != null) {
+            value = getXPathRes(o, result);
+        } else if (o.getPageResult().getExpression() != null) {
+            value = getExpressionRes(o, result);
         } else {
-            value = inject(o.getValue());
-            ResultUtil.addVariableMetaData(CONSTANT, o.getName(), NO_EXPRESSION, value, result);
+            value = getValueRes(o, result);
         }
+        return value;
+    }
+
+    private String getValueRes(Var o, CommandResult result) {
+        String value;
+        value = inject(o.getPageResult().getValue());
+        ResultUtil.addVariableMetaData(CONSTANT, o.getName(), NO_EXPRESSION, value, result);
+        return value;
+    }
+
+    private String getExpressionRes(Var o, CommandResult result) {
+        String value;
+        value = getExpressionResult(o.getPageResult().getExpression());
+        ResultUtil.addVariableMetaData(EXPRESSION, o.getName(),
+                o.getPageResult().getExpression(), value, result);
+        return value;
+    }
+
+    private String getXPathRes(Var o, CommandResult result) {
+        String value;
+        WebDriver webDriver = dependencies.getWebDriver();
+        value = webDriver.findElement(By.xpath(o.getPageResult().getXpath())).getText();
+        ResultUtil.addVariableMetaData(XPATH, o.getName(),
+                o.getPageResult().getXpath(), value, result);
+        return value;
+    }
+
+    private String getJpathRes(Var o, ScenarioContext context, CommandResult result) {
+        String value;
+        DocumentContext contextBody = JsonPath.parse(context.getBody());
+        value = contextBody.read(o.getPageResult().getJpath()).toString();
+        ResultUtil.addVariableMetaData(JSON_PATH, o.getName(),
+                o.getPageResult().getJpath(), value, result);
+        return value;
+    }
+
+    private String getDBResult(Var o, CommandResult result) {
+        String value;
+        sqlOperation = nameToAdapterAlias.getStorageOperation(o.getDbResult().getDbType() +
+                UNDERSCORE + o.getDbResult().getAlias());
+        value = getActualPostgresResult(o.getDbResult(), result);
+        ResultUtil.addVariableMetaData(POSTGRES_QUERY,
+                o.getName(), o.getDbResult().getQuery(), value, result);
         return value;
     }
 

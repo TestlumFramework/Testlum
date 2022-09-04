@@ -1,7 +1,7 @@
 package com.knubisoft.cott.testing.framework.context;
 
-import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +30,10 @@ public class NameToAdapterAlias {
         return new HashMap<>(alias);
     }
 
+    public StorageOperation getStorageOperation(final String name) {
+        Metadata metadata = getByNameOrThrow(name);
+        return metadata.getStorageOperation();
+    }
     public void removeAlias(final String name) {
         this.alias.remove(name);
     }

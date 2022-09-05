@@ -74,7 +74,7 @@
         <x:attribute name="file" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
-    <x:simpleType name="imageExt">
+    <x:simpleType name="imageExtension">
         <x:restriction base="x:string">
             <x:pattern value=".+(\.(jpg|jpeg|png|JPG|JPEG|PNG|))"/>
         </x:restriction>

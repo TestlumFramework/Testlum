@@ -6,6 +6,7 @@ import com.knubisoft.cott.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.ListSource;
 import com.knubisoft.cott.testing.framework.db.sql.MySqlOperation;
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.exception.IncorrectQueryForVarException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -14,11 +15,9 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.model.scenario.DbResult;
+import com.knubisoft.cott.testing.model.scenario.RelationalDbResult;
 import com.knubisoft.cott.testing.model.scenario.Var;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -39,8 +38,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.CONSTANT;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.EXPRESSION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.JSON_PATH;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NO_EXPRESSION;
-import static com.knubisoft.cott.testing.framework.util.ResultUtil.POSTGRES_QUERY;
-import static com.knubisoft.cott.testing.framework.util.ResultUtil.XPATH;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.RELATIONAL_DB_QUERY;
 import static java.lang.String.format;
 
 @Slf4j
@@ -56,106 +54,103 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     @Override
-    protected void acceptImpl(final Var o, final CommandResult result) {
+    protected void acceptImpl(final Var var, final CommandResult result) {
         try {
-            setContextVariable(o, result);
+            setContextVariable(var, result);
         } catch (Exception e) {
-            log.info(FAILED_VARIABLE_WITH_PATH_LOG, o.getName(), o.getComment());
+            log.info(FAILED_VARIABLE_WITH_PATH_LOG, var.getName(), var.getComment());
             throw e;
         }
     }
 
-    private void setContextVariable(final Var o, final CommandResult result) {
+    //CHECKSTYLE:ON
+
+    private void setContextVariable(final Var var, final CommandResult result) {
         ScenarioContext context = dependencies.getScenarioContext();
-        String value = getValueForContext(o, context, result);
-        context.set(o.getName(), value);
-        LogUtil.logVarInfo(o.getName(), value);
+        String value = getValueForContext(var, context, result);
+        context.set(var.getName(), value);
+        LogUtil.logVarInfo(var.getName(), value);
     }
 
     //CHECKSTYLE:OFF
-    private String getValueForContext(final Var o, final ScenarioContext context, final CommandResult result) {
-        String value;
-        if (o.getDbResult() != null) {
-            value = getDBResult(o, result);
-        } else if (o.getPageResult().getJpath() != null) {
-            value = getJpathRes(o, context, result);
-        } else if (o.getPageResult().getXpath() != null) {
-            value = getXPathRes(o, result);
-        } else if (o.getPageResult().getExpression() != null) {
-            value = getExpressionRes(o, result);
-        } else {
-            value = getValueRes(o, result);
+    private String getValueForContext(final Var var, final ScenarioContext context, final CommandResult result) {
+        String value = null;
+        if (var.getRelationalDbResult() != null) {
+            value = getDbResult(var, result);
+        } else if (var.getResultFrom() != null) {
+            value = getResultFrom(var, context, result);
         }
         return value;
     }
 
-    private String getValueRes(Var o, CommandResult result) {
-        String value;
-        value = inject(o.getPageResult().getValue());
-        ResultUtil.addVariableMetaData(CONSTANT, o.getName(), NO_EXPRESSION, value, result);
+    private String getResultFrom(final Var var, final ScenarioContext context, final CommandResult result) {
+        switch (var.getResultFrom().getType()) {
+            case EXPRESSION:
+                return getExpressionResult(var, result);
+            case JPATH:
+                return getJpathResult(var, context, result);
+            case VALUE:
+                return getValueResult(var, result);
+            default:
+                throw new DefaultFrameworkException("Type of 'Var' tag is not supported");
+        }
+    }
+
+    private String getValueResult(final Var var, final CommandResult result) {
+        String value = inject(var.getResultFrom().getInputValue());
+        ResultUtil.addVariableMetaData(CONSTANT, var.getName(), NO_EXPRESSION, value, result);
         return value;
     }
 
-    private String getExpressionRes(Var o, CommandResult result) {
-        String value;
-        value = getExpressionResult(o.getPageResult().getExpression());
-        ResultUtil.addVariableMetaData(EXPRESSION, o.getName(),
-                o.getPageResult().getExpression(), value, result);
+    private String getExpressionResult(final Var var, final CommandResult result) {
+        String value = parseExpressions(var.getResultFrom().getInputValue());
+        ResultUtil.addVariableMetaData(EXPRESSION, var.getName(),
+                var.getResultFrom().getInputValue(), value, result);
         return value;
     }
 
-    private String getXPathRes(Var o, CommandResult result) {
-        String value;
-        WebDriver webDriver = dependencies.getWebDriver();
-        value = webDriver.findElement(By.xpath(o.getPageResult().getXpath())).getText();
-        ResultUtil.addVariableMetaData(XPATH, o.getName(),
-                o.getPageResult().getXpath(), value, result);
-        return value;
-    }
-
-    private String getJpathRes(Var o, ScenarioContext context, CommandResult result) {
-        String value;
-        DocumentContext contextBody = JsonPath.parse(context.getBody());
-        value = contextBody.read(o.getPageResult().getJpath()).toString();
-        ResultUtil.addVariableMetaData(JSON_PATH, o.getName(),
-                o.getPageResult().getJpath(), value, result);
-        return value;
-    }
-
-    private String getDBResult(Var o, CommandResult result) {
-        String value;
-        sqlOperation = nameToAdapterAlias.getStorageOperation(o.getDbResult().getDbType() +
-                UNDERSCORE + o.getDbResult().getAlias());
-        value = getActualPostgresResult(o.getDbResult(), result);
-        ResultUtil.addVariableMetaData(POSTGRES_QUERY,
-                o.getName(), o.getDbResult().getQuery(), value, result);
-        return value;
-    }
-
-    private String getExpressionResult(final String expression) {
+    private String parseExpressions(final String expression) {
         ExpressionParser parser = new SpelExpressionParser();
         String injectedExpression = inject(expression);
         Expression exp = parser.parseExpression(injectedExpression);
-        return Objects.requireNonNull(exp.getValue()).toString();
+        return Objects.toString(exp.getValue(dependencies.getScenarioContext()));
     }
 
-    private String getActualPostgresResult(final DbResult postgresResult, final CommandResult result) {
-        String alias = postgresResult.getAlias();
-        List<String> query = new ArrayList<>(Collections.singletonList(postgresResult.getQuery()));
+    private String getJpathResult(final Var var, final ScenarioContext context, final CommandResult result) {
+        DocumentContext contextBody = JsonPath.parse(context.getBody());
+        String value = contextBody.read(var.getResultFrom().getInputValue()).toString();
+        ResultUtil.addVariableMetaData(JSON_PATH, var.getName(),
+                var.getResultFrom().getInputValue(), value, result);
+        return value;
+    }
+
+    private String getDbResult(final Var var, final CommandResult result) {
+        sqlOperation = nameToAdapterAlias.getStorageOperation(var.getRelationalDbResult().getDbType()
+                + UNDERSCORE + var.getRelationalDbResult().getAlias());
+        String amountOfLinks = getActualRelationalDbResult(var.getRelationalDbResult(), result);
+        ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY,
+                var.getName(), var.getRelationalDbResult().getQuery(), amountOfLinks, result);
+        return amountOfLinks;
+    }
+
+    private String getActualRelationalDbResult(final RelationalDbResult relationalDbResult,
+                                               final CommandResult result) {
+        String alias = relationalDbResult.getAlias();
+        List<String> query = new ArrayList<>(Collections.singletonList(relationalDbResult.getQuery()));
         result.put("query", query);
         LogUtil.logAllQueries(query, alias);
-        verifyQueryResult(postgresResult.getQuery(), postgresResult.getAlias());
+        verifyQueryResult(relationalDbResult.getQuery(), relationalDbResult.getAlias());
         ResultUtil.addDatabaseMetaData(alias, query, result);
-        StorageOperation.StorageOperationResult applyPostgres =
+        StorageOperation.StorageOperationResult applyRelationalDb =
                 sqlOperation.apply(new ListSource(query), inject(alias));
-        String[] queryParts = getQuery(applyPostgres).split(SPACE);
+        String[] queryParts = getQuery(applyRelationalDb).split(SPACE);
         String keyOfQueryResult = queryParts[1];
-        return getContent(applyPostgres, keyOfQueryResult);
+        return getContent(applyRelationalDb, keyOfQueryResult);
     }
 
-    private String getQuery(final StorageOperation.StorageOperationResult applyPostgres) {
+    private String getQuery(final StorageOperation.StorageOperationResult applyRelationalDb) {
         ArrayList<StorageOperation.QueryResult> list =
-                (ArrayList<StorageOperation.QueryResult>) applyPostgres.getRaw();
+                (ArrayList<StorageOperation.QueryResult>) applyRelationalDb.getRaw();
         return list.get(0).getQuery();
     }
 
@@ -169,7 +164,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
 
     private int applyQueryAndGetResult(final String newQuery, final String databaseName) {
         List<String> newQueryInList = new ArrayList<>(Arrays.asList(newQuery));
-        StorageOperation.StorageOperationResult applyPostgres =
+        StorageOperation.StorageOperationResult applyRelationalDb =
                 sqlOperation.apply(new ListSource(newQueryInList), databaseName);
         String count;
         if (sqlOperation instanceof MySqlOperation) {
@@ -177,17 +172,17 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         } else {
             count = "count";
         }
-        return Integer.parseInt(getContent(applyPostgres, count));
+        return Integer.parseInt(getContent(applyRelationalDb, count));
     }
 
-    private String getContent(final StorageOperation.StorageOperationResult applyPostgres,
+    private String getContent(final StorageOperation.StorageOperationResult applyRelationalDb,
                               final String key) {
         ArrayList<StorageOperation.QueryResult> list =
-                (ArrayList<StorageOperation.QueryResult>) applyPostgres.getRaw();
+                (ArrayList<StorageOperation.QueryResult>) applyRelationalDb.getRaw();
         ArrayList<LinkedCaseInsensitiveMap<String>> content =
                 (ArrayList<LinkedCaseInsensitiveMap<String>>) list.get(0).getContent();
-        Map<String, String> stringStringMap = content.get(0);
-        return String.valueOf(stringStringMap.get(key));
+        Map<String, String> mapWithContent = content.get(0);
+        return String.valueOf(mapWithContent.get(key));
     }
-    //CHECKSTYLE:ON
+
 }

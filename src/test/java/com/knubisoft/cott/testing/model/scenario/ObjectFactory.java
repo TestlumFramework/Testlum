@@ -734,11 +734,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link PostgresResult }
+     * Create an instance of {@link RelationalDbResult }
      * 
      */
-    public PostgresResult createPostgresResult() {
-        return new PostgresResult();
+    public RelationalDbResult createRelationalDbResult() {
+        return new RelationalDbResult();
+    }
+
+    /**
+     * Create an instance of {@link ResultFrom }
+     * 
+     */
+    public ResultFrom createResultFrom() {
+        return new ResultFrom();
     }
 
     /**

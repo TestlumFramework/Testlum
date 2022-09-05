@@ -11,17 +11,16 @@
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:choice>
-                    <x:element name="dbResult" type="tns:dbResult"/>
-                    <x:element name="pageResult" type="tns:pageRequest"/>
+                    <x:element name="relationalDbResult" type="tns:relationalDbResult"/>
+                    <x:element name="resultFrom" type="tns:resultFrom"/>
 
                 </x:choice>
                 <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="alias" type="tns:nonEmptyString" use="optional"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="dbResult">
+    <x:complexType name="relationalDbResult">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:sequence>
@@ -34,18 +33,18 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="pageRequest">
-        <x:complexContent>
-            <x:extension base="tns:abstractCommand">
-                <x:choice>
-                    <x:element name="value" type="tns:nonEmptyString"/>
-                    <x:element name="xpath" type="tns:nonEmptyString"/>
-                    <x:element name="jpath" type="tns:nonEmptyString"/>
-                    <x:element name="expression" type="tns:nonEmptyString"/>
-                </x:choice>
-            </x:extension>
-        </x:complexContent>
+    <x:complexType name="resultFrom">
+        <x:attribute name="type" type="tns:varType"/>
+        <x:attribute name="InputValue" type="tns:nonEmptyString"/>
     </x:complexType>
+
+    <x:simpleType name="varType">
+        <x:restriction base="x:string">
+            <x:enumeration value="value"/>
+            <x:enumeration value="jpath"/>
+            <x:enumeration value="expression"/>
+        </x:restriction>
+    </x:simpleType>
 
     <x:simpleType name="variableQuery">
         <x:restriction base="x:string">

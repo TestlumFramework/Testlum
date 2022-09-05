@@ -1,0 +1,143 @@
+
+package com.knubisoft.cott.testing.model.scenario;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
+
+
+/**
+ * <p>Java class for pageResult complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+ * <pre>
+ * &lt;complexType name="pageResult"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
+ *       &lt;choice&gt;
+ *         &lt;element name="value" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="xpath" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="jpath" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="expression" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
+ *       &lt;/choice&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "pageResult", propOrder = {
+    "value",
+    "xpath",
+    "jpath",
+    "expression"
+})
+public class PageResult
+    extends AbstractCommand
+{
+
+    protected String value;
+    protected String xpath;
+    protected String jpath;
+    protected String expression;
+
+    /**
+     * Gets the value of the value property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * Sets the value of the value property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    /**
+     * Gets the value of the xpath property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getXpath() {
+        return xpath;
+    }
+
+    /**
+     * Sets the value of the xpath property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setXpath(String value) {
+        this.xpath = value;
+    }
+
+    /**
+     * Gets the value of the jpath property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getJpath() {
+        return jpath;
+    }
+
+    /**
+     * Sets the value of the jpath property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setJpath(String value) {
+        this.jpath = value;
+    }
+
+    /**
+     * Gets the value of the expression property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getExpression() {
+        return expression;
+    }
+
+    /**
+     * Sets the value of the expression property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setExpression(String value) {
+        this.expression = value;
+    }
+
+}

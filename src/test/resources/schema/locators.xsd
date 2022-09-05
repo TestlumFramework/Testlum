@@ -20,6 +20,7 @@
             <x:element name="xpath" type="tns:nonEmptyString"/>
             <x:element name="id" type="tns:nonEmptyString"/>
             <x:element name="class" type="tns:nonEmptyString"/>
+            <x:element name="cssSelector" type="tns:nonEmptyString"/>
         </x:choice>
         <x:attribute name="locatorId" type="tns:pagesLocator" use="required"/>
         <x:attribute name="description" type="tns:nonEmptyString"/>

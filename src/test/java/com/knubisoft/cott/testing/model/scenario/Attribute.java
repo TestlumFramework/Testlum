@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="class"/&gt;
  *     &lt;enumeration value="id"/&gt;
  *     &lt;enumeration value="xpath"/&gt;
+ *     &lt;enumeration value="cssSelector"/&gt;
  *   &lt;/restriction&gt;
  * &lt;/simpleType&gt;
  * </pre>
@@ -34,7 +35,9 @@ public enum Attribute {
     @XmlEnumValue("id")
     ID("id"),
     @XmlEnumValue("xpath")
-    XPATH("xpath");
+    XPATH("xpath"),
+    @XmlEnumValue("cssSelector")
+    CSS_SELECTOR("cssSelector");
     private final String value;
 
     Attribute(String v) {

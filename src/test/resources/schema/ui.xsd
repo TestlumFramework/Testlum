@@ -220,17 +220,11 @@
                     <x:element name="compareWithFullScreen"/>
                     <x:element name="compareWith" type="tns:compareWith"/>
                 </x:choice>
-                <x:attribute name="file" type="tns:imageExtension" use="required"/>
+                <x:attribute name="file" type="tns:imageExt" use="required"/>
                 <x:attribute name="highlightDifference" type="x:boolean" default="false"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
-
-    <x:simpleType name="imageExtension">
-        <x:restriction base="x:string">
-            <x:pattern value="[^\s]+(\.(jpg|png))$"/>
-        </x:restriction>
-    </x:simpleType>
 
     <x:complexType name="compareWith">
         <x:attribute name="locator" type="tns:scenarioLocator" use="required"/>

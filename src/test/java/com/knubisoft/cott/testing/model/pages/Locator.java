@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="xpath" type="{http://www.knubisoft.com/cott/testing/model/pages}nonEmptyString"/&gt;
  *         &lt;element name="id" type="{http://www.knubisoft.com/cott/testing/model/pages}nonEmptyString"/&gt;
  *         &lt;element name="class" type="{http://www.knubisoft.com/cott/testing/model/pages}nonEmptyString"/&gt;
+ *         &lt;element name="cssSelector" type="{http://www.knubisoft.com/cott/testing/model/pages}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/cott/testing/model/pages}pagesLocator" /&gt;
  *       &lt;attribute name="description" type="{http://www.knubisoft.com/cott/testing/model/pages}nonEmptyString" /&gt;
@@ -37,7 +38,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "locator", propOrder = {
     "xpath",
     "id",
-    "clazz"
+    "clazz",
+    "cssSelector"
 })
 public class Locator {
 
@@ -45,6 +47,7 @@ public class Locator {
     protected String id;
     @XmlElement(name = "class")
     protected String clazz;
+    protected String cssSelector;
     @XmlAttribute(name = "locatorId", required = true)
     protected String locatorId;
     @XmlAttribute(name = "description")
@@ -120,6 +123,30 @@ public class Locator {
      */
     public void setClazz(String value) {
         this.clazz = value;
+    }
+
+    /**
+     * Gets the value of the cssSelector property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getCssSelector() {
+        return cssSelector;
+    }
+
+    /**
+     * Sets the value of the cssSelector property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setCssSelector(String value) {
+        this.cssSelector = value;
     }
 
     /**

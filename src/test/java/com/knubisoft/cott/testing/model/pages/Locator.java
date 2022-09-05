@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="id" type="{http://www.knubisoft.com/cott/testing/model/pages}nonEmptyString"/&gt;
  *         &lt;element name="class" type="{http://www.knubisoft.com/cott/testing/model/pages}nonEmptyString"/&gt;
  *         &lt;element name="cssSelector" type="{http://www.knubisoft.com/cott/testing/model/pages}nonEmptyString"/&gt;
+ *         &lt;element name="text" type="{http://www.knubisoft.com/cott/testing/model/pages}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/cott/testing/model/pages}pagesLocator" /&gt;
  *       &lt;attribute name="description" type="{http://www.knubisoft.com/cott/testing/model/pages}nonEmptyString" /&gt;
@@ -39,7 +40,8 @@ import javax.xml.bind.annotation.XmlType;
     "xpath",
     "id",
     "clazz",
-    "cssSelector"
+    "cssSelector",
+    "text"
 })
 public class Locator {
 
@@ -48,6 +50,7 @@ public class Locator {
     @XmlElement(name = "class")
     protected String clazz;
     protected String cssSelector;
+    protected String text;
     @XmlAttribute(name = "locatorId", required = true)
     protected String locatorId;
     @XmlAttribute(name = "description")
@@ -147,6 +150,30 @@ public class Locator {
      */
     public void setCssSelector(String value) {
         this.cssSelector = value;
+    }
+
+    /**
+     * Gets the value of the text property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getText() {
+        return text;
+    }
+
+    /**
+     * Sets the value of the text property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setText(String value) {
+        this.text = value;
     }
 
     /**

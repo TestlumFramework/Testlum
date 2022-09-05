@@ -11,7 +11,7 @@
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:attribute name="time" type="x:positiveInteger" use="required"/>
-                <x:attribute name="unit" type="tns:unit" default="millis"/>
+                <x:attribute name="unit" type="tns:unit" default="seconds"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

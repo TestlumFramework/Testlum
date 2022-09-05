@@ -61,7 +61,6 @@ public class RootTest {
     public void beforeAll() {
         new TestContextManager(getClass()).prepareTestInstance(this);
         FileRemover.clearActualFiles(TestResourceSettings.getInstance().getScenariosFolder());
-        cleanDatabases();
     }
 
     @DisplayName("Execution of test scenarios:")
@@ -70,7 +69,7 @@ public class RootTest {
     @SneakyThrows
     void execution(final Named<ScenarioArguments> arguments) {
         ScenarioArguments scenarioArguments = arguments.getPayload();
-        cleanDbAndMigrateIfRequired(scenarioArguments.getScenario());
+        cleanDatabases(scenarioArguments.getScenario());
         StopWatch stopWatch = StopWatch.createStarted();
         ScenarioRunner scenarioRunner = new ScenarioRunner(scenarioArguments, ctx);
         ctx.getAutowireCapableBeanFactory().autowireBean(scenarioRunner);
@@ -87,14 +86,10 @@ public class RootTest {
         }
     }
 
-    private void cleanDbAndMigrateIfRequired(final Scenario scenario) {
+    private void cleanDatabases(final Scenario scenario) {
         if (!scenario.getTags().isReadonly()) {
-            cleanDatabases();
+            systemDataStoreCleaner.cleanAll(this.nameToAdapterAlias);
         }
-    }
-
-    private void cleanDatabases() {
-        systemDataStoreCleaner.cleanAll(this.nameToAdapterAlias);
     }
 
     @AfterEach

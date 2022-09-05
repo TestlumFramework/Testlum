@@ -214,7 +214,6 @@
             <groupId>com.sendgrid</groupId>
             <artifactId>sendgrid-java</artifactId>
             <version>${sendgrid-java.version}</version>
-            <scope>test</scope>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
@@ -243,21 +242,22 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>com.github.awslabs</groupId>
-            <artifactId>aws-request-signing-apache-interceptor</artifactId>
-            <version>b3772780da</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.amazonaws</groupId>
-                    <artifactId>aws-java-sdk-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>joda-time</groupId>
-                    <artifactId>joda-time</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+<!--        todo remove if not used-->
+<!--        <dependency>-->
+<!--            <groupId>com.github.awslabs</groupId>-->
+<!--            <artifactId>aws-request-signing-apache-interceptor</artifactId>-->
+<!--            <version>b3772780da</version>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>com.amazonaws</groupId>-->
+<!--                    <artifactId>aws-java-sdk-core</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>joda-time</groupId>-->
+<!--                    <artifactId>joda-time</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>mysql</groupId>
@@ -535,6 +535,11 @@
 
                 <exclusion>
                     <groupId>org.junit.platform</groupId>
+                    <artifactId>junit-platform-engine</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.junit.platform</groupId>
                     <artifactId>junit-platform-commons</artifactId>
                 </exclusion>
 
@@ -745,6 +750,12 @@
             <artifactId>junit-jupiter-api</artifactId>
             <version>${org.junit.jupiter.version}</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.platform</groupId>
+                    <artifactId>junit-platform-commons</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -792,7 +803,6 @@
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
             <version>${junit-platform-launcher.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -1007,6 +1017,7 @@
                         <source>${project.basedir}/src/test/resources/schema/global-config.xsd</source>
                         <source>${project.basedir}/src/test/resources/schema/pages.xsd</source>
                     </sources>
+                    <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
                 </configuration>
             </plugin>
 

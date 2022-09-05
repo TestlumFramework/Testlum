@@ -21,6 +21,8 @@ public final class WebElementFinder {
             return driver.findElement(By.id(locator.getId()));
         } else if (locator.getClazz() != null) {
             return driver.findElement(By.className(locator.getClazz()));
+        } else if (locator.getCssSelector() != null) {
+            return driver.findElement(By.cssSelector(locator.getCssSelector()));
         }
         throw defaultFrameworkException(locator);
     }

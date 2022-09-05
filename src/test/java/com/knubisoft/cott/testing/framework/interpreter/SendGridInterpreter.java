@@ -4,19 +4,18 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.interpreter.lib.http.ApiResponse;
+import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
+import com.knubisoft.cott.testing.framework.util.HttpValidator;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.model.scenario.Header;
-import com.knubisoft.cott.testing.model.scenario.Sendgrid;
-import com.knubisoft.cott.testing.model.scenario.SendgridWithBody;
-import com.knubisoft.cott.testing.model.scenario.SendgridWithoutBody;
-import com.knubisoft.cott.testing.framework.report.CommandResult;
-import com.knubisoft.cott.testing.framework.util.HttpValidator;
 import com.knubisoft.cott.testing.framework.util.SendGridUtil;
 import com.knubisoft.cott.testing.model.scenario.Body;
+import com.knubisoft.cott.testing.model.scenario.Sendgrid;
 import com.knubisoft.cott.testing.model.scenario.SendgridInfo;
+import com.knubisoft.cott.testing.model.scenario.SendgridWithBody;
+import com.knubisoft.cott.testing.model.scenario.SendgridWithoutBody;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -97,22 +96,11 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         httpValidator.rethrowOnErrors();
     }
 
-    private Map<String, String> getHeaders(final SendgridInfo httpInfo) {
+    private Map<String, String> getHeaders(final SendgridInfo sendgridInfo) {
         Map<String, String> headers = new LinkedHashMap<>();
         InterpreterDependencies.Authorization authorization = dependencies.getAuthorization();
-        fillHeadersMap(httpInfo, headers, authorization);
+        SendGridUtil.fillHeadersMap(sendgridInfo.getHeader(), headers, authorization);
         return SendGridUtil.injectAndGetHeaders(headers, this);
-    }
-
-    private void fillHeadersMap(final SendgridInfo info,
-                                final Map<String, String> headers,
-                                final InterpreterDependencies.Authorization authorization) {
-        if (authorization != null && !authorization.getHeaders().isEmpty()) {
-            headers.putAll(authorization.getHeaders());
-        }
-        for (Header header : info.getHeader()) {
-            headers.put(header.getName(), header.getData());
-        }
     }
 
     private String getBody(final SendgridInfo sendgridInfo) {

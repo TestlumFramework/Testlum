@@ -3,15 +3,15 @@ package com.knubisoft.cott.testing.framework.interpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.model.scenario.KafkaHeader;
-import com.knubisoft.cott.testing.model.scenario.SendKafkaMessage;
-import com.knubisoft.cott.testing.framework.report.CommandResult;
-import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.model.scenario.Kafka;
+import com.knubisoft.cott.testing.model.scenario.KafkaHeader;
 import com.knubisoft.cott.testing.model.scenario.ReceiveKafkaMessage;
+import com.knubisoft.cott.testing.model.scenario.SendKafkaMessage;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
@@ -63,18 +63,18 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     }
 
     @Override
-    protected void acceptImpl(final Kafka kafka, final CommandResult result) {
-        List<CommandResult> subCommandsResult = new LinkedList<>();
+    protected void acceptImpl(final Kafka kafka, final CommandResult commandResult) {
+        List<CommandResult> subCommandsResultList = new LinkedList<>();
         int actionNumber = 1;
         for (Object action : kafka.getSendOrReceive()) {
-            CommandResult subCommandResult = ResultUtil.createNewCommandResultInstance(actionNumber);
             log.info(COMMAND_LOG, dependencies.getPosition().incrementAndGet(), action.getClass().getSimpleName());
-            processEachAction(action, kafka.getAlias(), subCommandResult);
-            subCommandsResult.add(subCommandResult);
+            CommandResult result = ResultUtil.createNewCommandResultInstance(actionNumber);
+            processEachAction(action, kafka.getAlias(), result);
+            subCommandsResultList.add(result);
             actionNumber++;
         }
-        result.setSubCommandsResult(subCommandsResult);
-        ResultUtil.setExecutionResultIfSubCommandsFailed(result);
+        commandResult.setSubCommandsResult(subCommandsResultList);
+        ResultUtil.setExecutionResultIfSubCommandsFailed(commandResult);
     }
 
     private void processEachAction(final Object action,
@@ -84,9 +84,9 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         try {
             processKafkaAction(subCommandResult, action, alias);
         } catch (Exception e) {
-            subCommandResult.setSuccess(false);
-            subCommandResult.setException(e);
             LogUtil.logException(e);
+            subCommandResult.setException(e);
+            subCommandResult.setSuccess(false);
         } finally {
             subCommandResult.setExecutionTime(stopWatch.getTime());
             stopWatch.stop();
@@ -94,14 +94,14 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     }
 
     private void processKafkaAction(final CommandResult subCommandResult,
-                                   final Object action,
-                                   final String alias) {
+                                    final Object action,
+                                    final String alias) {
         log.info(ALIAS_LOG, alias);
         if (action instanceof SendKafkaMessage) {
             SendKafkaMessage sendAction = (SendKafkaMessage) action;
             ResultUtil.addKafkaInfoForSendAction(sendAction, alias, subCommandResult);
             sendMessage(sendAction, subCommandResult, alias);
-        } else {
+        } else if (action instanceof ReceiveKafkaMessage) {
             ReceiveKafkaMessage receiveAction = (ReceiveKafkaMessage) action;
             ResultUtil.addKafkaInfoForReceiveAction(receiveAction, alias, subCommandResult);
             receiveMessages(receiveAction, subCommandResult, alias);
@@ -113,8 +113,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                                  final String alias) {
         String value = getValue(receive);
         LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getTopic(), value);
-
-        kafkaAdmin.get(alias).createOrModifyTopics(new NewTopic(receive.getTopic(), 1, (short) 1));
+        createTopicIfNotExists(receive.getTopic(), alias);
         receiveMessages(receive, value, result, alias);
     }
 
@@ -122,9 +121,8 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                                  final String value,
                                  final CommandResult result,
                                  final String alias) {
-        createTopicIfNotExists(receive.getTopic(), alias);
-
         List<KafkaMessage> actualKafkaMessages = receiveKafkaMessages(receive, alias);
+
         CompareBuilder comparator = newCompare()
                 .withExpected(value)
                 .withActual(actualKafkaMessages);

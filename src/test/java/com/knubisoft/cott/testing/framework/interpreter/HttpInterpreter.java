@@ -1,21 +1,20 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.interpreter.lib.http.ApiClient;
 import com.knubisoft.cott.testing.framework.interpreter.lib.http.ApiResponse;
-import com.knubisoft.cott.testing.framework.util.LogUtil;
-import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.model.scenario.Header;
-import com.knubisoft.cott.testing.model.scenario.Http;
-import com.knubisoft.cott.testing.model.scenario.HttpInfoWithBody;
-import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.HttpUtil;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
+import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.scenario.Body;
+import com.knubisoft.cott.testing.model.scenario.Http;
 import com.knubisoft.cott.testing.model.scenario.HttpInfo;
+import com.knubisoft.cott.testing.model.scenario.HttpInfoWithBody;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,19 +82,8 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     private Map<String, String> getHeaders(final HttpInfo httpInfo) {
         Map<String, String> headers = new LinkedHashMap<>();
         InterpreterDependencies.Authorization authorization = dependencies.getAuthorization();
-        fillHeadersMap(httpInfo, headers, authorization);
+        HttpUtil.fillHeadersMap(httpInfo.getHeader(), headers, authorization);
         return HttpUtil.injectAndGetHeaders(headers, this);
-    }
-
-    private void fillHeadersMap(final HttpInfo httpInfo,
-                                final Map<String, String> headers,
-                                final InterpreterDependencies.Authorization authorization) {
-        if (authorization != null && !authorization.getHeaders().isEmpty()) {
-            headers.putAll(authorization.getHeaders());
-        }
-        for (Header header : httpInfo.getHeader()) {
-            headers.put(header.getName(), header.getData());
-        }
     }
 
     private HttpEntity getBody(final HttpInfo httpInfo, final boolean isJson) {

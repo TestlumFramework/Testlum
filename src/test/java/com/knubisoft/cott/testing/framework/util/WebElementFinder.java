@@ -23,8 +23,10 @@ public final class WebElementFinder {
             return driver.findElement(By.className(locator.getClazz()));
         } else if (locator.getCssSelector() != null) {
             return driver.findElement(By.cssSelector(locator.getCssSelector()));
-        } else if (locator.getText() != null) {
-            return driver.findElement(By.linkText(locator.getText()));
+        } else if (locator.getLinkText() != null) {
+            return driver.findElement(By.linkText(locator.getLinkText()));
+        } else if (locator.getPartialLinkText() != null) {
+            return driver.findElement(By.partialLinkText(locator.getPartialLinkText()));
         }
         throw defaultFrameworkException(locator);
     }

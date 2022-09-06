@@ -92,7 +92,6 @@
         <com.twilio.sdk.version>9.0.0-rc.3</com.twilio.sdk.version>
         <image-comparison.version>4.4.0</image-comparison.version>
         <skipGenerateModels>true</skipGenerateModels>
-        <skipUITests>true</skipUITests>
     </properties>
 
     <repositories>
@@ -1040,28 +1039,6 @@
                                 <delete dir="${basedir}/src/test/java/META-INF"/>
                             </target>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${maven.surefire.failsafe.version}</version>
-                <configuration>
-                    <testFailureIgnore>false</testFailureIgnore>
-                    <includes>
-                        <include>**/RootTest*.java</include>
-                    </includes>
-                    <skipTests>${skipUITests}</skipTests>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>ui-test</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>

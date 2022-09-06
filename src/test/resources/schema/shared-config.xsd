@@ -55,7 +55,7 @@
         <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
-    <x:complexType name="abstractDataSource" abstract="true">
+    <x:complexType name="databaseConfig" abstract="true">
         <x:complexContent>
             <x:extension base="tns:integration">
                 <x:sequence>
@@ -64,15 +64,6 @@
                     <x:element name="password" type="tns:nonEmptyString"/>
                     <x:element name="connectionUrl" type="tns:nonEmptyString"/>
                     <x:element name="schema" type="tns:nonEmptyString" minOccurs="0"/>
-                </x:sequence>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="commonDataSource" abstract="true">
-        <x:complexContent>
-            <x:extension base="tns:abstractDataSource">
-                <x:sequence>
                     <x:element name="hikari" type="tns:hikari"/>
                 </x:sequence>
             </x:extension>

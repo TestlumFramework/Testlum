@@ -15,7 +15,7 @@
 
     <x:complexType name="postgres">
         <x:complexContent>
-            <x:extension base="tns:commonDataSource"/>
+            <x:extension base="tns:databaseConfig"/>
         </x:complexContent>
     </x:complexType>
 </x:schema>

@@ -91,7 +91,8 @@
         <jakarta.activation.version>1.2.2</jakarta.activation.version>
         <com.twilio.sdk.version>9.0.0-rc.3</com.twilio.sdk.version>
         <image-comparison.version>4.4.0</image-comparison.version>
-        <skipXjc>true</skipXjc>
+        <skipGenerateModels>true</skipGenerateModels>
+        <skipUITests>true</skipUITests>
     </properties>
 
     <repositories>
@@ -1008,8 +1009,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <skipXjc>${skipXjc}</skipXjc>
-                    <skipTestXjc>${skipXjc}</skipTestXjc>
+                    <skipXjc>${skipGenerateModels}</skipXjc>
+                    <skipTestXjc>${skipGenerateModels}</skipTestXjc>
                     <outputDirectory>src/test/java</outputDirectory>
                     <clearOutputDir>false</clearOutputDir>
                     <sources>
@@ -1026,7 +1027,7 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>${exec.maven.plugin.version}</version>
                 <configuration>
-                    <skip>${skipXjc}</skip>
+                    <skip>${skipGenerateModels}</skip>
                 </configuration>
                 <executions>
                     <execution>
@@ -1050,8 +1051,9 @@
                 <configuration>
                     <testFailureIgnore>false</testFailureIgnore>
                     <includes>
-                        <include>**/UIRootTest*.java</include>
+                        <include>**/RootTest*.java</include>
                     </includes>
+                    <skipTests>${skipUITests}</skipTests>
                 </configuration>
                 <executions>
                     <execution>

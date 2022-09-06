@@ -101,7 +101,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
             SendKafkaMessage sendAction = (SendKafkaMessage) action;
             ResultUtil.addKafkaInfoForSendAction(sendAction, alias, subCommandResult);
             sendMessage(sendAction, subCommandResult, alias);
-        } else if (action instanceof ReceiveKafkaMessage) {
+        } else {
             ReceiveKafkaMessage receiveAction = (ReceiveKafkaMessage) action;
             ResultUtil.addKafkaInfoForReceiveAction(receiveAction, alias, subCommandResult);
             receiveMessages(receiveAction, subCommandResult, alias);

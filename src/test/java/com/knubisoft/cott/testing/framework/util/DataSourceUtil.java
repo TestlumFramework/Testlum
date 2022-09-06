@@ -1,7 +1,7 @@
 package com.knubisoft.cott.testing.framework.util;
 
 
-import com.knubisoft.cott.testing.model.global_config.CommonDataSource;
+import com.knubisoft.cott.testing.model.global_config.DatabaseConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
@@ -11,7 +11,7 @@ import javax.sql.DataSource;
 @UtilityClass
 public final class DataSourceUtil {
 
-    public DataSource getHikariDataSource(final CommonDataSource dataSource) {
+    public DataSource getHikariDataSource(final DatabaseConfig dataSource) {
         HikariDataSource hikariDataSourceOriginal = new HikariDataSource();
         setDefaultHikariSettings(hikariDataSourceOriginal, dataSource);
         setAdditionalHikariSettings(hikariDataSourceOriginal, dataSource);
@@ -22,7 +22,7 @@ public final class DataSourceUtil {
     }
 
     private void setDefaultHikariSettings(final HikariDataSource hikariDataSourceOriginal,
-                                          final CommonDataSource dataSource) {
+                                          final DatabaseConfig dataSource) {
         hikariDataSourceOriginal.setDriverClassName(dataSource.getJdbcDriver());
         hikariDataSourceOriginal.setJdbcUrl(dataSource.getConnectionUrl());
         hikariDataSourceOriginal.setUsername(dataSource.getUsername());
@@ -30,7 +30,7 @@ public final class DataSourceUtil {
     }
 
     private void setAdditionalHikariSettings(final HikariDataSource hikariDataSourceOriginal,
-                                             final CommonDataSource dataSource) {
+                                             final DatabaseConfig dataSource) {
         hikariDataSourceOriginal.setMaximumPoolSize(dataSource.getHikari().getMaximumPoolSize());
         hikariDataSourceOriginal.setAutoCommit(dataSource.getHikari().isAutoCommit());
         hikariDataSourceOriginal.setConnectionInitSql(dataSource.getHikari().getConnectionInitSql());

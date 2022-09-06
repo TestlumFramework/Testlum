@@ -29,7 +29,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "integration")
 @XmlSeeAlso({
-    AbstractDataSource.class,
+    Clickhouse.class,
+    DatabaseConfig.class,
     Redis.class,
     Mongo.class,
     S3 .class,

@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="postgres"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}commonDataSource"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}databaseConfig"&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "postgres")
 public class Postgres
-    extends CommonDataSource
+    extends DatabaseConfig
 {
 
 

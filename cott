@@ -20,7 +20,7 @@ function generate {
 function getGenerateVal() {
     local arg="$1"
     case $arg in
-          models) mvn -pl ./ --also-make clean package -DskipGenerateModels=false -DskipUITests=true ;;
+          models) mvn -pl ./ --also-make clean package -DskipGenerateModels=false -DskipTests=true ;;
     esac
 }
 

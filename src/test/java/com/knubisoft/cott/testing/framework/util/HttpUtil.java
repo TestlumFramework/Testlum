@@ -4,13 +4,13 @@ import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
-import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
-import com.knubisoft.cott.testing.model.scenario.Http;
-import com.knubisoft.cott.testing.model.scenario.Multipart;
-import com.knubisoft.cott.testing.model.scenario.Param;
 import com.knubisoft.cott.testing.model.scenario.Body;
 import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequest;
+import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
+import com.knubisoft.cott.testing.model.scenario.Http;
 import com.knubisoft.cott.testing.model.scenario.HttpInfo;
+import com.knubisoft.cott.testing.model.scenario.Multipart;
+import com.knubisoft.cott.testing.model.scenario.Param;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -141,11 +142,28 @@ public final class HttpUtil {
     private HttpEntity injectFromFile(final Body body,
                                       final AbstractInterpreter<?> interpreter,
                                       final InterpreterDependencies dependencies) throws IOException {
-        String fileName = body.getFrom().getFile();
-        File from = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
-        String content = FileUtils.readFileToString(from, StandardCharsets.UTF_8);
-        String injectedContent = interpreter.inject(content);
+        String injectedContent = injectFromFile(body, interpreter, dependencies.getFile());
         return new StringEntity(injectedContent, ContentType.APPLICATION_JSON);
+    }
+
+    public String injectFromFile(final Body body,
+                                 final AbstractInterpreter<?> interpreter,
+                                 final File fromDir) throws IOException {
+        String fileName = body.getFrom().getFile();
+        File from = FileSearcher.searchFileFromDir(fromDir, fileName);
+        String content = FileUtils.readFileToString(from, StandardCharsets.UTF_8);
+        return interpreter.inject(content);
+    }
+
+    public void fillHeadersMap(final List<com.knubisoft.cott.testing.model.scenario.Header> headerList,
+                               final Map<String, String> headers,
+                               final InterpreterDependencies.Authorization authorization) {
+        if (authorization != null && !authorization.getHeaders().isEmpty()) {
+            headers.putAll(authorization.getHeaders());
+        }
+        for (com.knubisoft.cott.testing.model.scenario.Header header : headerList) {
+            headers.put(header.getName(), header.getData());
+        }
     }
 
     public Map<String, String> injectAndGetHeaders(final Map<String, String> headersMap,

@@ -1,9 +1,9 @@
 package com.knubisoft.cott.testing.framework.db.sql;
 
-import com.knubisoft.cott.testing.framework.db.sql.executor.impl.MySqlExecutor;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnMysqlEnabledCondition;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.Source;
+import com.knubisoft.cott.testing.framework.db.sql.executor.impl.MySqlExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,6 +37,6 @@ public class MySqlOperation implements StorageOperation {
 
     @Override
     public void clearSystem() {
-        mySqlExecutor.forEach((key, value) -> value.truncate(key));
+        mySqlExecutor.forEach((key, value) -> value.truncate());
     }
 }

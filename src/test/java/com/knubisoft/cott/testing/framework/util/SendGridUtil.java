@@ -3,22 +3,21 @@ package com.knubisoft.cott.testing.framework.util;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
+import com.knubisoft.cott.testing.model.scenario.Body;
+import com.knubisoft.cott.testing.model.scenario.Header;
 import com.knubisoft.cott.testing.model.scenario.Param;
 import com.knubisoft.cott.testing.model.scenario.Sendgrid;
-import com.knubisoft.cott.testing.model.scenario.Body;
 import com.knubisoft.cott.testing.model.scenario.SendgridInfo;
 import com.sendgrid.Method;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -48,9 +47,9 @@ public final class SendGridUtil {
                 .orElseThrow(() -> new DefaultFrameworkException(INCORRECT_HTTP_PROCESSING));
     }
 
-    public String injectAppropriatePart(final Body body,
-                                        final AbstractInterpreter<?> interpreter,
-                                        final InterpreterDependencies dependencies) throws IOException {
+    private String injectAppropriatePart(final Body body,
+                                         final AbstractInterpreter<?> interpreter,
+                                         final InterpreterDependencies dependencies) throws IOException {
         if (body == null) {
             return StringUtils.EMPTY;
         } else if (body.getRaw() != null) {
@@ -64,24 +63,24 @@ public final class SendGridUtil {
     private String injectFromFile(final Body body,
                                   final AbstractInterpreter<?> interpreter,
                                   final InterpreterDependencies dependencies) throws IOException {
-        String fileName = body.getFrom().getFile();
-        File from = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
-        String content = FileUtils.readFileToString(from, StandardCharsets.UTF_8);
-        return interpreter.inject(content);
+        return HttpUtil.injectFromFile(body, interpreter, dependencies.getFile());
     }
 
     public Map<String, String> injectAndGetHeaders(final Map<String, String> headersMap,
                                                    final AbstractInterpreter<?> interpreter) {
-        Map<String, String> injected = new LinkedHashMap<>(headersMap.size());
-        for (Map.Entry<String, String> each : headersMap.entrySet()) {
-            injected.put(interpreter.inject(each.getKey()), interpreter.inject(each.getValue()));
-        }
-        return injected;
+        return HttpUtil.injectAndGetHeaders(headersMap, interpreter);
+    }
+
+    public void fillHeadersMap(final List<Header> headerList,
+                               final Map<String, String> headers,
+                               final InterpreterDependencies.Authorization authorization) {
+        HttpUtil.fillHeadersMap(headerList, headers, authorization);
     }
 
     private String getFromParam(final Body body,
                                 final AbstractInterpreter<?> interpreter) {
-        Map<String, String> bodyParamMap = body.getParam().stream()
+        List<Param> params = body.getParam();
+        Map<String, String> bodyParamMap = params.stream()
                 .collect(toMap(Param::getName, Param::getData, (k, v) -> k, LinkedHashMap::new));
 
         return interpreter.toString(bodyParamMap);

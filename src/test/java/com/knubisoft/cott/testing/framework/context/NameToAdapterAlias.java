@@ -30,10 +30,6 @@ public class NameToAdapterAlias {
         return new HashMap<>(alias);
     }
 
-    public StorageOperation getStorageOperation(final String name) {
-        Metadata metadata = getByNameOrThrow(name);
-        return metadata.getStorageOperation();
-    }
     public void removeAlias(final String name) {
         this.alias.remove(name);
     }

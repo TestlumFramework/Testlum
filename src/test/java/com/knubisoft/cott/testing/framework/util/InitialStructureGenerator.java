@@ -13,10 +13,10 @@ import java.util.Map;
 
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.CONFIG_EXAMPLE_FILENAME;
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.DATA_FOLDER;
+import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.EXAMPLE_TEST_FOLDER;
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.EXPECTED_EXAMPLE_FILENAME;
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.JS_SCRIPT_EXAMPLE_FILENAME;
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.REQUIRED_FOLDER_NAMES;
-import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.SCENARIOS_FOLDER;
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.SCENARIO_FILENAME;
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.SHELL_SCRIPT_EXAMPLE_FILENAME;
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.TEST_SAMPLE_PATH;
@@ -29,8 +29,8 @@ public class InitialStructureGenerator {
     static {
         final Map<String, String> map = new HashMap<>(5);
         map.put(CONFIG_EXAMPLE_FILENAME, "");
-        map.put(SCENARIO_FILENAME, SCENARIOS_FOLDER);
-        map.put(EXPECTED_EXAMPLE_FILENAME, SCENARIOS_FOLDER);
+        map.put(SCENARIO_FILENAME, EXAMPLE_TEST_FOLDER);
+        map.put(EXPECTED_EXAMPLE_FILENAME, EXAMPLE_TEST_FOLDER);
         map.put(JS_SCRIPT_EXAMPLE_FILENAME, DATA_FOLDER);
         map.put(SHELL_SCRIPT_EXAMPLE_FILENAME, DATA_FOLDER);
         FOR_COPY_FILENAMES_TO_FOLDERS = Collections.unmodifiableMap(map);

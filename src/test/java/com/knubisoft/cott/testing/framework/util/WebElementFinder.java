@@ -8,23 +8,39 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 import static java.lang.String.format;
 
 @Slf4j
 @UtilityClass
 public final class WebElementFinder {
 
+    private static final Map<Predicate<Locator>, Function<Locator, By>> SEARCH_TYPES;
+
+    static {
+        final Map<Predicate<Locator>, Function<Locator, By>> map = new HashMap<>();
+        map.put(l -> Objects.nonNull(l.getXpath()), l -> By.xpath(l.getXpath()));
+        map.put(l -> Objects.nonNull(l.getId()), l -> By.id(l.getId()));
+        map.put(l -> Objects.nonNull(l.getClazz()), l -> By.className(l.getClazz()));
+        map.put(l -> Objects.nonNull(l.getCssSelector()), l -> By.cssSelector(l.getCssSelector()));
+        map.put(l -> Objects.nonNull(l.getLinkText()), l -> By.linkText(l.getLinkText()));
+        map.put(l -> Objects.nonNull(l.getPartialLinkText()), l -> By.partialLinkText(l.getPartialLinkText()));
+        SEARCH_TYPES = Collections.unmodifiableMap(map);
+    }
+
     public WebElement find(final Locator locator, final WebDriver driver) {
-        if (locator.getXpath() != null) {
-            return driver.findElement(By.xpath(locator.getXpath()));
-        } else if (locator.getId() != null) {
-            return driver.findElement(By.id(locator.getId()));
-        } else if (locator.getClazz() != null) {
-            return driver.findElement(By.className(locator.getClazz()));
-        } else if (locator.getCssSelector() != null) {
-            return driver.findElement(By.cssSelector(locator.getCssSelector()));
-        }
-        throw defaultFrameworkException(locator);
+        return SEARCH_TYPES.entrySet().stream()
+                .filter(l -> l.getKey().test(locator))
+                .findFirst()
+                .map(l -> l.getValue().apply(locator))
+                .map(driver::findElement)
+                .orElseThrow(() -> defaultFrameworkException(locator));
     }
 
     private DefaultFrameworkException defaultFrameworkException(final Locator locator) {

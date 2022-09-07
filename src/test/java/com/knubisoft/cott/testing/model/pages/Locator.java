@@ -24,6 +24,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="id" type="{http://www.knubisoft.com/cott/testing/model/pages}nonEmptyString"/&gt;
  *         &lt;element name="class" type="{http://www.knubisoft.com/cott/testing/model/pages}nonEmptyString"/&gt;
  *         &lt;element name="cssSelector" type="{http://www.knubisoft.com/cott/testing/model/pages}nonEmptyString"/&gt;
+ *         &lt;element name="linkText" type="{http://www.knubisoft.com/cott/testing/model/pages}nonEmptyString"/&gt;
+ *         &lt;element name="partialLinkText" type="{http://www.knubisoft.com/cott/testing/model/pages}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/cott/testing/model/pages}pagesLocator" /&gt;
  *       &lt;attribute name="description" type="{http://www.knubisoft.com/cott/testing/model/pages}nonEmptyString" /&gt;
@@ -39,7 +41,9 @@ import javax.xml.bind.annotation.XmlType;
     "xpath",
     "id",
     "clazz",
-    "cssSelector"
+    "cssSelector",
+    "linkText",
+    "partialLinkText"
 })
 public class Locator {
 
@@ -48,6 +52,8 @@ public class Locator {
     @XmlElement(name = "class")
     protected String clazz;
     protected String cssSelector;
+    protected String linkText;
+    protected String partialLinkText;
     @XmlAttribute(name = "locatorId", required = true)
     protected String locatorId;
     @XmlAttribute(name = "description")
@@ -147,6 +153,54 @@ public class Locator {
      */
     public void setCssSelector(String value) {
         this.cssSelector = value;
+    }
+
+    /**
+     * Gets the value of the linkText property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getLinkText() {
+        return linkText;
+    }
+
+    /**
+     * Sets the value of the linkText property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setLinkText(String value) {
+        this.linkText = value;
+    }
+
+    /**
+     * Gets the value of the partialLinkText property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getPartialLinkText() {
+        return partialLinkText;
+    }
+
+    /**
+     * Sets the value of the partialLinkText property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setPartialLinkText(String value) {
+        this.partialLinkText = value;
     }
 
     /**

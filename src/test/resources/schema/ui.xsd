@@ -167,6 +167,8 @@
             <x:enumeration value="id"/>
             <x:enumeration value="xpath"/>
             <x:enumeration value="cssSelector"/>
+            <x:enumeration value="linkText"/>
+            <x:enumeration value="partialLinkText"/>
         </x:restriction>
     </x:simpleType>
 

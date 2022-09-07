@@ -35,7 +35,7 @@
 
     <x:complexType name="resultFrom">
         <x:attribute name="type" type="tns:varType"/>
-        <x:attribute name="InputValue" type="tns:nonEmptyString"/>
+        <x:attribute name="value" type="tns:nonEmptyString"/>
     </x:complexType>
 
     <x:simpleType name="varType">

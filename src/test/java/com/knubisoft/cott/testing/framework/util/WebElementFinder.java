@@ -10,18 +10,16 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static java.lang.String.format;
-import static java.lang.String.valueOf;
 
 @Slf4j
 @UtilityClass
 public final class WebElementFinder {
 
-    private static final Map<Predicate<Locator>, Function<Locator, By>> chooseSelector =
+    private static final Map<Predicate<Locator>, Function<Locator, By>> CHOOSESELECTOR =
             ImmutableMap.<Predicate<Locator>, Function<Locator, By>>builder()
                     .put(it -> it.getXpath() != null, it -> By.xpath(it.getXpath()))
                     .put(it -> it.getId() != null, it -> By.id(it.getId()))
@@ -32,7 +30,7 @@ public final class WebElementFinder {
                     .build();
 
     public WebElement find(final Locator locator, final WebDriver driver) {
-        return chooseSelector.entrySet().stream()
+        return CHOOSESELECTOR.entrySet().stream()
                 .filter(it -> it.getKey().test(locator))
                 .findFirst()
                 .map(it -> it.getValue().apply(locator))

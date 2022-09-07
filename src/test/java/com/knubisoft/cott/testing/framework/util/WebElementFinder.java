@@ -1,6 +1,5 @@
 package com.knubisoft.cott.testing.framework.util;
 
-import com.google.common.collect.ImmutableMap;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.model.pages.Locator;
 import lombok.experimental.UtilityClass;
@@ -9,6 +8,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -23,14 +24,14 @@ public final class WebElementFinder {
     private static final Map<Predicate<Locator>, Function<Locator, By>> SEARCH_TYPES;
 
     static {
-        SEARCH_TYPES = ImmutableMap.<Predicate<Locator>, Function<Locator, By>>builder()
-                .put(it -> Objects.nonNull(it.getXpath()), it -> By.xpath(it.getXpath()))
-                .put(it -> Objects.nonNull(it.getId()), it -> By.id(it.getId()))
-                .put(it -> Objects.nonNull(it.getClazz()), it -> By.className(it.getClazz()))
-                .put(it -> Objects.nonNull(it.getCssSelector()), it -> By.cssSelector(it.getCssSelector()))
-                .put(it -> Objects.nonNull(it.getLinkText()), it -> By.linkText(it.getLinkText()))
-                .put(it -> Objects.nonNull(it.getPartialLinkText()), it -> By.partialLinkText(it.getPartialLinkText()))
-                .build();
+        final Map<Predicate<Locator>, Function<Locator, By>> map = new HashMap<>();
+        map.put(locator -> Objects.nonNull(locator.getXpath()), locator -> By.xpath(locator.getXpath()));
+        map.put(locator -> Objects.nonNull(locator.getId()), locator -> By.id(locator.getId()));
+        map.put(locator -> Objects.nonNull(locator.getClazz()), locator -> By.className(locator.getClazz()));
+        map.put(locator -> Objects.nonNull(locator.getCssSelector()), locator -> By.cssSelector(locator.getCssSelector()));
+        map.put(locator -> Objects.nonNull(locator.getLinkText()), locator -> By.linkText(locator.getLinkText()));
+        map.put(locator -> Objects.nonNull(locator.getPartialLinkText()), locator -> By.partialLinkText(locator.getPartialLinkText()));
+        SEARCH_TYPES = Collections.unmodifiableMap(map);
     }
 
     public WebElement find(final Locator locator, final WebDriver driver) {

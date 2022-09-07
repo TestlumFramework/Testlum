@@ -11,32 +11,54 @@
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:choice>
-                    <x:element name="value" type="tns:nonEmptyString"/>
-                    <x:element name="xpath" type="tns:nonEmptyString"/>
-                    <x:element name="jpath" type="tns:nonEmptyString"/>
-                    <x:element name="postgresResult" type="tns:postgresResult"/>
-                    <x:element name="expression" type="tns:nonEmptyString"/>
+                    <x:element name="relationalDbResult" type="tns:relationalDbResult"/>
+                    <x:element name="resultFrom" type="tns:resultFrom"/>
+
                 </x:choice>
                 <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="postgresResult">
+    <x:complexType name="relationalDbResult">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:sequence>
                     <x:element name="query" type="tns:variableQuery"/>
                 </x:sequence>
                 <x:attribute name="file" type="tns:nonEmptyString"/>
-                <x:attribute name="databaseName" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="dbType" type="tns:relationalDB" use="required"/>
+                <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
+
+    <x:complexType name="resultFrom">
+        <x:attribute name="type" type="tns:varType"/>
+        <x:attribute name="InputValue" type="tns:nonEmptyString"/>
+    </x:complexType>
+
+    <x:simpleType name="varType">
+        <x:restriction base="x:string">
+            <x:enumeration value="value"/>
+            <x:enumeration value="jpath"/>
+            <x:enumeration value="expression"/>
+        </x:restriction>
+    </x:simpleType>
 
     <x:simpleType name="variableQuery">
         <x:restriction base="x:string">
             <x:pattern value="SELECT[^\*,]+FROM.+WHERE.+"/>
         </x:restriction>
     </x:simpleType>
+
+    <x:simpleType name="relationalDB">
+        <x:restriction base="x:string">
+            <x:enumeration value="POSTGRES"/>
+            <x:enumeration value="MYSQL"/>
+            <x:enumeration value="ORACLE"/>
+            <x:enumeration value="CLICKHOUSE"/>
+        </x:restriction>
+    </x:simpleType>
 </x:schema>
+

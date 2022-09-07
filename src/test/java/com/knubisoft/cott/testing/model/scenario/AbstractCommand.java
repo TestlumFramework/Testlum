@@ -65,7 +65,7 @@ import javax.xml.bind.annotation.XmlType;
     RepeatUiCommand.class,
     Break.class,
     When.class,
-    PostgresResult.class,
+    RelationalDbResult.class,
     Logout.class
 })
 public abstract class AbstractCommand {

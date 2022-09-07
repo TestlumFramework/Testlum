@@ -58,6 +58,7 @@ public class ResultUtil {
     public static final String JSON_PATH = "JSON path";
     public static final String XPATH = "Xpath";
     public static final String POSTGRES_QUERY = "Postgres query";
+    public static final String RELATIONAL_DB_QUERY = "Relational DB query";
     public static final String EXPRESSION = "Expression";
     public static final String NO_EXPRESSION = "No expression";
     public static final String CONSTANT = "Constant";

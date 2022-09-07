@@ -25,20 +25,20 @@ public final class WebElementFinder {
 
     static {
         final Map<Predicate<Locator>, Function<Locator, By>> map = new HashMap<>();
-        map.put(locator -> Objects.nonNull(locator.getXpath()), locator -> By.xpath(locator.getXpath()));
-        map.put(locator -> Objects.nonNull(locator.getId()), locator -> By.id(locator.getId()));
-        map.put(locator -> Objects.nonNull(locator.getClazz()), locator -> By.className(locator.getClazz()));
-        map.put(locator -> Objects.nonNull(locator.getCssSelector()), locator -> By.cssSelector(locator.getCssSelector()));
-        map.put(locator -> Objects.nonNull(locator.getLinkText()), locator -> By.linkText(locator.getLinkText()));
-        map.put(locator -> Objects.nonNull(locator.getPartialLinkText()), locator -> By.partialLinkText(locator.getPartialLinkText()));
+        map.put(l -> Objects.nonNull(l.getXpath()), l -> By.xpath(l.getXpath()));
+        map.put(l -> Objects.nonNull(l.getId()), l -> By.id(l.getId()));
+        map.put(l -> Objects.nonNull(l.getClazz()), l -> By.className(l.getClazz()));
+        map.put(l -> Objects.nonNull(l.getCssSelector()), l -> By.cssSelector(l.getCssSelector()));
+        map.put(l -> Objects.nonNull(l.getLinkText()), l -> By.linkText(l.getLinkText()));
+        map.put(l -> Objects.nonNull(l.getPartialLinkText()), l -> By.partialLinkText(l.getPartialLinkText()));
         SEARCH_TYPES = Collections.unmodifiableMap(map);
     }
 
     public WebElement find(final Locator locator, final WebDriver driver) {
         return SEARCH_TYPES.entrySet().stream()
-                .filter(it -> it.getKey().test(locator))
+                .filter(l -> l.getKey().test(locator))
                 .findFirst()
-                .map(it -> it.getValue().apply(locator))
+                .map(l -> l.getValue().apply(locator))
                 .map(driver::findElement)
                 .orElseThrow(() -> defaultFrameworkException(locator));
     }

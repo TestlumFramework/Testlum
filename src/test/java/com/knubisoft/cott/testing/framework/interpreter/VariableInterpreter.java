@@ -74,11 +74,11 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         ResultFrom resultFrom = var.getResultFrom();
         switch (resultFrom.getType()) {
             case EXPRESSION:
-                return getExpressionResult(resultFrom.getInputValue(), var.getName(), result);
+                return getExpressionResult(resultFrom.getValue(), var.getName(), result);
             case JPATH:
-                return getJpathResult(resultFrom.getInputValue(), var.getName(), result);
+                return getJpathResult(resultFrom.getValue(), var.getName(), result);
             case VALUE:
-                return getValueResult(resultFrom.getInputValue(), var.getName(), result);
+                return getValueResult(resultFrom.getValue(), var.getName(), result);
             default:
                 throw new DefaultFrameworkException("Type of 'Var' tag is not supported");
         }

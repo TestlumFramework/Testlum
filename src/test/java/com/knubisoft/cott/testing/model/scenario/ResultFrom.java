@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="type" type="{http://www.knubisoft.com/cott/testing/model/scenario}varType" /&gt;
- *       &lt;attribute name="InputValue" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="value" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -31,8 +31,8 @@ public class ResultFrom {
 
     @XmlAttribute(name = "type")
     protected VarType type;
-    @XmlAttribute(name = "InputValue")
-    protected String inputValue;
+    @XmlAttribute(name = "value")
+    protected String value;
 
     /**
      * Gets the value of the type property.
@@ -59,27 +59,27 @@ public class ResultFrom {
     }
 
     /**
-     * Gets the value of the inputValue property.
+     * Gets the value of the value property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getInputValue() {
-        return inputValue;
+    public String getValue() {
+        return value;
     }
 
     /**
-     * Sets the value of the inputValue property.
+     * Sets the value of the value property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setInputValue(String value) {
-        this.inputValue = value;
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }

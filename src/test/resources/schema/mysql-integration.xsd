@@ -15,15 +15,7 @@
 
     <x:complexType name="mysql">
         <x:complexContent>
-            <x:extension base="tns:integration">
-                <x:sequence>
-                    <x:element name="jdbcDriver" type="tns:nonEmptyString"/>
-                    <x:element name="username" type="tns:nonEmptyString"/>
-                    <x:element name="password" type="tns:nonEmptyString"/>
-                    <x:element name="connectionUrl" type="tns:nonEmptyString"/>
-                    <x:element name="hikari" type="tns:hikari"/>
-                </x:sequence>
-            </x:extension>
+            <x:extension base="tns:databaseConfig"/>
         </x:complexContent>
     </x:complexType>
 </x:schema>

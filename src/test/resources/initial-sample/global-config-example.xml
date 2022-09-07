@@ -2,8 +2,9 @@
                          xmlns="http://www.knubisoft.com/cott/testing/model/global-config"
                          xsi:schemaLocation="http://www.knubisoft.com/cott/testing/model/global-config global-config.xsd">
     <stopScenarioOnFailure>false</stopScenarioOnFailure>
+    <delayBetweenScenariosRuns seconds="1" enabled="false"/>
 
-    <runScenariosByTag enable="true">
+    <runScenariosByTag enable="false">
         <tag name="someTag" enable="true"/>
     </runScenariosByTag>
 

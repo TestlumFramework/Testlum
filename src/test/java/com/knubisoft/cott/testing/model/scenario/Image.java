@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="compareWithFullScreen" type="{http://www.w3.org/2001/XMLSchema}anyType"/&gt;
  *         &lt;element name="compareWith" type="{http://www.knubisoft.com/cott/testing/model/scenario}compareWith"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="file" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="file" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}imageExtension" /&gt;
  *       &lt;attribute name="highlightDifference" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;

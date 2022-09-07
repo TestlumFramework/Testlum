@@ -2,14 +2,10 @@ package com.knubisoft.cott.testing.framework.db.sql.executor.impl;
 
 
 import com.knubisoft.cott.testing.framework.db.sql.executor.AbstractSqlExecutor;
-import lombok.SneakyThrows;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
-
-import static java.lang.String.format;
-import static java.util.Objects.requireNonNull;
 
 public class PostgresExecutor extends AbstractSqlExecutor {
 
@@ -28,15 +24,8 @@ public class PostgresExecutor extends AbstractSqlExecutor {
         super(dataSource);
     }
 
-    @SneakyThrows
     @Override
     public void truncate() {
-        final String schemaName = requireNonNull(template.getDataSource()).getConnection().getSchema();
-        List<String> tables = template.queryForList(format(SELECT_POSTGRES_TABLE_NAMES, schemaName), String.class);
-        for (String table : tables) {
-            for (String query : TRUNCATE_QUERIES) {
-                requireNonNull(template).execute(format(query, table));
-            }
-        }
+        super.defaultTruncate(SELECT_POSTGRES_TABLE_NAMES, TRUNCATE_QUERIES);
     }
 }

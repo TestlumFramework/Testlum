@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+
+function main {
+    local SUBCOMMAND="$1"
+
+    case $SUBCOMMAND in
+    generate) generate "${@:2}" ;;
+    esac
+}
+
+function generate {
+    for var in "$@"
+      do
+        getGenerateVal "$var"
+    done
+
+}
+
+function getGenerateVal() {
+    local arg="$1"
+    case $arg in
+          models) mvn -pl ./ --also-make clean package -DskipGenerateModels=false -DskipTests=true ;;
+    esac
+}
+
+main "$@"

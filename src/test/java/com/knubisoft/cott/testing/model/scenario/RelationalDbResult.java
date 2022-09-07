@@ -9,19 +9,20 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for postgresResult complex type.
+ * <p>Java class for relationalDbResult complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="postgresResult"&gt;
+ * &lt;complexType name="relationalDbResult"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="query" type="{http://www.knubisoft.com/cott/testing/model/scenario}variableQuery"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="databaseName" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="dbType" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}relationalDB" /&gt;
+ *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -30,10 +31,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "postgresResult", propOrder = {
+@XmlType(name = "relationalDbResult", propOrder = {
     "query"
 })
-public class PostgresResult
+public class RelationalDbResult
     extends AbstractCommand
 {
 
@@ -41,8 +42,10 @@ public class PostgresResult
     protected String query;
     @XmlAttribute(name = "file")
     protected String file;
-    @XmlAttribute(name = "databaseName", required = true)
-    protected String databaseName;
+    @XmlAttribute(name = "dbType", required = true)
+    protected RelationalDB dbType;
+    @XmlAttribute(name = "alias", required = true)
+    protected String alias;
 
     /**
      * Gets the value of the query property.
@@ -93,27 +96,51 @@ public class PostgresResult
     }
 
     /**
-     * Gets the value of the databaseName property.
+     * Gets the value of the dbType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link RelationalDB }
+     *     
+     */
+    public RelationalDB getDbType() {
+        return dbType;
+    }
+
+    /**
+     * Sets the value of the dbType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link RelationalDB }
+     *     
+     */
+    public void setDbType(RelationalDB value) {
+        this.dbType = value;
+    }
+
+    /**
+     * Gets the value of the alias property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getDatabaseName() {
-        return databaseName;
+    public String getAlias() {
+        return alias;
     }
 
     /**
-     * Sets the value of the databaseName property.
+     * Sets the value of the alias property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setDatabaseName(String value) {
-        this.databaseName = value;
+    public void setAlias(String value) {
+        this.alias = value;
     }
 
 }

@@ -29,10 +29,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "integration")
 @XmlSeeAlso({
-    Postgres.class,
     Clickhouse.class,
-    Mysql.class,
-    Oracle.class,
+    DatabaseConfig.class,
     Redis.class,
     Mongo.class,
     S3 .class,

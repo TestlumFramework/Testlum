@@ -91,7 +91,7 @@
         <jakarta.activation.version>1.2.2</jakarta.activation.version>
         <com.twilio.sdk.version>9.0.0-rc.3</com.twilio.sdk.version>
         <image-comparison.version>4.4.0</image-comparison.version>
-        <skipXjc>true</skipXjc>
+        <skipGenerateModels>true</skipGenerateModels>
     </properties>
 
     <repositories>
@@ -1008,8 +1008,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <skipXjc>${skipXjc}</skipXjc>
-                    <skipTestXjc>${skipXjc}</skipTestXjc>
+                    <skipXjc>${skipGenerateModels}</skipXjc>
+                    <skipTestXjc>${skipGenerateModels}</skipTestXjc>
                     <outputDirectory>src/test/java</outputDirectory>
                     <clearOutputDir>false</clearOutputDir>
                     <sources>
@@ -1026,7 +1026,7 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>${exec.maven.plugin.version}</version>
                 <configuration>
-                    <skip>${skipXjc}</skip>
+                    <skip>${skipGenerateModels}</skip>
                 </configuration>
                 <executions>
                     <execution>
@@ -1039,27 +1039,6 @@
                                 <delete dir="${basedir}/src/test/java/META-INF"/>
                             </target>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${maven.surefire.failsafe.version}</version>
-                <configuration>
-                    <testFailureIgnore>false</testFailureIgnore>
-                    <includes>
-                        <include>**/UIRootTest*.java</include>
-                    </includes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>ui-test</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>

@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.db.sql.executor;
 
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUCCESS_QUERY;
+import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.LF;
@@ -37,6 +39,17 @@ public abstract class AbstractSqlExecutor {
     }
 
     public abstract void truncate();
+
+    protected void defaultTruncate(final String selectTableNamesQuery, final List<String> truncateQueries) {
+        HikariDataSource dataSource = (HikariDataSource) requireNonNull(template.getDataSource());
+        final String schemaName = dataSource.getSchema();
+        List<String> tables = template.queryForList(format(selectTableNamesQuery, schemaName), String.class);
+        for (String table : tables) {
+            for (String query : truncateQueries) {
+                requireNonNull(template).execute(format(query, table));
+            }
+        }
+    }
 
     public List<StorageOperation.QueryResult<Object>> executeQueries(final List<String> queries) {
         try {

@@ -116,7 +116,7 @@ public class ExceptionMessage {
     public static final String UNKNOWN_BROWSER_TYPE = "Unknown browser type was found. Available browser types are: "
             + "<local browser>, <browser in docker>, <remote browser>";
 
-    public static final String ALIAS_NOT_FOUND = "Cannot find integration with alias <%s>";
+    public static final String ALIAS_NOT_FOUND = "Cannot find enabled integration with alias <%s>";
     public static final String API_NOT_FOUND = "Cannot find api with alias <%s>";
     public static final String IMAGES_DONT_MATCH = "The images don't match. Image comparison state is -> %s";
 }

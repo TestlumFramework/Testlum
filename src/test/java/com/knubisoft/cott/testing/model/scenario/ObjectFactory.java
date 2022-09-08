@@ -78,11 +78,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Ui }
+     * Create an instance of {@link Mobilebrowser }
      * 
      */
-    public Ui createUi() {
-        return new Ui();
+    public Mobilebrowser createMobilebrowser() {
+        return new Mobilebrowser();
+    }
+
+    /**
+     * Create an instance of {@link Web }
+     * 
+     */
+    public Web createWeb() {
+        return new Web();
+    }
+
+    /**
+     * Create an instance of {@link Native }
+     * 
+     */
+    public Native createNative() {
+        return new Native();
     }
 
     /**

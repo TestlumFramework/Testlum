@@ -21,7 +21,9 @@
     <x:include schemaLocation="ses-integration.xsd"/>
     <x:include schemaLocation="smtp-integration.xsd"/>
     <x:include schemaLocation="twilio-integration.xsd"/>
-    <x:include schemaLocation="ui-config.xsd"/>
+    <x:include schemaLocation="web-config.xsd"/>
+    <x:include schemaLocation="mobilebrowser-config.xsd"/>
+    <x:include schemaLocation="native-config.xsd"/>
     <x:include schemaLocation="report.xsd"/>
     <x:include schemaLocation="shared-config.xsd"/>
 
@@ -40,7 +42,9 @@
                 <x:element name="delayBetweenScenariosRuns" type="tns:delayBetweenScenariosRuns" minOccurs="0"/>
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
                 <x:element name="report" type="tns:report"/>
-                <x:element name="ui" type="tns:ui" minOccurs="0"/>
+                <x:element name="web" type="tns:web" minOccurs="0"/>
+                <x:element name="mobilebrowser" type="tns:mobilebrowser" minOccurs="0"/>
+                <x:element name="native" type="tns:native" minOccurs="0"/>
                 <x:element name="auth" type="tns:auth"/>
                 <x:element name="integrations" type="tns:integrations" minOccurs="0"/>
             </x:sequence>

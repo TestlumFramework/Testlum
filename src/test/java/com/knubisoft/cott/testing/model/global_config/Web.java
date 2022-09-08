@@ -9,12 +9,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ui complex type.
+ * <p>Java class for web complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ui"&gt;
+ * &lt;complexType name="web"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
@@ -30,11 +30,11 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ui", propOrder = {
+@XmlType(name = "web", propOrder = {
     "baseUrl",
     "browserSettings"
 })
-public class Ui {
+public class Web {
 
     @XmlElement(required = true)
     protected String baseUrl;

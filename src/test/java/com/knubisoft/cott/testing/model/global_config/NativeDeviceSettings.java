@@ -8,16 +8,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for browserSettings complex type.
+ * <p>Java class for nativeDeviceSettings complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="browserSettings"&gt;
+ * &lt;complexType name="nativeDeviceSettings"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}settings"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="browsers" type="{http://www.knubisoft.com/cott/testing/model/global-config}browsers"/&gt;
+ *         &lt;element name="devices" type="{http://www.knubisoft.com/cott/testing/model/global-config}nativeDevices"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -27,38 +27,38 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "browserSettings", propOrder = {
-    "browsers"
+@XmlType(name = "nativeDeviceSettings", propOrder = {
+    "devices"
 })
-public class BrowserSettings
+public class NativeDeviceSettings
     extends Settings
 {
 
     @XmlElement(required = true)
-    protected Browsers browsers;
+    protected NativeDevices devices;
 
     /**
-     * Gets the value of the browsers property.
+     * Gets the value of the devices property.
      * 
      * @return
      *     possible object is
-     *     {@link Browsers }
+     *     {@link NativeDevices }
      *     
      */
-    public Browsers getBrowsers() {
-        return browsers;
+    public NativeDevices getDevices() {
+        return devices;
     }
 
     /**
-     * Sets the value of the browsers property.
+     * Sets the value of the devices property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Browsers }
+     *     {@link NativeDevices }
      *     
      */
-    public void setBrowsers(Browsers value) {
-        this.browsers = value;
+    public void setDevices(NativeDevices value) {
+        this.devices = value;
     }
 
 }

@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -49,7 +50,12 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "ui", propOrder = {
     "clickOrInputOrNavigate"
 })
-public class Ui
+@XmlSeeAlso({
+    Mobilebrowser.class,
+    Web.class,
+    Native.class
+})
+public abstract class Ui
     extends AbstractCommand
 {
 

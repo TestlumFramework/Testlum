@@ -9,17 +9,18 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ui complex type.
+ * <p>Java class for mobilebrowser complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ui"&gt;
+ * &lt;complexType name="mobilebrowser"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="baseUrl" type="{http://www.knubisoft.com/cott/testing/model/global-config}url"/&gt;
- *         &lt;element name="browserSettings" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserSettings"/&gt;
+ *         &lt;element name="appiumServerUrl" type="{http://www.knubisoft.com/cott/testing/model/global-config}url"/&gt;
+ *         &lt;element name="deviceSettings" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowserDeviceSettings"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/restriction&gt;
@@ -30,16 +31,19 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ui", propOrder = {
+@XmlType(name = "mobilebrowser", propOrder = {
     "baseUrl",
-    "browserSettings"
+    "appiumServerUrl",
+    "deviceSettings"
 })
-public class Ui {
+public class Mobilebrowser {
 
     @XmlElement(required = true)
     protected String baseUrl;
     @XmlElement(required = true)
-    protected BrowserSettings browserSettings;
+    protected String appiumServerUrl;
+    @XmlElement(required = true)
+    protected MobilebrowserDeviceSettings deviceSettings;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
 
@@ -68,27 +72,51 @@ public class Ui {
     }
 
     /**
-     * Gets the value of the browserSettings property.
+     * Gets the value of the appiumServerUrl property.
      * 
      * @return
      *     possible object is
-     *     {@link BrowserSettings }
+     *     {@link String }
      *     
      */
-    public BrowserSettings getBrowserSettings() {
-        return browserSettings;
+    public String getAppiumServerUrl() {
+        return appiumServerUrl;
     }
 
     /**
-     * Sets the value of the browserSettings property.
+     * Sets the value of the appiumServerUrl property.
      * 
      * @param value
      *     allowed object is
-     *     {@link BrowserSettings }
+     *     {@link String }
      *     
      */
-    public void setBrowserSettings(BrowserSettings value) {
-        this.browserSettings = value;
+    public void setAppiumServerUrl(String value) {
+        this.appiumServerUrl = value;
+    }
+
+    /**
+     * Gets the value of the deviceSettings property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link MobilebrowserDeviceSettings }
+     *     
+     */
+    public MobilebrowserDeviceSettings getDeviceSettings() {
+        return deviceSettings;
+    }
+
+    /**
+     * Sets the value of the deviceSettings property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link MobilebrowserDeviceSettings }
+     *     
+     */
+    public void setDeviceSettings(MobilebrowserDeviceSettings value) {
+        this.deviceSettings = value;
     }
 
     /**

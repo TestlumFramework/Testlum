@@ -8,15 +8,15 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for takeScreenshotOfEachUiCommand complex type.
+ * <p>Java class for elementAutowait complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="takeScreenshotOfEachUiCommand"&gt;
+ * &lt;complexType name="elementAutowait"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="enable" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="seconds" use="required" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -25,26 +25,26 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "takeScreenshotOfEachUiCommand")
-public class TakeScreenshotOfEachUiCommand {
+@XmlType(name = "elementAutowait")
+public class ElementAutowait {
 
-    @XmlAttribute(name = "enable", required = true)
-    protected boolean enable;
+    @XmlAttribute(name = "seconds", required = true)
+    protected int seconds;
 
     /**
-     * Gets the value of the enable property.
+     * Gets the value of the seconds property.
      * 
      */
-    public boolean isEnable() {
-        return enable;
+    public int getSeconds() {
+        return seconds;
     }
 
     /**
-     * Sets the value of the enable property.
+     * Sets the value of the seconds property.
      * 
      */
-    public void setEnable(boolean value) {
-        this.enable = value;
+    public void setSeconds(int value) {
+        this.seconds = value;
     }
 
 }

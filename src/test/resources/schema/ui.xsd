@@ -8,7 +8,7 @@
     <x:include schemaLocation="shared.xsd"/>
     <x:include schemaLocation="wait.xsd"/>
 
-    <x:complexType name="ui">
+    <x:complexType name="ui" abstract="true">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:choice maxOccurs="unbounded">

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/cott/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/cott/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="ui.xsd"/>
+
+    <x:complexType name="native">
+        <x:complexContent>
+            <x:extension base="tns:ui">
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+</x:schema>

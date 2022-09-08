@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;choice maxOccurs="unbounded"&gt;
  *         &lt;element name="include" type="{http://www.knubisoft.com/cott/testing/model/scenario}include"/&gt;
  *         &lt;element name="repeat" type="{http://www.knubisoft.com/cott/testing/model/scenario}repeat"/&gt;
- *         &lt;element name="ui" type="{http://www.knubisoft.com/cott/testing/model/scenario}ui"/&gt;
+ *         &lt;element name="web" type="{http://www.knubisoft.com/cott/testing/model/scenario}web"/&gt;
  *         &lt;element name="http" type="{http://www.knubisoft.com/cott/testing/model/scenario}http"/&gt;
  *         &lt;element name="migrate" type="{http://www.knubisoft.com/cott/testing/model/scenario}migrate"/&gt;
  *         &lt;element name="postgres" type="{http://www.knubisoft.com/cott/testing/model/scenario}postgres"/&gt;
@@ -68,7 +68,7 @@ public class Repeat
     @XmlElements({
         @XmlElement(name = "include", type = Include.class),
         @XmlElement(name = "repeat", type = Repeat.class),
-        @XmlElement(name = "ui", type = Ui.class),
+        @XmlElement(name = "web", type = Web.class),
         @XmlElement(name = "http", type = Http.class),
         @XmlElement(name = "migrate", type = Migrate.class),
         @XmlElement(name = "postgres", type = Postgres.class),
@@ -117,7 +117,7 @@ public class Repeat
      * Objects of the following type(s) are allowed in the list
      * {@link Include }
      * {@link Repeat }
-     * {@link Ui }
+     * {@link Web }
      * {@link Http }
      * {@link Migrate }
      * {@link Postgres }

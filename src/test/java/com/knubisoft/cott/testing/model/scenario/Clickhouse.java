@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="query" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}aliasPattern" /&gt;
- *       &lt;attribute name="file" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}sqlFileExtension" /&gt;
+ *       &lt;attribute name="file" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}expected" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;

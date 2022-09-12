@@ -230,14 +230,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Invoke }
-     * 
-     */
-    public Invoke createInvoke() {
-        return new Invoke();
-    }
-
-    /**
      * Create an instance of {@link Shell }
      * 
      */
@@ -486,14 +478,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Break }
-     * 
-     */
-    public Break createBreak() {
-        return new Break();
-    }
-
-    /**
      * Create an instance of {@link Get }
      * 
      */
@@ -726,14 +710,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link When }
-     * 
-     */
-    public When createWhen() {
-        return new When();
-    }
-
-    /**
      * Create an instance of {@link RelationalDbResult }
      * 
      */
@@ -747,14 +723,6 @@ public class ObjectFactory {
      */
     public ResultFrom createResultFrom() {
         return new ResultFrom();
-    }
-
-    /**
-     * Create an instance of {@link Target }
-     * 
-     */
-    public Target createTarget() {
-        return new Target();
     }
 
     /**

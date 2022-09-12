@@ -114,7 +114,7 @@
 
     <x:simpleType name="aliasPattern">
         <x:restriction base="x:string">
-            <x:pattern value="[a-zA-Z]+[_\-/]*[a-zA-Z]"/>
+            <x:pattern value="[a-zA-Z\d_\-]+"/>
         </x:restriction>
     </x:simpleType>
 

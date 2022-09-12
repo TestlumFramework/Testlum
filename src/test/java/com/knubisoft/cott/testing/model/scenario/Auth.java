@@ -45,7 +45,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="twilio" type="{http://www.knubisoft.com/cott/testing/model/scenario}twilio"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/cott/testing/model/scenario}var"/&gt;
  *         &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}wait"/&gt;
- *         &lt;element name="invoke" type="{http://www.knubisoft.com/cott/testing/model/scenario}invoke"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="apiAlias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="credentials" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}credentialsExtension" /&gt;
@@ -89,8 +88,7 @@ public class Auth
         @XmlElement(name = "smtp", type = Smtp.class),
         @XmlElement(name = "twilio", type = Twilio.class),
         @XmlElement(name = "var", type = Var.class),
-        @XmlElement(name = "wait", type = Wait.class),
-        @XmlElement(name = "invoke", type = Invoke.class)
+        @XmlElement(name = "wait", type = Wait.class)
     })
     protected List<AbstractCommand> commands;
     @XmlAttribute(name = "apiAlias", required = true)
@@ -142,7 +140,6 @@ public class Auth
      * {@link Twilio }
      * {@link Var }
      * {@link Wait }
-     * {@link Invoke }
      * 
      * 
      */

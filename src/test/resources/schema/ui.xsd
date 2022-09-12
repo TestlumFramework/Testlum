@@ -52,7 +52,7 @@
     <x:complexType name="javascript">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
-                <x:attribute name="file" type="tns:nonEmptyString"/>
+                <x:attribute name="file" type="tns:fileExtension"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

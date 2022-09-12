@@ -129,8 +129,8 @@
                     <x:element name="invoke" type="tns:invoke"/>
                 </x:choice>
                 <x:attribute name="apiAlias" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="credentials" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="loginEndpoint" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="credentials" type="tns:credentialsExtension" use="required"/>
+                <x:attribute name="loginEndpoint" type="tns:endpoint" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -182,6 +182,12 @@
     <x:simpleType name="csv">
         <x:restriction base="x:string">
             <x:pattern value="[a-zA-Z\d_]+\.csv"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="credentialsExtension">
+        <x:restriction base="x:string">
+            <x:pattern value="[a-zA-Z\d_]+\.json"/>
         </x:restriction>
     </x:simpleType>
 </x:schema>

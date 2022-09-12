@@ -64,15 +64,27 @@
     <x:complexType name="header">
         <x:simpleContent>
             <x:extension base="x:string">
-                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="name" type="tns:namePattern" use="required"/>
                 <x:attribute name="data" type="x:string" use="required"/>
             </x:extension>
         </x:simpleContent>
     </x:complexType>
 
+    <x:simpleType name="namePattern" final="restriction">
+        <x:restriction base="x:string">
+            <x:pattern value="[a-zA-Z\-]+"/>
+        </x:restriction>
+    </x:simpleType>
+
     <x:complexType name="file">
-        <x:attribute name="file" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="file" type="tns:fileExtension" use="required"/>
     </x:complexType>
+
+    <x:simpleType name="fileExtension">
+        <x:restriction base="x:string">
+            <x:pattern value=".+(\.(json|js|ts|))"/>
+        </x:restriction>
+    </x:simpleType>
 
     <x:simpleType name="imageExtension">
         <x:restriction base="x:string">
@@ -92,6 +104,19 @@
     <x:simpleType name="scenarioLocator">
         <x:restriction base="x:string">
             <x:pattern value="([a-z0-9]+[A-Z]?[a-z0-9]?)*\.([a-z0-9]+[A-Z]?[a-z0-9]?)*"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="aliasPattern">
+        <x:restriction base="x:string">
+            <x:pattern value="[a-zA-Z]+[_\-/]*[a-zA-Z]"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="endpoint">
+        <x:restriction base="x:string">
+            <x:minLength value="2"/>
+            <x:pattern value="(/[^/].+)"/>
         </x:restriction>
     </x:simpleType>
 </x:schema>

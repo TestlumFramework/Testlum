@@ -199,7 +199,7 @@ public class ResultUtil {
                                 final String httpMethodName,
                                 final CommandResult commandResult) {
         commandResult.put(API_ALIAS, alias);
-        commandResult.put(ENDPOINT, httpInfo.getUrl());
+        commandResult.put(ENDPOINT, httpInfo.getEndpoint());
         commandResult.put(HTTP_METHOD, httpMethodName);
         List<Header> headers = httpInfo.getHeader();
         if (!headers.isEmpty()) {
@@ -212,7 +212,7 @@ public class ResultUtil {
                                                 final String httpMethodName,
                                                 final CommandResult commandResult) {
         commandResult.put(ALIAS, alias);
-        commandResult.put(ENDPOINT, elasticSearchRequest.getUrl());
+        commandResult.put(ENDPOINT, elasticSearchRequest.getEndpoint());
         commandResult.put(HTTP_METHOD, httpMethodName);
         List<Header> headers = elasticSearchRequest.getHeader();
         if (!headers.isEmpty()) {

@@ -63,7 +63,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     protected Response getActual(final ElasticSearchRequest elasticSearchRequest,
                                final HttpMethod httpMethod,
                                final String alias) {
-        LogUtil.logHttpInfo(alias, httpMethod.name(), elasticSearchRequest.getUrl());
+        LogUtil.logHttpInfo(alias, httpMethod.name(), elasticSearchRequest.getEndpoint());
         Request request = buildRequest(elasticSearchRequest, httpMethod);
         try {
             return restClient.get(alias).performRequest(request);
@@ -119,7 +119,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
                                  final HttpMethod httpMethod) {
         Map<String, String> headers = getHeaders(elasticSearchRequest);
 
-        Request request = new Request(httpMethod.name(), elasticSearchRequest.getUrl());
+        Request request = new Request(httpMethod.name(), elasticSearchRequest.getEndpoint());
 
         Map<String, String> params = getParams(elasticSearchRequest);
         request.addParameters(params);

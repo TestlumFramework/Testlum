@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="source" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
  *         &lt;element name="message" type="{http://www.knubisoft.com/cott/testing/model/scenario}sesMessage"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}aliasPattern" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;

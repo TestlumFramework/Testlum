@@ -64,25 +64,30 @@
     <x:complexType name="header">
         <x:simpleContent>
             <x:extension base="x:string">
-                <x:attribute name="name" type="tns:namePattern" use="required"/>
+                <x:attribute name="name" type="tns:headerName" use="required"/>
                 <x:attribute name="data" type="x:string" use="required"/>
             </x:extension>
         </x:simpleContent>
     </x:complexType>
 
-    <x:simpleType name="namePattern" final="restriction">
+    <x:simpleType name="headerName" final="restriction">
         <x:restriction base="x:string">
             <x:pattern value="[a-zA-Z\-]+"/>
         </x:restriction>
     </x:simpleType>
 
     <x:complexType name="file">
-        <x:attribute name="file" type="tns:fileExtension" use="required"/>
+        <x:attribute name="file" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
-    <x:simpleType name="fileExtension">
+    <x:simpleType name="jsFileExtension">
         <x:restriction base="x:string">
-            <x:pattern value=".+(\.(json|js|ts|))"/>
+            <x:pattern value=".+(\.js)"/>
+        </x:restriction>
+    </x:simpleType>
+    <x:simpleType name="jsonFileExtension">
+        <x:restriction base="x:string">
+            <x:pattern value=".+(\.json)"/>
         </x:restriction>
     </x:simpleType>
 
@@ -113,10 +118,22 @@
         </x:restriction>
     </x:simpleType>
 
-    <x:simpleType name="endpoint">
+    <x:simpleType name="endpointPattern">
         <x:restriction base="x:string">
             <x:minLength value="2"/>
             <x:pattern value="(/[^/].+)"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="credentialsExtension">
+        <x:restriction base="x:string">
+            <x:pattern value="[a-zA-Z\d_]+\.json"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="sqlFileExtension">
+        <x:restriction base="x:string">
+            <x:pattern value="[a-zA-Z\d_]+\.sql"/>
         </x:restriction>
     </x:simpleType>
 </x:schema>

@@ -30,6 +30,7 @@ import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VAR_QUERY_RESULT_ERROR;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_VARIABLE_WITH_PATH_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CONSTANT;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.EXPRESSION;
@@ -130,6 +131,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
                 (ArrayList<StorageOperation.QueryResult>) storageOperationResult.getRaw();
         ArrayList<LinkedCaseInsensitiveMap<String>> content =
                 (ArrayList<LinkedCaseInsensitiveMap<String>>) rawList.get(0).getContent();
+        verifyIfContentNotEmpty(content);
         Map<String, String> mapWithContent = content.get(0);
         return String.valueOf(mapWithContent.get(key));
     }
@@ -141,4 +143,9 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         return queryParts[1];
     }
 
+    private void verifyIfContentNotEmpty(final ArrayList<LinkedCaseInsensitiveMap<String>> content) {
+        if (content.size() < 1) {
+            throw new DefaultFrameworkException(VAR_QUERY_RESULT_ERROR);
+        }
+    }
 }

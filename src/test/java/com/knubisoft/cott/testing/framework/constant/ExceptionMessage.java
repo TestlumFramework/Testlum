@@ -119,4 +119,6 @@ public class ExceptionMessage {
     public static final String ALIAS_NOT_FOUND = "Cannot find enabled integration with alias <%s>";
     public static final String API_NOT_FOUND = "Cannot find api with alias <%s>";
     public static final String IMAGES_DONT_MATCH = "The images don't match. Image comparison state is -> %s";
+    public static final String VAR_QUERY_RESULT_ERROR =
+            "Query result is empty. Perhaps your database is empty or there is no such value in the database.";
 }

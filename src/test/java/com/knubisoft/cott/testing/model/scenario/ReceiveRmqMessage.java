@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;choice&gt;
  *         &lt;element name="message" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
- *         &lt;element name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}expected"/&gt;
+ *         &lt;element name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}expectedPattern"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="queue" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="prefetchCount" type="{http://www.w3.org/2001/XMLSchema}int" default="1" /&gt;

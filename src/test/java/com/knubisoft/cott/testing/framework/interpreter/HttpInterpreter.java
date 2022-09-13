@@ -49,8 +49,8 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         HttpInfo httpInfo = metadata.getHttpInfo();
         HttpMethod httpMethod = metadata.getHttpMethod();
         ResultUtil.addHttpMetaData(http.getAlias(), httpInfo, httpMethod.name(), result);
-        String url = inject(httpInfo.getUrl());
-        ApiResponse actual = getActual(httpInfo, url, httpMethod, http.getAlias());
+        String endpoint = inject(httpInfo.getEndpoint());
+        ApiResponse actual = getActual(httpInfo, endpoint, httpMethod, http.getAlias());
         CompareBuilder compare = newCompare()
                 .withActual(actual)
                 .withExpectedFile(httpInfo.getResponse().getFile());

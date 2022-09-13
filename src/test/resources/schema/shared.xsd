@@ -125,12 +125,6 @@
         </x:restriction>
     </x:simpleType>
 
-    <x:simpleType name="credentialsExtension">
-        <x:restriction base="x:string">
-            <x:pattern value="[a-zA-Z\d_]+\.json"/>
-        </x:restriction>
-    </x:simpleType>
-
     <x:simpleType name="sqlFileExtension">
         <x:restriction base="x:string">
             <x:pattern value="[a-zA-Z\d_]+\.sql"/>

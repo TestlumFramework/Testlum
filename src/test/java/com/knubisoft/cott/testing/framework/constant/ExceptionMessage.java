@@ -24,10 +24,6 @@ public class ExceptionMessage {
 
     public static final String UNKNOWN_TYPE = "Unknown type %s";
 
-    public static final String UNKNOWN_OPERATION = "Unknown operation for invoke object";
-
-    public static final String FUNCTION_IS_NOT_INVOKE_SUPPLIER =
-            "Class-function should be an instance from InvokeSupplier";
     public static final String FAILED_CONNECTION_TO_DATABASE =
             "Connection to database with name \"%s\" failed. "
                     + "Please check global configuration, it may be disabled or doesn't exist";

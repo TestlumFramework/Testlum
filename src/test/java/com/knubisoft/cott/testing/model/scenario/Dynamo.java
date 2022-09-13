@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence&gt;
  *         &lt;element name="query" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}expected" /&gt;
+ *       &lt;attribute name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}expectedPattern" /&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}aliasPattern" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;

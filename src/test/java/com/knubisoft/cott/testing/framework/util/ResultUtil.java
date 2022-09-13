@@ -226,7 +226,7 @@ public class ResultUtil {
                                     final String httpMethodName,
                                     final CommandResult commandResult) {
         commandResult.put(ALIAS, alias);
-        commandResult.put(ENDPOINT, sendgridInfo.getUrl());
+        commandResult.put(ENDPOINT, sendgridInfo.getEndpoint());
         commandResult.put(HTTP_METHOD, httpMethodName);
         List<Header> headers = sendgridInfo.getHeader();
         if (!headers.isEmpty()) {

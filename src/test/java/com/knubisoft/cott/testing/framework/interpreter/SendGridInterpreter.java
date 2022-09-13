@@ -76,10 +76,10 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         String body = getBody(sendgridInfo);
         Request request = new Request();
         request.setMethod(method);
-        request.setEndpoint(sendgridInfo.getUrl());
+        request.setEndpoint(sendgridInfo.getEndpoint());
         request.setBody(body);
         result.put(CONTENT_TO_SEND, PrettifyStringJson.getJSONResult(body));
-        LogUtil.logHttpInfo(alias, method.name(), sendgridInfo.getUrl());
+        LogUtil.logHttpInfo(alias, method.name(), sendgridInfo.getEndpoint());
         LogUtil.logBody(request.getBody());
         return sendGrid.get(alias).api(request);
     }

@@ -25,7 +25,7 @@
         </x:restriction>
     </x:simpleType>
 
-    <x:simpleType name="expected">
+    <x:simpleType name="expectedPattern">
         <x:restriction base="x:string">
             <x:pattern value="expected_\d+.json"/>
         </x:restriction>

@@ -124,7 +124,7 @@
                     <x:element name="wait" type="tns:wait"/>
                 </x:choice>
                 <x:attribute name="apiAlias" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="credentials" type="tns:credentialsExtension" use="required"/>
+                <x:attribute name="credentials" type="tns:jsonFileExtension" use="required"/>
                 <x:attribute name="loginEndpoint" type="tns:endpointPattern" use="required"/>
             </x:extension>
         </x:complexContent>

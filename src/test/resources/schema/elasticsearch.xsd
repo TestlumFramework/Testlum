@@ -100,7 +100,7 @@
         </x:sequence>
 
         <x:attribute name="code" type="tns:code" default="200"/>
-        <x:attribute name="file" type="tns:expected"/>
+        <x:attribute name="file" type="tns:expectedPattern"/>
     </x:complexType>
 
     <x:complexType name="elasticSearchResponseWarning">

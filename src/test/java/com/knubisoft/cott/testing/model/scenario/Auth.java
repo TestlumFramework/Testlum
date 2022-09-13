@@ -47,7 +47,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}wait"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="apiAlias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="credentials" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}credentialsExtension" /&gt;
+ *       &lt;attribute name="credentials" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}jsonFileExtension" /&gt;
  *       &lt;attribute name="loginEndpoint" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}endpointPattern" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;

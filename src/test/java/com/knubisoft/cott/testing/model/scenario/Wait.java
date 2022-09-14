@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="wait"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
- *       &lt;attribute name="time" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="time" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}timePattern" /&gt;
  *       &lt;attribute name="unit" type="{http://www.knubisoft.com/cott/testing/model/scenario}unit" default="seconds" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;

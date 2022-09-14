@@ -22,9 +22,10 @@ public class WaitInterpreter extends AbstractInterpreter<Wait> {
 
     @Override
     @SneakyThrows
-    protected void acceptImpl(final Wait o, final CommandResult result) {
-        log.info(WAIT_INFO_LOG, o.getTime(), o.getUnit());
-        result.put(TIME, inject(o.getTime()));
-        WaitUtil.getTimeUnit(o.getUnit(), result).sleep(Long.parseLong(o.getTime()));
+    protected void acceptImpl(final Wait wait, final CommandResult result) {
+        String time = inject(wait.getTime());
+        log.info(WAIT_INFO_LOG, time, wait.getUnit());
+        result.put(TIME, time);
+        WaitUtil.getTimeUnit(wait.getUnit(), result).sleep(Long.parseLong(time));
     }
 }

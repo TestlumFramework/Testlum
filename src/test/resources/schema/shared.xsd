@@ -130,4 +130,10 @@
             <x:pattern value="[a-zA-Z\d_]+\.sql"/>
         </x:restriction>
     </x:simpleType>
+
+    <x:simpleType name="timePattern">
+        <x:restriction base="x:string">
+            <x:pattern value="\d+|\{{2}([a-zA-Z\d_\-]+)\}{2}"/>
+        </x:restriction>
+    </x:simpleType>
 </x:schema>

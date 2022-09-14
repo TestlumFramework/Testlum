@@ -373,10 +373,10 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     @SneakyThrows
     private void wait(final Wait wait, final CommandResult result) {
-        long time = wait.getTime().longValue();
+        String time = inject(wait.getTime());
         result.put(TIME, time);
         log.info(WAIT_INFO_LOG, time, wait.getUnit());
-        WaitUtil.getTimeUnit(wait.getUnit(), result).sleep(time);
+        WaitUtil.getTimeUnit(wait.getUnit(), result).sleep(Long.parseLong(time));
     }
 
     private void scroll(final Scroll scroll, final CommandResult result) {

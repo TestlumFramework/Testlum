@@ -24,7 +24,7 @@ public class WaitInterpreter extends AbstractInterpreter<Wait> {
     @SneakyThrows
     protected void acceptImpl(final Wait o, final CommandResult result) {
         log.info(WAIT_INFO_LOG, o.getTime(), o.getUnit());
-        result.put(TIME, o.getTime());
-        WaitUtil.getTimeUnit(o.getUnit(), result).sleep(o.getTime().longValue());
+        result.put(TIME, inject(o.getTime()));
+        WaitUtil.getTimeUnit(o.getUnit(), result).sleep(Long.parseLong(o.getTime()));
     }
 }

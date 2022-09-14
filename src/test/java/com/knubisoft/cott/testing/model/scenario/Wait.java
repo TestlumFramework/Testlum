@@ -1,11 +1,9 @@
 
 package com.knubisoft.cott.testing.model.scenario;
 
-import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -18,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="wait"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
- *       &lt;attribute name="time" use="required" type="{http://www.w3.org/2001/XMLSchema}positiveInteger" /&gt;
+ *       &lt;attribute name="time" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}timePattern" /&gt;
  *       &lt;attribute name="unit" type="{http://www.knubisoft.com/cott/testing/model/scenario}unit" default="seconds" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -34,8 +32,7 @@ public class Wait
 {
 
     @XmlAttribute(name = "time", required = true)
-    @XmlSchemaType(name = "positiveInteger")
-    protected BigInteger time;
+    protected String time;
     @XmlAttribute(name = "unit")
     protected Unit unit;
 
@@ -44,10 +41,10 @@ public class Wait
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link String }
      *     
      */
-    public BigInteger getTime() {
+    public String getTime() {
         return time;
     }
 
@@ -56,10 +53,10 @@ public class Wait
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link String }
      *     
      */
-    public void setTime(BigInteger value) {
+    public void setTime(String value) {
         this.time = value;
     }
 

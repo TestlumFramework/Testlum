@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;choice&gt;
  *         &lt;element name="content" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="attribute" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="attribute" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}stringWithoutSpacesPattern" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;

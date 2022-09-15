@@ -155,7 +155,7 @@
                 <x:choice>
                     <x:element name="content" type="tns:nonEmptyString"/>
                 </x:choice>
-                <x:attribute name="attribute" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="attribute" type="tns:stringWithoutSpacesPattern" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

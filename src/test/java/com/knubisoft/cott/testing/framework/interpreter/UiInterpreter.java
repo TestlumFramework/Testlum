@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.interpreter;
 
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.exception.InvalidArgumentException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractSeleniumInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
@@ -63,7 +62,10 @@ import java.util.stream.IntStream;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.NEW_LINE;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.*;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NAVIGATE_NOT_SUPPORTED;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SECOND_TAB_NOT_FOUND;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEB_ELEMENT_ATTRIBUTE_NOT_EXIST;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.SCROLL_TO_ELEMENT_SCRIPT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BY_URL_LOG;
@@ -285,7 +287,8 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         UiUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
         String value = webElement.getAttribute(aAssert.getAttribute());
         if (Objects.isNull(value)){
-            throw new DefaultFrameworkException(WEB_ELEMENT_ATTRIBUTE_NOT_EXIST, aAssert.getLocatorId(), aAssert.getAttribute());
+            throw new DefaultFrameworkException(
+                    WEB_ELEMENT_ATTRIBUTE_NOT_EXIST, aAssert.getLocatorId(), aAssert.getAttribute());
         }
         return value
                 .replaceAll(SPACE, EMPTY)

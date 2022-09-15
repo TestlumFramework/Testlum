@@ -155,12 +155,12 @@
                 <x:choice>
                     <x:element name="content" type="tns:nonEmptyString"/>
                 </x:choice>
-                <x:attribute name="attribute" type="tns:attribute" use="required"/>
+                <x:attribute name="attribute" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
-    <x:simpleType name="attribute">
+    <!--<x:simpleType name="attribute">
         <x:restriction base="x:string">
             <x:enumeration value="outerHTML"/>
             <x:enumeration value="class"/>
@@ -170,7 +170,7 @@
             <x:enumeration value="linkText"/>
             <x:enumeration value="partialLinkText"/>
         </x:restriction>
-    </x:simpleType>
+    </x:simpleType>-->
 
     <x:complexType name="clear">
         <x:complexContent>

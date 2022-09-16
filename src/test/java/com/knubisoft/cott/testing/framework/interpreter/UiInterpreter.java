@@ -71,7 +71,6 @@ import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SP
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NAVIGATE_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SECOND_TAB_NOT_FOUND;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEB_ELEMENT_ATTRIBUTE_NOT_EXIST;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.SCROLL_TO_ELEMENT_SCRIPT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BY_URL_LOG;
@@ -292,10 +291,6 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         WebElement webElement = findWebElement(aAssert.getLocatorId());
         UiUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
         String value = UiUtil.getElementAttribute(webElement, aAssert.getAttribute());
-        if (Objects.isNull(value)) {
-            throw new DefaultFrameworkException(
-                    WEB_ELEMENT_ATTRIBUTE_NOT_EXIST, aAssert.getLocatorId(), aAssert.getAttribute());
-        }
         return value
                 .replaceAll(SPACE, EMPTY)
                 .replaceAll(NEW_LINE, EMPTY);

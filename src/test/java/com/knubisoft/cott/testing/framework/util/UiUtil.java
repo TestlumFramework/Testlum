@@ -1,6 +1,7 @@
 package com.knubisoft.cott.testing.framework.util;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.locator.GlobalLocators;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.pages.Locator;
@@ -26,6 +27,7 @@ import java.time.Duration;
 import java.util.Base64;
 import java.util.Objects;
 
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEB_ELEMENT_ATTRIBUTE_NOT_EXIST;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.URL_TO_IMAGE_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.URL_TO_ACTUAL_IMAGE;
 
@@ -95,7 +97,11 @@ public class UiUtil {
     }
 
     public String getElementAttribute(final WebElement webElement, final String attributeName) {
-        return webElement.getAttribute(attributeName);
+        String attribute = webElement.getAttribute(attributeName);
+        if (Objects.isNull(attribute)) {
+            throw new DefaultFrameworkException(WEB_ELEMENT_ATTRIBUTE_NOT_EXIST, attributeName);
+        }
+        return attribute;
     }
 
     @SneakyThrows

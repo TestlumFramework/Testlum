@@ -102,7 +102,7 @@ public class UiUtil {
     private BufferedImage extractImageFromElement(final WebElement webElement,
                                                   final String imageSourceAttribute,
                                                   final CommandResult result) {
-        String urlToActualImage = webElement.getAttribute(imageSourceAttribute);
+        String urlToActualImage = getElementAttribute(webElement, imageSourceAttribute);
         log.info(URL_TO_IMAGE_LOG, urlToActualImage);
         result.put(URL_TO_ACTUAL_IMAGE, urlToActualImage);
         return ImageIO.read(new URL(urlToActualImage));

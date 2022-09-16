@@ -275,7 +275,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     private void assertValues(final Assert aAssert, final CommandResult result) {
         result.put(ASSERT_LOCATOR, aAssert.getLocatorId());
-        result.put(ASSERT_ATTRIBUTE, aAssert.getAttribute().value());
+        result.put(ASSERT_ATTRIBUTE, aAssert.getAttribute());
         String actual = getActualValue(aAssert);
         String expected = aAssert.getContent().replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
         result.setActual(actual);
@@ -290,7 +290,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     private String getActualValue(final Assert aAssert) {
         WebElement webElement = findWebElement(aAssert.getLocatorId());
         UiUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
-        String value = webElement.getAttribute(aAssert.getAttribute().value());
+        String value = UiUtil.getElementAttribute(webElement, aAssert.getAttribute());
         return value
                 .replaceAll(SPACE, EMPTY)
                 .replaceAll(NEW_LINE, EMPTY);

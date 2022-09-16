@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;choice&gt;
  *         &lt;element name="content" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="attribute" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}attribute" /&gt;
+ *       &lt;attribute name="attribute" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}stringWithoutSpacesPattern" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -37,7 +37,7 @@ public class Assert
 
     protected String content;
     @XmlAttribute(name = "attribute", required = true)
-    protected Attribute attribute;
+    protected String attribute;
 
     /**
      * Gets the value of the content property.
@@ -68,10 +68,10 @@ public class Assert
      * 
      * @return
      *     possible object is
-     *     {@link Attribute }
+     *     {@link String }
      *     
      */
-    public Attribute getAttribute() {
+    public String getAttribute() {
         return attribute;
     }
 
@@ -80,10 +80,10 @@ public class Assert
      * 
      * @param value
      *     allowed object is
-     *     {@link Attribute }
+     *     {@link String }
      *     
      */
-    public void setAttribute(Attribute value) {
+    public void setAttribute(String value) {
         this.attribute = value;
     }
 

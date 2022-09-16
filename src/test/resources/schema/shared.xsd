@@ -25,6 +25,12 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:simpleType name="stringWithoutSpacesPattern">
+        <x:restriction base="x:string">
+            <x:pattern value="\S+"/>
+        </x:restriction>
+    </x:simpleType>
+
     <x:simpleType name="expectedPattern">
         <x:restriction base="x:string">
             <x:pattern value="expected_\d+.json"/>
@@ -114,7 +120,7 @@
 
     <x:simpleType name="aliasPattern">
         <x:restriction base="x:string">
-            <x:pattern value="[a-zA-Z\d_\-]+"/>
+            <x:pattern value="[a-zA-Z_\-/\d]+"/>
         </x:restriction>
     </x:simpleType>
 

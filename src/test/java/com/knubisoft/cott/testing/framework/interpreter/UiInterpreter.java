@@ -291,7 +291,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     private String getActualValue(final Assert aAssert) {
         WebElement webElement = findWebElement(aAssert.getLocatorId());
         UiUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
-        String value = webElement.getAttribute(aAssert.getAttribute());
+        String value = UiUtil.getElementAttribute(webElement, aAssert.getAttribute());
         if (Objects.isNull(value)) {
             throw new DefaultFrameworkException(
                     WEB_ELEMENT_ATTRIBUTE_NOT_EXIST, aAssert.getLocatorId(), aAssert.getAttribute());

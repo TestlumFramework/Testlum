@@ -84,14 +84,18 @@ public class UiUtil {
 
     @SneakyThrows
     public BufferedImage getActualImage(final WebDriver webDriver,
-                                               final Image image,
-                                               final CommandResult result) {
+                                        final Image image,
+                                        final CommandResult result) {
         CompareWith compareWith = image.getCompareWith();
         if (Objects.nonNull(compareWith)) {
             WebElement webElement = findWebElement(webDriver, compareWith.getLocator());
             return UiUtil.extractImageFromElement(webElement, compareWith.getAttribute(), result);
         }
         return ImageIO.read(takeScreenshot(webDriver));
+    }
+
+    public String getElementAttribute(final WebElement webElement, final String attributeName) {
+        return webElement.getAttribute(attributeName);
     }
 
     @SneakyThrows

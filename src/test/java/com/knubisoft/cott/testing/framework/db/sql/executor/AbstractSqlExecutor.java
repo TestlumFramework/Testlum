@@ -30,6 +30,7 @@ public abstract class AbstractSqlExecutor {
     private static final String DELETE = "DELETE";
     private static final String TRUNCATE = "TRUNCATE";
     private static final String DROP = "DROP";
+    private static final String SET = "SET";
     private static final String COUNT = "count";
 
     protected final JdbcTemplate template;
@@ -73,7 +74,7 @@ public abstract class AbstractSqlExecutor {
     private Object executeAppropriateQuery(final String query) {
         if (checkMatchQuery(query, INSERT, UPDATE, DELETE)) {
             return executeDMLQuery(query);
-        } else if (checkMatchQuery(query, ALTER, CREATE, TRUNCATE, DROP)) {
+        } else if (checkMatchQuery(query, ALTER, CREATE, TRUNCATE, DROP, SET)) {
             return executeDDLQuery(query);
         }
         return executeDQLQuery(query);

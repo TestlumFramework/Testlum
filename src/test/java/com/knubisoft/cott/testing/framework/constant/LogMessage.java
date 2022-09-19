@@ -28,6 +28,7 @@ public final class LogMessage {
     public static final String ANSI_RED_BOLD = "\033[1;31m";
     public static final String ANSI_YELLOW = "\u001B[33m";
     public static final String ANSI_CYAN = "\u001b[36m";
+    public static final String ANSI_BLUE_UNDERLINED = "\033[4;34m";
 
     public static final String ERROR_LOG = "Error ->";
     public static final String POSITION_COMMAND_LOG = ANSI_YELLOW
@@ -63,10 +64,10 @@ public final class LogMessage {
 
     public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
     public static final String TEST_EXECUTION_SUMMARY_TEMPLATE =
-                    "\n\nTest run finished\n{} tests found\n{} tests skipped\n{} tests started\n{} test aborted\n"
+            "\n\nTest run finished\n{} tests found\n{} tests skipped\n{} tests started\n{} test aborted\n"
                     + "{} test successful\n{} test failed\n";
     public static final String FAILED_SCENARIOS_NAME_TEMPLATE =
-                   ANSI_RED_BOLD + "Scenario %s was failed. Related exception provided below." + ANSI_RED_BOLD;
+            ANSI_RED_BOLD + "Scenario %s was failed. Related exception provided below." + ANSI_RED_BOLD;
     public static final String SUCCESS_QUERY = "Query completed successfully";
 
     public static final String DATASET_PATH_LOG = format(TABLE_FORMAT, "Migration dataset", "{}");
@@ -108,6 +109,11 @@ public final class LogMessage {
             + NEW_LOG_LINE + format(TABLE_FORMAT, "Invalid scenario", "{}")
             + NEW_LOG_LINE + format(TABLE_FORMAT, "Exception", "{}") + NEW_LOG_LINE
             + LINE + ANSI_RESET + "\n";
+
+    public static final String INITIAL_STRUCTURE_GENERATION_SUCCESS = ANSI_GREEN + "Initial structure by path "
+            + ANSI_BLUE_UNDERLINED + "{}" + ANSI_RESET + ANSI_GREEN + " generated successfully";
+    public static final String INITIAL_STRUCTURE_GENERATION_ERROR = ANSI_RED
+            + "Failed to generate initial structure by path " + ANSI_BLUE_UNDERLINED + "{}" + ANSI_RESET;
 
     public static final String TIMES_LOG = format(TABLE_FORMAT, "Times to repeat", "{}");
     public static final String CREDENTIALS_LOG = format(TABLE_FORMAT, "Credentials", "{}");

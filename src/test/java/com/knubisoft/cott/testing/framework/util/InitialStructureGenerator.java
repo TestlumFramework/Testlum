@@ -1,10 +1,10 @@
 package com.knubisoft.cott.testing.framework.util;
 
-import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -37,20 +37,29 @@ public class InitialStructureGenerator {
     }
 
     public void generate(final String pathToGenerate) {
-        REQUIRED_FOLDER_NAMES.forEach(name ->
-                createFolder(pathToGenerate, name));
-        FOR_COPY_FILENAMES_TO_FOLDERS.forEach((fileName, folder) ->
-                copyFileToFolder(fileName, pathToGenerate, folder));
+        try {
+            execute(pathToGenerate);
+            LogUtil.logStructureGeneration(pathToGenerate);
+        } catch (IOException e) {
+            LogUtil.logErrorStructureGeneration(pathToGenerate, e);
+        }
     }
 
-    @SneakyThrows
-    private void createFolder(final String path, final String name) {
+    private void execute(String pathToGenerate) throws IOException {
+        for (String name : REQUIRED_FOLDER_NAMES) {
+            createFolder(pathToGenerate, name);
+        }
+        for (Map.Entry<String, String> each : FOR_COPY_FILENAMES_TO_FOLDERS.entrySet()) {
+            copyFileToFolder(each.getKey(), pathToGenerate, each.getValue());
+        }
+    }
+
+    private void createFolder(final String path, final String name) throws IOException {
         File folder = new File(path, name);
         FileUtils.forceMkdir(folder);
     }
 
-    @SneakyThrows
-    private void copyFileToFolder(final String fileName, final String path, final String folder) {
+    private void copyFileToFolder(final String fileName, final String path, final String folder) throws IOException {
         try (InputStream file = InitialStructureGenerator.class.getClassLoader()
                 .getResourceAsStream(TEST_SAMPLE_PATH + fileName)) {
             if (file != null) {

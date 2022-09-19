@@ -31,6 +31,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BODY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
@@ -51,6 +52,8 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_METH
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.IMAGE_COMPARISON_TYPE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.IMAGE_FOR_COMPARISON_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.IMAGE_SOURCE_ATT_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.INITIAL_STRUCTURE_GENERATION_ERROR;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.INITIAL_STRUCTURE_GENERATION_SUCCESS;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.INVALID_CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.INVALID_SCENARIO_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.LOCAL_STORAGE_KEY;
@@ -68,11 +71,10 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_HOST
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_PORT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SOURCE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUBJECT_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_COMMAND_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.TABLE_FORMAT;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.VALUE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.VARIATION_LOG;
@@ -303,5 +305,13 @@ public class LogUtil {
         } else {
             log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_COMPARE);
         }
+    }
+
+    public void logStructureGeneration(String path) {
+        log.info(INITIAL_STRUCTURE_GENERATION_SUCCESS, path);
+    }
+
+    public void logErrorStructureGeneration(String path, Exception ex) {
+        log.error(INITIAL_STRUCTURE_GENERATION_ERROR, path, ex);
     }
 }

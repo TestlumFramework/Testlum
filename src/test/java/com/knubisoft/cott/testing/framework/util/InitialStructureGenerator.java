@@ -45,7 +45,7 @@ public class InitialStructureGenerator {
         }
     }
 
-    private void execute(String pathToGenerate) throws IOException {
+    private void execute(final String pathToGenerate) throws IOException {
         for (String name : REQUIRED_FOLDER_NAMES) {
             createFolder(pathToGenerate, name);
         }

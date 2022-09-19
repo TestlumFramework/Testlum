@@ -307,11 +307,11 @@ public class LogUtil {
         }
     }
 
-    public void logStructureGeneration(String path) {
+    public void logStructureGeneration(final String path) {
         log.info(INITIAL_STRUCTURE_GENERATION_SUCCESS, path);
     }
 
-    public void logErrorStructureGeneration(String path, Exception ex) {
+    public void logErrorStructureGeneration(final String path, final Exception ex) {
         log.error(INITIAL_STRUCTURE_GENERATION_ERROR, path, ex);
     }
 }

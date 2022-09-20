@@ -246,14 +246,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Invoke }
-     * 
-     */
-    public Invoke createInvoke() {
-        return new Invoke();
-    }
-
-    /**
      * Create an instance of {@link Shell }
      * 
      */
@@ -502,14 +494,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Break }
-     * 
-     */
-    public Break createBreak() {
-        return new Break();
-    }
-
-    /**
      * Create an instance of {@link Get }
      * 
      */
@@ -742,27 +726,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link When }
+     * Create an instance of {@link RelationalDbResult }
      * 
      */
-    public When createWhen() {
-        return new When();
+    public RelationalDbResult createRelationalDbResult() {
+        return new RelationalDbResult();
     }
 
     /**
-     * Create an instance of {@link PostgresResult }
+     * Create an instance of {@link ResultFrom }
      * 
      */
-    public PostgresResult createPostgresResult() {
-        return new PostgresResult();
-    }
-
-    /**
-     * Create an instance of {@link Target }
-     * 
-     */
-    public Target createTarget() {
-        return new Target();
+    public ResultFrom createResultFrom() {
+        return new ResultFrom();
     }
 
     /**

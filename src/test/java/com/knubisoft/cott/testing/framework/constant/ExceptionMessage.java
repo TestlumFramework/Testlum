@@ -24,10 +24,6 @@ public class ExceptionMessage {
 
     public static final String UNKNOWN_TYPE = "Unknown type %s";
 
-    public static final String UNKNOWN_OPERATION = "Unknown operation for invoke object";
-
-    public static final String FUNCTION_IS_NOT_INVOKE_SUPPLIER =
-            "Class-function should be an instance from InvokeSupplier";
     public static final String FAILED_CONNECTION_TO_DATABASE =
             "Connection to database with name \"%s\" failed. "
                     + "Please check global configuration, it may be disabled or doesn't exist";
@@ -116,7 +112,11 @@ public class ExceptionMessage {
     public static final String UNKNOWN_BROWSER_TYPE = "Unknown browser type was found. Available browser types are: "
             + "<local browser>, <browser in docker>, <remote browser>";
 
+    public static final String INTEGRATION_NOT_FOUND = "Cannot find integration configuration for <%s>";
     public static final String ALIAS_NOT_FOUND = "Cannot find enabled integration with alias <%s>";
     public static final String API_NOT_FOUND = "Cannot find api with alias <%s>";
     public static final String IMAGES_DONT_MATCH = "The images don't match. Image comparison state is -> %s";
+    public static final String VAR_QUERY_RESULT_ERROR =
+            "Query result is empty. Perhaps your database is empty or there is no such value in the database";
+    public static final String WEB_ELEMENT_ATTRIBUTE_NOT_EXIST = "Web element does not have attribute <%s>";
 }

@@ -58,6 +58,7 @@ public class ResultUtil {
     public static final String JSON_PATH = "JSON path";
     public static final String XPATH = "Xpath";
     public static final String POSTGRES_QUERY = "Postgres query";
+    public static final String RELATIONAL_DB_QUERY = "Relational DB query";
     public static final String EXPRESSION = "Expression";
     public static final String NO_EXPRESSION = "No expression";
     public static final String CONSTANT = "Constant";
@@ -198,7 +199,7 @@ public class ResultUtil {
                                 final String httpMethodName,
                                 final CommandResult commandResult) {
         commandResult.put(API_ALIAS, alias);
-        commandResult.put(ENDPOINT, httpInfo.getUrl());
+        commandResult.put(ENDPOINT, httpInfo.getEndpoint());
         commandResult.put(HTTP_METHOD, httpMethodName);
         List<Header> headers = httpInfo.getHeader();
         if (!headers.isEmpty()) {
@@ -211,7 +212,7 @@ public class ResultUtil {
                                                 final String httpMethodName,
                                                 final CommandResult commandResult) {
         commandResult.put(ALIAS, alias);
-        commandResult.put(ENDPOINT, elasticSearchRequest.getUrl());
+        commandResult.put(ENDPOINT, elasticSearchRequest.getEndpoint());
         commandResult.put(HTTP_METHOD, httpMethodName);
         List<Header> headers = elasticSearchRequest.getHeader();
         if (!headers.isEmpty()) {
@@ -225,7 +226,7 @@ public class ResultUtil {
                                     final String httpMethodName,
                                     final CommandResult commandResult) {
         commandResult.put(ALIAS, alias);
-        commandResult.put(ENDPOINT, sendgridInfo.getUrl());
+        commandResult.put(ENDPOINT, sendgridInfo.getEndpoint());
         commandResult.put(HTTP_METHOD, httpMethodName);
         List<Header> headers = sendgridInfo.getHeader();
         if (!headers.isEmpty()) {

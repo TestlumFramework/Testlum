@@ -273,7 +273,7 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
 
     private void assertValues(final Assert aAssert, final CommandResult result) {
         result.put(ASSERT_LOCATOR, aAssert.getLocatorId());
-        result.put(ASSERT_ATTRIBUTE, aAssert.getAttribute().value());
+        result.put(ASSERT_ATTRIBUTE, aAssert.getAttribute());
         String actual = getActualValue(aAssert);
         String expected = aAssert.getContent().replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
         result.setActual(actual);
@@ -288,7 +288,7 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
     private String getActualValue(final Assert aAssert) {
         WebElement webElement = findWebElement(aAssert.getLocatorId());
         UiUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
-        String value = webElement.getAttribute(aAssert.getAttribute().value());
+        String value = UiUtil.getElementAttribute(webElement, aAssert.getAttribute());
         return value
                 .replaceAll(SPACE, EMPTY)
                 .replaceAll(NEW_LINE, EMPTY);
@@ -371,10 +371,10 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
 
     @SneakyThrows
     private void wait(final Wait wait, final CommandResult result) {
-        long time = wait.getTime().longValue();
+        String time = inject(wait.getTime());
         result.put(TIME, time);
         log.info(WAIT_INFO_LOG, time, wait.getUnit());
-        WaitUtil.getTimeUnit(wait.getUnit(), result).sleep(time);
+        WaitUtil.getTimeUnit(wait.getUnit(), result).sleep(Long.parseLong(time));
     }
 
     private void scroll(final Scroll scroll, final CommandResult result) {

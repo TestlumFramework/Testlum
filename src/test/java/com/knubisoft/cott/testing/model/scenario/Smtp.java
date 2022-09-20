@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="subject" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
  *         &lt;element name="text" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}aliasPattern" /&gt;
  *       &lt;attribute name="recipientEmail" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;

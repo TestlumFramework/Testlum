@@ -50,7 +50,6 @@ import javax.xml.bind.annotation.XmlType;
     Dynamo.class,
     Var.class,
     Wait.class,
-    Invoke.class,
     Shell.class,
     Smtp.class,
     Twilio.class,
@@ -63,9 +62,7 @@ import javax.xml.bind.annotation.XmlType;
     CommandWithLocator.class,
     Image.class,
     RepeatUiCommand.class,
-    Break.class,
-    When.class,
-    PostgresResult.class,
+    RelationalDbResult.class,
     Logout.class
 })
 public abstract class AbstractCommand {

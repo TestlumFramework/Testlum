@@ -22,15 +22,12 @@
     <x:include schemaLocation="oracle.xsd"/>
     <x:include schemaLocation="kafka.xsd"/>
     <x:include schemaLocation="mysql.xsd"/>
-    <x:include schemaLocation="break.xsd"/>
     <x:include schemaLocation="elasticsearch.xsd"/>
     <x:include schemaLocation="ses.xsd"/>
     <x:include schemaLocation="sendgrid.xsd"/>
-    <x:include schemaLocation="when-then.xsd"/>
     <x:include schemaLocation="dynamo.xsd"/>
     <x:include schemaLocation="var.xsd"/>
     <x:include schemaLocation="wait.xsd"/>
-    <x:include schemaLocation="invoke.xsd"/>
     <x:include schemaLocation="http.xsd"/>
     <x:include schemaLocation="logout.xsd"/>
     <x:include schemaLocation="shell.xsd"/>
@@ -88,7 +85,6 @@
 
                     <x:element name="var" type="tns:var"/>
                     <x:element name="wait" type="tns:wait"/>
-                    <x:element name="invoke" type="tns:invoke"/>
                     <x:element name="shell" type="tns:shell"/>
                     <x:element name="smtp" type="tns:smtp"/>
                     <x:element name="twilio" type="tns:twilio"/>
@@ -130,11 +126,10 @@
 
                     <x:element name="var" type="tns:var"/>
                     <x:element name="wait" type="tns:wait"/>
-                    <x:element name="invoke" type="tns:invoke"/>
                 </x:choice>
                 <x:attribute name="apiAlias" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="credentials" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="loginEndpoint" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="credentials" type="tns:jsonFileExtension" use="required"/>
+                <x:attribute name="loginEndpoint" type="tns:endpointPattern" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -165,7 +160,6 @@
                     <x:element name="dynamo" type="tns:dynamo"/>
                     <x:element name="var" type="tns:var"/>
                     <x:element name="wait" type="tns:wait"/>
-                    <x:element name="invoke" type="tns:invoke"/>
                     <x:element name="shell" type="tns:shell"/>
                     <x:element name="smtp" type="tns:smtp"/>
                     <x:element name="twilio" type="tns:twilio"/>

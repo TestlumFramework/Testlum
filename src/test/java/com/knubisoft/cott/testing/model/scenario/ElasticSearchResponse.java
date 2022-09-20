@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="warning" type="{http://www.knubisoft.com/cott/testing/model/scenario}elasticSearchResponseWarning" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="code" type="{http://www.knubisoft.com/cott/testing/model/scenario}code" default="200" /&gt;
- *       &lt;attribute name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}expected" /&gt;
+ *       &lt;attribute name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}expectedPattern" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;

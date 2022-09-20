@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlValue;
  * &lt;complexType name="header"&gt;
  *   &lt;simpleContent&gt;
  *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema&gt;string"&gt;
- *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}headerName" /&gt;
  *       &lt;attribute name="data" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/simpleContent&gt;

@@ -17,11 +17,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
  *       &lt;choice&gt;
- *         &lt;element name="value" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
- *         &lt;element name="xpath" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
- *         &lt;element name="jpath" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
- *         &lt;element name="postgresResult" type="{http://www.knubisoft.com/cott/testing/model/scenario}postgresResult"/&gt;
- *         &lt;element name="expression" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="relationalDbResult" type="{http://www.knubisoft.com/cott/testing/model/scenario}relationalDbResult"/&gt;
+ *         &lt;element name="resultFrom" type="{http://www.knubisoft.com/cott/testing/model/scenario}resultFrom"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
@@ -33,142 +30,64 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "var", propOrder = {
-    "value",
-    "xpath",
-    "jpath",
-    "postgresResult",
-    "expression"
+    "relationalDbResult",
+    "resultFrom"
 })
 public class Var
     extends AbstractCommand
 {
 
-    protected String value;
-    protected String xpath;
-    protected String jpath;
-    protected PostgresResult postgresResult;
-    protected String expression;
+    protected RelationalDbResult relationalDbResult;
+    protected ResultFrom resultFrom;
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
     /**
-     * Gets the value of the value property.
+     * Gets the value of the relationalDbResult property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link RelationalDbResult }
      *     
      */
-    public String getValue() {
-        return value;
+    public RelationalDbResult getRelationalDbResult() {
+        return relationalDbResult;
     }
 
     /**
-     * Sets the value of the value property.
+     * Sets the value of the relationalDbResult property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link RelationalDbResult }
      *     
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setRelationalDbResult(RelationalDbResult value) {
+        this.relationalDbResult = value;
     }
 
     /**
-     * Gets the value of the xpath property.
+     * Gets the value of the resultFrom property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ResultFrom }
      *     
      */
-    public String getXpath() {
-        return xpath;
+    public ResultFrom getResultFrom() {
+        return resultFrom;
     }
 
     /**
-     * Sets the value of the xpath property.
+     * Sets the value of the resultFrom property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ResultFrom }
      *     
      */
-    public void setXpath(String value) {
-        this.xpath = value;
-    }
-
-    /**
-     * Gets the value of the jpath property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getJpath() {
-        return jpath;
-    }
-
-    /**
-     * Sets the value of the jpath property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setJpath(String value) {
-        this.jpath = value;
-    }
-
-    /**
-     * Gets the value of the postgresResult property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PostgresResult }
-     *     
-     */
-    public PostgresResult getPostgresResult() {
-        return postgresResult;
-    }
-
-    /**
-     * Sets the value of the postgresResult property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PostgresResult }
-     *     
-     */
-    public void setPostgresResult(PostgresResult value) {
-        this.postgresResult = value;
-    }
-
-    /**
-     * Gets the value of the expression property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getExpression() {
-        return expression;
-    }
-
-    /**
-     * Sets the value of the expression property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setExpression(String value) {
-        this.expression = value;
+    public void setResultFrom(ResultFrom value) {
+        this.resultFrom = value;
     }
 
     /**

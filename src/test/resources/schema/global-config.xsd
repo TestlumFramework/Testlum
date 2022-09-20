@@ -80,7 +80,7 @@
     </x:complexType>
 
     <x:complexType name="api">
-        <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
         <x:attribute name="url" type="tns:url" use="required"/>
     </x:complexType>
 

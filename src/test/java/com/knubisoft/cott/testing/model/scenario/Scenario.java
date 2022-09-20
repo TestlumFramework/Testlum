@@ -49,7 +49,6 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;element name="dynamo" type="{http://www.knubisoft.com/cott/testing/model/scenario}dynamo"/&gt;
  *           &lt;element name="var" type="{http://www.knubisoft.com/cott/testing/model/scenario}var"/&gt;
  *           &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}wait"/&gt;
- *           &lt;element name="invoke" type="{http://www.knubisoft.com/cott/testing/model/scenario}invoke"/&gt;
  *           &lt;element name="shell" type="{http://www.knubisoft.com/cott/testing/model/scenario}shell"/&gt;
  *           &lt;element name="smtp" type="{http://www.knubisoft.com/cott/testing/model/scenario}smtp"/&gt;
  *           &lt;element name="twilio" type="{http://www.knubisoft.com/cott/testing/model/scenario}twilio"/&gt;
@@ -103,7 +102,6 @@ public class Scenario {
         @XmlElement(name = "dynamo", type = Dynamo.class),
         @XmlElement(name = "var", type = Var.class),
         @XmlElement(name = "wait", type = Wait.class),
-        @XmlElement(name = "invoke", type = Invoke.class),
         @XmlElement(name = "shell", type = Shell.class),
         @XmlElement(name = "smtp", type = Smtp.class),
         @XmlElement(name = "twilio", type = Twilio.class)
@@ -206,7 +204,6 @@ public class Scenario {
      * {@link Dynamo }
      * {@link Var }
      * {@link Wait }
-     * {@link Invoke }
      * {@link Shell }
      * {@link Smtp }
      * {@link Twilio }

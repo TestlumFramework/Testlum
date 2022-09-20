@@ -81,7 +81,7 @@ pipeline {
     stage('run test tool') {
         steps {
             dir("tool") {
-                sh 'docker run -u $(id -u):$(id -g) --rm --network=host -v "$(pwd)"/cott-test-resources:/cott/cott-test-resources ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/cott/cott-test-resources/JENKINS_resources'
+                sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -v "$(pwd)"/cott-test-resources:/cott/cott-test-resources ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/cott/cott-test-resources/JENKINS_resources'
                 sh "cat cott-test-resources/JENKINS_resources/scenarios_execution_result.txt | awk '/successfully/{ exit 0 }/failed/{ exit 1 }'"
                 // sh "java -jar ./target/e2e-testing-tool.jar -c=config-jenkins.xml -p=./cott-test-resources/JENKINS_resources"
             }

@@ -1,6 +1,7 @@
 package com.knubisoft.cott.testing.framework.util;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.locator.GlobalLocators;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.pages.Locator;
@@ -26,6 +27,7 @@ import java.time.Duration;
 import java.util.Base64;
 import java.util.Objects;
 
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEB_ELEMENT_ATTRIBUTE_NOT_EXIST;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.URL_TO_IMAGE_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.URL_TO_ACTUAL_IMAGE;
 
@@ -84,8 +86,8 @@ public class UiUtil {
 
     @SneakyThrows
     public BufferedImage getActualImage(final WebDriver webDriver,
-                                               final Image image,
-                                               final CommandResult result) {
+                                        final Image image,
+                                        final CommandResult result) {
         CompareWith compareWith = image.getCompareWith();
         if (Objects.nonNull(compareWith)) {
             WebElement webElement = findWebElement(webDriver, compareWith.getLocator());
@@ -94,11 +96,19 @@ public class UiUtil {
         return ImageIO.read(takeScreenshot(webDriver));
     }
 
+    public String getElementAttribute(final WebElement webElement, final String attributeName) {
+        String attribute = webElement.getAttribute(attributeName);
+        if (Objects.isNull(attribute)) {
+            throw new DefaultFrameworkException(WEB_ELEMENT_ATTRIBUTE_NOT_EXIST, attributeName);
+        }
+        return attribute;
+    }
+
     @SneakyThrows
     private BufferedImage extractImageFromElement(final WebElement webElement,
                                                   final String imageSourceAttribute,
                                                   final CommandResult result) {
-        String urlToActualImage = webElement.getAttribute(imageSourceAttribute);
+        String urlToActualImage = getElementAttribute(webElement, imageSourceAttribute);
         log.info(URL_TO_IMAGE_LOG, urlToActualImage);
         result.put(URL_TO_ACTUAL_IMAGE, urlToActualImage);
         return ImageIO.read(new URL(urlToActualImage));

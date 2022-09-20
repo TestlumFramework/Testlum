@@ -60,4 +60,10 @@
         <Class name="com.knubisoft.cott.testing.framework.interpreter.SmtpInterpreter"/>
         <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
     </Match>
+
+    <Match>
+        <Class name="com.knubisoft.cott.testing.framework.util.InitialStructureGenerator"/>
+        <Method name="copyFileToFolder"/>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
+    </Match>
 </FindBugsFilter>

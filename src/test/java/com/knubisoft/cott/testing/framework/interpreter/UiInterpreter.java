@@ -4,7 +4,6 @@ import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractSeleniumInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
-import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.ImageComparator;
@@ -106,8 +105,7 @@ import static java.lang.String.format;
 
 
 @Slf4j
-@InterpreterForClass(Ui.class)
-public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
+public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterpreter<T> {
 
     private static final String MOVE_TO_EMPTY_SPACE = "//html";
     private static final Pattern HTTP_PATTERN = Pattern.compile("https?://.+");

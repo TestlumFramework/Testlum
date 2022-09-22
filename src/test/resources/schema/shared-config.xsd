@@ -51,9 +51,15 @@
 
 
     <x:complexType name="integration" abstract="true">
-        <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
+
+    <x:simpleType name="aliasPattern">
+        <x:restriction base="x:string">
+            <x:pattern value="[a-zA-Z_\-/\d]+"/>
+        </x:restriction>
+    </x:simpleType>
 
     <x:complexType name="databaseConfig" abstract="true">
         <x:complexContent>

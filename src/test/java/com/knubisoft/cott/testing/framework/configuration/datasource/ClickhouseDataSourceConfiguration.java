@@ -22,9 +22,11 @@ public class ClickhouseDataSourceConfiguration {
         final Map<String, DataSource> dataSourceMap = new HashMap<>();
         for (Clickhouse clickhouse
                 : GlobalTestConfigurationProvider.getIntegrations().getClickhouseIntegration().getClickhouse()) {
-            ClickHouseProperties properties = clickHouseProperties(clickhouse);
-            String url = clickhouse.getConnectionUrl();
-            dataSourceMap.put(clickhouse.getAlias(), new ClickHouseDataSource(url, properties));
+            if (clickhouse.isEnabled()) {
+                ClickHouseProperties properties = clickHouseProperties(clickhouse);
+                String url = clickhouse.getConnectionUrl();
+                dataSourceMap.put(clickhouse.getAlias(), new ClickHouseDataSource(url, properties));
+            }
         }
         return dataSourceMap;
     }

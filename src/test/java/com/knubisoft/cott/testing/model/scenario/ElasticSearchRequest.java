@@ -24,8 +24,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="param" type="{http://www.knubisoft.com/cott/testing/model/scenario}param" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element name="response" type="{http://www.knubisoft.com/cott/testing/model/scenario}elasticSearchResponse" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="url" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="host" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" default="PRIMARY" /&gt;
+ *       &lt;attribute name="endpoint" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}endpointPattern" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -51,10 +50,8 @@ public abstract class ElasticSearchRequest {
     protected List<Header> header;
     protected List<Param> param;
     protected ElasticSearchResponse response;
-    @XmlAttribute(name = "url", required = true)
-    protected String url;
-    @XmlAttribute(name = "host")
-    protected String host;
+    @XmlAttribute(name = "endpoint", required = true)
+    protected String endpoint;
 
     /**
      * Gets the value of the header property.
@@ -139,55 +136,27 @@ public abstract class ElasticSearchRequest {
     }
 
     /**
-     * Gets the value of the url property.
+     * Gets the value of the endpoint property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getUrl() {
-        return url;
+    public String getEndpoint() {
+        return endpoint;
     }
 
     /**
-     * Sets the value of the url property.
+     * Sets the value of the endpoint property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setUrl(String value) {
-        this.url = value;
-    }
-
-    /**
-     * Gets the value of the host property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getHost() {
-        if (host == null) {
-            return "PRIMARY";
-        } else {
-            return host;
-        }
-    }
-
-    /**
-     * Sets the value of the host property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setHost(String value) {
-        this.host = value;
+    public void setEndpoint(String value) {
+        this.endpoint = value;
     }
 
 }

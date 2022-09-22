@@ -36,6 +36,10 @@ public class JavascriptUtil {
         javascriptExecutor.executeScript(script);
     }
 
+    public String executeJsScriptAndReturnString(final String script, final WebDriver driver) {
+        JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
+        return javascriptExecutor.executeScript(script).toString();
+    }
     public String getScrollScript(final ScrollDirection direction,
                                   final String value, final ScrollMeasure measure) {
         LogUtil.logScrollInfo(direction.name(), measure.value(), value);

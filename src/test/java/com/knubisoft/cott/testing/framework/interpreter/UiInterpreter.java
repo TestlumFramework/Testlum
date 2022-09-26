@@ -1,6 +1,7 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
+import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractSeleniumInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -111,6 +112,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
 
     private static final String MOVE_TO_EMPTY_SPACE = "//html";
     private static final Pattern HTTP_PATTERN = Pattern.compile("https?://.+");
+    private final boolean stopScenarioOnFailure;
     private final Map<UiCommandPredicate, UiCommand> uiCommands;
 
     public UiInterpreter(final InterpreterDependencies dependencies) {
@@ -131,52 +133,57 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         commands.put(ui -> ui instanceof Hovers, (ui, result) -> hover((Hovers) ui, result));
         commands.put(ui -> ui instanceof Image, (ui, result) -> compareImages((Image) ui, result));
         this.uiCommands = Collections.unmodifiableMap(commands);
+        this.stopScenarioOnFailure = GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure();
     }
 
     @Override
-    protected void acceptImpl(final Ui o, final CommandResult result) {
-        LogUtil.logUiAttributes(o.isClearCookiesAfterExecution(), o.getClearLocalStorageByKey());
-        List<CommandResult> subCommandsResult = new LinkedList<>();
-        runCommands(o.getClickOrInputOrNavigate(), result, subCommandsResult);
-        clearLocalStorage(dependencies.getWebDriver(), o.getClearLocalStorageByKey(), result);
-        clearCookies(dependencies.getWebDriver(), o.isClearCookiesAfterExecution(), result);
+    protected void acceptImpl(final Ui ui, final CommandResult result) {
+        LogUtil.logUiAttributes(ui.isClearCookiesAfterExecution(), ui.getClearLocalStorageByKey());
+        runCommands(ui.getClickOrInputOrNavigate(), result);
+        clearLocalStorage(dependencies.getWebDriver(), ui.getClearLocalStorageByKey(), result);
+        clearCookies(dependencies.getWebDriver(), ui.isClearCookiesAfterExecution(), result);
     }
 
     private void runCommands(final List<AbstractCommand> commandList,
-                             final CommandResult result,
-                             final List<CommandResult> subCommandsResult) {
-        commandList.forEach(command -> uiCommands.keySet().stream()
-                .filter(key -> key.test(command))
-                .map(uiCommands::get)
-                .peek(s -> LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), command))
-                .forEach(method -> processEachCommand(command, method, subCommandsResult)));
+                             final CommandResult result) {
+        List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
+
+        for (AbstractCommand command : commandList) {
+            uiCommands.keySet().stream()
+                    .filter(key -> key.test(command))
+                    .map(uiCommands::get)
+                    .peek(s -> LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), command))
+                    .forEach(method -> processEachCommand(command, method, subCommandsResult));
+        }
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
-    private void processEachCommand(final AbstractCommand command, final UiInterpreter.UiCommand method,
+    private void processEachCommand(final AbstractCommand command,
+                                    final UiInterpreter.UiCommand method,
                                     final List<CommandResult> subCommandsResult) {
         CommandResult subCommandResult = ResultUtil.createCommandResultForUiSubCommand(
                 dependencies.getPosition().intValue(),
                 command.getClass().getSimpleName(),
                 command.getComment());
-        uiCommandExec(command, subCommandResult, method);
+        executeUiCommand(command, subCommandResult, method);
         subCommandsResult.add(subCommandResult);
     }
 
-    private void uiCommandExec(final AbstractCommand command, final CommandResult result,
-                               final UiInterpreter.UiCommand method) {
+    private void executeUiCommand(final AbstractCommand command,
+                                  final CommandResult subResult,
+                                  final UiInterpreter.UiCommand method) {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
-            method.accept(command, result);
+            method.accept(command, subResult);
         } catch (Exception e) {
-            result.setSuccess(false);
-            result.setException(e);
-            LogUtil.logException(e);
+            subResult.setSuccess(false);
+            subResult.setException(e);
+            checkIfStopScenarioOnFailure(e);
         } finally {
             long execTime = stopWatch.getTime();
             stopWatch.stop();
-            result.setExecutionTime(execTime);
+            subResult.setExecutionTime(execTime);
             log.info(EXECUTION_TIME_LOG, execTime);
         }
     }
@@ -414,11 +421,10 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         int times = repeat.getTimes().intValue();
         result.put(NUMBER_OF_REPETITIONS, times);
         log.info(TIMES_LOG, times);
-        List<CommandResult> subCommandsResult = new LinkedList<>();
         List<AbstractCommand> commandsForRepeat = repeat.getClickOrInputOrNavigate();
         ResultUtil.addCommandsForRepeat(commandsForRepeat, result);
         IntStream.range(0, times)
-                .forEach(e -> runCommands(commandsForRepeat, result, subCommandsResult));
+                .forEach(e -> runCommands(commandsForRepeat, result));
         log.info(REPEAT_FINISHED_LOG);
     }
 
@@ -434,6 +440,13 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         result.put(CLEAR_COOKIES_AFTER_EXECUTION, clearCookies);
         if (clearCookies) {
             driver.manage().deleteAllCookies();
+        }
+    }
+
+    private void checkIfStopScenarioOnFailure(final Exception e) {
+        LogUtil.logException(e);
+        if (stopScenarioOnFailure) {
+            throw new DefaultFrameworkException(e);
         }
     }
 

@@ -41,7 +41,8 @@ public final class LogMessage {
     public static final String SCENARIO_NUMBER_AND_PATH_LOG = ANSI_GREEN
             + "================== Execute for scenario #{} - {} ==================" + ANSI_RESET;
 
-    public static final String EXECUTION_STOP_SIGNAL_LOG = "Execution has been stopped because of StopSignal";
+    public static final String EXECUTION_STOP_SIGNAL_LOG = ANSI_RED_BOLD
+            + "***Execution has been stopped because of StopSignal***" + ANSI_RESET;
     public static final String EXCEPTION_LOG = ANSI_RED
             + "----------------    EXCEPTION    -----------------"
             + NEW_LOG_LINE + " {}" + NEW_LOG_LINE

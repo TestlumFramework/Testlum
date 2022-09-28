@@ -10,13 +10,13 @@ import java.util.List;
 
 public class ByText {
 
-    public static By text(String text){
+    public static By text(final String text) {
         return new By() {
             @Override
-            public List<WebElement> findElements(SearchContext context) {
+            public List<WebElement> findElements(final SearchContext context) {
                 String xpath = "//*[contains(text(), '" + text + "')]";
                 List<WebElement> elements = context.findElements(By.xpath(xpath));
-                if (elements.size() > 1){
+                if (elements.size() > 1) {
                     throw new DefaultFrameworkException(ExceptionMessage.FOUND_MORE_THEN_ONE_ELEMENT, text);
                 }
                 return elements;

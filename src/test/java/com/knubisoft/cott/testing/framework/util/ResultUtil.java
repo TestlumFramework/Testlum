@@ -163,9 +163,13 @@ public class ResultUtil {
                     .findFirst()
                     .map(CommandResult::getException)
                     .orElseGet(() -> new DefaultFrameworkException(STEP_FAILED));
-            result.setSuccess(false);
-            result.setException(exception);
+            setExceptionResult(result, exception);
         }
+    }
+
+    public void setExceptionResult(final CommandResult result, final Exception exception) {
+        result.setSuccess(false);
+        result.setException(exception);
     }
 
     public void addDatabaseMetaData(final String databaseAlias,

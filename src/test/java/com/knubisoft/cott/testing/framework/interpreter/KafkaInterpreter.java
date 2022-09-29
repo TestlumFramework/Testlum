@@ -85,8 +85,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
             processKafkaAction(subCommandResult, action, alias);
         } catch (Exception e) {
             LogUtil.logException(e);
-            subCommandResult.setException(e);
-            subCommandResult.setSuccess(false);
+            ResultUtil.setExceptionResult(subCommandResult, e);
         } finally {
             subCommandResult.setExecutionTime(stopWatch.getTime());
             stopWatch.stop();

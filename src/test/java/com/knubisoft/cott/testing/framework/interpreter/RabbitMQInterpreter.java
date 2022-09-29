@@ -3,13 +3,13 @@ package com.knubisoft.cott.testing.framework.interpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.scenario.Rabbit;
 import com.knubisoft.cott.testing.model.scenario.ReceiveRmqMessage;
-import com.knubisoft.cott.testing.framework.report.CommandResult;
-import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.model.scenario.RmqHeader;
 import com.knubisoft.cott.testing.model.scenario.SendRmqMessage;
 import lombok.Data;
@@ -72,8 +72,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         try {
             runRabbitMqOperation(subCommandResult, action, alias);
         } catch (Exception e) {
-            subCommandResult.setSuccess(false);
-            subCommandResult.setException(e);
+            ResultUtil.setExceptionResult(subCommandResult, e);
             LogUtil.logException(e);
         } finally {
             subCommandResult.setExecutionTime(stopWatch.getTime());

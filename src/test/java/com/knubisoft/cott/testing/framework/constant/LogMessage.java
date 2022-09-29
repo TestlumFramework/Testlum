@@ -40,12 +40,29 @@ public final class LogMessage {
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
     public static final String SCENARIO_NUMBER_AND_PATH_LOG = ANSI_GREEN
             + "================== Execute for scenario #{} - {} ==================" + ANSI_RESET;
+    public static final String LINE =
+            "-----------------------------------------------------------------------------------------------------"
+                    + "--------------------------------------------------------------------------------------";
+    public static final String INVALID_SCENARIO_LOG = ANSI_RED + LINE
+            + NEW_LOG_LINE + format(TABLE_FORMAT, "Invalid scenario", "{}")
+            + NEW_LOG_LINE + format(TABLE_FORMAT, "Exception", "{}") + NEW_LOG_LINE
+            + LINE + ANSI_RESET + "\n";
 
-    public static final String EXECUTION_STOP_SIGNAL_LOG = "Execution has been stopped because of StopSignal";
+    public static final String EXECUTION_STOP_SIGNAL_LOG = ANSI_YELLOW
+            + LINE + NEW_LOG_LINE
+            + "Execution has been stopped because of enabled <StopScenarioOnFailure>"
+            + NEW_LOG_LINE + LINE + ANSI_RESET;
+
     public static final String EXCEPTION_LOG = ANSI_RED
             + "----------------    EXCEPTION    -----------------"
             + NEW_LOG_LINE + " {}" + NEW_LOG_LINE
             + "--------------------------------------------------" + ANSI_RESET;
+
+    public static final String INITIAL_STRUCTURE_GENERATION_SUCCESS = ANSI_GREEN + "Initial structure by path "
+            + ANSI_BLUE_UNDERLINED + "{}" + ANSI_RESET + ANSI_GREEN + " generated successfully";
+    public static final String INITIAL_STRUCTURE_GENERATION_ERROR = ANSI_RED
+            + "Failed to generate initial structure by path " + ANSI_BLUE_UNDERLINED + "{}" + ANSI_RESET;
+
     public static final String FAILED_VARIABLE_WITH_PATH_LOG = "Failed [variable] {} [comment] {}";
 
     public static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
@@ -102,19 +119,6 @@ public final class LogMessage {
     public static final String SHELL_COMMAND_LOG = format(TABLE_FORMAT, "Shell command", "{}");
     public static final String SCROLL_DIRECTION_LOG = format(TABLE_FORMAT, "Direction", "{}");
     public static final String SCROLL_BY_LOG = format(TABLE_FORMAT, "Scroll by", "{}");
-    public static final String LINE =
-            "-----------------------------------------------------------------------------------------------------"
-                    + "--------------------------------------------------------------------------------------";
-    public static final String INVALID_SCENARIO_LOG = ANSI_RED + LINE
-            + NEW_LOG_LINE + format(TABLE_FORMAT, "Invalid scenario", "{}")
-            + NEW_LOG_LINE + format(TABLE_FORMAT, "Exception", "{}") + NEW_LOG_LINE
-            + LINE + ANSI_RESET + "\n";
-
-    public static final String INITIAL_STRUCTURE_GENERATION_SUCCESS = ANSI_GREEN + "Initial structure by path "
-            + ANSI_BLUE_UNDERLINED + "{}" + ANSI_RESET + ANSI_GREEN + " generated successfully";
-    public static final String INITIAL_STRUCTURE_GENERATION_ERROR = ANSI_RED
-            + "Failed to generate initial structure by path " + ANSI_BLUE_UNDERLINED + "{}" + ANSI_RESET;
-
     public static final String TIMES_LOG = format(TABLE_FORMAT, "Times to repeat", "{}");
     public static final String CREDENTIALS_LOG = format(TABLE_FORMAT, "Credentials", "{}");
     public static final String INVALID_CREDENTIALS_LOG = format(TABLE_FORMAT, "Invalid credentials", "{}");

@@ -28,6 +28,7 @@ import java.util.Base64;
 import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEB_ELEMENT_ATTRIBUTE_NOT_EXIST;
+import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.HIGHLIGHT_SCRIPT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.URL_TO_IMAGE_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.URL_TO_ACTUAL_IMAGE;
 
@@ -36,11 +37,30 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.URL_TO_ACTUAL
 public class UiUtil {
 
     private static final int TIME_TO_WAIT = GlobalTestConfigurationProvider.provide()
-            .getUi().getBrowserSettings().getWebElementAutowait().getSeconds();
+            .getWeb().getBrowserSettings().getElementAutowait().getSeconds();
+
+    private static final String FILE_PATH_PREFIX = "file:";
+
+    public String resolveSendKeysType(final String value, final WebElement element, final File fromDir) {
+        if (value.startsWith(FILE_PATH_PREFIX)) {
+            File file = FileSearcher.searchFileFromDir(fromDir, value.substring(FILE_PATH_PREFIX.length()));
+            return file.getPath();
+        }
+        element.clear();
+        return value;
+    }
 
     public WebElement findWebElement(final WebDriver webDriver, final String locatorId) {
         Locator locator = GlobalLocators.getLocator(locatorId);
         return WebElementFinder.find(locator, webDriver);
+    }
+
+    public void highlightElementIfRequired(final Boolean isHighlight,
+                                           final WebElement element,
+                                           final WebDriver driver) {
+        if (isHighlight == null || isHighlight) {
+            JavascriptUtil.executeJsScript(element, HIGHLIGHT_SCRIPT, driver);
+        }
     }
 
     public void waitForElementVisibility(final WebDriver driver, final WebElement element) {
@@ -50,7 +70,7 @@ public class UiUtil {
 
     public void waitForElementToBeClickable(final WebDriver driver, final WebElement element) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIME_TO_WAIT));
-        ElementHighlighter.highlight(element, driver);
+        UiUtil.highlightElementIfRequired(true, element, driver);
         wait.until(ExpectedConditions.elementToBeClickable(element));
     }
 

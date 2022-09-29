@@ -98,6 +98,10 @@ public class ExceptionMessage {
 
     public static final String VALID_SCENARIOS_NOT_FOUND = ANSI_RED + "Valid scenarios are not found" + ANSI_RESET;
     public static final String NOT_ENABLED_BROWSERS = "At least 1 browser must be enabled";
+
+    public static final String NOT_ENABLED_NATIVE_DEVICE = "At least 1 native device must be enabled";
+
+    public static final String NOT_ENABLED_MOBILEBROWSER_DEVICE = "At least 1 mobilebrowser device must be enabled";
     public static final String UI_DISABLED_ERROR = "Your scenarios contain UI testing steps, but your UI settings is "
             + "disabled. Please enable UI settings in config file or exclude scenarios with UI steps.";
 

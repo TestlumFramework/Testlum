@@ -4,6 +4,8 @@ import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfiguratio
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
+import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
+import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Dimension;
@@ -14,6 +16,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_MOBILEBROWSER_DEVICE;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_NATIVE_DEVICE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_INFO;
 
 @UtilityClass
@@ -23,9 +27,29 @@ public class BrowserUtil {
         List<AbstractBrowser> filteredResult = GlobalTestConfigurationProvider.getBrowsers().stream()
                 .filter(AbstractBrowser::isEnable)
                 .collect(Collectors.toList());
-        if (filteredResult.isEmpty()) {
-            throw new DefaultFrameworkException(NOT_ENABLED_BROWSERS);
-        }
+//        if (filteredResult.isEmpty()) {
+//            throw new DefaultFrameworkException(NOT_ENABLED_BROWSERS);
+//        }
+        return filteredResult;
+    }
+
+    public List<NativeDevice> filterEnabledNativeDevices() {
+        List<NativeDevice> filteredResult = GlobalTestConfigurationProvider.getNativeDevices().stream()
+                .filter(NativeDevice::isEnabled)
+                .collect(Collectors.toList());
+//        if (filteredResult.isEmpty()) {
+//            throw new DefaultFrameworkException(NOT_ENABLED_NATIVE_DEVICE);
+//        }
+        return filteredResult;
+    }
+
+    public List<MobilebrowserDevice> filterEnabledMobilebrowserDevices() {
+        List<MobilebrowserDevice> filteredResult = GlobalTestConfigurationProvider.getMobilebrowserDevices().stream()
+                .filter(MobilebrowserDevice::isEnabled)
+                .collect(Collectors.toList());
+//        if (filteredResult.isEmpty()) {
+//            throw new DefaultFrameworkException(NOT_ENABLED_MOBILEBROWSER_DEVICE);
+//        }
         return filteredResult;
     }
 

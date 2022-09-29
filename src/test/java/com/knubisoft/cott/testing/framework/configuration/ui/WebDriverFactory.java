@@ -44,7 +44,7 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DRI
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_VERSION;
 
 @UtilityClass
-public class WebDriverFactory {
+public class WebDriverFactory{
 
     private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;

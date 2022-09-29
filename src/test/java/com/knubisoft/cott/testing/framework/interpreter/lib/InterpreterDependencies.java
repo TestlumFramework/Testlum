@@ -23,16 +23,16 @@ public class InterpreterDependencies {
     private final File file;
     private final ScenarioContext scenarioContext;
     private final AtomicInteger position;
-    private WebDriver webDriver;
+    private Drivers drivers;
 
     private Authorization authorization;
 
-    public InterpreterDependencies(final WebDriver webDriver,
+    public InterpreterDependencies(final Drivers drivers,
                                    final ApplicationContext context,
                                    final File file,
                                    final ScenarioContext scenarioContext,
                                    final AtomicInteger position) {
-        this.webDriver = webDriver;
+        this.drivers = drivers;
         this.context = context;
         this.file = file;
         this.scenarioContext = scenarioContext;

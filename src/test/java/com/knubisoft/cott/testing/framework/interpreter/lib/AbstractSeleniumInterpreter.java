@@ -3,10 +3,11 @@ package com.knubisoft.cott.testing.framework.interpreter.lib;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
-import com.knubisoft.cott.testing.framework.util.ElementHighlighter;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
+import com.knubisoft.cott.testing.model.global_config.Settings;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.io.File;
@@ -21,14 +22,10 @@ public abstract class AbstractSeleniumInterpreter<T extends AbstractCommand> ext
         super(dependencies);
     }
 
-    protected WebElement findWebElement(final String locatorId) {
-        return UiUtil.findWebElement(dependencies.getWebDriver(), locatorId);
-    }
-
-    protected void takeScreenshotAndSaveIfRequired(final CommandResult result) {
-        if (dependencies.getGlobalTestConfiguration().getUi().getBrowserSettings()
-                .getTakeScreenshotOfEachUiCommand().isEnable()) {
-            File screenshot = UiUtil.takeScreenshot(dependencies.getWebDriver());
+    protected void takeScreenshotAndSaveIfRequired(final CommandResult result, final Settings settings,
+                                                   final WebDriver webDriver) {
+        if (settings.getTakeScreenshots().isEnable()) {
+            File screenshot = UiUtil.takeScreenshot(webDriver);
             File screenshotsFolder = new File(dependencies.getFile().getParent()
                     + TestResourceSettings.SCREENSHOT_FOLDER);
             tryToCopyScreenshotFileToFolder(screenshot, screenshotsFolder);
@@ -44,11 +41,6 @@ public abstract class AbstractSeleniumInterpreter<T extends AbstractCommand> ext
         }
     }
 
-    protected void highlightElementIfRequired(final Boolean isHighlight, final WebElement element) {
-        if (isHighlight == null || isHighlight) {
-            ElementHighlighter.highlight(element, dependencies.getWebDriver());
-        }
-    }
 
     private void copyScreenshotFileToFolder(final File screenshot, final File screenshotsFolder) throws IOException {
         String screenshotFileName = format(TestResourceSettings.SCREENSHOT_NAME_TO_SAVE,

@@ -3,6 +3,7 @@ package com.knubisoft.cott.testing.framework.interpreter;
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractSeleniumInterpreter;
+import com.knubisoft.cott.testing.framework.interpreter.lib.Drivers;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
@@ -11,9 +12,9 @@ import com.knubisoft.cott.testing.framework.util.ImageComparisonUtil;
 import com.knubisoft.cott.testing.framework.util.JavascriptUtil;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.framework.util.SeleniumUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.framework.util.WaitUtil;
+import com.knubisoft.cott.testing.model.global_config.Settings;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Assert;
 import com.knubisoft.cott.testing.model.scenario.Clear;
@@ -109,7 +110,14 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
 
     private static final String MOVE_TO_EMPTY_SPACE = "//html";
     private static final Pattern HTTP_PATTERN = Pattern.compile("https?://.+");
+    private final WebDriver driver = getDriver(dependencies.getDrivers());
+    private final Settings settings = getSettings();
+
     private final Map<UiCommandPredicate, UiCommand> uiCommands;
+
+    protected abstract WebDriver getDriver(Drivers drivers);
+
+    protected abstract Settings getSettings();
 
     public UiInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -136,8 +144,8 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
         LogUtil.logUiAttributes(o.isClearCookiesAfterExecution(), o.getClearLocalStorageByKey());
         List<CommandResult> subCommandsResult = new LinkedList<>();
         runCommands(o.getClickOrInputOrNavigate(), result, subCommandsResult);
-        clearLocalStorage(dependencies.getWebDriver(), o.getClearLocalStorageByKey(), result);
-        clearCookies(dependencies.getWebDriver(), o.isClearCookiesAfterExecution(), result);
+        clearLocalStorage(driver, o.getClearLocalStorageByKey(), result);
+        clearCookies(driver, o.isClearCookiesAfterExecution(), result);
     }
 
     private void runCommands(final List<AbstractCommand> commandList,
@@ -179,19 +187,19 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
         }
     }
 
-    private void click(final Click click, final CommandResult result) {
+    protected void click(final Click click, final CommandResult result) {
         result.put(CLICK_LOCATOR, click.getLocatorId());
-        WebElement webElement = findWebElement(click.getLocatorId());
-        UiUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
-        highlightElementIfRequired(click.isHighlight(), webElement);
-        takeScreenshotAndSaveIfRequired(result);
+        WebElement webElement = UiUtil.findWebElement(driver, click.getLocatorId());
+        UiUtil.waitForElementVisibility(driver, webElement);
+        UiUtil.highlightElementIfRequired(click.isHighlight(), webElement, driver);
+        takeScreenshotAndSaveIfRequired(result, settings, driver);
         clickWithMethod(click.getMethod(), webElement, result);
     }
 
     private void clickWithMethod(final ClickMethod method, final WebElement element, final CommandResult result) {
         if (method != null && method.equals(JS)) {
             result.put(CLICK_METHOD, "javascript");
-            JavascriptUtil.executeJsScript(element, CLICK_SCRIPT, dependencies.getWebDriver());
+            JavascriptUtil.executeJsScript(element, CLICK_SCRIPT, driver);
         } else {
             result.put(CLICK_METHOD, "selenium");
             element.click();
@@ -203,16 +211,15 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
         result.put(JS_FILE, fileName);
         log.info(JS_FILE_LOG, fileName);
         String command = JavascriptUtil.readCommands(fileName);
-        JavascriptUtil.executeJsScript(command, dependencies.getWebDriver());
+        JavascriptUtil.executeJsScript(command, driver);
     }
 
     private void hover(final Hovers hovers, final CommandResult result) {
         ResultUtil.addHoversMetaData(hovers, result);
-        WebDriver driver = dependencies.getWebDriver();
         Actions actions = new Actions(driver);
         List<WebElement> webElements = hovers.getHover().stream()
                 .peek(hover -> LogUtil.logHover(dependencies.getPosition().incrementAndGet(), hover))
-                .map(hover -> findWebElement(hover.getLocatorId()))
+                .map(hover -> UiUtil.findWebElement(driver, hover.getLocatorId()))
                 .collect(Collectors.toList());
         webElements.forEach(webElement -> {
             actions.moveToElement(webElement);
@@ -231,14 +238,14 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
 
     private void input(final Input input, final CommandResult result) {
         result.put(INPUT_LOCATOR, input.getLocatorId());
-        WebElement webElement = findWebElement(input.getLocatorId());
-        highlightElementIfRequired(input.isHighlight(), webElement);
+        WebElement webElement = UiUtil.findWebElement(driver, input.getLocatorId());
+        UiUtil.highlightElementIfRequired(input.isHighlight(), webElement, driver);
         String injected = inject(input.getValue());
-        String value = SeleniumUtil.resolveSendKeysType(injected, webElement, dependencies.getFile());
+        String value = UiUtil.resolveSendKeysType(injected, webElement, dependencies.getFile());
         result.put(INPUT_VALUE, value);
         log.info(VALUE_LOG, value);
         webElement.sendKeys(value);
-        takeScreenshotAndSaveIfRequired(result);
+        takeScreenshotAndSaveIfRequired(result, settings, driver);
     }
 
     private void navigate(final Navigate navigate, final CommandResult result) {
@@ -246,29 +253,29 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
         log.info(COMMAND_TYPE_LOG, navigateCommand.name());
         result.put(NAVIGATE_TYPE, navigateCommand.value());
         switch (navigateCommand) {
-            case BACK: dependencies.getWebDriver().navigate().back();
+            case BACK: driver.navigate().back();
                 break;
-            case RELOAD: dependencies.getWebDriver().navigate().refresh();
+            case RELOAD: driver.navigate().refresh();
                 break;
             case TO: navigateTo(navigate.getPath(), result);
                 break;
             default: throw new DefaultFrameworkException(format(NAVIGATE_NOT_SUPPORTED, navigateCommand.value()));
         }
-        takeScreenshotAndSaveIfRequired(result);
+        takeScreenshotAndSaveIfRequired(result, settings, driver);
     }
 
     private void navigateTo(final String path, final CommandResult result) {
         String url = inject(getUrl(path));
         result.put(NAVIGATE_URL, url);
         log.info(BY_URL_LOG, url);
-        dependencies.getWebDriver().navigate().to(url);
+        driver.navigate().to(url);
     }
 
     private String getUrl(final String path) {
         if (HTTP_PATTERN.matcher(path).matches()) {
             return path;
         }
-        return dependencies.getGlobalTestConfiguration().getUi().getBaseUrl() + path;
+        return dependencies.getGlobalTestConfiguration().getWeb().getBaseUrl() + path;
     }
 
     private void assertValues(final Assert aAssert, final CommandResult result) {
@@ -282,12 +289,12 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
                 .withActual(actual)
                 .withExpected(expected)
                 .exec();
-        takeScreenshotAndSaveIfRequired(result);
+        takeScreenshotAndSaveIfRequired(result, settings, driver);
     }
 
     private String getActualValue(final Assert aAssert) {
-        WebElement webElement = findWebElement(aAssert.getLocatorId());
-        UiUtil.waitForElementVisibility(dependencies.getWebDriver(), webElement);
+        WebElement webElement = UiUtil.findWebElement(driver, aAssert.getLocatorId());
+        UiUtil.waitForElementVisibility(driver, webElement);
         String value = UiUtil.getElementAttribute(webElement, aAssert.getAttribute());
         return value
                 .replaceAll(SPACE, EMPTY)
@@ -297,7 +304,7 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
     private void dropDown(final DropDown dropDown, final CommandResult result) {
         String locatorId = dropDown.getLocatorId();
         result.put(DROP_DOWN_LOCATOR, locatorId);
-        Select select = new Select(findWebElement(locatorId));
+        Select select = new Select(UiUtil.findWebElement(driver, locatorId));
         OneValue oneValue = dropDown.getOneValue();
         if (oneValue != null) {
             processOneValueFromDropDown(oneValue, select, result);
@@ -320,7 +327,7 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
         } else {
             deselectByMethod(select, method, value);
         }
-        takeScreenshotAndSaveIfRequired(result);
+        takeScreenshotAndSaveIfRequired(result, settings, driver);
     }
 
     private void selectByMethod(final Select select, final SelectOrDeselectBy method, final String value) {
@@ -350,23 +357,22 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
     private void clear(final Clear clear, final CommandResult result) {
         String locatorId = clear.getLocatorId();
         result.put(CLEAR_LOCATOR, locatorId);
-        WebElement element = findWebElement(locatorId);
-        UiUtil.waitForElementVisibility(dependencies.getWebDriver(), element);
+        WebElement element = UiUtil.findWebElement(driver, locatorId);
+        UiUtil.waitForElementVisibility(driver, element);
         element.clear();
-        highlightElementIfRequired(clear.isHighlight(), element);
-        takeScreenshotAndSaveIfRequired(result);
+        UiUtil.highlightElementIfRequired(clear.isHighlight(), element, driver);
+        takeScreenshotAndSaveIfRequired(result, settings, driver);
     }
 
     private void closeSecondTab(final CloseSecondTab closeSecondTab, final CommandResult result) {
         result.put(CLOSE_COMMAND, SECOND_TAB);
-        WebDriver webDriver = dependencies.getWebDriver();
-        List<String> windowHandles = new ArrayList<>(webDriver.getWindowHandles());
+        List<String> windowHandles = new ArrayList<>(driver.getWindowHandles());
         if (windowHandles.size() <= 1) {
             throw new DefaultFrameworkException(SECOND_TAB_NOT_FOUND);
         }
-        webDriver.switchTo().window(windowHandles.get(1));
-        webDriver.close();
-        webDriver.switchTo().window(windowHandles.get(0));
+        driver.switchTo().window(windowHandles.get(1));
+        driver.close();
+        driver.switchTo().window(windowHandles.get(0));
     }
 
     @SneakyThrows
@@ -382,17 +388,17 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
         ScrollMeasure measure = scroll.getMeasure();
         String value = scroll.getValue().toString();
         ResultUtil.addScrollMetaData(direction.value(), measure.value(), value, result);
-        takeScreenshotAndSaveIfRequired(result);
+        takeScreenshotAndSaveIfRequired(result, settings, driver);
         JavascriptUtil.executeJsScript(JavascriptUtil.getScrollScript(direction, value, measure),
-                dependencies.getWebDriver());
+                driver);
     }
 
     private void scrollTo(final ScrollTo scrollTo, final CommandResult result) {
         String locatorId = scrollTo.getLocatorId();
-        WebElement element = findWebElement(locatorId);
+        WebElement element = UiUtil.findWebElement(driver, locatorId);
         result.put(SCROLL_LOCATOR, locatorId);
-        takeScreenshotAndSaveIfRequired(result);
-        JavascriptUtil.executeJsScript(element, SCROLL_TO_ELEMENT_SCRIPT, dependencies.getWebDriver());
+        takeScreenshotAndSaveIfRequired(result, settings, driver);
+        JavascriptUtil.executeJsScript(element, SCROLL_TO_ELEMENT_SCRIPT, driver);
     }
 
     @SneakyThrows
@@ -402,7 +408,7 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
         File scenarioFile = dependencies.getFile();
         BufferedImage expectedImage = ImageIO
                 .read(FileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
-        BufferedImage actualImage = UiUtil.getActualImage(dependencies.getWebDriver(), image, result);
+        BufferedImage actualImage = UiUtil.getActualImage(driver, image, result);
         ImageComparisonResult comparisonResult = ImageComparator.compare(expectedImage, actualImage);
         ImageComparisonUtil
                 .processImageComparisonResult(comparisonResult, image, scenarioFile.getParentFile(), result);

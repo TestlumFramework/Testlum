@@ -5,6 +5,10 @@ import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.BrowserSettings;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
+import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
+import com.knubisoft.cott.testing.model.global_config.MobilebrowserDeviceSettings;
+import com.knubisoft.cott.testing.model.global_config.NativeDevice;
+import com.knubisoft.cott.testing.model.global_config.NativeDeviceSettings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -23,8 +27,24 @@ public class GlobalTestConfigurationProvider {
         return getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari();
     }
 
+    public static List<NativeDevice> getNativeDevices() {
+        return GlobalTestConfigurationProvider.provide().getNative().getDeviceSettings().getDevices().getDevice();
+    }
+
+    public static List<MobilebrowserDevice> getMobilebrowserDevices() {
+        return GlobalTestConfigurationProvider.provide().getMobilebrowser().getDeviceSettings().getDevices().getDevice();
+    }
+
     public static BrowserSettings getBrowserSettings() {
-       return GlobalTestConfigurationProvider.provide().getUi().getBrowserSettings();
+       return GlobalTestConfigurationProvider.provide().getWeb().getBrowserSettings();
+    }
+
+    public static NativeDeviceSettings getNativeSettings() {
+        return GlobalTestConfigurationProvider.provide().getNative().getDeviceSettings();
+    }
+
+    public static MobilebrowserDeviceSettings getMobilebrowserSettings() {
+        return GlobalTestConfigurationProvider.provide().getMobilebrowser().getDeviceSettings();
     }
 
     public static Integrations getIntegrations() {

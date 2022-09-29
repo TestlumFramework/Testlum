@@ -109,7 +109,7 @@ public class ScenarioFilter {
 
     private boolean scenarioContainsUiSteps(final Scenario scenario) {
         return scenario.getCommands().stream()
-                .anyMatch(command -> command.getClass().isAssignableFrom(Ui.class));
+                .anyMatch(command -> Ui.class.isAssignableFrom(command.getClass()));
     }
 
     private boolean isScenarioNonParsed(final ScenarioCollector.MappingResult entry) {

@@ -20,10 +20,10 @@ import static java.lang.String.format;
 @UtilityClass
 public final class WebElementFinder {
 
-    private static final Map<Predicate<Locator>, Function<Locator, org.openqa.selenium.By>> SEARCH_TYPES;
+    private static final Map<LocatorType, ByType> SEARCH_TYPES;
 
     static {
-        final Map<Predicate<Locator>, Function<Locator, org.openqa.selenium.By>> map = new HashMap<>();
+        final Map<LocatorType, ByType> map = new HashMap<>();
         map.put(l -> Objects.nonNull(l.getXpath()), l -> By.xpath(l.getXpath()));
         map.put(l -> Objects.nonNull(l.getId()), l -> By.id(l.getId()));
         map.put(l -> Objects.nonNull(l.getClazz()), l -> By.className(l.getClazz()));
@@ -45,4 +45,7 @@ public final class WebElementFinder {
         log.error("Web element for locator='{}' not found", locator);
         return new DefaultFrameworkException(format("Web element for locator='%s' not found", locator));
     }
+
+    private interface LocatorType extends Predicate<Locator> { }
+    private interface ByType extends Function<Locator, org.openqa.selenium.By> { }
 }

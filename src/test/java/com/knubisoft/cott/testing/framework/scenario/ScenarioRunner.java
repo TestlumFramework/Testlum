@@ -11,6 +11,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterScanner;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.report.ScenarioResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
+import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
@@ -106,8 +107,7 @@ public class ScenarioRunner {
         try {
             getInterpreterOrThrow(command).apply(command, result);
         } catch (Exception e) {
-            result.setSuccess(false);
-            result.setException(e);
+            ResultUtil.setExceptionResult(result, e);
         }
     }
 

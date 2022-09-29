@@ -149,13 +149,12 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
 
-        for (AbstractCommand command : commandList) {
-            uiCommands.keySet().stream()
-                    .filter(key -> key.test(command))
-                    .map(uiCommands::get)
-                    .peek(s -> LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), command))
-                    .forEach(method -> processEachCommand(command, method, subCommandsResult));
-        }
+        commandList.forEach(command -> uiCommands.keySet().stream()
+                .filter(key -> key.test(command))
+                .map(uiCommands::get)
+                .peek(s -> LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), command))
+                .forEach(method -> processEachCommand(command, method, subCommandsResult))
+        );
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
@@ -171,19 +170,19 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private void executeUiCommand(final AbstractCommand command,
-                                  final CommandResult subResult,
+                                  final CommandResult subCommandResult,
                                   final UiInterpreter.UiCommand method) {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
-            method.accept(command, subResult);
+            method.accept(command, subCommandResult);
         } catch (Exception e) {
-            subResult.setSuccess(false);
-            subResult.setException(e);
+            ResultUtil.setExceptionResult(subCommandResult, e);
+            LogUtil.logException(e);
             checkIfStopScenarioOnFailure(e);
         } finally {
             long execTime = stopWatch.getTime();
             stopWatch.stop();
-            subResult.setExecutionTime(execTime);
+            subCommandResult.setExecutionTime(execTime);
             log.info(EXECUTION_TIME_LOG, execTime);
         }
     }
@@ -444,7 +443,6 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private void checkIfStopScenarioOnFailure(final Exception e) {
-        LogUtil.logException(e);
         if (stopScenarioOnFailure) {
             throw new DefaultFrameworkException(e);
         }

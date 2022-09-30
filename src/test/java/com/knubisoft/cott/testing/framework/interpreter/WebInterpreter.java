@@ -4,9 +4,7 @@ import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfiguratio
 import com.knubisoft.cott.testing.framework.interpreter.lib.Drivers;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
-import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.global_config.Settings;
-import com.knubisoft.cott.testing.model.scenario.Ui;
 import com.knubisoft.cott.testing.model.scenario.Web;
 import org.openqa.selenium.WebDriver;
 
@@ -15,9 +13,6 @@ public class WebInterpreter extends UiInterpreter<Web>{
     public WebInterpreter(InterpreterDependencies dependencies) {
         super(dependencies);
     }
-//    public WebInterpreter(InterpreterDependencies dependencies) {
-//        super(dependencies);
-//    }
 
     @Override
     protected WebDriver getDriver(Drivers drivers) {
@@ -28,9 +23,4 @@ public class WebInterpreter extends UiInterpreter<Web>{
     protected Settings getSettings() {
         return GlobalTestConfigurationProvider.getBrowserSettings();
     }
-
-//    @Override
-//    protected void acceptImpl(Ui o, CommandResult result) {
-//        super.acceptImpl(o, result);
-//    }
 }

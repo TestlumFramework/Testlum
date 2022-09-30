@@ -42,7 +42,6 @@ public class TestSetCollector {
             return filtrationResult.getScenariosWithoutUiSteps()
                     .stream().map(this::getArgumentsWithoutUiSteps).map(this::convertToNamedArguments);
         }
-//        checkIfUiEnabled();
         return getScenarioArguments(filtrationResult.getScenariosWithUiSteps(),
                 filtrationResult.getScenariosWithoutUiSteps());
     }
@@ -171,10 +170,4 @@ public class TestSetCollector {
                 .anyMatch(command -> command instanceof Web);
     }
 
-//    private void checkIfUiEnabled() {
-//        Ui ui = GlobalTestConfigurationProvider.provide().getUi();
-//        if (ui == null || !ui.isEnabled()) {
-//            throw new DefaultFrameworkException(UI_DISABLED_ERROR);
-//        }
-//    }
 }

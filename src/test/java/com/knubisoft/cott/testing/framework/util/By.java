@@ -30,9 +30,8 @@ public class By {
         return org.openqa.selenium.By.cssSelector(cssSelector);
     }
 
-    /*The check "elements.size() > 1" is made in order for the tester to indicate exactly
-    which of the elements with the given text
-    he wants to use, in another way (for example by xpath or id)*/
+    /*COTT tool restricts the user and prevents the use of text
+    that is present in more than one element. In this case the exception is thrown.*/
 
     public static org.openqa.selenium.By text(final String text) {
         return new org.openqa.selenium.By() {

@@ -18,7 +18,6 @@
         <x:complexContent>
             <x:extension base="tns:integration">
                 <x:sequence>
-                    <x:element name="apiUrl" type="tns:nonEmptyString"/>
                     <x:element name="apiKey" type="tns:nonEmptyString"/>
                 </x:sequence>
             </x:extension>

@@ -4,7 +4,6 @@ import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.model.pages.Locator;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -21,16 +20,15 @@ import static java.lang.String.format;
 @UtilityClass
 public final class WebElementFinder {
 
-    private static final Map<Predicate<Locator>, Function<Locator, By>> SEARCH_TYPES;
+    private static final Map<LocatorType, ByType> SEARCH_TYPES;
 
     static {
-        final Map<Predicate<Locator>, Function<Locator, By>> map = new HashMap<>();
+        final Map<LocatorType, ByType> map = new HashMap<>();
         map.put(l -> Objects.nonNull(l.getXpath()), l -> By.xpath(l.getXpath()));
         map.put(l -> Objects.nonNull(l.getId()), l -> By.id(l.getId()));
         map.put(l -> Objects.nonNull(l.getClazz()), l -> By.className(l.getClazz()));
         map.put(l -> Objects.nonNull(l.getCssSelector()), l -> By.cssSelector(l.getCssSelector()));
-        map.put(l -> Objects.nonNull(l.getLinkText()), l -> By.linkText(l.getLinkText()));
-        map.put(l -> Objects.nonNull(l.getPartialLinkText()), l -> By.partialLinkText(l.getPartialLinkText()));
+        map.put(l -> Objects.nonNull(l.getText()), l -> By.text(l.getText()));
         SEARCH_TYPES = Collections.unmodifiableMap(map);
     }
 
@@ -47,4 +45,7 @@ public final class WebElementFinder {
         log.error("Web element for locator='{}' not found", locator);
         return new DefaultFrameworkException(format("Web element for locator='%s' not found", locator));
     }
+
+    private interface LocatorType extends Predicate<Locator> { }
+    private interface ByType extends Function<Locator, org.openqa.selenium.By> { }
 }

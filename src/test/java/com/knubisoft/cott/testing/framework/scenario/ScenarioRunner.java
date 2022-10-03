@@ -39,9 +39,8 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION
 @RequiredArgsConstructor
 public class ScenarioRunner {
     private static final AtomicInteger SCENARIO_ID_GENERATOR = new AtomicInteger();
-    private static final AtomicInteger ID_GENERATOR = new AtomicInteger();
-    private static final ScenarioResult SCENARIO_RESULT = new ScenarioResult();
-
+    private final AtomicInteger idGenerator = new AtomicInteger();
+    private final ScenarioResult scenarioResult = new ScenarioResult();
     private final ScenarioArguments scenarioArguments;
     private final ApplicationContext ctx;
     private InterpreterDependencies dependencies;
@@ -55,7 +54,7 @@ public class ScenarioRunner {
         prepareScenarioResult();
         LogUtil.logScenarioDetails(scenarioArguments, SCENARIO_ID_GENERATOR);
         runScenarioCommands();
-        return SCENARIO_RESULT;
+        return scenarioResult;
     }
 
     private void prepare() {
@@ -66,15 +65,15 @@ public class ScenarioRunner {
 
     private void prepareScenarioResult() {
         Scenario scenario = scenarioArguments.getScenario();
-        SCENARIO_RESULT.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
-        SCENARIO_RESULT.setPath(StringUtils.remove(scenarioArguments.getFile().getPath(), System.getProperty("PWD")));
-        SCENARIO_RESULT.setName(scenario.getOverview().getName());
-        SCENARIO_RESULT.setOverview(scenario.getOverview());
-        SCENARIO_RESULT.setTags(scenario.getTags());
-        SCENARIO_RESULT.setBrowser(scenarioArguments.getBrowser());
-        SCENARIO_RESULT.setMobilebrowserDevice(scenarioArguments.getMobilebrowserDevice());
-        SCENARIO_RESULT.setNativeDevice(scenarioArguments.getNativeDevice());
-        SCENARIO_RESULT.setSuccess(true);
+        scenarioResult.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
+        scenarioResult.setPath(StringUtils.remove(scenarioArguments.getFile().getPath(), System.getProperty("PWD")));
+        scenarioResult.setName(scenario.getOverview().getName());
+        scenarioResult.setOverview(scenario.getOverview());
+        scenarioResult.setTags(scenario.getTags());
+        scenarioResult.setBrowser(scenarioArguments.getBrowser());
+        scenarioResult.setMobilebrowserDevice(scenarioArguments.getMobilebrowserDevice());
+        scenarioResult.setNativeDevice(scenarioArguments.getNativeDevice());
+        scenarioResult.setSuccess(true);
     }
 
     private void runScenarioCommands() {
@@ -92,7 +91,7 @@ public class ScenarioRunner {
     private void runCommands(final List<AbstractCommand> commands) {
         for (AbstractCommand command : commands) {
             processCommand(command, result -> {
-                SCENARIO_RESULT.getCommands().add(result);
+                scenarioResult.getCommands().add(result);
                 handleException(result);
             });
         }
@@ -122,7 +121,7 @@ public class ScenarioRunner {
 
     private CommandResult prepareCommandResult(final AbstractCommand command) {
         CommandResult result = new CommandResult();
-        result.setId(ID_GENERATOR.incrementAndGet());
+        result.setId(idGenerator.incrementAndGet());
         result.setCommandKey(command.getClass().getSimpleName());
         result.setComment(command.getComment());
         result.setSuccess(true);
@@ -150,9 +149,9 @@ public class ScenarioRunner {
     }
 
     private void fillReportException(final String ex) {
-        if (SCENARIO_RESULT.getCause() == null) {
-            SCENARIO_RESULT.setCause(ex);
-            SCENARIO_RESULT.setSuccess(false);
+        if (scenarioResult.getCause() == null) {
+            scenarioResult.setCause(ex);
+            scenarioResult.setSuccess(false);
         }
     }
 
@@ -190,7 +189,7 @@ public class ScenarioRunner {
                 ctx,
                 scenarioArguments.getFile(),
                 new ScenarioContext(scenarioArguments.getVariation()),
-                ID_GENERATOR
+                idGenerator
         );
     }
 
@@ -200,7 +199,7 @@ public class ScenarioRunner {
                 ctx,
                 scenarioArguments.getFile(),
                 new ScenarioContext(scenarioArguments.getVariation()),
-                ID_GENERATOR
+                idGenerator
         );
     }
 

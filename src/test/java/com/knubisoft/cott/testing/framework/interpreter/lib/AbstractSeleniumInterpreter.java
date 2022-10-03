@@ -8,7 +8,6 @@ import com.knubisoft.cott.testing.model.global_config.Settings;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 import java.io.File;
 import java.io.IOException;

@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.openqa.selenium.WebDriver;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;

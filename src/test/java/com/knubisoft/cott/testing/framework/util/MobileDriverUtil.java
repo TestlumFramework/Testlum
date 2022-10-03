@@ -9,13 +9,16 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 
 @UtilityClass
 public class MobileDriverUtil {
-    public void setCommonCapabilities(AbstractDevice abstractDevice, DesiredCapabilities desiredCapabilities) {
+    public void setCommonCapabilities(final AbstractDevice abstractDevice,
+                                      final DesiredCapabilities desiredCapabilities) {
         desiredCapabilities.setCapability(MobileCapabilityType.DEVICE_NAME, abstractDevice.getDeviceName());
         desiredCapabilities.setCapability("udid", abstractDevice.getUdid());
         setPlatformCapabilities(abstractDevice, desiredCapabilities);
     }
 
-    private void setPlatformCapabilities(AbstractDevice abstractDevice, DesiredCapabilities desiredCapabilities) {
+    //CHECKSTYLE:OFF
+    private void setPlatformCapabilities(final AbstractDevice abstractDevice,
+                                         final DesiredCapabilities desiredCapabilities) {
         switch (abstractDevice.getPlatformName()) {
             case ANDROID:
                 desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, "uiautomator2");

@@ -11,9 +11,13 @@ import com.knubisoft.cott.testing.model.scenario.Ui;
 import org.openqa.selenium.WebDriver;
 
 @InterpreterForClass(Native.class)
-public class NativeInterpreter extends UiInterpreter<Native>{
+public class NativeInterpreter extends AbstractUiInterpreter<Native> {
+    public NativeInterpreter(final InterpreterDependencies dependencies) {
+        super(dependencies);
+    }
+
     @Override
-    protected WebDriver getDriver(Drivers drivers) {
+    protected WebDriver getDriver(final Drivers drivers) {
         return dependencies.getDrivers().getNativeDriver();
     }
 
@@ -22,12 +26,8 @@ public class NativeInterpreter extends UiInterpreter<Native>{
         return GlobalTestConfigurationProvider.getNativeSettings();
     }
 
-    public NativeInterpreter(InterpreterDependencies dependencies) {
-        super(dependencies);
-    }
-
     @Override
-    protected void acceptImpl(Ui o, CommandResult result) {
+    protected void acceptImpl(final Ui o, final CommandResult result) {
         super.acceptImpl(o, result);
     }
 

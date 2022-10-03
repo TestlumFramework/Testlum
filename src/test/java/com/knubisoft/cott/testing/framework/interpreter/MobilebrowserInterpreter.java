@@ -12,13 +12,13 @@ import org.openqa.selenium.WebDriver;
 
 
 @InterpreterForClass(Mobilebrowser.class)
-public class MobilebrowserInterpreter extends UiInterpreter<Mobilebrowser>{
-    public MobilebrowserInterpreter(InterpreterDependencies dependencies) {
+public class MobilebrowserInterpreter extends AbstractUiInterpreter<Mobilebrowser> {
+    public MobilebrowserInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
     }
 
     @Override
-    protected WebDriver getDriver(Drivers drivers) {
+    protected WebDriver getDriver(final Drivers drivers) {
         return dependencies.getDrivers().getMobilebrowserDriwer();
     }
 
@@ -28,7 +28,7 @@ public class MobilebrowserInterpreter extends UiInterpreter<Mobilebrowser>{
     }
 
     @Override
-    protected void acceptImpl(Ui o, CommandResult result) {
+    protected void acceptImpl(final Ui o, final CommandResult result) {
         super.acceptImpl(o, result);
     }
 

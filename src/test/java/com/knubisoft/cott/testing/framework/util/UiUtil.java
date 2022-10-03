@@ -7,6 +7,7 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.pages.Locator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
 import com.knubisoft.cott.testing.model.scenario.Image;
+import io.appium.java_client.AppiumDriver;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +59,7 @@ public class UiUtil {
     public void highlightElementIfRequired(final Boolean isHighlight,
                                            final WebElement element,
                                            final WebDriver driver) {
-        if (isHighlight == null || isHighlight) {
+        if ((isHighlight == null || isHighlight) && !(driver instanceof AppiumDriver)) {
             JavascriptUtil.executeJsScript(element, HIGHLIGHT_SCRIPT, driver);
         }
     }

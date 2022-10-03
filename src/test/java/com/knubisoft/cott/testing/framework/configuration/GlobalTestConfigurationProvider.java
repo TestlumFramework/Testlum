@@ -32,7 +32,8 @@ public class GlobalTestConfigurationProvider {
     }
 
     public static List<MobilebrowserDevice> getMobilebrowserDevices() {
-        return GlobalTestConfigurationProvider.provide().getMobilebrowser().getDeviceSettings().getDevices().getDevice();
+        return GlobalTestConfigurationProvider.provide().getMobilebrowser().getDeviceSettings()
+                .getDevices().getDevice();
     }
 
     public static BrowserSettings getBrowserSettings() {

@@ -209,7 +209,8 @@ public class ScenarioRunner {
             drivers.setWebDriver(WebDriverFactory.createDriver(scenarioArguments.getBrowser()));
         }
         if (scenarioArguments.getMobilebrowserDevice() != null) {
-            drivers.setMobilebrowserDriwer(MobilebrowserDriverFactory.createDriver(scenarioArguments.getMobilebrowserDevice()));
+            drivers.setMobilebrowserDriwer(MobilebrowserDriverFactory
+                    .createDriver(scenarioArguments.getMobilebrowserDevice()));
         }
         if (scenarioArguments.getNativeDevice() != null) {
             drivers.setNativeDriver(NativeDriverFactory.createDriver(scenarioArguments.getNativeDevice()));

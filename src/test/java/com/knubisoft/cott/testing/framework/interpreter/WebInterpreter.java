@@ -9,13 +9,13 @@ import com.knubisoft.cott.testing.model.scenario.Web;
 import org.openqa.selenium.WebDriver;
 
 @InterpreterForClass(Web.class)
-public class WebInterpreter extends UiInterpreter<Web>{
-    public WebInterpreter(InterpreterDependencies dependencies) {
+public class WebInterpreter extends AbstractUiInterpreter<Web> {
+    public WebInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
     }
 
     @Override
-    protected WebDriver getDriver(Drivers drivers) {
+    protected WebDriver getDriver(final Drivers drivers) {
         return dependencies.getDrivers().getWebDriver();
     }
 

@@ -1,8 +1,6 @@
 package com.knubisoft.cott.testing.framework;
 
-import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
-import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.parser.CSVParser;
 import com.knubisoft.cott.testing.framework.scenario.FiltrationResult;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioCollector;
@@ -30,7 +28,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UI_DISABLED_ERROR;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class TestSetCollector {
@@ -54,6 +51,7 @@ public class TestSetCollector {
         return scenarioArguments.stream().map(this::convertToNamedArguments);
     }
 
+    //CHECKSTYLE:OFF
     private void createArguments(final ScenarioCollector.MappingResult entry,
                               final List<ScenarioArguments> scenarioArguments) {
         Scenario scenario = entry.scenario;
@@ -62,36 +60,44 @@ public class TestSetCollector {
         List<NativeDevice> nativeDevices = BrowserUtil.filterEnabledNativeDevices();
 
         if (containsWebSteps(scenario) && containsNativeSteps(scenario) && containsMobilebrowserSteps(scenario)) {
-            nativeDevices.forEach(nativeDevice -> mobilebrowserDevices.forEach(mobilebrowserDevice -> browsers.forEach(browser ->
-                    addScenarioArgumentsWithUiSteps(entry, browser, mobilebrowserDevice, nativeDevice, scenarioArguments))));
+            nativeDevices.forEach(nativeDevice -> mobilebrowserDevices.forEach(mobilebrowserDevice -> browsers
+                    .forEach(browser -> addScenarioArgumentsWithUiSteps(entry, browser, mobilebrowserDevice,
+                            nativeDevice, scenarioArguments))));
             return;
         }
         if (containsWebSteps(scenario) && containsNativeSteps(scenario)) {
-            nativeDevices.forEach(nativeDevice -> browsers.forEach( browser ->
-                    addScenarioArgumentsWithUiSteps(entry, browser, null, nativeDevice, scenarioArguments)));;
+            nativeDevices.forEach(nativeDevice -> browsers.forEach(browser ->
+                    addScenarioArgumentsWithUiSteps(entry, browser, null,
+                            nativeDevice, scenarioArguments)));
         }
         if (containsWebSteps(scenario) && containsMobilebrowserSteps(scenario)) {
             browsers.forEach(browser -> mobilebrowserDevices.forEach(mobilebrowserDevice ->
-                    addScenarioArgumentsWithUiSteps(entry, browser, mobilebrowserDevice, null, scenarioArguments)));
+                    addScenarioArgumentsWithUiSteps(entry, browser, mobilebrowserDevice,
+                            null, scenarioArguments)));
             return;
         }
         if (containsNativeSteps(scenario) && containsMobilebrowserSteps(scenario)) {
             nativeDevices.forEach(nativeDevice -> mobilebrowserDevices.forEach(mobilebrowserDevice ->
-                    addScenarioArgumentsWithUiSteps(entry, null, mobilebrowserDevice, nativeDevice, scenarioArguments)));
+                    addScenarioArgumentsWithUiSteps(entry, null,
+                            mobilebrowserDevice, nativeDevice, scenarioArguments)));
             return;
         }
         if (containsWebSteps(scenario)) {
-            browsers.forEach(browser -> addScenarioArgumentsWithUiSteps(entry, browser, null, null, scenarioArguments));
+            browsers.forEach(browser -> addScenarioArgumentsWithUiSteps(entry, browser,
+                    null, null, scenarioArguments));
             return;
         }
         if (containsMobilebrowserSteps(scenario)) {
-            mobilebrowserDevices.forEach(mobilebrowserDevice -> addScenarioArgumentsWithUiSteps(entry, null, mobilebrowserDevice, null, scenarioArguments));
+            mobilebrowserDevices.forEach(mobilebrowserDevice -> addScenarioArgumentsWithUiSteps(entry, null,
+                    mobilebrowserDevice, null, scenarioArguments));
             return;
         }
         if (containsNativeSteps(scenario)) {
-            nativeDevices.forEach(nativeDevice -> addScenarioArgumentsWithUiSteps(entry, null, null, nativeDevice, scenarioArguments));
+            nativeDevices.forEach(nativeDevice -> addScenarioArgumentsWithUiSteps(entry,
+                    null, null, nativeDevice, scenarioArguments));
         }
     }
+    //CHECKSTYLE:ON
 
     private void addScenarioArgumentsWithUiSteps(final ScenarioCollector.MappingResult entry,
                                                  final AbstractBrowser webBrowser,

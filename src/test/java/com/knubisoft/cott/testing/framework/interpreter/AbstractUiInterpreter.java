@@ -107,7 +107,7 @@ import static java.lang.String.format;
 
 
 @Slf4j
-public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterpreter<T> {
+public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractSeleniumInterpreter<T> {
 
     private static final String MOVE_TO_EMPTY_SPACE = "//html";
     private static final Pattern HTTP_PATTERN = Pattern.compile("https?://.+");
@@ -117,11 +117,7 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
 
     private final Map<UiCommandPredicate, UiCommand> uiCommands;
 
-    protected abstract WebDriver getDriver(Drivers drivers);
-
-    protected abstract Settings getSettings();
-
-    public UiInterpreter(final InterpreterDependencies dependencies) {
+    public AbstractUiInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
         Map<UiCommandPredicate, UiCommand> commands = new HashMap<>();
         commands.put(ui -> ui instanceof RepeatUiCommand, (ui, result) -> repeat((RepeatUiCommand) ui, result));
@@ -141,6 +137,10 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
         this.uiCommands = Collections.unmodifiableMap(commands);
         this.stopScenarioOnFailure = GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure();
     }
+
+    protected abstract WebDriver getDriver(Drivers drivers);
+
+    protected abstract Settings getSettings();
 
     @Override
     protected void acceptImpl(final Ui ui, final CommandResult result) {
@@ -165,7 +165,7 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
     }
 
     private void processEachCommand(final AbstractCommand command,
-                                    final UiInterpreter.UiCommand method,
+                                    final AbstractUiInterpreter.UiCommand method,
                                     final List<CommandResult> subCommandsResult) {
         CommandResult subCommandResult = ResultUtil.createCommandResultForUiSubCommand(
                 dependencies.getPosition().intValue(),
@@ -177,7 +177,7 @@ public abstract class UiInterpreter<T extends Ui> extends AbstractSeleniumInterp
 
     private void executeUiCommand(final AbstractCommand command,
                                   final CommandResult subCommandResult,
-                                  final UiInterpreter.UiCommand method) {
+                                  final AbstractUiInterpreter.UiCommand method) {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
             method.accept(command, subCommandResult);

@@ -41,6 +41,7 @@ public class ScenarioRunner {
     private static final AtomicInteger SCENARIO_ID_GENERATOR = new AtomicInteger();
     private final AtomicInteger idGenerator = new AtomicInteger();
     private final ScenarioResult scenarioResult = new ScenarioResult();
+
     private final ScenarioArguments scenarioArguments;
     private final ApplicationContext ctx;
     private InterpreterDependencies dependencies;

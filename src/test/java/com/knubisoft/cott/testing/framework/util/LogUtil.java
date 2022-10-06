@@ -65,6 +65,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.REGEX_NEW
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_BY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_DIRECTION_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_SELECTOR;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SERVER_ERROR_RESPONSE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_HOST_LOG;
@@ -235,6 +236,13 @@ public class LogUtil {
         log.info(SCROLL_DIRECTION_LOG, direction);
         log.info(SCROLL_BY_LOG, measure);
         log.info(VALUE_LOG, value);
+    }
+
+    public void logInnerScrollInfo(final String direction, final String measure, final String value, final String selector) {
+        log.info(SCROLL_DIRECTION_LOG, direction);
+        log.info(SCROLL_BY_LOG, measure);
+        log.info(VALUE_LOG, value);
+        log.info(SCROLL_SELECTOR, selector);
     }
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {

@@ -50,7 +50,7 @@ public class JavascriptUtil {
 
     public String getInnerScrollScript(final ScrollDirection direction,
                                   final String value, final ScrollMeasure measure, final String selector) {
-        LogUtil.logScrollInfo(direction.name(), measure.value(), value);
+        LogUtil.logInnerScrollInfo(direction.name(), measure.value(), value, selector);
         if (direction.equals(ScrollDirection.UP)) {
             return format(INNER_SCROLL_VERTICAL_SCRIPT_FORMAT, selector,
                     innerScrollMeasureFormatter(measure, DelimiterConstant.DASH + value, selector));

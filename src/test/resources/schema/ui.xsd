@@ -177,12 +177,21 @@
     <x:complexType name="scroll">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
+                <x:attribute name="scrollType" type="tns:scrollType" default="page"/>
                 <x:attribute name="value" type="x:nonNegativeInteger" use="required"/>
                 <x:attribute name="direction" type="tns:scrollDirection" default="down"/>
                 <x:attribute name="measure" type="tns:scrollMeasure" default="pixel"/>
+                <x:attribute name="locator" type="tns:scenarioLocator"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
+
+    <x:simpleType name="scrollType">
+        <x:restriction base="x:string">
+            <x:enumeration value="inner"/>
+            <x:enumeration value="page"/>
+        </x:restriction>
+    </x:simpleType>
 
     <x:simpleType name="scrollDirection">
         <x:restriction base="x:string">

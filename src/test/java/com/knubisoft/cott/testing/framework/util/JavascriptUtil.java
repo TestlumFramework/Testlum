@@ -15,10 +15,12 @@ import java.nio.file.Files;
 import java.util.List;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
-import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.SCROLL_VERTICAL_PERCENT;
-import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.SCROLL_VERTICAL_SCRIPT_FORMAT;
+import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.INNER_SCROLL_VERTICAL_PERCENT;
+import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.INNER_SCROLL_VERTICAL_SCRIPT_FORMAT;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.JS_FILE_UNREADABLE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SCROLL_TO_ELEMENT_NOT_SUPPORTED;
+import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.PAGE_SCROLL_VERTICAL_PERCENT;
+import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.PAGE_SCROLL_VERTICAL_SCRIPT_FORMAT;
 import static java.lang.String.format;
 
 @UtilityClass
@@ -36,23 +38,44 @@ public class JavascriptUtil {
         javascriptExecutor.executeScript(script);
     }
 
-    public String getScrollScript(final ScrollDirection direction,
+    public String getPageScrollScript(final ScrollDirection direction,
                                   final String value, final ScrollMeasure measure) {
         LogUtil.logScrollInfo(direction.name(), measure.value(), value);
         if (direction.equals(ScrollDirection.UP)) {
-            return format(SCROLL_VERTICAL_SCRIPT_FORMAT,
-                    scrollMeasureFormatter(measure, DelimiterConstant.DASH + value));
+            return format(PAGE_SCROLL_VERTICAL_SCRIPT_FORMAT,
+                    pageScrollMeasureFormatter(measure, DelimiterConstant.DASH + value));
         }
-        return format(SCROLL_VERTICAL_SCRIPT_FORMAT, scrollMeasureFormatter(measure, value));
+        return format(PAGE_SCROLL_VERTICAL_SCRIPT_FORMAT, pageScrollMeasureFormatter(measure, value));
     }
 
-    private String scrollMeasureFormatter(final ScrollMeasure measure, final String value) {
+    public String getInnerScrollScript(final ScrollDirection direction,
+                                  final String value, final ScrollMeasure measure, final String selector) {
+        LogUtil.logScrollInfo(direction.name(), measure.value(), value);
+        if (direction.equals(ScrollDirection.UP)) {
+            return format(INNER_SCROLL_VERTICAL_SCRIPT_FORMAT, selector,
+                    innerScrollMeasureFormatter(measure, DelimiterConstant.DASH + value, selector));
+        }
+        return format(INNER_SCROLL_VERTICAL_SCRIPT_FORMAT, selector, innerScrollMeasureFormatter(measure, value, selector));
+    }
+
+    private String innerScrollMeasureFormatter(final ScrollMeasure measure, final String value, final String selector) {
         if (measure.equals(ScrollMeasure.PERCENT)) {
             float percent = Float.parseFloat(value) / MAX_PERCENTS_VALUE;
             if (percent > 1) {
                 throw new DefaultFrameworkException(format(SCROLL_TO_ELEMENT_NOT_SUPPORTED, value));
             }
-            return format(SCROLL_VERTICAL_PERCENT, percent);
+            return format(INNER_SCROLL_VERTICAL_PERCENT, selector, percent);
+        }
+        return value;
+    }
+
+    private String pageScrollMeasureFormatter(final ScrollMeasure measure, final String value) {
+        if (measure.equals(ScrollMeasure.PERCENT)) {
+            float percent = Float.parseFloat(value) / MAX_PERCENTS_VALUE;
+            if (percent > 1) {
+                throw new DefaultFrameworkException(format(SCROLL_TO_ELEMENT_NOT_SUPPORTED, value));
+            }
+            return format(PAGE_SCROLL_VERTICAL_PERCENT, percent);
         }
         return value;
     }

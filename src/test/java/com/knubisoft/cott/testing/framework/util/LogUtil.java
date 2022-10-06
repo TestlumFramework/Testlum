@@ -238,7 +238,8 @@ public class LogUtil {
         log.info(VALUE_LOG, value);
     }
 
-    public void logInnerScrollInfo(final String direction, final String measure, final String value, final String selector) {
+    public void logInnerScrollInfo(
+            final String direction, final String measure, final String value, final String selector) {
         log.info(SCROLL_DIRECTION_LOG, direction);
         log.info(SCROLL_BY_LOG, measure);
         log.info(VALUE_LOG, value);

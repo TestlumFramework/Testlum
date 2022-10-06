@@ -380,13 +380,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         command.getClickOrInputOrNavigate().forEach(o -> {
             if (o instanceof Javascript) {
                 validateFileExistenceInDataFolder(((Javascript) o).getFile());
-            } else if (o instanceof Scroll && ((Scroll) o).getScrollType() == ScrollType.INNER) {
+            } else if (o instanceof Scroll && ((Scroll) o).getType() == ScrollType.INNER) {
                 validateScrollCommand((Scroll) o);
             }
         });
     }
 
-    private void validateScrollCommand(Scroll scroll) {
+    private void validateScrollCommand(final Scroll scroll) {
         if (scroll.getLocator().isEmpty()) {
             throw new DefaultFrameworkException(ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
         }

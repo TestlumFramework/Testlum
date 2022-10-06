@@ -55,7 +55,8 @@ public class JavascriptUtil {
             return format(INNER_SCROLL_VERTICAL_SCRIPT_FORMAT, selector,
                     innerScrollMeasureFormatter(measure, DelimiterConstant.DASH + value, selector));
         }
-        return format(INNER_SCROLL_VERTICAL_SCRIPT_FORMAT, selector, innerScrollMeasureFormatter(measure, value, selector));
+        return format(INNER_SCROLL_VERTICAL_SCRIPT_FORMAT, selector,
+                innerScrollMeasureFormatter(measure, value, selector));
     }
 
     private String innerScrollMeasureFormatter(final ScrollMeasure measure, final String value, final String selector) {

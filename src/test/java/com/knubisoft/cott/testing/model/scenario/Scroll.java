@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="scroll"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
- *       &lt;attribute name="scrollType" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollType" default="page" /&gt;
+ *       &lt;attribute name="type" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollType" /&gt;
  *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}nonNegativeInteger" /&gt;
  *       &lt;attribute name="direction" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollDirection" default="down" /&gt;
  *       &lt;attribute name="measure" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollMeasure" default="pixel" /&gt;
@@ -36,8 +36,8 @@ public class Scroll
     extends AbstractCommand
 {
 
-    @XmlAttribute(name = "scrollType")
-    protected ScrollType scrollType;
+    @XmlAttribute(name = "type", required = true)
+    protected ScrollType type;
     @XmlAttribute(name = "value", required = true)
     @XmlSchemaType(name = "nonNegativeInteger")
     protected BigInteger value;
@@ -49,31 +49,27 @@ public class Scroll
     protected String locator;
 
     /**
-     * Gets the value of the scrollType property.
+     * Gets the value of the type property.
      * 
      * @return
      *     possible object is
      *     {@link ScrollType }
      *     
      */
-    public ScrollType getScrollType() {
-        if (scrollType == null) {
-            return ScrollType.PAGE;
-        } else {
-            return scrollType;
-        }
+    public ScrollType getType() {
+        return type;
     }
 
     /**
-     * Sets the value of the scrollType property.
+     * Sets the value of the type property.
      * 
      * @param value
      *     allowed object is
      *     {@link ScrollType }
      *     
      */
-    public void setScrollType(ScrollType value) {
-        this.scrollType = value;
+    public void setType(ScrollType value) {
+        this.type = value;
     }
 
     /**

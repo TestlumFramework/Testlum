@@ -18,7 +18,6 @@ import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.SeleniumUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.framework.util.WaitUtil;
-import com.knubisoft.cott.testing.model.pages.Locator;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Assert;
 import com.knubisoft.cott.testing.model.scenario.Clear;
@@ -387,25 +386,29 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         log.info(WAIT_INFO_LOG, time, wait.getUnit());
         WaitUtil.getTimeUnit(wait.getUnit(), result).sleep(Long.parseLong(time));
     }
-    private void scroll(final Scroll scroll, final CommandResult result){
+    private void scroll(final Scroll scroll, final CommandResult result) {
         ScrollDirection direction = scroll.getDirection();
         ScrollMeasure measure = scroll.getMeasure();
         String value = scroll.getValue().toString();
         ResultUtil.addScrollMetaData(direction.value(), measure.value(), value, result);
         takeScreenshotAndSaveIfRequired(result);
-        switch (scroll.getScrollType()) {
+        chooseScrollType(scroll, direction, measure, value);
+    }
+
+    private void chooseScrollType(
+            final Scroll scroll, final ScrollDirection direction, final ScrollMeasure measure, final String value) {
+        switch (scroll.getType()) {
             case INNER:
-                Locator locator = GlobalLocators.getLocator(scroll.getLocator());
-                String selector = locator.getCssSelector();
-                JavascriptUtil.executeJsScript(JavascriptUtil.getInnerScrollScript(direction, value, measure, selector),
+                String locator = GlobalLocators.getLocator(scroll.getLocator()).getCssSelector();
+                JavascriptUtil.executeJsScript(JavascriptUtil.getInnerScrollScript(direction, value, measure, locator),
                         dependencies.getWebDriver());
                 break;
             case PAGE:
-                JavascriptUtil.executeJsScript(JavascriptUtil.getPageScrollScript(direction, value, measure),
-                        dependencies.getWebDriver());
+                JavascriptUtil.executeJsScript(JavascriptUtil
+                        .getPageScrollScript(direction, value, measure), dependencies.getWebDriver());
                 break;
             default:
-                throw new DefaultFrameworkException(format(ExceptionMessage.SCROLL_TYPE_NOT_FOUND, scroll.getScrollType()));
+                throw new DefaultFrameworkException(format(ExceptionMessage.SCROLL_TYPE_NOT_FOUND, scroll.getType()));
         }
     }
 

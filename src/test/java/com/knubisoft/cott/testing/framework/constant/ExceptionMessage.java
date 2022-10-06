@@ -1,7 +1,5 @@
 package com.knubisoft.cott.testing.framework.constant;
 
-import java.util.List;
-
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ANSI_RED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ANSI_RESET;
 
@@ -122,6 +120,6 @@ public class ExceptionMessage {
             "Query result is empty. Perhaps your database is empty or there is no such value in the database";
     public static final String WEB_ELEMENT_ATTRIBUTE_NOT_EXIST = "Web element does not have attribute <%s>";
     public static final String FOUND_MORE_THEN_ONE_ELEMENT = "More than one element was found by text <%s>";
-    public static final String SCROLL_TYPE_NOT_FOUND = "Scroll type <%s> not found";
-    public static final String NO_LOCATOR_FOUND_FOR_INNER_SCROLL = "No locator found for INNER scroll type";
+    public static final String SCROLL_TYPE_NOT_FOUND = "Scroll type <%s> not supported";
+    public static final String NO_LOCATOR_FOUND_FOR_INNER_SCROLL = "You didn't specify a locator for the inner scroll";
 }

@@ -38,8 +38,8 @@ public class JavascriptUtil {
         javascriptExecutor.executeScript(script);
     }
 
-    public String getPageScrollScript(final ScrollDirection direction,
-                                  final String value, final ScrollMeasure measure) {
+    public String getPageScrollScript(
+            final ScrollDirection direction, final String value, final ScrollMeasure measure) {
         LogUtil.logScrollInfo(direction.name(), measure.value(), value);
         if (direction.equals(ScrollDirection.UP)) {
             return format(PAGE_SCROLL_VERTICAL_SCRIPT_FORMAT,
@@ -48,8 +48,8 @@ public class JavascriptUtil {
         return format(PAGE_SCROLL_VERTICAL_SCRIPT_FORMAT, pageScrollMeasureFormatter(measure, value));
     }
 
-    public String getInnerScrollScript(final ScrollDirection direction,
-                                  final String value, final ScrollMeasure measure, final String selector) {
+    public String getInnerScrollScript(
+            final ScrollDirection direction, final String value, final ScrollMeasure measure, final String selector) {
         LogUtil.logInnerScrollInfo(direction.name(), measure.value(), value, selector);
         if (direction.equals(ScrollDirection.UP)) {
             return format(INNER_SCROLL_VERTICAL_SCRIPT_FORMAT, selector,

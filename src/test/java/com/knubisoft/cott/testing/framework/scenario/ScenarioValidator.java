@@ -3,10 +3,12 @@ package com.knubisoft.cott.testing.framework.scenario;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.HttpUtil;
 import com.knubisoft.cott.testing.framework.util.SendGridUtil;
 import com.knubisoft.cott.testing.framework.validator.XMLValidator;
+import com.knubisoft.cott.testing.model.global_config.AbstractDevice;
 import com.knubisoft.cott.testing.model.global_config.Apis;
 import com.knubisoft.cott.testing.model.global_config.ClickhouseIntegration;
 import com.knubisoft.cott.testing.model.global_config.DynamoIntegration;
@@ -14,6 +16,7 @@ import com.knubisoft.cott.testing.model.global_config.ElasticsearchIntegration;
 import com.knubisoft.cott.testing.model.global_config.Integration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.KafkaIntegration;
+import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.MongoIntegration;
 import com.knubisoft.cott.testing.model.global_config.MysqlIntegration;
 import com.knubisoft.cott.testing.model.global_config.OracleIntegration;
@@ -38,8 +41,10 @@ import com.knubisoft.cott.testing.model.scenario.Include;
 import com.knubisoft.cott.testing.model.scenario.Javascript;
 import com.knubisoft.cott.testing.model.scenario.Kafka;
 import com.knubisoft.cott.testing.model.scenario.Migrate;
+import com.knubisoft.cott.testing.model.scenario.Mobilebrowser;
 import com.knubisoft.cott.testing.model.scenario.Mongo;
 import com.knubisoft.cott.testing.model.scenario.Mysql;
+import com.knubisoft.cott.testing.model.scenario.Native;
 import com.knubisoft.cott.testing.model.scenario.Oracle;
 import com.knubisoft.cott.testing.model.scenario.Postgres;
 import com.knubisoft.cott.testing.model.scenario.Rabbit;
@@ -72,11 +77,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ALIAS_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.API_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INTEGRATION_NOT_FOUND;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SAME_APPIUM_URL;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SAME_MOBILE_DEVICES;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF;
 import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.JSON_EXTENSION;
 
@@ -258,7 +266,40 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     @Override
     public void validate(final Scenario scenario, final File xmlFile) {
         if (scenario.isActive()) {
+            List<AbstractCommand> uiCommands = getUiCommands(scenario.getCommands());
+            if (!uiCommands.isEmpty() && isUiCommandsContainsTwoTagsTypes(scenario.getCommands())) {
+                validateAppiumUrl();
+                validateDevices();
+            }
             scenario.getCommands().forEach(it -> validateCommand(it, xmlFile));
+        }
+    }
+
+    private List<AbstractCommand> getUiCommands(final List<AbstractCommand> scenarioCommands) {
+        return scenarioCommands.stream().filter(abstractCommand ->
+                Ui.class.isAssignableFrom(abstractCommand.getClass())).collect(Collectors.toList());
+    }
+
+    private boolean isUiCommandsContainsTwoTagsTypes(final List<AbstractCommand> uiCommands) {
+        List<AbstractCommand> nativeList = uiCommands.stream().filter(abstractCommand ->
+                abstractCommand instanceof Native).collect(Collectors.toList());
+        List<AbstractCommand> mobilebrowserList = uiCommands.stream().filter(abstractCommand ->
+                abstractCommand instanceof Mobilebrowser).collect(Collectors.toList());
+        return !nativeList.isEmpty() && !mobilebrowserList.isEmpty();
+    }
+
+    private void validateAppiumUrl() {
+        if (GlobalTestConfigurationProvider.provide().getMobilebrowser().getAppiumServerUrl()
+                .equals(GlobalTestConfigurationProvider.provide().getNative().getAppiumServerUrl())) {
+            throw new DefaultFrameworkException(SAME_APPIUM_URL);
+        }
+    }
+
+    private void validateDevices() {
+        if (BrowserUtil.filterEnabledMobilebrowserDevices().stream().map(MobilebrowserDevice::getUdid)
+                .anyMatch(deviceUdid -> BrowserUtil.filterEnabledNativeDevices().stream()
+                        .map(AbstractDevice::getUdid).collect(Collectors.toList()).contains(deviceUdid))) {
+            throw new DefaultFrameworkException(SAME_MOBILE_DEVICES);
         }
     }
 

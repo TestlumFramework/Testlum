@@ -124,4 +124,9 @@ public class ExceptionMessage {
             "Query result is empty. Perhaps your database is empty or there is no such value in the database";
     public static final String WEB_ELEMENT_ATTRIBUTE_NOT_EXIST = "Web element does not have attribute <%s>";
     public static final String FOUND_MORE_THEN_ONE_ELEMENT = "More than one element was found by text <%s>";
+
+    public static final String SAME_APPIUM_URL = "Can`t use the same Appium server URL for scenario with "
+            + "<mobilebrowser> & <native> tags";
+    public static final String SAME_MOBILE_DEVICES = "Can`t use the same mobile devices for scenario with "
+            + "<mobilebrowser> & <native> tags";
 }

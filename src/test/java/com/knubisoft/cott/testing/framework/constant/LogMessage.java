@@ -96,7 +96,7 @@ public final class LogMessage {
     public static final String BROWSER_NAME_LOG = "Browser: {}";
     public static final String HTTP_STATUS_CODE = format(TABLE_FORMAT, "Status code", "{} {}");
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
-    public static final String SCROLL_SELECTOR = format(TABLE_FORMAT, "Selector", "{}");
+    public static final String SCROLL_LOCATOR = format(TABLE_FORMAT, "Locator", "{}");
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "Method", "{}");
     public static final String SMTP_HOST_LOG = format(TABLE_FORMAT, "SMTP Host", "{}");
     public static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");

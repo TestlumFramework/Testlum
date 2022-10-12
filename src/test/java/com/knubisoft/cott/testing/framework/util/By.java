@@ -13,6 +13,7 @@ import java.util.List;
 public class By {
 
     private static final String XPATH_TEMPLATE_FOR_TEXT_SEARCH = "//*[contains(text(), '%s')]";
+    private static final String XPATH_TEMPLATE_FOR_TEXT_SEARCH_FROM_PLACEHOLDER = "//*[@placeholder='%s']";
 
     public org.openqa.selenium.By xpath(final String xpath) {
         return org.openqa.selenium.By.xpath(xpath);
@@ -41,6 +42,10 @@ public class By {
                 List<WebElement> elements = context.findElements(By.xpath(xpath));
                 if (elements.size() > 1) {
                     throw new DefaultFrameworkException(ExceptionMessage.FOUND_MORE_THEN_ONE_ELEMENT, text);
+                } else if (elements.size() == 0) {
+                    String xpathByPh = String.format(XPATH_TEMPLATE_FOR_TEXT_SEARCH_FROM_PLACEHOLDER, text);
+                    List<WebElement> elementsByPh = context.findElements(By.xpath(xpathByPh));
+                    return elementsByPh;
                 }
                 return elements;
             }

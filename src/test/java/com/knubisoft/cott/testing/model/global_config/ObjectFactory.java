@@ -358,6 +358,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link WebSockets }
+     * 
+     */
+    public WebSockets createWebSockets() {
+        return new WebSockets();
+    }
+
+    /**
+     * Create an instance of {@link WebSocket }
+     * 
+     */
+    public WebSocket createWebSocket() {
+        return new WebSocket();
+    }
+
+    /**
      * Create an instance of {@link BrowserSettings }
      * 
      */

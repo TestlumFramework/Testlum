@@ -214,6 +214,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link WebSocket }
+     * 
+     */
+    public WebSocket createWebSocket() {
+        return new WebSocket();
+    }
+
+    /**
      * Create an instance of {@link Var }
      * 
      */
@@ -731,6 +739,22 @@ public class ObjectFactory {
      */
     public Logout createLogout() {
         return new Logout();
+    }
+
+    /**
+     * Create an instance of {@link WebSocketSend }
+     * 
+     */
+    public WebSocketSend createWebSocketSend() {
+        return new WebSocketSend();
+    }
+
+    /**
+     * Create an instance of {@link WebSocketReceive }
+     * 
+     */
+    public WebSocketReceive createWebSocketReceive() {
+        return new WebSocketReceive();
     }
 
 }

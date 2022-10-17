@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/cott/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/cott/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="webSocket">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:sequence maxOccurs="unbounded">
+                    <x:choice>
+                        <x:element name="send" type="tns:webSocketSend" maxOccurs="unbounded"/>
+                        <x:element name="receive" type="tns:webSocketReceive" maxOccurs="unbounded"/>
+                    </x:choice>
+                </x:sequence>
+                <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+                <x:attribute name="topics" type="tns:endpointPattern"/>
+                <x:attribute name="disconnect" type="x:boolean" default="true"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="webSocketSend">
+        <x:choice>
+            <x:element name="message" type="tns:nonEmptyString"/>
+            <x:element name="file" type="tns:bodyFile"/>
+        </x:choice>
+        <x:attribute name="endpoint" type="tns:endpointPattern" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="webSocketReceive">
+        <x:choice>
+            <x:element name="message" type="tns:nonEmptyString"/>
+            <x:element name="file" type="tns:expectedPattern"/>
+        </x:choice>
+        <x:attribute name="topic" type="tns:endpointPattern" use="required"/>
+        <x:attribute name="compareRule" type="tns:compareRule" default="allValues"/>
+        <x:attribute name="valuesNumber" type="x:integer" default="0"/>
+        <x:attribute name="timeoutMillis" type="x:long" default="5000"/>
+    </x:complexType>
+
+    <x:simpleType name="compareRule">
+        <x:restriction base="x:string">
+            <x:enumeration value="allValues"/>
+            <x:enumeration value="numberOfValues"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <!--    <x:complexType name="compareRule">-->
+    <!--        <x:choice>-->
+    <!--            <x:element name="allValues"/>-->
+    <!--            <x:element name="containsValues"/>-->
+    <!--            <x:element name="numberOfValues" type="tns:nonEmptyString"/>-->
+    <!--        </x:choice>-->
+    <!--    </x:complexType>-->
+
+</x:schema>

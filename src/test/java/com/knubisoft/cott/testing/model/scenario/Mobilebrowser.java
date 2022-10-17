@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="mobilebrowser"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}ui"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}common-web"&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "mobilebrowser")
 public class Mobilebrowser
-    extends Ui
+    extends CommonWeb
 {
 
 

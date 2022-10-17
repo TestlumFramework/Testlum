@@ -302,43 +302,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Javascript }
-     * 
-     */
-    public Javascript createJavascript() {
-        return new Javascript();
-    }
-
-    /**
-     * Create an instance of {@link Hovers }
-     * 
-     */
-    public Hovers createHovers() {
-        return new Hovers();
-    }
-
-    /**
-     * Create an instance of {@link Hover }
-     * 
-     */
-    public Hover createHover() {
-        return new Hover();
-    }
-
-    /**
      * Create an instance of {@link Input }
      * 
      */
     public Input createInput() {
         return new Input();
-    }
-
-    /**
-     * Create an instance of {@link Navigate }
-     * 
-     */
-    public Navigate createNavigate() {
-        return new Navigate();
     }
 
     /**
@@ -382,14 +350,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CloseSecondTab }
-     * 
-     */
-    public CloseSecondTab createCloseSecondTab() {
-        return new CloseSecondTab();
-    }
-
-    /**
      * Create an instance of {@link Scroll }
      * 
      */
@@ -427,6 +387,54 @@ public class ObjectFactory {
      */
     public RepeatUiCommand createRepeatUiCommand() {
         return new RepeatUiCommand();
+    }
+
+    /**
+     * Create an instance of {@link CommonWeb }
+     * 
+     */
+    public CommonWeb createCommonWeb() {
+        return new CommonWeb();
+    }
+
+    /**
+     * Create an instance of {@link Javascript }
+     * 
+     */
+    public Javascript createJavascript() {
+        return new Javascript();
+    }
+
+    /**
+     * Create an instance of {@link Hovers }
+     * 
+     */
+    public Hovers createHovers() {
+        return new Hovers();
+    }
+
+    /**
+     * Create an instance of {@link Hover }
+     * 
+     */
+    public Hover createHover() {
+        return new Hover();
+    }
+
+    /**
+     * Create an instance of {@link Navigate }
+     * 
+     */
+    public Navigate createNavigate() {
+        return new Navigate();
+    }
+
+    /**
+     * Create an instance of {@link CloseSecondTab }
+     * 
+     */
+    public CloseSecondTab createCloseSecondTab() {
+        return new CloseSecondTab();
     }
 
     /**

@@ -109,11 +109,9 @@ import static java.lang.String.format;
 @Slf4j
 public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractSeleniumInterpreter<T> {
 
-    private static final String MOVE_TO_EMPTY_SPACE = "//html";
-    private static final Pattern HTTP_PATTERN = Pattern.compile("https?://.+");
     private final boolean stopScenarioOnFailure;
-    private final WebDriver driver = getDriver(dependencies.getDrivers());
-    private final Settings settings = getSettings();
+    protected final WebDriver driver = getDriver(dependencies.getDrivers());
+    protected final Settings settings = getSettings();
 
     private final Map<UiCommandPredicate, UiCommand> uiCommands;
 
@@ -123,16 +121,12 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractSeleni
         commands.put(ui -> ui instanceof RepeatUiCommand, (ui, result) -> repeat((RepeatUiCommand) ui, result));
         commands.put(ui -> ui instanceof Click, (ui, result) -> click((Click) ui, result));
         commands.put(ui -> ui instanceof Input, (ui, result) -> input((Input) ui, result));
-        commands.put(ui -> ui instanceof Navigate, (ui, result) -> navigate((Navigate) ui, result));
         commands.put(ui -> ui instanceof Assert, (ui, result) -> assertValues((Assert) ui, result));
         commands.put(ui -> ui instanceof DropDown, (ui, result) -> dropDown((DropDown) ui, result));
-        commands.put(ui -> ui instanceof Javascript, (ui, result) -> execJsCommands((Javascript) ui, result));
         commands.put(ui -> ui instanceof Clear, (ui, result) -> clear((Clear) ui, result));
         commands.put(ui -> ui instanceof Wait, (ui, result) -> wait((Wait) ui, result));
-        commands.put(ui -> ui instanceof CloseSecondTab, (ui, result) -> closeSecondTab((CloseSecondTab) ui, result));
         commands.put(ui -> ui instanceof Scroll, (ui, result) -> scroll((Scroll) ui, result));
         commands.put(ui -> ui instanceof ScrollTo, (ui, result) -> scrollTo((ScrollTo) ui, result));
-        commands.put(ui -> ui instanceof Hovers, (ui, result) -> hover((Hovers) ui, result));
         commands.put(ui -> ui instanceof Image, (ui, result) -> compareImages((Image) ui, result));
         this.uiCommands = Collections.unmodifiableMap(commands);
         this.stopScenarioOnFailure = GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure();
@@ -145,7 +139,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractSeleni
     @Override
     protected void acceptImpl(final Ui ui, final CommandResult result) {
         LogUtil.logUiAttributes(ui.isClearCookiesAfterExecution(), ui.getClearLocalStorageByKey());
-        runCommands(ui.getClickOrInputOrNavigate(), result);
+        runCommands(ui.getClickOrInputOrAssert(), result);
         clearLocalStorage(driver, ui.getClearLocalStorageByKey(), result);
         clearCookies(driver, ui.isClearCookiesAfterExecution(), result);
     }
@@ -212,35 +206,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractSeleni
         }
     }
 
-    private void execJsCommands(final Javascript o, final CommandResult result) {
-        String fileName = o.getFile();
-        result.put(JS_FILE, fileName);
-        log.info(JS_FILE_LOG, fileName);
-        String command = JavascriptUtil.readCommands(fileName);
-        JavascriptUtil.executeJsScript(command, driver);
-    }
 
-    private void hover(final Hovers hovers, final CommandResult result) {
-        ResultUtil.addHoversMetaData(hovers, result);
-        Actions actions = new Actions(driver);
-        List<WebElement> webElements = hovers.getHover().stream()
-                .peek(hover -> LogUtil.logHover(dependencies.getPosition().incrementAndGet(), hover))
-                .map(hover -> UiUtil.findWebElement(driver, hover.getLocatorId()))
-                .collect(Collectors.toList());
-        webElements.forEach(webElement -> {
-            actions.moveToElement(webElement);
-            actions.perform();
-        });
-        moveToEmptySpace(hovers.isMoveToEmptySpace(), actions, driver);
-    }
-
-    private void moveToEmptySpace(final Boolean isMoveToEmptySpace, final Actions actions, final WebDriver webDriver) {
-        if (Objects.nonNull(isMoveToEmptySpace) && isMoveToEmptySpace) {
-            WebElement element = webDriver.findElement(By.xpath(MOVE_TO_EMPTY_SPACE));
-            actions.moveToElement(element);
-            actions.perform();
-        }
-    }
 
     private void input(final Input input, final CommandResult result) {
         result.put(INPUT_LOCATOR, input.getLocatorId());
@@ -254,35 +220,6 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractSeleni
         takeScreenshotAndSaveIfRequired(result, settings, driver);
     }
 
-    private void navigate(final Navigate navigate, final CommandResult result) {
-        NavigateCommand navigateCommand = navigate.getCommand();
-        log.info(COMMAND_TYPE_LOG, navigateCommand.name());
-        result.put(NAVIGATE_TYPE, navigateCommand.value());
-        switch (navigateCommand) {
-            case BACK: driver.navigate().back();
-                break;
-            case RELOAD: driver.navigate().refresh();
-                break;
-            case TO: navigateTo(navigate.getPath(), result);
-                break;
-            default: throw new DefaultFrameworkException(format(NAVIGATE_NOT_SUPPORTED, navigateCommand.value()));
-        }
-        takeScreenshotAndSaveIfRequired(result, settings, driver);
-    }
-
-    private void navigateTo(final String path, final CommandResult result) {
-        String url = inject(getUrl(path));
-        result.put(NAVIGATE_URL, url);
-        log.info(BY_URL_LOG, url);
-        driver.navigate().to(url);
-    }
-
-    private String getUrl(final String path) {
-        if (HTTP_PATTERN.matcher(path).matches()) {
-            return path;
-        }
-        return dependencies.getGlobalTestConfiguration().getWeb().getBaseUrl() + path;
-    }
 
     private void assertValues(final Assert aAssert, final CommandResult result) {
         result.put(ASSERT_LOCATOR, aAssert.getLocatorId());
@@ -370,17 +307,6 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractSeleni
         takeScreenshotAndSaveIfRequired(result, settings, driver);
     }
 
-    private void closeSecondTab(final CloseSecondTab closeSecondTab, final CommandResult result) {
-        result.put(CLOSE_COMMAND, SECOND_TAB);
-        List<String> windowHandles = new ArrayList<>(driver.getWindowHandles());
-        if (windowHandles.size() <= 1) {
-            throw new DefaultFrameworkException(SECOND_TAB_NOT_FOUND);
-        }
-        driver.switchTo().window(windowHandles.get(1));
-        driver.close();
-        driver.switchTo().window(windowHandles.get(0));
-    }
-
     @SneakyThrows
     private void wait(final Wait wait, final CommandResult result) {
         String time = inject(wait.getTime());
@@ -424,7 +350,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractSeleni
         int times = repeat.getTimes().intValue();
         result.put(NUMBER_OF_REPETITIONS, times);
         log.info(TIMES_LOG, times);
-        List<AbstractCommand> commandsForRepeat = repeat.getClickOrInputOrNavigate();
+        List<AbstractCommand> commandsForRepeat = repeat.getClickOrInputOrAssert();
         ResultUtil.addCommandsForRepeat(commandsForRepeat, result);
         IntStream.range(0, times)
                 .forEach(e -> runCommands(commandsForRepeat, result));

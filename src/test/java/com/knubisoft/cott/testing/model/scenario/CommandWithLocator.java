@@ -29,12 +29,12 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "commandWithLocator")
 @XmlSeeAlso({
     Click.class,
-    Hover.class,
     Input.class,
     DropDown.class,
     Assert.class,
     Clear.class,
-    ScrollTo.class
+    ScrollTo.class,
+    Hover.class
 })
 public abstract class CommandWithLocator
     extends AbstractCommand

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/cott/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/cott/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="ui.xsd"/>
+
+    <x:complexType name="common-web">
+        <x:complexContent>
+            <x:extension base="tns:ui">
+                <x:choice maxOccurs="unbounded" minOccurs="0">
+                    <x:element name="javascript" type="tns:javascript"/>
+                    <x:element name="navigate" type="tns:navigate"/>
+                    <x:element name="hovers" type="tns:hovers"/>
+                    <x:element name="closeSecondTab" type="tns:closeSecondTab"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="javascript">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:attribute name="file" type="tns:jsFileExtension"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="hovers">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice>
+                    <x:element name="hover" type="tns:hover" maxOccurs="unbounded" minOccurs="1"/>
+                </x:choice>
+                <x:attribute name="moveToEmptySpace" type="x:boolean"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="hover">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="navigate">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:attribute name="command" type="tns:navigateCommand" use="required"/>
+                <x:attribute name="path" type="tns:slashStartedOrUrlString"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="navigateCommand">
+        <x:restriction base="x:string">
+            <x:enumeration value="back"/>
+            <x:enumeration value="reload"/>
+            <x:enumeration value="to"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="slashStartedOrUrlString">
+        <x:restriction base="x:string">
+            <x:minLength value="2"/>
+            <x:pattern value="(/[^/].+)|(https?://.+)"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="closeSecondTab">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand"/>
+        </x:complexContent>
+    </x:complexType>
+</x:schema>

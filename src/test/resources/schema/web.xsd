@@ -5,11 +5,11 @@
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
-    <x:include schemaLocation="ui.xsd"/>
+    <x:include schemaLocation="common-web.xsd"/>
 
     <x:complexType name="web">
         <x:complexContent>
-            <x:extension base="tns:ui">
+            <x:extension base="tns:common-web">
             </x:extension>
         </x:complexContent>
     </x:complexType>

@@ -31,6 +31,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BODY_LOG;
@@ -79,8 +81,6 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_EXECUT
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.VALUE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.VARIATION_LOG;
 import static java.lang.String.format;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.SPACE;
 
 @UtilityClass
 @Slf4j
@@ -96,7 +96,6 @@ public class LogUtil {
             logUiInfo(scenarioArguments.getScenario().getVariations(),
                     BrowserUtil.getBrowserInfo(scenarioArguments.getBrowser()));
         }
-
     }
 
     private void logOverview(final Overview overview) {
@@ -114,12 +113,20 @@ public class LogUtil {
     }
 
     public void logBrokerActionInfo(final String action, final String queue, final String content) {
-        log.info(LogMessage.BROKER_ACTION_INFO_LOG,
-                action.toUpperCase(Locale.ROOT),
-                queue,
-                StringUtils.isNotBlank(content)
-                        ? PrettifyStringJson.getJSONResult(content)
-                                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT) : content);
+        logActionInfo(LogMessage.BROKER_ACTION_INFO_LOG, action, queue, content);
+    }
+
+    public void logWebSocketActionInfo(final String action, final String destination, final String content) {
+        logActionInfo(LogMessage.WEBSOCKET_ACTION_INFO_LOG, action, destination, content);
+    }
+
+    public void logActionInfo(final String template,
+                              final String action,
+                              final String destination,
+                              final String content) {
+        log.info(template, action.toUpperCase(Locale.ROOT), destination, StringUtils.isNotBlank(content)
+                ? PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT)
+                : content);
     }
 
     public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {
@@ -177,8 +184,9 @@ public class LogUtil {
                 testExecutionSummary.getTestsSucceededCount(),
                 failedScenarios);
         if (failedScenarios > 0) {
-            testExecutionSummary.getFailures().forEach(e -> log.error(format(LogMessage.FAILED_SCENARIOS_NAME_TEMPLATE,
-                            e.getTestIdentifier().getDisplayName()), e.getException()));
+            testExecutionSummary.getFailures().forEach(e -> log.error(
+                    format(LogMessage.FAILED_SCENARIOS_NAME_TEMPLATE, e.getTestIdentifier().getDisplayName()),
+                    e.getException()));
         }
     }
 
@@ -188,6 +196,14 @@ public class LogUtil {
         if (action instanceof CommandWithLocator) {
             log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());
         }
+    }
+
+    public void logSubCommand(final int position, final Object action) {
+        log.info(COMMAND_LOG, position, action.getClass().getSimpleName());
+    }
+
+    public void logAlias(final String alias) {
+        log.info(ALIAS_LOG, alias);
     }
 
     public void logSesInfo(final Ses ses) {
@@ -205,14 +221,13 @@ public class LogUtil {
         log.info(ALIAS_LOG, alias);
         log.info(HTTP_METHOD_LOG, method);
         log.info(ENDPOINT_LOG, endpoint);
-
     }
 
     public void logBody(final String body) {
         if (StringUtils.isNotBlank(body)) {
             log.info(BODY_LOG,
-                PrettifyStringJson.getJSONResult(body)
-                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+                    PrettifyStringJson.getJSONResult(body)
+                            .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
     }
 

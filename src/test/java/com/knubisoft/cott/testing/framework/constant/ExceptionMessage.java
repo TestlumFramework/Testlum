@@ -28,6 +28,9 @@ public class ExceptionMessage {
             "Connection to database with name \"%s\" failed. "
                     + "Please check global configuration, it may be disabled or doesn't exist";
 
+    public static final String WEBSOCKET_CONNECTION_FAILURE =
+            "Something went wrong while connecting to websocket with name <%s>";
+
     public static final String FUNCTION_FOR_COMMAND_NOT_FOUND = "Function for class %s not found. "
             + "Please register algorithm for interpreter";
 

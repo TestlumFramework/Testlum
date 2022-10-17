@@ -3,6 +3,7 @@ package com.knubisoft.cott.testing.framework.util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
@@ -13,9 +14,13 @@ public class PrettifyStringJson {
     //use this method only to add value to CommandResult
     public String getJSONResult(final String json) {
         if (StringUtils.isEmpty(json)) {
-            return getPrettyJSON("null");
+            return "null";
         }
-        return getPrettyJSON(json);
+        try {
+            return getPrettyJSON(json);
+        } catch (JsonParseException ignore) {
+            return json;
+        }
     }
 
     private String getPrettyJSON(final String json) {

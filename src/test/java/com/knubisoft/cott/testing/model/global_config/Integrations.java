@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;all&gt;
  *         &lt;element name="apis" type="{http://www.knubisoft.com/cott/testing/model/global-config}apis" minOccurs="0"/&gt;
+ *         &lt;element name="webSockets" type="{http://www.knubisoft.com/cott/testing/model/global-config}webSockets" minOccurs="0"/&gt;
  *         &lt;element name="postgresIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}postgresIntegration" minOccurs="0"/&gt;
  *         &lt;element name="clickhouseIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}clickhouseIntegration" minOccurs="0"/&gt;
  *         &lt;element name="mysqlIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}mysqlIntegration" minOccurs="0"/&gt;
@@ -48,6 +49,7 @@ import javax.xml.bind.annotation.XmlType;
 public class Integrations {
 
     protected Apis apis;
+    protected WebSockets webSockets;
     protected PostgresIntegration postgresIntegration;
     protected ClickhouseIntegration clickhouseIntegration;
     protected MysqlIntegration mysqlIntegration;
@@ -87,6 +89,30 @@ public class Integrations {
      */
     public void setApis(Apis value) {
         this.apis = value;
+    }
+
+    /**
+     * Gets the value of the webSockets property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link WebSockets }
+     *     
+     */
+    public WebSockets getWebSockets() {
+        return webSockets;
+    }
+
+    /**
+     * Sets the value of the webSockets property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link WebSockets }
+     *     
+     */
+    public void setWebSockets(WebSockets value) {
+        this.webSockets = value;
     }
 
     /**

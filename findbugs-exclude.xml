@@ -66,4 +66,14 @@
         <Method name="copyFileToFolder"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
     </Match>
+
+    <Match>
+        <Class name="com.knubisoft.cott.testing.framework.configuration.websocket.GlobalStompSessionHandler"/>
+        <Bug pattern="BC_UNCONFIRMED_CAST"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.cott.testing.framework.configuration.websocket.WebSocketMessageHandler"/>
+        <Bug pattern="DM_DEFAULT_ENCODING"/>
+    </Match>
 </FindBugsFilter>

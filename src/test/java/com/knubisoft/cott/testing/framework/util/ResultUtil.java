@@ -22,6 +22,8 @@ import com.knubisoft.cott.testing.model.scenario.SesBody;
 import com.knubisoft.cott.testing.model.scenario.SesMessage;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
+import com.knubisoft.cott.testing.model.scenario.WebSocketReceive;
+import com.knubisoft.cott.testing.model.scenario.WebSocketSend;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
@@ -101,12 +103,16 @@ public class ResultUtil {
     private static final String HEADERS_STATUS = "Headers status";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
     private static final String TOPIC = "Topic";
+    private static final String COMPARE_RULE = "Compare rule";
+    private static final String NUMBER_OF_VALUES = "Number of values";
     private static final String ROUTING_KEY = "Routing Key";
     private static final String EXCHANGE = "Exchange";
     private static final String ACTION = "Action";
     private static final String SEND = "Send";
+    private static final String COMMENT_FOR_WEBSOCKET_SEND_ACTION = "Send message via websocket";
     private static final String COMMENT_FOR_KAFKA_SEND_ACTION = "Send message to Kafka";
     private static final String COMMENT_FOR_RABBIT_SEND_ACTION = "Send message to RabbitMQ";
+    private static final String COMMENT_FOR_WEBSOCKET_RECEIVE_ACTION = "Receive messages via websocket";
     private static final String COMMENT_FOR_KAFKA_RECEIVE_ACTION = "Receive message from Kafka";
     private static final String COMMENT_FOR_RABBIT_RECEIVE_ACTION = "Receive message from RabbitMQ";
     private static final String TIMEOUT_MILLIS = "Timeout millis";
@@ -305,6 +311,30 @@ public class ResultUtil {
         addMessageBrokerGeneralMetaData(alias, RECEIVE, TOPIC, receiveAction.getTopic(), result);
         result.put(HEADERS_STATUS, receiveAction.isHeaders() ? ENABLE : DISABLE);
         result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
+    }
+
+    public void addWebsocketInfoForSendAction(final WebSocketSend sendAction,
+                                              final String alias,
+                                              final String message,
+                                              final CommandResult result) {
+        result.setCommandKey(SEND);
+        result.setComment(COMMENT_FOR_WEBSOCKET_SEND_ACTION);
+        result.put(ALIAS, alias);
+        result.put(MESSAGE_TO_SEND, message);
+        result.put(ACTION, SEND);
+        result.put(ENDPOINT, sendAction.getEndpoint());
+    }
+
+    public void addWebsocketInfoForReceiveAction(final WebSocketReceive receiveAction,
+                                                 final String alias,
+                                                 final CommandResult result) {
+        result.setCommandKey(RECEIVE);
+        result.setComment(COMMENT_FOR_WEBSOCKET_RECEIVE_ACTION);
+        result.put(TOPIC, receiveAction.getTopic());
+        result.put(COMPARE_RULE, receiveAction.getCompareRule().toString());
+        result.put(NUMBER_OF_VALUES, receiveAction.getValuesNumber().intValue());
+        result.put(ALIAS, alias);
+        result.put(ACTION, RECEIVE);
     }
 
     public void addS3GeneralMetaData(final String alias,

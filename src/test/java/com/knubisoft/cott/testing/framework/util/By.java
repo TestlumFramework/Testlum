@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.util;
 
 import com.knubisoft.cott.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.interpreter.UiInterpreter;
 import com.knubisoft.cott.testing.model.pages.Text;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.SearchContext;
@@ -37,32 +36,17 @@ public class By {
     that is present in more than one element. In this case the exception is thrown.*/
 
     public static org.openqa.selenium.By text(final Text text) {
-        if (text.isPlaceholder()) {
-            return textFromPlaceholder(text);
-        }
         return new org.openqa.selenium.By() {
             @Override
             public List<WebElement> findElements(final SearchContext context) {
-                String xpath = String.format(XPATH_TEMPLATE_FOR_TEXT_SEARCH, text.getValue());
+                String xpath = text.isPlaceholder()
+                        ? String.format(XPATH_TEMPLATE_FOR_TEXT_SEARCH_FROM_PLACEHOLDER, text.getValue())
+                        : String.format(XPATH_TEMPLATE_FOR_TEXT_SEARCH, text.getValue());
                 List<WebElement> elements = context.findElements(By.xpath(xpath));
                 if (elements.size() > 1) {
                     throw new DefaultFrameworkException(ExceptionMessage.FOUND_MORE_THEN_ONE_ELEMENT, text.getValue());
                 }
                 return elements;
-            }
-        };
-    }
-
-    public static org.openqa.selenium.By textFromPlaceholder(final Text text) {
-        return new org.openqa.selenium.By() {
-            @Override
-            public List<WebElement> findElements(SearchContext context) {
-                String xpathByPh = String.format(XPATH_TEMPLATE_FOR_TEXT_SEARCH_FROM_PLACEHOLDER, text.getValue());
-                List<WebElement> elementsByPh = context.findElements(By.xpath(xpathByPh));
-                if (elementsByPh.size() > 1) {
-                    throw new DefaultFrameworkException(ExceptionMessage.FOUND_MORE_THEN_ONE_ELEMENT, text.getValue());
-                }
-                return elementsByPh;
             }
         };
     }

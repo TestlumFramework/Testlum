@@ -11,6 +11,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterScanner;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.report.ScenarioResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
+import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
@@ -33,10 +34,11 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION
 @RequiredArgsConstructor
 public class ScenarioRunner {
     private static final AtomicInteger SCENARIO_ID_GENERATOR = new AtomicInteger();
+    private final AtomicInteger idGenerator = new AtomicInteger();
+    private final ScenarioResult scenarioResult = new ScenarioResult();
+
     private final ScenarioArguments scenarioArguments;
     private final ApplicationContext ctx;
-    private final ScenarioResult scenarioResult = new ScenarioResult();
-    private final AtomicInteger idGenerator = new AtomicInteger();
     private InterpreterDependencies dependencies;
     private boolean stopScenarioOnFailure;
     private CommandToInterpreterMap cmdToInterpreterMap;
@@ -70,7 +72,7 @@ public class ScenarioRunner {
         try {
             runCommands(scenarioArguments.getScenario().getCommands());
         } catch (StopSignalException ignore) {
-            log.info(EXECUTION_STOP_SIGNAL_LOG);
+            log.error(EXECUTION_STOP_SIGNAL_LOG);
         } finally {
             if (scenarioArguments.isContainsUiSteps()) {
                 dependencies.getWebDriver().quit();
@@ -80,18 +82,18 @@ public class ScenarioRunner {
 
     private void runCommands(final List<AbstractCommand> commands) {
         for (AbstractCommand command : commands) {
-            execCommand(command, result -> {
+            processCommand(command, result -> {
                 scenarioResult.getCommands().add(result);
                 handleException(result);
             });
         }
     }
 
-    private void execCommand(final AbstractCommand command, final CommandCallback callback) {
+    private void processCommand(final AbstractCommand command, final CommandCallback callback) {
         CommandResult result = prepareCommandResult(command);
         StopWatch stopWatch = StopWatch.createStarted();
         try {
-            execute(command, result);
+            executeCommand(command, result);
         } finally {
             long execTime = stopWatch.getTime();
             stopWatch.stop();
@@ -101,14 +103,11 @@ public class ScenarioRunner {
         callback.onCommandExecuted(result);
     }
 
-    private void execute(final AbstractCommand command, final CommandResult result) {
+    private void executeCommand(final AbstractCommand command, final CommandResult result) {
         try {
             getInterpreterOrThrow(command).apply(command, result);
-        } catch (StopSignalException e) {
-            throw e;
         } catch (Exception e) {
-            result.setSuccess(false);
-            result.setException(e);
+            ResultUtil.setExceptionResult(result, e);
         }
     }
 
@@ -196,7 +195,7 @@ public class ScenarioRunner {
         );
     }
 
-    private interface CommandCallback {
+    public interface CommandCallback {
         void onCommandExecuted(CommandResult result);
     }
 }

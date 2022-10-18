@@ -21,11 +21,18 @@
             <x:element name="id" type="tns:nonEmptyString"/>
             <x:element name="class" type="tns:nonEmptyString"/>
             <x:element name="cssSelector" type="tns:nonEmptyString"/>
-            <x:element name="linkText" type="tns:nonEmptyString"/>
-            <x:element name="partialLinkText" type="tns:nonEmptyString"/>
+            <x:element name="text" type="tns:text"/>
         </x:choice>
         <x:attribute name="locatorId" type="tns:pagesLocator" use="required"/>
         <x:attribute name="description" type="tns:nonEmptyString"/>
+    </x:complexType>
+
+    <x:complexType name="text">
+        <x:simpleContent>
+            <x:extension base="tns:nonEmptyString">
+                <x:attribute name="placeholder" type="x:boolean" default="false"/>
+            </x:extension>
+        </x:simpleContent>
     </x:complexType>
 
     <x:simpleType name="nonEmptyString">

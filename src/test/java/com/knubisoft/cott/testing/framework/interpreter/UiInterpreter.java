@@ -2,12 +2,10 @@ package com.knubisoft.cott.testing.framework.interpreter;
 
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.cott.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractSeleniumInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
-import com.knubisoft.cott.testing.framework.locator.GlobalLocators;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.ImageComparator;
@@ -18,7 +16,6 @@ import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.SeleniumUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.framework.util.WaitUtil;
-import com.knubisoft.cott.testing.model.pages.Locator;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Assert;
 import com.knubisoft.cott.testing.model.scenario.Clear;
@@ -46,7 +43,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.commons.lang3.tuple.Pair;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -65,7 +61,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -78,10 +73,6 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DRO
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NAVIGATE_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SECOND_TAB_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
-import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.INNER_SCROLL_VERTICAL_SCRIPT_BY_CLASS;
-import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.INNER_SCROLL_VERTICAL_SCRIPT_BY_CSS_SELECTOR;
-import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.INNER_SCROLL_VERTICAL_SCRIPT_BY_ID;
-import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.INNER_SCROLL_VERTICAL_SCRIPT_BY_XPATH;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.SCROLL_TO_ELEMENT_SCRIPT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BY_URL_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMAND_TYPE_LOG;
@@ -118,21 +109,6 @@ import static java.lang.String.format;
 @Slf4j
 @InterpreterForClass(Ui.class)
 public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
-
-    public static final Map<Predicate<Locator>, Pair<Function<Locator, String>, String>> SCRIPT_TYPE;
-
-    static {
-        final Map<Predicate<Locator>, Pair<Function<Locator, String>, String>> map = new HashMap<>();
-        map.put(locator -> Objects.nonNull(locator.getCssSelector()),
-                Pair.of(Locator::getCssSelector, INNER_SCROLL_VERTICAL_SCRIPT_BY_CSS_SELECTOR));
-        map.put(locator -> Objects.nonNull(locator.getId()),
-                Pair.of(Locator::getId, INNER_SCROLL_VERTICAL_SCRIPT_BY_ID));
-        map.put(locator -> Objects.nonNull(locator.getClazz()),
-                Pair.of(Locator::getClazz, INNER_SCROLL_VERTICAL_SCRIPT_BY_CLASS));
-        map.put(locator -> Objects.nonNull(locator.getXpath()),
-                Pair.of(Locator::getXpath, INNER_SCROLL_VERTICAL_SCRIPT_BY_XPATH));
-        SCRIPT_TYPE = Collections.unmodifiableMap(map);
-    }
 
     private static final String MOVE_TO_EMPTY_SPACE = "//html";
     private static final Pattern HTTP_PATTERN = Pattern.compile("https?://.+");
@@ -414,28 +390,8 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         ScrollMeasure measure = scroll.getMeasure();
         String value = scroll.getValue().toString();
         ResultUtil.addScrollMetaData(direction.value(), measure.value(), value, result);
+        JavascriptUtil.executeScrollScript(scroll, dependencies.getWebDriver());
         takeScreenshotAndSaveIfRequired(result);
-        chooseScrollType(scroll, direction, measure, value);
-    }
-
-    private void chooseScrollType(
-            final Scroll scroll,
-            final ScrollDirection direction,
-            final ScrollMeasure measure,
-            final String value) {
-        switch (scroll.getType()) {
-            case INNER:
-                Locator locator = GlobalLocators.getLocator(scroll.getLocator());
-                JavascriptUtil.executeJsScript(JavascriptUtil
-                                .getInnerScrollScript(direction, value, measure, locator, scroll.getLocator()),
-                        dependencies.getWebDriver());
-                break;
-            case PAGE: JavascriptUtil.executeJsScript(JavascriptUtil
-                        .getPageScrollScript(direction, value, measure), dependencies.getWebDriver());
-                break;
-            default:
-                throw new DefaultFrameworkException(format(ExceptionMessage.SCROLL_TYPE_NOT_FOUND, scroll.getType()));
-        }
     }
 
     private void scrollTo(final ScrollTo scrollTo, final CommandResult result) {

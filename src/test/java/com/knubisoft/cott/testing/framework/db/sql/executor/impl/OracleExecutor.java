@@ -3,27 +3,36 @@ package com.knubisoft.cott.testing.framework.db.sql.executor.impl;
 import com.knubisoft.cott.testing.framework.db.sql.executor.AbstractSqlExecutor;
 
 import javax.sql.DataSource;
-import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
 public class OracleExecutor extends AbstractSqlExecutor {
 
-    private static final String SELECT_ORACLE_TABLE_NAMES = "SELECT table_name FROM all_tables WHERE owner = '%s'";
-    private static final String DISABLE_ALL_TRIGGERS = "ALTER TABLE %s DISABLE ALL TRIGGERS";
-    private static final String DISABLE_VALIDATE_PRIMARY_KEY = "ALTER TABLE %s DISABLE PRIMARY KEY";
-    private static final String TRUNCATE_TABLES = "TRUNCATE TABLE %s";
-    private static final String ENABLE_VALIDATE_PRIMARY_KEY = "ALTER TABLE %s ENABLE PRIMARY KEY";
-    private static final String ENABLE_ALL_TRIGGERS = "ALTER TABLE %s ENABLE ALL TRIGGERS";
+    private static final String SELECT_ORACLE_TABLE_NAMES_AND_CONSTRAINTS_FOR_DISABLE =
+            "SELECT x1.table_name, x1.constraint_name FROM user_tables t1, user_constraints x1 "
+                    + "WHERE t1.table_name = x1.table_name ORDER BY x1.r_constraint_name NULLS LAST";
+    private static final String SELECT_ORACLE_TABLE_NAMES_AND_CONSTRAINTS_FOR_ENABLE =
+            "SELECT x1.table_name, x1.constraint_name FROM user_tables t1, user_constraints x1 "
+                    + "WHERE t1.table_name = x1.table_name ORDER BY x1.r_constraint_name NULLS FIRST";
+    private static final String SELECT_ORACLE_TABLE_NAMES = "SELECT table_name FROM user_tables";
+    private static final String DISABLE_CONSTRAINT = "ALTER TABLE %s DISABLE CONSTRAINT %s";
+    private static final String TRUNCATE_TABLE = "TRUNCATE TABLE %1$s";
+    private static final String ENABLE_CONSTRAINT = "ALTER TABLE %s ENABLE CONSTRAINT %s";
 
-    //todo
-    private static final List<String> TRUNCATE_QUERIES = Arrays.asList(
-            DISABLE_ALL_TRIGGERS,
-            DISABLE_VALIDATE_PRIMARY_KEY,
-            TRUNCATE_TABLES,
-            ENABLE_VALIDATE_PRIMARY_KEY,
-            ENABLE_ALL_TRIGGERS);
+    private static final String TABLE_NAME = "table_name";
+    private static final String CONSTRAINT_NAME = "constraint_name";
+
+    private static final Map<String, String> SELECT_TO_TRUNCATE_QUERIES = new LinkedHashMap<>();
+
+    static {
+        SELECT_TO_TRUNCATE_QUERIES.put(SELECT_ORACLE_TABLE_NAMES_AND_CONSTRAINTS_FOR_DISABLE, DISABLE_CONSTRAINT);
+        SELECT_TO_TRUNCATE_QUERIES.put(SELECT_ORACLE_TABLE_NAMES, TRUNCATE_TABLE);
+        SELECT_TO_TRUNCATE_QUERIES.put(SELECT_ORACLE_TABLE_NAMES_AND_CONSTRAINTS_FOR_ENABLE, ENABLE_CONSTRAINT);
+    }
 
     public OracleExecutor(final DataSource dataSource) {
         super(dataSource);
@@ -31,43 +40,13 @@ public class OracleExecutor extends AbstractSqlExecutor {
 
     @Override
     public void truncate() {
-        //todo
-        requireNonNull(template).execute("declare\n" +
-                "begin\n" +
-                "    for c1 in (select y1.table_name, y1.constraint_name\n" +
-                "               from user_constraints y1,\n" +
-                "                    user_tables x1\n" +
-                "               where x1.table_name = y1.table_name\n" +
-                "               order by y1.r_constraint_name nulls last)\n" +
-                "        loop\n" +
-                "            begin\n" +
-                "                dbms_output.put_line('alter table ' || c1.table_name || ' disable constraint ' || c1.constraint_name ||\n" +
-                "                                     ';');\n" +
-                "                execute immediate ('alter table ' || c1.table_name || ' disable constraint ' || c1.constraint_name);\n" +
-                "            end;\n" +
-                "        end loop;\n" +
-                "\n" +
-                "    for t1 in (select table_name from user_tables)\n" +
-                "        loop\n" +
-                "            begin\n" +
-                "                dbms_output.put_line('truncate table ' || t1.table_name || ';');\n" +
-                "                execute immediate ('truncate table ' || t1.table_name);\n" +
-                "            end;\n" +
-                "        end loop;\n" +
-                "\n" +
-                "    for c2 in (select y2.table_name, y2.constraint_name\n" +
-                "               from user_constraints y2,\n" +
-                "                    user_tables x2\n" +
-                "               where x2.table_name = y2.table_name\n" +
-                "               order by y2.r_constraint_name nulls first)\n" +
-                "        loop\n" +
-                "            begin\n" +
-                "                dbms_output.put_line('alter table ' || c2.table_name || ' enable constraint ' || c2.constraint_name ||\n" +
-                "                                     ';');\n" +
-                "                execute immediate ('alter table ' || c2.table_name || ' enable constraint ' || c2.constraint_name);\n" +
-                "            end;\n" +
-                "        end loop;\n" +
-                "\n" +
-                "end;");
+        SELECT_TO_TRUNCATE_QUERIES.forEach((selectQuery, tableQuery) -> {
+            List<Map<String, Object>> tableList = requireNonNull(template).queryForList(selectQuery);
+            tableList.forEach(row -> {
+                String tableName = (String) row.get(TABLE_NAME);
+                String constraint = (String) row.get(CONSTRAINT_NAME);
+                template.execute(format(tableQuery, tableName, constraint));
+            });
+        });
     }
 }

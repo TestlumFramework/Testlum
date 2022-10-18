@@ -61,6 +61,7 @@
         <maven.surefire.failsafe.version>3.0.0-M5</maven.surefire.failsafe.version>
         <tomcat.jdbc.version>10.1.0-M2</tomcat.jdbc.version>
         <postgresql.driver.version>42.2.18</postgresql.driver.version>
+        <oracle.database.ojdbc8>21.7.0.0</oracle.database.ojdbc8>
         <mongo-java-driver.version>3.12.8</mongo-java-driver.version>
         <mysql-connector-java.version>8.0.25</mysql-connector-java.version>
         <spring-kafka.version>2.7.1</spring-kafka.version>
@@ -792,6 +793,12 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql.driver.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>${oracle.database.ojdbc8}</version>
         </dependency>
 
         <dependency>

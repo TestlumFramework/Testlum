@@ -71,7 +71,7 @@ public class UiUtil {
 
     public void waitForElementToBeClickable(final WebDriver driver, final WebElement element) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIME_TO_WAIT));
-        UiUtil.highlightElementIfRequired(true, element, driver);
+        highlightElementIfRequired(true, element, driver);
         wait.until(ExpectedConditions.elementToBeClickable(element));
     }
 

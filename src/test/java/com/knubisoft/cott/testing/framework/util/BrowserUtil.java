@@ -3,8 +3,6 @@ package com.knubisoft.cott.testing.framework.util;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
-import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
-import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Dimension;
@@ -22,20 +20,6 @@ public class BrowserUtil {
     public List<AbstractBrowser> filterEnabledBrowsers() {
         List<AbstractBrowser> filteredResult = GlobalTestConfigurationProvider.getBrowsers().stream()
                 .filter(AbstractBrowser::isEnable)
-                .collect(Collectors.toList());
-        return filteredResult;
-    }
-
-    public List<NativeDevice> filterEnabledNativeDevices() {
-        List<NativeDevice> filteredResult = GlobalTestConfigurationProvider.getNativeDevices().stream()
-                .filter(NativeDevice::isEnabled)
-                .collect(Collectors.toList());
-        return filteredResult;
-    }
-
-    public List<MobilebrowserDevice> filterEnabledMobilebrowserDevices() {
-        List<MobilebrowserDevice> filteredResult = GlobalTestConfigurationProvider.getMobilebrowserDevices().stream()
-                .filter(MobilebrowserDevice::isEnabled)
                 .collect(Collectors.toList());
         return filteredResult;
     }

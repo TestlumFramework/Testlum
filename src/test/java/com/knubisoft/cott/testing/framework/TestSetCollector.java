@@ -6,6 +6,7 @@ import com.knubisoft.cott.testing.framework.scenario.FiltrationResult;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioFilter;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
+import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
@@ -56,8 +57,8 @@ public class TestSetCollector {
                               final List<ScenarioArguments> scenarioArguments) {
         Scenario scenario = entry.scenario;
         List<AbstractBrowser> browsers = BrowserUtil.filterEnabledBrowsers();
-        List<MobilebrowserDevice> mobilebrowserDevices = BrowserUtil.filterEnabledMobilebrowserDevices();
-        List<NativeDevice> nativeDevices = BrowserUtil.filterEnabledNativeDevices();
+        List<MobilebrowserDevice> mobilebrowserDevices = MobileUtil.filterEnabledMobilebrowserDevices();
+        List<NativeDevice> nativeDevices = MobileUtil.filterEnabledNativeDevices();
 
         if (containsWebSteps(scenario) && containsNativeSteps(scenario) && containsMobilebrowserSteps(scenario)) {
             nativeDevices.forEach(nativeDevice -> mobilebrowserDevices.forEach(mobilebrowserDevice -> browsers

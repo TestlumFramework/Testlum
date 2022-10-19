@@ -8,9 +8,9 @@ import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.exception.StopSignalException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.CommandToInterpreterMap;
-import com.knubisoft.cott.testing.framework.interpreter.lib.Drivers;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterScanner;
+import com.knubisoft.cott.testing.framework.interpreter.lib.ui.MockDriver;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.report.ScenarioResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
@@ -23,7 +23,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.openqa.selenium.WebDriver;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;
@@ -32,6 +31,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FUNCTION_FOR_COMMAND_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.MISSING_CONSTRUCTOR;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.MOBILEBROWSER_DRIVER_NOT_INIT;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NATIVE_DRIVER_NOT_INIT;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEB_DRIVER_NOT_INIT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_STOP_SIGNAL_LOG;
 
 
@@ -47,8 +49,6 @@ public class ScenarioRunner {
     private InterpreterDependencies dependencies;
     private boolean stopScenarioOnFailure;
     private CommandToInterpreterMap cmdToInterpreterMap;
-
-    private final Drivers drivers = new Drivers();
 
     public ScenarioResult run() {
         prepare();
@@ -84,7 +84,9 @@ public class ScenarioRunner {
             log.error(EXECUTION_STOP_SIGNAL_LOG);
         } finally {
             if (scenarioArguments.isContainsUiSteps()) {
-                dependencies.getDrivers().getDriversList().stream().filter(Objects::nonNull).forEach(WebDriver::quit);
+                dependencies.getNativeDriver().quit();
+                dependencies.getWebDriver().quit();
+                dependencies.getMobilebrowserDriver().quit();
             }
         }
     }
@@ -178,44 +180,21 @@ public class ScenarioRunner {
     }
 
     private InterpreterDependencies createDependencies() {
-        if (scenarioArguments.isContainsUiSteps()) {
-            return createDependenciesWithUI();
-        } else {
-            return createDependenciesWithoutUI();
-        }
-    }
-
-    private InterpreterDependencies createDependenciesWithoutUI() {
         return new InterpreterDependencies(
+                Objects.nonNull(scenarioArguments.getBrowser())
+                        ? WebDriverFactory.createDriver(scenarioArguments.getBrowser())
+                        : new MockDriver(WEB_DRIVER_NOT_INIT),
+                Objects.nonNull(scenarioArguments.getNativeDevice())
+                        ? NativeDriverFactory.createDriver(scenarioArguments.getNativeDevice())
+                        : new MockDriver(NATIVE_DRIVER_NOT_INIT),
+                Objects.nonNull(scenarioArguments.getMobilebrowserDevice())
+                        ? MobilebrowserDriverFactory.createDriver(scenarioArguments.getMobilebrowserDevice())
+                        : new MockDriver(MOBILEBROWSER_DRIVER_NOT_INIT),
                 ctx,
                 scenarioArguments.getFile(),
                 new ScenarioContext(scenarioArguments.getVariation()),
                 idGenerator
         );
-    }
-
-    private InterpreterDependencies createDependenciesWithUI() {
-        return new InterpreterDependencies(
-                createDrivers(),
-                ctx,
-                scenarioArguments.getFile(),
-                new ScenarioContext(scenarioArguments.getVariation()),
-                idGenerator
-        );
-    }
-
-    private Drivers createDrivers() {
-        if (scenarioArguments.getBrowser() != null) {
-            drivers.setWebDriver(WebDriverFactory.createDriver(scenarioArguments.getBrowser()));
-        }
-        if (scenarioArguments.getMobilebrowserDevice() != null) {
-            drivers.setMobilebrowserDriwer(MobilebrowserDriverFactory
-                    .createDriver(scenarioArguments.getMobilebrowserDevice()));
-        }
-        if (scenarioArguments.getNativeDevice() != null) {
-            drivers.setNativeDriver(NativeDriverFactory.createDriver(scenarioArguments.getNativeDevice()));
-        }
-        return drivers;
     }
 
     public interface CommandCallback {

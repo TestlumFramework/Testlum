@@ -94,6 +94,8 @@ public final class LogMessage {
     public static final String LOCATOR_LOG = format(TABLE_FORMAT, "Locator", "{}");
     public static final String VARIATION_LOG = "Variation - {}";
     public static final String BROWSER_NAME_LOG = "Browser: {}";
+    public static final String NATIVE_LOG = "Native device: {}";
+    public static final String MOBILEBROWSER_LOG = "Mobilebrowser device: {}";
     public static final String HTTP_STATUS_CODE = format(TABLE_FORMAT, "Status code", "{} {}");
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "Method", "{}");
@@ -130,6 +132,8 @@ public final class LogMessage {
     public static final String JS_FILE_LOG = format(TABLE_FORMAT, "JS file", "{}");
 
     public static final String BROWSER_INFO = "%s | type = %s | version = %s";
+    public static final String MOBILEBROWSER_INFO = "Device name = %s | platform = %s";
+    public static final String NATIVE_INFO = MOBILEBROWSER_INFO + " | app package = %s";
     public static final String EXTRACT_THEN_COMPARE = "Extract from web element then compare";
     public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a screenshot then compare";
 }

@@ -1,35 +1,24 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.cott.testing.framework.interpreter.lib.Drivers;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractCommonWebInterpreter;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
-import com.knubisoft.cott.testing.model.global_config.Settings;
 import com.knubisoft.cott.testing.model.scenario.Mobilebrowser;
 import com.knubisoft.cott.testing.model.scenario.Ui;
-import org.openqa.selenium.WebDriver;
-
 
 @InterpreterForClass(Mobilebrowser.class)
-public class MobilebrowserInterpreter extends AbstractUiInterpreter<Mobilebrowser> {
+public class MobilebrowserInterpreter extends AbstractCommonWebInterpreter<Mobilebrowser> {
     public MobilebrowserInterpreter(final InterpreterDependencies dependencies) {
-        super(dependencies);
+        super(dependencies,
+                dependencies.getMobilebrowserDriver(),
+                GlobalTestConfigurationProvider.getMobilebrowserSettings());
     }
 
     @Override
-    protected WebDriver getDriver(final Drivers drivers) {
-        return dependencies.getDrivers().getMobilebrowserDriwer();
-    }
-
-    @Override
-    protected Settings getSettings() {
-        return GlobalTestConfigurationProvider.getMobilebrowserSettings();
-    }
-
-    @Override
-    protected void acceptImpl(final Ui o, final CommandResult result) {
-        super.acceptImpl(o, result);
+    protected void acceptImpl(final Ui ui, final CommandResult result) {
+        super.acceptImpl(ui, result);
     }
 
 }

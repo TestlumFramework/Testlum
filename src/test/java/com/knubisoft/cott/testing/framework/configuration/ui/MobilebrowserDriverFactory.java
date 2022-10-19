@@ -14,7 +14,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import java.net.URL;
 
 @UtilityClass
-public class MobilebrowserDriverFactory {
+public class MobilebrowserDriverFactory{
     @SneakyThrows
     public WebDriver createDriver(final MobilebrowserDevice mobilebrowserDevice) {
         Mobilebrowser mobilebrowser = GlobalTestConfigurationProvider.provide().getMobilebrowser();

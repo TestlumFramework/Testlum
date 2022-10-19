@@ -6,6 +6,7 @@ import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.HttpUtil;
+import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.framework.util.SendGridUtil;
 import com.knubisoft.cott.testing.framework.validator.XMLValidator;
 import com.knubisoft.cott.testing.model.global_config.AbstractDevice;
@@ -268,9 +269,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     public void validate(final Scenario scenario, final File xmlFile) {
         if (scenario.isActive()) {
             List<AbstractCommand> uiCommands = getUiCommands(scenario.getCommands());
-            if (!uiCommands.isEmpty() && isUiCommandsContainsTwoTagsTypes(scenario.getCommands())) {
-                validateAppiumUrl();
-                validateDevices();
+            if (!uiCommands.isEmpty() && containsNativeAndMobileTags(uiCommands)) {
+                validateNativeAndMobilebrowserConfig();
             }
             scenario.getCommands().forEach(it -> validateCommand(it, xmlFile));
         }
@@ -281,24 +281,18 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 Ui.class.isAssignableFrom(abstractCommand.getClass())).collect(Collectors.toList());
     }
 
-    private boolean isUiCommandsContainsTwoTagsTypes(final List<AbstractCommand> uiCommands) {
-        List<AbstractCommand> nativeList = uiCommands.stream().filter(abstractCommand ->
-                abstractCommand instanceof Native).collect(Collectors.toList());
-        List<AbstractCommand> mobilebrowserList = uiCommands.stream().filter(abstractCommand ->
-                abstractCommand instanceof Mobilebrowser).collect(Collectors.toList());
-        return !nativeList.isEmpty() && !mobilebrowserList.isEmpty();
+    private boolean containsNativeAndMobileTags(final List<AbstractCommand> uiCommands) {
+        return uiCommands.stream().anyMatch(abstractCommand -> abstractCommand instanceof Native) &&
+                uiCommands.stream().anyMatch(abstractCommand -> abstractCommand instanceof Mobilebrowser);
     }
 
-    private void validateAppiumUrl() {
+    private void validateNativeAndMobilebrowserConfig() {
         if (GlobalTestConfigurationProvider.provide().getMobilebrowser().getAppiumServerUrl()
                 .equals(GlobalTestConfigurationProvider.provide().getNative().getAppiumServerUrl())) {
             throw new DefaultFrameworkException(SAME_APPIUM_URL);
         }
-    }
-
-    private void validateDevices() {
-        if (BrowserUtil.filterEnabledMobilebrowserDevices().stream().map(MobilebrowserDevice::getUdid)
-                .anyMatch(deviceUdid -> BrowserUtil.filterEnabledNativeDevices().stream()
+        if (MobileUtil.filterEnabledMobilebrowserDevices().stream().map(MobilebrowserDevice::getUdid)
+                .anyMatch(deviceUdid -> MobileUtil.filterEnabledNativeDevices().stream()
                         .map(AbstractDevice::getUdid).collect(Collectors.toList()).contains(deviceUdid))) {
             throw new DefaultFrameworkException(SAME_MOBILE_DEVICES);
         }

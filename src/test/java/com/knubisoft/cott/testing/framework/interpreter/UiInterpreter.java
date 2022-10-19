@@ -32,8 +32,6 @@ import com.knubisoft.cott.testing.model.scenario.NavigateCommand;
 import com.knubisoft.cott.testing.model.scenario.OneValue;
 import com.knubisoft.cott.testing.model.scenario.RepeatUiCommand;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
-import com.knubisoft.cott.testing.model.scenario.ScrollDirection;
-import com.knubisoft.cott.testing.model.scenario.ScrollMeasure;
 import com.knubisoft.cott.testing.model.scenario.ScrollTo;
 import com.knubisoft.cott.testing.model.scenario.SelectOrDeselectBy;
 import com.knubisoft.cott.testing.model.scenario.TypeForOneValue;

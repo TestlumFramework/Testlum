@@ -11,7 +11,7 @@
     <x:complexType name="ui" abstract="true">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
-                <x:choice maxOccurs="unbounded">
+                <x:choice maxOccurs="unbounded" minOccurs="0">
                     <x:element name="click" type="tns:click"/>
                     <x:element name="input" type="tns:input"/>
                     <x:element name="assert" type="tns:assert"/>

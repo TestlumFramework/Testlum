@@ -49,7 +49,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalTime;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -92,30 +91,27 @@ import static java.lang.String.format;
 @Slf4j
 public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterpreter<T> {
 
+    protected final Map<UiCommandPredicate, UiCommand> uiCommands = new HashMap<>();
     private final boolean stopScenarioOnFailure;
     private final WebDriver webDriver;
     private final Settings uiSettings;
-
-    private final Map<UiCommandPredicate, UiCommand> uiCommands;
 
     public AbstractUiInterpreter(final InterpreterDependencies dependencies,
                                  final WebDriver webDriver,
                                  final Settings uiSettings) {
         super(dependencies);
-        Map<UiCommandPredicate, UiCommand> commands = new HashMap<>();
-        commands.put(ui -> ui instanceof RepeatUiCommand, (ui, result) -> repeat((RepeatUiCommand) ui, result));
-        commands.put(ui -> ui instanceof Click, (ui, result) -> click((Click) ui, result));
-        commands.put(ui -> ui instanceof Input, (ui, result) -> input((Input) ui, result));
-        commands.put(ui -> ui instanceof Assert, (ui, result) -> assertValues((Assert) ui, result));
-        commands.put(ui -> ui instanceof DropDown, (ui, result) -> dropDown((DropDown) ui, result));
-        commands.put(ui -> ui instanceof Clear, (ui, result) -> clear((Clear) ui, result));
-        commands.put(ui -> ui instanceof Wait, (ui, result) -> wait((Wait) ui, result));
-        commands.put(ui -> ui instanceof Scroll, (ui, result) -> scroll((Scroll) ui, result));
-        commands.put(ui -> ui instanceof ScrollTo, (ui, result) -> scrollTo((ScrollTo) ui, result));
-        commands.put(ui -> ui instanceof Image, (ui, result) -> compareImages((Image) ui, result));
+        uiCommands.put(ui -> ui instanceof RepeatUiCommand, (ui, result) -> repeat((RepeatUiCommand) ui, result));
+        uiCommands.put(ui -> ui instanceof Click, (ui, result) -> click((Click) ui, result));
+        uiCommands.put(ui -> ui instanceof Input, (ui, result) -> input((Input) ui, result));
+        uiCommands.put(ui -> ui instanceof Assert, (ui, result) -> assertValues((Assert) ui, result));
+        uiCommands.put(ui -> ui instanceof DropDown, (ui, result) -> dropDown((DropDown) ui, result));
+        uiCommands.put(ui -> ui instanceof Clear, (ui, result) -> clear((Clear) ui, result));
+        uiCommands.put(ui -> ui instanceof Wait, (ui, result) -> wait((Wait) ui, result));
+        uiCommands.put(ui -> ui instanceof Scroll, (ui, result) -> scroll((Scroll) ui, result));
+        uiCommands.put(ui -> ui instanceof ScrollTo, (ui, result) -> scrollTo((ScrollTo) ui, result));
+        uiCommands.put(ui -> ui instanceof Image, (ui, result) -> compareImages((Image) ui, result));
         this.uiSettings = uiSettings;
         this.webDriver = webDriver;
-        this.uiCommands = Collections.unmodifiableMap(commands);
         this.stopScenarioOnFailure = GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure();
     }
 
@@ -191,7 +187,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
 
 
 
-    private void input(final Input input, final CommandResult result) {
+    protected void input(final Input input, final CommandResult result) {
         result.put(INPUT_LOCATOR, input.getLocatorId());
         WebElement webElement = UiUtil.findWebElement(webDriver, input.getLocatorId());
         UiUtil.highlightElementIfRequired(input.isHighlight(), webElement, webDriver);
@@ -204,7 +200,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
     }
 
 
-    private void assertValues(final Assert aAssert, final CommandResult result) {
+    protected void assertValues(final Assert aAssert, final CommandResult result) {
         result.put(ASSERT_LOCATOR, aAssert.getLocatorId());
         result.put(ASSERT_ATTRIBUTE, aAssert.getAttribute());
         String actual = getActualValue(aAssert);
@@ -227,7 +223,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
                 .replaceAll(NEW_LINE, EMPTY);
     }
 
-    private void dropDown(final DropDown dropDown, final CommandResult result) {
+    protected void dropDown(final DropDown dropDown, final CommandResult result) {
         String locatorId = dropDown.getLocatorId();
         result.put(DROP_DOWN_LOCATOR, locatorId);
         Select select = new Select(UiUtil.findWebElement(webDriver, locatorId));
@@ -280,7 +276,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
         }
     }
 
-    private void clear(final Clear clear, final CommandResult result) {
+    protected void clear(final Clear clear, final CommandResult result) {
         String locatorId = clear.getLocatorId();
         result.put(CLEAR_LOCATOR, locatorId);
         WebElement element = UiUtil.findWebElement(webDriver, locatorId);
@@ -291,14 +287,14 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
     }
 
     @SneakyThrows
-    private void wait(final Wait wait, final CommandResult result) {
+    protected void wait(final Wait wait, final CommandResult result) {
         String time = inject(wait.getTime());
         result.put(TIME, time);
         log.info(WAIT_INFO_LOG, time, wait.getUnit());
         WaitUtil.getTimeUnit(wait.getUnit(), result).sleep(Long.parseLong(time));
     }
 
-    private void scroll(final Scroll scroll, final CommandResult result) {
+    protected void scroll(final Scroll scroll, final CommandResult result) {
         ScrollDirection direction = scroll.getDirection();
         ScrollMeasure measure = scroll.getMeasure();
         String value = scroll.getValue().toString();
@@ -308,7 +304,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
                 webDriver);
     }
 
-    private void scrollTo(final ScrollTo scrollTo, final CommandResult result) {
+    protected void scrollTo(final ScrollTo scrollTo, final CommandResult result) {
         String locatorId = scrollTo.getLocatorId();
         WebElement element = UiUtil.findWebElement(webDriver, locatorId);
         result.put(SCROLL_LOCATOR, locatorId);
@@ -317,7 +313,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
     }
 
     @SneakyThrows
-    private void compareImages(final Image image, final CommandResult result) {
+    protected void compareImages(final Image image, final CommandResult result) {
         LogUtil.logImageComparisonInfo(image);
         ResultUtil.addImageComparisonMetaData(image, result);
         File scenarioFile = dependencies.getFile();
@@ -329,7 +325,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
                 .processImageComparisonResult(comparisonResult, image, scenarioFile.getParentFile(), result);
     }
 
-    private void repeat(final RepeatUiCommand repeat, final CommandResult result) {
+    protected void repeat(final RepeatUiCommand repeat, final CommandResult result) {
         int times = repeat.getTimes().intValue();
         result.put(NUMBER_OF_REPETITIONS, times);
         log.info(TIMES_LOG, times);
@@ -389,6 +385,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
         FileUtils.copyFile(screenshot, newScreenshot);
     }
 
-    private interface UiCommandPredicate extends Predicate<AbstractCommand> { }
-    private interface UiCommand extends BiConsumer<AbstractCommand, CommandResult> { }
+    interface UiCommandPredicate extends Predicate<AbstractCommand> { }
+    interface UiCommand extends BiConsumer<AbstractCommand, CommandResult> { }
 }
+

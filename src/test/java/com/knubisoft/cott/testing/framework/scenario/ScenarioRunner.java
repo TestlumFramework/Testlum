@@ -179,16 +179,17 @@ public class ScenarioRunner {
         }
     }
 
+    //CHECKSTYLE:OFF
     private InterpreterDependencies createDependencies() {
         return new InterpreterDependencies(
                 Objects.nonNull(scenarioArguments.getBrowser())
-                        ? WebDriverFactory.createDriver(scenarioArguments.getBrowser())
+                        ? new WebDriverFactory().createDriver(scenarioArguments.getBrowser())
                         : new MockDriver(WEB_DRIVER_NOT_INIT),
                 Objects.nonNull(scenarioArguments.getNativeDevice())
-                        ? NativeDriverFactory.createDriver(scenarioArguments.getNativeDevice())
+                        ? new NativeDriverFactory().createDriver(scenarioArguments.getNativeDevice())
                         : new MockDriver(NATIVE_DRIVER_NOT_INIT),
                 Objects.nonNull(scenarioArguments.getMobilebrowserDevice())
-                        ? MobilebrowserDriverFactory.createDriver(scenarioArguments.getMobilebrowserDevice())
+                        ? new MobilebrowserDriverFactory().createDriver(scenarioArguments.getMobilebrowserDevice())
                         : new MockDriver(MOBILEBROWSER_DRIVER_NOT_INIT),
                 ctx,
                 scenarioArguments.getFile(),
@@ -196,6 +197,7 @@ public class ScenarioRunner {
                 idGenerator
         );
     }
+    //CHECKSTYLE:ON
 
     public interface CommandCallback {
         void onCommandExecuted(CommandResult result);

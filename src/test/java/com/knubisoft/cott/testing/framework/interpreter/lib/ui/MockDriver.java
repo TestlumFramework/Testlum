@@ -14,7 +14,7 @@ public class MockDriver implements WebDriver {
     private final String exceptionMessage;
 
     @Override
-    public void get(String url) {
+    public void get(final String url) {
         throw new DefaultFrameworkException(exceptionMessage);
     }
 
@@ -29,12 +29,12 @@ public class MockDriver implements WebDriver {
     }
 
     @Override
-    public List<WebElement> findElements(By by) {
+    public List<WebElement> findElements(final By by) {
         throw new DefaultFrameworkException(exceptionMessage);
     }
 
     @Override
-    public WebElement findElement(By by) {
+    public WebElement findElement(final By by) {
         throw new DefaultFrameworkException(exceptionMessage);
     }
 

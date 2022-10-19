@@ -3,7 +3,6 @@ package com.knubisoft.cott.testing.framework.scenario;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.HttpUtil;
 import com.knubisoft.cott.testing.framework.util.MobileUtil;
@@ -282,8 +281,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private boolean containsNativeAndMobileTags(final List<AbstractCommand> uiCommands) {
-        return uiCommands.stream().anyMatch(abstractCommand -> abstractCommand instanceof Native) &&
-                uiCommands.stream().anyMatch(abstractCommand -> abstractCommand instanceof Mobilebrowser);
+        return uiCommands.stream().anyMatch(abstractCommand -> abstractCommand instanceof Native)
+                && uiCommands.stream().anyMatch(abstractCommand -> abstractCommand instanceof Mobilebrowser);
     }
 
     private void validateNativeAndMobilebrowserConfig() {

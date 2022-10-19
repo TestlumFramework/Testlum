@@ -15,8 +15,8 @@ public class NativeInterpreter extends AbstractUiInterpreter<Native> {
     }
 
     @Override
-    protected void acceptImpl(final Ui o, final CommandResult result) {
-        super.acceptImpl(o, result);
+    protected void acceptImpl(final Ui ui, final CommandResult result) {
+        super.acceptImpl(ui, result);
     }
 
 

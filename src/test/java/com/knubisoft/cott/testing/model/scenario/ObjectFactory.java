@@ -390,14 +390,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CommonWeb }
-     * 
-     */
-    public CommonWeb createCommonWeb() {
-        return new CommonWeb();
-    }
-
-    /**
      * Create an instance of {@link Javascript }
      * 
      */

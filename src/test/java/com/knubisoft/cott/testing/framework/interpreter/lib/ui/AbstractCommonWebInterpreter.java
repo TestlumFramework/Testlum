@@ -51,6 +51,10 @@ public abstract class AbstractCommonWebInterpreter<T extends CommonWeb> extends 
                                         final WebDriver webDriver,
                                         final Settings uiSettings) {
         super(dependencies, webDriver, uiSettings);
+        uiCommands.put(ui -> ui instanceof Navigate, (ui, result) -> navigate((Navigate) ui, result));
+        uiCommands.put(ui -> ui instanceof Javascript, (ui, result) -> execJsCommands((Javascript) ui, result));
+        uiCommands.put(ui -> ui instanceof CloseSecondTab, (ui, result) -> closeSecondTab((CloseSecondTab) ui, result));
+        uiCommands.put(ui -> ui instanceof Hovers, (ui, result) -> hover((Hovers) ui, result));
         this.uiSettings = uiSettings;
         this.webDriver = webDriver;
     }

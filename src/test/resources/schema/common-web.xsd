@@ -7,7 +7,7 @@
 
     <x:include schemaLocation="ui.xsd"/>
 
-    <x:complexType name="common-web">
+    <x:complexType name="common-web" abstract="true">
         <x:complexContent>
             <x:extension base="tns:ui">
                 <x:choice maxOccurs="unbounded" minOccurs="0">

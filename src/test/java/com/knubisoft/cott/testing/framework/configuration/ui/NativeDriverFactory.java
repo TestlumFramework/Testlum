@@ -7,20 +7,19 @@ import io.appium.java_client.AppiumDriver;
 
 import io.appium.java_client.remote.MobileCapabilityType;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.net.URL;
 
-@UtilityClass
-public class NativeDriverFactory {
+public class NativeDriverFactory implements AbstractDriverFactory {
     @SneakyThrows
-    public WebDriver createDriver(final NativeDevice nativeDevice) {
+    public WebDriver createDriver(final Object nativeDevice) {
+        NativeDevice device = (NativeDevice) nativeDevice;
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        MobileDriverUtil.setCommonCapabilities(nativeDevice, desiredCapabilities);
-        desiredCapabilities.setCapability("appPackage", nativeDevice.getAppPackage());
-        desiredCapabilities.setCapability("appActivity", nativeDevice.getAppActivity());
+        MobileDriverUtil.setCommonCapabilities(device, desiredCapabilities);
+        desiredCapabilities.setCapability("appPackage", device.getAppPackage());
+        desiredCapabilities.setCapability("appActivity", device.getAppActivity());
         desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "5000");
         String serverUrl = GlobalTestConfigurationProvider.provide().getNative().getAppiumServerUrl();
         WebDriver driver = new AppiumDriver(new URL(serverUrl), desiredCapabilities);

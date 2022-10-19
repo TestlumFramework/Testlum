@@ -22,7 +22,6 @@ import io.github.bonigarcia.wdm.managers.FirefoxDriverManager;
 import io.github.bonigarcia.wdm.managers.OperaDriverManager;
 import io.github.bonigarcia.wdm.managers.SafariDriverManager;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
@@ -43,8 +42,7 @@ import java.util.function.Predicate;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND;
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_VERSION;
 
-@UtilityClass
-public class WebDriverFactory {
+public class WebDriverFactory implements AbstractDriverFactory {
 
     private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;
@@ -59,7 +57,8 @@ public class WebDriverFactory {
         DRIVER_INITIALIZER_MAP = Collections.unmodifiableMap(map);
     }
 
-    public WebDriver createDriver(final AbstractBrowser browser) {
+    public WebDriver createDriver(final Object abstractBrowser) {
+        AbstractBrowser browser = (AbstractBrowser) abstractBrowser;
         WebDriver webDriver = DRIVER_INITIALIZER_MAP.keySet().stream()
                 .filter(key -> key.test(browser))
                 .map(DRIVER_INITIALIZER_MAP::get)
@@ -70,9 +69,9 @@ public class WebDriverFactory {
         return webDriver;
     }
 
-    private WebDriver getWebDriver(final AbstractBrowser browser,
-                                   final MutableCapabilities browserOptions,
-                                   final WebDriverManager driverManager) {
+    private static WebDriver getWebDriver(final AbstractBrowser browser,
+                                          final MutableCapabilities browserOptions,
+                                          final WebDriverManager driverManager) {
         setCapabilities(browser, browserOptions);
         BrowserUtil.BrowserType browserType = BrowserUtil.getBrowserType(browser);
         if (browserType == BrowserUtil.BrowserType.REMOTE) {
@@ -87,9 +86,9 @@ public class WebDriverFactory {
         return getLocalDriver(browser.getBrowserType().getLocalBrowser(), browserOptions, driverManager);
     }
 
-    private WebDriver getLocalDriver(final LocalBrowser localBrowserSettings,
-                                     final MutableCapabilities browserOptions,
-                                     final WebDriverManager driverManager) {
+    private static WebDriver getLocalDriver(final LocalBrowser localBrowserSettings,
+                                            final MutableCapabilities browserOptions,
+                                            final WebDriverManager driverManager) {
         String driverVersion = localBrowserSettings.getDriverVersion();
         if (StringUtils.isNotEmpty(localBrowserSettings.getDriverVersion())) {
             driverManager.driverVersion(driverVersion);
@@ -97,9 +96,9 @@ public class WebDriverFactory {
         return driverManager.capabilities(browserOptions).create();
     }
 
-    private WebDriver getBrowserInDocker(final BrowserInDocker browserInDockerSettings,
-                                         final MutableCapabilities browserOptions,
-                                         final WebDriverManager driverManager) {
+    private static WebDriver getBrowserInDocker(final BrowserInDocker browserInDockerSettings,
+                                                final MutableCapabilities browserOptions,
+                                                final WebDriverManager driverManager) {
         String dockerNetwork = browserInDockerSettings.getDockerNetwork();
         ScreenRecording screenRecordingSettings = browserInDockerSettings.getScreenRecording();
         driverManager.capabilities(browserOptions).browserVersion(browserInDockerSettings.getBrowserVersion());
@@ -114,13 +113,13 @@ public class WebDriverFactory {
 
 
     @SneakyThrows
-    private WebDriver getRemoteDriver(final RemoteBrowser remoteBrowserSettings,
-                                      final MutableCapabilities browserOptions) {
+    private static WebDriver getRemoteDriver(final RemoteBrowser remoteBrowserSettings,
+                                             final MutableCapabilities browserOptions) {
         browserOptions.setCapability(BROWSER_VERSION, remoteBrowserSettings.getBrowserVersion());
         return new RemoteWebDriver(new URL(remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
     }
 
-    private void setCapabilities(final AbstractBrowser browser, final MutableCapabilities driverOptions) {
+    private static void setCapabilities(final AbstractBrowser browser, final MutableCapabilities driverOptions) {
         Capabilities capabilities = browser.getCapabilities();
         if (capabilities != null) {
             capabilities.getCapability()

@@ -14,19 +14,18 @@ public enum PageScrollScript {
     PAGE_VERTICAL_SCROLL_PIXEL_SCRIPT("window.scrollBy(0, %s)"),
     PAGE_VERTICAL_SCROLL_PERCENT_SCRIPT("document.body.scrollHeight * %s");
 
+    private static final int MAX_PERCENTS_VALUE = 100;
+
     private final String script;
 
     PageScrollScript(final String script) {
         this.script = script;
     }
 
-    private static final int MAX_PERCENTS_VALUE = 100;
-
     public static String getPageScrollScript(final Scroll scroll) {
         ScrollDirection direction = scroll.getDirection();
         ScrollMeasure measure = scroll.getMeasure();
         String value = scroll.getValue().toString();
-        LogUtil.logScrollInfo(direction.name(), measure.value(), value);
         if (direction.equals(ScrollDirection.UP)) {
             return format(PageScrollScript.PAGE_VERTICAL_SCROLL_PIXEL_SCRIPT.script,
                     pageScrollMeasureFormatter(measure, DelimiterConstant.DASH + value));
@@ -35,7 +34,7 @@ public enum PageScrollScript {
                 pageScrollMeasureFormatter(measure, value));
     }
 
-    private static String pageScrollMeasureFormatter(ScrollMeasure measure, String value) {
+    private static String pageScrollMeasureFormatter(final ScrollMeasure measure, final String value) {
         if (measure.equals(ScrollMeasure.PERCENT)) {
             float percent = Float.parseFloat(value) / MAX_PERCENTS_VALUE;
             if (percent > 1) {

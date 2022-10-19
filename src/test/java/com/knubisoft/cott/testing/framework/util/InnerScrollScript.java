@@ -38,35 +38,35 @@ public enum InnerScrollScript {
             "document.evaluate('%s', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
                     + ".singleNodeValue.scrollHeight * %s");
 
-
-    private final Predicate<Locator> locatorPredicate;
-    private final Function<Locator, String> selector;
-    private final String byPixel;
-    private final String byPercentage;
-
-    InnerScrollScript(final Predicate<Locator> locatorPredicate,
-                      final Function<Locator, String> selector,
-                      final String byPixel,
-                      final String byPercentage) {
-        this.locatorPredicate = locatorPredicate;
-        this.selector = selector;
-        this.byPixel = byPixel;
-        this.byPercentage = byPercentage;
-    }
-
     private static final int MAX_PERCENTS_VALUE = 100;
+
+    private final Predicate<Locator> locatorTypePredicate;
+    private final Function<Locator, String> locatorValue;
+    private final String scrollByPixelScript;
+    private final String scrollByPercentageScript;
+
+
+    InnerScrollScript(final Predicate<Locator> locatorTypePredicate,
+                      final Function<Locator, String> locatorValue,
+                      final String scrollByPixelScript,
+                      final String scrollByPercentageScript) {
+        this.locatorTypePredicate = locatorTypePredicate;
+        this.locatorValue = locatorValue;
+        this.scrollByPixelScript = scrollByPixelScript;
+        this.scrollByPercentageScript = scrollByPercentageScript;
+    }
 
     public static String getScrollScript(final Scroll scroll) {
         Locator locator = GlobalLocators.getLocator(scroll.getLocator());
         String value = scroll.getValue().toString();
         ScrollMeasure measure = scroll.getMeasure();
-        InnerScrollScript innerScrollScript = getScrollScript(locator);
-        String selector = innerScrollScript.selector.apply(locator);
+        InnerScrollScript innerScrollScript = getInnerScrollScript(locator);
+        String selector = innerScrollScript.locatorValue.apply(locator);
         if (ScrollDirection.UP.equals(scroll.getDirection())) {
-            return format(innerScrollScript.byPixel, selector,
+            return format(innerScrollScript.scrollByPixelScript, selector,
                     innerScrollMeasureFormater(measure, DelimiterConstant.DASH + value, selector, locator));
         }
-        return format(innerScrollScript.byPixel, selector,
+        return format(innerScrollScript.scrollByPixelScript, selector,
                 innerScrollMeasureFormater(measure, value, selector, locator));
     }
 
@@ -79,16 +79,16 @@ public enum InnerScrollScript {
             if (percent > 1) {
                 throw new DefaultFrameworkException(format(SCROLL_TO_ELEMENT_NOT_SUPPORTED, value));
             }
-            return format(getScrollScript(locator).byPercentage, selector, percent);
+            return format(getInnerScrollScript(locator).scrollByPercentageScript, selector, percent);
         }
         return value;
     }
 
-    private static InnerScrollScript getScrollScript(Locator locator) {
+    private static InnerScrollScript getInnerScrollScript(final Locator locator) {
         return Arrays.stream(InnerScrollScript.values())
-                .filter(l -> l.locatorPredicate.test(locator))
+                .filter(l -> l.locatorTypePredicate.test(locator))
                 .findFirst()
-                .orElseThrow(() -> new DefaultFrameworkException(format(ExceptionMessage.NO_SUCH_LOCATOR), locator));
+                .orElseThrow(() -> new DefaultFrameworkException(format(ExceptionMessage.NO_SUCH_LOCATOR, locator)));
     }
 
 }

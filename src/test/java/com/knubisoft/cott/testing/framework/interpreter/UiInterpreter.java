@@ -386,10 +386,8 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private void scroll(final Scroll scroll, final CommandResult result) {
-        ScrollDirection direction = scroll.getDirection();
-        ScrollMeasure measure = scroll.getMeasure();
-        String value = scroll.getValue().toString();
-        ResultUtil.addScrollMetaData(direction.value(), measure.value(), value, result);
+        ResultUtil.addScrollMetaData(scroll, result);
+        LogUtil.logScrollInfo(scroll);
         JavascriptUtil.executeScrollScript(scroll, dependencies.getWebDriver());
         takeScreenshotAndSaveIfRequired(result);
     }

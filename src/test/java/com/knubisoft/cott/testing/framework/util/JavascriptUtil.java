@@ -41,7 +41,7 @@ public class JavascriptUtil {
         }
     }
 
-    public static void executeScrollScript(Scroll scroll, WebDriver webDriver) {
+    public static void executeScrollScript(final Scroll scroll, final WebDriver webDriver) {
         switch (scroll.getType()) {
             case INNER:
             JavascriptUtil.executeJsScript(InnerScrollScript.getScrollScript(scroll), webDriver);

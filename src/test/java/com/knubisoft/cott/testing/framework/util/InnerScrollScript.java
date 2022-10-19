@@ -14,7 +14,6 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SCROLL_TO_ELEMENT_NOT_SUPPORTED;
 import static java.lang.String.format;
 
 public enum InnerScrollScript {
@@ -22,23 +21,25 @@ public enum InnerScrollScript {
     INNER_VERTICAL_BY_CSS_SELECTOR(locator -> Objects.nonNull(locator.getCssSelector()),
             Locator::getCssSelector,
             "document.querySelector('%s').scrollBy(0, %s)",
-            "document.querySelector('%s').scrollHeight * %s"),
+            "document.querySelector('%s').scrollBy(0, document.querySelector('%s')"
+                    + ".scrollHeight * %s)"),
     INNER_VERTICAL_BY_ID(locator -> Objects.nonNull(locator.getId()),
             Locator::getId,
             "document.getElementById('%s').scrollBy(0, %s)",
-            "document.getElementById('%s').scrollHeight * %s"),
+            "document.getElementById('%s').scrollBy(0, document.getElementById('%s')"
+                    + ".scrollHeight * %s)"),
     INNER_VERTICAL_BY_CLASS(locator -> Objects.nonNull(locator.getClazz()),
             Locator::getClazz,
             "document.getElementsByClassName('%s').scrollBy(0, %s)",
-            "document.getElementsByClassName('%s').scrollHeight * %s"),
+            "document.getElementsByClassName('%s').scrollBy(0, "
+                    + "document.getElementsByClassName('%s').scrollHeight * %s)"),
     INNER_VERTICAL_BY_XPATH(locator -> Objects.nonNull(locator.getXpath()),
             Locator::getXpath,
             "document.evaluate('%s', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
                     + ".singleNodeValue.scrollBy(0, %s)",
             "document.evaluate('%s', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
-                    + ".singleNodeValue.scrollHeight * %s");
-
-    private static final int MAX_PERCENTS_VALUE = 100;
+                    + ".singleNodeValue.scrollBy(0, document.evaluate('%s', document, null, "
+                    + "XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollHeight * %s)");
 
     private final Predicate<Locator> locatorTypePredicate;
     private final Function<Locator, String> locatorValue;
@@ -62,26 +63,27 @@ public enum InnerScrollScript {
         ScrollMeasure measure = scroll.getMeasure();
         InnerScrollScript innerScrollScript = getInnerScrollScript(locator);
         String selector = innerScrollScript.locatorValue.apply(locator);
-        if (ScrollDirection.UP.equals(scroll.getDirection())) {
-            return format(innerScrollScript.scrollByPixelScript, selector,
-                    innerScrollMeasureFormater(measure, DelimiterConstant.DASH + value, selector, locator));
+        if (ScrollMeasure.PERCENT.equals(measure)) {
+            return getInnerPercentScript(scroll, selector, value);
         }
-        return format(innerScrollScript.scrollByPixelScript, selector,
-                innerScrollMeasureFormater(measure, value, selector, locator));
+        return getInnerPixelScript(scroll, selector, value);
+
     }
 
-    private static String innerScrollMeasureFormater(final ScrollMeasure measure,
-                                                     final String value,
-                                                     final String selector,
-                                                     final Locator locator) {
-        if (ScrollMeasure.PERCENT.equals(measure)) {
-            float percent = Float.parseFloat(value) / MAX_PERCENTS_VALUE;
-            if (percent > 1) {
-                throw new DefaultFrameworkException(format(SCROLL_TO_ELEMENT_NOT_SUPPORTED, value));
-            }
-            return format(getInnerScrollScript(locator).scrollByPercentageScript, selector, percent);
-        }
-        return value;
+    private static String getInnerPixelScript(final Scroll scroll, final String selector, final String value) {
+        Locator locator = GlobalLocators.getLocator(scroll.getLocator());
+        return format(getInnerScrollScript(locator).scrollByPixelScript,
+                selector,
+                ScrollDirection.UP.equals(scroll.getDirection()) ? DelimiterConstant.DASH + value : value);
+    }
+
+    private static String getInnerPercentScript(final Scroll scroll, final String selector, final String value) {
+        Locator locator = GlobalLocators.getLocator(scroll.getLocator());
+        float percent = UiUtil.calculatePercentageValue(value);
+        return format(getInnerScrollScript(locator).scrollByPercentageScript,
+                selector,
+                selector,
+                ScrollDirection.UP.equals(scroll.getDirection()) ? DelimiterConstant.DASH + percent : percent);
     }
 
     private static InnerScrollScript getInnerScrollScript(final Locator locator) {

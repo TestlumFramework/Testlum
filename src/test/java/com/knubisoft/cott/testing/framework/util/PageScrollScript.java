@@ -4,13 +4,15 @@ import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
 import com.knubisoft.cott.testing.model.scenario.ScrollDirection;
 import com.knubisoft.cott.testing.model.scenario.ScrollMeasure;
+import lombok.Getter;
 
 import static java.lang.String.format;
 
+@Getter
 public enum PageScrollScript {
 
-    PAGE_VERTICAL_SCROLL_PIXEL_SCRIPT("window.scrollBy(0, %s)"),
-    PAGE_VERTICAL_SCROLL_PERCENT_SCRIPT("window.scrollBy(0, document.body.scrollHeight * %s)");
+    VERTICAL_BY_PIXEL("window.scrollBy(0, %s)"),
+    VERTICAL_BY_PERCENT("window.scrollBy(0, document.body.scrollHeight * %s)");
 
     private final String script;
 
@@ -19,22 +21,12 @@ public enum PageScrollScript {
     }
 
     public static String getPageScrollScript(final Scroll scroll) {
-        ScrollMeasure measure = scroll.getMeasure();
         String value = scroll.getValue().toString();
-        if (ScrollMeasure.PERCENT.equals(measure)) {
-            return getPageScrollByPercentScript(scroll, value);
+        boolean isUpDirection = ScrollDirection.UP.equals(scroll.getDirection());
+        if (ScrollMeasure.PERCENT.equals(scroll.getMeasure())) {
+            float percent = UiUtil.calculatePercentageValue(value);
+            return format(VERTICAL_BY_PERCENT.getScript(), isUpDirection ? DelimiterConstant.DASH + percent : percent);
         }
-        return getPageScrollByPixelScript(scroll, value);
-    }
-
-    private static String getPageScrollByPixelScript(final Scroll scroll, final String value) {
-        return format(PageScrollScript.PAGE_VERTICAL_SCROLL_PIXEL_SCRIPT.script,
-                ScrollDirection.UP.equals(scroll.getDirection()) ? DelimiterConstant.DASH + value : value);
-    }
-
-    private static String getPageScrollByPercentScript(final Scroll scroll, final String value) {
-        float percent = UiUtil.calculatePercentageValue(value);
-        return format(PageScrollScript.PAGE_VERTICAL_SCROLL_PERCENT_SCRIPT.script,
-                ScrollDirection.UP.equals(scroll.getDirection()) ? DelimiterConstant.DASH + percent : percent);
+        return format(VERTICAL_BY_PIXEL.getScript(), isUpDirection ? DelimiterConstant.DASH + value : value);
     }
 }

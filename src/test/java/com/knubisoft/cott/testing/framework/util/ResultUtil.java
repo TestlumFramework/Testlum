@@ -14,6 +14,8 @@ import com.knubisoft.cott.testing.model.scenario.KafkaHeaders;
 import com.knubisoft.cott.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.cott.testing.model.scenario.RmqHeaders;
+import com.knubisoft.cott.testing.model.scenario.Scroll;
+import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.SendRmqMessage;
 import com.knubisoft.cott.testing.model.scenario.SendgridInfo;
@@ -90,6 +92,8 @@ public class ResultUtil {
     public static final String IMAGE_ATTACHED_TO_STEP = "Actual image attached to report step";
     private static final String SCROLL_DIRECTION = "Scroll direction";
     private static final String SCROLL_MEASURE = "Scroll measure";
+    private static final String SCROLL_TYPE = "Scroll type";
+    private static final String LOCATOR_FOR_SCROLL = "Locator for scroll";
     private static final String DESTINATION = "Destination";
     private static final String SUBJECT = "Subject";
     private static final String HTML = "HTML";
@@ -379,13 +383,15 @@ public class ResultUtil {
         commandResult.put(VALUE, value);
     }
 
-    public void addScrollMetaData(final String direction,
-                                  final String measure,
-                                  final String value,
+    public void addScrollMetaData(final Scroll scroll,
                                   final CommandResult commandResult) {
-        commandResult.put(SCROLL_DIRECTION, direction);
-        commandResult.put(SCROLL_MEASURE, measure);
-        commandResult.put(VALUE, value);
+        commandResult.put(SCROLL_DIRECTION, scroll.getDirection());
+        commandResult.put(SCROLL_MEASURE, scroll.getMeasure());
+        commandResult.put(VALUE, scroll.getValue().toString());
+        commandResult.put(SCROLL_TYPE, scroll.getType());
+        if (ScrollType.INNER.equals(scroll.getType())) {
+            commandResult.put(LOCATOR_FOR_SCROLL, scroll.getLocator());
+        }
     }
 
     public void addHoversMetaData(final Hovers hovers, final CommandResult result) {

@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.scenario;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.cott.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.HttpUtil;
@@ -49,6 +50,8 @@ import com.knubisoft.cott.testing.model.scenario.Redis;
 import com.knubisoft.cott.testing.model.scenario.Response;
 import com.knubisoft.cott.testing.model.scenario.S3;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
+import com.knubisoft.cott.testing.model.scenario.Scroll;
+import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.SendRmqMessage;
 import com.knubisoft.cott.testing.model.scenario.Sendgrid;
@@ -377,8 +380,16 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         command.getClickOrInputOrNavigate().forEach(o -> {
             if (o instanceof Javascript) {
                 validateFileExistenceInDataFolder(((Javascript) o).getFile());
+            } else if (o instanceof Scroll && ((Scroll) o).getType() == ScrollType.INNER) {
+                validateScrollCommand((Scroll) o);
             }
         });
+    }
+
+    private void validateScrollCommand(final Scroll scroll) {
+        if (scroll.getLocator().isEmpty()) {
+            throw new DefaultFrameworkException(ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
+        }
     }
 
     private void validateShellCommand(final File xmlFile, final Shell shell) {

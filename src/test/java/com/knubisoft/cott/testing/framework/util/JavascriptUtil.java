@@ -44,13 +44,13 @@ public class JavascriptUtil {
     public static void executeScrollScript(final Scroll scroll, final WebDriver webDriver) {
         switch (scroll.getType()) {
             case INNER:
-            JavascriptUtil.executeJsScript(InnerScrollScript.getInnerScrollScript(scroll), webDriver);
-            break;
+                JavascriptUtil.executeJsScript(InnerScrollScript.getInnerScrollScript(scroll), webDriver);
+                break;
             case PAGE:
-            JavascriptUtil.executeJsScript(PageScrollScript.getPageScrollScript(scroll), webDriver);
-            break;
+                JavascriptUtil.executeJsScript(PageScrollScript.getPageScrollScript(scroll), webDriver);
+                break;
             default:
-            throw new DefaultFrameworkException(format(ExceptionMessage.SCROLL_TYPE_NOT_FOUND, scroll.getType()));
+                throw new DefaultFrameworkException(format(ExceptionMessage.SCROLL_TYPE_NOT_FOUND, scroll.getType()));
         }
     }
 }

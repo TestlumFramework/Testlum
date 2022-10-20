@@ -122,5 +122,5 @@ public class ExceptionMessage {
     public static final String FOUND_MORE_THEN_ONE_ELEMENT = "More than one element was found by text <%s>";
     public static final String SCROLL_TYPE_NOT_FOUND = "Scroll type <%s> not supported";
     public static final String NO_LOCATOR_FOUND_FOR_INNER_SCROLL = "You didn't specify a locator for the inner scroll";
-    public static final String NO_SUCH_LOCATOR = "Locator <%s> not found";
+    public static final String NO_SUCH_LOCATOR = "Locator <%s> for INNER scroll not found";
 }

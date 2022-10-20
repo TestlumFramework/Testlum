@@ -15,6 +15,7 @@ import com.knubisoft.cott.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.cott.testing.model.scenario.RmqHeaders;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
+import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.SendRmqMessage;
 import com.knubisoft.cott.testing.model.scenario.SendgridInfo;
@@ -90,6 +91,7 @@ public class ResultUtil {
     private static final String SCROLL_DIRECTION = "Scroll direction";
     private static final String SCROLL_MEASURE = "Scroll measure";
     private static final String SCROLL_TYPE = "Scroll type";
+    private static final String LOCATOR_FOR_SCROLL = "Locator for scroll";
     private static final String DESTINATION = "Destination";
     private static final String SUBJECT = "Subject";
     private static final String HTML = "HTML";
@@ -357,6 +359,9 @@ public class ResultUtil {
         commandResult.put(SCROLL_MEASURE, scroll.getMeasure());
         commandResult.put(VALUE, scroll.getValue().toString());
         commandResult.put(SCROLL_TYPE, scroll.getType());
+        if (ScrollType.INNER.equals(scroll.getType())) {
+            commandResult.put(LOCATOR_FOR_SCROLL, scroll.getLocator());
+        }
     }
 
     public void addHoversMetaData(final Hovers hovers, final CommandResult result) {

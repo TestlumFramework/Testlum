@@ -65,12 +65,12 @@ public enum InnerScrollScript {
                 .filter(e -> e.getLocatorTypePredicate().test(locator))
                 .findFirst()
                 .map(e -> {
-                    if (ScrollMeasure.PERCENT.equals(scroll.getMeasure())) {
-                        return formatInnerPercentScript(e.getPercentageScript(), e.getLocatorValue().apply(locator),
-                                scroll.getValue().toString(), scroll.getDirection());
-                    }
-                    return formatInnerPixelScript(e.getPixelScript(), e.getLocatorValue().apply(locator),
-                            scroll.getValue().toString(), scroll.getDirection());
+                    String selector = e.locatorValue.apply(locator);
+                    String value = scroll.getValue().toString();
+                    ScrollDirection scrollDirection = scroll.getDirection();
+                    return ScrollMeasure.PERCENT.equals(scroll.getMeasure())
+                            ? formatInnerPercentScript(e.getPercentageScript(), selector, value, scrollDirection)
+                            : formatInnerPixelScript(e.getPixelScript(), selector, value, scrollDirection);
                 })
                 .orElseThrow(() -> new DefaultFrameworkException(format(ExceptionMessage.NO_SUCH_LOCATOR, locator)));
     }

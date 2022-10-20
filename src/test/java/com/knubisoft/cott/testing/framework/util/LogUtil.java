@@ -10,6 +10,8 @@ import com.knubisoft.cott.testing.model.scenario.CompareWith;
 import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.Overview;
 import com.knubisoft.cott.testing.model.scenario.OverviewPart;
+import com.knubisoft.cott.testing.model.scenario.Scroll;
+import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
@@ -65,6 +67,8 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.REGEX_NEW
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_BY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_DIRECTION_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_LOCATOR;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_TYPE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SERVER_ERROR_RESPONSE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_HOST_LOG;
@@ -231,10 +235,14 @@ public class LogUtil {
         }
     }
 
-    public void logScrollInfo(final String direction, final String measure, final String value) {
-        log.info(SCROLL_DIRECTION_LOG, direction);
-        log.info(SCROLL_BY_LOG, measure);
-        log.info(VALUE_LOG, value);
+    public void logScrollInfo(final Scroll scroll) {
+        log.info(SCROLL_DIRECTION_LOG, scroll.getDirection());
+        log.info(SCROLL_BY_LOG, scroll.getMeasure());
+        log.info(VALUE_LOG, scroll.getValue().toString());
+        log.info(SCROLL_TYPE, scroll.getType());
+        if (ScrollType.INNER.equals(scroll.getType())) {
+            log.info(SCROLL_LOCATOR, scroll.getLocator());
+        }
     }
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {

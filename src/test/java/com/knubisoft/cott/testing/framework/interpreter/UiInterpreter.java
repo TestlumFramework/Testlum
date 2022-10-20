@@ -32,8 +32,6 @@ import com.knubisoft.cott.testing.model.scenario.NavigateCommand;
 import com.knubisoft.cott.testing.model.scenario.OneValue;
 import com.knubisoft.cott.testing.model.scenario.RepeatUiCommand;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
-import com.knubisoft.cott.testing.model.scenario.ScrollDirection;
-import com.knubisoft.cott.testing.model.scenario.ScrollMeasure;
 import com.knubisoft.cott.testing.model.scenario.ScrollTo;
 import com.knubisoft.cott.testing.model.scenario.SelectOrDeselectBy;
 import com.knubisoft.cott.testing.model.scenario.TypeForOneValue;
@@ -386,13 +384,10 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private void scroll(final Scroll scroll, final CommandResult result) {
-        ScrollDirection direction = scroll.getDirection();
-        ScrollMeasure measure = scroll.getMeasure();
-        String value = scroll.getValue().toString();
-        ResultUtil.addScrollMetaData(direction.value(), measure.value(), value, result);
+        ResultUtil.addScrollMetaData(scroll, result);
+        LogUtil.logScrollInfo(scroll);
+        JavascriptUtil.executeScrollScript(scroll, dependencies.getWebDriver());
         takeScreenshotAndSaveIfRequired(result);
-        JavascriptUtil.executeJsScript(JavascriptUtil.getScrollScript(direction, value, measure),
-                dependencies.getWebDriver());
     }
 
     private void scrollTo(final ScrollTo scrollTo, final CommandResult result) {

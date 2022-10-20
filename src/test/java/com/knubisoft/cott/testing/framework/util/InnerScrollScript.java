@@ -72,7 +72,7 @@ public enum InnerScrollScript {
                             ? formatInnerPercentScript(e.getPercentageScript(), selector, value, scrollDirection)
                             : formatInnerPixelScript(e.getPixelScript(), selector, value, scrollDirection);
                 })
-                .orElseThrow(() -> new DefaultFrameworkException(format(ExceptionMessage.NO_SUCH_LOCATOR, locator)));
+                .orElseThrow(() -> new DefaultFrameworkException(format(ExceptionMessage.INVALID_LOCATOR, locator)));
     }
 
     private static String formatInnerPixelScript(final String script,

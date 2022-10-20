@@ -44,9 +44,6 @@ public abstract class AbstractCommonWebInterpreter<T extends CommonWeb> extends 
     private static final Pattern HTTP_PATTERN = Pattern.compile("https?://.+");
     private static final String MOVE_TO_EMPTY_SPACE = "//html";
 
-    private final WebDriver webDriver;
-    private final Settings uiSettings;
-
     public AbstractCommonWebInterpreter(final InterpreterDependencies dependencies,
                                         final WebDriver webDriver,
                                         final Settings uiSettings) {
@@ -55,8 +52,11 @@ public abstract class AbstractCommonWebInterpreter<T extends CommonWeb> extends 
         uiCommands.put(ui -> ui instanceof Javascript, (ui, result) -> execJsCommands((Javascript) ui, result));
         uiCommands.put(ui -> ui instanceof CloseSecondTab, (ui, result) -> closeSecondTab((CloseSecondTab) ui, result));
         uiCommands.put(ui -> ui instanceof Hovers, (ui, result) -> hover((Hovers) ui, result));
-        this.uiSettings = uiSettings;
-        this.webDriver = webDriver;
+    }
+
+    @Override
+    protected void acceptImpl(CommonWeb ui, CommandResult result) {
+        runCommands(ui.getJavascriptOrNavigateOrHovers(), result);
     }
 
     private void execJsCommands(final Javascript o, final CommandResult result) {

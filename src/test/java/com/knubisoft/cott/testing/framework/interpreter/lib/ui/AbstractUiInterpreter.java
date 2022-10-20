@@ -92,9 +92,9 @@ import static java.lang.String.format;
 public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterpreter<T> {
 
     protected final Map<UiCommandPredicate, UiCommand> uiCommands = new HashMap<>();
+    protected final WebDriver webDriver;
+    protected final Settings uiSettings;
     private final boolean stopScenarioOnFailure;
-    private final WebDriver webDriver;
-    private final Settings uiSettings;
 
     public AbstractUiInterpreter(final InterpreterDependencies dependencies,
                                  final WebDriver webDriver,
@@ -123,7 +123,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
         clearCookies(webDriver, ui.isClearCookiesAfterExecution(), result);
     }
 
-    private void runCommands(final List<AbstractCommand> commandList,
+    protected void runCommands(final List<AbstractCommand> commandList,
                              final CommandResult result) {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);

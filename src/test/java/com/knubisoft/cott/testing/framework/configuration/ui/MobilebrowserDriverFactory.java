@@ -20,11 +20,10 @@ public class MobilebrowserDriverFactory implements AbstractDriverFactory {
     public WebDriver createDriver(final Object mobilebrowserDevice) {
         Mobilebrowser mobilebrowser = GlobalTestConfigurationProvider.provide().getMobilebrowser();
         String serverUrl = mobilebrowser.getAppiumServerUrl();
-        WebDriver driver;
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "5000");
         MobileDriverUtil.setCommonCapabilities((AbstractDevice) mobilebrowserDevice, desiredCapabilities);
-        driver = new AppiumDriver(new URL(serverUrl), desiredCapabilities);
+        WebDriver driver = new AppiumDriver(new URL(serverUrl), desiredCapabilities);
         driver.get(mobilebrowser.getBaseUrl());
         return driver;
     }

@@ -119,7 +119,7 @@ public class ExceptionMessage {
     public static final String VAR_QUERY_RESULT_ERROR =
             "Query result is empty. Perhaps your database is empty or there is no such value in the database";
     public static final String WEB_ELEMENT_ATTRIBUTE_NOT_EXIST = "Web element does not have attribute <%s>";
-    public static final String FOUND_MORE_THEN_ONE_ELEMENT = "More than one element was found by text <%s>";
+    public static final String FOUND_MORE_THEN_ONE_ELEMENT = "More than one element was found by locator <%s>";
     public static final String SCROLL_TYPE_NOT_FOUND = "Scroll type <%s> not supported";
     public static final String NO_LOCATOR_FOUND_FOR_INNER_SCROLL = "You didn't specify a locator for the inner scroll";
     public static final String INVALID_LOCATOR =

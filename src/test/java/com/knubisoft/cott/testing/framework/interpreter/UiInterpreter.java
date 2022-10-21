@@ -34,6 +34,7 @@ import com.knubisoft.cott.testing.model.scenario.RepeatUiCommand;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
 import com.knubisoft.cott.testing.model.scenario.ScrollTo;
 import com.knubisoft.cott.testing.model.scenario.SelectOrDeselectBy;
+import com.knubisoft.cott.testing.model.scenario.SwitchToFrame;
 import com.knubisoft.cott.testing.model.scenario.TypeForOneValue;
 import com.knubisoft.cott.testing.model.scenario.Ui;
 import com.knubisoft.cott.testing.model.scenario.Wait;
@@ -99,6 +100,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.NAVIGATE_URL;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NUMBER_OF_REPETITIONS;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.SCROLL_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.SECOND_TAB;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.SWITCH_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.TIME;
 import static com.knubisoft.cott.testing.model.scenario.ClickMethod.JS;
 import static java.lang.String.format;
@@ -130,6 +132,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         commands.put(ui -> ui instanceof ScrollTo, (ui, result) -> scrollTo((ScrollTo) ui, result));
         commands.put(ui -> ui instanceof Hovers, (ui, result) -> hover((Hovers) ui, result));
         commands.put(ui -> ui instanceof Image, (ui, result) -> compareImages((Image) ui, result));
+        commands.put(ui -> ui instanceof SwitchToFrame, (ui, result) -> switchToFrame((SwitchToFrame) ui, result));
         this.uiCommands = Collections.unmodifiableMap(commands);
         this.stopScenarioOnFailure = GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure();
     }
@@ -396,6 +399,14 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         result.put(SCROLL_LOCATOR, locatorId);
         takeScreenshotAndSaveIfRequired(result);
         JavascriptUtil.executeJsScript(element, SCROLL_TO_ELEMENT_SCRIPT, dependencies.getWebDriver());
+    }
+
+    private void switchToFrame(final SwitchToFrame switchToFrame, final CommandResult result) {
+        String locatorId = switchToFrame.getLocatorId();
+        LogUtil.logSwitchToFrameInfo(locatorId);
+        result.put(SWITCH_LOCATOR, locatorId);
+        WebElement element = findWebElement(locatorId);
+        dependencies.getWebDriver().switchTo().frame(element);
     }
 
     @SneakyThrows

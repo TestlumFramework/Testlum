@@ -382,6 +382,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link SwitchToFrame }
+     * 
+     */
+    public SwitchToFrame createSwitchToFrame() {
+        return new SwitchToFrame();
+    }
+
+    /**
      * Create an instance of {@link ScrollTo }
      * 
      */

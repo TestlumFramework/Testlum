@@ -35,26 +35,27 @@ public class By {
         return new org.openqa.selenium.By() {
             @Override
             public List<WebElement> findElements(SearchContext context) {
-                String xpathWithClassName = format(XPATH_TEMPLATE_FOR_CLASS_NAME_SEARCH, className);
-                return validateElements(xpathWithClassName, context, className);
+                String xpathForSearch = format(XPATH_TEMPLATE_FOR_CLASS_NAME_SEARCH, className);
+                return validateElements(xpathForSearch, context, className);
             }
         };
     }
-
-    /*COTT tool restricts the user and prevents the use of text
-    that is present in more than one element. In this case the exception is thrown.*/
 
     public static org.openqa.selenium.By text(final Text text) {
         return new org.openqa.selenium.By() {
             @Override
             public List<WebElement> findElements(final SearchContext context) {
-                String xpath = text.isPlaceholder()
-                        ? format(XPATH_TEMPLATE_FOR_TEXT_SEARCH_FROM_PLACEHOLDER, text.getValue())
-                        : format(XPATH_TEMPLATE_FOR_TEXT_SEARCH, text.getValue());
-                return validateElements(xpath, context, text.getValue());
+                String textValue = text.getValue();
+                String xpathForSearch = text.isPlaceholder()
+                        ? format(XPATH_TEMPLATE_FOR_TEXT_SEARCH_FROM_PLACEHOLDER, textValue)
+                        : format(XPATH_TEMPLATE_FOR_TEXT_SEARCH, textValue);
+                return validateElements(xpathForSearch, context, textValue);
             }
         };
     }
+
+    /*COTT tool restricts the user and prevents the use of locator
+        that is present in more than one element. In this case the exception is thrown.*/
 
     private List<WebElement> validateElements(final String xpath, final SearchContext context, final String locator) {
          List<WebElement> elements  = context.findElements(By.xpath(xpath));

@@ -36,7 +36,7 @@ public class By {
             @Override
             public List<WebElement> findElements(final SearchContext context) {
                 String xpathForSearch = format(XPATH_TEMPLATE_FOR_CLASS_NAME_SEARCH, className);
-                return validateElements(xpathForSearch, context, className);
+                return findElementsByCustomXpath(xpathForSearch, context, className);
             }
         };
     }
@@ -49,7 +49,7 @@ public class By {
                 String xpathForSearch = text.isPlaceholder()
                         ? format(XPATH_TEMPLATE_FOR_TEXT_SEARCH_FROM_PLACEHOLDER, textValue)
                         : format(XPATH_TEMPLATE_FOR_TEXT_SEARCH, textValue);
-                return validateElements(xpathForSearch, context, textValue);
+                return findElementsByCustomXpath(xpathForSearch, context, textValue);
             }
         };
     }
@@ -57,7 +57,9 @@ public class By {
     /*COTT tool restricts the user and prevents the use of locator
         that is present in more than one element. In this case the exception is thrown.*/
 
-    private List<WebElement> validateElements(final String xpath, final SearchContext context, final String locator) {
+    private List<WebElement> findElementsByCustomXpath(final String xpath,
+                                                       final SearchContext context,
+                                                       final String locator) {
          List<WebElement> elements = context.findElements(By.xpath(xpath));
          if (elements.size() > 1) {
              throw new DefaultFrameworkException(ExceptionMessage.FOUND_MORE_THEN_ONE_ELEMENT, locator);

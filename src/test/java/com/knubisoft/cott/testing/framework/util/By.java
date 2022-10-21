@@ -34,7 +34,7 @@ public class By {
     public org.openqa.selenium.By className(final String className) {
         return new org.openqa.selenium.By() {
             @Override
-            public List<WebElement> findElements(SearchContext context) {
+            public List<WebElement> findElements(final SearchContext context) {
                 String xpathForSearch = format(XPATH_TEMPLATE_FOR_CLASS_NAME_SEARCH, className);
                 return validateElements(xpathForSearch, context, className);
             }
@@ -58,7 +58,7 @@ public class By {
         that is present in more than one element. In this case the exception is thrown.*/
 
     private List<WebElement> validateElements(final String xpath, final SearchContext context, final String locator) {
-         List<WebElement> elements  = context.findElements(By.xpath(xpath));
+         List<WebElement> elements = context.findElements(By.xpath(xpath));
          if (elements.size() > 1) {
              throw new DefaultFrameworkException(ExceptionMessage.FOUND_MORE_THEN_ONE_ELEMENT, locator);
          }

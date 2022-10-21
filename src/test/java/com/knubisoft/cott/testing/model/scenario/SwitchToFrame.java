@@ -3,7 +3,6 @@ package com.knubisoft.cott.testing.model.scenario;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -15,8 +14,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="switchToFrame"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
- *       &lt;attribute name="locator" type="{http://www.knubisoft.com/cott/testing/model/scenario}scenarioLocator" /&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}commandWithLocator"&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -27,34 +25,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "switchToFrame")
 public class SwitchToFrame
-    extends AbstractCommand
+    extends CommandWithLocator
 {
 
-    @XmlAttribute(name = "locator")
-    protected String locator;
-
-    /**
-     * Gets the value of the locator property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getLocator() {
-        return locator;
-    }
-
-    /**
-     * Sets the value of the locator property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setLocator(String value) {
-        this.locator = value;
-    }
 
 }

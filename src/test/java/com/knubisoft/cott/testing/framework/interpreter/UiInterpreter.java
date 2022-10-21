@@ -402,9 +402,10 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private void switchToFrame(final SwitchToFrame switchToFrame, final CommandResult result) {
-        LogUtil.logSwitchToFrameInfo(switchToFrame);
-        result.put(SWITCH_LOCATOR, switchToFrame.getLocator());
-        WebElement element = findWebElement(switchToFrame.getLocator());
+        String locatorId = switchToFrame.getLocatorId();
+        LogUtil.logSwitchToFrameInfo(locatorId);
+        result.put(SWITCH_LOCATOR, locatorId);
+        WebElement element = findWebElement(locatorId);
         WebDriver driver = dependencies.getWebDriver();
         driver.switchTo().frame(element);
     }

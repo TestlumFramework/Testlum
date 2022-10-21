@@ -59,7 +59,6 @@ import javax.xml.bind.annotation.XmlType;
     Navigate.class,
     CloseSecondTab.class,
     Scroll.class,
-    SwitchToFrame.class,
     CommandWithLocator.class,
     Image.class,
     RepeatUiCommand.class,

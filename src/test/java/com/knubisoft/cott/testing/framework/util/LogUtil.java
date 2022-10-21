@@ -247,8 +247,8 @@ public class LogUtil {
         }
     }
 
-    public void logSwitchToFrameInfo(final SwitchToFrame switchToFrame) {
-        log.info(SWITCH_TO_FRAME_LOCATOR, switchToFrame.getLocator());
+    public void logSwitchToFrameInfo(final String locatorId) {
+        log.info(SWITCH_TO_FRAME_LOCATOR, locatorId);
     }
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {

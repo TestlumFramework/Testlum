@@ -189,8 +189,7 @@
 
     <x:complexType name="switchToFrame">
         <x:complexContent>
-            <x:extension base="tns:abstractCommand">
-                <x:attribute name="locator" type="tns:scenarioLocator"/>
+            <x:extension base="tns:commandWithLocator">
             </x:extension>
         </x:complexContent>
     </x:complexType>

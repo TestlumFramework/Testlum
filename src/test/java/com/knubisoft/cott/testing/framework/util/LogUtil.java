@@ -14,6 +14,7 @@ import com.knubisoft.cott.testing.model.scenario.Scroll;
 import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
+import com.knubisoft.cott.testing.model.scenario.SwitchToFrame;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.Ui;
 import lombok.SneakyThrows;
@@ -75,6 +76,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_HOST
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_PORT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SOURCE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUBJECT_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SWITCH_TO_FRAME_LOCATOR;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
@@ -243,6 +245,10 @@ public class LogUtil {
         if (ScrollType.INNER.equals(scroll.getType())) {
             log.info(SCROLL_LOCATOR, scroll.getLocator());
         }
+    }
+
+    public void logSwitchToFrameInfo(final SwitchToFrame switchToFrame) {
+        log.info(SWITCH_TO_FRAME_LOCATOR, switchToFrame.getLocator());
     }
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {

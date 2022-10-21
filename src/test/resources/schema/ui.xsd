@@ -26,6 +26,7 @@
                     <x:element name="scrollTo" type="tns:scrollTo"/>
                     <x:element name="image" type="tns:image"/>
                     <x:element name="repeat" type="tns:repeatUiCommand"/>
+                    <x:element name="switchToFrame" type="tns:switchToFrame"/>
                 </x:choice>
                 <x:attribute name="clearCookiesAfterExecution" type="x:boolean" default="false"/>
                 <x:attribute name="clearLocalStorageByKey" type="tns:nonEmptyString"/>
@@ -181,6 +182,14 @@
                 <x:attribute name="value" type="x:nonNegativeInteger" use="required"/>
                 <x:attribute name="direction" type="tns:scrollDirection" default="down"/>
                 <x:attribute name="measure" type="tns:scrollMeasure" default="pixel"/>
+                <x:attribute name="locator" type="tns:scenarioLocator"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="switchToFrame">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
                 <x:attribute name="locator" type="tns:scenarioLocator"/>
             </x:extension>
         </x:complexContent>

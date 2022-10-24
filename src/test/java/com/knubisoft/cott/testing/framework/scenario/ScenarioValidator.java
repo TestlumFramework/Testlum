@@ -64,6 +64,7 @@ import com.knubisoft.cott.testing.model.scenario.Sqs;
 import com.knubisoft.cott.testing.model.scenario.StorageName;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.Ui;
+import com.knubisoft.cott.testing.model.scenario.Var;
 import com.knubisoft.cott.testing.model.scenario.When;
 import org.springframework.util.StringUtils;
 
@@ -255,6 +256,11 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateIncludeAction(include, xmlFile);
         });
 
+        validatorMap.put(o -> o instanceof Var, (xmlFile, command) -> {
+            Var var = (Var) command;
+            validateVarCommand(xmlFile, var);
+        });
+
         this.abstractCommandValidatorsMap = Collections.unmodifiableMap(validatorMap);
     }
 
@@ -290,6 +296,32 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .findFirst()
                 .orElseThrow(() -> new DefaultFrameworkException(ALIAS_NOT_FOUND, alias));
     }
+
+    //CHECKSTYLE:OFF
+    private void validateVarCommand(final File xmlFile, final Var var) {
+        if (Objects.nonNull(var.getRelationalDbResult())) {
+            String alias = var.getRelationalDbResult().getAlias();
+            List<? extends Integration> integrationsList;
+            switch (var.getRelationalDbResult().getDbType()) {
+                case POSTGRES:
+                    integrationsList = integrations.getPostgresIntegration().getPostgres();
+                    break;
+                case MYSQL:
+                    integrationsList = integrations.getMysqlIntegration().getMysql();
+                    break;
+                case ORACLE:
+                    integrationsList = integrations.getOracleIntegration().getOracle();
+                    break;
+                case CLICKHOUSE:
+                    integrationsList = integrations.getClickhouseIntegration().getClickhouse();
+                    break;
+                default:
+                    throw new DefaultFrameworkException("DB alias for <var> tag not found");
+            }
+            validateAlias(integrationsList, alias);
+        }
+    }
+    //CHECKSTYLE:ON
 
     private void validateElasticsearchCommand(final File xmlFile, final Elasticsearch elasticsearch) {
         Stream.of(elasticsearch.getPost(), elasticsearch.getGet(), elasticsearch.getPut(), elasticsearch.getDelete())

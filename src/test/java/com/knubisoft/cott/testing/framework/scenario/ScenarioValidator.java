@@ -304,15 +304,19 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             List<? extends Integration> integrationsList;
             switch (var.getRelationalDbResult().getDbType()) {
                 case POSTGRES:
+                    checkIntegrationExistence(integrations.getPostgresIntegration(), PostgresIntegration.class);
                     integrationsList = integrations.getPostgresIntegration().getPostgres();
                     break;
                 case MYSQL:
+                    checkIntegrationExistence(integrations.getMysqlIntegration(), MysqlIntegration.class);
                     integrationsList = integrations.getMysqlIntegration().getMysql();
                     break;
                 case ORACLE:
+                    checkIntegrationExistence(integrations.getOracleIntegration(), OracleIntegration.class);
                     integrationsList = integrations.getOracleIntegration().getOracle();
                     break;
                 case CLICKHOUSE:
+                    checkIntegrationExistence(integrations.getClickhouseIntegration(), ClickhouseIntegration.class);
                     integrationsList = integrations.getClickhouseIntegration().getClickhouse();
                     break;
                 default:

@@ -105,6 +105,7 @@ public final class LogMessage {
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
     public static final String SCROLL_LOCATOR = format(TABLE_FORMAT, "Scroll locator", "{}");
     public static final String SCROLL_TYPE = format(TABLE_FORMAT, "Scroll type", "{}");
+    public static final String SWITCH_TO_FRAME_LOCATOR = format(TABLE_FORMAT, "Frame locator to switch", "{}");
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "Method", "{}");
     public static final String SMTP_HOST_LOG = format(TABLE_FORMAT, "SMTP Host", "{}");
     public static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");

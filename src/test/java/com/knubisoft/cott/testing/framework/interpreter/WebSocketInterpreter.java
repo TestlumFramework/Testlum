@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.interpreter;
 
 import com.google.common.collect.ImmutableList;
 import com.knubisoft.cott.testing.framework.configuration.websocket.WebSocketMessageHandler;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -17,25 +16,25 @@ import com.knubisoft.cott.testing.model.scenario.CompareRule;
 import com.knubisoft.cott.testing.model.scenario.WebSocket;
 import com.knubisoft.cott.testing.model.scenario.WebSocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebSocketSend;
+import com.knubisoft.cott.testing.model.scenario.WebSocketTopic;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.stomp.StompSession;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static com.knubisoft.cott.testing.framework.configuration.websocket.WebSocketConfiguration.WebSocketConnectionSupplier;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEBSOCKET_CONNECTION_FAILURE;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEBSOCKET_NOT_ALL_MESSAGES_RECEIVED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SEND_ACTION;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.UNABLE_TO_DISCONNECT_BECAUSE_CONNECTION_CLOSED;
 import static java.lang.String.format;
 
 @Slf4j
@@ -86,13 +85,14 @@ public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
     }
 
     private void subscribeToTopics(final WebSocket webSocket) {
-        String[] topics = webSocket.getTopics().split(DelimiterConstant.COMMA);
-        Set<String> topicList = new HashSet<>(Arrays.asList(topics));
-        topicList.forEach(topic -> {
-            WebSocketMessageHandler handler = new WebSocketMessageHandler();
-            topicToMessageHandler.put(topic, handler);
-            stompSession.subscribe(topic, handler);
-        });
+        webSocket.getTopic().stream()
+                .distinct()
+                .map(WebSocketTopic::getValue)
+                .forEach(topic -> {
+                    WebSocketMessageHandler handler = new WebSocketMessageHandler();
+                    topicToMessageHandler.put(topic, handler);
+                    stompSession.subscribe(topic, handler);
+                });
     }
 
     private void runActions(final WebSocket webSocket,
@@ -148,10 +148,13 @@ public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
         ResultUtil.addWebsocketInfoForReceiveAction(wsReceive, alias, result);
         LogUtil.logWebSocketActionInfo(RECEIVE_ACTION, wsReceive.getTopic(), expectedContent);
 
-        List<String> messagesToCompare = getActualMessages(wsReceive);
-        messagesToCompare = getMessagesToCompare(wsReceive, messagesToCompare);
+        List<String> receivedMessages = getActualMessages(wsReceive);
+        String contentToCompare = getMessagesToCompareByRule(wsReceive, receivedMessages, expectedContent);
 
-        compareMessageContent(messagesToCompare, expectedContent, result);
+        result.setActual(PrettifyStringJson.getJSONResult(contentToCompare));
+        result.setExpected(PrettifyStringJson.getJSONResult(expectedContent));
+
+        executeComparison(contentToCompare, expectedContent);
     }
 
     private List<String> getActualMessages(final WebSocketReceive wsReceive) throws InterruptedException {
@@ -161,35 +164,36 @@ public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
 
         if (minimumMessagesNumber > receivedMessages.size()) {
             TimeUnit.MILLISECONDS.sleep(wsReceive.getTimeoutMillis());
-        }
-        if (minimumMessagesNumber > receivedMessages.size()) {
-            throw new DefaultFrameworkException("Not all messages received, remaining: %s",
-                    minimumMessagesNumber - receivedMessages.size());
+            if (minimumMessagesNumber > receivedMessages.size()) {
+                throw new DefaultFrameworkException(WEBSOCKET_NOT_ALL_MESSAGES_RECEIVED,
+                        minimumMessagesNumber - receivedMessages.size());
+            }
         }
         return ImmutableList.copyOf(receivedMessages);
     }
 
-    private List<String> getMessagesToCompare(final WebSocketReceive wsReceive,
-                                              final List<String> messagesToCompare) {
+    private String getMessagesToCompareByRule(final WebSocketReceive wsReceive,
+                                              final List<String> receivedMessages,
+                                              final String expectedContent) {
         CompareRule compareRule = wsReceive.getCompareRule();
-        if (CompareRule.NUMBER_OF_VALUES == compareRule) {
-            return messagesToCompare.subList(0, wsReceive.getValuesNumber().intValue());
-        }
-        //todo CONTAINS_VALUES
 
-        return messagesToCompare;
+        if (CompareRule.EQUALS == compareRule) {
+            return toString(receivedMessages.subList(0, wsReceive.getValuesNumber().intValue()));
+        }
+        if (CompareRule.CONTAINS == compareRule) {
+            return receivedMessages.stream()
+                    .filter(message -> Objects.equals(message, expectedContent))
+                    .findFirst()
+                    .orElseGet(() -> toString(receivedMessages));
+        }
+        return toString(receivedMessages);
     }
 
-    private void compareMessageContent(final List<String> messagesToCompare,
-                                       final String expectedContent,
-                                       final CommandResult result) {
+    private void executeComparison(final String actualContent,
+                                   final String expectedContent) {
         CompareBuilder comparator = newCompare()
                 .withExpected(expectedContent)
-                .withActual(messagesToCompare);
-
-        result.setActual(PrettifyStringJson.getJSONResult(toString(messagesToCompare)));
-        result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
-
+                .withActual(actualContent);
         comparator.exec();
     }
 
@@ -212,7 +216,7 @@ public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
         if (isDisconnectEnabled && stompSession.isConnected()) {
             stompSession.disconnect();
         } else if (isDisconnectEnabled && !stompSession.isConnected()) {
-            log.error("Unable to disconnect session because the connection was closed");
+            log.error(UNABLE_TO_DISCONNECT_BECAUSE_CONNECTION_CLOSED);
         }
     }
 }

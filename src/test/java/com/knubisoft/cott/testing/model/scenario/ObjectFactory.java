@@ -750,6 +750,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link WebSocketTopic }
+     * 
+     */
+    public WebSocketTopic createWebSocketTopic() {
+        return new WebSocketTopic();
+    }
+
+    /**
      * Create an instance of {@link WebSocketSend }
      * 
      */

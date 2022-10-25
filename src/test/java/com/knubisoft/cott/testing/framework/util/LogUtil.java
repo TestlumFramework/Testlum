@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BODY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
@@ -80,6 +79,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUBJECT_L
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SWITCH_TO_FRAME_LOCATOR;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_COMMAND_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;

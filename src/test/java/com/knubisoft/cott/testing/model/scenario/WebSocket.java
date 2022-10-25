@@ -20,14 +20,14 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="webSocket"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
- *       &lt;sequence maxOccurs="unbounded"&gt;
- *         &lt;choice&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="topic" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketTopic" maxOccurs="unbounded"/&gt;
+ *         &lt;choice maxOccurs="unbounded"&gt;
  *           &lt;element name="send" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketSend" maxOccurs="unbounded"/&gt;
  *           &lt;element name="receive" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketReceive" maxOccurs="unbounded"/&gt;
  *         &lt;/choice&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}aliasPattern" /&gt;
- *       &lt;attribute name="topics" type="{http://www.knubisoft.com/cott/testing/model/scenario}endpointPattern" /&gt;
  *       &lt;attribute name="disconnect" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -38,12 +38,15 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "webSocket", propOrder = {
+    "topic",
     "sendOrReceive"
 })
 public class WebSocket
     extends AbstractCommand
 {
 
+    @XmlElement(required = true)
+    protected List<WebSocketTopic> topic;
     @XmlElements({
         @XmlElement(name = "send", type = WebSocketSend.class),
         @XmlElement(name = "receive", type = WebSocketReceive.class)
@@ -51,10 +54,37 @@ public class WebSocket
     protected List<Object> sendOrReceive;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
-    @XmlAttribute(name = "topics")
-    protected String topics;
     @XmlAttribute(name = "disconnect")
     protected Boolean disconnect;
+
+    /**
+     * Gets the value of the topic property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the topic property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getTopic().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link WebSocketTopic }
+     * 
+     * 
+     */
+    public List<WebSocketTopic> getTopic() {
+        if (topic == null) {
+            topic = new ArrayList<WebSocketTopic>();
+        }
+        return this.topic;
+    }
 
     /**
      * Gets the value of the sendOrReceive property.
@@ -108,30 +138,6 @@ public class WebSocket
      */
     public void setAlias(String value) {
         this.alias = value;
-    }
-
-    /**
-     * Gets the value of the topics property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getTopics() {
-        return topics;
-    }
-
-    /**
-     * Sets the value of the topics property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setTopics(String value) {
-        this.topics = value;
     }
 
     /**

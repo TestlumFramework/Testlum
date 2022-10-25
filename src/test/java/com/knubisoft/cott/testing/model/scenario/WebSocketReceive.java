@@ -22,8 +22,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}expectedPattern"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="topic" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}endpointPattern" /&gt;
- *       &lt;attribute name="compareRule" type="{http://www.knubisoft.com/cott/testing/model/scenario}compareRule" default="allValues" /&gt;
- *       &lt;attribute name="valuesNumber" type="{http://www.w3.org/2001/XMLSchema}integer" default="0" /&gt;
+ *       &lt;attribute name="compareRule" type="{http://www.knubisoft.com/cott/testing/model/scenario}compareRule" default="equals" /&gt;
+ *       &lt;attribute name="valuesNumber" type="{http://www.w3.org/2001/XMLSchema}integer" default="1" /&gt;
  *       &lt;attribute name="timeoutMillis" type="{http://www.w3.org/2001/XMLSchema}long" default="5000" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -132,7 +132,7 @@ public class WebSocketReceive {
      */
     public CompareRule getCompareRule() {
         if (compareRule == null) {
-            return CompareRule.ALL_VALUES;
+            return CompareRule.EQUALS;
         } else {
             return compareRule;
         }
@@ -160,7 +160,7 @@ public class WebSocketReceive {
      */
     public BigInteger getValuesNumber() {
         if (valuesNumber == null) {
-            return new BigInteger("0");
+            return new BigInteger("1");
         } else {
             return valuesNumber;
         }

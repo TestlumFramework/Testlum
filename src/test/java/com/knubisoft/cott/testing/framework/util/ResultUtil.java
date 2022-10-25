@@ -202,11 +202,11 @@ public class ResultUtil {
     public void addMessageBrokerGeneralMetaData(final String alias,
                                                 final String action,
                                                 final String destination,
-                                                final String destinationName,
+                                                final String destinationValue,
                                                 final CommandResult result) {
         result.put(ALIAS, alias);
         result.put(ACTION, action);
-        result.put(destination, destinationName);
+        result.put(destination, destinationValue);
     }
 
     public void addHttpMetaData(final String alias,
@@ -324,10 +324,8 @@ public class ResultUtil {
                                               final CommandResult result) {
         result.setCommandKey(SEND);
         result.setComment(COMMENT_FOR_WEBSOCKET_SEND_ACTION);
-        result.put(ALIAS, alias);
+        addMessageBrokerGeneralMetaData(alias, SEND, ENDPOINT, sendAction.getEndpoint(), result);
         result.put(MESSAGE_TO_SEND, message);
-        result.put(ACTION, SEND);
-        result.put(ENDPOINT, sendAction.getEndpoint());
     }
 
     public void addWebsocketInfoForReceiveAction(final WebSocketReceive receiveAction,
@@ -335,11 +333,10 @@ public class ResultUtil {
                                                  final CommandResult result) {
         result.setCommandKey(RECEIVE);
         result.setComment(COMMENT_FOR_WEBSOCKET_RECEIVE_ACTION);
-        result.put(TOPIC, receiveAction.getTopic());
+        addMessageBrokerGeneralMetaData(alias, RECEIVE, TOPIC, receiveAction.getTopic(), result);
         result.put(COMPARE_RULE, receiveAction.getCompareRule().toString());
         result.put(NUMBER_OF_VALUES, receiveAction.getValuesNumber().intValue());
-        result.put(ALIAS, alias);
-        result.put(ACTION, RECEIVE);
+        result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
     }
 
     public void addS3GeneralMetaData(final String alias,

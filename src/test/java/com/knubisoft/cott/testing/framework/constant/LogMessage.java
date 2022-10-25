@@ -87,6 +87,11 @@ public final class LogMessage {
             "File for action", "{}");
 
     public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
+
+    public static final String UNABLE_TO_DISCONNECT_BECAUSE_CONNECTION_CLOSED = "Unable to disconnect session "
+            + "because the connection was closed";
+
+    public static final String TESTS_RUN_FAILED = "Test run failed";
     public static final String TEST_EXECUTION_SUMMARY_TEMPLATE =
             "\n\nTest run finished\n{} tests found\n{} tests skipped\n{} tests started\n{} test aborted\n"
                     + "{} test successful\n{} test failed\n";

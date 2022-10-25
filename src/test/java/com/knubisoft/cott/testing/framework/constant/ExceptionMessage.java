@@ -30,6 +30,7 @@ public class ExceptionMessage {
 
     public static final String WEBSOCKET_CONNECTION_FAILURE =
             "Something went wrong while connecting to websocket with name <%s>";
+    public static final String WEBSOCKET_NOT_ALL_MESSAGES_RECEIVED = "Not all messages received, remaining: %s";
 
     public static final String FUNCTION_FOR_COMMAND_NOT_FOUND = "Function for class %s not found. "
             + "Please register algorithm for interpreter";
@@ -90,7 +91,6 @@ public class ExceptionMessage {
                     + "\nExample: -g=/user/folder/resources or --generate=/user/folder/resources\n"
                     + "\nYou entered ---> %s\n";
 
-    public static final String TESTS_RUN_FAILED = "Test run failed";
     public static final String NAVIGATE_NOT_SUPPORTED = "Navigate command %s not supported";
     public static final String DROP_DOWN_NOT_SUPPORTED = "Drop down by method by %s not supported";
     public static final String SCROLL_TO_ELEMENT_NOT_SUPPORTED = "Scroll to the element by %s percents not supported";

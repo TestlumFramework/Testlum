@@ -14,8 +14,8 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="compareRule"&gt;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *     &lt;enumeration value="allValues"/&gt;
- *     &lt;enumeration value="numberOfValues"/&gt;
+ *     &lt;enumeration value="equals"/&gt;
+ *     &lt;enumeration value="contains"/&gt;
  *   &lt;/restriction&gt;
  * &lt;/simpleType&gt;
  * </pre>
@@ -25,10 +25,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum CompareRule {
 
-    @XmlEnumValue("allValues")
-    ALL_VALUES("allValues"),
-    @XmlEnumValue("numberOfValues")
-    NUMBER_OF_VALUES("numberOfValues");
+    @XmlEnumValue("equals")
+    EQUALS("equals"),
+    @XmlEnumValue("contains")
+    CONTAINS("contains");
     private final String value;
 
     CompareRule(String v) {

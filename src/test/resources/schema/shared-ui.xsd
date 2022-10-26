@@ -8,27 +8,6 @@
     <x:include schemaLocation="shared.xsd"/>
     <x:include schemaLocation="wait.xsd"/>
 
-    <x:complexType name="ui" abstract="true">
-        <x:complexContent>
-            <x:extension base="tns:abstractCommand">
-                <x:choice maxOccurs="unbounded" minOccurs="0">
-                    <x:element name="click" type="tns:click"/>
-                    <x:element name="input" type="tns:input"/>
-                    <x:element name="assert" type="tns:assert"/>
-                    <x:element name="dropDown" type="tns:dropDown"/>
-                    <x:element name="wait" type="tns:wait"/>
-                    <x:element name="clear" type="tns:clear"/>
-                    <x:element name="scroll" type="tns:scroll"/>
-                    <x:element name="scrollTo" type="tns:scrollTo"/>
-                    <x:element name="image" type="tns:image"/>
-                    <x:element name="repeat" type="tns:repeatUiCommand"/>
-                </x:choice>
-                <x:attribute name="clearCookiesAfterExecution" type="x:boolean" default="false"/>
-                <x:attribute name="clearLocalStorageByKey" type="tns:nonEmptyString"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
     <x:complexType name="click">
         <x:complexContent>
             <x:extension base="tns:commandWithLocator">
@@ -180,6 +159,61 @@
                 </x:choice>
                 <x:attribute name="times" type="x:positiveInteger" use="required"/>
             </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="javascript">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:attribute name="file" type="tns:jsFileExtension"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="hovers">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice>
+                    <x:element name="hover" type="tns:hover" maxOccurs="unbounded" minOccurs="1"/>
+                </x:choice>
+                <x:attribute name="moveToEmptySpace" type="x:boolean"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="hover">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="navigate">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:attribute name="command" type="tns:navigateCommand" use="required"/>
+                <x:attribute name="path" type="tns:slashStartedOrUrlString"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="navigateCommand">
+        <x:restriction base="x:string">
+            <x:enumeration value="back"/>
+            <x:enumeration value="reload"/>
+            <x:enumeration value="to"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="slashStartedOrUrlString">
+        <x:restriction base="x:string">
+            <x:minLength value="2"/>
+            <x:pattern value="(/[^/].+)|(https?://.+)"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="closeSecondTab">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand"/>
         </x:complexContent>
     </x:complexType>
 

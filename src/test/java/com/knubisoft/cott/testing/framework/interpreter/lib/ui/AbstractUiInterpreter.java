@@ -89,7 +89,7 @@ import static java.lang.String.format;
 
 
 @Slf4j
-public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterpreter<T> {
+public abstract class AbstractUiInterpreter<T extends AbstractCommand> extends AbstractInterpreter<T> {
 
     protected final Map<UiCommandPredicate, UiCommand> uiCommands = new HashMap<>();
     protected final WebDriver webDriver;

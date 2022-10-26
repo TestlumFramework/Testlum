@@ -33,7 +33,6 @@ import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.Body;
 import com.knubisoft.cott.testing.model.scenario.Clickhouse;
-import com.knubisoft.cott.testing.model.scenario.CommonWeb;
 import com.knubisoft.cott.testing.model.scenario.Dynamo;
 import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
 import com.knubisoft.cott.testing.model.scenario.Http;
@@ -109,11 +108,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             checkIntegrationExistence(integrations.getApis(), Apis.class);
             Http http = (Http) command;
             validateHttpCommand(xmlFile, http);
-        });
-
-        validatorMap.put(o -> CommonWeb.class.isAssignableFrom(o.getClass()), (xmlFile, command) -> {
-            CommonWeb commonWeb = (CommonWeb) command;
-            validateCommonWebCommands(commonWeb);
         });
 
         validatorMap.put(o -> o instanceof Shell, (xmlFile, command) -> {
@@ -406,14 +400,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         if (response != null && response.getFile() != null) {
             FileSearcher.searchFileFromDir(xmlFile, response.getFile());
         }
-    }
-
-    private void validateCommonWebCommands(final CommonWeb command) {
-        command.getJavascriptOrNavigateOrHovers().forEach(o -> {
-            if (o instanceof Javascript) {
-                validateFileExistenceInDataFolder(((Javascript) o).getFile());
-            }
-        });
     }
 
     private void validateShellCommand(final File xmlFile, final Shell shell) {

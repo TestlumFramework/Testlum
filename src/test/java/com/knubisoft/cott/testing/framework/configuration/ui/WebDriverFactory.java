@@ -22,6 +22,7 @@ import io.github.bonigarcia.wdm.managers.FirefoxDriverManager;
 import io.github.bonigarcia.wdm.managers.OperaDriverManager;
 import io.github.bonigarcia.wdm.managers.SafariDriverManager;
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
@@ -42,7 +43,8 @@ import java.util.function.Predicate;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND;
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_VERSION;
 
-public class WebDriverFactory implements AbstractDriverFactory {
+@UtilityClass
+public class WebDriverFactory {
 
     private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;
@@ -57,8 +59,8 @@ public class WebDriverFactory implements AbstractDriverFactory {
         DRIVER_INITIALIZER_MAP = Collections.unmodifiableMap(map);
     }
 
-    public WebDriver createDriver(final Object abstractBrowser) {
-        AbstractBrowser browser = (AbstractBrowser) abstractBrowser;
+    public WebDriver createDriver(final AbstractBrowser abstractBrowser) {
+        AbstractBrowser browser = abstractBrowser;
         WebDriver webDriver = DRIVER_INITIALIZER_MAP.keySet().stream()
                 .filter(key -> key.test(browser))
                 .map(DRIVER_INITIALIZER_MAP::get)

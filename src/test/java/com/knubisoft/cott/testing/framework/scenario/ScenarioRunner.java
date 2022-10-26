@@ -183,13 +183,13 @@ public class ScenarioRunner {
     private InterpreterDependencies createDependencies() {
         return new InterpreterDependencies(
                 Objects.nonNull(scenarioArguments.getBrowser())
-                        ? new WebDriverFactory().createDriver(scenarioArguments.getBrowser())
+                        ? WebDriverFactory.createDriver(scenarioArguments.getBrowser())
                         : new MockDriver(WEB_DRIVER_NOT_INIT),
                 Objects.nonNull(scenarioArguments.getNativeDevice())
-                        ? new NativeDriverFactory().createDriver(scenarioArguments.getNativeDevice())
+                        ? NativeDriverFactory.createDriver(scenarioArguments.getNativeDevice())
                         : new MockDriver(NATIVE_DRIVER_NOT_INIT),
                 Objects.nonNull(scenarioArguments.getMobilebrowserDevice())
-                        ? new MobilebrowserDriverFactory().createDriver(scenarioArguments.getMobilebrowserDevice())
+                        ? MobilebrowserDriverFactory.createDriver(scenarioArguments.getMobilebrowserDevice())
                         : new MockDriver(MOBILEBROWSER_DRIVER_NOT_INIT),
                 ctx,
                 scenarioArguments.getFile(),

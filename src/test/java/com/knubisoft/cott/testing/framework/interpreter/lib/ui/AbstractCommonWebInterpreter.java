@@ -9,7 +9,6 @@ import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.global_config.Settings;
 import com.knubisoft.cott.testing.model.scenario.CloseSecondTab;
-import com.knubisoft.cott.testing.model.scenario.CommonWeb;
 import com.knubisoft.cott.testing.model.scenario.Hovers;
 import com.knubisoft.cott.testing.model.scenario.Javascript;
 import com.knubisoft.cott.testing.model.scenario.Navigate;

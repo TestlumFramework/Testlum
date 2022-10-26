@@ -27,12 +27,47 @@
                     <x:element name="image" type="tns:image"/>
                     <x:element name="repeat" type="tns:repeatUiCommand"/>
                     <x:element name="switchToFrame" type="tns:switchToFrame"/>
+                    <x:element name="hotKeyCommand" type="tns:hotKeyCommand"/>
                 </x:choice>
                 <x:attribute name="clearCookiesAfterExecution" type="x:boolean" default="false"/>
                 <x:attribute name="clearLocalStorageByKey" type="tns:nonEmptyString"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
+
+    <x:complexType name="hotKeyCommand">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:attribute name="hotKeyAction" type="tns:hotKeyAction"/>
+                <x:attribute name="singleKeyAction" type="tns:singleKeyAction"/>
+                <x:attribute name="locator" type="tns:scenarioLocator"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="singleKeyAction">
+        <x:restriction base="x:string">
+            <x:enumeration value="tab"/>
+            <x:enumeration value="enter"/>
+            <x:enumeration value="delete"/>
+            <x:enumeration value="escape"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="hotKeyAction">
+        <x:restriction base="x:string">
+            <x:enumeration value="highLightAll"/>
+            <x:enumeration value="copy"/>
+            <x:enumeration value="paste"/>
+            <x:enumeration value="cut"/>
+            <x:enumeration value="newTab"/>
+            <x:enumeration value="newAnonymousTab"/>
+            <x:enumeration value="openClosedTab"/>
+            <x:enumeration value="openClosedTabs"/>
+            <x:enumeration value="goToNextTab"/>
+            <x:enumeration value="goToPreviousTab"/>
+        </x:restriction>
+    </x:simpleType>
 
     <x:complexType name="click">
         <x:complexContent>

@@ -278,6 +278,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link HotKeyCommand }
+     * 
+     */
+    public HotKeyCommand createHotKeyCommand() {
+        return new HotKeyCommand();
+    }
+
+    /**
      * Create an instance of {@link Click }
      * 
      */

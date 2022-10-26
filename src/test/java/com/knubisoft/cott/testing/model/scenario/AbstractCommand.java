@@ -54,6 +54,7 @@ import javax.xml.bind.annotation.XmlType;
     Shell.class,
     Smtp.class,
     Twilio.class,
+    HotKeyCommand.class,
     Javascript.class,
     Hovers.class,
     Navigate.class,

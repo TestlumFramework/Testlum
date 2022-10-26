@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="image" type="{http://www.knubisoft.com/cott/testing/model/scenario}image"/&gt;
  *         &lt;element name="repeat" type="{http://www.knubisoft.com/cott/testing/model/scenario}repeatUiCommand"/&gt;
  *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/cott/testing/model/scenario}switchToFrame"/&gt;
+ *         &lt;element name="hotKeyCommand" type="{http://www.knubisoft.com/cott/testing/model/scenario}hotKeyCommand"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="clearCookiesAfterExecution" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *       &lt;attribute name="clearLocalStorageByKey" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
@@ -69,7 +70,8 @@ public class Ui
         @XmlElement(name = "scrollTo", type = ScrollTo.class),
         @XmlElement(name = "image", type = Image.class),
         @XmlElement(name = "repeat", type = RepeatUiCommand.class),
-        @XmlElement(name = "switchToFrame", type = SwitchToFrame.class)
+        @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
+        @XmlElement(name = "hotKeyCommand", type = HotKeyCommand.class)
     })
     protected List<AbstractCommand> clickOrInputOrNavigate;
     @XmlAttribute(name = "clearCookiesAfterExecution")
@@ -110,6 +112,7 @@ public class Ui
      * {@link Image }
      * {@link RepeatUiCommand }
      * {@link SwitchToFrame }
+     * {@link HotKeyCommand }
      * 
      * 
      */

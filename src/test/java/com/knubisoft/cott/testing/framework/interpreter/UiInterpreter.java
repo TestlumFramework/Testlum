@@ -8,6 +8,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependenc
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
+import com.knubisoft.cott.testing.framework.util.HotKeyCommandUtil;
 import com.knubisoft.cott.testing.framework.util.ImageComparator;
 import com.knubisoft.cott.testing.framework.util.ImageComparisonUtil;
 import com.knubisoft.cott.testing.framework.util.JavascriptUtil;
@@ -23,6 +24,7 @@ import com.knubisoft.cott.testing.model.scenario.Click;
 import com.knubisoft.cott.testing.model.scenario.ClickMethod;
 import com.knubisoft.cott.testing.model.scenario.CloseSecondTab;
 import com.knubisoft.cott.testing.model.scenario.DropDown;
+import com.knubisoft.cott.testing.model.scenario.HotKeyCommand;
 import com.knubisoft.cott.testing.model.scenario.Hovers;
 import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.Input;
@@ -34,6 +36,7 @@ import com.knubisoft.cott.testing.model.scenario.RepeatUiCommand;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
 import com.knubisoft.cott.testing.model.scenario.ScrollTo;
 import com.knubisoft.cott.testing.model.scenario.SelectOrDeselectBy;
+import com.knubisoft.cott.testing.model.scenario.SingleKeyAction;
 import com.knubisoft.cott.testing.model.scenario.SwitchToFrame;
 import com.knubisoft.cott.testing.model.scenario.TypeForOneValue;
 import com.knubisoft.cott.testing.model.scenario.Ui;
@@ -133,6 +136,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         commands.put(ui -> ui instanceof Hovers, (ui, result) -> hover((Hovers) ui, result));
         commands.put(ui -> ui instanceof Image, (ui, result) -> compareImages((Image) ui, result));
         commands.put(ui -> ui instanceof SwitchToFrame, (ui, result) -> switchToFrame((SwitchToFrame) ui, result));
+        commands.put(ui -> ui instanceof HotKeyCommand, (ui, result) -> hotKeyCommand((HotKeyCommand) ui, result));
         this.uiCommands = Collections.unmodifiableMap(commands);
         this.stopScenarioOnFailure = GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure();
     }
@@ -407,6 +411,13 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         result.put(SWITCH_LOCATOR, locatorId);
         WebElement element = findWebElement(locatorId);
         dependencies.getWebDriver().switchTo().frame(element);
+    }
+
+    private void hotKeyCommand(final HotKeyCommand hotKeyCommand, final CommandResult result) {
+        if (Objects.nonNull(hotKeyCommand.getSingleKeyAction())) {
+            HotKeyCommandUtil.singleKeyCommand(hotKeyCommand, dependencies.getWebDriver());
+        }
+        HotKeyCommandUtil.hotKeyCommand(hotKeyCommand, dependencies.getWebDriver());
     }
 
     @SneakyThrows

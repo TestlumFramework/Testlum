@@ -27,10 +27,9 @@ import com.knubisoft.cott.testing.model.scenario.Input;
 import com.knubisoft.cott.testing.model.scenario.OneValue;
 import com.knubisoft.cott.testing.model.scenario.RepeatUiCommand;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
-import com.knubisoft.cott.testing.model.scenario.ScrollDirection;
-import com.knubisoft.cott.testing.model.scenario.ScrollMeasure;
 import com.knubisoft.cott.testing.model.scenario.ScrollTo;
 import com.knubisoft.cott.testing.model.scenario.SelectOrDeselectBy;
+import com.knubisoft.cott.testing.model.scenario.SwitchToFrame;
 import com.knubisoft.cott.testing.model.scenario.TypeForOneValue;
 import com.knubisoft.cott.testing.model.scenario.Ui;
 import com.knubisoft.cott.testing.model.scenario.Wait;
@@ -83,6 +82,8 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.INPUT_LOCATOR
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.INPUT_VALUE;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NUMBER_OF_REPETITIONS;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.SCROLL_LOCATOR;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.SECOND_TAB;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.SWITCH_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.TIME;
 import static com.knubisoft.cott.testing.model.scenario.ClickMethod.JS;
 import static java.lang.String.format;
@@ -110,6 +111,7 @@ public abstract class AbstractUiInterpreter<T extends AbstractCommand> extends A
         uiCommands.put(ui -> ui instanceof Scroll, (ui, result) -> scroll((Scroll) ui, result));
         uiCommands.put(ui -> ui instanceof ScrollTo, (ui, result) -> scrollTo((ScrollTo) ui, result));
         uiCommands.put(ui -> ui instanceof Image, (ui, result) -> compareImages((Image) ui, result));
+        commands.put(ui -> ui instanceof SwitchToFrame, (ui, result) -> switchToFrame((SwitchToFrame) ui, result));
         this.uiSettings = uiSettings;
         this.webDriver = webDriver;
         this.stopScenarioOnFailure = GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure();
@@ -294,15 +296,11 @@ public abstract class AbstractUiInterpreter<T extends AbstractCommand> extends A
         WaitUtil.getTimeUnit(wait.getUnit(), result).sleep(Long.parseLong(time));
     }
 
-    protected void scroll(final Scroll scroll, final CommandResult result) {
-        ScrollDirection direction = scroll.getDirection();
-        ScrollMeasure measure = scroll.getMeasure();
-        String value = scroll.getValue().toString();
-        ResultUtil.addScrollMetaData(direction.value(), measure.value(), value, result);
+    private void scroll(final Scroll scroll, final CommandResult result) {
+        ResultUtil.addScrollMetaData(scroll, result);
+        LogUtil.logScrollInfo(scroll);
+        JavascriptUtil.executeScrollScript(scroll, dependencies.getWebDriver());
         takeScreenshotAndSaveIfRequired(result, uiSettings, webDriver);
-        JavascriptUtil.executeJsScript(JavascriptUtil.getScrollScript(direction, value, measure),
-                webDriver);
-    }
 
     protected void scrollTo(final ScrollTo scrollTo, final CommandResult result) {
         String locatorId = scrollTo.getLocatorId();
@@ -310,6 +308,14 @@ public abstract class AbstractUiInterpreter<T extends AbstractCommand> extends A
         result.put(SCROLL_LOCATOR, locatorId);
         takeScreenshotAndSaveIfRequired(result, uiSettings, webDriver);
         JavascriptUtil.executeJsScript(element, SCROLL_TO_ELEMENT_SCRIPT, webDriver);
+    }
+
+    private void switchToFrame(final SwitchToFrame switchToFrame, final CommandResult result) {
+        String locatorId = switchToFrame.getLocatorId();
+        LogUtil.logSwitchToFrameInfo(locatorId);
+        result.put(SWITCH_LOCATOR, locatorId);
+        WebElement element = findWebElement(locatorId);
+        dependencies.getWebDriver().switchTo().frame(element);
     }
 
     @SneakyThrows

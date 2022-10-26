@@ -28,14 +28,18 @@ import java.time.Duration;
 import java.util.Base64;
 import java.util.Objects;
 
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SCROLL_TO_ELEMENT_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEB_ELEMENT_ATTRIBUTE_NOT_EXIST;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.HIGHLIGHT_SCRIPT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.URL_TO_IMAGE_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.URL_TO_ACTUAL_IMAGE;
+import static java.lang.String.format;
 
 @Slf4j
 @UtilityClass
 public class UiUtil {
+
+    private static final int MAX_PERCENTS_VALUE = 100;
 
     private static final int TIME_TO_WAIT = GlobalTestConfigurationProvider.provide()
             .getWeb().getBrowserSettings().getElementAutowait().getSeconds();
@@ -123,6 +127,14 @@ public class UiUtil {
             throw new DefaultFrameworkException(WEB_ELEMENT_ATTRIBUTE_NOT_EXIST, attributeName);
         }
         return attribute;
+    }
+
+    public float calculatePercentageValue(final String value) {
+        float percent = Float.parseFloat(value) / MAX_PERCENTS_VALUE;
+        if (percent > 1) {
+            throw new DefaultFrameworkException(format(SCROLL_TO_ELEMENT_NOT_SUPPORTED, value));
+        }
+        return percent;
     }
 
     @SneakyThrows

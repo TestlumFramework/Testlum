@@ -18,6 +18,11 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="enter"/&gt;
  *     &lt;enumeration value="delete"/&gt;
  *     &lt;enumeration value="escape"/&gt;
+ *     &lt;enumeration value="space"/&gt;
+ *     &lt;enumeration value="arrowLeft"/&gt;
+ *     &lt;enumeration value="arrowRight"/&gt;
+ *     &lt;enumeration value="arrowUp"/&gt;
+ *     &lt;enumeration value="arrowDown"/&gt;
  *   &lt;/restriction&gt;
  * &lt;/simpleType&gt;
  * </pre>
@@ -34,7 +39,17 @@ public enum SingleKeyAction {
     @XmlEnumValue("delete")
     DELETE("delete"),
     @XmlEnumValue("escape")
-    ESCAPE("escape");
+    ESCAPE("escape"),
+    @XmlEnumValue("space")
+    SPACE("space"),
+    @XmlEnumValue("arrowLeft")
+    ARROW_LEFT("arrowLeft"),
+    @XmlEnumValue("arrowRight")
+    ARROW_RIGHT("arrowRight"),
+    @XmlEnumValue("arrowUp")
+    ARROW_UP("arrowUp"),
+    @XmlEnumValue("arrowDown")
+    ARROW_DOWN("arrowDown");
     private final String value;
 
     SingleKeyAction(String v) {

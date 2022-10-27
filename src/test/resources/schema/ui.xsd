@@ -51,6 +51,11 @@
             <x:enumeration value="enter"/>
             <x:enumeration value="delete"/>
             <x:enumeration value="escape"/>
+            <x:enumeration value="space"/>
+            <x:enumeration value="arrowLeft"/>
+            <x:enumeration value="arrowRight"/>
+            <x:enumeration value="arrowUp"/>
+            <x:enumeration value="arrowDown"/>
         </x:restriction>
     </x:simpleType>
 

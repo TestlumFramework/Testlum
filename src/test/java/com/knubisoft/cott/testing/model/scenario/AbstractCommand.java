@@ -51,6 +51,7 @@ import javax.xml.bind.annotation.XmlType;
     Sendgrid.class,
     Ses.class,
     Dynamo.class,
+    WebSocket.class,
     Var.class,
     Wait.class,
     Shell.class,

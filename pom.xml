@@ -43,11 +43,10 @@
         <org.junit.jupiter.version>5.8.0</org.junit.jupiter.version>
         <org.junit.version>4.13.2</org.junit.version>
         <lombok.version>1.18.24</lombok.version>
-        <imagination.comparator.version>1.4</imagination.comparator.version>
+        <imagination.comparator.version>2.0</imagination.comparator.version>
         <org.slf4j.api.version>1.7.30</org.slf4j.api.version>
         <com.opencsv.version>5.5.1</com.opencsv.version>
         <io.micrometer.version>1.6.6</io.micrometer.version>
-        <org.spring.boot.version>2.4.3</org.spring.boot.version>
 
         <pl.project13.maven.plugin.version>4.0.0</pl.project13.maven.plugin.version>
         <org.spring.version>5.3.4</org.spring.version>
@@ -245,23 +244,6 @@
             </exclusions>
         </dependency>
 
-<!--        todo remove if not used-->
-<!--        <dependency>-->
-<!--            <groupId>com.github.awslabs</groupId>-->
-<!--            <artifactId>aws-request-signing-apache-interceptor</artifactId>-->
-<!--            <version>b3772780da</version>-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>com.amazonaws</groupId>-->
-<!--                    <artifactId>aws-java-sdk-core</artifactId>-->
-<!--                </exclusion>-->
-<!--                <exclusion>-->
-<!--                    <groupId>joda-time</groupId>-->
-<!--                    <artifactId>joda-time</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -397,10 +379,29 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
             <version>${spring-kafka.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-messaging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -441,6 +442,12 @@
                     <artifactId>spring-core</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+            <version>${org.spring.boot.version}</version>
         </dependency>
 
         <dependency>
@@ -775,7 +782,6 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>tree-comparator</artifactId>
-            <version>${imagination.comparator.version}</version>
         </dependency>
 
         <dependency>
@@ -857,6 +863,12 @@
             <groupId>com.twilio.sdk</groupId>
             <artifactId>twilio</artifactId>
             <version>${com.twilio.sdk.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.datatype</groupId>
+                    <artifactId>jackson-datatype-jsr310</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -888,6 +900,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>tree-comparator</artifactId>
+                <version>${imagination.comparator.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.asynchttpclient</groupId>
                 <artifactId>async-http-client</artifactId>

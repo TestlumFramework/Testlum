@@ -139,21 +139,21 @@ public class ScenarioRunner {
         return (AbstractInterpreter<AbstractCommand>) interpreter;
     }
 
-    @SneakyThrows
     private void handleException(final CommandResult result) {
         Exception ex = result.getException();
         if (ex != null) {
             LogUtil.logException(ex);
-            fillReportException(ex.getMessage());
+            fillReportException(ex);
             if (stopScenarioOnFailure) {
                 throw new StopSignalException();
             }
         }
     }
 
-    private void fillReportException(final String ex) {
-        if (scenarioResult.getCause() == null) {
-            scenarioResult.setCause(ex);
+    private void fillReportException(final Exception ex) {
+        if (StringUtils.isEmpty(scenarioResult.getCause())) {
+            String cause = StringUtils.isEmpty(ex.getMessage()) ? ex.getClass().getSimpleName() : ex.getMessage();
+            scenarioResult.setCause(cause);
             scenarioResult.setSuccess(false);
         }
     }

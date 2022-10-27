@@ -13,6 +13,7 @@ import com.knubisoft.cott.testing.framework.util.ImageComparisonUtil;
 import com.knubisoft.cott.testing.framework.util.JavascriptUtil;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
+import com.knubisoft.cott.testing.framework.util.ScenarioUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.framework.util.WaitUtil;
 import com.knubisoft.cott.testing.model.global_config.Settings;
@@ -76,7 +77,6 @@ import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.C
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.SCROLL_TO_ELEMENT_SCRIPT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BY_URL_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMAND_TYPE_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.JS_FILE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.REPEAT_FINISHED_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TIMES_LOG;
@@ -115,7 +115,6 @@ public abstract class AbstractUiInterpreter<T extends AbstractCommand> extends A
     protected final Map<UiCommandPredicate, UiCommand> uiCommands = new HashMap<>();
     protected final WebDriver webDriver;
     protected final Settings uiSettings;
-    private final boolean stopScenarioOnFailure;
 
     public AbstractUiInterpreter(final InterpreterDependencies dependencies,
                                  final WebDriver webDriver,
@@ -134,7 +133,6 @@ public abstract class AbstractUiInterpreter<T extends AbstractCommand> extends A
         uiCommands.put(ui -> ui instanceof SwitchToFrame, (ui, result) -> switchToFrame((SwitchToFrame) ui, result));
         this.uiSettings = uiSettings;
         this.webDriver = webDriver;
-        this.stopScenarioOnFailure = GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure();
     }
 
     @Override
@@ -179,12 +177,12 @@ public abstract class AbstractUiInterpreter<T extends AbstractCommand> extends A
         } catch (Exception e) {
             ResultUtil.setExceptionResult(subCommandResult, e);
             LogUtil.logException(e);
-            checkIfStopScenarioOnFailure(e);
+            ScenarioUtil.checkIfStopScenarioOnFailure(e);
         } finally {
             long execTime = stopWatch.getTime();
             stopWatch.stop();
             subCommandResult.setExecutionTime(execTime);
-            log.info(EXECUTION_TIME_LOG, execTime);
+            LogUtil.logExecutionTime(execTime, command);
         }
     }
 
@@ -450,12 +448,6 @@ public abstract class AbstractUiInterpreter<T extends AbstractCommand> extends A
         }
     }
 
-    private void checkIfStopScenarioOnFailure(final Exception e) {
-        if (stopScenarioOnFailure) {
-            throw new DefaultFrameworkException(e);
-        }
-    }
-
     protected void takeScreenshotAndSaveIfRequired(final CommandResult result, final Settings settings,
                                                    final WebDriver webDriver) {
         if (settings.getTakeScreenshots().isEnable()) {
@@ -484,7 +476,7 @@ public abstract class AbstractUiInterpreter<T extends AbstractCommand> extends A
         FileUtils.copyFile(screenshot, newScreenshot);
     }
 
-    interface UiCommandPredicate extends Predicate<AbstractCommand> { }
-    interface UiCommand extends BiConsumer<AbstractCommand, CommandResult> { }
+    private interface UiCommandPredicate extends Predicate<AbstractCommand> { }
+    private interface UiCommand extends BiConsumer<AbstractCommand, CommandResult> { }
 }
 

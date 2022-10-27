@@ -10,7 +10,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 public final class LogMessage {
 
     public static final String TABLE_FORMAT = "%-23s|%-70s";
-    public static final String CONTENT_FORMAT = format("%n%19s| %-20s|", EMPTY, EMPTY);
+    public static final String CONTENT_FORMAT = format("%n%19s| %-23s|", EMPTY, EMPTY);
     public static final String NEW_LOG_LINE = format("%n%19s| ", EMPTY);
     public static final String REGEX_NEW_LINE = "[\\r\\n]";
 
@@ -70,9 +70,16 @@ public final class LogMessage {
     public static final String RETHROWN_ERRORS_LOG = "Errors:%n %s";
     public static final String FAILED_VISITING_PATH_LOG = "Failed to visit path {}";
 
+    public static final String WEBSOCKET_ACTION_INFO_LOG = format(TABLE_FORMAT,
+            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Destination", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Content", "{}");
+
     public static final String BROKER_ACTION_INFO_LOG = format(TABLE_FORMAT,
-            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT, "Queue", "{}")
-            + NEW_LOG_LINE + format(TABLE_FORMAT, "Content", "{}");
+            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Queue", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Content", "{}");
+
     public static final String S3_ACTION_INFO_LOG = format(TABLE_FORMAT,
             "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Bucket", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
@@ -80,6 +87,11 @@ public final class LogMessage {
             "File for action", "{}");
 
     public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
+
+    public static final String UNABLE_TO_DISCONNECT_BECAUSE_CONNECTION_CLOSED = "Unable to disconnect session "
+            + "because the connection was closed";
+
+    public static final String TESTS_RUN_FAILED = "Test run failed";
     public static final String TEST_EXECUTION_SUMMARY_TEMPLATE =
             "\n\nTest run finished\n{} tests found\n{} tests skipped\n{} tests started\n{} test aborted\n"
                     + "{} test successful\n{} test failed\n";

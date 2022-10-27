@@ -53,6 +53,7 @@ import com.knubisoft.cott.testing.model.web.scenario.NewUi;
     Sendgrid.class,
     Ses.class,
     Dynamo.class,
+    WebSocket.class,
     Var.class,
     Wait.class,
     Shell.class,

@@ -42,7 +42,8 @@ import javax.xml.bind.annotation.XmlType;
     Sendgrid.class,
     Ses.class,
     Smtp.class,
-    Twilio.class
+    Twilio.class,
+    WebSocket.class
 })
 public abstract class Integration {
 

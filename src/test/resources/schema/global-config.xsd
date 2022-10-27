@@ -21,6 +21,7 @@
     <x:include schemaLocation="ses-integration.xsd"/>
     <x:include schemaLocation="smtp-integration.xsd"/>
     <x:include schemaLocation="twilio-integration.xsd"/>
+    <x:include schemaLocation="websocket-integration.xsd"/>
     <x:include schemaLocation="ui-config.xsd"/>
     <x:include schemaLocation="report.xsd"/>
     <x:include schemaLocation="shared-config.xsd"/>
@@ -28,7 +29,7 @@
     <x:annotation>
         <x:appinfo>
             <jaxb:bindings
-                    node="/x:schema/x:element[@name='globalTestConfiguration']//x:complexType//x:sequence">
+                node="/x:schema/x:element[@name='globalTestConfiguration']//x:complexType//x:sequence">
             </jaxb:bindings>
         </x:appinfo>
     </x:annotation>
@@ -50,6 +51,7 @@
     <x:complexType name="integrations">
         <x:all>
             <x:element name="apis" type="tns:apis" minOccurs="0"/>
+            <x:element name="webSockets" type="tns:webSockets" minOccurs="0"/>
             <x:element name="postgresIntegration" type="tns:postgresIntegration" minOccurs="0"/>
             <x:element name="clickhouseIntegration" type="tns:clickhouseIntegration" minOccurs="0"/>
             <x:element name="mysqlIntegration" type="tns:mysqlIntegration" minOccurs="0"/>
@@ -102,7 +104,7 @@
         <x:restriction base="x:string">
             <x:enumeration value="basic"/>
             <x:enumeration value="jwt"/>
-<!--            <x:enumeration value="oauth2"/>-->
+            <!--            <x:enumeration value="oauth2"/>-->
             <x:enumeration value="custom"/>
             <x:enumeration value="default"/>
         </x:restriction>

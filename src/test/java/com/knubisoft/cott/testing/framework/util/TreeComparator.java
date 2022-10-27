@@ -1,16 +1,14 @@
 package com.knubisoft.cott.testing.framework.util;
 
 
+import com.knubisoft.comparator.Comparator;
 import com.knubisoft.cott.testing.framework.exception.ComparisonException;
 import lombok.experimental.UtilityClass;
-import org.imagination.comparator.Comparator;
-
-import java.util.Collections;
 
 @UtilityClass
 public final class TreeComparator {
 
-    private static final Comparator COMPARATOR = Comparator.java().strict(Collections.emptyMap());
+    private static final Comparator COMPARATOR = Comparator.strict();
 
     public void compare(final String expected, final String actual) throws ComparisonException {
         try {

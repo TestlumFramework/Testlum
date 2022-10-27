@@ -3,19 +3,15 @@ package com.knubisoft.cott.testing.framework.interpreter;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
-import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractCommonWebInterpreter;
+import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiInterpreter;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
-import com.knubisoft.cott.testing.model.scenario.Ui;
 import com.knubisoft.cott.testing.model.scenario.Web;
 
 @InterpreterForClass(Web.class)
-public class WebInterpreter extends AbstractCommonWebInterpreter<Web> {
+public class WebInterpreter extends AbstractUiInterpreter<Web> {
     public WebInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies, dependencies.getWebDriver(), GlobalTestConfigurationProvider.getBrowserSettings());
     }
 
-    @Override
-    protected void acceptImpl(Ui ui, CommandResult result) {
-        super.acceptImpl(ui, result);
-    }
+
 }

@@ -128,7 +128,7 @@ public class ExceptionMessage {
     public static final String NO_LOCATOR_FOUND_FOR_INNER_SCROLL = "You didn't specify a locator for the inner scroll";
     public static final String INVALID_LOCATOR =
             "Locator type is not supported for INNER scroll. Your locator -> <%s>.";
-    public static final String FOUND_MORE_THEN_ONE_ELEMENT = "More than one element was found by text <%s>";
+//    public static final String FOUND_MORE_THEN_ONE_ELEMENT = "More than one element was found by text <%s>";
 
     public static final String SAME_APPIUM_URL = "Can`t use the same Appium server URL for scenario with "
             + "<mobilebrowser> & <native> tags";

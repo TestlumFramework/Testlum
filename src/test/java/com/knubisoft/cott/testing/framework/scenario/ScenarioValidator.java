@@ -68,7 +68,6 @@ import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.Sqs;
 import com.knubisoft.cott.testing.model.scenario.StorageName;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
-import com.knubisoft.cott.testing.model.scenario.Ui;
 import com.knubisoft.cott.testing.model.scenario.When;
 import org.springframework.util.StringUtils;
 

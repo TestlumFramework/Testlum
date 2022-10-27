@@ -18,7 +18,6 @@ import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
-import com.knubisoft.cott.testing.model.scenario.Ui;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;

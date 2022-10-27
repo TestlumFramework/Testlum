@@ -21,9 +21,14 @@ import com.knubisoft.cott.testing.model.scenario.Assert;
 import com.knubisoft.cott.testing.model.scenario.Clear;
 import com.knubisoft.cott.testing.model.scenario.Click;
 import com.knubisoft.cott.testing.model.scenario.ClickMethod;
+import com.knubisoft.cott.testing.model.scenario.CloseSecondTab;
 import com.knubisoft.cott.testing.model.scenario.DropDown;
+import com.knubisoft.cott.testing.model.scenario.Hovers;
 import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.Input;
+import com.knubisoft.cott.testing.model.scenario.Javascript;
+import com.knubisoft.cott.testing.model.scenario.Navigate;
+import com.knubisoft.cott.testing.model.scenario.NavigateCommand;
 import com.knubisoft.cott.testing.model.scenario.OneValue;
 import com.knubisoft.cott.testing.model.scenario.RepeatUiCommand;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
@@ -31,16 +36,17 @@ import com.knubisoft.cott.testing.model.scenario.ScrollTo;
 import com.knubisoft.cott.testing.model.scenario.SelectOrDeselectBy;
 import com.knubisoft.cott.testing.model.scenario.SwitchToFrame;
 import com.knubisoft.cott.testing.model.scenario.TypeForOneValue;
-import com.knubisoft.cott.testing.model.scenario.Ui;
 import com.knubisoft.cott.testing.model.scenario.Wait;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.html5.WebStorage;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
 import javax.imageio.ImageIO;
@@ -48,22 +54,30 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.NEW_LINE;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NAVIGATE_NOT_SUPPORTED;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SECOND_TAB_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.SCROLL_TO_ELEMENT_SCRIPT;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.BY_URL_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMAND_TYPE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.JS_FILE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.REPEAT_FINISHED_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TIMES_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.VALUE_LOG;
@@ -76,10 +90,14 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLEAR_LOCAL_S
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLEAR_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLICK_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLICK_METHOD;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLOSE_COMMAND;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.DROP_DOWN_FOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.DROP_DOWN_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.INPUT_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.INPUT_VALUE;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.JS_FILE;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.NAVIGATE_TYPE;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.NAVIGATE_URL;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NUMBER_OF_REPETITIONS;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.SCROLL_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.SECOND_TAB;
@@ -92,6 +110,8 @@ import static java.lang.String.format;
 @Slf4j
 public abstract class AbstractUiInterpreter<T extends AbstractCommand> extends AbstractInterpreter<T> {
 
+    private static final Pattern HTTP_PATTERN = Pattern.compile("https?://.+");
+    private static final String MOVE_TO_EMPTY_SPACE = "//html";
     protected final Map<UiCommandPredicate, UiCommand> uiCommands = new HashMap<>();
     protected final WebDriver webDriver;
     protected final Settings uiSettings;
@@ -111,18 +131,18 @@ public abstract class AbstractUiInterpreter<T extends AbstractCommand> extends A
         uiCommands.put(ui -> ui instanceof Scroll, (ui, result) -> scroll((Scroll) ui, result));
         uiCommands.put(ui -> ui instanceof ScrollTo, (ui, result) -> scrollTo((ScrollTo) ui, result));
         uiCommands.put(ui -> ui instanceof Image, (ui, result) -> compareImages((Image) ui, result));
-        commands.put(ui -> ui instanceof SwitchToFrame, (ui, result) -> switchToFrame((SwitchToFrame) ui, result));
+        uiCommands.put(ui -> ui instanceof SwitchToFrame, (ui, result) -> switchToFrame((SwitchToFrame) ui, result));
         this.uiSettings = uiSettings;
         this.webDriver = webDriver;
         this.stopScenarioOnFailure = GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure();
     }
 
     @Override
-    protected void acceptImpl(final Ui ui, final CommandResult result) {
-        LogUtil.logUiAttributes(ui.isClearCookiesAfterExecution(), ui.getClearLocalStorageByKey());
-        runCommands(ui.getClickOrInputOrAssert(), result);
-        clearLocalStorage(webDriver, ui.getClearLocalStorageByKey(), result);
-        clearCookies(webDriver, ui.isClearCookiesAfterExecution(), result);
+    protected void acceptImpl(final AbstractCommand ui, final CommandResult result) {
+//        LogUtil.logUiAttributes(ui.isClearCookiesAfterExecution(), ui.getClearLocalStorageByKey());
+//        runCommands(ui.getClickOrInputOrAssert(), result);
+//        clearLocalStorage(webDriver, ui.getClearLocalStorageByKey(), result);
+//        clearCookies(webDriver, ui.isClearCookiesAfterExecution(), result);
     }
 
     protected void runCommands(final List<AbstractCommand> commandList,
@@ -301,6 +321,7 @@ public abstract class AbstractUiInterpreter<T extends AbstractCommand> extends A
         LogUtil.logScrollInfo(scroll);
         JavascriptUtil.executeScrollScript(scroll, dependencies.getWebDriver());
         takeScreenshotAndSaveIfRequired(result, uiSettings, webDriver);
+    }
 
     protected void scrollTo(final ScrollTo scrollTo, final CommandResult result) {
         String locatorId = scrollTo.getLocatorId();
@@ -314,7 +335,7 @@ public abstract class AbstractUiInterpreter<T extends AbstractCommand> extends A
         String locatorId = switchToFrame.getLocatorId();
         LogUtil.logSwitchToFrameInfo(locatorId);
         result.put(SWITCH_LOCATOR, locatorId);
-        WebElement element = findWebElement(locatorId);
+        WebElement element = UiUtil.findWebElement(webDriver,locatorId);
         dependencies.getWebDriver().switchTo().frame(element);
     }
 
@@ -335,12 +356,84 @@ public abstract class AbstractUiInterpreter<T extends AbstractCommand> extends A
         int times = repeat.getTimes().intValue();
         result.put(NUMBER_OF_REPETITIONS, times);
         log.info(TIMES_LOG, times);
-        List<AbstractCommand> commandsForRepeat = repeat.getClickOrInputOrAssert();
+        List<AbstractCommand> commandsForRepeat = repeat.getClickOrInputOrNavigate();
         ResultUtil.addCommandsForRepeat(commandsForRepeat, result);
         IntStream.range(0, times)
                 .forEach(e -> runCommands(commandsForRepeat, result));
         log.info(REPEAT_FINISHED_LOG);
     }
+
+
+        private void execJsCommands(final Javascript o, final CommandResult result) {
+            String fileName = o.getFile();
+            result.put(JS_FILE, fileName);
+            log.info(JS_FILE_LOG, fileName);
+            String command = JavascriptUtil.readCommands(fileName);
+            JavascriptUtil.executeJsScript(command, webDriver);
+        }
+
+        private void hover(final Hovers hovers, final CommandResult result) {
+            ResultUtil.addHoversMetaData(hovers, result);
+            Actions actions = new Actions(webDriver);
+            List<WebElement> webElements = hovers.getHover().stream()
+                    .peek(hover -> LogUtil.logHover(dependencies.getPosition().incrementAndGet(), hover))
+                    .map(hover -> UiUtil.findWebElement(webDriver, hover.getLocatorId()))
+                    .collect(Collectors.toList());
+            webElements.forEach(webElement -> {
+                actions.moveToElement(webElement);
+                actions.perform();
+            });
+            moveToEmptySpace(hovers.isMoveToEmptySpace(), actions, webDriver);
+        }
+
+        private void moveToEmptySpace(final Boolean isMoveToEmptySpace, final Actions actions, final WebDriver webDriver) {
+            if (Objects.nonNull(isMoveToEmptySpace) && isMoveToEmptySpace) {
+                WebElement element = webDriver.findElement(By.xpath(MOVE_TO_EMPTY_SPACE));
+                actions.moveToElement(element);
+                actions.perform();
+            }
+        }
+
+        private void closeSecondTab(final CloseSecondTab closeSecondTab, final CommandResult result) {
+            result.put(CLOSE_COMMAND, SECOND_TAB);
+            List<String> windowHandles = new ArrayList<>(webDriver.getWindowHandles());
+            if (windowHandles.size() <= 1) {
+                throw new DefaultFrameworkException(SECOND_TAB_NOT_FOUND);
+            }
+            webDriver.switchTo().window(windowHandles.get(1));
+            webDriver.close();
+            webDriver.switchTo().window(windowHandles.get(0));
+        }
+
+        private void navigate(final Navigate navigate, final CommandResult result) {
+            NavigateCommand navigateCommand = navigate.getCommand();
+            log.info(COMMAND_TYPE_LOG, navigateCommand.name());
+            result.put(NAVIGATE_TYPE, navigateCommand.value());
+            switch (navigateCommand) {
+                case BACK: webDriver.navigate().back();
+                    break;
+                case RELOAD: webDriver.navigate().refresh();
+                    break;
+                case TO: navigateTo(navigate.getPath(), result);
+                    break;
+                default: throw new DefaultFrameworkException(format(NAVIGATE_NOT_SUPPORTED, navigateCommand.value()));
+            }
+            takeScreenshotAndSaveIfRequired(result, uiSettings, webDriver);
+        }
+
+        private void navigateTo(final String path, final CommandResult result) {
+            String url = inject(getUrl(path));
+            result.put(NAVIGATE_URL, url);
+            log.info(BY_URL_LOG, url);
+            webDriver.navigate().to(url);
+        }
+
+        private String getUrl(final String path) {
+            if (HTTP_PATTERN.matcher(path).matches()) {
+                return path;
+            }
+            return dependencies.getGlobalTestConfiguration().getWeb().getBaseUrl() + path;
+        }
 
     private void clearLocalStorage(final WebDriver driver, final String key, final CommandResult result) {
         if (StringUtils.isNotEmpty(key)) {

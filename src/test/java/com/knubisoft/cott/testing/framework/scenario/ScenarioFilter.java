@@ -6,7 +6,6 @@ import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.cott.testing.model.global_config.TagValue;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
-import com.knubisoft.cott.testing.model.scenario.Ui;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 

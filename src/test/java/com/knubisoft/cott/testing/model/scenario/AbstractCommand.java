@@ -56,14 +56,14 @@ import javax.xml.bind.annotation.XmlType;
     Shell.class,
     Smtp.class,
     Twilio.class,
-    Scroll.class,
-    Image.class,
-    RepeatUiCommand.class,
     Javascript.class,
     Hovers.class,
-    CommandWithLocator.class,
     Navigate.class,
     CloseSecondTab.class,
+    Scroll.class,
+    CommandWithLocator.class,
+    Image.class,
+    RepeatUiCommand.class,
     RelationalDbResult.class,
     Logout.class
 })

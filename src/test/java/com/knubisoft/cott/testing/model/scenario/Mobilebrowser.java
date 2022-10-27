@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="navigate" type="{http://www.knubisoft.com/cott/testing/model/scenario}navigate"/&gt;
  *         &lt;element name="hovers" type="{http://www.knubisoft.com/cott/testing/model/scenario}hovers"/&gt;
  *         &lt;element name="closeSecondTab" type="{http://www.knubisoft.com/cott/testing/model/scenario}closeSecondTab"/&gt;
+ *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/cott/testing/model/scenario}switchToFrame"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="clearCookiesAfterExecution" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *       &lt;attribute name="clearLocalStorageByKey" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
@@ -67,7 +68,8 @@ public class Mobilebrowser
         @XmlElement(name = "javascript", type = Javascript.class),
         @XmlElement(name = "navigate", type = Navigate.class),
         @XmlElement(name = "hovers", type = Hovers.class),
-        @XmlElement(name = "closeSecondTab", type = CloseSecondTab.class)
+        @XmlElement(name = "closeSecondTab", type = CloseSecondTab.class),
+        @XmlElement(name = "switchToFrame", type = SwitchToFrame.class)
     })
     protected List<AbstractCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "clearCookiesAfterExecution")
@@ -107,6 +109,7 @@ public class Mobilebrowser
      * {@link Navigate }
      * {@link Hovers }
      * {@link CloseSecondTab }
+     * {@link SwitchToFrame }
      * 
      * 
      */

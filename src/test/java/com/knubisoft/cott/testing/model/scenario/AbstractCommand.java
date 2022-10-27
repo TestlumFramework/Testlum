@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
+import com.knubisoft.cott.testing.model._native.scenario.NewNative;
+import com.knubisoft.cott.testing.model.web.scenario.NewUi;
 
 
 /**
@@ -33,6 +35,8 @@ import javax.xml.bind.annotation.XmlType;
     Auth.class,
     Repeat.class,
     Ui.class,
+    NewUi.class,
+    NewNative.class,
     Http.class,
     Migrate.class,
     Postgres.class,

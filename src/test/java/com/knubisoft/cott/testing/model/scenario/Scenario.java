@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import com.knubisoft.cott.testing.model._native.scenario.NewNative;
+import com.knubisoft.cott.testing.model.web.scenario.NewUi;
 
 
 /**
@@ -29,6 +31,8 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;element name="auth" type="{http://www.knubisoft.com/cott/testing/model/scenario}auth"/&gt;
  *           &lt;element name="repeat" type="{http://www.knubisoft.com/cott/testing/model/scenario}repeat"/&gt;
  *           &lt;element name="ui" type="{http://www.knubisoft.com/cott/testing/model/scenario}ui"/&gt;
+ *           &lt;element name="newUi" type="{http://www.knubisoft.com/cott/testing/model/web/scenario}newUi"/&gt;
+ *           &lt;element name="newNative" type="{http://www.knubisoft.com/cott/testing/model/native/scenario}newNative"/&gt;
  *           &lt;element name="http" type="{http://www.knubisoft.com/cott/testing/model/scenario}http"/&gt;
  *           &lt;element name="migrate" type="{http://www.knubisoft.com/cott/testing/model/scenario}migrate"/&gt;
  *           &lt;element name="postgres" type="{http://www.knubisoft.com/cott/testing/model/scenario}postgres"/&gt;
@@ -80,6 +84,8 @@ public class Scenario {
         @XmlElement(name = "auth", type = Auth.class),
         @XmlElement(name = "repeat", type = Repeat.class),
         @XmlElement(name = "ui", type = Ui.class),
+        @XmlElement(name = "newUi", type = NewUi.class),
+        @XmlElement(name = "newNative", type = NewNative.class),
         @XmlElement(name = "http", type = Http.class),
         @XmlElement(name = "migrate", type = Migrate.class),
         @XmlElement(name = "postgres", type = Postgres.class),
@@ -180,6 +186,8 @@ public class Scenario {
      * {@link Auth }
      * {@link Repeat }
      * {@link Ui }
+     * {@link NewUi }
+     * {@link NewNative }
      * {@link Http }
      * {@link Migrate }
      * {@link Postgres }

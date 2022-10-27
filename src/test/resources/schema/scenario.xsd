@@ -2,6 +2,8 @@
 <x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
           targetNamespace="http://www.knubisoft.com/cott/testing/model/scenario"
           xmlns:tns="http://www.knubisoft.com/cott/testing/model/scenario"
+          xmlns:ea="http://www.knubisoft.com/cott/testing/model/native/scenario"
+          xmlns:ea1="http://www.knubisoft.com/cott/testing/model/web/scenario"
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
@@ -31,6 +33,8 @@
     <x:include schemaLocation="shell.xsd"/>
     <x:include schemaLocation="smtp.xsd"/>
     <x:include schemaLocation="twilio.xsd"/>
+    <x:import schemaLocation="new-native.xsd" namespace="http://www.knubisoft.com/cott/testing/model/native/scenario"/>
+    <x:import schemaLocation="new-ui.xsd" namespace="http://www.knubisoft.com/cott/testing/model/web/scenario"/>
 
     <x:annotation>
         <x:appinfo>
@@ -61,6 +65,8 @@
                     <x:element name="auth" type="tns:auth"/>
                     <x:element name="repeat" type="tns:repeat"/>
                     <x:element name="ui" type="tns:ui"/>
+                    <x:element name="newUi" type="ea1:newUi"/>
+                    <x:element name="newNative" type="ea:newNative"/>
 
                     <x:element name="http" type="tns:http"/>
                     <x:element name="migrate" type="tns:migrate"/>

@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="openClosedTabs"/&gt;
  *     &lt;enumeration value="goToNextTab"/&gt;
  *     &lt;enumeration value="goToPreviousTab"/&gt;
+ *     &lt;enumeration value="openDevTools"/&gt;
  *   &lt;/restriction&gt;
  * &lt;/simpleType&gt;
  * </pre>
@@ -52,7 +53,9 @@ public enum HotKeyAction {
     @XmlEnumValue("goToNextTab")
     GO_TO_NEXT_TAB("goToNextTab"),
     @XmlEnumValue("goToPreviousTab")
-    GO_TO_PREVIOUS_TAB("goToPreviousTab");
+    GO_TO_PREVIOUS_TAB("goToPreviousTab"),
+    @XmlEnumValue("openDevTools")
+    OPEN_DEV_TOOLS("openDevTools");
     private final String value;
 
     HotKeyAction(String v) {

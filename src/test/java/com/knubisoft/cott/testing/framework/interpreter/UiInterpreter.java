@@ -9,6 +9,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.HotKeyCommandUtil;
+import com.knubisoft.cott.testing.framework.util.SingleKeyCommandUtil;
 import com.knubisoft.cott.testing.framework.util.ImageComparator;
 import com.knubisoft.cott.testing.framework.util.ImageComparisonUtil;
 import com.knubisoft.cott.testing.framework.util.JavascriptUtil;
@@ -36,7 +37,6 @@ import com.knubisoft.cott.testing.model.scenario.RepeatUiCommand;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
 import com.knubisoft.cott.testing.model.scenario.ScrollTo;
 import com.knubisoft.cott.testing.model.scenario.SelectOrDeselectBy;
-import com.knubisoft.cott.testing.model.scenario.SingleKeyAction;
 import com.knubisoft.cott.testing.model.scenario.SwitchToFrame;
 import com.knubisoft.cott.testing.model.scenario.TypeForOneValue;
 import com.knubisoft.cott.testing.model.scenario.Ui;
@@ -414,10 +414,12 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
     }
 
     private void hotKeyCommand(final HotKeyCommand hotKeyCommand, final CommandResult result) {
+        LogUtil.logHotKeyCommandInfo(hotKeyCommand);
         if (Objects.nonNull(hotKeyCommand.getSingleKeyAction())) {
-            HotKeyCommandUtil.singleKeyCommand(hotKeyCommand, dependencies.getWebDriver());
+            SingleKeyCommandUtil.singleKeyCommand(hotKeyCommand, dependencies.getWebDriver());
+        } else {
+            HotKeyCommandUtil.hotKeyCommand(hotKeyCommand, dependencies.getWebDriver());
         }
-        HotKeyCommandUtil.hotKeyCommand(hotKeyCommand, dependencies.getWebDriver());
     }
 
     @SneakyThrows

@@ -71,6 +71,7 @@
             <x:enumeration value="openClosedTabs"/>
             <x:enumeration value="goToNextTab"/>
             <x:enumeration value="goToPreviousTab"/>
+            <x:enumeration value="openDevTools"/>
         </x:restriction>
     </x:simpleType>
 

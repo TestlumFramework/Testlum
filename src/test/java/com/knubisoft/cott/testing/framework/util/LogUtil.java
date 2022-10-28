@@ -7,12 +7,14 @@ import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
+import com.knubisoft.cott.testing.model.scenario.HotKeyCommand;
 import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.Overview;
 import com.knubisoft.cott.testing.model.scenario.OverviewPart;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
 import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.Ses;
+import com.knubisoft.cott.testing.model.scenario.SingleKeyAction;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.Ui;
@@ -50,6 +52,8 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.HOT_KEY_LOCATOR_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.HOT_KEY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.IMAGE_COMPARISON_TYPE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.IMAGE_FOR_COMPARISON_LOG;
@@ -71,6 +75,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_LO
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_TYPE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SERVER_ERROR_RESPONSE_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SINGLE_KEY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_HOST_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_PORT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SOURCE_LOG;
@@ -248,6 +253,15 @@ public class LogUtil {
 
     public void logSwitchToFrameInfo(final String locatorId) {
         log.info(SWITCH_TO_FRAME_LOCATOR, locatorId);
+    }
+
+    public void logHotKeyCommandInfo(final HotKeyCommand hotKeyCommand) {
+        if (Objects.nonNull(hotKeyCommand.getSingleKeyAction())) {
+            log.info(SINGLE_KEY_LOG, hotKeyCommand.getSingleKeyAction());
+        } else {
+            log.info(HOT_KEY_LOG, hotKeyCommand.getHotKeyAction());
+            log.info(HOT_KEY_LOCATOR_LOG, hotKeyCommand.getLocator());
+        }
     }
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {

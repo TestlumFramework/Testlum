@@ -124,5 +124,5 @@ public class ExceptionMessage {
     public static final String NO_LOCATOR_FOUND_FOR_INNER_SCROLL = "You didn't specify a locator for the inner scroll";
     public static final String INVALID_LOCATOR =
             "Locator type is not supported for INNER scroll. Your locator -> <%s>.";
-    public static final String KEY_NOT_SUPPORTED = "This key is not supported";
+    public static final String KEY_NOT_SUPPORTED = "This key command is not supported. Command -> <%s>";
 }

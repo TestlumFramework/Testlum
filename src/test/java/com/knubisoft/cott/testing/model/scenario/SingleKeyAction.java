@@ -1,72 +1,60 @@
 
 package com.knubisoft.cott.testing.model.scenario;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for singleKeyAction.
+ * <p>Java class for singleKeyAction complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
+ * 
  * <pre>
- * &lt;simpleType name="singleKeyAction"&gt;
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *     &lt;enumeration value="tab"/&gt;
- *     &lt;enumeration value="enter"/&gt;
- *     &lt;enumeration value="delete"/&gt;
- *     &lt;enumeration value="escape"/&gt;
- *     &lt;enumeration value="space"/&gt;
- *     &lt;enumeration value="arrowLeft"/&gt;
- *     &lt;enumeration value="arrowRight"/&gt;
- *     &lt;enumeration value="arrowUp"/&gt;
- *     &lt;enumeration value="arrowDown"/&gt;
- *   &lt;/restriction&gt;
- * &lt;/simpleType&gt;
+ * &lt;complexType name="singleKeyAction"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
+ *       &lt;attribute name="singleKeyCommand" type="{http://www.knubisoft.com/cott/testing/model/scenario}singleKeyActionEnum" /&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
+ * 
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "singleKeyAction")
-@XmlEnum
-public enum SingleKeyAction {
+public class SingleKeyAction
+    extends AbstractCommand
+{
 
-    @XmlEnumValue("tab")
-    TAB("tab"),
-    @XmlEnumValue("enter")
-    ENTER("enter"),
-    @XmlEnumValue("delete")
-    DELETE("delete"),
-    @XmlEnumValue("escape")
-    ESCAPE("escape"),
-    @XmlEnumValue("space")
-    SPACE("space"),
-    @XmlEnumValue("arrowLeft")
-    ARROW_LEFT("arrowLeft"),
-    @XmlEnumValue("arrowRight")
-    ARROW_RIGHT("arrowRight"),
-    @XmlEnumValue("arrowUp")
-    ARROW_UP("arrowUp"),
-    @XmlEnumValue("arrowDown")
-    ARROW_DOWN("arrowDown");
-    private final String value;
+    @XmlAttribute(name = "singleKeyCommand")
+    protected SingleKeyActionEnum singleKeyCommand;
 
-    SingleKeyAction(String v) {
-        value = v;
+    /**
+     * Gets the value of the singleKeyCommand property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link SingleKeyActionEnum }
+     *     
+     */
+    public SingleKeyActionEnum getSingleKeyCommand() {
+        return singleKeyCommand;
     }
 
-    public String value() {
-        return value;
-    }
-
-    public static SingleKeyAction fromValue(String v) {
-        for (SingleKeyAction c: SingleKeyAction.values()) {
-            if (c.value.equals(v)) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException(v);
+    /**
+     * Sets the value of the singleKeyCommand property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link SingleKeyActionEnum }
+     *     
+     */
+    public void setSingleKeyCommand(SingleKeyActionEnum value) {
+        this.singleKeyCommand = value;
     }
 
 }

@@ -27,7 +27,7 @@
                     <x:element name="image" type="tns:image"/>
                     <x:element name="repeat" type="tns:repeatUiCommand"/>
                     <x:element name="switchToFrame" type="tns:switchToFrame"/>
-                    <x:element name="hotKeyCommand" type="tns:hotKeyCommand"/>
+                    <x:element name="hotKey" type="tns:hotKey"/>
                 </x:choice>
                 <x:attribute name="clearCookiesAfterExecution" type="x:boolean" default="false"/>
                 <x:attribute name="clearLocalStorageByKey" type="tns:nonEmptyString"/>
@@ -35,17 +35,34 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="hotKeyCommand">
+    <x:complexType name="hotKey">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
-                <x:attribute name="hotKeyAction" type="tns:hotKeyAction"/>
-                <x:attribute name="singleKeyAction" type="tns:singleKeyAction"/>
-                <x:attribute name="locator" type="tns:scenarioLocator"/>
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="combinedKeyAction" type="tns:combinedKeyAction"/>
+                    <x:element name="singleKeyAction" type="tns:singleKeyAction"/>
+                </x:choice>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
-    <x:simpleType name="singleKeyAction">
+    <x:complexType name="combinedKeyAction">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
+                <x:attribute name="combinedKeyCommand" type="tns:combinedKeyActionEnum"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="singleKeyAction">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:attribute name="singleKeyCommand" type="tns:singleKeyActionEnum"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="singleKeyActionEnum">
         <x:restriction base="x:string">
             <x:enumeration value="tab"/>
             <x:enumeration value="enter"/>
@@ -59,7 +76,7 @@
         </x:restriction>
     </x:simpleType>
 
-    <x:simpleType name="hotKeyAction">
+    <x:simpleType name="combinedKeyActionEnum">
         <x:restriction base="x:string">
             <x:enumeration value="highLightAll"/>
             <x:enumeration value="copy"/>

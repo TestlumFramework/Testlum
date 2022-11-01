@@ -7,12 +7,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for hotKeyAction.
+ * <p>Java class for combinedKeyActionEnum.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="hotKeyAction"&gt;
+ * &lt;simpleType name="combinedKeyActionEnum"&gt;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
  *     &lt;enumeration value="highLightAll"/&gt;
  *     &lt;enumeration value="copy"/&gt;
@@ -30,9 +30,9 @@ import javax.xml.bind.annotation.XmlType;
  * </pre>
  * 
  */
-@XmlType(name = "hotKeyAction")
+@XmlType(name = "combinedKeyActionEnum")
 @XmlEnum
-public enum HotKeyAction {
+public enum CombinedKeyActionEnum {
 
     @XmlEnumValue("highLightAll")
     HIGH_LIGHT_ALL("highLightAll"),
@@ -58,7 +58,7 @@ public enum HotKeyAction {
     OPEN_DEV_TOOLS("openDevTools");
     private final String value;
 
-    HotKeyAction(String v) {
+    CombinedKeyActionEnum(String v) {
         value = v;
     }
 
@@ -66,8 +66,8 @@ public enum HotKeyAction {
         return value;
     }
 
-    public static HotKeyAction fromValue(String v) {
-        for (HotKeyAction c: HotKeyAction.values()) {
+    public static CombinedKeyActionEnum fromValue(String v) {
+        for (CombinedKeyActionEnum c: CombinedKeyActionEnum.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

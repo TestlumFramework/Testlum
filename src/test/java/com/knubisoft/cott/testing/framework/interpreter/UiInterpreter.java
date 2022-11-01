@@ -8,7 +8,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependenc
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
-import com.knubisoft.cott.testing.framework.util.HotKeyCommandUtil;
+import com.knubisoft.cott.testing.framework.util.CombinedKeyCommandUtil;
 import com.knubisoft.cott.testing.framework.util.SingleKeyCommandUtil;
 import com.knubisoft.cott.testing.framework.util.ImageComparator;
 import com.knubisoft.cott.testing.framework.util.ImageComparisonUtil;
@@ -24,8 +24,10 @@ import com.knubisoft.cott.testing.model.scenario.Clear;
 import com.knubisoft.cott.testing.model.scenario.Click;
 import com.knubisoft.cott.testing.model.scenario.ClickMethod;
 import com.knubisoft.cott.testing.model.scenario.CloseSecondTab;
+import com.knubisoft.cott.testing.model.scenario.CombinedKeyAction;
+import com.knubisoft.cott.testing.model.scenario.CombinedKeyActionEnum;
 import com.knubisoft.cott.testing.model.scenario.DropDown;
-import com.knubisoft.cott.testing.model.scenario.HotKeyCommand;
+import com.knubisoft.cott.testing.model.scenario.HotKey;
 import com.knubisoft.cott.testing.model.scenario.Hovers;
 import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.Input;
@@ -37,6 +39,8 @@ import com.knubisoft.cott.testing.model.scenario.RepeatUiCommand;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
 import com.knubisoft.cott.testing.model.scenario.ScrollTo;
 import com.knubisoft.cott.testing.model.scenario.SelectOrDeselectBy;
+import com.knubisoft.cott.testing.model.scenario.SingleKeyAction;
+import com.knubisoft.cott.testing.model.scenario.SingleKeyActionEnum;
 import com.knubisoft.cott.testing.model.scenario.SwitchToFrame;
 import com.knubisoft.cott.testing.model.scenario.TypeForOneValue;
 import com.knubisoft.cott.testing.model.scenario.Ui;
@@ -93,6 +97,8 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLEAR_LOCATOR
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLICK_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLICK_METHOD;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLOSE_COMMAND;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.COMBINED_KEY_ACTION;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.COMBINED_KEY_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.DROP_DOWN_FOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.DROP_DOWN_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.INPUT_LOCATOR;
@@ -103,6 +109,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.NAVIGATE_URL;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NUMBER_OF_REPETITIONS;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.SCROLL_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.SECOND_TAB;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.SINGLE_KEY_ACTION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.SWITCH_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.TIME;
 import static com.knubisoft.cott.testing.model.scenario.ClickMethod.JS;
@@ -136,7 +143,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         commands.put(ui -> ui instanceof Hovers, (ui, result) -> hover((Hovers) ui, result));
         commands.put(ui -> ui instanceof Image, (ui, result) -> compareImages((Image) ui, result));
         commands.put(ui -> ui instanceof SwitchToFrame, (ui, result) -> switchToFrame((SwitchToFrame) ui, result));
-        commands.put(ui -> ui instanceof HotKeyCommand, (ui, result) -> hotKeyCommand((HotKeyCommand) ui, result));
+        commands.put(ui -> ui instanceof HotKey, (ui, result) -> hotKeyCommand((HotKey) ui, result));
         this.uiCommands = Collections.unmodifiableMap(commands);
         this.stopScenarioOnFailure = GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure();
     }
@@ -413,12 +420,26 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         dependencies.getWebDriver().switchTo().frame(element);
     }
 
-    private void hotKeyCommand(final HotKeyCommand hotKeyCommand, final CommandResult result) {
-        LogUtil.logHotKeyCommandInfo(hotKeyCommand);
-        if (Objects.nonNull(hotKeyCommand.getSingleKeyAction())) {
-            SingleKeyCommandUtil.singleKeyCommand(hotKeyCommand, dependencies.getWebDriver());
-        } else {
-            HotKeyCommandUtil.hotKeyCommand(hotKeyCommand, dependencies.getWebDriver());
+    private void hotKeyCommand(final HotKey hotKey, final CommandResult result) {
+        for (Object action : hotKey.getCombinedKeyActionOrSingleKeyAction()) {
+            processHotKeyAction(action, result);
+        }
+    }
+
+    private void processHotKeyAction(final Object action, final CommandResult result) {
+        if (action instanceof SingleKeyAction) {
+            SingleKeyActionEnum singleKeyAction = ((SingleKeyAction) action).getSingleKeyCommand();
+            LogUtil.logSingleKeyCommandInfo(singleKeyAction);
+            result.put(SINGLE_KEY_ACTION, singleKeyAction);
+            SingleKeyCommandUtil.singleKeyCommand(singleKeyAction, dependencies.getWebDriver());
+        } else if (action instanceof CombinedKeyAction) {
+            CombinedKeyActionEnum combinedKeyAction = ((CombinedKeyAction) action).getCombinedKeyCommand();
+            String locatorId = ((CombinedKeyAction) action).getLocatorId();
+            LogUtil.logCombinedKeyCommandInfo(combinedKeyAction, locatorId);
+            result.put(COMBINED_KEY_ACTION, combinedKeyAction);
+            result.put(COMBINED_KEY_LOCATOR, locatorId);
+            CombinedKeyCommandUtil.combinedKeyCommand(combinedKeyAction, dependencies.getWebDriver(), locatorId);
+
         }
     }
 

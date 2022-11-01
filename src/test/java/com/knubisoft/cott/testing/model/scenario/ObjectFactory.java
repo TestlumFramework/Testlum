@@ -278,11 +278,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link HotKeyCommand }
+     * Create an instance of {@link HotKey }
      * 
      */
-    public HotKeyCommand createHotKeyCommand() {
-        return new HotKeyCommand();
+    public HotKey createHotKey() {
+        return new HotKey();
+    }
+
+    /**
+     * Create an instance of {@link CombinedKeyAction }
+     * 
+     */
+    public CombinedKeyAction createCombinedKeyAction() {
+        return new CombinedKeyAction();
+    }
+
+    /**
+     * Create an instance of {@link SingleKeyAction }
+     * 
+     */
+    public SingleKeyAction createSingleKeyAction() {
+        return new SingleKeyAction();
     }
 
     /**

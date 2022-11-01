@@ -5,16 +5,16 @@ import com.knubisoft.cott.testing.framework.constant.LogMessage;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Auth;
+import com.knubisoft.cott.testing.model.scenario.CombinedKeyActionEnum;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
-import com.knubisoft.cott.testing.model.scenario.HotKeyCommand;
 import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.Overview;
 import com.knubisoft.cott.testing.model.scenario.OverviewPart;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
 import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.Ses;
-import com.knubisoft.cott.testing.model.scenario.SingleKeyAction;
+import com.knubisoft.cott.testing.model.scenario.SingleKeyActionEnum;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.Ui;
@@ -40,6 +40,8 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BODY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CLEAR_COOKIES_AFTER;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMBINED_KEY_LOCATOR_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMBINED_KEY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMAND_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMENT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_FORMAT;
@@ -52,8 +54,6 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.HOT_KEY_LOCATOR_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.HOT_KEY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.IMAGE_COMPARISON_TYPE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.IMAGE_FOR_COMPARISON_LOG;
@@ -255,13 +255,13 @@ public class LogUtil {
         log.info(SWITCH_TO_FRAME_LOCATOR, locatorId);
     }
 
-    public void logHotKeyCommandInfo(final HotKeyCommand hotKeyCommand) {
-        if (Objects.nonNull(hotKeyCommand.getSingleKeyAction())) {
-            log.info(SINGLE_KEY_LOG, hotKeyCommand.getSingleKeyAction());
-        } else {
-            log.info(HOT_KEY_LOG, hotKeyCommand.getHotKeyAction());
-            log.info(HOT_KEY_LOCATOR_LOG, hotKeyCommand.getLocator());
-        }
+    public void logSingleKeyCommandInfo(final SingleKeyActionEnum singleKeyAction) {
+        log.info(SINGLE_KEY_LOG, singleKeyAction);
+    }
+
+    public void logCombinedKeyCommandInfo(final CombinedKeyActionEnum combinedKeyAction, final String locatorId) {
+        log.info(COMBINED_KEY_LOG, combinedKeyAction);
+        log.info(COMBINED_KEY_LOCATOR_LOG, locatorId);
     }
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {

@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="repeatUiCommand"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice maxOccurs="unbounded"&gt;
  *         &lt;element name="click" type="{http://www.knubisoft.com/cott/testing/model/scenario}click"/&gt;
  *         &lt;element name="input" type="{http://www.knubisoft.com/cott/testing/model/scenario}input"/&gt;
@@ -50,7 +50,7 @@ import javax.xml.bind.annotation.XmlType;
     "clickOrInputOrNavigate"
 })
 public class RepeatUiCommand
-    extends AbstractCommand
+    extends AbstractUiCommand
 {
 
     @XmlElements({

@@ -438,6 +438,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link WaitUi }
+     * 
+     */
+    public WaitUi createWaitUi() {
+        return new WaitUi();
+    }
+
+    /**
      * Create an instance of {@link RepeatUiCommand }
      * 
      */

@@ -23,11 +23,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="click" type="{http://www.knubisoft.com/cott/testing/model/scenario}click"/&gt;
  *         &lt;element name="input" type="{http://www.knubisoft.com/cott/testing/model/scenario}input"/&gt;
  *         &lt;element name="assert" type="{http://www.knubisoft.com/cott/testing/model/scenario}assert"/&gt;
- *         &lt;element name="dropDown" type="{http://www.knubisoft.com/cott/testing/model/scenario}dropDown"/&gt;
- *         &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}wait"/&gt;
+ *         &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}waitUi"/&gt;
  *         &lt;element name="clear" type="{http://www.knubisoft.com/cott/testing/model/scenario}clear"/&gt;
- *         &lt;element name="scroll" type="{http://www.knubisoft.com/cott/testing/model/scenario}scroll"/&gt;
- *         &lt;element name="scrollTo" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollTo"/&gt;
  *         &lt;element name="image" type="{http://www.knubisoft.com/cott/testing/model/scenario}image"/&gt;
  *         &lt;element name="repeat" type="{http://www.knubisoft.com/cott/testing/model/scenario}repeatUiCommand"/&gt;
  *       &lt;/choice&gt;
@@ -50,15 +47,12 @@ public class Native
         @XmlElement(name = "click", type = Click.class),
         @XmlElement(name = "input", type = Input.class),
         @XmlElement(name = "assert", type = Assert.class),
-        @XmlElement(name = "dropDown", type = DropDown.class),
-        @XmlElement(name = "wait", type = Wait.class),
+        @XmlElement(name = "wait", type = WaitUi.class),
         @XmlElement(name = "clear", type = Clear.class),
-        @XmlElement(name = "scroll", type = Scroll.class),
-        @XmlElement(name = "scrollTo", type = ScrollTo.class),
         @XmlElement(name = "image", type = Image.class),
         @XmlElement(name = "repeat", type = RepeatUiCommand.class)
     })
-    protected List<AbstractCommand> clickOrInputOrAssert;
+    protected List<AbstractUiCommand> clickOrInputOrAssert;
 
     /**
      * Gets the value of the clickOrInputOrAssert property.
@@ -81,19 +75,16 @@ public class Native
      * {@link Click }
      * {@link Input }
      * {@link Assert }
-     * {@link DropDown }
-     * {@link Wait }
+     * {@link WaitUi }
      * {@link Clear }
-     * {@link Scroll }
-     * {@link ScrollTo }
      * {@link Image }
      * {@link RepeatUiCommand }
      * 
      * 
      */
-    public List<AbstractCommand> getClickOrInputOrAssert() {
+    public List<AbstractUiCommand> getClickOrInputOrAssert() {
         if (clickOrInputOrAssert == null) {
-            clickOrInputOrAssert = new ArrayList<AbstractCommand>();
+            clickOrInputOrAssert = new ArrayList<AbstractUiCommand>();
         }
         return this.clickOrInputOrAssert;
     }

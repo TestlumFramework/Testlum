@@ -68,6 +68,7 @@ import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.Sqs;
 import com.knubisoft.cott.testing.model.scenario.StorageName;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
+import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.When;
 import org.springframework.util.StringUtils;
 
@@ -257,6 +258,10 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateIncludeAction(include, xmlFile);
         });
 
+        validatorMap.put(o -> o instanceof Web, (xmlFile, command) -> {
+            validateWebCommands((Web) command);
+        });
+
         this.abstractCommandValidatorsMap = Collections.unmodifiableMap(validatorMap);
     }
 
@@ -272,8 +277,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private List<AbstractCommand> getUiCommands(final List<AbstractCommand> scenarioCommands) {
-        return scenarioCommands.stream().filter(abstractCommand ->
-                Ui.class.isAssignableFrom(abstractCommand.getClass())).collect(Collectors.toList());
+        return scenarioCommands.stream().filter(abstractCommand -> abstractCommand instanceof Native
+                || abstractCommand instanceof Web || abstractCommand instanceof Mobilebrowser)
+                .collect(Collectors.toList());
     }
 
     private boolean containsNativeAndMobileTags(final List<AbstractCommand> uiCommands) {
@@ -282,8 +288,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateNativeAndMobilebrowserConfig() {
-        if (GlobalTestConfigurationProvider.provide().getMobilebrowser().getAppiumServerUrl()
-                .equals(GlobalTestConfigurationProvider.provide().getNative().getAppiumServerUrl())) {
+        if (GlobalTestConfigurationProvider.getMobilebrowserSettings().getAppiumServerUrl()
+                .equals(GlobalTestConfigurationProvider.getNativeSettings().getAppiumServerUrl())) {
             throw new DefaultFrameworkException(SAME_APPIUM_URL);
         }
         if (MobileUtil.filterEnabledMobilebrowserDevices().stream().map(MobilebrowserDevice::getUdid)
@@ -404,8 +410,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
-    private void validateUiCommands(final Ui command) {
-        command.getClickOrInputOrNavigate().forEach(o -> {
+    private void validateWebCommands(final Web command) {
+        command.getClickOrInputOrAssert().forEach(o -> {
             if (o instanceof Javascript) {
                 validateFileExistenceInDataFolder(((Javascript) o).getFile());
             } else if (o instanceof Scroll && ((Scroll) o).getType() == ScrollType.INNER) {

@@ -14,11 +14,8 @@
                     <x:element name="click" type="tns:click"/>
                     <x:element name="input" type="tns:input"/>
                     <x:element name="assert" type="tns:assert"/>
-                    <x:element name="dropDown" type="tns:dropDown"/>
-                    <x:element name="wait" type="tns:wait"/>
+                    <x:element name="wait" type="tns:waitUi"/>
                     <x:element name="clear" type="tns:clear"/>
-                    <x:element name="scroll" type="tns:scroll"/>
-                    <x:element name="scrollTo" type="tns:scrollTo"/>
                     <x:element name="image" type="tns:image"/>
                     <x:element name="repeat" type="tns:repeatUiCommand"/>
                 </x:choice>

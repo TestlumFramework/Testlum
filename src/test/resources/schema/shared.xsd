@@ -7,7 +7,7 @@
 
     <x:complexType name="commandWithLocator" abstract="true">
         <x:complexContent>
-            <x:extension base="tns:abstractCommand">
+            <x:extension base="tns:abstractUiCommand">
                 <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
             </x:extension>
         </x:complexContent>
@@ -16,6 +16,13 @@
     <x:complexType name="abstractCommand" abstract="true">
         <x:attribute name="comment" type="tns:stringMin10" use="required"/>
         <x:attribute name="threshold" type="x:int"/>
+    </x:complexType>
+
+    <x:complexType name="abstractUiCommand" abstract="true">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+            </x:extension>
+        </x:complexContent>
     </x:complexType>
 
     <x:simpleType name="nonEmptyString">

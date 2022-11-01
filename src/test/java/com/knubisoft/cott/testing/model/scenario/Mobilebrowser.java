@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="input" type="{http://www.knubisoft.com/cott/testing/model/scenario}input"/&gt;
  *         &lt;element name="assert" type="{http://www.knubisoft.com/cott/testing/model/scenario}assert"/&gt;
  *         &lt;element name="dropDown" type="{http://www.knubisoft.com/cott/testing/model/scenario}dropDown"/&gt;
- *         &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}wait"/&gt;
+ *         &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}waitUi"/&gt;
  *         &lt;element name="clear" type="{http://www.knubisoft.com/cott/testing/model/scenario}clear"/&gt;
  *         &lt;element name="scroll" type="{http://www.knubisoft.com/cott/testing/model/scenario}scroll"/&gt;
  *         &lt;element name="scrollTo" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollTo"/&gt;
@@ -59,7 +59,7 @@ public class Mobilebrowser
         @XmlElement(name = "input", type = Input.class),
         @XmlElement(name = "assert", type = Assert.class),
         @XmlElement(name = "dropDown", type = DropDown.class),
-        @XmlElement(name = "wait", type = Wait.class),
+        @XmlElement(name = "wait", type = WaitUi.class),
         @XmlElement(name = "clear", type = Clear.class),
         @XmlElement(name = "scroll", type = Scroll.class),
         @XmlElement(name = "scrollTo", type = ScrollTo.class),
@@ -71,7 +71,7 @@ public class Mobilebrowser
         @XmlElement(name = "closeSecondTab", type = CloseSecondTab.class),
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class)
     })
-    protected List<AbstractCommand> clickOrInputOrAssert;
+    protected List<AbstractUiCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "clearCookiesAfterExecution")
     protected Boolean clearCookiesAfterExecution;
     @XmlAttribute(name = "clearLocalStorageByKey")
@@ -99,7 +99,7 @@ public class Mobilebrowser
      * {@link Input }
      * {@link Assert }
      * {@link DropDown }
-     * {@link Wait }
+     * {@link WaitUi }
      * {@link Clear }
      * {@link Scroll }
      * {@link ScrollTo }
@@ -113,9 +113,9 @@ public class Mobilebrowser
      * 
      * 
      */
-    public List<AbstractCommand> getClickOrInputOrAssert() {
+    public List<AbstractUiCommand> getClickOrInputOrAssert() {
         if (clickOrInputOrAssert == null) {
-            clickOrInputOrAssert = new ArrayList<AbstractCommand>();
+            clickOrInputOrAssert = new ArrayList<AbstractUiCommand>();
         }
         return this.clickOrInputOrAssert;
     }

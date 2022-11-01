@@ -11,6 +11,8 @@ import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
 import com.knubisoft.cott.testing.model.scenario.Image;
+import com.knubisoft.cott.testing.model.scenario.Mobilebrowser;
+import com.knubisoft.cott.testing.model.scenario.Native;
 import com.knubisoft.cott.testing.model.scenario.Overview;
 import com.knubisoft.cott.testing.model.scenario.OverviewPart;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
@@ -18,6 +20,7 @@ import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
+import com.knubisoft.cott.testing.model.scenario.Web;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -257,7 +260,7 @@ public class LogUtil {
     }
 
     public void logExecutionTime(final long time, final AbstractCommand command) {
-        if (command instanceof Ui) {
+        if (command instanceof Native || command instanceof Web || command instanceof Mobilebrowser) {
             log.info(UI_EXECUTION_TIME_LOG, time);
         } else {
             log.info(EXECUTION_TIME_LOG, time);

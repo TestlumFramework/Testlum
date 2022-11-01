@@ -34,7 +34,7 @@
         <x:complexContent>
             <x:extension base="tns:abstractDevice">
                 <x:sequence>
-<!--                    <x:element name="app" type="tns:nonEmptyString"/>-->
+                    <x:element name="app" type="tns:nonEmptyString" minOccurs="0"/>
                     <x:element name="appPackage" type="tns:nonEmptyString"/>
                     <x:element name="appActivity" type="tns:nonEmptyString"/>
                 </x:sequence>

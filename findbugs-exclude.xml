@@ -76,4 +76,14 @@
         <Class name="com.knubisoft.cott.testing.framework.configuration.websocket.WebSocketMessageHandler"/>
         <Bug pattern="DM_DEFAULT_ENCODING"/>
     </Match>
+
+    <Match>
+        <Class name="com.knubisoft.cott.testing.framework.util.JavascriptUtil"/>
+        <Bug pattern="BC_UNCONFIRMED_CAST"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.cott.testing.framework.util.UiUtil"/>
+        <Bug pattern="BC_UNCONFIRMED_CAST"/>
+    </Match>
 </FindBugsFilter>

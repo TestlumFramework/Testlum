@@ -3,14 +3,10 @@ package com.knubisoft.cott.testing.framework.interpreter.lib;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
-import com.knubisoft.cott.testing.framework.exception.ComparisonException;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.exception.FileLinkingException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.JacksonMapperUtil;
-import com.knubisoft.cott.testing.framework.util.StringPrettifier;
-import com.knubisoft.cott.testing.framework.util.TreeComparator;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -21,12 +17,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMENT_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMPARISON_FOR_STEP_WAS_SKIPPED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.POSITION_COMMAND_LOG;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SLOW_COMMAND_PROCESSING;
 import static java.lang.String.format;
@@ -109,69 +103,13 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         return actual;
     }
 
+    protected CompareBuilder newCompare() {
+        return new CompareBuilder(dependencies.getFile(), dependencies.getPosition());
+    }
+
     public String inject(final String original) {
         return dependencies.getScenarioContext().inject(original);
     }
 
-    protected CompareBuilder newCompare() {
-        return new CompareBuilder();
-    }
 
-    @Getter
-    protected class CompareBuilder {
-        private String expected;
-        private Supplier<String> supplierActual;
-
-        public CompareBuilder withActual(final Object actual) {
-            this.supplierActual = () -> AbstractInterpreter.this.toString(actual);
-            return this;
-        }
-
-        public CompareBuilder withActual(final String actual) {
-            this.supplierActual = () -> String.valueOf(actual);
-            return this;
-        }
-
-        public CompareBuilder withExpected(final String expected) {
-            this.expected = String.valueOf(expected);
-            return this;
-        }
-
-        public CompareBuilder withExpectedFile(final String fileName) {
-            if (fileName != null) {
-                File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
-                return tryToUseExpectedFile(file);
-            }
-            return this;
-        }
-
-        private CompareBuilder tryToUseExpectedFile(final File file) {
-            try {
-                return withExpected(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                throw new DefaultFrameworkException(e);
-            }
-        }
-
-        @SneakyThrows
-        public void exec() {
-            if (expected != null) {
-                String actual = supplierActual.get();
-                tryToCompare(actual);
-            } else {
-                log.info(format(COMPARISON_FOR_STEP_WAS_SKIPPED, dependencies.getPosition()));
-            }
-        }
-
-        private void tryToCompare(final String actual) {
-            try {
-                final String newActual = StringPrettifier.prettify(actual);
-                final String newExpected = StringPrettifier.prettify(expected);
-                TreeComparator.compare(newExpected, newActual);
-            } catch (ComparisonException e) {
-                save(actual);
-                throw new DefaultFrameworkException(e);
-            }
-        }
-    }
 }

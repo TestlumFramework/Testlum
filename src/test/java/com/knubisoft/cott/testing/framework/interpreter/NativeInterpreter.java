@@ -1,17 +1,25 @@
 package com.knubisoft.cott.testing.framework.interpreter;
-
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
-import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiInterpreter;
+import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
-import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
+import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.Native;
 
 @InterpreterForClass(Native.class)
-public class NativeInterpreter extends AbstractUiInterpreter<Native> {
+public class NativeInterpreter extends AbstractInterpreter<Native> {
     public NativeInterpreter(final InterpreterDependencies dependencies) {
-        super(dependencies, dependencies.getNativeDriver(), GlobalTestConfigurationProvider.getNativeSettings());
+        super(dependencies);
     }
 
+    @Override
+    protected void acceptImpl(final Native command, final CommandResult result) {
+        boolean takeScreenshots = GlobalTestConfigurationProvider.getNativeSettings().getDeviceSettings()
+                .getTakeScreenshots().isEnable();
+        ExecutorDependencies executorDependencies = new ExecutorDependencies(dependencies.getNativeDriver(),
+                dependencies.getFile(), dependencies.getScenarioContext(), dependencies.getPosition(), takeScreenshots);
+        UiUtil.runCommands(command.getClickOrInputOrAssert(), result, executorDependencies);
+    }
 }

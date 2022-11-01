@@ -1,0 +1,50 @@
+package com.knubisoft.cott.testing.framework.interpreter.lib.ui.executor;
+
+import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
+import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
+import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
+import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
+import com.knubisoft.cott.testing.framework.util.ResultUtil;
+import com.knubisoft.cott.testing.framework.util.UiUtil;
+import com.knubisoft.cott.testing.model.scenario.Hovers;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+@ExecutorForClass(Hovers.class)
+public class HoverExecutor extends AbstractUiExecutor<Hovers> {
+    private static final String MOVE_TO_EMPTY_SPACE = "//html";
+
+    public HoverExecutor(final ExecutorDependencies dependencies) {
+        super(dependencies);
+    }
+
+    @Override
+    public void execute(final Hovers hovers, final CommandResult result) {
+        ResultUtil.addHoversMetaData(hovers, result);
+        Actions actions = new Actions(dependencies.getDriver());
+        List<WebElement> webElements = hovers.getHover().stream()
+                .peek(hover -> LogUtil.logHover(dependencies.getPosition().incrementAndGet(), hover))
+                .map(hover -> UiUtil.findWebElement(dependencies.getDriver(), hover.getLocatorId()))
+                .collect(Collectors.toList());
+        webElements.forEach(webElement -> {
+            actions.moveToElement(webElement);
+            actions.perform();
+        });
+        moveToEmptySpace(hovers.isMoveToEmptySpace(), actions);
+    }
+
+    private void moveToEmptySpace(final Boolean isMoveToEmptySpace, final Actions actions) {
+        if (Objects.nonNull(isMoveToEmptySpace) && isMoveToEmptySpace) {
+            WebElement element = dependencies.getDriver().findElement(By.xpath(MOVE_TO_EMPTY_SPACE));
+            actions.moveToElement(element);
+            actions.perform();
+        }
+    }
+
+}

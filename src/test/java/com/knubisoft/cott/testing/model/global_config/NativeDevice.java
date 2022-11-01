@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}abstractDevice"&gt;
  *       &lt;sequence&gt;
+ *         &lt;element name="app" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
  *         &lt;element name="appPackage" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="appActivity" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
@@ -29,6 +30,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "nativeDevice", propOrder = {
+    "app",
     "appPackage",
     "appActivity"
 })
@@ -36,10 +38,35 @@ public class NativeDevice
     extends AbstractDevice
 {
 
+    protected String app;
     @XmlElement(required = true)
     protected String appPackage;
     @XmlElement(required = true)
     protected String appActivity;
+
+    /**
+     * Gets the value of the app property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getApp() {
+        return app;
+    }
+
+    /**
+     * Sets the value of the app property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setApp(String value) {
+        this.app = value;
+    }
 
     /**
      * Gets the value of the appPackage property.

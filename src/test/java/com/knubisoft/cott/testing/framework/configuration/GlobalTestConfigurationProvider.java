@@ -2,13 +2,13 @@ package com.knubisoft.cott.testing.framework.configuration;
 
 import com.knubisoft.cott.testing.framework.parser.XMLParsers;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
-import com.knubisoft.cott.testing.model.global_config.BrowserSettings;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
+import com.knubisoft.cott.testing.model.global_config.Mobilebrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
-import com.knubisoft.cott.testing.model.global_config.MobilebrowserDeviceSettings;
+import com.knubisoft.cott.testing.model.global_config.Native;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
-import com.knubisoft.cott.testing.model.global_config.NativeDeviceSettings;
+import com.knubisoft.cott.testing.model.global_config.Web;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -24,7 +24,7 @@ public class GlobalTestConfigurationProvider {
     }
 
     public static List<AbstractBrowser> getBrowsers() {
-        return getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari();
+        return getBrowserSettings().getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari();
     }
 
     public static List<NativeDevice> getNativeDevices() {
@@ -32,20 +32,19 @@ public class GlobalTestConfigurationProvider {
     }
 
     public static List<MobilebrowserDevice> getMobilebrowserDevices() {
-        return GlobalTestConfigurationProvider.provide().getMobilebrowser().getDeviceSettings()
-                .getDevices().getDevice();
+        return getMobilebrowserSettings().getDeviceSettings().getDevices().getDevice();
     }
 
-    public static BrowserSettings getBrowserSettings() {
-       return GlobalTestConfigurationProvider.provide().getWeb().getBrowserSettings();
+    public static Web getBrowserSettings() {
+       return GlobalTestConfigurationProvider.provide().getWeb();
     }
 
-    public static NativeDeviceSettings getNativeSettings() {
-        return GlobalTestConfigurationProvider.provide().getNative().getDeviceSettings();
+    public static Mobilebrowser getMobilebrowserSettings() {
+        return GlobalTestConfigurationProvider.provide().getMobilebrowser();
     }
 
-    public static MobilebrowserDeviceSettings getMobilebrowserSettings() {
-        return GlobalTestConfigurationProvider.provide().getMobilebrowser().getDeviceSettings();
+    public static Native getNativeSettings() {
+        return GlobalTestConfigurationProvider.provide().getNative();
     }
 
     public static Integrations getIntegrations() {

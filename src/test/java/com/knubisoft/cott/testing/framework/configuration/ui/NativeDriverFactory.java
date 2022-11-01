@@ -8,6 +8,7 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -19,6 +20,9 @@ public class NativeDriverFactory {
     public WebDriver createDriver(final NativeDevice nativeDevice) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         MobileDriverUtil.setCommonCapabilities(nativeDevice, desiredCapabilities);
+        if (StringUtils.isNotEmpty(nativeDevice.getApp())) {
+            desiredCapabilities.setCapability(MobileCapabilityType.APP, nativeDevice.getApp());
+        }
         desiredCapabilities.setCapability("appPackage", nativeDevice.getAppPackage());
         desiredCapabilities.setCapability("appActivity", nativeDevice.getAppActivity());
         desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "5000");

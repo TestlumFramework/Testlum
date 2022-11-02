@@ -48,6 +48,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_F
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATION_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.DIVIDE_LINE_FOR_KEY_COMMANDS;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
@@ -256,10 +257,12 @@ public class LogUtil {
     }
 
     public void logSingleKeyCommandInfo(final SingleKeyActionEnum singleKeyAction) {
+        log.info(DIVIDE_LINE_FOR_KEY_COMMANDS);
         log.info(SINGLE_KEY_LOG, singleKeyAction);
     }
 
     public void logCombinedKeyCommandInfo(final CombinedKeyActionEnum combinedKeyAction, final String locatorId) {
+        log.info(DIVIDE_LINE_FOR_KEY_COMMANDS);
         log.info(COMBINED_KEY_LOG, combinedKeyAction);
         log.info(COMBINED_KEY_LOCATOR_LOG, locatorId);
     }

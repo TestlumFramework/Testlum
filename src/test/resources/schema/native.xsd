@@ -14,7 +14,7 @@
                     <x:element name="click" type="tns:click"/>
                     <x:element name="input" type="tns:input"/>
                     <x:element name="assert" type="tns:assert"/>
-                    <x:element name="wait" type="tns:waitUi"/>
+                    <x:element name="wait" type="tns:wait"/>
                     <x:element name="clear" type="tns:clear"/>
                     <x:element name="image" type="tns:image"/>
                 </x:choice>

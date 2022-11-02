@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="click" type="{http://www.knubisoft.com/cott/testing/model/scenario}click"/&gt;
  *         &lt;element name="input" type="{http://www.knubisoft.com/cott/testing/model/scenario}input"/&gt;
  *         &lt;element name="assert" type="{http://www.knubisoft.com/cott/testing/model/scenario}assert"/&gt;
- *         &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}waitUi"/&gt;
+ *         &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}wait"/&gt;
  *         &lt;element name="clear" type="{http://www.knubisoft.com/cott/testing/model/scenario}clear"/&gt;
  *         &lt;element name="image" type="{http://www.knubisoft.com/cott/testing/model/scenario}image"/&gt;
  *       &lt;/choice&gt;
@@ -46,7 +46,7 @@ public class Native
         @XmlElement(name = "click", type = Click.class),
         @XmlElement(name = "input", type = Input.class),
         @XmlElement(name = "assert", type = Assert.class),
-        @XmlElement(name = "wait", type = WaitUi.class),
+        @XmlElement(name = "wait", type = Wait.class),
         @XmlElement(name = "clear", type = Clear.class),
         @XmlElement(name = "image", type = Image.class)
     })
@@ -73,7 +73,7 @@ public class Native
      * {@link Click }
      * {@link Input }
      * {@link Assert }
-     * {@link WaitUi }
+     * {@link Wait }
      * {@link Clear }
      * {@link Image }
      * 

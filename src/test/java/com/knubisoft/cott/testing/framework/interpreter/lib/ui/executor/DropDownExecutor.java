@@ -25,6 +25,7 @@ import static java.lang.String.format;
 @Slf4j
 @ExecutorForClass(DropDown.class)
 public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
+
     public DropDownExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
     }

@@ -24,6 +24,7 @@ import static java.lang.String.format;
 @Slf4j
 @ExecutorForClass(Navigate.class)
 public class NavigateExecutor extends AbstractUiExecutor<Navigate> {
+
     private static final Pattern HTTP_PATTERN = Pattern.compile("https?://.+");
 
     public NavigateExecutor(final ExecutorDependencies dependencies) {

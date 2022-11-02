@@ -50,7 +50,6 @@ import javax.xml.bind.annotation.XmlType;
     Dynamo.class,
     WebSocket.class,
     Var.class,
-    Wait.class,
     Shell.class,
     Smtp.class,
     Twilio.class,

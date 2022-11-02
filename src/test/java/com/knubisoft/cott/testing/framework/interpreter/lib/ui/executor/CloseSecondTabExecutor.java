@@ -18,6 +18,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.SECOND_TAB;
 
 @ExecutorForClass(CloseSecondTab.class)
 public class CloseSecondTabExecutor extends AbstractUiExecutor<CloseSecondTab> {
+
     public CloseSecondTabExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
     }

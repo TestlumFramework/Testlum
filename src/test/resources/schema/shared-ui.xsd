@@ -213,13 +213,4 @@
         <x:attribute name="attribute" type="tns:nonEmptyString" default="src"/>
     </x:complexType>
 
-    <x:complexType name="waitUi">
-        <x:complexContent>
-            <x:extension base="tns:abstractUiCommand">
-                <x:attribute name="time" type="tns:timePattern" use="required"/>
-                <x:attribute name="unit" type="tns:unit" default="seconds"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
 </x:schema>

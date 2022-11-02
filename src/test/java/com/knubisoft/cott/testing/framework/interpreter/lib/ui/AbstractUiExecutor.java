@@ -4,6 +4,7 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 
 public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
+
     protected final ExecutorDependencies dependencies;
 
     protected AbstractUiExecutor(final ExecutorDependencies dependencies) {

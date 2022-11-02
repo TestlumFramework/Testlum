@@ -16,6 +16,7 @@ import java.net.URL;
 
 @UtilityClass
 public class NativeDriverFactory {
+
     @SneakyThrows
     public WebDriver createDriver(final NativeDevice nativeDevice) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();

@@ -26,14 +26,14 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "abstractUiCommand")
 @XmlSeeAlso({
+    Wait.class,
     Javascript.class,
     Hovers.class,
     Navigate.class,
     CloseSecondTab.class,
     Scroll.class,
     CommandWithLocator.class,
-    Image.class,
-    WaitUi.class
+    Image.class
 })
 public abstract class AbstractUiCommand
     extends AbstractCommand

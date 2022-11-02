@@ -11,6 +11,7 @@ import java.util.Set;
 
 @RequiredArgsConstructor
 public class MockDriver implements WebDriver {
+
     private final String exceptionMessage;
 
     @Override

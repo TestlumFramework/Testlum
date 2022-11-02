@@ -17,6 +17,7 @@ import static com.knubisoft.cott.testing.model.scenario.ClickMethod.JS;
 
 @ExecutorForClass(Click.class)
 public class ClickExecutor extends AbstractUiExecutor<Click> {
+
     public ClickExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
     }

@@ -9,6 +9,7 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FUN
 
 @UtilityClass
 public class ExecutorProvider {
+
     private final CommandToExecutorClassMap executors = ExecutorScanner.getExecutors();
 
     @SneakyThrows

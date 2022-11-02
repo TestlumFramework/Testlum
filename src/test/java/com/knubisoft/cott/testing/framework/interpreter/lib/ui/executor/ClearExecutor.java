@@ -12,6 +12,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLEAR_LOCATOR
 
 @ExecutorForClass(Clear.class)
 public class ClearExecutor extends AbstractUiExecutor<Clear> {
+
     public ClearExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
     }

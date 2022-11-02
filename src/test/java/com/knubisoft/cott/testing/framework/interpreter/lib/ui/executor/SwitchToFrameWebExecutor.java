@@ -13,6 +13,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.SWITCH_LOCATO
 
 @ExecutorForClass(SwitchToFrame.class)
 public class SwitchToFrameWebExecutor extends AbstractUiExecutor<SwitchToFrame> {
+
     public SwitchToFrameWebExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
     }

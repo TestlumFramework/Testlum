@@ -26,6 +26,7 @@ import static java.lang.String.format;
 @Slf4j
 @Getter
 public class CompareBuilder {
+
     private final File scenarioFile;
     private final AtomicInteger position;
     private String expected;

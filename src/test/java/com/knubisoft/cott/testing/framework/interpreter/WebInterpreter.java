@@ -10,6 +10,7 @@ import org.openqa.selenium.WebDriver;
 
 @InterpreterForClass(Web.class)
 public class WebInterpreter extends AbstractUiInterpreter<Web> {
+
     public WebInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
     }
@@ -19,7 +20,7 @@ public class WebInterpreter extends AbstractUiInterpreter<Web> {
         boolean takeScreenshots = GlobalTestConfigurationProvider.getBrowserSettings().getBrowserSettings()
                 .getTakeScreenshots().isEnable();
         WebDriver driver = dependencies.getWebDriver();
-        runCommands(command.getClickOrInputOrAssert(), result, createExecutorDependencies(takeScreenshots, driver));
+        runCommands(command.getClickOrInputOrAssert(), result, createExecutorDependencies(UiType.WEB));
         clearLocalStorage(driver, command.getClearLocalStorageByKey(), result);
         clearCookies(driver, command.isClearCookiesAfterExecution(), result);
     }

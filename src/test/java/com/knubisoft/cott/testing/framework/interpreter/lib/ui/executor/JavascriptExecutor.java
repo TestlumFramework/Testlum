@@ -14,6 +14,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.JS_FILE;
 @Slf4j
 @ExecutorForClass(Javascript.class)
 public class JavascriptExecutor extends AbstractUiExecutor<Javascript> {
+
     public JavascriptExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
     }

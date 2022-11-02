@@ -15,6 +15,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.SCROLL_LOCATO
 
 @ExecutorForClass(ScrollTo.class)
 public class ScrollToWebExecutor extends AbstractUiExecutor<ScrollTo> {
+
     public ScrollToWebExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
     }

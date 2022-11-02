@@ -20,6 +20,7 @@ import java.io.File;
 
 @ExecutorForClass(Image.class)
 public class CompareImageExecutor extends AbstractUiExecutor<Image> {
+
     public CompareImageExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
     }

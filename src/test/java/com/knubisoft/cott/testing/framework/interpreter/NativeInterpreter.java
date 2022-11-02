@@ -8,6 +8,7 @@ import com.knubisoft.cott.testing.model.scenario.Native;
 
 @InterpreterForClass(Native.class)
 public class NativeInterpreter extends AbstractUiInterpreter<Native> {
+
     public NativeInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
     }
@@ -16,7 +17,6 @@ public class NativeInterpreter extends AbstractUiInterpreter<Native> {
     protected void acceptImpl(final Native command, final CommandResult result) {
         boolean takeScreenshots = GlobalTestConfigurationProvider.getNativeSettings().getDeviceSettings()
                 .getTakeScreenshots().isEnable();
-        runCommands(command.getClickOrInputOrAssert(), result,
-                createExecutorDependencies(takeScreenshots, dependencies.getNativeDriver()));
+        runCommands(command.getClickOrInputOrAssert(), result, createExecutorDependencies(UiType.NATIVE));
     }
 }

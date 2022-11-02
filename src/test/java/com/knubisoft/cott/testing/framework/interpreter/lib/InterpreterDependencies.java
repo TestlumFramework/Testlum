@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 @Setter
 public class InterpreterDependencies {
+
     private final GlobalTestConfiguration globalTestConfiguration = GlobalTestConfigurationProvider.provide();
     private final ApplicationContext context;
     private final File file;

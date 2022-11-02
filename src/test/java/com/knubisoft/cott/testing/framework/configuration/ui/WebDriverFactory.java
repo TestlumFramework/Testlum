@@ -71,8 +71,8 @@ public class WebDriverFactory {
     }
 
     private WebDriver getWebDriver(final AbstractBrowser browser,
-                                          final MutableCapabilities browserOptions,
-                                          final WebDriverManager driverManager) {
+                                   final MutableCapabilities browserOptions,
+                                   final WebDriverManager driverManager) {
         setCapabilities(browser, browserOptions);
         BrowserUtil.BrowserType browserType = BrowserUtil.getBrowserType(browser);
         if (browserType == BrowserUtil.BrowserType.REMOTE) {
@@ -88,8 +88,8 @@ public class WebDriverFactory {
     }
 
     private WebDriver getLocalDriver(final LocalBrowser localBrowserSettings,
-                                            final MutableCapabilities browserOptions,
-                                            final WebDriverManager driverManager) {
+                                     final MutableCapabilities browserOptions,
+                                     final WebDriverManager driverManager) {
         String driverVersion = localBrowserSettings.getDriverVersion();
         if (StringUtils.isNotEmpty(localBrowserSettings.getDriverVersion())) {
             driverManager.driverVersion(driverVersion);
@@ -98,8 +98,8 @@ public class WebDriverFactory {
     }
 
     private WebDriver getBrowserInDocker(final BrowserInDocker browserInDockerSettings,
-                                                final MutableCapabilities browserOptions,
-                                                final WebDriverManager driverManager) {
+                                         final MutableCapabilities browserOptions,
+                                         final WebDriverManager driverManager) {
         String dockerNetwork = browserInDockerSettings.getDockerNetwork();
         ScreenRecording screenRecordingSettings = browserInDockerSettings.getScreenRecording();
         driverManager.capabilities(browserOptions).browserVersion(browserInDockerSettings.getBrowserVersion());
@@ -115,7 +115,7 @@ public class WebDriverFactory {
 
     @SneakyThrows
     private WebDriver getRemoteDriver(final RemoteBrowser remoteBrowserSettings,
-                                             final MutableCapabilities browserOptions) {
+                                      final MutableCapabilities browserOptions) {
         browserOptions.setCapability(BROWSER_VERSION, remoteBrowserSettings.getBrowserVersion());
         return new RemoteWebDriver(new URL(remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
     }
@@ -211,7 +211,9 @@ public class WebDriverFactory {
         }
     }
 
-    private interface BrowserPredicate extends Predicate<AbstractBrowser> { }
+    private interface BrowserPredicate extends Predicate<AbstractBrowser> {
+    }
 
-    private interface WebDriverFunction extends Function<AbstractBrowser, WebDriver> { }
+    private interface WebDriverFunction extends Function<AbstractBrowser, WebDriver> {
+    }
 }

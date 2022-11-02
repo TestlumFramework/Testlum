@@ -16,6 +16,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.INPUT_VALUE;
 @Slf4j
 @ExecutorForClass(Input.class)
 public class InputExecutor extends AbstractUiExecutor<Input> {
+
     public InputExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
     }

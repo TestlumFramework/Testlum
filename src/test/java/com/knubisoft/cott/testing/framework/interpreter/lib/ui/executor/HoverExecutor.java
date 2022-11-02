@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 @ExecutorForClass(Hovers.class)
 public class HoverExecutor extends AbstractUiExecutor<Hovers> {
+
     private static final String MOVE_TO_EMPTY_SPACE = "//html";
 
     public HoverExecutor(final ExecutorDependencies dependencies) {

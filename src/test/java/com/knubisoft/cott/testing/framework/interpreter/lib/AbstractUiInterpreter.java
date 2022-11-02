@@ -1,5 +1,7 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib;
 
+import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorProvider;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
@@ -25,13 +27,32 @@ public abstract class AbstractUiInterpreter<T extends AbstractUiTag> extends Abs
         super(dependencies);
     }
 
-    public ExecutorDependencies createExecutorDependencies(final boolean takeScreenshots, final WebDriver driver) {
+    public ExecutorDependencies createExecutorDependencies(UiType uiType) {
+        WebDriver driver;
+        boolean takeScreenshots;
+        switch (uiType) {
+            case WEB:
+                driver = dependencies.getWebDriver();
+                takeScreenshots = GlobalTestConfigurationProvider.webScreenshot();
+                break;
+            case MOBILE_BROWSER:
+                driver = dependencies.getMobilebrowserDriver();
+                takeScreenshots = GlobalTestConfigurationProvider.mobilebrowserScreenshot();
+                break;
+            case NATIVE:
+                driver = dependencies.getNativeDriver();
+                takeScreenshots = GlobalTestConfigurationProvider.nativeScreenshot();
+                break;
+            default:
+                throw new DefaultFrameworkException("Type {} not found", uiType);
+        }
         return ExecutorDependencies.builder()
                 .file(dependencies.getFile())
                 .driver(driver)
                 .scenarioContext(dependencies.getScenarioContext())
                 .position(dependencies.getPosition())
-                .takeScreenshots(takeScreenshots).build();
+                .takeScreenshots(takeScreenshots)
+                .build();
     }
 
     public void runCommands(final List<AbstractUiCommand> commandList, final CommandResult result,
@@ -87,5 +108,11 @@ public abstract class AbstractUiInterpreter<T extends AbstractUiTag> extends Abs
         if (clearCookies) {
             driver.manage().deleteAllCookies();
         }
+    }
+
+    public enum UiType {
+        WEB,
+        NATIVE,
+        MOBILE_BROWSER
     }
 }

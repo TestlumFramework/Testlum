@@ -1,13 +1,13 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorProvider;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.ScenarioUtil;
+import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiTag;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +17,7 @@ import org.openqa.selenium.html5.WebStorage;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLEAR_COOKIES_AFTER_EXECUTION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLEAR_LOCAL_STORAGE_BY_KEY;
@@ -28,30 +29,12 @@ public abstract class AbstractUiInterpreter<T extends AbstractUiTag> extends Abs
     }
 
     public ExecutorDependencies createExecutorDependencies(UiType uiType) {
-        WebDriver driver;
-        boolean takeScreenshots;
-        switch (uiType) {
-            case WEB:
-                driver = dependencies.getWebDriver();
-                takeScreenshots = GlobalTestConfigurationProvider.webScreenshot();
-                break;
-            case MOBILE_BROWSER:
-                driver = dependencies.getMobilebrowserDriver();
-                takeScreenshots = GlobalTestConfigurationProvider.mobilebrowserScreenshot();
-                break;
-            case NATIVE:
-                driver = dependencies.getNativeDriver();
-                takeScreenshots = GlobalTestConfigurationProvider.nativeScreenshot();
-                break;
-            default:
-                throw new DefaultFrameworkException("Type {} not found", uiType);
-        }
         return ExecutorDependencies.builder()
                 .file(dependencies.getFile())
-                .driver(driver)
+                .driver(uiType.getDriver(dependencies))
                 .scenarioContext(dependencies.getScenarioContext())
                 .position(dependencies.getPosition())
-                .takeScreenshots(takeScreenshots)
+                .takeScreenshots(uiType.isScreenshot(dependencies.getGlobalTestConfiguration()))
                 .build();
     }
 
@@ -111,8 +94,31 @@ public abstract class AbstractUiInterpreter<T extends AbstractUiTag> extends Abs
     }
 
     public enum UiType {
-        WEB,
-        NATIVE,
-        MOBILE_BROWSER
+        WEB (globalTestConfiguration ->
+                globalTestConfiguration.getWeb().getBrowserSettings().getTakeScreenshots().isEnable(),
+                InterpreterDependencies::getWebDriver),
+        NATIVE (globalTestConfiguration ->
+                globalTestConfiguration.getNative().getDeviceSettings().getTakeScreenshots().isEnable(),
+                InterpreterDependencies::getNativeDriver),
+        MOBILE_BROWSER (globalTestConfiguration ->
+                globalTestConfiguration.getMobilebrowser().getDeviceSettings().getTakeScreenshots().isEnable(),
+                InterpreterDependencies::getMobilebrowserDriver);
+
+        private final Function<GlobalTestConfiguration, Boolean> screenshotFunction;
+        private final Function<InterpreterDependencies, WebDriver> webDriverFunction;
+
+        UiType(final Function<GlobalTestConfiguration, Boolean> screenshotFunction,
+               final Function<InterpreterDependencies, WebDriver> webDriverFunction) {
+            this.screenshotFunction = screenshotFunction;
+            this.webDriverFunction = webDriverFunction;
+        }
+
+        public boolean isScreenshot(final GlobalTestConfiguration globalTestConfiguration) {
+            return screenshotFunction.apply(globalTestConfiguration);
+        }
+
+        public WebDriver getDriver(final InterpreterDependencies interpreterDependencies) {
+            return webDriverFunction.apply(interpreterDependencies);
+        }
     }
 }

@@ -17,12 +17,9 @@ public class WebInterpreter extends AbstractUiInterpreter<Web> {
 
     @Override
     protected void acceptImpl(final Web command, final CommandResult result) {
-        boolean takeScreenshots = GlobalTestConfigurationProvider.getBrowserSettings().getBrowserSettings()
-                .getTakeScreenshots().isEnable();
-        WebDriver driver = dependencies.getWebDriver();
         runCommands(command.getClickOrInputOrAssert(), result, createExecutorDependencies(UiType.WEB));
-        clearLocalStorage(driver, command.getClearLocalStorageByKey(), result);
-        clearCookies(driver, command.isClearCookiesAfterExecution(), result);
+        clearLocalStorage(dependencies.getWebDriver(), command.getClearLocalStorageByKey(), result);
+        clearCookies(dependencies.getWebDriver(), command.isClearCookiesAfterExecution(), result);
     }
 
 }

@@ -16,9 +16,8 @@ public class MobilebrowserInterpreter extends AbstractUiInterpreter<Mobilebrowse
 
     @Override
     protected void acceptImpl(final Mobilebrowser command, final CommandResult result) {
-        WebDriver driver = dependencies.getMobilebrowserDriver();
         runCommands(command.getClickOrInputOrAssert(), result, createExecutorDependencies(UiType.MOBILE_BROWSER));
-        clearLocalStorage(driver, command.getClearLocalStorageByKey(), result);
-        clearCookies(driver, command.isClearCookiesAfterExecution(), result);
+        clearLocalStorage(dependencies.getMobilebrowserDriver(), command.getClearLocalStorageByKey(), result);
+        clearCookies(dependencies.getMobilebrowserDriver(), command.isClearCookiesAfterExecution(), result);
     }
 }

@@ -15,8 +15,6 @@ public class NativeInterpreter extends AbstractUiInterpreter<Native> {
 
     @Override
     protected void acceptImpl(final Native command, final CommandResult result) {
-        boolean takeScreenshots = GlobalTestConfigurationProvider.getNativeSettings().getDeviceSettings()
-                .getTakeScreenshots().isEnable();
         runCommands(command.getClickOrInputOrAssert(), result, createExecutorDependencies(UiType.NATIVE));
     }
 }

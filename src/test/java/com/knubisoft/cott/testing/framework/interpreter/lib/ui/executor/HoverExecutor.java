@@ -36,6 +36,7 @@ public class HoverExecutor extends AbstractUiExecutor<Hovers> {
             actions.moveToElement(webElement);
             actions.perform();
         });
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         moveToEmptySpace(hovers.isMoveToEmptySpace(), actions);
     }
 

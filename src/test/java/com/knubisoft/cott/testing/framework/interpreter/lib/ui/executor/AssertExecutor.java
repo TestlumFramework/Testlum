@@ -34,6 +34,7 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
                 .withActual(actual)
                 .withExpected(expected)
                 .exec();
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private String getActualValue(final Assert aAssert) {

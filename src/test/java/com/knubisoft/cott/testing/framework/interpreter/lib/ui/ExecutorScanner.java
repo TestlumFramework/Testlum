@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_DECLARED_WITH_EXECUTOR_FOR_CLASS;
+
 
 @UtilityClass
 public class ExecutorScanner {
@@ -34,7 +36,7 @@ public class ExecutorScanner {
                                           final Class<? extends AbstractUiExecutor<AbstractUiCommand>> executor) {
         ExecutorForClass executorForClass = executor.getAnnotation(ExecutorForClass.class);
         if (executorForClass == null) {
-            throw new DefaultFrameworkException("Error", executor);
+            throw new DefaultFrameworkException(NOT_DECLARED_WITH_EXECUTOR_FOR_CLASS, executor);
         }
         map.put(executorForClass.value(), executor);
     }

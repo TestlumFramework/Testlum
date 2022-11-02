@@ -24,5 +24,6 @@ public class SwitchToFrameWebExecutor extends AbstractUiExecutor<SwitchToFrame> 
         result.put(SWITCH_LOCATOR, locatorId);
         WebElement element = UiUtil.findWebElement(dependencies.getDriver(), locatorId);
         dependencies.getDriver().switchTo().frame(element);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 }

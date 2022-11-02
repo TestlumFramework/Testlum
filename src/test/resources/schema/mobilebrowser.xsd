@@ -9,7 +9,7 @@
 
     <x:complexType name="mobilebrowser">
         <x:complexContent>
-            <x:extension base="tns:abstractCommand">
+            <x:extension base="tns:abstractUiTag">
                 <x:choice maxOccurs="unbounded" minOccurs="0">
                     <x:element name="click" type="tns:click"/>
                     <x:element name="input" type="tns:input"/>
@@ -20,7 +20,6 @@
                     <x:element name="scroll" type="tns:scroll"/>
                     <x:element name="scrollTo" type="tns:scrollTo"/>
                     <x:element name="image" type="tns:image"/>
-                    <x:element name="repeat" type="tns:repeatUiCommand"/>
                     <x:element name="javascript" type="tns:javascript"/>
                     <x:element name="navigate" type="tns:navigate"/>
                     <x:element name="hovers" type="tns:hovers"/>

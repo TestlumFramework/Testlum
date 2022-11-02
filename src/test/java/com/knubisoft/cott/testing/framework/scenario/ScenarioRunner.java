@@ -23,6 +23,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.openqa.selenium.WebDriver;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;
@@ -179,25 +180,35 @@ public class ScenarioRunner {
         }
     }
 
-    //CHECKSTYLE:OFF
     private InterpreterDependencies createDependencies() {
         return new InterpreterDependencies(
-                Objects.nonNull(scenarioArguments.getBrowser())
-                        ? WebDriverFactory.createDriver(scenarioArguments.getBrowser())
-                        : new MockDriver(WEB_DRIVER_NOT_INIT),
-                Objects.nonNull(scenarioArguments.getNativeDevice())
-                        ? NativeDriverFactory.createDriver(scenarioArguments.getNativeDevice())
-                        : new MockDriver(NATIVE_DRIVER_NOT_INIT),
-                Objects.nonNull(scenarioArguments.getMobilebrowserDevice())
-                        ? MobilebrowserDriverFactory.createDriver(scenarioArguments.getMobilebrowserDevice())
-                        : new MockDriver(MOBILEBROWSER_DRIVER_NOT_INIT),
+                createWebDriver(),
+                createNativeDriver(),
+                createMobilebrowserDriver(),
                 ctx,
                 scenarioArguments.getFile(),
                 new ScenarioContext(scenarioArguments.getVariation()),
                 idGenerator
         );
     }
-    //CHECKSTYLE:ON
+
+    private WebDriver createWebDriver() {
+        return Objects.nonNull(scenarioArguments.getBrowser())
+                ? WebDriverFactory.createDriver(scenarioArguments.getBrowser())
+                : new MockDriver(WEB_DRIVER_NOT_INIT);
+    }
+
+    private WebDriver createMobilebrowserDriver() {
+        return Objects.nonNull(scenarioArguments.getMobilebrowserDevice())
+                ? MobilebrowserDriverFactory.createDriver(scenarioArguments.getMobilebrowserDevice())
+                : new MockDriver(MOBILEBROWSER_DRIVER_NOT_INIT);
+    }
+
+    private WebDriver createNativeDriver() {
+        return Objects.nonNull(scenarioArguments.getNativeDevice())
+                ? NativeDriverFactory.createDriver(scenarioArguments.getNativeDevice())
+                : new MockDriver(NATIVE_DRIVER_NOT_INIT);
+    }
 
     public interface CommandCallback {
         void onCommandExecuted(CommandResult result);

@@ -56,6 +56,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         } else {
             deselectByMethod(select, method, value);
         }
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void selectByMethod(final Select select, final SelectOrDeselectBy method, final String value) {

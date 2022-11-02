@@ -7,6 +7,7 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.JavascriptUtil;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
+import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
 
 @ExecutorForClass(Scroll.class)
@@ -21,5 +22,6 @@ public class ScrollWebExecutor extends AbstractUiExecutor<Scroll> {
         ResultUtil.addScrollMetaData(scroll, result);
         LogUtil.logScrollInfo(scroll);
         JavascriptUtil.executeScrollScript(scroll, dependencies.getDriver());
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 }

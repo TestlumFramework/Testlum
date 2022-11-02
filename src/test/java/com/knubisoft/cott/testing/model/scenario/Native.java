@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="native"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiTag"&gt;
  *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
  *         &lt;element name="click" type="{http://www.knubisoft.com/cott/testing/model/scenario}click"/&gt;
  *         &lt;element name="input" type="{http://www.knubisoft.com/cott/testing/model/scenario}input"/&gt;
@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}waitUi"/&gt;
  *         &lt;element name="clear" type="{http://www.knubisoft.com/cott/testing/model/scenario}clear"/&gt;
  *         &lt;element name="image" type="{http://www.knubisoft.com/cott/testing/model/scenario}image"/&gt;
- *         &lt;element name="repeat" type="{http://www.knubisoft.com/cott/testing/model/scenario}repeatUiCommand"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -40,7 +39,7 @@ import javax.xml.bind.annotation.XmlType;
     "clickOrInputOrAssert"
 })
 public class Native
-    extends AbstractCommand
+    extends AbstractUiTag
 {
 
     @XmlElements({
@@ -49,8 +48,7 @@ public class Native
         @XmlElement(name = "assert", type = Assert.class),
         @XmlElement(name = "wait", type = WaitUi.class),
         @XmlElement(name = "clear", type = Clear.class),
-        @XmlElement(name = "image", type = Image.class),
-        @XmlElement(name = "repeat", type = RepeatUiCommand.class)
+        @XmlElement(name = "image", type = Image.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
 
@@ -78,7 +76,6 @@ public class Native
      * {@link WaitUi }
      * {@link Clear }
      * {@link Image }
-     * {@link RepeatUiCommand }
      * 
      * 
      */

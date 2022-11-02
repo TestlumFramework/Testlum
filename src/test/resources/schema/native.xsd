@@ -9,7 +9,7 @@
 
     <x:complexType name="native">
         <x:complexContent>
-            <x:extension base="tns:abstractCommand">
+            <x:extension base="tns:abstractUiTag">
                 <x:choice maxOccurs="unbounded" minOccurs="0">
                     <x:element name="click" type="tns:click"/>
                     <x:element name="input" type="tns:input"/>
@@ -17,7 +17,6 @@
                     <x:element name="wait" type="tns:waitUi"/>
                     <x:element name="clear" type="tns:clear"/>
                     <x:element name="image" type="tns:image"/>
-                    <x:element name="repeat" type="tns:repeatUiCommand"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>

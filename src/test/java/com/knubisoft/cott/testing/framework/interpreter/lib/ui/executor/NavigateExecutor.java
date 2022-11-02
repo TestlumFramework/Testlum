@@ -6,6 +6,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecuto
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.Navigate;
 import com.knubisoft.cott.testing.model.scenario.NavigateCommand;
 import io.appium.java_client.AppiumDriver;
@@ -43,7 +44,7 @@ public class NavigateExecutor extends AbstractUiExecutor<Navigate> {
                 break;
             default: throw new DefaultFrameworkException(format(NAVIGATE_NOT_SUPPORTED, navigateCommand.value()));
         }
-
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void navigateTo(final String path, final CommandResult result) {

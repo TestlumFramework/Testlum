@@ -83,7 +83,7 @@
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.util.UiUtil"/>
+        <Class name="com.knubisoft.cott.testing.framework.interpreter.lib.AbstractUiInterpreter"/>
         <Bug pattern="BC_UNCONFIRMED_CAST"/>
     </Match>
 </FindBugsFilter>

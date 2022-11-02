@@ -30,5 +30,6 @@ public class InputExecutor extends AbstractUiExecutor<Input> {
         result.put(INPUT_VALUE, value);
         log.info(VALUE_LOG, value);
         webElement.sendKeys(value);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 }

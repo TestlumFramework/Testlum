@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="mobilebrowser"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiTag"&gt;
  *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
  *         &lt;element name="click" type="{http://www.knubisoft.com/cott/testing/model/scenario}click"/&gt;
  *         &lt;element name="input" type="{http://www.knubisoft.com/cott/testing/model/scenario}input"/&gt;
@@ -30,7 +30,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="scroll" type="{http://www.knubisoft.com/cott/testing/model/scenario}scroll"/&gt;
  *         &lt;element name="scrollTo" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollTo"/&gt;
  *         &lt;element name="image" type="{http://www.knubisoft.com/cott/testing/model/scenario}image"/&gt;
- *         &lt;element name="repeat" type="{http://www.knubisoft.com/cott/testing/model/scenario}repeatUiCommand"/&gt;
  *         &lt;element name="javascript" type="{http://www.knubisoft.com/cott/testing/model/scenario}javascript"/&gt;
  *         &lt;element name="navigate" type="{http://www.knubisoft.com/cott/testing/model/scenario}navigate"/&gt;
  *         &lt;element name="hovers" type="{http://www.knubisoft.com/cott/testing/model/scenario}hovers"/&gt;
@@ -51,7 +50,7 @@ import javax.xml.bind.annotation.XmlType;
     "clickOrInputOrAssert"
 })
 public class Mobilebrowser
-    extends AbstractCommand
+    extends AbstractUiTag
 {
 
     @XmlElements({
@@ -64,7 +63,6 @@ public class Mobilebrowser
         @XmlElement(name = "scroll", type = Scroll.class),
         @XmlElement(name = "scrollTo", type = ScrollTo.class),
         @XmlElement(name = "image", type = Image.class),
-        @XmlElement(name = "repeat", type = RepeatUiCommand.class),
         @XmlElement(name = "javascript", type = Javascript.class),
         @XmlElement(name = "navigate", type = Navigate.class),
         @XmlElement(name = "hovers", type = Hovers.class),
@@ -104,7 +102,6 @@ public class Mobilebrowser
      * {@link Scroll }
      * {@link ScrollTo }
      * {@link Image }
-     * {@link RepeatUiCommand }
      * {@link Javascript }
      * {@link Navigate }
      * {@link Hovers }

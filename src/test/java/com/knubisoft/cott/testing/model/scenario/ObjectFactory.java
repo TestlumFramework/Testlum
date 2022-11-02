@@ -446,14 +446,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link RepeatUiCommand }
-     * 
-     */
-    public RepeatUiCommand createRepeatUiCommand() {
-        return new RepeatUiCommand();
-    }
-
-    /**
      * Create an instance of {@link SendRmqMessage }
      * 
      */

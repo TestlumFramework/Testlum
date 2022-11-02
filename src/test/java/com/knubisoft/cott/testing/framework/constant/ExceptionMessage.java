@@ -22,6 +22,9 @@ public class ExceptionMessage {
     public static final String NOT_DECLARED_WITH_INTERPRETER_FOR_CLASS = "Each non abstract interpreter must "
             + "declare annotation InterpreterForClass. Class %s do not have this annotation";
 
+    public static final String NOT_DECLARED_WITH_EXECUTOR_FOR_CLASS = "Each non abstract executor must "
+            + "declare annotation ExecutorForClass. Class %s do not have this annotation";
+
     public static final String UNKNOWN_TYPE = "Unknown type %s";
 
     public static final String FAILED_CONNECTION_TO_DATABASE =
@@ -34,6 +37,9 @@ public class ExceptionMessage {
 
     public static final String FUNCTION_FOR_COMMAND_NOT_FOUND = "Function for class %s not found. "
             + "Please register algorithm for interpreter";
+
+    public static final String FUNCTION_FOR_UI_COMMAND_NOT_FOUND = "Function for class %s not found. "
+            + "Please register algorithm for executor";
 
     public static final String UNABLE_FIND_FILE_IN_ROOT_FOLDER = "Unable to find file by key [%1$s] "
             + "Initial scan folder [%2$s] with strategy recursive walk to root folder [%3$s]";

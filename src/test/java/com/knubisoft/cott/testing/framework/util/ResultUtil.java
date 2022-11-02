@@ -3,7 +3,7 @@ package com.knubisoft.cott.testing.framework.util;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
-import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
+import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
 import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequest;
 import com.knubisoft.cott.testing.model.scenario.Header;
@@ -404,7 +404,7 @@ public class ResultUtil {
         });
     }
 
-    public void addCommandsForRepeat(final List<AbstractCommand> commandsForRepeat, final CommandResult result) {
+    public void addCommandsForRepeat(final List<AbstractUiCommand> commandsForRepeat, final CommandResult result) {
         result.put(COMMANDS_FOR_REPEAT, commandsForRepeat.stream()
                 .map(command -> command.getClass().getSimpleName()).collect(Collectors.toList()));
     }

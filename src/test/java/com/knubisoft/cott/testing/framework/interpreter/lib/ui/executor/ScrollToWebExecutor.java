@@ -25,5 +25,6 @@ public class ScrollToWebExecutor extends AbstractUiExecutor<ScrollTo> {
         WebElement element = UiUtil.findWebElement(dependencies.getDriver(), locatorId);
         result.put(SCROLL_LOCATOR, locatorId);
         JavascriptUtil.executeJsScript(element, SCROLL_TO_ELEMENT_SCRIPT, dependencies.getDriver());
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 }

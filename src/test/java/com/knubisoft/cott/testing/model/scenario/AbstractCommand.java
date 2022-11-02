@@ -32,9 +32,6 @@ import javax.xml.bind.annotation.XmlType;
     Include.class,
     Auth.class,
     Repeat.class,
-    Mobilebrowser.class,
-    Web.class,
-    Native.class,
     Http.class,
     Migrate.class,
     Postgres.class,
@@ -57,6 +54,7 @@ import javax.xml.bind.annotation.XmlType;
     Shell.class,
     Smtp.class,
     Twilio.class,
+    AbstractUiTag.class,
     AbstractUiCommand.class,
     RelationalDbResult.class,
     Logout.class

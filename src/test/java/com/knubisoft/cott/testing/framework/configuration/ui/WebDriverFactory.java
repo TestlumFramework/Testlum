@@ -59,8 +59,7 @@ public class WebDriverFactory {
         DRIVER_INITIALIZER_MAP = Collections.unmodifiableMap(map);
     }
 
-    public WebDriver createDriver(final AbstractBrowser abstractBrowser) {
-        AbstractBrowser browser = abstractBrowser;
+    public WebDriver createDriver(final AbstractBrowser browser) {
         WebDriver webDriver = DRIVER_INITIALIZER_MAP.keySet().stream()
                 .filter(key -> key.test(browser))
                 .map(DRIVER_INITIALIZER_MAP::get)
@@ -71,7 +70,7 @@ public class WebDriverFactory {
         return webDriver;
     }
 
-    private static WebDriver getWebDriver(final AbstractBrowser browser,
+    private WebDriver getWebDriver(final AbstractBrowser browser,
                                           final MutableCapabilities browserOptions,
                                           final WebDriverManager driverManager) {
         setCapabilities(browser, browserOptions);
@@ -88,7 +87,7 @@ public class WebDriverFactory {
         return getLocalDriver(browser.getBrowserType().getLocalBrowser(), browserOptions, driverManager);
     }
 
-    private static WebDriver getLocalDriver(final LocalBrowser localBrowserSettings,
+    private WebDriver getLocalDriver(final LocalBrowser localBrowserSettings,
                                             final MutableCapabilities browserOptions,
                                             final WebDriverManager driverManager) {
         String driverVersion = localBrowserSettings.getDriverVersion();
@@ -98,7 +97,7 @@ public class WebDriverFactory {
         return driverManager.capabilities(browserOptions).create();
     }
 
-    private static WebDriver getBrowserInDocker(final BrowserInDocker browserInDockerSettings,
+    private WebDriver getBrowserInDocker(final BrowserInDocker browserInDockerSettings,
                                                 final MutableCapabilities browserOptions,
                                                 final WebDriverManager driverManager) {
         String dockerNetwork = browserInDockerSettings.getDockerNetwork();
@@ -115,13 +114,13 @@ public class WebDriverFactory {
 
 
     @SneakyThrows
-    private static WebDriver getRemoteDriver(final RemoteBrowser remoteBrowserSettings,
+    private WebDriver getRemoteDriver(final RemoteBrowser remoteBrowserSettings,
                                              final MutableCapabilities browserOptions) {
         browserOptions.setCapability(BROWSER_VERSION, remoteBrowserSettings.getBrowserVersion());
         return new RemoteWebDriver(new URL(remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
     }
 
-    private static void setCapabilities(final AbstractBrowser browser, final MutableCapabilities driverOptions) {
+    private void setCapabilities(final AbstractBrowser browser, final MutableCapabilities driverOptions) {
         Capabilities capabilities = browser.getCapabilities();
         if (capabilities != null) {
             capabilities.getCapability()
@@ -133,7 +132,7 @@ public class WebDriverFactory {
         WebDriver init(T browser);
     }
 
-    private static class ChromeDriverInitializer implements WebDriverInitializer<Chrome> {
+    private class ChromeDriverInitializer implements WebDriverInitializer<Chrome> {
 
         @Override
         public WebDriver init(final Chrome browser) {
@@ -151,7 +150,7 @@ public class WebDriverFactory {
         }
     }
 
-    private static class FirefoxDriverInitializer implements WebDriverInitializer<Firefox> {
+    private class FirefoxDriverInitializer implements WebDriverInitializer<Firefox> {
 
         @Override
         public WebDriver init(final Firefox browser) {
@@ -169,7 +168,7 @@ public class WebDriverFactory {
         }
     }
 
-    private static class EdgeDriverInitializer implements WebDriverInitializer<Edge> {
+    private class EdgeDriverInitializer implements WebDriverInitializer<Edge> {
 
         @Override
         public WebDriver init(final Edge browser) {
@@ -187,7 +186,7 @@ public class WebDriverFactory {
         }
     }
 
-    private static class SafariDriverInitializer implements WebDriverInitializer<Safari> {
+    private class SafariDriverInitializer implements WebDriverInitializer<Safari> {
 
         @Override
         public WebDriver init(final Safari browser) {
@@ -195,7 +194,7 @@ public class WebDriverFactory {
         }
     }
 
-    private static class OperaDriverInitializer implements WebDriverInitializer<Opera> {
+    private class OperaDriverInitializer implements WebDriverInitializer<Opera> {
 
         @Override
         public WebDriver init(final Opera browser) {

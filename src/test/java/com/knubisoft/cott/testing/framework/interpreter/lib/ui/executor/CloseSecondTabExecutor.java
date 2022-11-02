@@ -5,6 +5,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecuto
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.CloseSecondTab;
 import org.openqa.selenium.WebDriver;
 
@@ -32,5 +33,6 @@ public class CloseSecondTabExecutor extends AbstractUiExecutor<CloseSecondTab> {
         driver.switchTo().window(windowHandles.get(1));
         driver.close();
         driver.switchTo().window(windowHandles.get(0));
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 }

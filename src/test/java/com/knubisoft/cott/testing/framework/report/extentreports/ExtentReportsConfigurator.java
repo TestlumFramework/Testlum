@@ -9,6 +9,7 @@ import com.knubisoft.cott.testing.model.global_config.HtmlReportGenerator;
 import com.knubisoft.cott.testing.model.global_config.KlovServerReportGenerator;
 import com.knubisoft.cott.testing.model.global_config.Mongodb;
 import lombok.experimental.UtilityClass;
+import org.joda.time.DateTime;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -35,8 +36,9 @@ public class ExtentReportsConfigurator {
     }
 
     private void attachSparkReporter(final ExtentReports extentReports, final String projectName) {
+        String dateTime = new DateTime().toString(TestResourceSettings.REPORT_FOLDER_DATE_NAME);
         String pathForReportSaving = TestResourceSettings.getInstance().getTestResourcesFolder().getAbsolutePath()
-                + TestResourceSettings.REPORT_FOLDER;
+                + TestResourceSettings.REPORT_FOLDER + dateTime;
         String formattedPathForReportSaving =
                 format(TEMPLATE_FOR_REPORT_SAVING_PATH, pathForReportSaving, projectName, LocalDateTime.now());
         ExtentSparkReporter extentSparkReporter = new ExtentSparkReporter(formattedPathForReportSaving);

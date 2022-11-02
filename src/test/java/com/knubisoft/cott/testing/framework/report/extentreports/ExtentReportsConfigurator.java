@@ -9,9 +9,9 @@ import com.knubisoft.cott.testing.model.global_config.HtmlReportGenerator;
 import com.knubisoft.cott.testing.model.global_config.KlovServerReportGenerator;
 import com.knubisoft.cott.testing.model.global_config.Mongodb;
 import lombok.experimental.UtilityClass;
-import org.joda.time.DateTime;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import static java.lang.String.format;
@@ -19,7 +19,7 @@ import static java.lang.String.format;
 @UtilityClass
 public class ExtentReportsConfigurator {
 
-    private static final String TEMPLATE_FOR_REPORT_SAVING_PATH = "%s/%s_%s";
+    private static final String TEMPLATE_FOR_REPORT_SAVING_PATH = "%s/%s_%s.html";
 
     public void configure(final ExtentReports extentReports) {
         com.knubisoft.cott.testing.model.global_config.ExtentReports extentReportsConfig =
@@ -36,11 +36,13 @@ public class ExtentReportsConfigurator {
     }
 
     private void attachSparkReporter(final ExtentReports extentReports, final String projectName) {
-        String dateTime = new DateTime().toString(TestResourceSettings.REPORT_FOLDER_DATE_NAME);
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
         String pathForReportSaving = TestResourceSettings.getInstance().getTestResourcesFolder().getAbsolutePath()
-                + TestResourceSettings.REPORT_FOLDER + dateTime;
+                + TestResourceSettings.REPORT_FOLDER + LocalDateTime.now().toLocalDate().format(dateFormatter);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
         String formattedPathForReportSaving =
-                format(TEMPLATE_FOR_REPORT_SAVING_PATH, pathForReportSaving, projectName, LocalDateTime.now());
+                format(TEMPLATE_FOR_REPORT_SAVING_PATH, pathForReportSaving, projectName, LocalDateTime.now()
+                        .format(dateTimeFormatter));
         ExtentSparkReporter extentSparkReporter = new ExtentSparkReporter(formattedPathForReportSaving);
         extentReports.attachReporter(extentSparkReporter);
     }

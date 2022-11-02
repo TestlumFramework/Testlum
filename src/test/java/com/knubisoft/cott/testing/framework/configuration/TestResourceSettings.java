@@ -27,8 +27,7 @@ public class TestResourceSettings {
 
     public static final String SCREENSHOT_FOLDER = "/screenshots";
     public static final String SCHEMAS_FOLDER = "schema";
-    public static final String REPORT_FOLDER = "/report";
-    public static final String REPORT_FOLDER_DATE_NAME = "/dd-MM-yy";
+    public static final String REPORT_FOLDER = "/report/";
     public static final String LOCATORS_PAGES_FOLDER = "locators/pages";
     public static final String LOCATORS_COMPONENTS_FOLDER = "locators/component";
     public static final String SCENARIOS_FOLDER = "scenarios";

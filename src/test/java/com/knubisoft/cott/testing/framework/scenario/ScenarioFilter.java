@@ -5,8 +5,8 @@ import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.cott.testing.model.global_config.TagValue;
-import com.knubisoft.cott.testing.model.scenario.AbstractUiWrap;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
+import com.knubisoft.cott.testing.model.scenario.Ui;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -109,7 +109,7 @@ public class ScenarioFilter {
 
     private boolean scenarioContainsUiSteps(final Scenario scenario) {
         return scenario.getCommands().stream()
-                .anyMatch(command -> AbstractUiWrap.class.isAssignableFrom(command.getClass()));
+                .anyMatch(command -> Ui.class.isAssignableFrom(command.getClass()));
     }
 
     private boolean isScenarioNonParsed(final ScenarioCollector.MappingResult entry) {

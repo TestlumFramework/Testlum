@@ -18,7 +18,7 @@
         <x:attribute name="threshold" type="x:int"/>
     </x:complexType>
 
-    <x:complexType name="abstractUiWrap" abstract="true">
+    <x:complexType name="ui" abstract="true">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
             </x:extension>

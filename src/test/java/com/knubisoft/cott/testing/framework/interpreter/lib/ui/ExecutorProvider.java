@@ -5,7 +5,7 @@ import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FUNCTION_FOR_UI_COMMAND_NOT_FOUND;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.EXECUTOR_FOR_UI_COMMAND_NOT_FOUND;
 
 @UtilityClass
 public class ExecutorProvider {
@@ -17,7 +17,7 @@ public class ExecutorProvider {
                                                                         final ExecutorDependencies dependencies) {
         Class<? extends AbstractUiExecutor<AbstractUiCommand>> executor = executors.get(command.getClass());
         if (executor == null) {
-            throw new DefaultFrameworkException(FUNCTION_FOR_UI_COMMAND_NOT_FOUND, command.getClass());
+            throw new DefaultFrameworkException(EXECUTOR_FOR_UI_COMMAND_NOT_FOUND, command.getClass());
         }
         return executor.getConstructor(ExecutorDependencies.class).newInstance(dependencies);
     }

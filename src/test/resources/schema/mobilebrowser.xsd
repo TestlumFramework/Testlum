@@ -9,7 +9,7 @@
 
     <x:complexType name="mobilebrowser">
         <x:complexContent>
-            <x:extension base="tns:abstractUiWrap">
+            <x:extension base="tns:ui">
                 <x:choice maxOccurs="unbounded" minOccurs="0">
                     <x:element name="click" type="tns:click"/>
                     <x:element name="input" type="tns:input"/>

@@ -38,8 +38,7 @@ public class ExceptionMessage {
     public static final String FUNCTION_FOR_COMMAND_NOT_FOUND = "Function for class %s not found. "
             + "Please register algorithm for interpreter";
 
-    public static final String FUNCTION_FOR_UI_COMMAND_NOT_FOUND = "Function for class %s not found. "
-            + "Please register algorithm for executor";
+    public static final String EXECUTOR_FOR_UI_COMMAND_NOT_FOUND = "Executor for class %s not found.";
 
     public static final String UNABLE_FIND_FILE_IN_ROOT_FOLDER = "Unable to find file by key [%1$s] "
             + "Initial scan folder [%2$s] with strategy recursive walk to root folder [%3$s]";

@@ -4,6 +4,7 @@ import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfiguratio
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.HttpUtil;
 import com.knubisoft.cott.testing.framework.util.MobileUtil;
@@ -31,7 +32,6 @@ import com.knubisoft.cott.testing.model.global_config.SmtpIntegration;
 import com.knubisoft.cott.testing.model.global_config.SqsIntegration;
 import com.knubisoft.cott.testing.model.global_config.TwilioIntegration;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
-import com.knubisoft.cott.testing.model.scenario.AbstractUiWrap;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.Body;
 import com.knubisoft.cott.testing.model.scenario.Clickhouse;
@@ -69,6 +69,7 @@ import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.Sqs;
 import com.knubisoft.cott.testing.model.scenario.StorageName;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
+import com.knubisoft.cott.testing.model.scenario.Ui;
 import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.When;
 import org.springframework.util.StringUtils;
@@ -87,6 +88,9 @@ import java.util.stream.Stream;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ALIAS_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.API_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INTEGRATION_NOT_FOUND;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_MOBILEBROWSER_DEVICE;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_NATIVE_DEVICE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SAME_APPIUM_URL;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SAME_MOBILE_DEVICES;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF;
@@ -263,6 +267,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateWebCommands((Web) command);
         });
 
+        validatorMap.put(o -> o instanceof Mobilebrowser, (xmlFile, command) -> {
+            validateMobilebrowserCommands((Mobilebrowser) command);
+        });
+
+        validatorMap.put(o -> o instanceof Native, (xmlFile, command) -> {
+            validateNativeCommands();
+        });
+
         this.abstractCommandValidatorsMap = Collections.unmodifiableMap(validatorMap);
     }
 
@@ -279,7 +291,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private List<AbstractCommand> getUiCommands(final List<AbstractCommand> scenarioCommands) {
         return scenarioCommands.stream().filter(abstractCommand ->
-                        AbstractUiWrap.class.isAssignableFrom(abstractCommand.getClass()))
+                        Ui.class.isAssignableFrom(abstractCommand.getClass()))
                 .collect(Collectors.toList());
     }
 
@@ -412,6 +424,28 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateWebCommands(final Web command) {
+        if (BrowserUtil.filterEnabledBrowsers().isEmpty()) {
+            throw new DefaultFrameworkException(NOT_ENABLED_BROWSERS);
+        }
+        command.getClickOrInputOrAssert().forEach(o -> {
+            if (o instanceof Javascript) {
+                validateFileExistenceInDataFolder(((Javascript) o).getFile());
+            } else if (o instanceof Scroll && ((Scroll) o).getType() == ScrollType.INNER) {
+                validateScrollCommand((Scroll) o);
+            }
+        });
+    }
+
+    private void validateNativeCommands() {
+        if (MobileUtil.filterEnabledNativeDevices().isEmpty()) {
+            throw new DefaultFrameworkException(NOT_ENABLED_NATIVE_DEVICE);
+        }
+    }
+
+    private void validateMobilebrowserCommands(final Mobilebrowser command) {
+        if (MobileUtil.filterEnabledMobilebrowserDevices().isEmpty()) {
+            throw new DefaultFrameworkException(NOT_ENABLED_MOBILEBROWSER_DEVICE);
+        }
         command.getClickOrInputOrAssert().forEach(o -> {
             if (o instanceof Javascript) {
                 validateFileExistenceInDataFolder(((Javascript) o).getFile());

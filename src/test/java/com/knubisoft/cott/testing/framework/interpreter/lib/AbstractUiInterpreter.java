@@ -8,7 +8,7 @@ import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.ScenarioUtil;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
-import com.knubisoft.cott.testing.model.scenario.AbstractUiWrap;
+import com.knubisoft.cott.testing.model.scenario.Ui;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.openqa.selenium.WebDriver;
@@ -21,7 +21,7 @@ import java.util.function.Function;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLEAR_COOKIES_AFTER_EXECUTION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLEAR_LOCAL_STORAGE_BY_KEY;
 
-public abstract class AbstractUiInterpreter<T extends AbstractUiWrap> extends AbstractInterpreter<T> {
+public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterpreter<T> {
 
     protected AbstractUiInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);

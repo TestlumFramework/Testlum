@@ -22,10 +22,10 @@ public class WaitExecutor extends AbstractUiExecutor<Wait> {
 
     @SneakyThrows
     @Override
-    public void execute(final Wait waitUi, final CommandResult result) {
-        String time = inject(waitUi.getTime());
+    public void execute(final Wait wait, final CommandResult result) {
+        String time = inject(wait.getTime());
         result.put(TIME, time);
-        log.info(WAIT_INFO_LOG, time, waitUi.getUnit());
-        WaitUtil.getTimeUnit(waitUi.getUnit(), result).sleep(Long.parseLong(time));
+        log.info(WAIT_INFO_LOG, time, wait.getUnit());
+        WaitUtil.getTimeUnit(wait.getUnit(), result).sleep(Long.parseLong(time));
     }
 }

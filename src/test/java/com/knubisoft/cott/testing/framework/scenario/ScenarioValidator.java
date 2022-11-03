@@ -31,7 +31,7 @@ import com.knubisoft.cott.testing.model.global_config.SmtpIntegration;
 import com.knubisoft.cott.testing.model.global_config.SqsIntegration;
 import com.knubisoft.cott.testing.model.global_config.TwilioIntegration;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
-import com.knubisoft.cott.testing.model.scenario.AbstractUiTag;
+import com.knubisoft.cott.testing.model.scenario.AbstractUiWrap;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.Body;
 import com.knubisoft.cott.testing.model.scenario.Clickhouse;
@@ -279,7 +279,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private List<AbstractCommand> getUiCommands(final List<AbstractCommand> scenarioCommands) {
         return scenarioCommands.stream().filter(abstractCommand ->
-                        AbstractUiTag.class.isAssignableFrom(abstractCommand.getClass()))
+                        AbstractUiWrap.class.isAssignableFrom(abstractCommand.getClass()))
                 .collect(Collectors.toList());
     }
 

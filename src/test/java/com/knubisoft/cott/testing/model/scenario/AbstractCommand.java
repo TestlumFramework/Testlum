@@ -53,7 +53,7 @@ import javax.xml.bind.annotation.XmlType;
     Shell.class,
     Smtp.class,
     Twilio.class,
-    AbstractUiTag.class,
+    AbstractUiWrap.class,
     AbstractUiCommand.class,
     RelationalDbResult.class,
     Logout.class

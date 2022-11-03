@@ -51,18 +51,6 @@ public class GlobalTestConfigurationProvider {
         return GlobalTestConfigurationProvider.provide().getIntegrations();
     }
 
-    public static boolean webScreenshot () {
-        return getBrowserSettings().getBrowserSettings().getTakeScreenshots().isEnable();
-    }
-
-    public static boolean nativeScreenshot () {
-        return getNativeSettings().getDeviceSettings().getTakeScreenshots().isEnable();
-    }
-
-    public static boolean mobilebrowserScreenshot () {
-        return getMobilebrowserSettings().getDeviceSettings().getTakeScreenshots().isEnable();
-    }
-
     private static GlobalTestConfiguration init() {
         return XMLParsers.forGlobalTestConfiguration().process(TestResourceSettings.getInstance().getConfigFile());
     }

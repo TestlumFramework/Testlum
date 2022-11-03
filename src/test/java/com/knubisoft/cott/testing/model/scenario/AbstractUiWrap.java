@@ -8,12 +8,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for abstractUiTag complex type.
+ * <p>Java class for abstractUiWrap complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="abstractUiTag"&gt;
+ * &lt;complexType name="abstractUiWrap"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
  *     &lt;/extension&gt;
@@ -24,13 +24,13 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "abstractUiTag")
+@XmlType(name = "abstractUiWrap")
 @XmlSeeAlso({
     Mobilebrowser.class,
     Web.class,
     Native.class
 })
-public abstract class AbstractUiTag
+public abstract class AbstractUiWrap
     extends AbstractCommand
 {
 

@@ -5,7 +5,6 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependenc
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.scenario.Mobilebrowser;
-import org.openqa.selenium.WebDriver;
 
 @InterpreterForClass(Mobilebrowser.class)
 public class MobilebrowserInterpreter extends AbstractUiInterpreter<Mobilebrowser> {

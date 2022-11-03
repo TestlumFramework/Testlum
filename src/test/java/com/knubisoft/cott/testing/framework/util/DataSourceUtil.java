@@ -37,7 +37,7 @@ public final class DataSourceUtil {
         hikariDataSourceOriginal.setConnectionTestQuery(dataSource.getHikari().getConnectionTestQuery());
         hikariDataSourceOriginal.setPoolName(dataSource.getHikari().getPoolName());
         hikariDataSourceOriginal.setIdleTimeout(dataSource.getHikari().getIdleTimeout());
+        hikariDataSourceOriginal.setMinimumIdle(dataSource.getHikari().getMinimumIdle());
         hikariDataSourceOriginal.setMaxLifetime(dataSource.getHikari().getMaxLifetime());
     }
-
 }

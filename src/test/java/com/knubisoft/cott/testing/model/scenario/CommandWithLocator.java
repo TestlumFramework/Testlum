@@ -28,7 +28,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "commandWithLocator")
 @XmlSeeAlso({
-    CombinedKeyAction.class,
+    Copy.class,
+    Paste.class,
+    Cut.class,
+    Highlight.class,
     Click.class,
     Hover.class,
     Input.class,

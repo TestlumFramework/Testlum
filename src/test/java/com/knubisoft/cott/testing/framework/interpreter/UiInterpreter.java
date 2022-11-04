@@ -9,6 +9,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.CombinedKeyCommandUtil;
+import com.knubisoft.cott.testing.framework.util.HotKeyUtil;
 import com.knubisoft.cott.testing.framework.util.SingleKeyCommandUtil;
 import com.knubisoft.cott.testing.framework.util.ImageComparator;
 import com.knubisoft.cott.testing.framework.util.ImageComparisonUtil;
@@ -154,6 +155,10 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         runCommands(ui.getClickOrInputOrNavigate(), result);
         clearLocalStorage(dependencies.getWebDriver(), ui.getClearLocalStorageByKey(), result);
         clearCookies(dependencies.getWebDriver(), ui.isClearCookiesAfterExecution(), result);
+    }
+
+    private void hotKeyCommand(final HotKey hotKey, final CommandResult result) {
+        HotKeyUtil.runHotKeyCommands(hotKey.getCopyOrPasteOrCut(), dependencies.getWebDriver());
     }
 
     private void runCommands(final List<AbstractCommand> commandList,
@@ -420,13 +425,13 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
         dependencies.getWebDriver().switchTo().frame(element);
     }
 
-    private void hotKeyCommand(final HotKey hotKey, final CommandResult result) {
+    /*private void hotKeyCommand(final HotKey hotKey, final CommandResult result) {
         for (Object action : hotKey.getCombinedKeyActionOrSingleKeyAction()) {
             processHotKeyAction(action, result);
         }
-    }
+    }*/
 
-    private void processHotKeyAction(final Object action, final CommandResult result) {
+   /* private void processHotKeyAction(final Object action, final CommandResult result) {
         if (action instanceof SingleKeyAction) {
             SingleKeyActionEnum singleKeyAction = ((SingleKeyAction) action).getSingleKeyCommand();
             LogUtil.logSingleKeyCommandInfo(singleKeyAction);
@@ -441,7 +446,7 @@ public class UiInterpreter extends AbstractSeleniumInterpreter<Ui> {
             CombinedKeyCommandUtil.combinedKeyCommand(combinedKeyAction, dependencies.getWebDriver(), locatorId);
 
         }
-    }
+    }*/
 
     @SneakyThrows
     private void compareImages(final Image image, final CommandResult result) {

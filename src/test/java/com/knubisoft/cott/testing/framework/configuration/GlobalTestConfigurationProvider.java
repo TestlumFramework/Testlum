@@ -12,6 +12,7 @@ import com.knubisoft.cott.testing.model.global_config.Web;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -24,15 +25,24 @@ public class GlobalTestConfigurationProvider {
     }
 
     public static List<AbstractBrowser> getBrowsers() {
-        return getBrowserSettings().getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari();
+        if (getBrowserSettings() != null) {
+            return getBrowserSettings().getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari();
+        }
+        return new ArrayList<>();
     }
 
     public static List<NativeDevice> getNativeDevices() {
-        return GlobalTestConfigurationProvider.provide().getNative().getDeviceSettings().getDevices().getDevice();
+        if (getNativeSettings() != null) {
+            return getNativeSettings().getDeviceSettings().getDevices().getDevice();
+        }
+        return new ArrayList<>();
     }
 
     public static List<MobilebrowserDevice> getMobilebrowserDevices() {
-        return getMobilebrowserSettings().getDeviceSettings().getDevices().getDevice();
+        if (getMobilebrowserSettings() != null) {
+            return getMobilebrowserSettings().getDeviceSettings().getDevices().getDevice();
+        }
+        return new ArrayList<>();
     }
 
     public static Web getBrowserSettings() {

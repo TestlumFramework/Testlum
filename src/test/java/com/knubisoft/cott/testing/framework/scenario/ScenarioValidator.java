@@ -424,7 +424,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateWebCommands(final Web command) {
-        if (BrowserUtil.filterEnabledBrowsers().isEmpty()) {
+        if (BrowserUtil.filterEnabledBrowsers().isEmpty()
+                || !GlobalTestConfigurationProvider.getBrowserSettings().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_BROWSERS);
         }
         command.getClickOrInputOrAssert().forEach(o -> {
@@ -437,13 +438,15 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateNativeCommands() {
-        if (MobileUtil.filterEnabledNativeDevices().isEmpty()) {
+        if (MobileUtil.filterEnabledNativeDevices().isEmpty()
+                || !GlobalTestConfigurationProvider.getNativeSettings().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_NATIVE_DEVICE);
         }
     }
 
     private void validateMobilebrowserCommands(final Mobilebrowser command) {
-        if (MobileUtil.filterEnabledMobilebrowserDevices().isEmpty()) {
+        if (MobileUtil.filterEnabledMobilebrowserDevices().isEmpty()
+                || !GlobalTestConfigurationProvider.getMobilebrowserSettings().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_MOBILEBROWSER_DEVICE);
         }
         command.getClickOrInputOrAssert().forEach(o -> {

@@ -9,6 +9,7 @@ import com.knubisoft.cott.testing.framework.db.source.Source;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.scenario.Migrate;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.ERROR_DURING_DB_MIGRATION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NAME_FOR_MIGRATION_MUST_PRESENT;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.DATASET_PATH_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.*;
 
 @Slf4j
 @InterpreterForClass(Migrate.class)
@@ -56,7 +55,7 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
             List<Source> sourceList = createSourceList(datasets);
             applyDatasets(sourceList, storageName, databaseName);
         } catch (Exception e) {
-            log.error(ERROR_DURING_DB_MIGRATION_LOG, e);
+            LogUtil.logException(e);
             throw new DefaultFrameworkException(e);
         }
     }

@@ -15,13 +15,11 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="browserSettings"&gt;
  *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}settings"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="takeScreenshotOfEachUiCommand" type="{http://www.knubisoft.com/cott/testing/model/global-config}takeScreenshotOfEachUiCommand"/&gt;
- *         &lt;element name="webElementAutowait" type="{http://www.knubisoft.com/cott/testing/model/global-config}webElementAutowait"/&gt;
  *         &lt;element name="browsers" type="{http://www.knubisoft.com/cott/testing/model/global-config}browsers"/&gt;
  *       &lt;/sequence&gt;
- *     &lt;/restriction&gt;
+ *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -30,66 +28,14 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "browserSettings", propOrder = {
-    "takeScreenshotOfEachUiCommand",
-    "webElementAutowait",
     "browsers"
 })
-public class BrowserSettings {
+public class BrowserSettings
+    extends Settings
+{
 
-    @XmlElement(required = true)
-    protected TakeScreenshotOfEachUiCommand takeScreenshotOfEachUiCommand;
-    @XmlElement(required = true)
-    protected WebElementAutowait webElementAutowait;
     @XmlElement(required = true)
     protected Browsers browsers;
-
-    /**
-     * Gets the value of the takeScreenshotOfEachUiCommand property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TakeScreenshotOfEachUiCommand }
-     *     
-     */
-    public TakeScreenshotOfEachUiCommand getTakeScreenshotOfEachUiCommand() {
-        return takeScreenshotOfEachUiCommand;
-    }
-
-    /**
-     * Sets the value of the takeScreenshotOfEachUiCommand property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TakeScreenshotOfEachUiCommand }
-     *     
-     */
-    public void setTakeScreenshotOfEachUiCommand(TakeScreenshotOfEachUiCommand value) {
-        this.takeScreenshotOfEachUiCommand = value;
-    }
-
-    /**
-     * Gets the value of the webElementAutowait property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link WebElementAutowait }
-     *     
-     */
-    public WebElementAutowait getWebElementAutowait() {
-        return webElementAutowait;
-    }
-
-    /**
-     * Sets the value of the webElementAutowait property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link WebElementAutowait }
-     *     
-     */
-    public void setWebElementAutowait(WebElementAutowait value) {
-        this.webElementAutowait = value;
-    }
 
     /**
      * Gets the value of the browsers property.

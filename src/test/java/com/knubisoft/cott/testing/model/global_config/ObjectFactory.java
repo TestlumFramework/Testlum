@@ -62,11 +62,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Ui }
+     * Create an instance of {@link Web }
      * 
      */
-    public Ui createUi() {
-        return new Ui();
+    public Web createWeb() {
+        return new Web();
+    }
+
+    /**
+     * Create an instance of {@link Mobilebrowser }
+     * 
+     */
+    public Mobilebrowser createMobilebrowser() {
+        return new Mobilebrowser();
+    }
+
+    /**
+     * Create an instance of {@link Native }
+     * 
+     */
+    public Native createNative() {
+        return new Native();
     }
 
     /**
@@ -99,6 +115,30 @@ public class ObjectFactory {
      */
     public Hikari createHikari() {
         return new Hikari();
+    }
+
+    /**
+     * Create an instance of {@link Settings }
+     * 
+     */
+    public Settings createSettings() {
+        return new Settings();
+    }
+
+    /**
+     * Create an instance of {@link TakeScreenshot }
+     * 
+     */
+    public TakeScreenshot createTakeScreenshot() {
+        return new TakeScreenshot();
+    }
+
+    /**
+     * Create an instance of {@link ElementAutowait }
+     * 
+     */
+    public ElementAutowait createElementAutowait() {
+        return new ElementAutowait();
     }
 
     /**
@@ -358,22 +398,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WebSockets }
-     * 
-     */
-    public WebSockets createWebSockets() {
-        return new WebSockets();
-    }
-
-    /**
-     * Create an instance of {@link WebSocket }
-     * 
-     */
-    public WebSocket createWebSocket() {
-        return new WebSocket();
-    }
-
-    /**
      * Create an instance of {@link BrowserSettings }
      * 
      */
@@ -454,22 +478,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link TakeScreenshotOfEachUiCommand }
-     * 
-     */
-    public TakeScreenshotOfEachUiCommand createTakeScreenshotOfEachUiCommand() {
-        return new TakeScreenshotOfEachUiCommand();
-    }
-
-    /**
-     * Create an instance of {@link WebElementAutowait }
-     * 
-     */
-    public WebElementAutowait createWebElementAutowait() {
-        return new WebElementAutowait();
-    }
-
-    /**
      * Create an instance of {@link Chrome }
      * 
      */
@@ -507,6 +515,70 @@ public class ObjectFactory {
      */
     public Safari createSafari() {
         return new Safari();
+    }
+
+    /**
+     * Create an instance of {@link MobilebrowserDeviceSettings }
+     * 
+     */
+    public MobilebrowserDeviceSettings createMobilebrowserDeviceSettings() {
+        return new MobilebrowserDeviceSettings();
+    }
+
+    /**
+     * Create an instance of {@link MobilebrowserDevices }
+     * 
+     */
+    public MobilebrowserDevices createMobilebrowserDevices() {
+        return new MobilebrowserDevices();
+    }
+
+    /**
+     * Create an instance of {@link MobilebrowserDevice }
+     * 
+     */
+    public MobilebrowserDevice createMobilebrowserDevice() {
+        return new MobilebrowserDevice();
+    }
+
+    /**
+     * Create an instance of {@link NativeDeviceSettings }
+     * 
+     */
+    public NativeDeviceSettings createNativeDeviceSettings() {
+        return new NativeDeviceSettings();
+    }
+
+    /**
+     * Create an instance of {@link NativeDevices }
+     * 
+     */
+    public NativeDevices createNativeDevices() {
+        return new NativeDevices();
+    }
+
+    /**
+     * Create an instance of {@link NativeDevice }
+     * 
+     */
+    public NativeDevice createNativeDevice() {
+        return new NativeDevice();
+    }
+
+    /**
+     * Create an instance of {@link WebSockets }
+     * 
+     */
+    public WebSockets createWebSockets() {
+        return new WebSockets();
+    }
+
+    /**
+     * Create an instance of {@link WebSocket }
+     * 
+     */
+    public WebSocket createWebSocket() {
+        return new WebSocket();
     }
 
     /**

@@ -8,32 +8,6 @@
     <x:include schemaLocation="shared.xsd"/>
     <x:include schemaLocation="wait.xsd"/>
 
-    <x:complexType name="ui">
-        <x:complexContent>
-            <x:extension base="tns:abstractCommand">
-                <x:choice maxOccurs="unbounded">
-                    <x:element name="click" type="tns:click"/>
-                    <x:element name="input" type="tns:input"/>
-                    <x:element name="navigate" type="tns:navigate"/>
-                    <x:element name="assert" type="tns:assert"/>
-                    <x:element name="dropDown" type="tns:dropDown"/>
-                    <x:element name="javascript" type="tns:javascript"/>
-                    <x:element name="hovers" type="tns:hovers"/>
-                    <x:element name="wait" type="tns:wait"/>
-                    <x:element name="clear" type="tns:clear"/>
-                    <x:element name="closeSecondTab" type="tns:closeSecondTab"/>
-                    <x:element name="scroll" type="tns:scroll"/>
-                    <x:element name="scrollTo" type="tns:scrollTo"/>
-                    <x:element name="image" type="tns:image"/>
-                    <x:element name="repeat" type="tns:repeatUiCommand"/>
-                    <x:element name="switchToFrame" type="tns:switchToFrame"/>
-                </x:choice>
-                <x:attribute name="clearCookiesAfterExecution" type="x:boolean" default="false"/>
-                <x:attribute name="clearLocalStorageByKey" type="tns:nonEmptyString"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
     <x:complexType name="click">
         <x:complexContent>
             <x:extension base="tns:commandWithLocator">
@@ -52,7 +26,7 @@
 
     <x:complexType name="javascript">
         <x:complexContent>
-            <x:extension base="tns:abstractCommand">
+            <x:extension base="tns:abstractUiCommand">
                 <x:attribute name="file" type="tns:jsFileExtension"/>
             </x:extension>
         </x:complexContent>
@@ -60,7 +34,7 @@
 
     <x:complexType name="hovers">
         <x:complexContent>
-            <x:extension base="tns:abstractCommand">
+            <x:extension base="tns:abstractUiCommand">
                 <x:choice>
                     <x:element name="hover" type="tns:hover" maxOccurs="unbounded" minOccurs="1"/>
                 </x:choice>
@@ -86,7 +60,7 @@
 
     <x:complexType name="navigate">
         <x:complexContent>
-            <x:extension base="tns:abstractCommand">
+            <x:extension base="tns:abstractUiCommand">
                 <x:attribute name="command" type="tns:navigateCommand" use="required"/>
                 <x:attribute name="path" type="tns:slashStartedOrUrlString"/>
             </x:extension>
@@ -171,13 +145,13 @@
     
     <x:complexType name="closeSecondTab">
         <x:complexContent>
-            <x:extension base="tns:abstractCommand"/>
+            <x:extension base="tns:abstractUiCommand"/>
         </x:complexContent>
     </x:complexType>
 
     <x:complexType name="scroll">
         <x:complexContent>
-            <x:extension base="tns:abstractCommand">
+            <x:extension base="tns:abstractUiCommand">
                 <x:attribute name="type" type="tns:scrollType" use="required"/>
                 <x:attribute name="value" type="x:nonNegativeInteger" use="required"/>
                 <x:attribute name="direction" type="tns:scrollDirection" default="down"/>
@@ -223,7 +197,7 @@
 
     <x:complexType name="image">
         <x:complexContent>
-            <x:extension base="tns:abstractCommand">
+            <x:extension base="tns:abstractUiCommand">
                 <x:choice>
                     <x:element name="compareWithFullScreen"/>
                     <x:element name="compareWith" type="tns:compareWith"/>
@@ -237,29 +211,6 @@
     <x:complexType name="compareWith">
         <x:attribute name="locator" type="tns:scenarioLocator" use="required"/>
         <x:attribute name="attribute" type="tns:nonEmptyString" default="src"/>
-    </x:complexType>
-
-    <x:complexType name="repeatUiCommand">
-        <x:complexContent>
-            <x:extension base="tns:abstractCommand">
-                <x:choice maxOccurs="unbounded">
-                    <x:element name="click" type="tns:click"/>
-                    <x:element name="input" type="tns:input"/>
-                    <x:element name="navigate" type="tns:navigate"/>
-                    <x:element name="assert" type="tns:assert"/>
-                    <x:element name="dropDown" type="tns:dropDown"/>
-                    <x:element name="javascript" type="tns:javascript"/>
-                    <x:element name="wait" type="tns:wait"/>
-                    <x:element name="clear" type="tns:clear"/>
-                    <x:element name="closeSecondTab" type="tns:closeSecondTab"/>
-                    <x:element name="scroll" type="tns:scroll"/>
-                    <x:element name="scrollTo" type="tns:scrollTo"/>
-                    <x:element name="image" type="tns:image"/>
-                    <x:element name="repeat" type="tns:repeatUiCommand"/>
-                </x:choice>
-                <x:attribute name="times" type="x:positiveInteger" use="required"/>
-            </x:extension>
-        </x:complexContent>
     </x:complexType>
 
 </x:schema>

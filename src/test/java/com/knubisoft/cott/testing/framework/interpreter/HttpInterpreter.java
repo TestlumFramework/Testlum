@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.interpreter;
 
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
+import com.knubisoft.cott.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.interpreter.lib.http.ApiClient;

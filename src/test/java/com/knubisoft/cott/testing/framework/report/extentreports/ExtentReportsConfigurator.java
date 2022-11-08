@@ -19,7 +19,7 @@ import static java.lang.String.format;
 @UtilityClass
 public class ExtentReportsConfigurator {
 
-    private static final String TEMPLATE_FOR_REPORT_SAVING_PATH = "%s/%s_%s.html";
+    private static final String TEMPLATE_FOR_REPORT_SAVING_PATH = "%s/%s/%s_%s.html";
 
     public void configure(final ExtentReports extentReports) {
         com.knubisoft.cott.testing.model.global_config.ExtentReports extentReportsConfig =
@@ -36,13 +36,12 @@ public class ExtentReportsConfigurator {
     }
 
     private void attachSparkReporter(final ExtentReports extentReports, final String projectName) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+        LocalDateTime dateTime = LocalDateTime.now();
         String pathForReportSaving = TestResourceSettings.getInstance().getTestResourcesFolder().getAbsolutePath()
-                + TestResourceSettings.REPORT_FOLDER + LocalDateTime.now().toLocalDate().format(dateFormatter);
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
-        String formattedPathForReportSaving =
-                format(TEMPLATE_FOR_REPORT_SAVING_PATH, pathForReportSaving, projectName, LocalDateTime.now()
-                        .format(dateTimeFormatter));
+                + TestResourceSettings.REPORT_FOLDER;
+        String formattedPathForReportSaving = format(TEMPLATE_FOR_REPORT_SAVING_PATH, pathForReportSaving,
+                        dateTime.format(TestResourceSettings.DATE_FORMATER),
+                        projectName, dateTime.format(TestResourceSettings.DATE_TIME_FORMATER));
         ExtentSparkReporter extentSparkReporter = new ExtentSparkReporter(formattedPathForReportSaving);
         extentReports.attachReporter(extentSparkReporter);
     }

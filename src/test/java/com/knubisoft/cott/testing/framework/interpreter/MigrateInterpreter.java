@@ -22,7 +22,8 @@ import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NAME_FOR_MIGRATION_MUST_PRESENT;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.*;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.DATASET_PATH_LOG;
 
 @Slf4j
 @InterpreterForClass(Migrate.class)

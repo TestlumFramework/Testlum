@@ -10,12 +10,11 @@ import com.knubisoft.cott.testing.model.pages.Include;
 import com.knubisoft.cott.testing.model.pages.Locator;
 import com.knubisoft.cott.testing.model.pages.Page;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNABLE_PARSE_FILE_WITH_LOCATORS;
 import static java.lang.String.format;
@@ -48,7 +47,10 @@ public class LocatorCollector {
     private Page parseLocatorOrThrow(final File each) {
         try {
             PageValidator pageValidator = new PageValidator();
-            return XMLParsers.forPageLocator().process(each, pageValidator);
+            Page page = XMLParsers.forPageLocator().process(each);
+            page.getLocators().getLocator().addAll(getIncludes(page));
+            pageValidator.validate(page, each);
+            return page;
         } catch (Exception e) {
             throw new DefaultFrameworkException(
                     format(UNABLE_PARSE_FILE_WITH_LOCATORS, each.getName(), e.getMessage()), e);
@@ -60,40 +62,23 @@ public class LocatorCollector {
         Map<String, Locator> result = new LinkedHashMap<>();
 
         for (Map.Entry<File, Page> each : fileToPage.entrySet()) {
-            for (Locator locator : getLocators(each)) {
+            for (Locator locator : each.getValue().getLocators().getLocator()) {
                 result.put(getKeyName(each, locator), locator);
             }
         }
         return result;
     }
 
-    private List<Locator> getLocators(Map.Entry<File, Page> each) {
-        List<Locator> result = each.getValue().getLocators().getLocator();
+    private List<Locator> getIncludes(Page page) {
+        List<Locator> includes = new ArrayList<>();
 
-        for (Include include : each.getValue().getInclude()) {
-            Component component = parseComponent(include);
-            List<Locator> locatorsFromComponent = component.getLocators().getLocator();
-            validateLocators(each.getKey(), result, locatorsFromComponent, include);
-            result.addAll(locatorsFromComponent);
-        }
-        return result;
+        page.getInclude().stream()
+                .map(c -> parseComponent(c)
+                        .getLocators()
+                        .getLocator())
+                .forEach(includes::addAll);
 
-    }
-
-    private void validateLocators(File file, List<Locator> result, List<Locator> locatorsFromComponent, Include include) {
-        Set<String> ids = result.stream()
-                .map(Locator::getLocatorId)
-                .collect(Collectors.toSet());
-
-        for (Locator each : locatorsFromComponent) {
-            String locatorId = each.getLocatorId();
-            if (ids.contains(locatorId)) {
-                throw new DefaultFrameworkException(
-                        "Locator with id <%s> from component <%s> is duplicated in <%s> page",
-                         locatorId, include.getComponent(), file.getName());
-            }
-            ids.add(locatorId);
-        }
+        return includes;
 
     }
 

@@ -57,7 +57,7 @@ public abstract class AbstractSqlExecutor {
         try {
             return queries.stream().map(this::executeQuery).collect(Collectors.toList());
         } catch (BadSqlGrammarException e) {
-            throw new BadSqlGrammarException(null, e.getSql(), e.getSQLException());
+            throw new BadSqlGrammarException(EMPTY, e.getSql(), e.getSQLException());
         } catch (Exception e) {
             throw new DefaultFrameworkException(e);
         }

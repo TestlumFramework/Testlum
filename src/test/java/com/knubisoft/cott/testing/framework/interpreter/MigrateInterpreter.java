@@ -14,7 +14,6 @@ import com.knubisoft.cott.testing.model.scenario.Migrate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.BadSqlGrammarException;
 
 import java.io.File;
 import java.util.List;
@@ -58,11 +57,9 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
         try {
             List<Source> sourceList = createSourceList(datasets);
             applyDatasets(sourceList, storageName, databaseName);
-        } catch (BadSqlGrammarException e) {
-            log.error(ERROR_DURING_DB_MIGRATION_LOG,
-                    e.getCause().getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
-            throw new DefaultFrameworkException(e);
         } catch (Exception e) {
+            String error = e.getCause().getCause().getMessage();
+            log.error(ERROR_DURING_DB_MIGRATION_LOG, error.replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
             throw new DefaultFrameworkException(e);
         }
     }

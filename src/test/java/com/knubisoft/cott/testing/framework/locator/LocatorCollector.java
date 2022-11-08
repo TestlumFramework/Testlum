@@ -69,7 +69,7 @@ public class LocatorCollector {
         return result;
     }
 
-    private List<Locator> getIncludes(Page page) {
+    private List<Locator> getIncludes(final Page page) {
         List<Locator> includes = new ArrayList<>();
 
         page.getInclude().stream()

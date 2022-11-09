@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="commandWithLocator"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}scenarioLocator" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlType;
     ScrollTo.class
 })
 public abstract class CommandWithLocator
-    extends AbstractCommand
+    extends AbstractUiCommand
 {
 
     @XmlAttribute(name = "locatorId", required = true)

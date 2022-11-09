@@ -22,7 +22,9 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="delayBetweenScenariosRuns" type="{http://www.knubisoft.com/cott/testing/model/global-config}delayBetweenScenariosRuns" minOccurs="0"/&gt;
  *         &lt;element name="runScenariosByTag" type="{http://www.knubisoft.com/cott/testing/model/global-config}runScenariosByTag"/&gt;
  *         &lt;element name="report" type="{http://www.knubisoft.com/cott/testing/model/global-config}report"/&gt;
- *         &lt;element name="ui" type="{http://www.knubisoft.com/cott/testing/model/global-config}ui" minOccurs="0"/&gt;
+ *         &lt;element name="web" type="{http://www.knubisoft.com/cott/testing/model/global-config}web" minOccurs="0"/&gt;
+ *         &lt;element name="mobilebrowser" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowser" minOccurs="0"/&gt;
+ *         &lt;element name="native" type="{http://www.knubisoft.com/cott/testing/model/global-config}native" minOccurs="0"/&gt;
  *         &lt;element name="auth" type="{http://www.knubisoft.com/cott/testing/model/global-config}auth"/&gt;
  *         &lt;element name="integrations" type="{http://www.knubisoft.com/cott/testing/model/global-config}integrations" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
@@ -39,7 +41,9 @@ import javax.xml.bind.annotation.XmlType;
     "delayBetweenScenariosRuns",
     "runScenariosByTag",
     "report",
-    "ui",
+    "web",
+    "mobilebrowser",
+    "_native",
     "auth",
     "integrations"
 })
@@ -52,7 +56,10 @@ public class GlobalTestConfiguration {
     protected RunScenariosByTag runScenariosByTag;
     @XmlElement(required = true)
     protected Report report;
-    protected Ui ui;
+    protected Web web;
+    protected Mobilebrowser mobilebrowser;
+    @XmlElement(name = "native")
+    protected Native _native;
     @XmlElement(required = true)
     protected Auth auth;
     protected Integrations integrations;
@@ -146,27 +153,75 @@ public class GlobalTestConfiguration {
     }
 
     /**
-     * Gets the value of the ui property.
+     * Gets the value of the web property.
      * 
      * @return
      *     possible object is
-     *     {@link Ui }
+     *     {@link Web }
      *     
      */
-    public Ui getUi() {
-        return ui;
+    public Web getWeb() {
+        return web;
     }
 
     /**
-     * Sets the value of the ui property.
+     * Sets the value of the web property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Ui }
+     *     {@link Web }
      *     
      */
-    public void setUi(Ui value) {
-        this.ui = value;
+    public void setWeb(Web value) {
+        this.web = value;
+    }
+
+    /**
+     * Gets the value of the mobilebrowser property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Mobilebrowser }
+     *     
+     */
+    public Mobilebrowser getMobilebrowser() {
+        return mobilebrowser;
+    }
+
+    /**
+     * Sets the value of the mobilebrowser property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Mobilebrowser }
+     *     
+     */
+    public void setMobilebrowser(Mobilebrowser value) {
+        this.mobilebrowser = value;
+    }
+
+    /**
+     * Gets the value of the native property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Native }
+     *     
+     */
+    public Native getNative() {
+        return _native;
+    }
+
+    /**
+     * Sets the value of the native property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Native }
+     *     
+     */
+    public void setNative(Native value) {
+        this._native = value;
     }
 
     /**

@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="image"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice&gt;
  *         &lt;element name="compareWithFullScreen" type="{http://www.w3.org/2001/XMLSchema}anyType"/&gt;
  *         &lt;element name="compareWith" type="{http://www.knubisoft.com/cott/testing/model/scenario}compareWith"/&gt;
@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
     "compareWith"
 })
 public class Image
-    extends AbstractCommand
+    extends AbstractUiCommand
 {
 
     protected Object compareWithFullScreen;

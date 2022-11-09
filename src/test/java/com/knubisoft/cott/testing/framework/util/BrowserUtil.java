@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.util;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +12,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_INFO;
 
 @UtilityClass
@@ -23,9 +21,6 @@ public class BrowserUtil {
         List<AbstractBrowser> filteredResult = GlobalTestConfigurationProvider.getBrowsers().stream()
                 .filter(AbstractBrowser::isEnable)
                 .collect(Collectors.toList());
-        if (filteredResult.isEmpty()) {
-            throw new DefaultFrameworkException(NOT_ENABLED_BROWSERS);
-        }
         return filteredResult;
     }
 

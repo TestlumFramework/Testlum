@@ -9,7 +9,7 @@
 
     <x:complexType name="wait">
         <x:complexContent>
-            <x:extension base="tns:abstractCommand">
+            <x:extension base="tns:abstractUiCommand">
                 <x:attribute name="time" type="tns:timePattern" use="required"/>
                 <x:attribute name="unit" type="tns:unit" default="seconds"/>
             </x:extension>

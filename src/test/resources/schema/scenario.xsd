@@ -8,7 +8,9 @@
     <x:include schemaLocation="shared.xsd"/>
     <x:include schemaLocation="overview.xsd"/>
     <x:include schemaLocation="tags.xsd"/>
-    <x:include schemaLocation="ui.xsd"/>
+    <x:include schemaLocation="mobilebrowser.xsd"/>
+    <x:include schemaLocation="web.xsd"/>
+    <x:include schemaLocation="native.xsd"/>
     <x:include schemaLocation="migrate.xsd"/>
     <x:include schemaLocation="postgres.xsd"/>
     <x:include schemaLocation="mongo.xsd"/>
@@ -61,7 +63,9 @@
                     <x:element name="include" type="tns:include"/>
                     <x:element name="auth" type="tns:auth"/>
                     <x:element name="repeat" type="tns:repeat"/>
-                    <x:element name="ui" type="tns:ui"/>
+                    <x:element name="mobilebrowser" type="tns:mobilebrowser"/>
+                    <x:element name="web" type="tns:web"/>
+                    <x:element name="native" type="tns:native"/>
 
                     <x:element name="http" type="tns:http"/>
                     <x:element name="migrate" type="tns:migrate"/>
@@ -101,7 +105,7 @@
                     <x:element name="include" type="tns:include"/>
 <!--                    <x:element name="auth" type="tns:auth"/>-->
                     <x:element name="repeat" type="tns:repeat"/>
-                    <x:element name="ui" type="tns:ui"/>
+                    <x:element name="web" type="tns:web"/>
 
                     <x:element name="http" type="tns:http"/>
                     <x:element name="migrate" type="tns:migrate"/>
@@ -139,7 +143,7 @@
                     <x:element name="include" type="tns:include"/>
 <!--                    <x:element name="auth" type="tns:auth"/>-->
                     <x:element name="repeat" type="tns:repeat"/>
-                    <x:element name="ui" type="tns:ui"/>
+                    <x:element name="web" type="tns:web"/>
                     <x:element name="http" type="tns:http"/>
                     <x:element name="migrate" type="tns:migrate"/>
                     <x:element name="postgres" type="tns:postgres"/>

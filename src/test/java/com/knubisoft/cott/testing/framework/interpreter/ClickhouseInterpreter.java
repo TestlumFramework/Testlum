@@ -4,6 +4,7 @@ import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.ListSource;
 import com.knubisoft.cott.testing.framework.db.sql.ClickhouseOperation;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
+import com.knubisoft.cott.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;

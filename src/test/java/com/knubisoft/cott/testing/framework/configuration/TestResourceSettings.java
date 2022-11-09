@@ -45,8 +45,8 @@ public class TestResourceSettings {
 
     public static final List<String> REQUIRED_FOLDER_NAMES = Collections.unmodifiableList(Arrays.asList(
             SCENARIOS_FOLDER, LOCATORS_PAGES_FOLDER, LOCATORS_COMPONENTS_FOLDER, REPORT_FOLDER, DATA_FOLDER));
-    public static DateTimeFormatter DATE_FORMATER = DateTimeFormatter.ofPattern(REPORT_DATE_PATTERN);
-    public static DateTimeFormatter DATE_TIME_FORMATER = DateTimeFormatter.ofPattern(REPORT_DATE_TIME_PATTERN);
+    public static final DateTimeFormatter DATE_FORMATER = DateTimeFormatter.ofPattern(REPORT_DATE_PATTERN);
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(REPORT_DATE_TIME_PATTERN);
 
     private static TestResourceSettings instance;
 

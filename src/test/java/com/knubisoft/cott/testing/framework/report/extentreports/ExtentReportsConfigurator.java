@@ -11,7 +11,6 @@ import com.knubisoft.cott.testing.model.global_config.Mongodb;
 import lombok.experimental.UtilityClass;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import static java.lang.String.format;
@@ -41,7 +40,7 @@ public class ExtentReportsConfigurator {
                 + TestResourceSettings.REPORT_FOLDER;
         String formattedPathForReportSaving = format(TEMPLATE_FOR_REPORT_SAVING_PATH, pathForReportSaving,
                         dateTime.format(TestResourceSettings.DATE_FORMATER),
-                        projectName, dateTime.format(TestResourceSettings.DATE_TIME_FORMATER));
+                        projectName, dateTime.format(TestResourceSettings.DATE_TIME_FORMATTER));
         ExtentSparkReporter extentSparkReporter = new ExtentSparkReporter(formattedPathForReportSaving);
         extentReports.attachReporter(extentSparkReporter);
     }

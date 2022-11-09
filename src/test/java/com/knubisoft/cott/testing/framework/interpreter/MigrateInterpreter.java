@@ -27,6 +27,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.ERROR_DUR
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.NEW_LOG_LINE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
 
+
 @Slf4j
 @InterpreterForClass(Migrate.class)
 public class MigrateInterpreter extends AbstractInterpreter<Migrate> {

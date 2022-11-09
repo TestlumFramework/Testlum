@@ -10,12 +10,10 @@ import com.knubisoft.cott.testing.model.pages.Include;
 import com.knubisoft.cott.testing.model.pages.Locator;
 import com.knubisoft.cott.testing.model.pages.Page;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import org.jetbrains.annotations.NotNull;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNABLE_PARSE_FILE_WITH_LOCATORS;
 import static java.lang.String.format;
 
@@ -48,7 +46,7 @@ public class LocatorCollector {
         try {
             PageValidator pageValidator = new PageValidator();
             Page page = XMLParsers.forPageLocator().process(each);
-            page.getLocators().getLocator().addAll(getIncludes(page));
+            addIncludeLocators(page);
             pageValidator.validate(page, each);
             return page;
         } catch (Exception e) {
@@ -57,7 +55,6 @@ public class LocatorCollector {
         }
     }
 
-    @NotNull
     private Map<String, Locator> transformToNameToLocatorMap(final Map<File, Page> fileToPage) {
         Map<String, Locator> result = new LinkedHashMap<>();
 
@@ -69,16 +66,14 @@ public class LocatorCollector {
         return result;
     }
 
-    private List<Locator> getIncludes(final Page page) {
-        List<Locator> includes = new ArrayList<>();
+    private void addIncludeLocators(final Page page) {
+        List<Locator> includes = page.getLocators().getLocator();
 
         page.getInclude().stream()
                 .map(c -> parseComponent(c)
                         .getLocators()
                         .getLocator())
                 .forEach(includes::addAll);
-
-        return includes;
 
     }
 

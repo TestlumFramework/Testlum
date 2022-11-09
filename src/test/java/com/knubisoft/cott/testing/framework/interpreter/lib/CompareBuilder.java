@@ -18,8 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
-import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMPARISON_FOR_STEP_WAS_SKIPPED;
 import static java.lang.String.format;
 
@@ -85,15 +83,8 @@ public class CompareBuilder {
             final String newExpected = StringPrettifier.prettify(expected);
             TreeComparator.compare(newExpected, newActual);
         } catch (ComparisonException e) {
-           save(actual);
-        }
-    }
-
-    private String prettify(final String actual) {
-        try {
-            return tryToPrettify(actual);
-        } catch (Exception ignore) {
-            return actual;
+            save(actual);
+            throw new DefaultFrameworkException(e);
         }
     }
 
@@ -101,17 +92,10 @@ public class CompareBuilder {
         try {
             File target = new File(scenarioFile.getParent(),
                     String.format(TestResourceSettings.FILENAME_TO_SAVE, position.get()));
-            FileUtils.writeStringToFile(target, prettify(actual), StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(target, StringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
         } catch (IOException e) {
             log.error(e.getMessage());
             throw new DefaultFrameworkException(e);
         }
-    }
-    private String tryToPrettify(final String actual) {
-        if (actual.startsWith(OPEN_BRACE) || actual.startsWith(OPEN_SQUARE_BRACKET)) {
-            Object json = JacksonMapperUtil.readValue(actual, Object.class);
-            return JacksonMapperUtil.writeValueAsStringWithDefaultPrettyPrinter(json);
-        }
-        return actual;
     }
 }

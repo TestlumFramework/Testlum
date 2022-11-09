@@ -1,12 +1,14 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib;
 
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
-import com.knubisoft.cott.testing.framework.util.FileSearcher;
-import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
+import com.knubisoft.cott.testing.framework.constant.MigrationConstant;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.exception.FileLinkingException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.JacksonMapperUtil;
+import com.knubisoft.cott.testing.framework.util.StringPrettifier;
+import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -18,11 +20,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
-import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
-import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SLOW_COMMAND_PROCESSING;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMENT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.POSITION_COMMAND_LOG;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SLOW_COMMAND_PROCESSING;
 import static java.lang.String.format;
 
 @Slf4j
@@ -58,7 +58,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         try {
             File target = new File(dependencies.getFile().getParent(),
                     String.format(TestResourceSettings.FILENAME_TO_SAVE, dependencies.getPosition().get()));
-            FileUtils.writeStringToFile(target, prettify(actual), StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(target, StringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
         } catch (IOException e) {
             log.error(e.getMessage());
             throw new DefaultFrameworkException(e);
@@ -70,22 +70,18 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         return JacksonMapperUtil.writeValueAsString(o);
     }
 
+    public String inject(final String original) {
+        return dependencies.getScenarioContext().inject(original);
+    }
+
     @SneakyThrows
     protected void setContextBody(final String o) {
         dependencies.getScenarioContext().setBody(o);
     }
 
-    private String prettify(final String actual) {
-        try {
-            return tryToPrettify(actual);
-        } catch (Exception ignore) {
-            return actual;
-        }
-    }
-
     protected String getContentIfFile(final String fileOrContent) {
         try {
-            if (fileOrContent.endsWith(".json")) {
+            if (fileOrContent.endsWith(MigrationConstant.JSON_EXTENSION)) {
                 return FileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
             }
         } catch (FileLinkingException e) {
@@ -95,21 +91,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
 
     }
 
-    private String tryToPrettify(final String actual) {
-        if (actual.startsWith(OPEN_BRACE) || actual.startsWith(OPEN_SQUARE_BRACKET)) {
-            Object json = JacksonMapperUtil.readValue(actual, Object.class);
-            return JacksonMapperUtil.writeValueAsStringWithDefaultPrettyPrinter(json);
-        }
-        return actual;
-    }
-
     protected CompareBuilder newCompare() {
         return new CompareBuilder(dependencies.getFile(), dependencies.getPosition());
     }
-
-    public String inject(final String original) {
-        return dependencies.getScenarioContext().inject(original);
-    }
-
-
 }

@@ -1,6 +1,5 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
-import com.google.common.collect.ImmutableList;
 import com.knubisoft.cott.testing.framework.configuration.websocket.WebSocketMessageHandler;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -13,11 +12,12 @@ import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.ScenarioUtil;
-import com.knubisoft.cott.testing.model.scenario.CompareRule;
 import com.knubisoft.cott.testing.model.scenario.WebSocket;
 import com.knubisoft.cott.testing.model.scenario.WebSocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebSocketSend;
+import com.knubisoft.cott.testing.model.scenario.WebSocketSendReceive;
 import com.knubisoft.cott.testing.model.scenario.WebSocketTopic;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.knubisoft.cott.testing.framework.configuration.websocket.WebSocketConfiguration.WebSocketConnectionSupplier;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEBSOCKET_CONNECTION_FAILURE;
@@ -98,7 +100,7 @@ public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
 
     private void runActions(final WebSocket webSocket,
                             final List<CommandResult> subCommandsResultList) {
-        webSocket.getSendOrReceive().forEach(action -> {
+        webSocket.getSendOrReceiveOrSendReceive().forEach(action -> {
             LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action);
             CommandResult result = ResultUtil.createNewCommandResultInstance(dependencies.getPosition().intValue());
             processEachAction(action, webSocket.getAlias(), result);
@@ -125,11 +127,13 @@ public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
 
     private void executeAction(final Object action,
                                final String alias,
-                               final CommandResult result) throws InterruptedException {
+                               final CommandResult result) {
         if (action instanceof WebSocketSend) {
             sendMessage((WebSocketSend) action, alias, result);
-        } else {
+        } else if (action instanceof WebSocketReceive) {
             receiveMessages((WebSocketReceive) action, alias, result);
+        } else {
+            sendAndReceiveMessages((WebSocketSendReceive) action, alias, result);
         }
     }
 
@@ -144,53 +148,63 @@ public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
 
     private void receiveMessages(final WebSocketReceive wsReceive,
                                  final String alias,
-                                 final CommandResult result) throws InterruptedException {
+                                 final CommandResult result) {
         final String expectedContent = getExpectedContent(wsReceive);
         ResultUtil.addWebsocketInfoForReceiveAction(wsReceive, alias, result);
         LogUtil.logWebSocketActionInfo(RECEIVE_ACTION, wsReceive.getTopic(), expectedContent);
 
-        List<String> receivedMessages = getActualMessages(wsReceive);
-        String contentToCompare = getMessagesToCompareByRule(wsReceive, receivedMessages, expectedContent);
+        final List<String> contentToCompare = getActualMessages(wsReceive);
 
-        result.setActual(PrettifyStringJson.getJSONResult(contentToCompare));
+        result.setActual(PrettifyStringJson.getJSONResult(toString(contentToCompare)));
         result.setExpected(PrettifyStringJson.getJSONResult(expectedContent));
 
         executeComparison(contentToCompare, expectedContent);
     }
 
-    private List<String> getActualMessages(final WebSocketReceive wsReceive) throws InterruptedException {
+    private List<String> getActualMessages(final WebSocketReceive wsReceive) {
         WebSocketMessageHandler handler = topicToMessageHandler.get(wsReceive.getTopic());
-        int minimumMessagesNumber = wsReceive.getValuesNumber().intValue();
-        List<String> receivedMessages = handler.getReceivedMessages();
+        LinkedList<String> receivedMessages = handler.getReceivedMessages();
 
-        if (minimumMessagesNumber > receivedMessages.size()) {
+        checkMessagesReceived(wsReceive, receivedMessages);
+
+        return IntStream.range(0, wsReceive.getValuesNumber())
+                .mapToObj(id -> receivedMessages.pollFirst())
+                .collect(Collectors.toList());
+    }
+
+    @SneakyThrows
+    private void checkMessagesReceived(final WebSocketReceive wsReceive,
+                                       final LinkedList<String> receivedMessages) {
+        int requiredMessagesNumber = wsReceive.getValuesNumber();
+        if (requiredMessagesNumber > receivedMessages.size()) {
             TimeUnit.MILLISECONDS.sleep(wsReceive.getTimeoutMillis());
-            if (minimumMessagesNumber > receivedMessages.size()) {
-                throw new DefaultFrameworkException(WEBSOCKET_NOT_ALL_MESSAGES_RECEIVED,
-                        minimumMessagesNumber - receivedMessages.size());
+            if (requiredMessagesNumber > receivedMessages.size()) {
+                log.error(format(
+                        WEBSOCKET_NOT_ALL_MESSAGES_RECEIVED, requiredMessagesNumber - receivedMessages.size()));
             }
         }
-        return ImmutableList.copyOf(receivedMessages);
     }
 
-    private String getMessagesToCompareByRule(final WebSocketReceive wsReceive,
-                                              final List<String> receivedMessages,
-                                              final String expectedContent) {
-        CompareRule compareRule = wsReceive.getCompareRule();
+    private void sendAndReceiveMessages(final WebSocketSendReceive wsSendReceive,
+                                        final String alias,
+                                        final CommandResult result) {
+        WebSocketSend wsSend = new WebSocketSend();
+        wsSend.setEndpoint(wsSendReceive.getEndpoint());
+        wsSend.setMessage(wsSendReceive.getMessage());
+        wsSend.setFile(wsSendReceive.getFile());
+        sendMessage(wsSend, alias, result);
 
-        if (CompareRule.EQUALS == compareRule) {
-            return toString(receivedMessages.subList(0, wsReceive.getValuesNumber().intValue()));
-        }
-        if (CompareRule.CONTAINS == compareRule) {
-            return receivedMessages.stream()
-                    .filter(message -> Objects.equals(message, expectedContent))
-                    .findFirst()
-                    .orElseGet(() -> toString(receivedMessages));
-        }
-        return toString(receivedMessages);
+        WebSocketReceive wsReceive = new WebSocketReceive();
+        wsReceive.setTopic(wsSendReceive.getTopic());
+        wsReceive.setMessage(getContentIfFile(wsSendReceive.getExpected()));
+        wsReceive.setValuesNumber(wsSendReceive.getValuesNumber());
+        wsReceive.setTimeoutMillis(wsSendReceive.getTimeoutMillis());
+        receiveMessages(wsReceive, alias, result);
+
+        ResultUtil.addWebsocketInfoForSendAndReceiveAction(result);
     }
 
-    private void executeComparison(final String actualContent,
+    private void executeComparison(final List<String> actualContent,
                                    final String expectedContent) {
         CompareBuilder comparator = newCompare()
                 .withExpected(expectedContent)

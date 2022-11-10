@@ -8,18 +8,24 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for webSocketReceive complex type.
+ * <p>Java class for webSocketSendReceive complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="webSocketReceive"&gt;
+ * &lt;complexType name="webSocketSendReceive"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;choice&gt;
- *         &lt;element name="message" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
- *         &lt;element name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}expectedPattern"/&gt;
- *       &lt;/choice&gt;
+ *       &lt;sequence&gt;
+ *         &lt;choice&gt;
+ *           &lt;element name="message" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
+ *           &lt;element name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}bodyFile"/&gt;
+ *         &lt;/choice&gt;
+ *         &lt;choice&gt;
+ *           &lt;element name="expected" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;/choice&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="endpoint" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}endpointPattern" /&gt;
  *       &lt;attribute name="topic" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}endpointPattern" /&gt;
  *       &lt;attribute name="valuesNumber" type="{http://www.w3.org/2001/XMLSchema}int" default="0" /&gt;
  *       &lt;attribute name="timeoutMillis" type="{http://www.w3.org/2001/XMLSchema}int" default="5000" /&gt;
@@ -31,14 +37,18 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "webSocketReceive", propOrder = {
+@XmlType(name = "webSocketSendReceive", propOrder = {
     "message",
-    "file"
+    "file",
+    "expected"
 })
-public class WebSocketReceive {
+public class WebSocketSendReceive {
 
     protected String message;
     protected String file;
+    protected String expected;
+    @XmlAttribute(name = "endpoint", required = true)
+    protected String endpoint;
     @XmlAttribute(name = "topic", required = true)
     protected String topic;
     @XmlAttribute(name = "valuesNumber")
@@ -92,6 +102,54 @@ public class WebSocketReceive {
      */
     public void setFile(String value) {
         this.file = value;
+    }
+
+    /**
+     * Gets the value of the expected property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getExpected() {
+        return expected;
+    }
+
+    /**
+     * Sets the value of the expected property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setExpected(String value) {
+        this.expected = value;
+    }
+
+    /**
+     * Gets the value of the endpoint property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    /**
+     * Sets the value of the endpoint property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setEndpoint(String value) {
+        this.endpoint = value;
     }
 
     /**

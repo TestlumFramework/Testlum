@@ -7,13 +7,12 @@ import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.util.MimeType;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Objects;
 
 public class WebSocketMessageHandler implements StompFrameHandler {
 
-    private final List<String> messages = new ArrayList<>();
+    private final LinkedList<String> messages = new LinkedList<>();
 
 
     @Override
@@ -30,15 +29,15 @@ public class WebSocketMessageHandler implements StompFrameHandler {
     @Override
     public void handleFrame(final StompHeaders headers, final Object payload) {
         if (payload instanceof String) {
-            messages.add((String) payload);
+            messages.addLast((String) payload);
         } else if (payload instanceof byte[]) {
-            messages.add(new String((byte[]) payload));
+            messages.addLast(new String((byte[]) payload));
         } else {
             throw new DefaultFrameworkException("Unknown content type received");
         }
     }
 
-    public List<String> getReceivedMessages() {
+    public LinkedList<String> getReceivedMessages() {
         return messages;
     }
 }

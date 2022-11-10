@@ -21,10 +21,11 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="topic" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketTopic" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="topic" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketTopic" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;choice maxOccurs="unbounded"&gt;
  *           &lt;element name="send" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketSend" maxOccurs="unbounded"/&gt;
  *           &lt;element name="receive" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketReceive" maxOccurs="unbounded"/&gt;
+ *           &lt;element name="sendReceive" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketSendReceive" maxOccurs="unbounded"/&gt;
  *         &lt;/choice&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}aliasPattern" /&gt;
@@ -39,19 +40,19 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "webSocket", propOrder = {
     "topic",
-    "sendOrReceive"
+    "sendOrReceiveOrSendReceive"
 })
 public class WebSocket
     extends AbstractCommand
 {
 
-    @XmlElement(required = true)
     protected List<WebSocketTopic> topic;
     @XmlElements({
         @XmlElement(name = "send", type = WebSocketSend.class),
-        @XmlElement(name = "receive", type = WebSocketReceive.class)
+        @XmlElement(name = "receive", type = WebSocketReceive.class),
+        @XmlElement(name = "sendReceive", type = WebSocketSendReceive.class)
     })
-    protected List<Object> sendOrReceive;
+    protected List<Object> sendOrReceiveOrSendReceive;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
     @XmlAttribute(name = "disconnect")
@@ -87,18 +88,18 @@ public class WebSocket
     }
 
     /**
-     * Gets the value of the sendOrReceive property.
+     * Gets the value of the sendOrReceiveOrSendReceive property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the sendOrReceive property.
+     * This is why there is not a <CODE>set</CODE> method for the sendOrReceiveOrSendReceive property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getSendOrReceive().add(newItem);
+     *    getSendOrReceiveOrSendReceive().add(newItem);
      * </pre>
      * 
      * 
@@ -106,14 +107,15 @@ public class WebSocket
      * Objects of the following type(s) are allowed in the list
      * {@link WebSocketSend }
      * {@link WebSocketReceive }
+     * {@link WebSocketSendReceive }
      * 
      * 
      */
-    public List<Object> getSendOrReceive() {
-        if (sendOrReceive == null) {
-            sendOrReceive = new ArrayList<Object>();
+    public List<Object> getSendOrReceiveOrSendReceive() {
+        if (sendOrReceiveOrSendReceive == null) {
+            sendOrReceiveOrSendReceive = new ArrayList<Object>();
         }
-        return this.sendOrReceive;
+        return this.sendOrReceiveOrSendReceive;
     }
 
     /**

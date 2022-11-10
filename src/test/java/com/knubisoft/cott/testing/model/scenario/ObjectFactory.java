@@ -781,4 +781,12 @@ public class ObjectFactory {
         return new WebSocketReceive();
     }
 
+    /**
+     * Create an instance of {@link WebSocketSendReceive }
+     * 
+     */
+    public WebSocketSendReceive createWebSocketSendReceive() {
+        return new WebSocketSendReceive();
+    }
+
 }

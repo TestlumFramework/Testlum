@@ -4,7 +4,6 @@ import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -23,7 +22,6 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.LF;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 
-@Slf4j
 public abstract class AbstractSqlExecutor {
 
     private static final String SPACE_PLUS = " +";
@@ -73,8 +71,8 @@ public abstract class AbstractSqlExecutor {
                         .replaceAll(SPACE_PLUS, SPACE)
                         .trim());
 
-            Object result = executeAppropriateQuery(queryResult.getQuery());
-            queryResult.setContent(result);
+        Object result = executeAppropriateQuery(queryResult.getQuery());
+        queryResult.setContent(result);
         return queryResult;
     }
 

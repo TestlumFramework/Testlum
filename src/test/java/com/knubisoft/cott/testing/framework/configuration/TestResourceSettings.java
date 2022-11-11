@@ -29,8 +29,6 @@ public class TestResourceSettings {
     public static final String SCREENSHOT_FOLDER = "/screenshots";
     public static final String SCHEMAS_FOLDER = "schema";
     public static final String REPORT_FOLDER = "/report";
-    public static final String REPORT_DATE_PATTERN = "MM-dd-yyyy";
-    public static final String REPORT_DATE_TIME_PATTERN = "MM-dd-yyyyТHH:mm:ss";
     public static final String LOCATORS_PAGES_FOLDER = "locators/pages";
     public static final String LOCATORS_COMPONENTS_FOLDER = "locators/component";
     public static final String SCENARIOS_FOLDER = "scenarios";
@@ -45,8 +43,6 @@ public class TestResourceSettings {
 
     public static final List<String> REQUIRED_FOLDER_NAMES = Collections.unmodifiableList(Arrays.asList(
             SCENARIOS_FOLDER, LOCATORS_PAGES_FOLDER, LOCATORS_COMPONENTS_FOLDER, REPORT_FOLDER, DATA_FOLDER));
-    public static final DateTimeFormatter DATE_FORMATER = DateTimeFormatter.ofPattern(REPORT_DATE_PATTERN);
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(REPORT_DATE_TIME_PATTERN);
 
     private static TestResourceSettings instance;
 

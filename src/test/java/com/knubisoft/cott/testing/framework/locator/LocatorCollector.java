@@ -19,6 +19,7 @@ import static java.lang.String.format;
 
 public class LocatorCollector {
 
+    private static final PageValidator PAGE_VALIDATOR = new PageValidator();
     private final File pagesFolder;
     private final File componentsFolder;
 
@@ -44,15 +45,29 @@ public class LocatorCollector {
 
     private Page parseLocatorOrThrow(final File each) {
         try {
-            PageValidator pageValidator = new PageValidator();
             Page page = XMLParsers.forPageLocator().process(each);
             addIncludeLocators(page);
-            pageValidator.validate(page, each);
+            PAGE_VALIDATOR.validate(page, each);
             return page;
         } catch (Exception e) {
             throw new DefaultFrameworkException(
                     format(UNABLE_PARSE_FILE_WITH_LOCATORS, each.getName(), e.getMessage()), e);
         }
+    }
+
+    private void addIncludeLocators(final Page page) {
+        List<Locator> includes = page.getLocators().getLocator();
+
+        for (Include include : page.getInclude()) {
+            Component component = parseComponent(include);
+            includes.addAll(component.getLocators().getLocator());
+        }
+
+    }
+
+    private Component parseComponent(final Include include) {
+        File file = FileSearcher.searchFileFromDir(componentsFolder, include.getComponent());
+        return XMLParsers.forComponentLocator().process(file);
     }
 
     private Map<String, Locator> transformToNameToLocatorMap(final Map<File, Page> fileToPage) {
@@ -64,23 +79,6 @@ public class LocatorCollector {
             }
         }
         return result;
-    }
-
-    private void addIncludeLocators(final Page page) {
-        List<Locator> includes = page.getLocators().getLocator();
-
-        page.getInclude().stream()
-                .map(c -> parseComponent(c)
-                        .getLocators()
-                        .getLocator())
-                .forEach(includes::addAll);
-
-    }
-
-
-    private Component parseComponent(final Include include) {
-        File file = FileSearcher.searchFileFromDir(componentsFolder, include.getComponent());
-        return XMLParsers.forComponentLocator().process(file);
     }
 
     private String getKeyName(final Map.Entry<File, Page> each, final Locator locator) {

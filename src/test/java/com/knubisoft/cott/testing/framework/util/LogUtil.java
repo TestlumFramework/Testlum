@@ -26,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.client.HttpClientErrorException;
 import software.amazon.awssdk.http.HttpStatusCode;
@@ -49,6 +50,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_L
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.ERROR_EXECUTING_SQL_QUERY;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
@@ -311,6 +313,15 @@ public class LogUtil {
             log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
         } else {
             log.error(EXCEPTION_LOG, ex.toString());
+        }
+    }
+
+    public void logSqlException(final BadSqlGrammarException ex) {
+        if (StringUtils.isNotBlank(ex.getMessage())) {
+            String error = ex.getCause().getMessage();
+            log.error(ERROR_EXECUTING_SQL_QUERY, error.replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+        } else {
+            log.error(ERROR_EXECUTING_SQL_QUERY, ex.toString());
         }
     }
 

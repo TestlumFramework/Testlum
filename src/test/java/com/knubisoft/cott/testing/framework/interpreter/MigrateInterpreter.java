@@ -23,10 +23,6 @@ import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UN
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NAME_FOR_MIGRATION_MUST_PRESENT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DATASET_PATH_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.ERROR_DURING_DB_MIGRATION_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.NEW_LOG_LINE;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
-
 
 @Slf4j
 @InterpreterForClass(Migrate.class)
@@ -59,8 +55,6 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
             List<Source> sourceList = createSourceList(datasets);
             applyDatasets(sourceList, storageName, databaseName);
         } catch (Exception e) {
-            String error = e.getCause().getCause().getMessage();
-            log.error(ERROR_DURING_DB_MIGRATION_LOG, error.replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
             throw new DefaultFrameworkException(e);
         }
     }

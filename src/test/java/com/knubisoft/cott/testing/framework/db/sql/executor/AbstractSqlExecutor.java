@@ -2,7 +2,10 @@ package com.knubisoft.cott.testing.framework.db.sql.executor;
 
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -20,6 +23,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.LF;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 
+@Slf4j
 public abstract class AbstractSqlExecutor {
 
     private static final String SPACE_PLUS = " +";
@@ -55,6 +59,9 @@ public abstract class AbstractSqlExecutor {
     public List<StorageOperation.QueryResult<Object>> executeQueries(final List<String> queries) {
         try {
             return queries.stream().map(this::executeQuery).collect(Collectors.toList());
+        } catch (BadSqlGrammarException e) {
+            LogUtil.logSqlException(e);
+            throw new DefaultFrameworkException(e);
         } catch (Exception e) {
             throw new DefaultFrameworkException(e);
         }
@@ -66,8 +73,8 @@ public abstract class AbstractSqlExecutor {
                         .replaceAll(SPACE_PLUS, SPACE)
                         .trim());
 
-        Object result = executeAppropriateQuery(queryResult.getQuery());
-        queryResult.setContent(result);
+            Object result = executeAppropriateQuery(queryResult.getQuery());
+            queryResult.setContent(result);
         return queryResult;
     }
 

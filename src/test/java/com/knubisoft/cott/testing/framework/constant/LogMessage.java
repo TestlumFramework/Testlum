@@ -40,6 +40,8 @@ public final class LogMessage {
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = ANSI_RED + "Error during database migration -> "
             + ANSI_ORANGE + "{}" + ANSI_RESET;
+    public static final String ERROR_EXECUTING_SQL_QUERY = ANSI_RED + "Error while executing SQL query -> "
+            + "{}" + ANSI_ORANGE + NEW_LOG_LINE + "{}" + ANSI_RESET;
     public static final String SCENARIO_NUMBER_AND_PATH_LOG = ANSI_GREEN
             + "================== Execute for scenario #{} - {} ==================" + ANSI_RESET;
     public static final String LINE =

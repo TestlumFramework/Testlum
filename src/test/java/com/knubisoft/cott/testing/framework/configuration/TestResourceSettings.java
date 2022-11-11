@@ -3,7 +3,6 @@ package com.knubisoft.cott.testing.framework.configuration;
 import lombok.Getter;
 
 import java.io.File;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

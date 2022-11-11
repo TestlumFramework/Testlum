@@ -19,9 +19,9 @@ import static java.lang.String.format;
 @UtilityClass
 public class ExtentReportsConfigurator {
 
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("MM-dd-yyyyТHH:mm:ss");
     private static final String TEMPLATE_FOR_REPORT_SAVING_PATH = "%s/%s/%s_%s.html";
-    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("MM-dd-yyyyТHH:mm:ss");
 
     public void configure(final ExtentReports extentReports) {
         com.knubisoft.cott.testing.model.global_config.ExtentReports extentReportsConfig =

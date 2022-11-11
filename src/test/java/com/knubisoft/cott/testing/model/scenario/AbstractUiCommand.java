@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlType;
     Hovers.class,
     Navigate.class,
     CloseSecondTab.class,
+    CloseTab.class,
     Scroll.class,
     CommandWithLocator.class,
     Image.class

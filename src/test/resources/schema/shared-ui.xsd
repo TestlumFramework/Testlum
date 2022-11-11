@@ -149,6 +149,14 @@
         </x:complexContent>
     </x:complexType>
 
+    <x:complexType name="closeTab">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="tab" type="tns:tabPattern"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
     <x:complexType name="scroll">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">

@@ -102,6 +102,8 @@ public class ExceptionMessage {
     public static final String JS_FILE_UNREADABLE = "The .js file by path ./javascript/%s unreadable";
 
     public static final String SECOND_TAB_NOT_FOUND = "Second tab not found";
+    public static final String TAB_NOT_FOUND = "Available tab that can be closed not found";
+    public static final String TAB_OUT_OF_BOUNDS = "Cannot close the tab №<%s> because there are only %s tabs";
     public static final String DRIVER_INITIALIZER_NOT_FOUND = "Driver initializer not found";
 
     public static final String VALID_SCENARIOS_NOT_FOUND = ANSI_RED + "Valid scenarios are not found" + ANSI_RESET;

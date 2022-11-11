@@ -398,6 +398,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CloseTab }
+     * 
+     */
+    public CloseTab createCloseTab() {
+        return new CloseTab();
+    }
+
+    /**
      * Create an instance of {@link Scroll }
      * 
      */

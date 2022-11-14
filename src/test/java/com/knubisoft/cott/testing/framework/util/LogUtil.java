@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.util;
 
 import com.amazonaws.services.simpleemail.model.Message;
 import com.knubisoft.cott.testing.framework.constant.LogMessage;
+import com.knubisoft.cott.testing.framework.db.sql.util.SqlExtractor;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
@@ -26,7 +27,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.client.HttpClientErrorException;
 import software.amazon.awssdk.http.HttpStatusCode;
@@ -50,7 +50,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_L
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.ERROR_EXECUTING_SQL_QUERY;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
@@ -316,12 +316,13 @@ public class LogUtil {
         }
     }
 
-    public void logSqlException(final BadSqlGrammarException ex) {
+    public void logSqlException(final Exception ex, final String query) {
         if (StringUtils.isNotBlank(ex.getMessage())) {
-            String error = ex.getCause().getMessage();
-            log.error(ERROR_EXECUTING_SQL_QUERY, error.replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+            String error = ex.getCause().getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE);
+            String sqlQuery = SqlExtractor.getBrokenQuery(ex, query);
+            log.error(ERROR_SQL_QUERY, error, sqlQuery.replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
         } else {
-            log.error(ERROR_EXECUTING_SQL_QUERY, ex.toString());
+            log.error(ERROR_SQL_QUERY, ex.toString());
         }
     }
 

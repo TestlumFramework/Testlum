@@ -20,7 +20,7 @@
 
     <x:simpleType name="urlWebSocket" final="restriction">
         <x:restriction base="x:string">
-            <x:pattern value="((ws|https?)://.+)"/>
+            <x:pattern value="((wss?|https?)://.+)"/>
         </x:restriction>
     </x:simpleType>
 

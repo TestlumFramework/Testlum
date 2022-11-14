@@ -15,7 +15,6 @@ import com.knubisoft.cott.testing.framework.util.ScenarioUtil;
 import com.knubisoft.cott.testing.model.scenario.WebSocket;
 import com.knubisoft.cott.testing.model.scenario.WebSocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebSocketSend;
-import com.knubisoft.cott.testing.model.scenario.WebSocketSendReceive;
 import com.knubisoft.cott.testing.model.scenario.WebSocketTopic;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -100,7 +99,7 @@ public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
 
     private void runActions(final WebSocket webSocket,
                             final List<CommandResult> subCommandsResultList) {
-        webSocket.getSendOrReceiveOrSendReceive().forEach(action -> {
+        webSocket.getSendOrReceive().forEach(action -> {
             LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action);
             CommandResult result = ResultUtil.createNewCommandResultInstance(dependencies.getPosition().intValue());
             processEachAction(action, webSocket.getAlias(), result);
@@ -130,10 +129,8 @@ public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
                                final CommandResult result) {
         if (action instanceof WebSocketSend) {
             sendMessage((WebSocketSend) action, alias, result);
-        } else if (action instanceof WebSocketReceive) {
-            receiveMessages((WebSocketReceive) action, alias, result);
         } else {
-            sendAndReceiveMessages((WebSocketSendReceive) action, alias, result);
+            receiveMessages((WebSocketReceive) action, alias, result);
         }
     }
 
@@ -144,6 +141,11 @@ public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
         ResultUtil.addWebsocketInfoForSendAction(wsSend, alias, message, result);
         LogUtil.logWebSocketActionInfo(SEND_ACTION, wsSend.getEndpoint(), message);
         stompSession.send(wsSend.getEndpoint(), message);
+
+        if (Objects.nonNull(wsSend.getReceive())) {
+            receiveMessages(wsSend.getReceive(), alias, result);
+            ResultUtil.addWebsocketInfoForSendAndReceiveAction(result);
+        }
     }
 
     private void receiveMessages(final WebSocketReceive wsReceive,
@@ -183,25 +185,6 @@ public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
                         WEBSOCKET_NOT_ALL_MESSAGES_RECEIVED, requiredMessagesNumber - receivedMessages.size()));
             }
         }
-    }
-
-    private void sendAndReceiveMessages(final WebSocketSendReceive wsSendReceive,
-                                        final String alias,
-                                        final CommandResult result) {
-        WebSocketSend wsSend = new WebSocketSend();
-        wsSend.setEndpoint(wsSendReceive.getEndpoint());
-        wsSend.setMessage(wsSendReceive.getMessage());
-        wsSend.setFile(wsSendReceive.getFile());
-        sendMessage(wsSend, alias, result);
-
-        WebSocketReceive wsReceive = new WebSocketReceive();
-        wsReceive.setTopic(wsSendReceive.getTopic());
-        wsReceive.setMessage(getContentIfFile(wsSendReceive.getExpected()));
-        wsReceive.setValuesNumber(wsSendReceive.getValuesNumber());
-        wsReceive.setTimeoutMillis(wsSendReceive.getTimeoutMillis());
-        receiveMessages(wsReceive, alias, result);
-
-        ResultUtil.addWebsocketInfoForSendAndReceiveAction(result);
     }
 
     private void executeComparison(final List<String> actualContent,

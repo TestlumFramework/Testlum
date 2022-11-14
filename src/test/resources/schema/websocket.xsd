@@ -15,7 +15,6 @@
                     <x:choice maxOccurs="unbounded">
                         <x:element name="send" type="tns:webSocketSend" maxOccurs="unbounded"/>
                         <x:element name="receive" type="tns:webSocketReceive" maxOccurs="unbounded"/>
-                        <x:element name="sendReceive" type="tns:webSocketSendReceive" maxOccurs="unbounded"/>
                     </x:choice>
                 </x:sequence>
                 <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
@@ -29,10 +28,13 @@
     </x:complexType>
 
     <x:complexType name="webSocketSend">
-        <x:choice>
-            <x:element name="message" type="tns:nonEmptyString"/>
-            <x:element name="file" type="tns:bodyFile"/>
-        </x:choice>
+        <x:sequence>
+            <x:choice>
+                <x:element name="message" type="tns:nonEmptyString"/>
+                <x:element name="file" type="tns:bodyFile"/>
+            </x:choice>
+            <x:element name="receive" type="tns:webSocketReceive" minOccurs="0"/>
+        </x:sequence>
         <x:attribute name="endpoint" type="tns:endpointPattern" use="required"/>
     </x:complexType>
 
@@ -41,22 +43,6 @@
             <x:element name="message" type="tns:nonEmptyString"/>
             <x:element name="file" type="tns:expectedPattern"/>
         </x:choice>
-        <x:attribute name="topic" type="tns:endpointPattern" use="required"/>
-        <x:attribute name="valuesNumber" type="x:int" default="0"/>
-        <x:attribute name="timeoutMillis" type="x:int" default="5000"/>
-    </x:complexType>
-
-    <x:complexType name="webSocketSendReceive">
-        <x:sequence>
-            <x:choice>
-                <x:element name="message" type="tns:nonEmptyString"/>
-                <x:element name="file" type="tns:bodyFile"/>
-            </x:choice>
-            <x:choice>
-                <x:element name="expected" type="tns:nonEmptyString"/>
-            </x:choice>
-        </x:sequence>
-        <x:attribute name="endpoint" type="tns:endpointPattern" use="required"/>
         <x:attribute name="topic" type="tns:endpointPattern" use="required"/>
         <x:attribute name="valuesNumber" type="x:int" default="0"/>
         <x:attribute name="timeoutMillis" type="x:int" default="5000"/>

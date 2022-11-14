@@ -25,7 +25,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;choice maxOccurs="unbounded"&gt;
  *           &lt;element name="send" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketSend" maxOccurs="unbounded"/&gt;
  *           &lt;element name="receive" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketReceive" maxOccurs="unbounded"/&gt;
- *           &lt;element name="sendReceive" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketSendReceive" maxOccurs="unbounded"/&gt;
  *         &lt;/choice&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}aliasPattern" /&gt;
@@ -40,7 +39,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "webSocket", propOrder = {
     "topic",
-    "sendOrReceiveOrSendReceive"
+    "sendOrReceive"
 })
 public class WebSocket
     extends AbstractCommand
@@ -49,10 +48,9 @@ public class WebSocket
     protected List<WebSocketTopic> topic;
     @XmlElements({
         @XmlElement(name = "send", type = WebSocketSend.class),
-        @XmlElement(name = "receive", type = WebSocketReceive.class),
-        @XmlElement(name = "sendReceive", type = WebSocketSendReceive.class)
+        @XmlElement(name = "receive", type = WebSocketReceive.class)
     })
-    protected List<Object> sendOrReceiveOrSendReceive;
+    protected List<Object> sendOrReceive;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
     @XmlAttribute(name = "disconnect")
@@ -88,18 +86,18 @@ public class WebSocket
     }
 
     /**
-     * Gets the value of the sendOrReceiveOrSendReceive property.
+     * Gets the value of the sendOrReceive property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the sendOrReceiveOrSendReceive property.
+     * This is why there is not a <CODE>set</CODE> method for the sendOrReceive property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getSendOrReceiveOrSendReceive().add(newItem);
+     *    getSendOrReceive().add(newItem);
      * </pre>
      * 
      * 
@@ -107,15 +105,14 @@ public class WebSocket
      * Objects of the following type(s) are allowed in the list
      * {@link WebSocketSend }
      * {@link WebSocketReceive }
-     * {@link WebSocketSendReceive }
      * 
      * 
      */
-    public List<Object> getSendOrReceiveOrSendReceive() {
-        if (sendOrReceiveOrSendReceive == null) {
-            sendOrReceiveOrSendReceive = new ArrayList<Object>();
+    public List<Object> getSendOrReceive() {
+        if (sendOrReceive == null) {
+            sendOrReceive = new ArrayList<Object>();
         }
-        return this.sendOrReceiveOrSendReceive;
+        return this.sendOrReceive;
     }
 
     /**

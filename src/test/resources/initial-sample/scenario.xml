@@ -16,29 +16,25 @@
         <shellFile>/shell-1.sh</shellFile>
     </shell>
 
-    <wait comment="Example of a 'wait' command"
-          time="1" unit="seconds"/>
+    <wait comment="Example of a 'wait' command" time="1" unit="seconds"/>
 
-    <ui comment="Example of ui commands">
+    <web comment="Example of ui commands">
         <navigate comment="Example of a 'navigate' to some page"
                   command="to" path="https://yahoo.com"/>
 
-        <wait comment="Example of a 'wait' command"
-              time="1" unit="seconds"/>
+        <wait comment="Example of a 'wait' command" time="1" unit="seconds"/>
 
         <scroll comment="Example of a 'scroll' page down to 42 percent"
-                direction="down" value="42" measure="percent"/>
+                direction="down" value="42" measure="percent" type="page"/>
 
-        <wait comment="Example of a 'wait' command"
-              time="1" unit="seconds"/>
+        <wait comment="Example of a 'wait' command" time="1" unit="seconds"/>
 
         <navigate comment="Example of a 'navigate' back to a previous page"
                   command="back"/>
 
         <javascript comment="Example of a JS script execution" file="greating.js"/>
 
-        <wait comment="Example of a 'wait' command"
-              time="1" unit="seconds"/>
-    </ui>
+        <wait comment="Example of a 'wait' command" time="1" unit="seconds"/>
+    </web>
 
 </scenario>

@@ -14,9 +14,9 @@ public class OnWebsocketEnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext context,
                            final AnnotatedTypeMetadata metadata) {
-        final WebSockets websockets = GlobalTestConfigurationProvider.getIntegrations().getWebSockets();
+        final WebSockets websockets = GlobalTestConfigurationProvider.getIntegrations().getWebsockets();
         if (Objects.nonNull(websockets)) {
-            return websockets.getWebSocket().stream().anyMatch(WebSocket::isEnabled);
+            return websockets.getWebsocket().stream().anyMatch(WebSocket::isEnabled);
         }
         return false;
     }

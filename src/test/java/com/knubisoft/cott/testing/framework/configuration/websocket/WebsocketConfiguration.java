@@ -33,7 +33,7 @@ public class WebsocketConfiguration {
     @Bean
     public Map<String, WebsocketConnectionSupplier> websocketConnections() {
         final Map<String, WebsocketConnectionSupplier> connectionSupplierMap = new HashMap<>();
-        for (WebSocket websocket : GlobalTestConfigurationProvider.getIntegrations().getWebSockets().getWebSocket()) {
+        for (WebSocket websocket : GlobalTestConfigurationProvider.getIntegrations().getWebsockets().getWebsocket()) {
             WebSocketStompClient websocketClient = createWebsocketStompClient();
             connectionSupplierMap.put(websocket.getAlias(),
                     () -> websocketClient.connect(websocket.getUrl(), new GlobalStompSessionHandler())

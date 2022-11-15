@@ -11,6 +11,7 @@ import com.knubisoft.cott.testing.model.global_config.Mongodb;
 import lombok.experimental.UtilityClass;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import static java.lang.String.format;
@@ -18,7 +19,9 @@ import static java.lang.String.format;
 @UtilityClass
 public class ExtentReportsConfigurator {
 
-    private static final String TEMPLATE_FOR_REPORT_SAVING_PATH = "%s/%s_%s";
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("MM-dd-yyyyТHH:mm:ss");
+    private static final String TEMPLATE_FOR_REPORT_SAVING_PATH = "%s/%s/%s_%s.html";
 
     public void configure(final ExtentReports extentReports) {
         com.knubisoft.cott.testing.model.global_config.ExtentReports extentReportsConfig =
@@ -35,10 +38,11 @@ public class ExtentReportsConfigurator {
     }
 
     private void attachSparkReporter(final ExtentReports extentReports, final String projectName) {
+        LocalDateTime dateTime = LocalDateTime.now();
         String pathForReportSaving = TestResourceSettings.getInstance().getTestResourcesFolder().getAbsolutePath()
                 + TestResourceSettings.REPORT_FOLDER;
-        String formattedPathForReportSaving =
-                format(TEMPLATE_FOR_REPORT_SAVING_PATH, pathForReportSaving, projectName, LocalDateTime.now());
+        String formattedPathForReportSaving = format(TEMPLATE_FOR_REPORT_SAVING_PATH, pathForReportSaving,
+                        dateTime.format(DATE_FORMATTER), projectName, dateTime.format(DATE_TIME_FORMATTER));
         ExtentSparkReporter extentSparkReporter = new ExtentSparkReporter(formattedPathForReportSaving);
         extentReports.attachReporter(extentSparkReporter);
     }

@@ -1,9 +1,9 @@
 package com.knubisoft.cott.testing.framework.db.sql.executor;
 
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
-import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -54,11 +54,7 @@ public abstract class AbstractSqlExecutor {
     }
 
     public List<StorageOperation.QueryResult<Object>> executeQueries(final List<String> queries) {
-        try {
-            return queries.stream().map(this::executeQuery).collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new DefaultFrameworkException(e);
-        }
+        return queries.stream().map(this::executeQuery).collect(Collectors.toList());
     }
 
     private StorageOperation.QueryResult<Object> executeQuery(final String query) {
@@ -72,7 +68,7 @@ public abstract class AbstractSqlExecutor {
             queryResult.setContent(result);
         } catch (Exception e) {
             LogUtil.logSqlException(e, queryResult.getQuery());
-            throw new DefaultFrameworkException(e);
+            throw new DataAccessResourceFailureException(e.getMessage());
         }
         return queryResult;
     }

@@ -318,9 +318,8 @@ public class LogUtil {
 
     public void logSqlException(final Exception ex, final String query) {
         if (StringUtils.isNotBlank(ex.getMessage())) {
-            String error = ex.getCause().getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE);
-            String sqlQuery = SqlExtractor.getBrokenQuery(ex, query);
-            log.error(ERROR_SQL_QUERY, error, sqlQuery.replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+            log.error(ERROR_SQL_QUERY, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE),
+                    SqlExtractor.getBadSql(ex, query).replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
         } else {
             log.error(ERROR_SQL_QUERY, ex.toString());
         }

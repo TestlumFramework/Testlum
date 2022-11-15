@@ -51,12 +51,8 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     private void migrate(final List<String> datasets,
                          final String storageName,
                          final String databaseName) {
-        try {
             List<Source> sourceList = createSourceList(datasets);
             applyDatasets(sourceList, storageName, databaseName);
-        } catch (Exception e) {
-            throw new DefaultFrameworkException(e);
-        }
     }
 
     private List<Source> createSourceList(final List<String> datasets) {

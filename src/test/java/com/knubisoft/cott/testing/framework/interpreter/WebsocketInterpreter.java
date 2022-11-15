@@ -1,6 +1,6 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
-import com.knubisoft.cott.testing.framework.configuration.websocket.WebSocketMessageHandler;
+import com.knubisoft.cott.testing.framework.configuration.websocket.WebsocketMessageHandler;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.CompareBuilder;
@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.knubisoft.cott.testing.framework.configuration.websocket.WebSocketConfiguration.WebSocketConnectionSupplier;
+import static com.knubisoft.cott.testing.framework.configuration.websocket.WebsocketConfiguration.WebsocketConnectionSupplier;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEBSOCKET_CONNECTION_FAILURE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEBSOCKET_NOT_ALL_MESSAGES_RECEIVED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.RECEIVE_ACTION;
@@ -41,43 +41,43 @@ import static java.lang.String.format;
 
 @Slf4j
 @InterpreterForClass(WebSocket.class)
-public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
+public class WebsocketInterpreter extends AbstractInterpreter<WebSocket> {
 
     private final Map<String, StompSession> aliasToStompSession = new HashMap<>();
-    private final Map<String, WebSocketMessageHandler> topicToMessageHandler = new HashMap<>();
+    private final Map<String, WebsocketMessageHandler> topicToMessageHandler = new HashMap<>();
 
     private StompSession stompSession;
 
     @Autowired(required = false)
-    private Map<String, WebSocketConnectionSupplier> webSocketConnectionSupplier;
+    private Map<String, WebsocketConnectionSupplier> websocketConnections;
 
-    public WebSocketInterpreter(final InterpreterDependencies dependencies) {
+    public WebsocketInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
     }
 
     @Override
-    protected void acceptImpl(final WebSocket webSocket, final CommandResult commandResult) {
+    protected void acceptImpl(final WebSocket websocket, final CommandResult commandResult) {
         List<CommandResult> subCommandsResultList = new LinkedList<>();
         commandResult.setSubCommandsResult(subCommandsResultList);
-        processWebSockets(webSocket, subCommandsResultList);
+        processWebsockets(websocket, subCommandsResultList);
         ResultUtil.setExecutionResultIfSubCommandsFailed(commandResult);
     }
 
-    private void processWebSockets(final WebSocket webSocket,
+    private void processWebsockets(final WebSocket websocket,
                                    final List<CommandResult> subCommandsResultList) {
-        executeConnection(webSocket);
-        subscribeToTopics(webSocket);
-        runActions(webSocket, subCommandsResultList);
-        disconnectFromSessionIfEnabled(webSocket);
+        executeConnection(websocket);
+        subscribeToTopics(websocket);
+        runActions(websocket, subCommandsResultList);
+        disconnectFromSessionIfEnabled(websocket);
     }
 
-    private void executeConnection(final WebSocket webSocket) {
-        String alias = webSocket.getAlias();
+    private void executeConnection(final WebSocket websocket) {
+        String alias = websocket.getAlias();
         try {
             this.stompSession = aliasToStompSession.get(alias);
             if (Objects.isNull(stompSession) || !stompSession.isConnected()) {
-                WebSocketConnectionSupplier webSocketConnection = webSocketConnectionSupplier.get(alias);
-                this.stompSession = webSocketConnection.get().get();
+                WebsocketConnectionSupplier websocketConnection = websocketConnections.get(alias);
+                this.stompSession = websocketConnection.get().get();
                 aliasToStompSession.put(alias, stompSession);
             }
         } catch (Exception e) {
@@ -86,23 +86,23 @@ public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
         }
     }
 
-    private void subscribeToTopics(final WebSocket webSocket) {
-        webSocket.getTopic().stream()
+    private void subscribeToTopics(final WebSocket websocket) {
+        websocket.getTopic().stream()
                 .distinct()
                 .map(WebSocketTopic::getValue)
                 .forEach(topic -> {
-                    WebSocketMessageHandler handler = new WebSocketMessageHandler();
+                    WebsocketMessageHandler handler = new WebsocketMessageHandler();
                     topicToMessageHandler.put(topic, handler);
                     stompSession.subscribe(topic, handler);
                 });
     }
 
-    private void runActions(final WebSocket webSocket,
+    private void runActions(final WebSocket websocket,
                             final List<CommandResult> subCommandsResultList) {
-        webSocket.getSendOrReceive().forEach(action -> {
+        websocket.getSendOrReceive().forEach(action -> {
             LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action);
             CommandResult result = ResultUtil.createNewCommandResultInstance(dependencies.getPosition().intValue());
-            processEachAction(action, webSocket.getAlias(), result);
+            processEachAction(action, websocket.getAlias(), result);
             subCommandsResultList.add(result);
         });
     }
@@ -139,7 +139,7 @@ public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
                              final CommandResult result) {
         final String message = getMessageToSend(wsSend);
         ResultUtil.addWebsocketInfoForSendAction(wsSend, alias, message, result);
-        LogUtil.logWebSocketActionInfo(SEND_ACTION, wsSend.getEndpoint(), message);
+        LogUtil.logWebsocketActionInfo(SEND_ACTION, wsSend.getEndpoint(), message);
         stompSession.send(wsSend.getEndpoint(), message);
 
         if (Objects.nonNull(wsSend.getReceive())) {
@@ -153,7 +153,7 @@ public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
                                  final CommandResult result) {
         final String expectedContent = getExpectedContent(wsReceive);
         ResultUtil.addWebsocketInfoForReceiveAction(wsReceive, alias, result);
-        LogUtil.logWebSocketActionInfo(RECEIVE_ACTION, wsReceive.getTopic(), expectedContent);
+        LogUtil.logWebsocketActionInfo(RECEIVE_ACTION, wsReceive.getTopic(), expectedContent);
 
         final List<String> contentToCompare = getActualMessages(wsReceive);
 
@@ -164,7 +164,7 @@ public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
     }
 
     private List<String> getActualMessages(final WebSocketReceive wsReceive) {
-        WebSocketMessageHandler handler = topicToMessageHandler.get(wsReceive.getTopic());
+        WebsocketMessageHandler handler = topicToMessageHandler.get(wsReceive.getTopic());
         LinkedList<String> receivedMessages = handler.getReceivedMessages();
 
         checkMessagesReceived(wsReceive, receivedMessages);
@@ -209,8 +209,8 @@ public class WebSocketInterpreter extends AbstractInterpreter<WebSocket> {
                 : FileSearcher.searchFileToString(file, dependencies.getFile());
     }
 
-    private void disconnectFromSessionIfEnabled(final WebSocket webSocket) {
-        boolean isDisconnectEnabled = webSocket.isDisconnect() && Objects.nonNull(stompSession);
+    private void disconnectFromSessionIfEnabled(final WebSocket websocket) {
+        boolean isDisconnectEnabled = websocket.isDisconnect() && Objects.nonNull(stompSession);
         if (isDisconnectEnabled && stompSession.isConnected()) {
             stompSession.disconnect();
         } else if (isDisconnectEnabled && !stompSession.isConnected()) {

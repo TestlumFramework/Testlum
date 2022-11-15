@@ -9,14 +9,14 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 
 import java.util.Objects;
 
-public class OnWebSocketEnabledCondition implements Condition {
+public class OnWebsocketEnabledCondition implements Condition {
 
     @Override
     public boolean matches(final ConditionContext context,
                            final AnnotatedTypeMetadata metadata) {
-        final WebSockets webSockets = GlobalTestConfigurationProvider.getIntegrations().getWebSockets();
-        if (Objects.nonNull(webSockets)) {
-            return webSockets.getWebSocket().stream().anyMatch(WebSocket::isEnabled);
+        final WebSockets websockets = GlobalTestConfigurationProvider.getIntegrations().getWebSockets();
+        if (Objects.nonNull(websockets)) {
+            return websockets.getWebSocket().stream().anyMatch(WebSocket::isEnabled);
         }
         return false;
     }

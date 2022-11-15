@@ -10,7 +10,7 @@ import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.Objects;
 
-public class WebSocketMessageHandler implements StompFrameHandler {
+public class WebsocketMessageHandler implements StompFrameHandler {
 
     private final LinkedList<String> messages = new LinkedList<>();
 

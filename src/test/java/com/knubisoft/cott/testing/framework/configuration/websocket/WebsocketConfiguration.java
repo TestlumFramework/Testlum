@@ -1,7 +1,7 @@
 package com.knubisoft.cott.testing.framework.configuration.websocket;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.cott.testing.framework.configuration.condition.OnWebSocketEnabledCondition;
+import com.knubisoft.cott.testing.framework.configuration.condition.OnWebsocketEnabledCondition;
 import com.knubisoft.cott.testing.model.global_config.WebSocket;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -27,23 +27,23 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 @Configuration
-@Conditional({OnWebSocketEnabledCondition.class})
-public class WebSocketConfiguration {
+@Conditional({OnWebsocketEnabledCondition.class})
+public class WebsocketConfiguration {
 
     @Bean
-    public Map<String, WebSocketConnectionSupplier> webSocketConnections() {
-        final Map<String, WebSocketConnectionSupplier> connectionSupplierMap = new HashMap<>();
-        for (WebSocket webSocket : GlobalTestConfigurationProvider.getIntegrations().getWebSockets().getWebSocket()) {
-            WebSocketStompClient webSocketClient = createWebSocketStompClient();
-            connectionSupplierMap.put(webSocket.getAlias(),
-                    () -> webSocketClient.connect(webSocket.getUrl(), new GlobalStompSessionHandler())
+    public Map<String, WebsocketConnectionSupplier> websocketConnections() {
+        final Map<String, WebsocketConnectionSupplier> connectionSupplierMap = new HashMap<>();
+        for (WebSocket websocket : GlobalTestConfigurationProvider.getIntegrations().getWebSockets().getWebSocket()) {
+            WebSocketStompClient websocketClient = createWebsocketStompClient();
+            connectionSupplierMap.put(websocket.getAlias(),
+                    () -> websocketClient.connect(websocket.getUrl(), new GlobalStompSessionHandler())
             );
         }
         return connectionSupplierMap;
     }
 
-    private WebSocketStompClient createWebSocketStompClient() {
-        WebSocketClient sockJsClient = getSockJsWebSocketClient();
+    private WebSocketStompClient createWebsocketStompClient() {
+        WebSocketClient sockJsClient = getSockJsWebsocketClient();
         WebSocketStompClient stompClient = new WebSocketStompClient(sockJsClient);
         List<MessageConverter> messageConverters = Arrays.asList(
                 new MappingJackson2MessageConverter(),
@@ -53,12 +53,12 @@ public class WebSocketConfiguration {
         return stompClient;
     }
 
-    private WebSocketClient getSockJsWebSocketClient() {
-        WebSocketClient standardWebSocketClient = new StandardWebSocketClient();
+    private WebSocketClient getSockJsWebsocketClient() {
+        WebSocketClient standardWebsocketClient = new StandardWebSocketClient();
         List<Transport> transports = new ArrayList<>(1);
-        transports.add(new WebSocketTransport(standardWebSocketClient));
+        transports.add(new WebSocketTransport(standardWebsocketClient));
         return new SockJsClient(transports);
     }
 
-    public interface WebSocketConnectionSupplier extends Supplier<ListenableFuture<StompSession>> { }
+    public interface WebsocketConnectionSupplier extends Supplier<ListenableFuture<StompSession>> { }
 }

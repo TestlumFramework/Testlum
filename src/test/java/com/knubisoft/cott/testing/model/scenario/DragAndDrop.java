@@ -8,12 +8,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for drag-and-drop complex type.
+ * <p>Java class for dragAndDrop complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="drag-and-drop"&gt;
+ * &lt;complexType name="dragAndDrop"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice&gt;
@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="filePath" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="toLocatorId" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="dropFile" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="dropFile" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "drag-and-drop", propOrder = {
+@XmlType(name = "dragAndDrop", propOrder = {
     "fromLocatorId",
     "filePath"
 })
@@ -42,8 +42,8 @@ public class DragAndDrop
     protected String filePath;
     @XmlAttribute(name = "toLocatorId", required = true)
     protected String toLocatorId;
-    @XmlAttribute(name = "dropFile", required = true)
-    protected boolean dropFile;
+    @XmlAttribute(name = "dropFile")
+    protected Boolean dropFile;
 
     /**
      * Gets the value of the fromLocatorId property.
@@ -120,16 +120,28 @@ public class DragAndDrop
     /**
      * Gets the value of the dropFile property.
      * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
      */
     public boolean isDropFile() {
-        return dropFile;
+        if (dropFile == null) {
+            return false;
+        } else {
+            return dropFile;
+        }
     }
 
     /**
      * Sets the value of the dropFile property.
      * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
      */
-    public void setDropFile(boolean value) {
+    public void setDropFile(Boolean value) {
         this.dropFile = value;
     }
 

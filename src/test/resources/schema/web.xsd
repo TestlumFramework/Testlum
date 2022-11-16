@@ -25,7 +25,7 @@
                     <x:element name="hovers" type="tns:hovers"/>
                     <x:element name="closeSecondTab" type="tns:closeSecondTab"/>
                     <x:element name="switchToFrame" type="tns:switchToFrame"/>
-                    <x:element name="drag-and-drop" type="tns:drag-and-drop"/>
+                    <x:element name="dragAndDrop" type="tns:dragAndDrop"/>
                 </x:choice>
                 <x:attribute name="clearCookiesAfterExecution" type="x:boolean" default="false"/>
                 <x:attribute name="clearLocalStorageByKey" type="tns:nonEmptyString"/>

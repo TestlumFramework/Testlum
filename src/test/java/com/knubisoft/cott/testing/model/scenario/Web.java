@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="hovers" type="{http://www.knubisoft.com/cott/testing/model/scenario}hovers"/&gt;
  *         &lt;element name="closeSecondTab" type="{http://www.knubisoft.com/cott/testing/model/scenario}closeSecondTab"/&gt;
  *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/cott/testing/model/scenario}switchToFrame"/&gt;
- *         &lt;element name="drag-and-drop" type="{http://www.knubisoft.com/cott/testing/model/scenario}drag-and-drop"/&gt;
+ *         &lt;element name="dragAndDrop" type="{http://www.knubisoft.com/cott/testing/model/scenario}dragAndDrop"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="clearCookiesAfterExecution" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *       &lt;attribute name="clearLocalStorageByKey" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
@@ -69,7 +69,7 @@ public class Web
         @XmlElement(name = "hovers", type = Hovers.class),
         @XmlElement(name = "closeSecondTab", type = CloseSecondTab.class),
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
-        @XmlElement(name = "drag-and-drop", type = DragAndDrop.class)
+        @XmlElement(name = "dragAndDrop", type = DragAndDrop.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "clearCookiesAfterExecution")

@@ -213,14 +213,13 @@
         <x:attribute name="attribute" type="tns:nonEmptyString" default="src"/>
     </x:complexType>
 
-    <x:complexType name="drag-and-drop">
+    <x:complexType name="dragAndDrop">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:choice maxOccurs="1" minOccurs="1">
                     <x:element name="fromLocatorId" type="tns:nonEmptyString"/>
                     <x:element name="filePath" type="tns:nonEmptyString"/>
                 </x:choice>
-<!--                <x:attribute name="fromLocatorId" type="tns:nonEmptyString" use="required"/>-->
                 <x:attribute name="toLocatorId" type="tns:nonEmptyString" use="required"/>
                 <x:attribute name="dropFile" type="x:boolean" default="false"/>
             </x:extension>

@@ -12,6 +12,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FILE_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.QUERY_FOR_DRAG_AND_DROP;
 
 @ExecutorForClass(DragAndDrop.class)
@@ -26,20 +27,19 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
 
     @Override
     public void execute(final DragAndDrop dragAndDrop, final CommandResult result) {
+        WebElement target = UiUtil.findWebElement(driver, dragAndDrop.getToLocatorId());
         if (dragAndDrop.isDropFile()) {
-            dropFile(new File(dragAndDrop.getFilePath()),
-                    UiUtil.findWebElement(driver, dragAndDrop.getToLocatorId()));
+            dropFile(new File(dragAndDrop.getFilePath()), target);
         } else {
             Actions action = new Actions(driver);
-            action.dragAndDrop(UiUtil.findWebElement(driver, dragAndDrop.getFromLocatorId()),
-                            UiUtil.findWebElement(driver, dragAndDrop.getToLocatorId()))
+            action.dragAndDrop(UiUtil.findWebElement(driver, dragAndDrop.getFromLocatorId()), target)
                     .build()
                     .perform();
         }
     }
     public void dropFile(final File filePath, final WebElement target) {
         if (!filePath.exists()) {
-            throw new DefaultFrameworkException("File not found: " + filePath);
+            throw new DefaultFrameworkException(FILE_NOT_FOUND, filePath);
         }
 
         JavascriptExecutor jse = (JavascriptExecutor) driver;

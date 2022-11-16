@@ -438,6 +438,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DragAndDrop }
+     * 
+     */
+    public DragAndDrop createDragAndDrop() {
+        return new DragAndDrop();
+    }
+
+    /**
      * Create an instance of {@link SendRmqMessage }
      * 
      */

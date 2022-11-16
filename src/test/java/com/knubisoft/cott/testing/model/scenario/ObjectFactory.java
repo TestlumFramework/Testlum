@@ -78,11 +78,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Ui }
+     * Create an instance of {@link Mobilebrowser }
      * 
      */
-    public Ui createUi() {
-        return new Ui();
+    public Mobilebrowser createMobilebrowser() {
+        return new Mobilebrowser();
+    }
+
+    /**
+     * Create an instance of {@link Web }
+     * 
+     */
+    public Web createWeb() {
+        return new Web();
+    }
+
+    /**
+     * Create an instance of {@link Native }
+     * 
+     */
+    public Native createNative() {
+        return new Native();
     }
 
     /**
@@ -211,6 +227,14 @@ public class ObjectFactory {
      */
     public Dynamo createDynamo() {
         return new Dynamo();
+    }
+
+    /**
+     * Create an instance of {@link WebSocket }
+     * 
+     */
+    public WebSocket createWebSocket() {
+        return new WebSocket();
     }
 
     /**
@@ -491,14 +515,6 @@ public class ObjectFactory {
      */
     public CompareWith createCompareWith() {
         return new CompareWith();
-    }
-
-    /**
-     * Create an instance of {@link RepeatUiCommand }
-     * 
-     */
-    public RepeatUiCommand createRepeatUiCommand() {
-        return new RepeatUiCommand();
     }
 
     /**
@@ -819,6 +835,30 @@ public class ObjectFactory {
      */
     public Logout createLogout() {
         return new Logout();
+    }
+
+    /**
+     * Create an instance of {@link WebSocketTopic }
+     * 
+     */
+    public WebSocketTopic createWebSocketTopic() {
+        return new WebSocketTopic();
+    }
+
+    /**
+     * Create an instance of {@link WebSocketSend }
+     * 
+     */
+    public WebSocketSend createWebSocketSend() {
+        return new WebSocketSend();
+    }
+
+    /**
+     * Create an instance of {@link WebSocketReceive }
+     * 
+     */
+    public WebSocketReceive createWebSocketReceive() {
+        return new WebSocketReceive();
     }
 
 }

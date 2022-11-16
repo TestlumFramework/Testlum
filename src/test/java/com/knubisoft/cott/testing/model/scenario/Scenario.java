@@ -28,7 +28,9 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;element name="include" type="{http://www.knubisoft.com/cott/testing/model/scenario}include"/&gt;
  *           &lt;element name="auth" type="{http://www.knubisoft.com/cott/testing/model/scenario}auth"/&gt;
  *           &lt;element name="repeat" type="{http://www.knubisoft.com/cott/testing/model/scenario}repeat"/&gt;
- *           &lt;element name="ui" type="{http://www.knubisoft.com/cott/testing/model/scenario}ui"/&gt;
+ *           &lt;element name="mobilebrowser" type="{http://www.knubisoft.com/cott/testing/model/scenario}mobilebrowser"/&gt;
+ *           &lt;element name="web" type="{http://www.knubisoft.com/cott/testing/model/scenario}web"/&gt;
+ *           &lt;element name="native" type="{http://www.knubisoft.com/cott/testing/model/scenario}native"/&gt;
  *           &lt;element name="http" type="{http://www.knubisoft.com/cott/testing/model/scenario}http"/&gt;
  *           &lt;element name="migrate" type="{http://www.knubisoft.com/cott/testing/model/scenario}migrate"/&gt;
  *           &lt;element name="postgres" type="{http://www.knubisoft.com/cott/testing/model/scenario}postgres"/&gt;
@@ -45,6 +47,7 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;element name="sendgrid" type="{http://www.knubisoft.com/cott/testing/model/scenario}sendgrid"/&gt;
  *           &lt;element name="ses" type="{http://www.knubisoft.com/cott/testing/model/scenario}ses"/&gt;
  *           &lt;element name="dynamo" type="{http://www.knubisoft.com/cott/testing/model/scenario}dynamo"/&gt;
+ *           &lt;element name="websocket" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocket"/&gt;
  *           &lt;element name="var" type="{http://www.knubisoft.com/cott/testing/model/scenario}var"/&gt;
  *           &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}wait"/&gt;
  *           &lt;element name="shell" type="{http://www.knubisoft.com/cott/testing/model/scenario}shell"/&gt;
@@ -79,7 +82,9 @@ public class Scenario {
         @XmlElement(name = "include", type = Include.class),
         @XmlElement(name = "auth", type = Auth.class),
         @XmlElement(name = "repeat", type = Repeat.class),
-        @XmlElement(name = "ui", type = Ui.class),
+        @XmlElement(name = "mobilebrowser", type = Mobilebrowser.class),
+        @XmlElement(name = "web", type = Web.class),
+        @XmlElement(name = "native", type = Native.class),
         @XmlElement(name = "http", type = Http.class),
         @XmlElement(name = "migrate", type = Migrate.class),
         @XmlElement(name = "postgres", type = Postgres.class),
@@ -96,6 +101,7 @@ public class Scenario {
         @XmlElement(name = "sendgrid", type = Sendgrid.class),
         @XmlElement(name = "ses", type = Ses.class),
         @XmlElement(name = "dynamo", type = Dynamo.class),
+        @XmlElement(name = "websocket", type = WebSocket.class),
         @XmlElement(name = "var", type = Var.class),
         @XmlElement(name = "wait", type = Wait.class),
         @XmlElement(name = "shell", type = Shell.class),
@@ -179,7 +185,9 @@ public class Scenario {
      * {@link Include }
      * {@link Auth }
      * {@link Repeat }
-     * {@link Ui }
+     * {@link Mobilebrowser }
+     * {@link Web }
+     * {@link Native }
      * {@link Http }
      * {@link Migrate }
      * {@link Postgres }
@@ -196,6 +204,7 @@ public class Scenario {
      * {@link Sendgrid }
      * {@link Ses }
      * {@link Dynamo }
+     * {@link WebSocket }
      * {@link Var }
      * {@link Wait }
      * {@link Shell }

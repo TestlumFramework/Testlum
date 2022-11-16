@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="hovers"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice&gt;
  *         &lt;element name="hover" type="{http://www.knubisoft.com/cott/testing/model/scenario}hover" maxOccurs="unbounded"/&gt;
  *       &lt;/choice&gt;
@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlType;
     "hover"
 })
 public class Hovers
-    extends AbstractCommand
+    extends AbstractUiCommand
 {
 
     protected List<Hover> hover;

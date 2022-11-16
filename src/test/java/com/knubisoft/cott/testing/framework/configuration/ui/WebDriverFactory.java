@@ -66,7 +66,7 @@ public class WebDriverFactory {
                 .map(webDriverFunction -> webDriverFunction.apply(browser))
                 .peek(driver -> BrowserUtil.manageWindowSize(browser, driver))
                 .findFirst().orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
-        webDriver.get(GlobalTestConfigurationProvider.provide().getUi().getBaseUrl());
+        webDriver.get(GlobalTestConfigurationProvider.provide().getWeb().getBaseUrl());
         return webDriver;
     }
 
@@ -132,7 +132,7 @@ public class WebDriverFactory {
         WebDriver init(T browser);
     }
 
-    private static class ChromeDriverInitializer implements WebDriverInitializer<Chrome> {
+    private class ChromeDriverInitializer implements WebDriverInitializer<Chrome> {
 
         @Override
         public WebDriver init(final Chrome browser) {
@@ -150,7 +150,7 @@ public class WebDriverFactory {
         }
     }
 
-    private static class FirefoxDriverInitializer implements WebDriverInitializer<Firefox> {
+    private class FirefoxDriverInitializer implements WebDriverInitializer<Firefox> {
 
         @Override
         public WebDriver init(final Firefox browser) {
@@ -168,7 +168,7 @@ public class WebDriverFactory {
         }
     }
 
-    private static class EdgeDriverInitializer implements WebDriverInitializer<Edge> {
+    private class EdgeDriverInitializer implements WebDriverInitializer<Edge> {
 
         @Override
         public WebDriver init(final Edge browser) {
@@ -186,7 +186,7 @@ public class WebDriverFactory {
         }
     }
 
-    private static class SafariDriverInitializer implements WebDriverInitializer<Safari> {
+    private class SafariDriverInitializer implements WebDriverInitializer<Safari> {
 
         @Override
         public WebDriver init(final Safari browser) {
@@ -194,7 +194,7 @@ public class WebDriverFactory {
         }
     }
 
-    private static class OperaDriverInitializer implements WebDriverInitializer<Opera> {
+    private class OperaDriverInitializer implements WebDriverInitializer<Opera> {
 
         @Override
         public WebDriver init(final Opera browser) {
@@ -211,7 +211,9 @@ public class WebDriverFactory {
         }
     }
 
-    private interface BrowserPredicate extends Predicate<AbstractBrowser> { }
+    private interface BrowserPredicate extends Predicate<AbstractBrowser> {
+    }
 
-    private interface WebDriverFunction extends Function<AbstractBrowser, WebDriver> { }
+    private interface WebDriverFunction extends Function<AbstractBrowser, WebDriver> {
+    }
 }

@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="navigate"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;attribute name="command" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}navigateCommand" /&gt;
  *       &lt;attribute name="path" type="{http://www.knubisoft.com/cott/testing/model/scenario}slashStartedOrUrlString" /&gt;
  *     &lt;/extension&gt;
@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "navigate")
 public class Navigate
-    extends AbstractCommand
+    extends AbstractUiCommand
 {
 
     @XmlAttribute(name = "command", required = true)

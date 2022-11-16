@@ -27,7 +27,7 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
         result.put(ASSERT_LOCATOR, aAssert.getLocatorId());
         result.put(ASSERT_ATTRIBUTE, aAssert.getAttribute());
         String actual = getActualValue(aAssert);
-        String expected = aAssert.getContent().replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
+        String expected = inject(aAssert.getContent()).replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
         result.setActual(actual);
         result.setExpected(expected);
         new CompareBuilder(dependencies.getFile(), dependencies.getPosition())

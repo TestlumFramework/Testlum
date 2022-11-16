@@ -3,7 +3,6 @@ package com.knubisoft.cott.testing.framework.db.sql.executor;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.zaxxer.hikari.HikariDataSource;
-import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -68,7 +67,7 @@ public abstract class AbstractSqlExecutor {
             queryResult.setContent(result);
         } catch (Exception e) {
             LogUtil.logSqlException(e, queryResult.getQuery());
-            throw new DataAccessResourceFailureException(e.getMessage());
+            throw e;
         }
         return queryResult;
     }

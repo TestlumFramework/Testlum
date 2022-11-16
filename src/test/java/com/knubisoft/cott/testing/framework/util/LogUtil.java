@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.util;
 
 import com.amazonaws.services.simpleemail.model.Message;
 import com.knubisoft.cott.testing.framework.constant.LogMessage;
-import com.knubisoft.cott.testing.framework.db.sql.util.SqlExtractor;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
@@ -255,7 +254,7 @@ public class LogUtil {
     @SneakyThrows
     public void logBodyContent(final HttpEntity body) {
         if (body != null) {
-            logBody(IOUtils.toString(body.getContent(), StandardCharsets.UTF_8.name()));
+            logBody(IOUtils.toString(body.getContent(), StandardCharsets.UTF_8));
         }
     }
 
@@ -319,9 +318,10 @@ public class LogUtil {
     public void logSqlException(final Exception ex, final String query) {
         if (StringUtils.isNotBlank(ex.getMessage())) {
             log.error(ERROR_SQL_QUERY, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE),
-                    SqlExtractor.getBadSql(ex, query).replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+                    SqlUtil.getBrokenQuery(ex, query).replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
         } else {
-            log.error(ERROR_SQL_QUERY, ex.toString());
+            log.error(ERROR_SQL_QUERY, ex.toString().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE),
+                    SqlUtil.getBrokenQuery(ex, query).replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
         }
     }
 

@@ -126,7 +126,7 @@ public class LogUtil {
         logActionInfo(LogMessage.BROKER_ACTION_INFO_LOG, action, queue, content);
     }
 
-    public void logWebSocketActionInfo(final String action, final String destination, final String content) {
+    public void logWebsocketActionInfo(final String action, final String destination, final String content) {
         logActionInfo(LogMessage.WEBSOCKET_ACTION_INFO_LOG, action, destination, content);
     }
 

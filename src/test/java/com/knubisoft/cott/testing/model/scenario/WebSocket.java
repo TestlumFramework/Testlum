@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="topic" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketTopic" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="topic" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketTopic" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;choice maxOccurs="unbounded"&gt;
  *           &lt;element name="send" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketSend" maxOccurs="unbounded"/&gt;
  *           &lt;element name="receive" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketReceive" maxOccurs="unbounded"/&gt;
@@ -45,7 +45,6 @@ public class WebSocket
     extends AbstractCommand
 {
 
-    @XmlElement(required = true)
     protected List<WebSocketTopic> topic;
     @XmlElements({
         @XmlElement(name = "send", type = WebSocketSend.class),

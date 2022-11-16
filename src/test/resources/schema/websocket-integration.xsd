@@ -9,7 +9,7 @@
 
     <x:complexType name="webSockets">
         <x:choice>
-            <x:element name="webSocket" type="tns:webSocket" maxOccurs="unbounded"/>
+            <x:element name="websocket" type="tns:webSocket" maxOccurs="unbounded"/>
         </x:choice>
     </x:complexType>
 

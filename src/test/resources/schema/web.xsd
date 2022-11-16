@@ -23,7 +23,6 @@
                     <x:element name="javascript" type="tns:javascript"/>
                     <x:element name="navigate" type="tns:navigate"/>
                     <x:element name="hovers" type="tns:hovers"/>
-                    <x:element name="closeSecondTab" type="tns:closeSecondTab"/>
                     <x:element name="switchToFrame" type="tns:switchToFrame"/>
                     <x:element name="closeTab" type="tns:closeTab"/>
                 </x:choice>

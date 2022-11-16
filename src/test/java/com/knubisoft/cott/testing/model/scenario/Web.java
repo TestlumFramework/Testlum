@@ -33,7 +33,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="javascript" type="{http://www.knubisoft.com/cott/testing/model/scenario}javascript"/&gt;
  *         &lt;element name="navigate" type="{http://www.knubisoft.com/cott/testing/model/scenario}navigate"/&gt;
  *         &lt;element name="hovers" type="{http://www.knubisoft.com/cott/testing/model/scenario}hovers"/&gt;
- *         &lt;element name="closeSecondTab" type="{http://www.knubisoft.com/cott/testing/model/scenario}closeSecondTab"/&gt;
  *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/cott/testing/model/scenario}switchToFrame"/&gt;
  *         &lt;element name="closeTab" type="{http://www.knubisoft.com/cott/testing/model/scenario}closeTab"/&gt;
  *       &lt;/choice&gt;
@@ -67,7 +66,6 @@ public class Web
         @XmlElement(name = "javascript", type = Javascript.class),
         @XmlElement(name = "navigate", type = Navigate.class),
         @XmlElement(name = "hovers", type = Hovers.class),
-        @XmlElement(name = "closeSecondTab", type = CloseSecondTab.class),
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
         @XmlElement(name = "closeTab", type = CloseTab.class)
     })
@@ -107,7 +105,6 @@ public class Web
      * {@link Javascript }
      * {@link Navigate }
      * {@link Hovers }
-     * {@link CloseSecondTab }
      * {@link SwitchToFrame }
      * {@link CloseTab }
      * 

@@ -5,6 +5,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecuto
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.Assert;
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +14,6 @@ import org.openqa.selenium.WebElement;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.NEW_LINE;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.ATT_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.ASSERT_ATTRIBUTE;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.ASSERT_LOCATOR;
 
@@ -28,8 +27,7 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
 
     @Override
     public void execute(final Assert aAssert, final CommandResult result) {
-        log.info(ATT_LOG, aAssert.getAttribute());
-        log.info(CONTENT_LOG, aAssert.getContent());
+        LogUtil.logAssertTag(aAssert);
         result.put(ASSERT_LOCATOR, aAssert.getLocatorId());
         result.put(ASSERT_ATTRIBUTE, aAssert.getAttribute());
         String actual = getActualValue(aAssert);

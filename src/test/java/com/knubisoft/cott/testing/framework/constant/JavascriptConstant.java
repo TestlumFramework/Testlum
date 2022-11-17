@@ -11,8 +11,8 @@ public class JavascriptConstant {
     public static final String SCROLL_TO_ELEMENT_SCRIPT =
             "arguments[0].scrollIntoView({block: \"center\", inline: \"center\"});";
     public static final String QUERY_FOR_DRAG_AND_DROP = "var target = arguments[0],"
-            + "    offsetX = arguments[1],"
-            + "    offsetY = arguments[2],"
+            + "    offsetX = 0,"
+            + "    offsetY = 0,"
             + "    document = target.ownerDocument || document,"
             + "    window = document.defaultView || window;"
             + ""

@@ -216,7 +216,7 @@
     <x:complexType name="dragAndDrop">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
-                <x:choice maxOccurs="1" minOccurs="1">
+                <x:choice>
                     <x:element name="fromLocatorId" type="tns:nonEmptyString"/>
                     <x:element name="filePath" type="tns:nonEmptyString"/>
                 </x:choice>

@@ -43,7 +43,7 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         }
 
         JavascriptExecutor jse = (JavascriptExecutor) driver;
-        WebElement input = (WebElement) jse.executeScript(QUERY_FOR_DRAG_AND_DROP, target, 0, 0);
-        input.sendKeys(filePath.getAbsoluteFile().toString());
+        WebElement input = (WebElement) jse.executeScript(QUERY_FOR_DRAG_AND_DROP, target);
+        input.sendKeys(filePath.getAbsolutePath());
     }
 }

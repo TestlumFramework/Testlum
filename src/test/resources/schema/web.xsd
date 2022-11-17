@@ -25,6 +25,7 @@
                     <x:element name="hovers" type="tns:hovers"/>
                     <x:element name="closeSecondTab" type="tns:closeSecondTab"/>
                     <x:element name="switchToFrame" type="tns:switchToFrame"/>
+                    <x:element name="hotKey" type="tns:hotKey"/>
                 </x:choice>
                 <x:attribute name="clearCookiesAfterExecution" type="x:boolean" default="false"/>
                 <x:attribute name="clearLocalStorageByKey" type="tns:nonEmptyString"/>

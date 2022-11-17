@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="hotKey"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice maxOccurs="unbounded"&gt;
  *         &lt;element name="copy" type="{http://www.knubisoft.com/cott/testing/model/scenario}copy"/&gt;
  *         &lt;element name="paste" type="{http://www.knubisoft.com/cott/testing/model/scenario}paste"/&gt;
@@ -42,7 +42,7 @@ import javax.xml.bind.annotation.XmlType;
     "copyOrPasteOrCut"
 })
 public class HotKey
-    extends AbstractCommand
+    extends AbstractUiCommand
 {
 
     @XmlElements({
@@ -56,7 +56,7 @@ public class HotKey
         @XmlElement(name = "space", type = Space.class),
         @XmlElement(name = "backSpace", type = BackSpace.class)
     })
-    protected List<AbstractCommand> copyOrPasteOrCut;
+    protected List<AbstractUiCommand> copyOrPasteOrCut;
 
     /**
      * Gets the value of the copyOrPasteOrCut property.
@@ -88,9 +88,9 @@ public class HotKey
      * 
      * 
      */
-    public List<AbstractCommand> getCopyOrPasteOrCut() {
+    public List<AbstractUiCommand> getCopyOrPasteOrCut() {
         if (copyOrPasteOrCut == null) {
-            copyOrPasteOrCut = new ArrayList<AbstractCommand>();
+            copyOrPasteOrCut = new ArrayList<AbstractUiCommand>();
         }
         return this.copyOrPasteOrCut;
     }

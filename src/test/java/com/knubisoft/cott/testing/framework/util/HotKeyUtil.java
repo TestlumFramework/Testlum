@@ -2,7 +2,7 @@ package com.knubisoft.cott.testing.framework.util;
 
 import com.knubisoft.cott.testing.framework.locator.GlobalLocators;
 import com.knubisoft.cott.testing.model.pages.Locator;
-import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
+import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.cott.testing.model.scenario.BackSpace;
 import com.knubisoft.cott.testing.model.scenario.Copy;
 import com.knubisoft.cott.testing.model.scenario.Cut;
@@ -30,54 +30,56 @@ public class HotKeyUtil {
 
     private final Map<HotKeyCommandPredicate, HotKeyCommand> hotKeyCommands;
 
-    static  {
+    static {
         Map<HotKeyCommandPredicate, HotKeyCommand> commands = new HashMap<>();
         commands.put(hotKey -> hotKey instanceof Copy, (hotKey, driver) -> copyCommand((Copy) hotKey, driver));
         commands.put(hotKey -> hotKey instanceof Paste, (hotKey, driver) -> pasteCommand((Paste) hotKey, driver));
         commands.put(hotKey -> hotKey instanceof Cut, (hotKey, driver) -> cutCommand((Cut) hotKey, driver));
-        commands.put(hotKey -> hotKey instanceof Highlight, (hotKey, driver) -> highlightCommand((Highlight) hotKey, driver));
+        commands.put(hotKey -> hotKey instanceof Highlight, (hotKey, driver) ->
+                highlightCommand((Highlight) hotKey, driver));
         commands.put(hotKey -> hotKey instanceof Tab, (hotKey, driver) -> tabCommand((Tab) hotKey, driver));
         commands.put(hotKey -> hotKey instanceof Enter, (hotKey, driver) -> enterCommand((Enter) hotKey, driver));
-        commands.put(hotKey -> hotKey instanceof BackSpace, (hotKey, driver) -> backSpaceCommand((BackSpace) hotKey, driver));
+        commands.put(hotKey -> hotKey instanceof BackSpace, (hotKey, driver) ->
+                backSpaceCommand((BackSpace) hotKey, driver));
         commands.put(hotKey -> hotKey instanceof Escape, (hotKey, driver) -> escapeCommand((Escape) hotKey, driver));
         commands.put(hotKey -> hotKey instanceof Space, (hotKey, driver) -> spaceCommand((Space) hotKey, driver));
         hotKeyCommands = Collections.unmodifiableMap(commands);
     }
 
-    public void runHotKeyCommands(final List<AbstractCommand> hotKeyCommandList, final WebDriver driver) {
+    public void runHotKeyCommands(final List<AbstractUiCommand> hotKeyCommandList, final WebDriver driver) {
         hotKeyCommandList.forEach(command -> hotKeyCommands.keySet().stream()
                 .filter(key -> key.test(command))
                 .map(hotKeyCommands::get)
                 .forEach(method -> executeHotKeyCommands(command, method, driver)));
     }
 
-    private void executeHotKeyCommands(final AbstractCommand command,
+    private void executeHotKeyCommands(final AbstractUiCommand command,
                                       final HotKeyUtil.HotKeyCommand hotKeyCommand,
                                       final WebDriver driver) {
         hotKeyCommand.accept(command, driver);
     }
 
-    private static void escapeCommand(Escape escape, WebDriver driver) {
+    private static void escapeCommand(final Escape escape, final WebDriver driver) {
         Actions action = new Actions(driver);
         action.sendKeys(Keys.ESCAPE).perform();
     }
 
-    private static void backSpaceCommand(BackSpace backSpace, WebDriver driver) {
+    private static void backSpaceCommand(final BackSpace backSpace, final WebDriver driver) {
         Actions action = new Actions(driver);
         action.sendKeys(Keys.BACK_SPACE).perform();
     }
 
-    private static void spaceCommand(Space space, WebDriver driver) {
+    private static void spaceCommand(final Space space, final WebDriver driver) {
         Actions action = new Actions(driver);
         action.sendKeys(Keys.SPACE).perform();
     }
 
-    private static void enterCommand(Enter enter, WebDriver driver) {
+    private static void enterCommand(final Enter enter, final WebDriver driver) {
         Actions action = new Actions(driver);
         action.sendKeys(Keys.ENTER).perform();
     }
 
-    private static void tabCommand(Tab tab, WebDriver driver) {
+    private static void tabCommand(final Tab tab, final WebDriver driver) {
         Actions action = new Actions(driver);
         action.sendKeys(Keys.TAB).perform();
     }
@@ -109,7 +111,6 @@ public class HotKeyUtil {
         WebElement element = WebElementFinder.find(locator, driver);
         action.keyDown(element, Keys.COMMAND).sendKeys("a").sendKeys("c").build().perform();
     }
-
-    private interface HotKeyCommandPredicate extends Predicate<AbstractCommand> { }
-    private interface HotKeyCommand extends BiConsumer<AbstractCommand, WebDriver> { }
+    private interface HotKeyCommandPredicate extends Predicate<AbstractUiCommand> { }
+    private interface HotKeyCommand extends BiConsumer<AbstractUiCommand, WebDriver> { }
 }

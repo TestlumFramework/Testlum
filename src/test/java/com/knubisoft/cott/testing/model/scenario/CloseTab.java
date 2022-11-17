@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="closeTab"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
- *       &lt;attribute name="tab" type="{http://www.knubisoft.com/cott/testing/model/scenario}tabPattern" /&gt;
+ *       &lt;attribute name="tabIndex" type="{http://www.knubisoft.com/cott/testing/model/scenario}tabPattern" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -30,31 +30,31 @@ public class CloseTab
     extends AbstractUiCommand
 {
 
-    @XmlAttribute(name = "tab")
-    protected Integer tab;
+    @XmlAttribute(name = "tabIndex")
+    protected Integer tabIndex;
 
     /**
-     * Gets the value of the tab property.
+     * Gets the value of the tabIndex property.
      * 
      * @return
      *     possible object is
      *     {@link Integer }
      *     
      */
-    public Integer getTab() {
-        return tab;
+    public Integer getTabIndex() {
+        return tabIndex;
     }
 
     /**
-     * Sets the value of the tab property.
+     * Sets the value of the tabIndex property.
      * 
      * @param value
      *     allowed object is
      *     {@link Integer }
      *     
      */
-    public void setTab(Integer value) {
-        this.tab = value;
+    public void setTabIndex(Integer value) {
+        this.tabIndex = value;
     }
 
 }

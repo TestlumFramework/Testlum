@@ -142,17 +142,11 @@
             </x:extension>
         </x:complexContent>
     </x:complexType>
-    
-    <x:complexType name="closeSecondTab">
-        <x:complexContent>
-            <x:extension base="tns:abstractUiCommand"/>
-        </x:complexContent>
-    </x:complexType>
 
     <x:complexType name="closeTab">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
-                <x:attribute name="tab" type="tns:tabPattern"/>
+                <x:attribute name="tabIndex" type="tns:tabPattern"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

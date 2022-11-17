@@ -33,7 +33,7 @@ public class CloseTabExecutor extends AbstractUiExecutor<CloseTab> {
         if (windows.size() < 2) {
             throw new DefaultFrameworkException(TAB_NOT_FOUND);
         }
-        closeTab(closeTab.getTab(), result);
+        closeTab(closeTab.getTabIndex(), result);
         driver.switchTo().window(windows.peekLast());
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }

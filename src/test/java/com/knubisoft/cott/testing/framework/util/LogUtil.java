@@ -254,7 +254,7 @@ public class LogUtil {
     @SneakyThrows
     public void logBodyContent(final HttpEntity body) {
         if (body != null) {
-            logBody(IOUtils.toString(body.getContent(), StandardCharsets.UTF_8));
+            logBody(IOUtils.toString(body.getContent(), StandardCharsets.UTF_8.name()));
         }
     }
 
@@ -320,8 +320,7 @@ public class LogUtil {
             log.error(ERROR_SQL_QUERY, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE),
                     SqlUtil.getBrokenQuery(ex, query).replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
         } else {
-            log.error(ERROR_SQL_QUERY, ex.toString().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE),
-                    SqlUtil.getBrokenQuery(ex, query).replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+            log.error(ERROR_SQL_QUERY, ex.toString().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
         }
     }
 

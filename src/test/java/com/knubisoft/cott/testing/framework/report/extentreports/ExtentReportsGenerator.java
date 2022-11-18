@@ -13,6 +13,8 @@ import com.knubisoft.cott.testing.framework.report.ScenarioResult;
 import com.knubisoft.cott.testing.framework.report.extentreports.model.ResultForComparison;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
+import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
+import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.scenario.Overview;
 import lombok.SneakyThrows;
 import org.apache.commons.collections.CollectionUtils;
@@ -41,6 +43,11 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private static final String BROWSER = "Browser:";
     private static final String BROWSER_TYPE = "Browser type:";
     private static final String BROWSER_VERSION = "Browser version:";
+    private static final String NATIVE_DEVICE = "Native device:";
+    private static final String MOBILEBROWSER_DEVICE = "Mobilebrowser device:";
+    private static final String DEVICE_PLATFORM = "Device platform:";
+    private static final String DEVICE_UDID = "Device udid:";
+    private static final String APP_PACKAGE = "App package:";
     private static final String LINK_TEMPLATE = "<a href='%s'>%s<a/>";
     private static final String PREFORMATTED_TEXT_TEMPLATE = "<pre>%s</pre>";
     private static final String PREFORMATTED_CODE_TEXT_TEMPLATE = "<pre><code>%s</code></pre>";
@@ -72,6 +79,8 @@ public class ExtentReportsGenerator implements ReportGenerator {
         extentTest.assignCategory(scenarioResult.getTags().getTag().toArray(new String[0]));
         addOverviewInfo(extentTest, scenarioResult.getOverview(), scenarioResult.getPath());
         addBrowserInfo(extentTest, scenarioResult.getBrowser());
+        addNativeDeviceInfo(extentTest, scenarioResult.getNativeDevice());
+        addMobilebrowserDeviceInfo(extentTest, scenarioResult.getMobilebrowserDevice());
         setExecutionResult(extentTest, scenarioResult);
         addScenarioSteps(extentTest, scenarioResult.getCommands());
     }
@@ -96,6 +105,19 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private void addBrowserInfo(final ExtentTest extentTest, final AbstractBrowser browser) {
         if (Objects.nonNull(browser)) {
             extentTest.info(MarkupHelper.createTable(createTableWithBrowserInfo(browser)));
+        }
+    }
+
+    private void addNativeDeviceInfo(final ExtentTest extentTest, final NativeDevice nativeDevice) {
+        if (Objects.nonNull(nativeDevice)) {
+            extentTest.info(MarkupHelper.createTable(createTableWithNativeDeviceInfo(nativeDevice)));
+        }
+    }
+
+    private void addMobilebrowserDeviceInfo(final ExtentTest extentTest,
+                                            final MobilebrowserDevice mobilebrowserDevice) {
+        if (Objects.nonNull(mobilebrowserDevice)) {
+            extentTest.info(MarkupHelper.createTable(createTableWithMobilebrowserDeviceInfo(mobilebrowserDevice)));
         }
     }
 
@@ -139,6 +161,26 @@ public class ExtentReportsGenerator implements ReportGenerator {
         browserInfoTable[ONE][ONE] = browserType.getTypeName();
         browserInfoTable[TWO][ZERO] = format(BOLD_TEXT_TEMPLATE, BROWSER_VERSION);
         browserInfoTable[TWO][ONE] = BrowserUtil.getBrowserVersion(browser, browserType);
+        return browserInfoTable;
+    }
+
+    private String[][] createTableWithNativeDeviceInfo(final NativeDevice nativeDevice) {
+        String[][] browserInfoTable = new String[THREE][TWO];
+        browserInfoTable[ZERO][ZERO] = format(BOLD_TEXT_TEMPLATE, NATIVE_DEVICE);
+        browserInfoTable[ZERO][ONE] = nativeDevice.getDeviceName();
+        browserInfoTable[ONE][ZERO] = format(BOLD_TEXT_TEMPLATE, DEVICE_PLATFORM);
+        browserInfoTable[ONE][ONE] = nativeDevice.getPlatformName().value();
+        browserInfoTable[TWO][ZERO] = format(BOLD_TEXT_TEMPLATE, APP_PACKAGE);
+        browserInfoTable[TWO][ONE] = nativeDevice.getAppPackage();
+        return browserInfoTable;
+    }
+
+    private String[][] createTableWithMobilebrowserDeviceInfo(final MobilebrowserDevice mobilebrowserDevice) {
+        String[][] browserInfoTable = new String[TWO][TWO];
+        browserInfoTable[ZERO][ZERO] = format(BOLD_TEXT_TEMPLATE, MOBILEBROWSER_DEVICE);
+        browserInfoTable[ZERO][ONE] = mobilebrowserDevice.getDeviceName();
+        browserInfoTable[ONE][ZERO] = format(BOLD_TEXT_TEMPLATE, DEVICE_PLATFORM);
+        browserInfoTable[ONE][ONE] = mobilebrowserDevice.getPlatformName().value();
         return browserInfoTable;
     }
 

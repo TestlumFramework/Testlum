@@ -18,6 +18,12 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:simpleType name="urlWebSocket" final="restriction">
+        <x:restriction base="x:string">
+            <x:pattern value="((wss?|https?)://.+)"/>
+        </x:restriction>
+    </x:simpleType>
+
     <x:simpleType name="nonEmptyString">
         <x:restriction base="x:string">
             <x:minLength value="1"/>
@@ -75,5 +81,38 @@
             </x:extension>
         </x:complexContent>
     </x:complexType>
+
+
+    <x:complexType name="settings">
+        <x:sequence>
+            <x:element name="takeScreenshots" type="tns:takeScreenshot"/>
+            <x:element name="elementAutowait" type="tns:elementAutowait"/>
+        </x:sequence>
+        <x:attribute name="enabled" type="x:boolean"/>
+    </x:complexType>
+
+    <x:complexType name="takeScreenshot">
+        <x:attribute name="enable" type="x:boolean" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="elementAutowait">
+        <x:attribute name="seconds" type="x:int" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="abstractDevice" abstract="true">
+        <x:sequence>
+            <x:element name="udid" type="tns:nonEmptyString"/>
+            <x:element name="deviceName" type="tns:nonEmptyString"/>
+        </x:sequence>
+        <x:attribute name="platformName" type="tns:platform" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="platform">
+        <x:restriction base="x:string">
+            <x:enumeration value="ios"/>
+            <x:enumeration value="android"/>
+        </x:restriction>
+    </x:simpleType>
 
 </x:schema>

@@ -22,14 +22,23 @@ public class ExceptionMessage {
     public static final String NOT_DECLARED_WITH_INTERPRETER_FOR_CLASS = "Each non abstract interpreter must "
             + "declare annotation InterpreterForClass. Class %s do not have this annotation";
 
+    public static final String NOT_DECLARED_WITH_EXECUTOR_FOR_CLASS = "Each non abstract executor must "
+            + "declare annotation ExecutorForClass. Class %s do not have this annotation";
+
     public static final String UNKNOWN_TYPE = "Unknown type %s";
 
     public static final String FAILED_CONNECTION_TO_DATABASE =
             "Connection to database with name \"%s\" failed. "
                     + "Please check global configuration, it may be disabled or doesn't exist";
 
+    public static final String WEBSOCKET_CONNECTION_FAILURE =
+            "Something went wrong while connecting to websocket with name <%s>";
+    public static final String WEBSOCKET_NOT_ALL_MESSAGES_RECEIVED = "Not all messages received, remaining: %s";
+
     public static final String FUNCTION_FOR_COMMAND_NOT_FOUND = "Function for class %s not found. "
             + "Please register algorithm for interpreter";
+
+    public static final String EXECUTOR_FOR_UI_COMMAND_NOT_FOUND = "Executor for class %s not found.";
 
     public static final String UNABLE_FIND_FILE_IN_ROOT_FOLDER = "Unable to find file by key [%1$s] "
             + "Initial scan folder [%2$s] with strategy recursive walk to root folder [%3$s]";
@@ -87,7 +96,6 @@ public class ExceptionMessage {
                     + "\nExample: -g=/user/folder/resources or --generate=/user/folder/resources\n"
                     + "\nYou entered ---> %s\n";
 
-    public static final String TESTS_RUN_FAILED = "Test run failed";
     public static final String NAVIGATE_NOT_SUPPORTED = "Navigate command %s not supported";
     public static final String DROP_DOWN_NOT_SUPPORTED = "Drop down by method by %s not supported";
     public static final String SCROLL_TO_ELEMENT_NOT_SUPPORTED = "Scroll to the element by %s percents not supported";
@@ -97,7 +105,14 @@ public class ExceptionMessage {
     public static final String DRIVER_INITIALIZER_NOT_FOUND = "Driver initializer not found";
 
     public static final String VALID_SCENARIOS_NOT_FOUND = ANSI_RED + "Valid scenarios are not found" + ANSI_RESET;
-    public static final String NOT_ENABLED_BROWSERS = "At least 1 browser must be enabled";
+    public static final String NOT_ENABLED_BROWSERS = "Web configuration should be declared "
+            + "and enabled. At least 1 browser must be enabled";
+
+    public static final String NOT_ENABLED_NATIVE_DEVICE = "Native configuration should be declared "
+            + "and enabled. At least 1 native device must be enabled";
+
+    public static final String NOT_ENABLED_MOBILEBROWSER_DEVICE = "Mobilebrowser configuration should be declared "
+            + "and enabled. At least 1 mobilebrowser device must be enabled";
     public static final String UI_DISABLED_ERROR = "Your scenarios contain UI testing steps, but your UI settings is "
             + "disabled. Please enable UI settings in config file or exclude scenarios with UI steps.";
 
@@ -124,4 +139,16 @@ public class ExceptionMessage {
     public static final String NO_LOCATOR_FOUND_FOR_INNER_SCROLL = "You didn't specify a locator for the inner scroll";
     public static final String INVALID_LOCATOR =
             "Locator type is not supported for INNER scroll. Your locator -> <%s>.";
+//    public static final String FOUND_MORE_THEN_ONE_ELEMENT = "More than one element was found by text <%s>";
+
+    public static final String SAME_APPIUM_URL = "Can`t use the same Appium server URL for scenario with "
+            + "<mobilebrowser> & <native> tags";
+    public static final String SAME_MOBILE_DEVICES = "Can`t use the same mobile devices for scenario with "
+            + "<mobilebrowser> & <native> tags";
+    public static final String WEB_DRIVER_NOT_INIT = "The webDriver for <web> has not been initialized, "
+            + "check your configuration in config file";
+    public static final String NATIVE_DRIVER_NOT_INIT = "The webDriver for <native> has not been initialized, "
+            + "check your configuration in config file";
+    public static final String MOBILEBROWSER_DRIVER_NOT_INIT = "The webDriver for <mobilebrowser> has not been "
+            + "initialized, check your configuration in config file";
 }

@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="scroll"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;attribute name="type" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollType" /&gt;
  *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}nonNegativeInteger" /&gt;
  *       &lt;attribute name="direction" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollDirection" default="down" /&gt;
@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "scroll")
 public class Scroll
-    extends AbstractCommand
+    extends AbstractUiCommand
 {
 
     @XmlAttribute(name = "type", required = true)

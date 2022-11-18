@@ -3,7 +3,11 @@ package com.knubisoft.cott.testing.framework.util;
 import com.amazonaws.services.simpleemail.model.Message;
 import com.knubisoft.cott.testing.framework.constant.LogMessage;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
+import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
+import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
+import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
+import com.knubisoft.cott.testing.model.scenario.Assert;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
@@ -33,8 +37,10 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.TESTS_RUN_FAILED;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.ATTRIBUTE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BODY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CLEAR_COOKIES_AFTER;
@@ -61,7 +67,9 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.INVALID_S
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.LOCAL_STORAGE_KEY;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.MESSAGE_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.MOBILEBROWSER_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.NAME_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.NATIVE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.NEW_LOG_LINE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
@@ -78,14 +86,13 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUBJECT_L
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SWITCH_TO_FRAME_LOCATOR;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_COMMAND_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.VALUE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.VARIATION_LOG;
 import static java.lang.String.format;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.SPACE;
 
 @UtilityClass
 @Slf4j
@@ -98,10 +105,9 @@ public class LogUtil {
         Overview overview = scenarioArguments.getScenario().getOverview();
         logOverview(overview);
         if (scenarioArguments.isContainsUiSteps()) {
-            logUiInfo(scenarioArguments.getScenario().getVariations(),
-                    BrowserUtil.getBrowserInfo(scenarioArguments.getBrowser()));
+            logUiInfo(scenarioArguments.getScenario().getVariations(), scenarioArguments.getBrowser(),
+                    scenarioArguments.getNativeDevice(), scenarioArguments.getMobilebrowserDevice());
         }
-
     }
 
     private void logOverview(final Overview overview) {
@@ -119,12 +125,20 @@ public class LogUtil {
     }
 
     public void logBrokerActionInfo(final String action, final String queue, final String content) {
-        log.info(LogMessage.BROKER_ACTION_INFO_LOG,
-                action.toUpperCase(Locale.ROOT),
-                queue,
-                StringUtils.isNotBlank(content)
-                        ? PrettifyStringJson.getJSONResult(content)
-                                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT) : content);
+        logActionInfo(LogMessage.BROKER_ACTION_INFO_LOG, action, queue, content);
+    }
+
+    public void logWebsocketActionInfo(final String action, final String destination, final String content) {
+        logActionInfo(LogMessage.WEBSOCKET_ACTION_INFO_LOG, action, destination, content);
+    }
+
+    public void logActionInfo(final String template,
+                              final String action,
+                              final String destination,
+                              final String content) {
+        log.info(template, action.toUpperCase(Locale.ROOT), destination, StringUtils.isNotBlank(content)
+                ? PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT)
+                : content);
     }
 
     public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {
@@ -157,11 +171,20 @@ public class LogUtil {
         }
     }
 
-    private void logUiInfo(final String variation, final String browserVersion) {
+    private void logUiInfo(final String variation, final AbstractBrowser browser, final NativeDevice nativeDevice,
+                           final MobilebrowserDevice mobilebrowserDevice) {
         if (StringUtils.isNotBlank(variation)) {
             log.info(VARIATION_LOG, variation);
         }
-        log.info(BROWSER_NAME_LOG, browserVersion);
+        if (Objects.nonNull(browser)) {
+            log.info(BROWSER_NAME_LOG, BrowserUtil.getBrowserInfo(browser));
+        }
+        if (Objects.nonNull(nativeDevice)) {
+            log.info(NATIVE_LOG, MobileUtil.getNativeDeviceInfo(nativeDevice));
+        }
+        if (Objects.nonNull(mobilebrowserDevice)) {
+            log.info(MOBILEBROWSER_LOG, MobileUtil.getMobilebrowserDeviceInfo(mobilebrowserDevice));
+        }
     }
 
     public void logTestExecutionSummary(final TestExecutionSummary testExecutionSummary) {
@@ -182,8 +205,9 @@ public class LogUtil {
                 testExecutionSummary.getTestsSucceededCount(),
                 failedScenarios);
         if (failedScenarios > 0) {
-            testExecutionSummary.getFailures().forEach(e -> log.error(format(LogMessage.FAILED_SCENARIOS_NAME_TEMPLATE,
-                            e.getTestIdentifier().getDisplayName()), e.getException()));
+            testExecutionSummary.getFailures().forEach(e -> log.error(
+                    format(LogMessage.FAILED_SCENARIOS_NAME_TEMPLATE, e.getTestIdentifier().getDisplayName()),
+                    e.getException()));
         }
     }
 
@@ -193,6 +217,19 @@ public class LogUtil {
         if (action instanceof CommandWithLocator) {
             log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());
         }
+    }
+
+    public void logSubCommand(final int position, final Object action) {
+        log.info(COMMAND_LOG, position, action.getClass().getSimpleName());
+    }
+
+    public void logAssertTag(final Assert aAssert) {
+        log.info(ATTRIBUTE_LOG, aAssert.getAttribute());
+        log.info(CONTENT_LOG, aAssert.getContent());
+    }
+
+    public void logAlias(final String alias) {
+        log.info(ALIAS_LOG, alias);
     }
 
     public void logSesInfo(final Ses ses) {
@@ -210,14 +247,13 @@ public class LogUtil {
         log.info(ALIAS_LOG, alias);
         log.info(HTTP_METHOD_LOG, method);
         log.info(ENDPOINT_LOG, endpoint);
-
     }
 
     public void logBody(final String body) {
         if (StringUtils.isNotBlank(body)) {
             log.info(BODY_LOG,
-                PrettifyStringJson.getJSONResult(body)
-                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+                    PrettifyStringJson.getJSONResult(body)
+                            .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
     }
 
@@ -229,7 +265,7 @@ public class LogUtil {
     }
 
     public void logExecutionTime(final long time, final AbstractCommand command) {
-        if (command instanceof Ui) {
+        if (Ui.class.isAssignableFrom(command.getClass())) {
             log.info(UI_EXECUTION_TIME_LOG, time);
         } else {
             log.info(EXECUTION_TIME_LOG, time);

@@ -8,6 +8,7 @@ import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.ScenarioUtil;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
+import com.knubisoft.cott.testing.model.scenario.SwitchToFrame;
 import com.knubisoft.cott.testing.model.scenario.Ui;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -44,6 +45,12 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
         for (AbstractUiCommand uiCommand : commandList) {
             LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), uiCommand);
             processEachCommand(uiCommand, subCommandsResult, dependencies);
+            if (uiCommand instanceof SwitchToFrame) {
+                for (AbstractUiCommand command : ((SwitchToFrame) uiCommand).getClickOrInputOrAssert()) {
+                    LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), command);
+                    processEachCommand(command, subCommandsResult, dependencies);
+                }
+            }
         }
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }

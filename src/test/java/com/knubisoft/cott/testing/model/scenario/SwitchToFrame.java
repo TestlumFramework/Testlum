@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
@@ -19,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="switchToFrame"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}commandWithLocator"&gt;
  *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
  *         &lt;element name="click" type="{http://www.knubisoft.com/cott/testing/model/scenario}click"/&gt;
  *         &lt;element name="input" type="{http://www.knubisoft.com/cott/testing/model/scenario}input"/&gt;
@@ -36,7 +35,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="closeSecondTab" type="{http://www.knubisoft.com/cott/testing/model/scenario}closeSecondTab"/&gt;
  *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/cott/testing/model/scenario}switchToFrame"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="locator" type="{http://www.knubisoft.com/cott/testing/model/scenario}scenarioLocator" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -49,7 +47,7 @@ import javax.xml.bind.annotation.XmlType;
     "clickOrInputOrAssert"
 })
 public class SwitchToFrame
-    extends AbstractUiCommand
+    extends CommandWithLocator
 {
 
     @XmlElements({
@@ -69,8 +67,6 @@ public class SwitchToFrame
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
-    @XmlAttribute(name = "locator")
-    protected String locator;
 
     /**
      * Gets the value of the clickOrInputOrAssert property.
@@ -112,30 +108,6 @@ public class SwitchToFrame
             clickOrInputOrAssert = new ArrayList<AbstractUiCommand>();
         }
         return this.clickOrInputOrAssert;
-    }
-
-    /**
-     * Gets the value of the locator property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getLocator() {
-        return locator;
-    }
-
-    /**
-     * Sets the value of the locator property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setLocator(String value) {
-        this.locator = value;
     }
 
 }

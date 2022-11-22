@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlType;
     DropDown.class,
     Assert.class,
     Clear.class,
+    SwitchToFrame.class,
     ScrollTo.class
 })
 public abstract class CommandWithLocator

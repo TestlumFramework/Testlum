@@ -90,6 +90,9 @@ public class ResultUtil {
     public static final String URL_TO_ACTUAL_IMAGE = "URL to actual image";
     public static final String ADDITIONAL_INFO = "Additional info";
     public static final String IMAGE_ATTACHED_TO_STEP = "Actual image attached to report step";
+    public static final String FROM_LOCATOR = "From locator";
+    public static final String FROM_LOCAL_FILE = "From local file";
+    public static final String TO_LOCATOR = "To locator";
     private static final String SCROLL_DIRECTION = "Scroll direction";
     private static final String SCROLL_MEASURE = "Scroll measure";
     private static final String SCROLL_TYPE = "Scroll type";
@@ -149,6 +152,7 @@ public class ResultUtil {
     private static final String IMAGE_COMPARISON_TYPE = "Image comparison type";
     private static final String IMAGE_LOCATOR = "Locator to element with image";
     private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
+
 
     public CommandResult createCommandResultForUiSubCommand(final int number, final String name, final String comment) {
         CommandResult subCommandResult = createNewCommandResultInstance(number);

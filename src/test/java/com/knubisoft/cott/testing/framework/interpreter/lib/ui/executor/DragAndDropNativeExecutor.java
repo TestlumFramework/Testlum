@@ -13,6 +13,8 @@ import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.FROM_LOCATOR;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.TO_LOCATOR;
 
 @ExecutorForClass(DragAndDropNative.class)
 public class DragAndDropNativeExecutor extends AbstractUiExecutor<DragAndDropNative> {
@@ -27,7 +29,10 @@ public class DragAndDropNativeExecutor extends AbstractUiExecutor<DragAndDropNat
     public void execute(final DragAndDropNative dragAndDropNative, final CommandResult result) {
         WebElement from = UiUtil.findWebElement(driver, dragAndDropNative.getFromLocatorId());
         WebElement to = UiUtil.findWebElement(driver, dragAndDropNative.getToLocatorId());
+        result.put(FROM_LOCATOR, dragAndDropNative.getFromLocatorId());
         driver.perform(Collections.singletonList(setupDragAndDrop(from, to)));
+        result.put(TO_LOCATOR, dragAndDropNative.getToLocatorId());
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private static Sequence setupDragAndDrop(final WebElement from, final WebElement to) {

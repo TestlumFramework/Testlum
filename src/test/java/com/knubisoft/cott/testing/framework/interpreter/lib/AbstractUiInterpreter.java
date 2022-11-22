@@ -38,7 +38,8 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
                 .build();
     }
 
-    public void runCommands(final List<AbstractUiCommand> commandList, final CommandResult result,
+    public void runCommands(final List<AbstractUiCommand> commandList,
+                            final CommandResult result,
                             final ExecutorDependencies dependencies) {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
@@ -46,13 +47,19 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
             LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), uiCommand);
             processEachCommand(uiCommand, subCommandsResult, dependencies);
             if (uiCommand instanceof SwitchToFrame) {
-                for (AbstractUiCommand command : ((SwitchToFrame) uiCommand).getClickOrInputOrAssert()) {
-                    LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), command);
-                    processEachCommand(command, subCommandsResult, dependencies);
-                }
+                processSwitchToFrameCommand(uiCommand, subCommandsResult, dependencies);
             }
         }
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
+    }
+
+    private void processSwitchToFrameCommand(final AbstractUiCommand uiCommand,
+                                             final List<CommandResult> subCommandsResult,
+                                             final ExecutorDependencies dependencies) {
+        for (AbstractUiCommand command : ((SwitchToFrame) uiCommand).getClickOrInputOrAssert()) {
+            LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), command);
+            processEachCommand(command, subCommandsResult, dependencies);
+        }
     }
 
     private void processEachCommand(final AbstractUiCommand command,

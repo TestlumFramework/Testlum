@@ -20,7 +20,7 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
 
     private final WebDriver driver;
 
-    protected DragAndDropExecutor(final ExecutorDependencies dependencies) {
+    public DragAndDropExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         driver = dependencies.getDriver();
     }

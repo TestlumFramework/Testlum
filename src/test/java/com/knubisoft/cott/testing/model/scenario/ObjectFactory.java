@@ -446,6 +446,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DragAndDropNative }
+     * 
+     */
+    public DragAndDropNative createDragAndDropNative() {
+        return new DragAndDropNative();
+    }
+
+    /**
      * Create an instance of {@link SendRmqMessage }
      * 
      */

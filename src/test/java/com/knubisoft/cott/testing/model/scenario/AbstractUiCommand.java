@@ -34,7 +34,8 @@ import javax.xml.bind.annotation.XmlType;
     Scroll.class,
     CommandWithLocator.class,
     Image.class,
-    DragAndDrop.class
+    DragAndDrop.class,
+    DragAndDropNative.class
 })
 public abstract class AbstractUiCommand
     extends AbstractCommand

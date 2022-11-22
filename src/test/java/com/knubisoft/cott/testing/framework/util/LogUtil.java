@@ -8,7 +8,6 @@ import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Auth;
-import com.knubisoft.cott.testing.model.scenario.CombinedKeyActionEnum;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
 import com.knubisoft.cott.testing.model.scenario.Image;
@@ -17,7 +16,6 @@ import com.knubisoft.cott.testing.model.scenario.OverviewPart;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
 import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.Ses;
-import com.knubisoft.cott.testing.model.scenario.SingleKeyActionEnum;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.Ui;
@@ -44,15 +42,12 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BODY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CLEAR_COOKIES_AFTER;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMBINED_KEY_LOCATOR_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMBINED_KEY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMAND_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMENT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_FORMAT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATION_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.DIVIDE_LINE_FOR_KEY_COMMANDS;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
@@ -82,7 +77,6 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_LO
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_TYPE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SERVER_ERROR_RESPONSE_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.SINGLE_KEY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_HOST_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_PORT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SOURCE_LOG;
@@ -283,17 +277,6 @@ public class LogUtil {
 
     public void logSwitchToFrameInfo(final String locatorId) {
         log.info(SWITCH_TO_FRAME_LOCATOR, locatorId);
-    }
-
-    public void logSingleKeyCommandInfo(final SingleKeyActionEnum singleKeyAction) {
-        log.info(DIVIDE_LINE_FOR_KEY_COMMANDS);
-        log.info(SINGLE_KEY_LOG, singleKeyAction);
-    }
-
-    public void logCombinedKeyCommandInfo(final CombinedKeyActionEnum combinedKeyAction, final String locatorId) {
-        log.info(DIVIDE_LINE_FOR_KEY_COMMANDS);
-        log.info(COMBINED_KEY_LOG, combinedKeyAction);
-        log.info(COMBINED_KEY_LOCATOR_LOG, locatorId);
     }
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {

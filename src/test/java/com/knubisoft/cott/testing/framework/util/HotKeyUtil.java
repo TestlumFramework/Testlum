@@ -59,53 +59,53 @@ public class HotKeyUtil {
         hotKeyCommand.accept(command, driver);
     }
 
-    private static void escapeCommand(final Escape escape, final WebDriver driver) {
+    private void escapeCommand(final Escape escape, final WebDriver driver) {
         Actions action = new Actions(driver);
         action.sendKeys(Keys.ESCAPE).perform();
     }
 
-    private static void backSpaceCommand(final BackSpace backSpace, final WebDriver driver) {
+    private void backSpaceCommand(final BackSpace backSpace, final WebDriver driver) {
         Actions action = new Actions(driver);
         action.sendKeys(Keys.BACK_SPACE).perform();
     }
 
-    private static void spaceCommand(final Space space, final WebDriver driver) {
+    private void spaceCommand(final Space space, final WebDriver driver) {
         Actions action = new Actions(driver);
         action.sendKeys(Keys.SPACE).perform();
     }
 
-    private static void enterCommand(final Enter enter, final WebDriver driver) {
+    private void enterCommand(final Enter enter, final WebDriver driver) {
         Actions action = new Actions(driver);
         action.sendKeys(Keys.ENTER).perform();
     }
 
-    private static void tabCommand(final Tab tab, final WebDriver driver) {
+    private void tabCommand(final Tab tab, final WebDriver driver) {
         Actions action = new Actions(driver);
         action.sendKeys(Keys.TAB).perform();
     }
 
-    private static void highlightCommand(final Highlight highlight, final WebDriver driver) {
+    private void highlightCommand(final Highlight highlight, final WebDriver driver) {
         Actions action = new Actions(driver);
         Locator locator = GlobalLocators.getLocator(highlight.getLocatorId());
         WebElement element = WebElementFinder.find(locator, driver);
         action.keyDown(element, Keys.COMMAND).sendKeys("a").build().perform();
     }
 
-    private static void cutCommand(final Cut cut, final WebDriver driver) {
+    private void cutCommand(final Cut cut, final WebDriver driver) {
         Actions action = new Actions(driver);
         Locator locator = GlobalLocators.getLocator(cut.getLocatorId());
         WebElement element = WebElementFinder.find(locator, driver);
         action.keyDown(element, Keys.COMMAND).sendKeys("a").sendKeys("x").build().perform();
     }
 
-    private static void pasteCommand(final Paste paste, final WebDriver driver) {
+    private void pasteCommand(final Paste paste, final WebDriver driver) {
         Actions action = new Actions(driver);
         Locator locator = GlobalLocators.getLocator(paste.getLocatorId());
         WebElement element = WebElementFinder.find(locator, driver);
         action.keyDown(element, Keys.COMMAND).sendKeys("v").build().perform();
     }
 
-    private static void copyCommand(final Copy copy, final WebDriver driver) {
+    private void copyCommand(final Copy copy, final WebDriver driver) {
         Actions action = new Actions(driver);
         Locator locator = GlobalLocators.getLocator(copy.getLocatorId());
         WebElement element = WebElementFinder.find(locator, driver);

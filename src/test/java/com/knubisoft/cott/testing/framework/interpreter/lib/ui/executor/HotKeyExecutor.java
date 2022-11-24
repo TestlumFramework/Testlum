@@ -5,6 +5,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependenc
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.locator.GlobalLocators;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.WebElementFinder;
 import com.knubisoft.cott.testing.model.pages.Locator;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
@@ -19,7 +20,6 @@ import com.knubisoft.cott.testing.model.scenario.Paste;
 import com.knubisoft.cott.testing.model.scenario.Space;
 import com.knubisoft.cott.testing.model.scenario.Tab;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
@@ -68,6 +68,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     private void executeHotKeyCommands(final AbstractUiCommand command,
                                        final HotKeyExecutor.HotKeyCommand hotKeyCommand,
                                        final Actions action) {
+        LogUtil.logHotKeyInfo(command);
         hotKeyCommand.accept(command, action);
     }
 

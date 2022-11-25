@@ -360,12 +360,10 @@ public class LogUtil {
         log.error(INITIAL_STRUCTURE_GENERATION_ERROR, path, ex);
     }
 
-    public static void logHotKeyInfo(AbstractUiCommand command) {
-        if (command instanceof CommandWithLocator){
-            log.info(HOTKEY_COMMAND, command);
+    public static void logHotKeyInfo(final AbstractUiCommand command) {
+        log.info(HOTKEY_COMMAND, command);
+        if (command instanceof CommandWithLocator) {
             log.info(HOTKEY_COMMAND_LOCATOR, ((CommandWithLocator) command).getLocatorId());
-        } else {
-            log.info(HOTKEY_COMMAND, command);
         }
     }
 }

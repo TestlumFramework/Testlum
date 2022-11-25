@@ -454,6 +454,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ScrollNative }
+     * 
+     */
+    public ScrollNative createScrollNative() {
+        return new ScrollNative();
+    }
+
+    /**
+     * Create an instance of {@link ScrollToNative }
+     * 
+     */
+    public ScrollToNative createScrollToNative() {
+        return new ScrollToNative();
+    }
+
+    /**
      * Create an instance of {@link SendRmqMessage }
      * 
      */

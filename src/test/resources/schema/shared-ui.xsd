@@ -234,4 +234,19 @@
             </x:extension>
         </x:complexContent>
     </x:complexType>
+    <x:complexType name="scrollNative">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="direction" type="tns:scrollDirection" default="down"/>
+                <x:attribute name="value" type="x:int" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+    <x:complexType name="scrollToNative">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="toLocatorId" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
 </x:schema>

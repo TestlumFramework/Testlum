@@ -57,7 +57,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
                                              final List<CommandResult> subCommandsResult,
                                              final ExecutorDependencies dependencies) {
         for (AbstractUiCommand command : ((SwitchToFrame) uiCommand).getClickOrInputOrAssert()) {
-            LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), command);
+            LogUtil.logUICommandInSwitchTag(dependencies.getPosition().incrementAndGet(), command);
             processEachCommand(command, subCommandsResult, dependencies);
         }
     }

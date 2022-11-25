@@ -34,6 +34,8 @@ public final class LogMessage {
     public static final String POSITION_COMMAND_LOG = ANSI_YELLOW
             + "--------- Scenario step #%d - %s ---------" + ANSI_RESET;
     public static final String UI_COMMAND_LOG = ANSI_CYAN + "------- UI command #{} - {} -------" + ANSI_RESET;
+    public static final String UI_COMMAND_IN_SWITCH_TO_FRAME_LOG =
+            ANSI_CYAN + "------ UI command in frame #{} - {} -------" + ANSI_RESET;
     public static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
     public static final String REPEAT_FINISHED_LOG = ANSI_CYAN + "------- Repeat is finished -------" + ANSI_RESET;
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
@@ -112,7 +114,6 @@ public final class LogMessage {
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
     public static final String SCROLL_LOCATOR = format(TABLE_FORMAT, "Scroll locator", "{}");
     public static final String SCROLL_TYPE = format(TABLE_FORMAT, "Scroll type", "{}");
-    public static final String SWITCH_TO_FRAME_LOCATOR = format(TABLE_FORMAT, "Frame locator to switch", "{}");
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "Method", "{}");
     public static final String SMTP_HOST_LOG = format(TABLE_FORMAT, "SMTP Host", "{}");
     public static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");

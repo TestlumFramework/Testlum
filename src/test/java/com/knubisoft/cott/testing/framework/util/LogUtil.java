@@ -81,11 +81,11 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_HOST
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_PORT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SOURCE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUBJECT_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.SWITCH_TO_FRAME_LOCATOR;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_COMMAND_IN_SWITCH_TO_FRAME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_COMMAND_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.VALUE_LOG;
@@ -217,6 +217,14 @@ public class LogUtil {
         }
     }
 
+    public void logUICommandInSwitchTag(final int position, final AbstractCommand action) {
+        log.info(UI_COMMAND_IN_SWITCH_TO_FRAME_LOG, position, action.getClass().getSimpleName());
+        log.info(COMMENT_LOG, action.getComment());
+        if (action instanceof CommandWithLocator) {
+            log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());
+        }
+    }
+
     public void logSubCommand(final int position, final Object action) {
         log.info(COMMAND_LOG, position, action.getClass().getSimpleName());
     }
@@ -275,9 +283,9 @@ public class LogUtil {
         }
     }
 
-    public void logSwitchToFrameInfo(final String locatorId) {
+    /*public void logSwitchToFrameInfo(final String locatorId) {
         log.info(SWITCH_TO_FRAME_LOCATOR, locatorId);
-    }
+    }*/
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {
         log.error(INVALID_SCENARIO_LOG, path, exception);

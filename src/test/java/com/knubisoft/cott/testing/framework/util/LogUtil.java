@@ -361,7 +361,7 @@ public class LogUtil {
     }
 
     public static void logHotKeyInfo(final AbstractUiCommand command) {
-        log.info(HOTKEY_COMMAND, command);
+        log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
         if (command instanceof CommandWithLocator) {
             log.info(HOTKEY_COMMAND_LOCATOR, ((CommandWithLocator) command).getLocatorId());
         }

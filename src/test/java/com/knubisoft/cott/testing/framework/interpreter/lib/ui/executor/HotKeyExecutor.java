@@ -10,6 +10,7 @@ import com.knubisoft.cott.testing.framework.util.WebElementFinder;
 import com.knubisoft.cott.testing.model.pages.Locator;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.cott.testing.model.scenario.BackSpace;
+import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.Copy;
 import com.knubisoft.cott.testing.model.scenario.Cut;
 import com.knubisoft.cott.testing.model.scenario.Enter;
@@ -35,7 +36,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
 
     private final Map<HotKeyCommandPredicate, HotKeyCommand> hotKeyCommands;
 
-    protected HotKeyExecutor(final ExecutorDependencies dependencies) {
+    public HotKeyExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         Map<HotKeyCommandPredicate, HotKeyCommand> commands = new HashMap<>();
         commands.put(hotKey -> hotKey instanceof Copy, (hotKey, action) -> copyCommand((Copy) hotKey, action));
@@ -43,12 +44,11 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
         commands.put(hotKey -> hotKey instanceof Cut, (hotKey, action) -> cutCommand((Cut) hotKey, action));
         commands.put(hotKey -> hotKey instanceof Highlight, (hotKey, action) ->
                 highlightCommand((Highlight) hotKey, action));
-        commands.put(hotKey -> hotKey instanceof Tab, (hotKey, action) -> tabCommand((Tab) hotKey, action));
-        commands.put(hotKey -> hotKey instanceof Enter, (hotKey, action) -> enterCommand((Enter) hotKey, action));
-        commands.put(hotKey -> hotKey instanceof BackSpace, (hotKey, action) ->
-                backSpaceCommand((BackSpace) hotKey, action));
-        commands.put(hotKey -> hotKey instanceof Escape, (hotKey, action) -> escapeCommand((Escape) hotKey, action));
-        commands.put(hotKey -> hotKey instanceof Space, (hotKey, action) -> spaceCommand((Space) hotKey, action));
+        commands.put(hotKey -> hotKey instanceof Tab, (hotKey, action) -> tabCommand(action));
+        commands.put(hotKey -> hotKey instanceof Enter, (hotKey, action) -> enterCommand(action));
+        commands.put(hotKey -> hotKey instanceof BackSpace, (hotKey, action) -> backSpaceCommand(action));
+        commands.put(hotKey -> hotKey instanceof Escape, (hotKey, action) -> escapeCommand(action));
+        commands.put(hotKey -> hotKey instanceof Space, (hotKey, action) -> spaceCommand(action));
         hotKeyCommands = Collections.unmodifiableMap(commands);
     }
 
@@ -72,48 +72,45 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
         hotKeyCommand.accept(command, action);
     }
 
-    private void escapeCommand(final Escape escape, final Actions action) {
+    private void escapeCommand(final Actions action) {
         action.sendKeys(Keys.ESCAPE).perform();
     }
 
-    private void backSpaceCommand(final BackSpace backSpace, final Actions action) {
+    private void backSpaceCommand(final Actions action) {
         action.sendKeys(Keys.BACK_SPACE).perform();
     }
 
-    private void spaceCommand(final Space space, final Actions action) {
+    private void spaceCommand(final Actions action) {
         action.sendKeys(Keys.SPACE).perform();
     }
 
-    private void enterCommand(final Enter enter, final Actions action) {
+    private void enterCommand(final Actions action) {
         action.sendKeys(Keys.ENTER).perform();
     }
 
-    private void tabCommand(final Tab tab, final Actions action) {
+    private void tabCommand(final Actions action) {
         action.sendKeys(Keys.TAB).perform();
     }
 
     private void highlightCommand(final Highlight highlight, final Actions action) {
-        Locator locator = GlobalLocators.getLocator(highlight.getLocatorId());
-        WebElement element = WebElementFinder.find(locator, dependencies.getDriver());
-        action.keyDown(element, Keys.COMMAND).sendKeys("a").build().perform();
+        action.keyDown(getElementForHotKey(highlight), Keys.COMMAND).sendKeys("a").build().perform();
     }
 
     private void cutCommand(final Cut cut, final Actions action) {
-        Locator locator = GlobalLocators.getLocator(cut.getLocatorId());
-        WebElement element = WebElementFinder.find(locator, dependencies.getDriver());
-        action.keyDown(element, Keys.COMMAND).sendKeys("a").sendKeys("x").build().perform();
+        action.keyDown(getElementForHotKey(cut), Keys.COMMAND).sendKeys("a").sendKeys("x").build().perform();
     }
 
     private void pasteCommand(final Paste paste, final Actions action) {
-        Locator locator = GlobalLocators.getLocator(paste.getLocatorId());
-        WebElement element = WebElementFinder.find(locator, dependencies.getDriver());
-        action.keyDown(element, Keys.COMMAND).sendKeys("v").build().perform();
+        action.keyDown(getElementForHotKey(paste), Keys.COMMAND).sendKeys("v").build().perform();
     }
 
     private void copyCommand(final Copy copy, final Actions action) {
-        Locator locator = GlobalLocators.getLocator(copy.getLocatorId());
-        WebElement element = WebElementFinder.find(locator, dependencies.getDriver());
-        action.keyDown(element, Keys.COMMAND).sendKeys("a").sendKeys("c").build().perform();
+        action.keyDown(getElementForHotKey(copy), Keys.COMMAND).sendKeys("a").sendKeys("c").build().perform();
+    }
+
+    private WebElement getElementForHotKey(final CommandWithLocator command) {
+        Locator locator = GlobalLocators.getLocator(command.getLocatorId());
+        return WebElementFinder.find(locator, dependencies.getDriver());
     }
 
     private interface HotKeyCommandPredicate extends Predicate<AbstractUiCommand> { }

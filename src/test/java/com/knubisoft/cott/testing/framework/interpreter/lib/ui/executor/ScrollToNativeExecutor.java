@@ -29,10 +29,12 @@ public class ScrollToNativeExecutor extends AbstractUiExecutor<ScrollToNative> {
     public void execute(final ScrollToNative scrollToNative, final CommandResult result) {
         for (int i = 0; i < defaultScrolls; i++) {
             try {
+                result.put("Scrolling to element with locator id", scrollToNative.getToLocatorId());
                 Dimension dimension = driver.manage().window().getSize();
                 Point start = new Point(dimension.width / 2, dimension.height / 2);
                 driver.perform(Collections.singletonList(UiUtil.buildSequence(start, new Point(0, defaultValue))));
                 UiUtil.findWebElement(driver, scrollToNative.getToLocatorId()).isDisplayed();
+                UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
                 return;
             } catch (Exception ignored) {
                 //Means locator is not visible, code continue scrolling to find locator

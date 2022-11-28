@@ -27,9 +27,12 @@ public class ScrollNativeExecutor extends AbstractUiExecutor<ScrollNative> {
     public void execute(final ScrollNative scrollNative, final CommandResult result) {
         int scrollValue = ScrollDirection.UP.equals(scrollNative.getDirection()) ? scrollNative.getValue()
                 : -scrollNative.getValue();
+        result.put("Scroll direction", scrollNative.getDirection().value());
+        result.put("Scroll value", Math.abs(scrollValue));
         Dimension dimension = driver.manage().window().getSize();
         Point start = new Point(dimension.width / 2, dimension.height / 2);
         driver.perform(Collections.singletonList(UiUtil.buildSequence(start, new Point(0, scrollValue))));
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
 }

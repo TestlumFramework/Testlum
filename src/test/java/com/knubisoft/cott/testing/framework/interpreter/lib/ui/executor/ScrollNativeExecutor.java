@@ -5,14 +5,18 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependenc
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
+import com.knubisoft.cott.testing.model.scenario.ScrollDirection;
 import com.knubisoft.cott.testing.model.scenario.ScrollNative;
 import io.appium.java_client.AppiumDriver;
+import java.util.Collections;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
 
 
 @ExecutorForClass(ScrollNative.class)
 public class ScrollNativeExecutor extends AbstractUiExecutor<ScrollNative> {
 
-    private final AppiumDriver driver;
+    private AppiumDriver driver;
 
     public ScrollNativeExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -21,12 +25,11 @@ public class ScrollNativeExecutor extends AbstractUiExecutor<ScrollNative> {
 
     @Override
     public void execute(final ScrollNative scrollNative, final CommandResult result) {
-        Integer scrollValue = scrollNative.getValue();
-        if (scrollNative.getDirection().value().equals("up")) {
-            UiUtil.scrollByUnits(driver, -scrollValue);
-        } else {
-            UiUtil.scrollByUnits(driver, scrollValue);
-        }
+        int scrollValue = ScrollDirection.UP.equals(scrollNative.getDirection()) ? scrollNative.getValue()
+                : -scrollNative.getValue();
+        Dimension dimension = driver.manage().window().getSize();
+        Point start = new Point(dimension.width / 2, dimension.height / 2);
+        driver.perform(Collections.singletonList(UiUtil.buildSequence(start, new Point(0, scrollValue))));
     }
 
 }

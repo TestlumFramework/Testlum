@@ -185,16 +185,12 @@ public class UiUtil {
         return ImageIO.read(new URL(urlToActualImage));
     }
 
-    public void scrollByUnits(final AppiumDriver driver, final Integer units) {
+    public Sequence buildSequence(final Point start, final Point end) {
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
-        Dimension dimension = driver.manage().window().getSize();
-        Point start = new Point(dimension.width / 2, dimension.height / 2);
-        Sequence swipe = new Sequence(finger, 1)
+        return new Sequence(finger, 1)
                 .addAction(finger.createPointerMove(Duration.ofMillis(0), viewport(), start.getX(), start.getY()))
                 .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
-                .addAction(finger.createPointerMove(Duration.ofSeconds(1), viewport(), 0, -units))
+                .addAction(finger.createPointerMove(Duration.ofSeconds(1), viewport(), end.getX(), end.getY()))
                 .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
-        driver.perform(Collections.singletonList(swipe));
-        driver.switchTo();
     }
 }

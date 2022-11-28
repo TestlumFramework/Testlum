@@ -234,6 +234,7 @@
             </x:extension>
         </x:complexContent>
     </x:complexType>
+
     <x:complexType name="scrollNative">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
@@ -242,6 +243,7 @@
             </x:extension>
         </x:complexContent>
     </x:complexType>
+
     <x:complexType name="scrollToNative">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">

@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -7,13 +8,17 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.ScrollToNative;
 import io.appium.java_client.AppiumDriver;
+import java.util.Collections;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ELEMENT_NOT_FOUND;
 
 @ExecutorForClass(ScrollToNative.class)
 public class ScrollToNativeExecutor extends AbstractUiExecutor<ScrollToNative> {
 
     private final AppiumDriver driver;
-    private final Integer defaultValue = 500;
-    private final Integer defaultScrolls = 20;
+    private final static int defaultValue = -500;
+    private final static int defaultScrolls = 20;
 
     public ScrollToNativeExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -24,12 +29,15 @@ public class ScrollToNativeExecutor extends AbstractUiExecutor<ScrollToNative> {
     public void execute(final ScrollToNative scrollToNative, final CommandResult result) {
         for (int i = 0; i < defaultScrolls; i++) {
             try {
-                UiUtil.scrollByUnits(driver, defaultValue);
-                UiUtil.findWebElement(driver, scrollToNative.getToLocatorId());
-                break;
+                Dimension dimension = driver.manage().window().getSize();
+                Point start = new Point(dimension.width / 2, dimension.height / 2);
+                driver.perform(Collections.singletonList(UiUtil.buildSequence(start, new Point(0, defaultValue))));
+                UiUtil.findWebElement(driver, scrollToNative.getToLocatorId()).isDisplayed();
+                return;
             } catch (Exception ignored) {
                 //Means locator is not visible, code continue scrolling to find locator
             }
         }
+        throw new DefaultFrameworkException(ELEMENT_NOT_FOUND, scrollToNative.getToLocatorId());
     }
 }

@@ -9,11 +9,11 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class SqlUtil {
     private static final int CUT_LIMIT = 100;
-    private static final int PUT_SQL_IN_CONTEXT = 50;
-    private static final Pattern BAD_SQL_POSITION_PATTERN = Pattern.compile("[^0-9]+([0-9]+)$");
+    private static final int OFFSET_LIMIT = 2;
+    private static final Pattern BAD_SQL_POSITION_PATTERN = Pattern.compile("([0-9]+)");
 
     public String getBrokenQuery(final Exception ex, final String query) {
-        final int position = getSqlPositionFromException(ex) - PUT_SQL_IN_CONTEXT;
+        final int position = getSqlPositionFromException(ex) - OFFSET_LIMIT;
         return StringUtils.abbreviate(query, position, CUT_LIMIT);
     }
 

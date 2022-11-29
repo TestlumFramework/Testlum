@@ -6,6 +6,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.locator.GlobalLocators;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
+import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.WebElementFinder;
 import com.knubisoft.cott.testing.model.pages.Locator;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
@@ -26,6 +27,7 @@ import org.openqa.selenium.interactions.Actions;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -44,52 +46,47 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
         commands.put(hotKey -> hotKey instanceof Cut, (hotKey, action) -> cutCommand((Cut) hotKey, action));
         commands.put(hotKey -> hotKey instanceof Highlight, (hotKey, action) ->
                 highlightCommand((Highlight) hotKey, action));
-        commands.put(hotKey -> hotKey instanceof Tab, (hotKey, action) -> tabCommand(action));
-        commands.put(hotKey -> hotKey instanceof Enter, (hotKey, action) -> enterCommand(action));
-        commands.put(hotKey -> hotKey instanceof BackSpace, (hotKey, action) -> backSpaceCommand(action));
-        commands.put(hotKey -> hotKey instanceof Escape, (hotKey, action) -> escapeCommand(action));
-        commands.put(hotKey -> hotKey instanceof Space, (hotKey, action) -> spaceCommand(action));
+        commands.put(hotKey -> hotKey instanceof Tab, (hotKey, action) -> singleKeyCommand(Keys.TAB, action));
+        commands.put(hotKey -> hotKey instanceof Enter, (hotKey, action) -> singleKeyCommand(Keys.ENTER, action));
+        commands.put(hotKey -> hotKey instanceof BackSpace, (hotKey, action) ->
+                singleKeyCommand(Keys.BACK_SPACE, action));
+        commands.put(hotKey -> hotKey instanceof Escape, (hotKey, action) -> singleKeyCommand(Keys.ESCAPE, action));
+        commands.put(hotKey -> hotKey instanceof Space, (hotKey, action) -> singleKeyCommand(Keys.SPACE, action));
         hotKeyCommands = Collections.unmodifiableMap(commands);
     }
 
     @Override
     public void execute(final HotKey hotKey, final CommandResult result) {
         Actions action = new Actions(dependencies.getDriver());
-        runHotKeyCommands(hotKey.getCopyOrPasteOrCut(), action);
+        runHotKeyCommands(hotKey.getCopyOrPasteOrCut(), action, result);
     }
 
-    private void runHotKeyCommands(final List<AbstractUiCommand> hotKeyCommandList, final Actions action) {
+    private void runHotKeyCommands(final List<AbstractUiCommand> hotKeyCommandList,
+                                   final Actions action,
+                                   final CommandResult result) {
+        List<CommandResult> subCommandsResult = new LinkedList<>();
+        result.setSubCommandsResult(subCommandsResult);
         hotKeyCommandList.forEach(command -> hotKeyCommands.keySet().stream()
                 .filter(key -> key.test(command))
                 .map(hotKeyCommands::get)
-                .forEach(method -> executeHotKeyCommands(command, method, action)));
+                .forEach(method -> executeHotKeyCommands(command, method, action, subCommandsResult)));
     }
 
     private void executeHotKeyCommands(final AbstractUiCommand command,
                                        final HotKeyExecutor.HotKeyCommand hotKeyCommand,
-                                       final Actions action) {
+                                       final Actions action,
+                                       final List<CommandResult> subCommandsResult) {
+        CommandResult subCommandResult = ResultUtil.createCommandResultForUiSubCommand(
+                dependencies.getPosition().intValue(),
+                command.getClass().getSimpleName(),
+                command.getComment());
         LogUtil.logHotKeyInfo(command);
         hotKeyCommand.accept(command, action);
+        subCommandsResult.add(subCommandResult);
     }
 
-    private void escapeCommand(final Actions action) {
-        action.sendKeys(Keys.ESCAPE).perform();
-    }
-
-    private void backSpaceCommand(final Actions action) {
-        action.sendKeys(Keys.BACK_SPACE).perform();
-    }
-
-    private void spaceCommand(final Actions action) {
-        action.sendKeys(Keys.SPACE).perform();
-    }
-
-    private void enterCommand(final Actions action) {
-        action.sendKeys(Keys.ENTER).perform();
-    }
-
-    private void tabCommand(final Actions action) {
-        action.sendKeys(Keys.TAB).perform();
+    private void singleKeyCommand(final Keys key, final Actions action) {
+        action.sendKeys(key).perform();
     }
 
     private void highlightCommand(final Highlight highlight, final Actions action) {

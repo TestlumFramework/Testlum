@@ -29,7 +29,7 @@ public class DragAndDropNativeExecutor extends AbstractUiExecutor<DragAndDropNat
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
-    private void performDragAndDrop(DragAndDropNative dragAndDropNative) {
+    private void performDragAndDrop(final DragAndDropNative dragAndDropNative) {
         Point source = UiUtil.findWebElement(driver, dragAndDropNative.getFromLocatorId()).getLocation();
         Point target = UiUtil.findWebElement(driver, dragAndDropNative.getToLocatorId()).getLocation();
         driver.perform(Collections.singletonList(UiUtil.buildSequence(source, target)));

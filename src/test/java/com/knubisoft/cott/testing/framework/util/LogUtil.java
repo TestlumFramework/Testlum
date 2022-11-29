@@ -49,6 +49,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_L
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_FRAME;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
@@ -80,12 +81,12 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.SERVER_ER
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_HOST_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_PORT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SOURCE_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_FRAME;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUBJECT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_COMMAND_IN_SWITCH_TO_FRAME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_COMMAND_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.VALUE_LOG;
@@ -217,12 +218,12 @@ public class LogUtil {
         }
     }
 
-    public void logUICommandInSwitchTag(final int position, final AbstractCommand action) {
-        log.info(UI_COMMAND_IN_SWITCH_TO_FRAME_LOG, position, action.getClass().getSimpleName());
-        log.info(COMMENT_LOG, action.getComment());
-        if (action instanceof CommandWithLocator) {
-            log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());
-        }
+    public void startUiCommandsInFrame() {
+        log.info(START_UI_COMMANDS_IN_FRAME);
+    }
+
+    public void endUiCommandsInFrame() {
+        log.info(END_UI_COMMANDS_IN_FRAME);
     }
 
     public void logSubCommand(final int position, final Object action) {

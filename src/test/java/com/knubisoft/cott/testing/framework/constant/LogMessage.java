@@ -34,8 +34,6 @@ public final class LogMessage {
     public static final String POSITION_COMMAND_LOG = ANSI_YELLOW
             + "--------- Scenario step #%d - %s ---------" + ANSI_RESET;
     public static final String UI_COMMAND_LOG = ANSI_CYAN + "------- UI command #{} - {} -------" + ANSI_RESET;
-    public static final String UI_COMMAND_IN_SWITCH_TO_FRAME_LOG =
-            ANSI_CYAN + "------ UI command in frame #{} - {} -------" + ANSI_RESET;
     public static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
     public static final String REPEAT_FINISHED_LOG = ANSI_CYAN + "------- Repeat is finished -------" + ANSI_RESET;
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
@@ -45,6 +43,10 @@ public final class LogMessage {
     public static final String LINE =
             "-----------------------------------------------------------------------------------------------------"
                     + "--------------------------------------------------------------------------------------";
+    public static final String START_UI_COMMANDS_IN_FRAME =
+            ANSI_CYAN + "------- Start ui commands in frame -------" + ANSI_RESET;
+    public static final String END_UI_COMMANDS_IN_FRAME =
+            ANSI_CYAN + "------- End ui commands in frame -------" + ANSI_RESET;
     public static final String INVALID_SCENARIO_LOG = ANSI_RED + LINE
             + NEW_LOG_LINE + format(TABLE_FORMAT, "Invalid scenario", "{}")
             + NEW_LOG_LINE + format(TABLE_FORMAT, "Exception", "{}") + NEW_LOG_LINE

@@ -99,6 +99,9 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
         NATIVE(globalTestConfiguration ->
                 globalTestConfiguration.getNative().getDeviceSettings().getTakeScreenshots().isEnable(),
                 InterpreterDependencies::getNativeDriver),
+        MAC(globalTestConfiguration ->
+                false,
+                InterpreterDependencies::getMacDriver),
         MOBILE_BROWSER(globalTestConfiguration ->
                 globalTestConfiguration.getMobilebrowser().getDeviceSettings().getTakeScreenshots().isEnable(),
                 InterpreterDependencies::getMobilebrowserDriver);

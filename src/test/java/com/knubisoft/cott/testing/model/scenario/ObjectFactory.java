@@ -102,6 +102,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Mac }
+     * 
+     */
+    public Mac createMac() {
+        return new Mac();
+    }
+
+    /**
      * Create an instance of {@link Http }
      * 
      */

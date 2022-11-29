@@ -3,6 +3,7 @@ package com.knubisoft.cott.testing.framework.interpreter.lib;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
+import io.appium.java_client.mac.Mac2Driver;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -28,11 +29,14 @@ public class InterpreterDependencies {
     private final WebDriver nativeDriver;
     private final WebDriver mobilebrowserDriver;
 
+    private final Mac2Driver macDriver;
+
     private Authorization authorization;
 
     public InterpreterDependencies(final WebDriver webDriver,
                                    final WebDriver nativeDriver,
                                    final WebDriver mobilebrowserDriver,
+                                   final Mac2Driver macDriver,
                                    final ApplicationContext context,
                                    final File file,
                                    final ScenarioContext scenarioContext,
@@ -40,6 +44,7 @@ public class InterpreterDependencies {
         this.webDriver = webDriver;
         this.nativeDriver = nativeDriver;
         this.mobilebrowserDriver = mobilebrowserDriver;
+        this.macDriver = macDriver;
         this.context = context;
         this.file = file;
         this.scenarioContext = scenarioContext;

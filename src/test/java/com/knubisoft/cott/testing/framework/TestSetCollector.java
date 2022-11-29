@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework;
 
+import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.parser.CSVParser;
 import com.knubisoft.cott.testing.framework.scenario.FiltrationResult;
@@ -11,6 +12,7 @@ import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
+import com.knubisoft.cott.testing.model.scenario.Mac;
 import com.knubisoft.cott.testing.model.scenario.Mobilebrowser;
 import com.knubisoft.cott.testing.model.scenario.Native;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
@@ -63,39 +65,43 @@ public class TestSetCollector {
         if (containsWebSteps(scenario) && containsNativeSteps(scenario) && containsMobilebrowserSteps(scenario)) {
             nativeDevices.forEach(nativeDevice -> mobilebrowserDevices.forEach(mobilebrowserDevice -> browsers
                     .forEach(browser -> addScenarioArgumentsWithUiSteps(entry, browser, mobilebrowserDevice,
-                            nativeDevice, scenarioArguments))));
+                            nativeDevice,null, scenarioArguments))));
             return;
         }
         if (containsWebSteps(scenario) && containsNativeSteps(scenario)) {
             nativeDevices.forEach(nativeDevice -> browsers.forEach(browser ->
                     addScenarioArgumentsWithUiSteps(entry, browser, null,
-                            nativeDevice, scenarioArguments)));
+                            nativeDevice, null, scenarioArguments)));
         }
         if (containsWebSteps(scenario) && containsMobilebrowserSteps(scenario)) {
             browsers.forEach(browser -> mobilebrowserDevices.forEach(mobilebrowserDevice ->
                     addScenarioArgumentsWithUiSteps(entry, browser, mobilebrowserDevice,
-                            null, scenarioArguments)));
+                            null, null, scenarioArguments)));
             return;
         }
         if (containsNativeSteps(scenario) && containsMobilebrowserSteps(scenario)) {
             nativeDevices.forEach(nativeDevice -> mobilebrowserDevices.forEach(mobilebrowserDevice ->
                     addScenarioArgumentsWithUiSteps(entry, null,
-                            mobilebrowserDevice, nativeDevice, scenarioArguments)));
+                            mobilebrowserDevice, nativeDevice, null, scenarioArguments)));
             return;
         }
         if (containsWebSteps(scenario)) {
             browsers.forEach(browser -> addScenarioArgumentsWithUiSteps(entry, browser,
-                    null, null, scenarioArguments));
+                    null, null, null, scenarioArguments));
             return;
         }
         if (containsMobilebrowserSteps(scenario)) {
             mobilebrowserDevices.forEach(mobilebrowserDevice -> addScenarioArgumentsWithUiSteps(entry, null,
-                    mobilebrowserDevice, null, scenarioArguments));
+                    mobilebrowserDevice, null, null, scenarioArguments));
             return;
         }
         if (containsNativeSteps(scenario)) {
             nativeDevices.forEach(nativeDevice -> addScenarioArgumentsWithUiSteps(entry,
-                    null, null, nativeDevice, scenarioArguments));
+                    null, null, nativeDevice, null, scenarioArguments));
+        }
+        if (containsMacSteps(scenario)) {
+            addScenarioArgumentsWithUiSteps(entry, null, null, null,
+                    GlobalTestConfigurationProvider.provide().getMac(), scenarioArguments);
         }
     }
     //CHECKSTYLE:ON
@@ -104,15 +110,16 @@ public class TestSetCollector {
                                                  final AbstractBrowser webBrowser,
                                                  final MobilebrowserDevice mobilebrowserDevice,
                                                  final NativeDevice nativeDevice,
+                                                 final com.knubisoft.cott.testing.model.global_config.Mac mac,
                                                  final List<ScenarioArguments> arguments) {
         if (variationsExist(entry)) {
             List<Map<String, String>> variationList = getVariationList(entry);
             variationList.forEach(variation ->
                     arguments.add(getArgumentsWithUiSteps(entry, webBrowser, mobilebrowserDevice,
-                            nativeDevice, variation)));
+                            nativeDevice, mac, variation)));
         } else {
             arguments.add(getArgumentsWithUiSteps(entry, webBrowser, mobilebrowserDevice,
-                    nativeDevice, new HashMap<>()));
+                    nativeDevice, mac, new HashMap<>()));
         }
     }
 
@@ -120,6 +127,7 @@ public class TestSetCollector {
                                                       final AbstractBrowser browser,
                                                       final MobilebrowserDevice mobilebrowserDevice,
                                                       final NativeDevice nativeDevice,
+                                                      final com.knubisoft.cott.testing.model.global_config.Mac mac,
                                                       final Map<String, String> variation) {
         return ScenarioArguments.builder()
                 .path(getShortPath(entry.file))
@@ -129,6 +137,7 @@ public class TestSetCollector {
                 .browser(browser)
                 .mobilebrowserDevice(mobilebrowserDevice)
                 .nativeDevice(nativeDevice)
+                .mac(mac)
                 .variation(variation)
                 .containsUiSteps(true)
                 .build();
@@ -175,6 +184,11 @@ public class TestSetCollector {
     private boolean containsWebSteps(final Scenario scenario) {
         return scenario.getCommands().stream()
                 .anyMatch(command -> command instanceof Web);
+    }
+
+    private boolean containsMacSteps(final Scenario scenario) {
+        return scenario.getCommands().stream()
+                .anyMatch(command -> command instanceof Mac);
     }
 
 }

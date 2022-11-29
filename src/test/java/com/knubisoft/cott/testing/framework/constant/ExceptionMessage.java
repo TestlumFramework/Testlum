@@ -151,4 +151,6 @@ public class ExceptionMessage {
             + "check your configuration in config file";
     public static final String MOBILEBROWSER_DRIVER_NOT_INIT = "The webDriver for <mobilebrowser> has not been "
             + "initialized, check your configuration in config file";
+    public static final String MAC_DRIVER_NOT_INIT = "The webDriver for <mac> has not been initialized, "
+            + "check your configuration in config file";
 }

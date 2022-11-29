@@ -11,6 +11,7 @@
     <x:include schemaLocation="mobilebrowser.xsd"/>
     <x:include schemaLocation="web.xsd"/>
     <x:include schemaLocation="native.xsd"/>
+    <x:include schemaLocation="mac.xsd"/>
     <x:include schemaLocation="migrate.xsd"/>
     <x:include schemaLocation="postgres.xsd"/>
     <x:include schemaLocation="mongo.xsd"/>
@@ -66,6 +67,7 @@
                     <x:element name="mobilebrowser" type="tns:mobilebrowser"/>
                     <x:element name="web" type="tns:web"/>
                     <x:element name="native" type="tns:native"/>
+                    <x:element name="mac" type="tns:mac"/>
 
                     <x:element name="http" type="tns:http"/>
                     <x:element name="migrate" type="tns:migrate"/>

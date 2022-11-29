@@ -1,6 +1,7 @@
 package com.knubisoft.cott.testing.framework.scenario;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.cott.testing.framework.configuration.ui.MacDriverFactory;
 import com.knubisoft.cott.testing.framework.configuration.ui.MobilebrowserDriverFactory;
 import com.knubisoft.cott.testing.framework.configuration.ui.NativeDriverFactory;
 import com.knubisoft.cott.testing.framework.configuration.ui.WebDriverFactory;
@@ -18,6 +19,7 @@ import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
+import io.appium.java_client.mac.Mac2Driver;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FUNCTION_FOR_COMMAND_NOT_FOUND;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.MAC_DRIVER_NOT_INIT;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.MISSING_CONSTRUCTOR;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.MOBILEBROWSER_DRIVER_NOT_INIT;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NATIVE_DRIVER_NOT_INIT;
@@ -88,6 +91,7 @@ public class ScenarioRunner {
                 dependencies.getNativeDriver().quit();
                 dependencies.getWebDriver().quit();
                 dependencies.getMobilebrowserDriver().quit();
+                dependencies.getMacDriver().quit();
             }
         }
     }
@@ -185,6 +189,7 @@ public class ScenarioRunner {
                 createWebDriver(),
                 createNativeDriver(),
                 createMobilebrowserDriver(),
+                (Mac2Driver) createMacDriver(),
                 ctx,
                 scenarioArguments.getFile(),
                 new ScenarioContext(scenarioArguments.getVariation()),
@@ -208,6 +213,12 @@ public class ScenarioRunner {
         return Objects.nonNull(scenarioArguments.getNativeDevice())
                 ? NativeDriverFactory.createDriver(scenarioArguments.getNativeDevice())
                 : new MockDriver(NATIVE_DRIVER_NOT_INIT);
+    }
+
+    private WebDriver createMacDriver() {
+        return Objects.nonNull(scenarioArguments.getMac())
+                ? MacDriverFactory.createDriver(scenarioArguments.getMac())
+                : new MockDriver(MAC_DRIVER_NOT_INIT);
     }
 
     public interface CommandCallback {

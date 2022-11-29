@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="web" type="{http://www.knubisoft.com/cott/testing/model/global-config}web" minOccurs="0"/&gt;
  *         &lt;element name="mobilebrowser" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowser" minOccurs="0"/&gt;
  *         &lt;element name="native" type="{http://www.knubisoft.com/cott/testing/model/global-config}native" minOccurs="0"/&gt;
+ *         &lt;element name="mac" type="{http://www.knubisoft.com/cott/testing/model/global-config}mac" minOccurs="0"/&gt;
  *         &lt;element name="auth" type="{http://www.knubisoft.com/cott/testing/model/global-config}auth"/&gt;
  *         &lt;element name="integrations" type="{http://www.knubisoft.com/cott/testing/model/global-config}integrations" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
@@ -44,6 +45,7 @@ import javax.xml.bind.annotation.XmlType;
     "web",
     "mobilebrowser",
     "_native",
+    "mac",
     "auth",
     "integrations"
 })
@@ -60,6 +62,7 @@ public class GlobalTestConfiguration {
     protected Mobilebrowser mobilebrowser;
     @XmlElement(name = "native")
     protected Native _native;
+    protected Mac mac;
     @XmlElement(required = true)
     protected Auth auth;
     protected Integrations integrations;
@@ -222,6 +225,30 @@ public class GlobalTestConfiguration {
      */
     public void setNative(Native value) {
         this._native = value;
+    }
+
+    /**
+     * Gets the value of the mac property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Mac }
+     *     
+     */
+    public Mac getMac() {
+        return mac;
+    }
+
+    /**
+     * Sets the value of the mac property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Mac }
+     *     
+     */
+    public void setMac(Mac value) {
+        this.mac = value;
     }
 
     /**

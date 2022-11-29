@@ -238,8 +238,10 @@
     <x:complexType name="scrollNative">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="type" type="tns:scrollType" use="required"/>
                 <x:attribute name="direction" type="tns:scrollDirection" default="down"/>
                 <x:attribute name="value" type="x:int" use="required"/>
+                <x:attribute name="locator" type="tns:scenarioLocator"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -251,4 +253,21 @@
             </x:extension>
         </x:complexContent>
     </x:complexType>
+
+    <x:complexType name="swipeNative">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="direction" type="tns:swipeDirection" use="required"/>
+                <x:attribute name="quantity" type="x:int"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="swipeDirection">
+        <x:restriction base="x:string">
+            <x:enumeration value="right"/>
+            <x:enumeration value="left"/>
+        </x:restriction>
+    </x:simpleType>
+
 </x:schema>

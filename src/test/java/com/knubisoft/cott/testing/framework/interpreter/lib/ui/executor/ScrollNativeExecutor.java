@@ -7,6 +7,7 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.ScrollDirection;
 import com.knubisoft.cott.testing.model.scenario.ScrollNative;
+import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import io.appium.java_client.AppiumDriver;
 import java.util.Collections;
 import org.openqa.selenium.Dimension;
@@ -29,8 +30,13 @@ public class ScrollNativeExecutor extends AbstractUiExecutor<ScrollNative> {
                 : -scrollNative.getValue();
         result.put("Scroll direction", scrollNative.getDirection().value());
         result.put("Scroll value", Math.abs(scrollValue));
-        Dimension dimension = driver.manage().window().getSize();
-        Point start = new Point(dimension.width / 2, dimension.height / 2);
+        Point start;
+        if (ScrollType.INNER.equals(scrollNative.getType())) {
+            start = UiUtil.findWebElement(driver, scrollNative.getLocator()).getLocation();
+        } else {
+            Dimension dimension = driver.manage().window().getSize();
+            start = new Point(dimension.width / 2, dimension.height / 2);
+        }
         driver.perform(Collections.singletonList(UiUtil.buildSequence(start, new Point(0, scrollValue))));
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }

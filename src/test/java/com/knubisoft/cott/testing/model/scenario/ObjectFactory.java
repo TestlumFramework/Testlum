@@ -470,6 +470,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link SwipeNative }
+     * 
+     */
+    public SwipeNative createSwipeNative() {
+        return new SwipeNative();
+    }
+
+    /**
      * Create an instance of {@link SendRmqMessage }
      * 
      */

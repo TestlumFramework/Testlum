@@ -93,6 +93,7 @@ public class ResultUtil {
     public static final String FROM_LOCATOR = "From locator";
     public static final String FROM_LOCAL_FILE = "From local file";
     public static final String TO_LOCATOR = "To locator";
+    public static final String PERFORM_SWIPE = "Perform swipe with direction";
     private static final String SCROLL_DIRECTION = "Scroll direction";
     private static final String SCROLL_MEASURE = "Scroll measure";
     private static final String SCROLL_TYPE = "Scroll type";

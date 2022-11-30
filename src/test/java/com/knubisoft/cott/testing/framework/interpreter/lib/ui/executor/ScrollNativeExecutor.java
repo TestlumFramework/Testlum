@@ -4,6 +4,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecuto
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.ScrollDirection;
 import com.knubisoft.cott.testing.model.scenario.ScrollNative;
@@ -28,8 +29,7 @@ public class ScrollNativeExecutor extends AbstractUiExecutor<ScrollNative> {
     public void execute(final ScrollNative scrollNative, final CommandResult result) {
         int scrollValue = ScrollDirection.UP.equals(scrollNative.getDirection()) ? scrollNative.getValue()
                 : -scrollNative.getValue();
-        result.put("Scroll direction", scrollNative.getDirection().value());
-        result.put("Scroll value", Math.abs(scrollValue));
+        ResultUtil.addScrollNativeMetaDada(scrollNative, result);
         Point start;
         if (ScrollType.INNER.equals(scrollNative.getType())) {
             start = UiUtil.findWebElement(driver, scrollNative.getLocator()).getLocation();

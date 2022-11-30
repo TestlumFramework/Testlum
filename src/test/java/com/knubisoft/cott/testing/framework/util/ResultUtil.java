@@ -14,6 +14,7 @@ import com.knubisoft.cott.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.cott.testing.model.scenario.RmqHeaders;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
+import com.knubisoft.cott.testing.model.scenario.ScrollNative;
 import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.SendRmqMessage;
@@ -93,6 +94,7 @@ public class ResultUtil {
     public static final String FROM_LOCATOR = "From locator";
     public static final String FROM_LOCAL_FILE = "From local file";
     public static final String TO_LOCATOR = "To locator";
+    public static final String SCROLL_TO_ELEMENT = "Scrolling to element with locator id";
     public static final String PERFORM_SWIPE = "Perform swipe with direction";
     private static final String SCROLL_DIRECTION = "Scroll direction";
     private static final String SCROLL_MEASURE = "Scroll measure";
@@ -394,6 +396,16 @@ public class ResultUtil {
         if (ScrollType.INNER.equals(scroll.getType())) {
             commandResult.put(LOCATOR_FOR_SCROLL, scroll.getLocator());
         }
+    }
+
+    public void addScrollNativeMetaDada(final ScrollNative scrollNative,
+                                        final CommandResult commandResult) {
+        commandResult.put(SCROLL_TYPE, scrollNative.getType());
+        if (ScrollType.INNER.equals(scrollNative.getType())) {
+            commandResult.put(LOCATOR_FOR_SCROLL, scrollNative.getLocator());
+        }
+        commandResult.put(SCROLL_DIRECTION, scrollNative.getDirection());
+        commandResult.put(VALUE, scrollNative.getValue());
     }
 
     public void addHoversMetaData(final Hovers hovers, final CommandResult result) {

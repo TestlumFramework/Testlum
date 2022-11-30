@@ -17,7 +17,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.PERFORM_SWIPE
 @ExecutorForClass(SwipeNative.class)
 public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
 
-    private static final int DEFAULT_VALUE = 700;
+    private static final int DEFAULT_VALUE = 750;
     private final AppiumDriver driver;
 
     public SwipeNativeExecutor(final ExecutorDependencies dependencies) {
@@ -29,7 +29,7 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
     public void execute(final SwipeNative swipeNative, final CommandResult result) {
         int quantity = Objects.isNull(swipeNative.getQuantity()) ? 1 : swipeNative.getQuantity();
         for (int i = 0; i < quantity; i++) {
-            result.put(PERFORM_SWIPE, swipeNative.getDirection().value());
+            result.put(PERFORM_SWIPE, swipeNative.getDirection());
             performSwipe(swipeNative);
             UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         }

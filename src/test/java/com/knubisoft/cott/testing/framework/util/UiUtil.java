@@ -46,6 +46,7 @@ import static org.openqa.selenium.interactions.PointerInput.Origin.viewport;
 public class UiUtil {
 
     private static final int MAX_PERCENTS_VALUE = 100;
+    private static final int DEFAULT_DURATION = 250;
 
     private static final int TIME_TO_WAIT = GlobalTestConfigurationProvider.provide()
             .getWeb().getBrowserSettings().getElementAutowait().getSeconds();
@@ -186,9 +187,9 @@ public class UiUtil {
     public Sequence buildSequence(final Point start, final Point end) {
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         return new Sequence(finger, 1)
-                .addAction(finger.createPointerMove(Duration.ofMillis(0), viewport(), start.getX(), start.getY()))
+                .addAction(finger.createPointerMove(Duration.ofMillis(0), viewport(), start.x, start.y))
                 .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
-                .addAction(finger.createPointerMove(Duration.ofSeconds(1), viewport(), end.getX(), end.getY()))
+                .addAction(finger.createPointerMove(Duration.ofMillis(DEFAULT_DURATION), viewport(), end.x, end.y))
                 .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
     }
 }

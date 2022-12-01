@@ -36,7 +36,7 @@ import java.util.function.Predicate;
 @ExecutorForClass(HotKey.class)
 public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
 
-    private final Map<HotKeyCommandPredicate, HotKeyCommand> hotKeyCommands;
+    private final Map<HotKeyCommandPredicate, HotKeyCommand> hotKeyCmdMethods;
 
     public HotKeyExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -52,28 +52,28 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
                 singleKeyCommand(Keys.BACK_SPACE, action));
         commands.put(hotKey -> hotKey instanceof Escape, (hotKey, action) -> singleKeyCommand(Keys.ESCAPE, action));
         commands.put(hotKey -> hotKey instanceof Space, (hotKey, action) -> singleKeyCommand(Keys.SPACE, action));
-        hotKeyCommands = Collections.unmodifiableMap(commands);
+        hotKeyCmdMethods = Collections.unmodifiableMap(commands);
     }
 
     @Override
     public void execute(final HotKey hotKey, final CommandResult result) {
         Actions action = new Actions(dependencies.getDriver());
-        runHotKeyCommands(hotKey.getCopyOrPasteOrCut(), action, result);
+        runHotKeyCommand(hotKey.getCopyOrPasteOrCut(), action, result);
     }
 
-    private void runHotKeyCommands(final List<AbstractUiCommand> hotKeyCommandList,
+    private void runHotKeyCommand(final List<AbstractUiCommand> hotKeyCommandList,
                                    final Actions action,
                                    final CommandResult result) {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
-        hotKeyCommandList.forEach(command -> hotKeyCommands.keySet().stream()
+        hotKeyCommandList.forEach(command -> hotKeyCmdMethods.keySet().stream()
                 .filter(key -> key.test(command))
-                .map(hotKeyCommands::get)
+                .map(hotKeyCmdMethods::get)
                 .forEach(method -> executeHotKeyCommands(command, method, action, subCommandsResult)));
     }
 
     private void executeHotKeyCommands(final AbstractUiCommand command,
-                                       final HotKeyExecutor.HotKeyCommand hotKeyCommand,
+                                       final HotKeyExecutor.HotKeyCommand hotKeyCmdMethods,
                                        final Actions action,
                                        final List<CommandResult> subCommandsResult) {
         CommandResult subCommandResult = ResultUtil.createCommandResultForUiSubCommand(
@@ -81,7 +81,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
                 command.getClass().getSimpleName(),
                 command.getComment());
         LogUtil.logHotKeyInfo(command);
-        hotKeyCommand.accept(command, action);
+        hotKeyCmdMethods.accept(command, action);
         subCommandsResult.add(subCommandResult);
     }
 

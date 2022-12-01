@@ -32,12 +32,11 @@ import javax.xml.bind.annotation.XmlType;
     Navigate.class,
     CloseSecondTab.class,
     Scroll.class,
-    CommandWithLocator.class,
     Image.class,
     DragAndDrop.class,
     DragAndDropNative.class,
     ScrollNative.class,
-    ScrollToNative.class,
+    CommandWithLocator.class,
     SwipeNative.class
 })
 public abstract class AbstractUiCommand

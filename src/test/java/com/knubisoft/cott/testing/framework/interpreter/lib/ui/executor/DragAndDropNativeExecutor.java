@@ -9,16 +9,17 @@ import com.knubisoft.cott.testing.model.scenario.DragAndDropNative;
 import io.appium.java_client.AppiumDriver;
 import java.util.Collections;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.interactions.Sequence;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.FROM_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.TO_LOCATOR;
 
 @ExecutorForClass(DragAndDropNative.class)
 public class DragAndDropNativeExecutor extends AbstractUiExecutor<DragAndDropNative> {
-    private final AppiumDriver driver;
+
+    private static final int ACTION_DURATION = 1000;
 
     public DragAndDropNativeExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        driver = (AppiumDriver) dependencies.getDriver();
     }
 
     @Override
@@ -30,9 +31,11 @@ public class DragAndDropNativeExecutor extends AbstractUiExecutor<DragAndDropNat
     }
 
     private void performDragAndDrop(final DragAndDropNative dragAndDropNative) {
+        AppiumDriver driver = (AppiumDriver) dependencies.getDriver();
         Point source = UiUtil.findWebElement(driver, dragAndDropNative.getFromLocatorId()).getLocation();
         Point target = UiUtil.findWebElement(driver, dragAndDropNative.getToLocatorId()).getLocation();
-        driver.perform(Collections.singletonList(UiUtil.buildSequence(source, target)));
+        Sequence dragAndDrop = UiUtil.buildSequence(source, target, ACTION_DURATION);
+        driver.perform(Collections.singletonList(dragAndDrop));
     }
 
 }

@@ -9,38 +9,50 @@ import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.ScrollToNative;
 import io.appium.java_client.AppiumDriver;
 import java.util.Collections;
-import org.openqa.selenium.Dimension;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.interactions.Sequence;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ELEMENT_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.SCROLL_TO_ELEMENT;
 
 @ExecutorForClass(ScrollToNative.class)
 public class ScrollToNativeExecutor extends AbstractUiExecutor<ScrollToNative> {
 
-    private static final int DEFAULT_VALUE = -500;
-    private static final int DEFAULT_SCROLLS = 20;
-    private final AppiumDriver driver;
+    private static final int DEFAULT_SCROLL_VALUE = -250;
+    private static final int DEFAULT_SCROLLS_COUNT = 20;
+    private static final int ACTION_DURATION = 750;
 
     public ScrollToNativeExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        driver = (AppiumDriver) dependencies.getDriver();
     }
 
     @Override
     public void execute(final ScrollToNative scrollToNative, final CommandResult result) {
-        for (int i = 0; i < DEFAULT_SCROLLS; i++) {
+        AppiumDriver driver = (AppiumDriver) dependencies.getDriver();
+        Point start = UiUtil.getCenterPoint(driver);
+        Point end = new Point(0, DEFAULT_SCROLL_VALUE);
+        Sequence scroll = UiUtil.buildSequence(start, end, ACTION_DURATION);
+        result.put(SCROLL_TO_ELEMENT, scrollToNative.getLocatorId());
+        if (scrollToFindElement(scrollToNative, result, driver, scroll)) {
+            return;
+        }
+        throw new DefaultFrameworkException(ELEMENT_NOT_FOUND, scrollToNative.getLocatorId());
+    }
+
+    private boolean scrollToFindElement(final ScrollToNative scrollToNative,
+                                        final CommandResult result,
+                                        final AppiumDriver driver,
+                                        final Sequence scroll) {
+        for (int i = 0; i < DEFAULT_SCROLLS_COUNT; i++) {
             try {
-                result.put(SCROLL_TO_ELEMENT, scrollToNative.getToLocatorId());
-                Dimension dimension = driver.manage().window().getSize();
-                Point start = new Point(dimension.width / 2, dimension.height / 2);
-                driver.perform(Collections.singletonList(UiUtil.buildSequence(start, new Point(0, DEFAULT_VALUE))));
-                UiUtil.findWebElement(driver, scrollToNative.getToLocatorId()).isDisplayed();
+                driver.perform(Collections.singletonList(scroll));
+                UiUtil.findWebElement(driver, scrollToNative.getLocatorId()).isDisplayed();
                 UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
-                return;
-            } catch (Exception ignored) {
+                return true;
+            } catch (NoSuchElementException e) {
                 //Means locator is not visible, code continue scrolling to find locator
             }
         }
-        throw new DefaultFrameworkException(ELEMENT_NOT_FOUND, scrollToNative.getToLocatorId());
+        return false;
     }
 }

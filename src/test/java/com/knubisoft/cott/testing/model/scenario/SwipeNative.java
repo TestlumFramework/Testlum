@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;attribute name="direction" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}swipeDirection" /&gt;
- *       &lt;attribute name="quantity" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
+ *       &lt;attribute name="quantity" type="{http://www.w3.org/2001/XMLSchema}int" default="1" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -68,8 +68,12 @@ public class SwipeNative
      *     {@link Integer }
      *     
      */
-    public Integer getQuantity() {
-        return quantity;
+    public int getQuantity() {
+        if (quantity == null) {
+            return  1;
+        } else {
+            return quantity;
+        }
     }
 
     /**

@@ -23,6 +23,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.TakesScreenshot;
@@ -46,7 +47,6 @@ import static org.openqa.selenium.interactions.PointerInput.Origin.viewport;
 public class UiUtil {
 
     private static final int MAX_PERCENTS_VALUE = 100;
-    private static final int DEFAULT_DURATION = 250;
 
     private static final int TIME_TO_WAIT = GlobalTestConfigurationProvider.provide()
             .getWeb().getBrowserSettings().getElementAutowait().getSeconds();
@@ -184,12 +184,17 @@ public class UiUtil {
         return ImageIO.read(new URL(urlToActualImage));
     }
 
-    public Sequence buildSequence(final Point start, final Point end) {
+    public Sequence buildSequence(final Point start, final Point end, final int duration) {
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         return new Sequence(finger, 1)
                 .addAction(finger.createPointerMove(Duration.ofMillis(0), viewport(), start.x, start.y))
                 .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
-                .addAction(finger.createPointerMove(Duration.ofMillis(DEFAULT_DURATION), viewport(), end.x, end.y))
+                .addAction(finger.createPointerMove(Duration.ofMillis(duration), viewport(), end.x, end.y))
                 .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+    }
+
+    public Point getCenterPoint(final WebDriver driver) {
+        Dimension dimension = driver.manage().window().getSize();
+        return new Point(dimension.height / 2, dimension.height / 2);
     }
 }

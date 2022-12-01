@@ -96,6 +96,7 @@ public class ResultUtil {
     public static final String TO_LOCATOR = "To locator";
     public static final String SCROLL_TO_ELEMENT = "Scrolling to element with locator id";
     public static final String PERFORM_SWIPE = "Perform swipe with direction";
+    public static final String AMOUNT_OF_SWIPES = "Amount of swipes";
     private static final String SCROLL_DIRECTION = "Scroll direction";
     private static final String SCROLL_MEASURE = "Scroll measure";
     private static final String SCROLL_TYPE = "Scroll type";

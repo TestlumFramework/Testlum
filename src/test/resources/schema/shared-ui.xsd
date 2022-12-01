@@ -248,8 +248,7 @@
 
     <x:complexType name="scrollToNative">
         <x:complexContent>
-            <x:extension base="tns:abstractUiCommand">
-                <x:attribute name="toLocatorId" type="tns:nonEmptyString" use="required"/>
+            <x:extension base="tns:commandWithLocator">
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -258,7 +257,7 @@
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:attribute name="direction" type="tns:swipeDirection" use="required"/>
-                <x:attribute name="quantity" type="x:int"/>
+                <x:attribute name="quantity" type="x:int" default="1"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

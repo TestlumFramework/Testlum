@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}wait"/&gt;
  *         &lt;element name="clear" type="{http://www.knubisoft.com/cott/testing/model/scenario}clear"/&gt;
  *         &lt;element name="image" type="{http://www.knubisoft.com/cott/testing/model/scenario}image"/&gt;
+ *         &lt;element name="refresh" type="{http://www.knubisoft.com/cott/testing/model/scenario}refresh"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -48,7 +49,8 @@ public class Native
         @XmlElement(name = "assert", type = Assert.class),
         @XmlElement(name = "wait", type = Wait.class),
         @XmlElement(name = "clear", type = Clear.class),
-        @XmlElement(name = "image", type = Image.class)
+        @XmlElement(name = "image", type = Image.class),
+        @XmlElement(name = "refresh", type = Refresh.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
 
@@ -76,6 +78,7 @@ public class Native
      * {@link Wait }
      * {@link Clear }
      * {@link Image }
+     * {@link Refresh }
      * 
      * 
      */

@@ -33,7 +33,8 @@ import javax.xml.bind.annotation.XmlType;
     CloseSecondTab.class,
     Scroll.class,
     CommandWithLocator.class,
-    Image.class
+    Image.class,
+    Refresh.class
 })
 public abstract class AbstractUiCommand
     extends AbstractCommand

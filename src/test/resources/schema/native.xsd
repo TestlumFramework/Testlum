@@ -17,6 +17,7 @@
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="clear" type="tns:clear"/>
                     <x:element name="image" type="tns:image"/>
+                    <x:element name="refresh" type="tns:refresh"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>

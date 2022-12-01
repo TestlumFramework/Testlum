@@ -1,7 +1,7 @@
 package com.knubisoft.cott.testing.framework.db.sql.executor;
 
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
-import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -53,11 +53,7 @@ public abstract class AbstractSqlExecutor {
     }
 
     public List<StorageOperation.QueryResult<Object>> executeQueries(final List<String> queries) {
-        try {
-            return queries.stream().map(this::executeQuery).collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new DefaultFrameworkException(e);
-        }
+        return queries.stream().map(this::executeQuery).collect(Collectors.toList());
     }
 
     private StorageOperation.QueryResult<Object> executeQuery(final String query) {
@@ -66,8 +62,13 @@ public abstract class AbstractSqlExecutor {
                         .replaceAll(SPACE_PLUS, SPACE)
                         .trim());
 
-        Object result = executeAppropriateQuery(queryResult.getQuery());
-        queryResult.setContent(result);
+        try {
+            Object result = executeAppropriateQuery(queryResult.getQuery());
+            queryResult.setContent(result);
+        } catch (Exception e) {
+            LogUtil.logSqlException(e, queryResult.getQuery());
+            throw e;
+        }
         return queryResult;
     }
 

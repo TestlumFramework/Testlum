@@ -20,9 +20,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.ERROR_DURING_DB_MIGRATION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NAME_FOR_MIGRATION_MUST_PRESENT;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DATASET_PATH_LOG;
 
 @Slf4j
@@ -52,13 +51,8 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     private void migrate(final List<String> datasets,
                          final String storageName,
                          final String databaseName) {
-        try {
             List<Source> sourceList = createSourceList(datasets);
             applyDatasets(sourceList, storageName, databaseName);
-        } catch (Exception e) {
-            log.error(ERROR_DURING_DB_MIGRATION_LOG, e);
-            throw new DefaultFrameworkException(e);
-        }
     }
 
     private List<Source> createSourceList(final List<String> datasets) {

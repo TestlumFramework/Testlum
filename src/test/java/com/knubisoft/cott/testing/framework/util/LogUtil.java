@@ -7,6 +7,7 @@ import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
+import com.knubisoft.cott.testing.model.scenario.Assert;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
@@ -39,6 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.ATTRIBUTE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BODY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CLEAR_COOKIES_AFTER;
@@ -49,6 +51,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_L
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_FRAME;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
@@ -230,6 +233,11 @@ public class LogUtil {
         log.info(COMMAND_LOG, position, action.getClass().getSimpleName());
     }
 
+    public void logAssertTag(final Assert aAssert) {
+        log.info(ATTRIBUTE_LOG, aAssert.getAttribute());
+        log.info(CONTENT_LOG, aAssert.getContent());
+    }
+
     public void logAlias(final String alias) {
         log.info(ALIAS_LOG, alias);
     }
@@ -320,6 +328,15 @@ public class LogUtil {
             log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
         } else {
             log.error(EXCEPTION_LOG, ex.toString());
+        }
+    }
+
+    public void logSqlException(final Exception ex, final String query) {
+        if (StringUtils.isNotBlank(ex.getMessage())) {
+            log.error(ERROR_SQL_QUERY, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE),
+                    SqlUtil.getBrokenQuery(ex, query).replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+        } else {
+            log.error(ERROR_SQL_QUERY, ex.toString().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
         }
     }
 

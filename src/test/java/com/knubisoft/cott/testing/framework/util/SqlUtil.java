@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class SqlUtil {
     private static final int CUT_LIMIT = 100;
     private static final int OFFSET_LIMIT = 2;
-    private static final Pattern BAD_SQL_POSITION_PATTERN = Pattern.compile("([0-9]+)");
+    private static final Pattern BAD_SQL_POSITION_PATTERN = Pattern.compile("Position: ([0-9]+)");
 
     public String getBrokenQuery(final Exception ex, final String query) {
         final int position = getSqlPositionFromException(ex) - OFFSET_LIMIT;

@@ -46,22 +46,19 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
         for (AbstractUiCommand uiCommand : commandList) {
             LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), uiCommand);
             processEachCommand(uiCommand, subCommandsResult, dependencies);
-            if (uiCommand instanceof SwitchToFrame) {
-                LogUtil.startUiCommandsInFrame();
-                processSwitchToFrameCommand(uiCommand, subCommandsResult, dependencies);
-            }
+            processIfSwitchToFrame(uiCommand, result, dependencies);
         }
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
-    private void processSwitchToFrameCommand(final AbstractUiCommand uiCommand,
-                                             final List<CommandResult> subCommandsResult,
-                                             final ExecutorDependencies dependencies) {
-        for (AbstractUiCommand command : ((SwitchToFrame) uiCommand).getClickOrInputOrAssert()) {
-            LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), command);
-            processEachCommand(command, subCommandsResult, dependencies);
+    private void processIfSwitchToFrame(final AbstractUiCommand uiCommand,
+                                        final CommandResult result,
+                                        final ExecutorDependencies dependencies) {
+        if (uiCommand instanceof SwitchToFrame) {
+            LogUtil.startUiCommandsInFrame();
+            runCommands(((SwitchToFrame) uiCommand).getClickOrInputOrAssert(), result, dependencies);
+            LogUtil.endUiCommandsInFrame();
         }
-        LogUtil.endUiCommandsInFrame();
     }
 
     private void processEachCommand(final AbstractUiCommand command,

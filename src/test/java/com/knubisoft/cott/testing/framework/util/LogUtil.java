@@ -292,10 +292,6 @@ public class LogUtil {
         }
     }
 
-    /*public void logSwitchToFrameInfo(final String locatorId) {
-        log.info(SWITCH_TO_FRAME_LOCATOR, locatorId);
-    }*/
-
     public void logNonParsedScenarioInfo(final String path, final String exception) {
         log.error(INVALID_SCENARIO_LOG, path, exception);
     }

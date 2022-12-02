@@ -76,7 +76,8 @@ public class ResultUtil {
     public static final String INPUT_VALUE = "Value for input";
     public static final String CLICK_METHOD = "Click method";
     public static final String CLOSE_COMMAND = "Close command for";
-    public static final String SECOND_TAB = "second tab";
+    public static final String LAST_TAB = "Last recently opened tab";
+    public static final String TAB_NUMBER = "Tab with number '%s'";
     public static final String JS_FILE = "JS file to execute";
     public static final String NAVIGATE_TYPE = "Navigate command type";
     public static final String NAVIGATE_URL = "URL for navigate";

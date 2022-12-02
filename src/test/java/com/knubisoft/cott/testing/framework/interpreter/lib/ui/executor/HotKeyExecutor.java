@@ -33,83 +33,84 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.HOTKEY_LOCATOR;
+
 @ExecutorForClass(HotKey.class)
 public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
 
     private final Map<HotKeyCommandPredicate, HotKeyCommand> hotKeyCmdMethods;
 
+    private final Actions action = new Actions(dependencies.getDriver());
+
     public HotKeyExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         Map<HotKeyCommandPredicate, HotKeyCommand> commands = new HashMap<>();
-        commands.put(hotKey -> hotKey instanceof Copy, (hotKey, action) -> copyCommand((Copy) hotKey, action));
-        commands.put(hotKey -> hotKey instanceof Paste, (hotKey, action) -> pasteCommand((Paste) hotKey, action));
-        commands.put(hotKey -> hotKey instanceof Cut, (hotKey, action) -> cutCommand((Cut) hotKey, action));
-        commands.put(hotKey -> hotKey instanceof Highlight, (hotKey, action) ->
-                highlightCommand((Highlight) hotKey, action));
-        commands.put(hotKey -> hotKey instanceof Tab, (hotKey, action) -> singleKeyCommand(Keys.TAB, action));
-        commands.put(hotKey -> hotKey instanceof Enter, (hotKey, action) -> singleKeyCommand(Keys.ENTER, action));
-        commands.put(hotKey -> hotKey instanceof BackSpace, (hotKey, action) ->
-                singleKeyCommand(Keys.BACK_SPACE, action));
-        commands.put(hotKey -> hotKey instanceof Escape, (hotKey, action) -> singleKeyCommand(Keys.ESCAPE, action));
-        commands.put(hotKey -> hotKey instanceof Space, (hotKey, action) -> singleKeyCommand(Keys.SPACE, action));
+        commands.put(hotKey -> hotKey instanceof Copy, (hotKey, result) -> copyCommand((Copy) hotKey, result));
+        commands.put(hotKey -> hotKey instanceof Paste, (hotKey, result) -> pasteCommand((Paste) hotKey, result));
+        commands.put(hotKey -> hotKey instanceof Cut, (hotKey, result) -> cutCommand((Cut) hotKey, result));
+        commands.put(hotKey -> hotKey instanceof Highlight, (hotKey, result) ->
+                highlightCommand((Highlight) hotKey, result));
+        commands.put(hotKey -> hotKey instanceof Tab, (hotKey, result) -> singleKeyCommand(Keys.TAB));
+        commands.put(hotKey -> hotKey instanceof Enter, (hotKey, result) -> singleKeyCommand(Keys.ENTER));
+        commands.put(hotKey -> hotKey instanceof BackSpace, (hotKey, result) -> singleKeyCommand(Keys.BACK_SPACE));
+        commands.put(hotKey -> hotKey instanceof Escape, (hotKey, result) -> singleKeyCommand(Keys.ESCAPE));
+        commands.put(hotKey -> hotKey instanceof Space, (hotKey, result) -> singleKeyCommand(Keys.SPACE));
         hotKeyCmdMethods = Collections.unmodifiableMap(commands);
     }
 
     @Override
     public void execute(final HotKey hotKey, final CommandResult result) {
-        Actions action = new Actions(dependencies.getDriver());
-        runHotKeyCommand(hotKey.getCopyOrPasteOrCut(), action, result);
+        runHotKeyCommand(hotKey.getCopyOrPasteOrCut(), result);
     }
 
     private void runHotKeyCommand(final List<AbstractUiCommand> hotKeyCommandList,
-                                   final Actions action,
                                    final CommandResult result) {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         hotKeyCommandList.forEach(command -> hotKeyCmdMethods.keySet().stream()
                 .filter(key -> key.test(command))
                 .map(hotKeyCmdMethods::get)
-                .forEach(method -> executeHotKeyCommands(command, method, action, subCommandsResult)));
+                .forEach(method -> executeHotKeyCommands(command, method, subCommandsResult)));
     }
 
     private void executeHotKeyCommands(final AbstractUiCommand command,
                                        final HotKeyExecutor.HotKeyCommand hotKeyCmdMethods,
-                                       final Actions action,
                                        final List<CommandResult> subCommandsResult) {
         CommandResult subCommandResult = ResultUtil.createCommandResultForUiSubCommand(
                 dependencies.getPosition().intValue(),
                 command.getClass().getSimpleName(),
                 command.getComment());
         LogUtil.logHotKeyInfo(command);
-        hotKeyCmdMethods.accept(command, action);
+        hotKeyCmdMethods.accept(command, subCommandResult);
         subCommandsResult.add(subCommandResult);
     }
 
-    private void singleKeyCommand(final Keys key, final Actions action) {
+    private void singleKeyCommand(final Keys key) {
         action.sendKeys(key).perform();
     }
 
-    private void highlightCommand(final Highlight highlight, final Actions action) {
-        action.keyDown(getElementForHotKey(highlight), Keys.COMMAND).sendKeys("a").build().perform();
+    private void highlightCommand(final Highlight highlight, final CommandResult result) {
+        action.keyDown(getElementForHotKey(highlight, result), Keys.COMMAND).sendKeys("a").build().perform();
     }
 
-    private void cutCommand(final Cut cut, final Actions action) {
-        action.keyDown(getElementForHotKey(cut), Keys.COMMAND).sendKeys("a").sendKeys("x").build().perform();
+    private void cutCommand(final Cut cut, final CommandResult result) {
+        action.keyDown(getElementForHotKey(cut, result), Keys.COMMAND).sendKeys("a").sendKeys("x").build().perform();
     }
 
-    private void pasteCommand(final Paste paste, final Actions action) {
-        action.keyDown(getElementForHotKey(paste), Keys.COMMAND).sendKeys("v").build().perform();
+    private void pasteCommand(final Paste paste, final CommandResult result) {
+        action.keyDown(getElementForHotKey(paste, result), Keys.COMMAND).sendKeys("v").build().perform();
     }
 
-    private void copyCommand(final Copy copy, final Actions action) {
-        action.keyDown(getElementForHotKey(copy), Keys.COMMAND).sendKeys("a").sendKeys("c").build().perform();
+    private void copyCommand(final Copy copy, final CommandResult result) {
+        action.keyDown(getElementForHotKey(copy, result), Keys.COMMAND).sendKeys("a").sendKeys("c").build().perform();
     }
 
-    private WebElement getElementForHotKey(final CommandWithLocator command) {
+    private WebElement getElementForHotKey(final CommandWithLocator command, final CommandResult result) {
         Locator locator = GlobalLocators.getLocator(command.getLocatorId());
+        result.put(HOTKEY_LOCATOR, locator.getLocatorId());
         return WebElementFinder.find(locator, dependencies.getDriver());
     }
 
     private interface HotKeyCommandPredicate extends Predicate<AbstractUiCommand> { }
-    private interface HotKeyCommand extends BiConsumer<AbstractUiCommand, Actions> { }
+    private interface HotKeyCommand extends BiConsumer<AbstractUiCommand, CommandResult> { }
 }

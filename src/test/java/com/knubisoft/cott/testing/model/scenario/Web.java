@@ -68,7 +68,7 @@ public class Web
         @XmlElement(name = "navigate", type = Navigate.class),
         @XmlElement(name = "hovers", type = Hovers.class),
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
-        @XmlElement(name = "hotKey", type = HotKey.class)
+        @XmlElement(name = "hotKey", type = HotKey.class),
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
         @XmlElement(name = "closeTab", type = CloseTab.class)
     })

@@ -8,6 +8,7 @@ import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.ScenarioUtil;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
+import com.knubisoft.cott.testing.model.scenario.SwitchToFrame;
 import com.knubisoft.cott.testing.model.scenario.Ui;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -37,15 +38,27 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
                 .build();
     }
 
-    public void runCommands(final List<AbstractUiCommand> commandList, final CommandResult result,
+    public void runCommands(final List<AbstractUiCommand> commandList,
+                            final CommandResult result,
                             final ExecutorDependencies dependencies) {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         for (AbstractUiCommand uiCommand : commandList) {
             LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), uiCommand);
             processEachCommand(uiCommand, subCommandsResult, dependencies);
+            processIfSwitchToFrame(uiCommand, result, dependencies);
         }
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
+    }
+
+    private void processIfSwitchToFrame(final AbstractUiCommand uiCommand,
+                                        final CommandResult result,
+                                        final ExecutorDependencies dependencies) {
+        if (uiCommand instanceof SwitchToFrame) {
+            LogUtil.startUiCommandsInFrame();
+            runCommands(((SwitchToFrame) uiCommand).getClickOrInputOrAssert(), result, dependencies);
+            LogUtil.endUiCommandsInFrame();
+        }
     }
 
     private void processEachCommand(final AbstractUiCommand command,

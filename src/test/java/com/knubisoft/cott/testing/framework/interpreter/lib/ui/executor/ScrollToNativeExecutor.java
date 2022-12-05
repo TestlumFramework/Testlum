@@ -33,13 +33,10 @@ public class ScrollToNativeExecutor extends AbstractUiExecutor<ScrollToNative> {
         Point end = new Point(0, DEFAULT_SCROLL_VALUE);
         Sequence scroll = UiUtil.buildSequence(start, end, ACTION_DURATION);
         result.put(SCROLL_TO_ELEMENT, scrollToNative.getLocatorId());
-        if (scrollToFindElement(scrollToNative, result, driver, scroll)) {
-            return;
-        }
-        throw new DefaultFrameworkException(ELEMENT_NOT_FOUND, scrollToNative.getLocatorId());
+        processScrollToElement(scrollToNative, result, driver, scroll);
     }
 
-    private boolean scrollToFindElement(final ScrollToNative scrollToNative,
+    private void processScrollToElement(final ScrollToNative scrollToNative,
                                         final CommandResult result,
                                         final AppiumDriver driver,
                                         final Sequence scroll) {
@@ -48,11 +45,11 @@ public class ScrollToNativeExecutor extends AbstractUiExecutor<ScrollToNative> {
                 driver.perform(Collections.singletonList(scroll));
                 UiUtil.findWebElement(driver, scrollToNative.getLocatorId()).isDisplayed();
                 UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
-                return true;
+                return;
             } catch (NoSuchElementException e) {
                 //Means locator is not visible, code continue scrolling to find locator
             }
         }
-        return false;
+        throw new DefaultFrameworkException(ELEMENT_NOT_FOUND, scrollToNative.getLocatorId());
     }
 }

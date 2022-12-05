@@ -187,9 +187,9 @@ public class UiUtil {
     public Sequence buildSequence(final Point start, final Point end, final int duration) {
         PointerInput finger = new PointerInput(PointerInput.Kind.TOUCH, "finger");
         return new Sequence(finger, 1)
-                .addAction(finger.createPointerMove(Duration.ofMillis(0), viewport(), start.x, start.y))
+                .addAction(finger.createPointerMove(Duration.ofMillis(0), viewport(), start.getX(), start.getY()))
                 .addAction(finger.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
-                .addAction(finger.createPointerMove(Duration.ofMillis(duration), viewport(), end.x, end.y))
+                .addAction(finger.createPointerMove(Duration.ofMillis(duration), viewport(), end.getX(), end.getY()))
                 .addAction(finger.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
     }
 

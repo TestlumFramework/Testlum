@@ -91,9 +91,9 @@ public class ResultUtil {
     public static final String URL_TO_ACTUAL_IMAGE = "URL to actual image";
     public static final String ADDITIONAL_INFO = "Additional info";
     public static final String IMAGE_ATTACHED_TO_STEP = "Actual image attached to report step";
-    public static final String FROM_LOCATOR = "From locator";
+    public static final String FROM_LOCATOR = "From element with locator";
     public static final String FROM_LOCAL_FILE = "From local file";
-    public static final String TO_LOCATOR = "To locator";
+    public static final String TO_LOCATOR = "To element with locator";
     public static final String SCROLL_TO_ELEMENT = "Scrolling to element with locator id";
     public static final String PERFORM_SWIPE = "Perform swipe with direction";
     public static final String AMOUNT_OF_SWIPES = "Amount of swipes";

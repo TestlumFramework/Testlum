@@ -9,7 +9,6 @@ import com.knubisoft.cott.testing.model.scenario.SwipeDirection;
 import com.knubisoft.cott.testing.model.scenario.SwipeNative;
 import io.appium.java_client.AppiumDriver;
 import java.util.Collections;
-import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.interactions.Sequence;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.AMOUNT_OF_SWIPES;
@@ -30,21 +29,20 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
         int quantity = swipeNative.getQuantity();
         result.put(AMOUNT_OF_SWIPES, quantity);
         result.put(PERFORM_SWIPE, swipeNative.getDirection());
-        for (int i = 0; i < quantity; i++) {
-            performSwipe(swipeNative);
-            UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
-        }
-    }
-
-    private void performSwipe(final SwipeNative swipeNative) {
         AppiumDriver driver = (AppiumDriver) dependencies.getDriver();
         Point start = UiUtil.getCenterPoint(driver);
+        for (int i = 0; i < quantity; i++) {
+            performSwipe(swipeNative, driver, start);
+        }
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+    }
+
+    private void performSwipe(final SwipeNative swipeNative, final AppiumDriver driver, final Point start) {
         Sequence swipe = UiUtil.buildSequence(start, getEndPoint(swipeNative, start), ACTION_DURATION);
         driver.perform(Collections.singletonList(swipe));
         driver.switchTo();
     }
 
-    @NotNull
     private static Point getEndPoint(final SwipeNative swipeNative, final Point start) {
         return SwipeDirection.RIGHT.equals(swipeNative.getDirection())
                 ? new Point(start.getX() - DEFAULT_SWIPE_VALUE, start.getY())

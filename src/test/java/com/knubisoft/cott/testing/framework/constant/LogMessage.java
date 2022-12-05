@@ -28,6 +28,7 @@ public final class LogMessage {
     public static final String ANSI_RED_BOLD = "\033[1;31m";
     public static final String ANSI_YELLOW = "\u001B[33m";
     public static final String ANSI_CYAN = "\u001b[36m";
+    public static final String ANSI_ORANGE = "\u001b[38;5;208m";
     public static final String ANSI_BLUE_UNDERLINED = "\033[4;34m";
 
     public static final String ERROR_LOG = "Error ->";
@@ -37,12 +38,19 @@ public final class LogMessage {
     public static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
     public static final String REPEAT_FINISHED_LOG = ANSI_CYAN + "------- Repeat is finished -------" + ANSI_RESET;
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
+    public static final String ATTRIBUTE_LOG = format(TABLE_FORMAT, "Attribute", "{}");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
+    public static final String ERROR_SQL_QUERY = ANSI_RED + "Error while executing SQL query -> "
+            + "{}" + ANSI_ORANGE + NEW_LOG_LINE + "{}" + ANSI_RESET;
     public static final String SCENARIO_NUMBER_AND_PATH_LOG = ANSI_GREEN
             + "================== Execute for scenario #{} - {} ==================" + ANSI_RESET;
     public static final String LINE =
             "-----------------------------------------------------------------------------------------------------"
                     + "--------------------------------------------------------------------------------------";
+    public static final String START_UI_COMMANDS_IN_FRAME =
+            ANSI_CYAN + "------- Start ui commands in frame -------" + ANSI_RESET;
+    public static final String END_UI_COMMANDS_IN_FRAME =
+            ANSI_CYAN + "------- End ui commands in frame -------" + ANSI_RESET;
     public static final String INVALID_SCENARIO_LOG = ANSI_RED + LINE
             + NEW_LOG_LINE + format(TABLE_FORMAT, "Invalid scenario", "{}")
             + NEW_LOG_LINE + format(TABLE_FORMAT, "Exception", "{}") + NEW_LOG_LINE
@@ -112,7 +120,6 @@ public final class LogMessage {
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
     public static final String SCROLL_LOCATOR = format(TABLE_FORMAT, "Scroll locator", "{}");
     public static final String SCROLL_TYPE = format(TABLE_FORMAT, "Scroll type", "{}");
-    public static final String SWITCH_TO_FRAME_LOCATOR = format(TABLE_FORMAT, "Frame locator to switch", "{}");
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "Method", "{}");
     public static final String SMTP_HOST_LOG = format(TABLE_FORMAT, "SMTP Host", "{}");
     public static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");

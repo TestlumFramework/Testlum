@@ -18,10 +18,12 @@
         </extentReports>
     </report>
 
-    <ui enabled="true">
+    <web enabled="true">
+        <baseUrl>https://google.com</baseUrl>
+
         <browserSettings>
-            <takeScreenshotOfEachUiCommand enable="false"/>
-            <webElementAutowait seconds="3"/>
+            <takeScreenshots enable="false"/>
+            <elementAutowait seconds="3"/>
 
             <browsers>
                 <chrome enable="true" maximizedBrowserWindow="false" headlessMode="false">
@@ -40,36 +42,34 @@
                 </firefox>
             </browsers>
         </browserSettings>
-
-        <baseUrl>https://google.com</baseUrl>
-    </ui>
+    </web>
 
     <auth authStrategy="default"/>
 
     <integrations>
-<!--        <apis>-->
-<!--            <api alias="myAPI" url="http://localhost:8080"/>-->
-<!--        </apis>-->
+        <!--        <apis>-->
+        <!--            <api alias="myAPI" url="http://localhost:8080"/>-->
+        <!--        </apis>-->
 
-<!--        <postgresIntegration>-->
-<!--            <postgres alias="my_database" enabled="false">-->
-<!--                <jdbcDriver>org.postgresql.Driver</jdbcDriver>-->
-<!--                <username>postgres</username>-->
-<!--                <password>password</password>-->
-<!--                <connectionUrl>jdbc:postgresql://localhost:5433/my_database</connectionUrl>-->
-<!--                <schema>public</schema>-->
-<!--                <hikari>-->
-<!--                    <connectionTimeout>45000</connectionTimeout>-->
-<!--                    <idleTimeout>60000</idleTimeout>-->
-<!--                    <maxLifetime>180000</maxLifetime>-->
-<!--                    <maximumPoolSize>50</maximumPoolSize>-->
-<!--                    <minimumIdle>5</minimumIdle>-->
-<!--                    <connectionInitSql>SELECT 1</connectionInitSql>-->
-<!--                    <connectionTestQuery>SELECT 1</connectionTestQuery>-->
-<!--                    <poolName>core-postgres-db-pool</poolName>-->
-<!--                    <autoCommit>true</autoCommit>-->
-<!--                </hikari>-->
-<!--            </postgres>-->
-<!--        </postgresIntegration>-->
+        <!--        <postgresIntegration>-->
+        <!--            <postgres alias="my_database" enabled="false">-->
+        <!--                <jdbcDriver>org.postgresql.Driver</jdbcDriver>-->
+        <!--                <username>postgres</username>-->
+        <!--                <password>password</password>-->
+        <!--                <connectionUrl>jdbc:postgresql://localhost:5433/my_database</connectionUrl>-->
+        <!--                <schema>public</schema>-->
+        <!--                <hikari>-->
+        <!--                    <connectionTimeout>45000</connectionTimeout>-->
+        <!--                    <idleTimeout>60000</idleTimeout>-->
+        <!--                    <maxLifetime>180000</maxLifetime>-->
+        <!--                    <maximumPoolSize>50</maximumPoolSize>-->
+        <!--                    <minimumIdle>5</minimumIdle>-->
+        <!--                    <connectionInitSql>SELECT 1</connectionInitSql>-->
+        <!--                    <connectionTestQuery>SELECT 1</connectionTestQuery>-->
+        <!--                    <poolName>core-postgres-db-pool</poolName>-->
+        <!--                    <autoCommit>true</autoCommit>-->
+        <!--                </hikari>-->
+        <!--            </postgres>-->
+        <!--        </postgresIntegration>-->
     </integrations>
 </globalTestConfiguration>

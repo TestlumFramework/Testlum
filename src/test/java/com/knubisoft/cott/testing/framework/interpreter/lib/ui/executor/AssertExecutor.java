@@ -5,6 +5,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecuto
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.Assert;
 import org.openqa.selenium.WebElement;
@@ -24,10 +25,11 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
 
     @Override
     public void execute(final Assert aAssert, final CommandResult result) {
+        LogUtil.logAssertTag(aAssert);
         result.put(ASSERT_LOCATOR, aAssert.getLocatorId());
         result.put(ASSERT_ATTRIBUTE, aAssert.getAttribute());
         String actual = getActualValue(aAssert);
-        String expected = aAssert.getContent().replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
+        String expected = inject(aAssert.getContent()).replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
         result.setActual(actual);
         result.setExpected(expected);
         new CompareBuilder(dependencies.getFile(), dependencies.getPosition())

@@ -33,9 +33,9 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="javascript" type="{http://www.knubisoft.com/cott/testing/model/scenario}javascript"/&gt;
  *         &lt;element name="navigate" type="{http://www.knubisoft.com/cott/testing/model/scenario}navigate"/&gt;
  *         &lt;element name="hovers" type="{http://www.knubisoft.com/cott/testing/model/scenario}hovers"/&gt;
- *         &lt;element name="closeSecondTab" type="{http://www.knubisoft.com/cott/testing/model/scenario}closeSecondTab"/&gt;
  *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/cott/testing/model/scenario}switchToFrame"/&gt;
  *         &lt;element name="dragAndDrop" type="{http://www.knubisoft.com/cott/testing/model/scenario}dragAndDrop"/&gt;
+ *         &lt;element name="closeTab" type="{http://www.knubisoft.com/cott/testing/model/scenario}closeTab"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="clearCookiesAfterExecution" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *       &lt;attribute name="clearLocalStorageByKey" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
@@ -67,9 +67,9 @@ public class Web
         @XmlElement(name = "javascript", type = Javascript.class),
         @XmlElement(name = "navigate", type = Navigate.class),
         @XmlElement(name = "hovers", type = Hovers.class),
-        @XmlElement(name = "closeSecondTab", type = CloseSecondTab.class),
+        @XmlElement(name = "dragAndDrop", type = DragAndDrop.class),
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
-        @XmlElement(name = "dragAndDrop", type = DragAndDrop.class)
+        @XmlElement(name = "closeTab", type = CloseTab.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "clearCookiesAfterExecution")
@@ -107,10 +107,10 @@ public class Web
      * {@link Javascript }
      * {@link Navigate }
      * {@link Hovers }
-     * {@link CloseSecondTab }
      * {@link SwitchToFrame }
      * {@link DragAndDrop }
-     * 
+     * {@link CloseTab }
+     *
      * 
      */
     public List<AbstractUiCommand> getClickOrInputOrAssert() {

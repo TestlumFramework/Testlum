@@ -390,11 +390,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CloseSecondTab }
+     * Create an instance of {@link CloseTab }
      * 
      */
-    public CloseSecondTab createCloseSecondTab() {
-        return new CloseSecondTab();
+    public CloseTab createCloseTab() {
+        return new CloseTab();
     }
 
     /**

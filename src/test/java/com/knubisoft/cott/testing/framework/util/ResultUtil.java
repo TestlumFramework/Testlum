@@ -76,7 +76,8 @@ public class ResultUtil {
     public static final String INPUT_VALUE = "Value for input";
     public static final String CLICK_METHOD = "Click method";
     public static final String CLOSE_COMMAND = "Close command for";
-    public static final String SECOND_TAB = "second tab";
+    public static final String LAST_TAB = "Last recently opened tab";
+    public static final String TAB_NUMBER = "Tab with number '%s'";
     public static final String JS_FILE = "JS file to execute";
     public static final String NAVIGATE_TYPE = "Navigate command type";
     public static final String NAVIGATE_URL = "URL for navigate";
@@ -114,12 +115,12 @@ public class ResultUtil {
     private static final String HEADERS_STATUS = "Headers status";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
     private static final String TOPIC = "Topic";
-    private static final String COMPARE_RULE = "Compare rule";
     private static final String NUMBER_OF_VALUES = "Number of values";
     private static final String ROUTING_KEY = "Routing Key";
     private static final String EXCHANGE = "Exchange";
     private static final String ACTION = "Action";
     private static final String SEND = "Send";
+    private static final String COMMENT_FOR_WEBSOCKET_SEND_RECEIVE_ACTION = "Send and receive messages via websocket";
     private static final String COMMENT_FOR_WEBSOCKET_SEND_ACTION = "Send message via websocket";
     private static final String COMMENT_FOR_KAFKA_SEND_ACTION = "Send message to Kafka";
     private static final String COMMENT_FOR_RABBIT_SEND_ACTION = "Send message to RabbitMQ";
@@ -131,6 +132,7 @@ public class ResultUtil {
     private static final String BUCKET = "Bucket";
     private static final String CORRELATION_ID = "Correlation ID";
     private static final String RECEIVE = "Receive";
+    private static final String SEND_RECEIVE = "SendAndReceive";
     private static final String DATABASE = "Database";
     private static final String DATABASE_ALIAS = "Database alias";
     private static final String PATCHES = "Patches";
@@ -341,9 +343,14 @@ public class ResultUtil {
         result.setCommandKey(RECEIVE);
         result.setComment(COMMENT_FOR_WEBSOCKET_RECEIVE_ACTION);
         addMessageBrokerGeneralMetaData(alias, RECEIVE, TOPIC, receiveAction.getTopic(), result);
-        result.put(COMPARE_RULE, receiveAction.getCompareRule().toString());
-        result.put(NUMBER_OF_VALUES, receiveAction.getValuesNumber().intValue());
+        result.put(NUMBER_OF_VALUES, receiveAction.getValuesNumber());
         result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
+    }
+
+    public void addWebsocketInfoForSendAndReceiveAction(final CommandResult result) {
+        result.setCommandKey(SEND_RECEIVE);
+        result.setComment(COMMENT_FOR_WEBSOCKET_SEND_RECEIVE_ACTION);
+        result.put(ACTION, SEND_RECEIVE);
     }
 
     public void addS3GeneralMetaData(final String alias,

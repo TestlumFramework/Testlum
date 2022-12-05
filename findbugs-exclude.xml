@@ -73,7 +73,7 @@
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.configuration.websocket.WebSocketMessageHandler"/>
+        <Class name="com.knubisoft.cott.testing.framework.configuration.websocket.WebsocketMessageHandler"/>
         <Bug pattern="DM_DEFAULT_ENCODING"/>
     </Match>
 

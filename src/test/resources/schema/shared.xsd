@@ -156,4 +156,10 @@
             <x:pattern value="\d+|\{{2}([a-zA-Z\d_\-]+)\}{2}"/>
         </x:restriction>
     </x:simpleType>
+    
+    <x:simpleType name="tabPattern">
+        <x:restriction base="x:int">
+            <x:pattern value="[2-9]|[1-9][0-9]"/>
+        </x:restriction>
+    </x:simpleType>
 </x:schema>

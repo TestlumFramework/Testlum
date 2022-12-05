@@ -16,10 +16,13 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="webSocketSend"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;choice&gt;
- *         &lt;element name="message" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
- *         &lt;element name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}bodyFile"/&gt;
- *       &lt;/choice&gt;
+ *       &lt;sequence&gt;
+ *         &lt;choice&gt;
+ *           &lt;element name="message" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
+ *           &lt;element name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}bodyFile"/&gt;
+ *         &lt;/choice&gt;
+ *         &lt;element name="receive" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketReceive" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
  *       &lt;attribute name="endpoint" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}endpointPattern" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -31,12 +34,14 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "webSocketSend", propOrder = {
     "message",
-    "file"
+    "file",
+    "receive"
 })
 public class WebSocketSend {
 
     protected String message;
     protected String file;
+    protected WebSocketReceive receive;
     @XmlAttribute(name = "endpoint", required = true)
     protected String endpoint;
 
@@ -86,6 +91,30 @@ public class WebSocketSend {
      */
     public void setFile(String value) {
         this.file = value;
+    }
+
+    /**
+     * Gets the value of the receive property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link WebSocketReceive }
+     *     
+     */
+    public WebSocketReceive getReceive() {
+        return receive;
+    }
+
+    /**
+     * Sets the value of the receive property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link WebSocketReceive }
+     *     
+     */
+    public void setReceive(WebSocketReceive value) {
+        this.receive = value;
     }
 
     /**

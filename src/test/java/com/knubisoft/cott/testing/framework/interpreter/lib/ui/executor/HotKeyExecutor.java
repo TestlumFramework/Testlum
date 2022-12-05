@@ -60,13 +60,9 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
 
     @Override
     public void execute(final HotKey hotKey, final CommandResult result) {
-        runHotKeyCommand(hotKey.getCopyOrPasteOrCut(), result);
-    }
-
-    private void runHotKeyCommand(final List<AbstractUiCommand> hotKeyCommandList, final CommandResult result) {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
-        hotKeyCommandList.forEach(command -> hotKeyCmdMethods.keySet().stream()
+        hotKey.getCopyOrPasteOrCut().forEach(command -> hotKeyCmdMethods.keySet().stream()
                 .filter(key -> key.test(command))
                 .map(hotKeyCmdMethods::get)
                 .forEach(method -> executeHotKeyCommand(command, method, subCommandsResult)));

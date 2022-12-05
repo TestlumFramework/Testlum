@@ -26,25 +26,24 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
 
     @Override
     public void execute(final SwipeNative swipeNative, final CommandResult result) {
-        int quantity = swipeNative.getQuantity();
-        result.put(AMOUNT_OF_SWIPES, quantity);
+        result.put(AMOUNT_OF_SWIPES, swipeNative.getQuantity());
         result.put(PERFORM_SWIPE, swipeNative.getDirection());
-        AppiumDriver driver = (AppiumDriver) dependencies.getDriver();
-        Point start = UiUtil.getCenterPoint(driver);
-        for (int i = 0; i < quantity; i++) {
-            performSwipe(swipeNative, driver, start);
-        }
+        performSwipe(swipeNative);
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
-    private void performSwipe(final SwipeNative swipeNative, final AppiumDriver driver, final Point start) {
-        Sequence swipe = UiUtil.buildSequence(start, getEndPoint(swipeNative, start), ACTION_DURATION);
-        driver.perform(Collections.singletonList(swipe));
-        driver.switchTo();
+    private void performSwipe(final SwipeNative swipeNative) {
+        AppiumDriver driver = (AppiumDriver) dependencies.getDriver();
+        Point start = UiUtil.getCenterPoint(driver);
+        Sequence swipe = UiUtil.buildSequence(start, getEndPoint(swipeNative.getDirection(), start), ACTION_DURATION);
+        for (int i = 0; i < swipeNative.getQuantity(); i++) {
+            driver.perform(Collections.singletonList(swipe));
+            driver.switchTo();
+        }
     }
 
-    private static Point getEndPoint(final SwipeNative swipeNative, final Point start) {
-        return SwipeDirection.RIGHT.equals(swipeNative.getDirection())
+    private static Point getEndPoint(final SwipeDirection direction, final Point start) {
+        return SwipeDirection.RIGHT.equals(direction)
                 ? new Point(start.getX() - DEFAULT_SWIPE_VALUE, start.getY())
                 : new Point(start.getX() + DEFAULT_SWIPE_VALUE, start.getY());
     }

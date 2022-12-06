@@ -478,6 +478,86 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link HotKey }
+     *
+     */
+    public HotKey createHotKey() {
+        return new HotKey();
+    }
+
+    /**
+     * Create an instance of {@link Copy }
+     *
+     */
+    public Copy createCopy() {
+        return new Copy();
+    }
+
+    /**
+     * Create an instance of {@link Paste }
+     *
+     */
+    public Paste createPaste() {
+        return new Paste();
+    }
+
+    /**
+     * Create an instance of {@link Cut }
+     *
+     */
+    public Cut createCut() {
+        return new Cut();
+    }
+
+    /**
+     * Create an instance of {@link Highlight }
+     *
+     */
+    public Highlight createHighlight() {
+        return new Highlight();
+    }
+
+    /**
+     * Create an instance of {@link Tab }
+     *
+     */
+    public Tab createTab() {
+        return new Tab();
+    }
+
+    /**
+     * Create an instance of {@link Enter }
+     *
+     */
+    public Enter createEnter() {
+        return new Enter();
+    }
+
+    /**
+     * Create an instance of {@link BackSpace }
+     *
+     */
+    public BackSpace createBackSpace() {
+        return new BackSpace();
+    }
+
+    /**
+     * Create an instance of {@link Escape }
+     *
+     */
+    public Escape createEscape() {
+        return new Escape();
+    }
+
+    /**
+     * Create an instance of {@link Space }
+     *
+     */
+    public Space createSpace() {
+        return new Space();
+    }
+
+    /**
      * Create an instance of {@link SendRmqMessage }
      * 
      */

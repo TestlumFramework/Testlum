@@ -34,7 +34,17 @@
     <x:complexType name="mobilebrowserDevice">
         <x:complexContent>
             <x:extension base="tns:abstractDevice">
+                <x:sequence>
+                </x:sequence>
+                <x:attribute name="platformName" type="tns:platform" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
+
+    <x:simpleType name="platform">
+        <x:restriction base="x:string">
+            <x:enumeration value="ios"/>
+            <x:enumeration value="android"/>
+        </x:restriction>
+    </x:simpleType>
 </x:schema>

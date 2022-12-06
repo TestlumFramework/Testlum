@@ -165,13 +165,11 @@ public class ExtentReportsGenerator implements ReportGenerator {
     }
 
     private String[][] createTableWithNativeDeviceInfo(final NativeDevice nativeDevice) {
-        String[][] browserInfoTable = new String[THREE][TWO];
+        String[][] browserInfoTable = new String[TWO][TWO];
         browserInfoTable[ZERO][ZERO] = format(BOLD_TEXT_TEMPLATE, NATIVE_DEVICE);
         browserInfoTable[ZERO][ONE] = nativeDevice.getDeviceName();
         browserInfoTable[ONE][ZERO] = format(BOLD_TEXT_TEMPLATE, DEVICE_PLATFORM);
-        browserInfoTable[ONE][ONE] = nativeDevice.getPlatformName().value();
-        browserInfoTable[TWO][ZERO] = format(BOLD_TEXT_TEMPLATE, APP_PACKAGE);
-        browserInfoTable[TWO][ONE] = nativeDevice.getAppPackage();
+        browserInfoTable[ONE][ONE] = nativeDevice.getClass().getSimpleName();
         return browserInfoTable;
     }
 

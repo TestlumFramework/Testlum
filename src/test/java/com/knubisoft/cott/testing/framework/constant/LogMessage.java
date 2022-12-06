@@ -155,7 +155,7 @@ public final class LogMessage {
 
     public static final String BROWSER_INFO = "%s | type = %s | version = %s";
     public static final String MOBILEBROWSER_INFO = "Device name = %s | platform = %s";
-    public static final String NATIVE_INFO = MOBILEBROWSER_INFO + " | app package = %s";
+    public static final String NATIVE_INFO = MOBILEBROWSER_INFO + " | udid = %s";
     public static final String EXTRACT_THEN_COMPARE = "Extract from web element then compare";
     public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a screenshot then compare";
 }

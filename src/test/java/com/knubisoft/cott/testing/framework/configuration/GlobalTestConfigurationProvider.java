@@ -33,7 +33,7 @@ public class GlobalTestConfigurationProvider {
 
     public static List<NativeDevice> getNativeDevices() {
         if (getNativeSettings() != null) {
-            return getNativeSettings().getDeviceSettings().getDevices().getDevice();
+            return getNativeSettings().getDeviceSettings().getDevices().getAndroidOrIos();
         }
         return Collections.emptyList();
     }

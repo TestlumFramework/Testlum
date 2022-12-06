@@ -479,7 +479,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link HotKey }
-     *
+     * 
      */
     public HotKey createHotKey() {
         return new HotKey();
@@ -487,7 +487,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Copy }
-     *
+     * 
      */
     public Copy createCopy() {
         return new Copy();
@@ -495,7 +495,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Paste }
-     *
+     * 
      */
     public Paste createPaste() {
         return new Paste();
@@ -503,7 +503,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Cut }
-     *
+     * 
      */
     public Cut createCut() {
         return new Cut();
@@ -511,7 +511,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Highlight }
-     *
+     * 
      */
     public Highlight createHighlight() {
         return new Highlight();
@@ -519,7 +519,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Tab }
-     *
+     * 
      */
     public Tab createTab() {
         return new Tab();
@@ -527,7 +527,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Enter }
-     *
+     * 
      */
     public Enter createEnter() {
         return new Enter();
@@ -535,7 +535,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link BackSpace }
-     *
+     * 
      */
     public BackSpace createBackSpace() {
         return new BackSpace();
@@ -543,7 +543,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Escape }
-     *
+     * 
      */
     public Escape createEscape() {
         return new Escape();
@@ -551,7 +551,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Space }
-     *
+     * 
      */
     public Space createSpace() {
         return new Space();

@@ -37,7 +37,6 @@ import javax.xml.bind.annotation.XmlType;
     SwitchToFrame.class,
     ScrollTo.class,
     ScrollToNative.class,
-    ScrollTo.class,
     Copy.class,
     Paste.class,
     Cut.class,

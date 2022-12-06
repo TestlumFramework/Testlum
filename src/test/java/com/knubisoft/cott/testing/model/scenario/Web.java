@@ -69,6 +69,8 @@ public class Web
         @XmlElement(name = "navigate", type = Navigate.class),
         @XmlElement(name = "hovers", type = Hovers.class),
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
+        @XmlElement(name = "dragAndDrop", type = DragAndDrop.class),
+        @XmlElement(name = "hotKey", type = HotKey.class),
         @XmlElement(name = "closeTab", type = CloseTab.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
@@ -111,7 +113,7 @@ public class Web
      * {@link DragAndDrop }
      * {@link HotKey }
      * {@link CloseTab }
-     *
+     * 
      * 
      */
     public List<AbstractUiCommand> getClickOrInputOrAssert() {

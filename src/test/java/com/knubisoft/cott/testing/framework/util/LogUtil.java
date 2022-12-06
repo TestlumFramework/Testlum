@@ -8,6 +8,7 @@ import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Assert;
+import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
@@ -58,6 +59,8 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.HOTKEY_COMMAND;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.HOTKEY_COMMAND_LOCATOR;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.IMAGE_COMPARISON_TYPE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.IMAGE_FOR_COMPARISON_LOG;
@@ -377,5 +380,12 @@ public class LogUtil {
 
     public void logErrorStructureGeneration(final String path, final Exception ex) {
         log.error(INITIAL_STRUCTURE_GENERATION_ERROR, path, ex);
+    }
+
+    public static void logHotKeyInfo(final AbstractUiCommand command) {
+        log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
+        if (command instanceof CommandWithLocator) {
+            log.info(HOTKEY_COMMAND_LOCATOR, ((CommandWithLocator) command).getLocatorId());
+        }
     }
 }

@@ -19,10 +19,10 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
+ *         &lt;element name="capabilities" type="{http://www.knubisoft.com/cott/testing/model/global-config}capabilities" minOccurs="0"/&gt;
  *         &lt;element name="udid" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="deviceName" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="platformName" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}platform" /&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "abstractDevice", propOrder = {
+    "capabilities",
     "udid",
     "deviceName"
 })
@@ -42,14 +43,37 @@ import javax.xml.bind.annotation.XmlType;
 })
 public abstract class AbstractDevice {
 
+    protected Capabilities capabilities;
     @XmlElement(required = true)
     protected String udid;
     @XmlElement(required = true)
     protected String deviceName;
-    @XmlAttribute(name = "platformName", required = true)
-    protected Platform platformName;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
+
+    /**
+     * Gets the value of the capabilities property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Capabilities }
+     *     
+     */
+    public Capabilities getCapabilities() {
+        return capabilities;
+    }
+
+    /**
+     * Sets the value of the capabilities property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Capabilities }
+     *     
+     */
+    public void setCapabilities(Capabilities value) {
+        this.capabilities = value;
+    }
 
     /**
      * Gets the value of the udid property.
@@ -97,30 +121,6 @@ public abstract class AbstractDevice {
      */
     public void setDeviceName(String value) {
         this.deviceName = value;
-    }
-
-    /**
-     * Gets the value of the platformName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Platform }
-     *     
-     */
-    public Platform getPlatformName() {
-        return platformName;
-    }
-
-    /**
-     * Sets the value of the platformName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Platform }
-     *     
-     */
-    public void setPlatformName(Platform value) {
-        this.platformName = value;
     }
 
     /**

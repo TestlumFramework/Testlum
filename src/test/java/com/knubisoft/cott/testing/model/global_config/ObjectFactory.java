@@ -142,6 +142,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Capabilities }
+     * 
+     */
+    public Capabilities createCapabilities() {
+        return new Capabilities();
+    }
+
+    /**
+     * Create an instance of {@link Capability }
+     * 
+     */
+    public Capability createCapability() {
+        return new Capability();
+    }
+
+    /**
      * Create an instance of {@link PostgresIntegration }
      * 
      */
@@ -462,22 +478,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Capabilities }
-     * 
-     */
-    public Capabilities createCapabilities() {
-        return new Capabilities();
-    }
-
-    /**
-     * Create an instance of {@link Capability }
-     * 
-     */
-    public Capability createCapability() {
-        return new Capability();
-    }
-
-    /**
      * Create an instance of {@link Chrome }
      * 
      */
@@ -563,6 +563,22 @@ public class ObjectFactory {
      */
     public NativeDevice createNativeDevice() {
         return new NativeDevice();
+    }
+
+    /**
+     * Create an instance of {@link AndroidDevice }
+     * 
+     */
+    public AndroidDevice createAndroidDevice() {
+        return new AndroidDevice();
+    }
+
+    /**
+     * Create an instance of {@link IosDevice }
+     * 
+     */
+    public IosDevice createIosDevice() {
+        return new IosDevice();
     }
 
     /**

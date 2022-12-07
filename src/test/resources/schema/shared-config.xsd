@@ -119,4 +119,11 @@
         <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
+    <x:complexType name="authorization">
+        <x:sequence>
+            <x:element name="username" type="tns:nonEmptyString"/>
+            <x:element name="password" type="tns:nonEmptyString"/>
+        </x:sequence>
+    </x:complexType>
+
 </x:schema>

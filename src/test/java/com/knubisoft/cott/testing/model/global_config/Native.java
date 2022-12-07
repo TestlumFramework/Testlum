@@ -42,6 +42,8 @@ public class Native {
     protected NativeDeviceSettings deviceSettings;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
+    @XmlAttribute(name = "browserStackConnection", required = true)
+    protected boolean browserStackConnection;
 
     /**
      * Gets the value of the appiumServerUrl property.
@@ -107,4 +109,11 @@ public class Native {
         this.enabled = value;
     }
 
+    public boolean isBrowserStackConnectionEnabled() {
+        return browserStackConnection;
+    }
+
+    public void setBrowserStackConnection(boolean browserStackConnection) {
+        this.browserStackConnection = browserStackConnection;
+    }
 }

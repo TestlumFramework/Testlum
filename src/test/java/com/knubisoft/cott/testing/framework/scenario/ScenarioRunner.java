@@ -206,7 +206,8 @@ public class ScenarioRunner {
 
     private WebDriver createNativeDriver() {
         return Objects.nonNull(scenarioArguments.getNativeDevice())
-                ? NativeDriverFactory.createDriver(scenarioArguments.getNativeDevice())
+                ? NativeDriverFactory.createDriver(scenarioArguments.getNativeDevice(),
+                scenarioArguments.getBrowserStack())
                 : new MockDriver(NATIVE_DRIVER_NOT_INIT);
     }
 

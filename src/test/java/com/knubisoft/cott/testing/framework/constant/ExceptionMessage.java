@@ -126,7 +126,6 @@ public class ExceptionMessage {
 
     public static final String DB_NOT_SUPPORTED = "Database by name %s not supported";
 
-
     public static final String UNKNOWN_BROWSER_TYPE = "Unknown browser type was found. Available browser types are: "
             + "<local browser>, <browser in docker>, <remote browser>";
 

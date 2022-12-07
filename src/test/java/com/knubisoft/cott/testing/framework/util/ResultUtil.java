@@ -84,6 +84,8 @@ public class ResultUtil {
     public static final String DROP_DOWN_LOCATOR = "Locator for drop down command";
     public static final String DROP_DOWN_FOR = "Drop down command for";
     public static final String DROP_DOWN_BY = "Process by";
+
+    public static final String NATIVE_MOVE_TO = "Native moving direction";
     public static final String ALL_VALUES_DESELECT = "all values (deselect)";
     public static final String ONE_VALUE_TEMPLATE = "one value (%s)";
     public static final String NUMBER_OF_REPETITIONS = "Number of repetitions";

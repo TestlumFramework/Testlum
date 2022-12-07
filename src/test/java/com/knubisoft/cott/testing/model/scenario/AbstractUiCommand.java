@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
     CloseTab.class,
     Scroll.class,
     Image.class,
+    NavigateNative.class,
     HotKey.class,
     CommandWithLocator.class,
     Tab.class,

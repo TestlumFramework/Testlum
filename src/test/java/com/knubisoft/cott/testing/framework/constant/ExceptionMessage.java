@@ -126,6 +126,7 @@ public class ExceptionMessage {
 
     public static final String DB_NOT_SUPPORTED = "Database by name %s not supported";
 
+
     public static final String UNKNOWN_BROWSER_TYPE = "Unknown browser type was found. Available browser types are: "
             + "<local browser>, <browser in docker>, <remote browser>";
 
@@ -138,6 +139,7 @@ public class ExceptionMessage {
     public static final String WEB_ELEMENT_ATTRIBUTE_NOT_EXIST = "Web element does not have attribute <%s>";
     public static final String FOUND_MORE_THEN_ONE_ELEMENT = "More than one element was found by locator <%s>";
     public static final String SCROLL_TYPE_NOT_FOUND = "Scroll type <%s> not supported";
+    public static final String NAVIGATE_DESTINATION_UNSUPPORTED = "Native moving destination is unsupported";
     public static final String NO_LOCATOR_FOUND_FOR_INNER_SCROLL = "You didn't specify a locator for the inner scroll";
     public static final String INVALID_LOCATOR =
             "Locator type is not supported for INNER scroll. Your locator -> <%s>.";

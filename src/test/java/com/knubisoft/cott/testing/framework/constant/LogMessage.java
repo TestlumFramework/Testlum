@@ -116,6 +116,7 @@ public final class LogMessage {
     public static final String BROWSER_NAME_LOG = "Browser: {}";
     public static final String NATIVE_LOG = "Native device: {}";
     public static final String MOBILEBROWSER_LOG = "Mobilebrowser device: {}";
+    public static final String NATIVE_NAVIGATION_LOG = format(TABLE_FORMAT, "Navigate to", "{}");
     public static final String HTTP_STATUS_CODE = format(TABLE_FORMAT, "Status code", "{} {}");
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
     public static final String SCROLL_LOCATOR = format(TABLE_FORMAT, "Scroll locator", "{}");

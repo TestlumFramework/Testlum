@@ -1,0 +1,27 @@
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/cott/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/cott/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:complexType name="browserStack">
+        <x:sequence>
+            <x:element name="browserStackLogin" type="tns:browserStackLogin"/>
+            <x:element name="playMarketLogin" type="tns:playMarketLogin"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="browserStackLogin">
+        <x:complexContent>
+            <x:extension base="tns:authorization"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="playMarketLogin">
+        <x:complexContent>
+            <x:extension base="tns:authorization"/>
+        </x:complexContent>
+    </x:complexType>
+</x:schema>

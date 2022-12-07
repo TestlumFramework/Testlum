@@ -12,6 +12,7 @@
             <x:element name="deviceSettings" type="tns:nativeDeviceSettings"/>
         </x:sequence>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:attribute name="browserStackConnection" type="x:boolean" use="required"/>
     </x:complexType>
 
     <x:complexType name="nativeDeviceSettings">
@@ -41,6 +42,7 @@
         <x:complexContent>
             <x:extension base="tns:nativeDevice">
                 <x:sequence>
+                    <x:element name="app" type="tns:nonEmptyString"/>
                     <x:element name="appPackage" type="tns:nonEmptyString"/>
                     <x:element name="appActivity" type="tns:nonEmptyString"/>
                 </x:sequence>

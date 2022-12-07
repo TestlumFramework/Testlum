@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.configuration;
 
 import com.knubisoft.cott.testing.framework.parser.XMLParsers;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
+import com.knubisoft.cott.testing.model.global_config.BrowserStack;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Mobilebrowser;
@@ -46,7 +47,7 @@ public class GlobalTestConfigurationProvider {
     }
 
     public static Web getBrowserSettings() {
-       return GlobalTestConfigurationProvider.provide().getWeb();
+        return GlobalTestConfigurationProvider.provide().getWeb();
     }
 
     public static Mobilebrowser getMobilebrowserSettings() {
@@ -55,6 +56,10 @@ public class GlobalTestConfigurationProvider {
 
     public static Native getNativeSettings() {
         return GlobalTestConfigurationProvider.provide().getNative();
+    }
+
+    public static BrowserStack getBrowserStack() {
+        return GlobalTestConfigurationProvider.provide().getBrowserStack();
     }
 
     public static Integrations getIntegrations() {

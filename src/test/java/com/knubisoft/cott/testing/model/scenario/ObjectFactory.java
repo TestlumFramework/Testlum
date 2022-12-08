@@ -438,14 +438,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link NavigateNative }
-     * 
-     */
-    public NavigateNative createNavigateNative() {
-        return new NavigateNative();
-    }
-
-    /**
      * Create an instance of {@link HotKey }
      * 
      */
@@ -523,6 +515,14 @@ public class ObjectFactory {
      */
     public Space createSpace() {
         return new Space();
+    }
+
+    /**
+     * Create an instance of {@link NavigateNative }
+     * 
+     */
+    public NavigateNative createNavigateNative() {
+        return new NavigateNative();
     }
 
     /**

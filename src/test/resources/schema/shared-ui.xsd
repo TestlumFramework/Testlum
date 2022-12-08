@@ -230,22 +230,6 @@
         <x:attribute name="locator" type="tns:scenarioLocator" use="required"/>
         <x:attribute name="attribute" type="tns:nonEmptyString" default="src"/>
     </x:complexType>
-    
-    <x:complexType name="navigateNative">
-        <x:complexContent>
-            <x:extension base="tns:abstractUiCommand">
-                <x:attribute name="destination" type="tns:navigateNativeDestination" use="required"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-    
-    <x:simpleType name="navigateNativeDestination">
-        <x:restriction base="x:string">
-            <x:enumeration value="back"/>
-            <x:enumeration value="home"/>
-            <x:enumeration value="overview"/>
-        </x:restriction>
-    </x:simpleType>
 
     <x:complexType name="hotKey">
         <x:complexContent>

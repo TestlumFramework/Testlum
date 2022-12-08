@@ -31,6 +31,7 @@ public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
     @Override
     public void execute(final NavigateNative navigateNative, final CommandResult result) {
         result.put(NATIVE_MOVE_TO, navigateNative.getDestination());
+        log.info(NATIVE_NAVIGATION_LOG, navigateNative.getDestination());
         if (dependencies.getDriver() instanceof AndroidDriver) {
             performAndroidNavigation(navigateNative);
         }
@@ -38,7 +39,6 @@ public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
             IOSDriver driver = (IOSDriver) dependencies.getDriver();
             //TODO performIosNavigation
         }
-        log.info(NATIVE_NAVIGATION_LOG, navigateNative.getDestination());
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 

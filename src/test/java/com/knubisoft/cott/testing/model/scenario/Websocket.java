@@ -12,19 +12,19 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for webSocket complex type.
+ * <p>Java class for websocket complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="webSocket"&gt;
+ * &lt;complexType name="websocket"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="topic" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketTopic" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;choice maxOccurs="unbounded"&gt;
- *           &lt;element name="send" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketSend" maxOccurs="unbounded"/&gt;
- *           &lt;element name="receive" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketReceive" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="stomp" type="{http://www.knubisoft.com/cott/testing/model/scenario}websocketStomp" minOccurs="0"/&gt;
+ *         &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
+ *           &lt;element name="send" type="{http://www.knubisoft.com/cott/testing/model/scenario}websocketSend"/&gt;
+ *           &lt;element name="receive" type="{http://www.knubisoft.com/cott/testing/model/scenario}websocketReceive"/&gt;
  *         &lt;/choice&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}aliasPattern" /&gt;
@@ -37,18 +37,18 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "webSocket", propOrder = {
-    "topic",
+@XmlType(name = "websocket", propOrder = {
+    "stomp",
     "sendOrReceive"
 })
-public class WebSocket
+public class Websocket
     extends AbstractCommand
 {
 
-    protected List<WebSocketTopic> topic;
+    protected WebsocketStomp stomp;
     @XmlElements({
-        @XmlElement(name = "send", type = WebSocketSend.class),
-        @XmlElement(name = "receive", type = WebSocketReceive.class)
+        @XmlElement(name = "send", type = WebsocketSend.class),
+        @XmlElement(name = "receive", type = WebsocketReceive.class)
     })
     protected List<Object> sendOrReceive;
     @XmlAttribute(name = "alias", required = true)
@@ -57,32 +57,27 @@ public class WebSocket
     protected Boolean disconnect;
 
     /**
-     * Gets the value of the topic property.
+     * Gets the value of the stomp property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the topic property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTopic().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link WebSocketTopic }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link WebsocketStomp }
+     *     
      */
-    public List<WebSocketTopic> getTopic() {
-        if (topic == null) {
-            topic = new ArrayList<WebSocketTopic>();
-        }
-        return this.topic;
+    public WebsocketStomp getStomp() {
+        return stomp;
+    }
+
+    /**
+     * Sets the value of the stomp property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link WebsocketStomp }
+     *     
+     */
+    public void setStomp(WebsocketStomp value) {
+        this.stomp = value;
     }
 
     /**
@@ -103,8 +98,8 @@ public class WebSocket
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link WebSocketSend }
-     * {@link WebSocketReceive }
+     * {@link WebsocketSend }
+     * {@link WebsocketReceive }
      * 
      * 
      */

@@ -143,7 +143,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Capabilities }
-     *
+     * 
      */
     public Capabilities createCapabilities() {
         return new Capabilities();
@@ -151,7 +151,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Capability }
-     *
+     * 
      */
     public Capability createCapability() {
         return new Capability();
@@ -567,7 +567,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link AndroidDevice }
-     *
+     * 
      */
     public AndroidDevice createAndroidDevice() {
         return new AndroidDevice();
@@ -575,7 +575,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link IosDevice }
-     *
+     * 
      */
     public IosDevice createIosDevice() {
         return new IosDevice();

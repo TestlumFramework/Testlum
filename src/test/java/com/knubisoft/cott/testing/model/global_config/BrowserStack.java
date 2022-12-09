@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="browserStackLogin" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserStackLogin"/&gt;
- *         &lt;element name="deviceSettings" type="{http://www.knubisoft.com/cott/testing/model/global-config}playMarketLogin"/&gt;
+ *         &lt;element name="playMarketLogin" type="{http://www.knubisoft.com/cott/testing/model/global-config}playMarketLogin"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -38,19 +38,51 @@ public class BrowserStack {
     @XmlElement(required = true)
     protected PlayMarketLogin playMarketLogin;
 
+    /**
+     * Gets the value of the browserStackLogin property.
+     *
+     * @return
+     *     possible object is
+     *     {@link BrowserStackLogin }
+     *
+     */
     public BrowserStackLogin getBrowserStackLogin() {
         return browserStackLogin;
     }
 
-    public void setBrowserStackLogin(BrowserStackLogin browserStackLogin) {
-        this.browserStackLogin = browserStackLogin;
+    /**
+     * Sets the value of the browserStackLogin property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link BrowserStackLogin }
+     *
+     */
+    public void setBrowserStackLogin(BrowserStackLogin value) {
+        this.browserStackLogin = value;
     }
 
+    /**
+     * Gets the value of the playMarketLogin property.
+     *
+     * @return
+     *     possible object is
+     *     {@link PlayMarketLogin }
+     *
+     */
     public PlayMarketLogin getPlayMarketLogin() {
         return playMarketLogin;
     }
 
-    public void setPlayMarketLogin(PlayMarketLogin playMarketLogin) {
-        this.playMarketLogin = playMarketLogin;
+    /**
+     * Sets the value of the playMarketLogin property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link PlayMarketLogin }
+     *
+     */
+    public void setPlayMarketLogin(PlayMarketLogin value) {
+        this.playMarketLogin = value;
     }
 }

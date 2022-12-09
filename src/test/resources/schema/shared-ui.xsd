@@ -231,6 +231,62 @@
         <x:attribute name="attribute" type="tns:nonEmptyString" default="src"/>
     </x:complexType>
 
+    <x:complexType name="dragAndDrop">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice>
+                    <x:element name="fromLocatorId" type="tns:nonEmptyString"/>
+                    <x:element name="filePath" type="tns:nonEmptyString"/>
+                </x:choice>
+                <x:attribute name="toLocatorId" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="dropFile" type="x:boolean" default="false"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="dragAndDropNative">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="fromLocatorId" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="toLocatorId" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="scrollNative">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="type" type="tns:scrollType" use="required"/>
+                <x:attribute name="direction" type="tns:scrollDirection" default="down"/>
+                <x:attribute name="value" type="x:int" use="required"/>
+                <x:attribute name="locator" type="tns:scenarioLocator"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="scrollToNative">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="swipeNative">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="direction" type="tns:swipeDirection" use="required"/>
+                <x:attribute name="quantity" type="x:int" default="1"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="swipeDirection">
+        <x:restriction base="x:string">
+            <x:enumeration value="right"/>
+            <x:enumeration value="left"/>
+        </x:restriction>
+    </x:simpleType>
+
     <x:complexType name="hotKey">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">

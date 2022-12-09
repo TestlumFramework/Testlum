@@ -26,6 +26,10 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}wait"/&gt;
  *         &lt;element name="clear" type="{http://www.knubisoft.com/cott/testing/model/scenario}clear"/&gt;
  *         &lt;element name="image" type="{http://www.knubisoft.com/cott/testing/model/scenario}image"/&gt;
+ *         &lt;element name="dragAndDrop" type="{http://www.knubisoft.com/cott/testing/model/scenario}dragAndDropNative"/&gt;
+ *         &lt;element name="scroll" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollNative"/&gt;
+ *         &lt;element name="scrollTo" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollToNative"/&gt;
+ *         &lt;element name="swipe" type="{http://www.knubisoft.com/cott/testing/model/scenario}swipeNative"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -48,7 +52,11 @@ public class Native
         @XmlElement(name = "assert", type = Assert.class),
         @XmlElement(name = "wait", type = Wait.class),
         @XmlElement(name = "clear", type = Clear.class),
-        @XmlElement(name = "image", type = Image.class)
+        @XmlElement(name = "image", type = Image.class),
+        @XmlElement(name = "dragAndDrop", type = DragAndDropNative.class),
+        @XmlElement(name = "scroll", type = ScrollNative.class),
+        @XmlElement(name = "scrollTo", type = ScrollToNative.class),
+        @XmlElement(name = "swipe", type = SwipeNative.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
 
@@ -76,6 +84,10 @@ public class Native
      * {@link Wait }
      * {@link Clear }
      * {@link Image }
+     * {@link DragAndDropNative }
+     * {@link ScrollNative }
+     * {@link ScrollToNative }
+     * {@link SwipeNative }
      * 
      * 
      */

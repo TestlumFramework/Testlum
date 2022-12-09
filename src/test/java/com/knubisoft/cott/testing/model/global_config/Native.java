@@ -109,10 +109,18 @@ public class Native {
         this.enabled = value;
     }
 
+    /**
+     * Gets the value of the browserStackConnection property.
+     *
+     */
     public boolean isBrowserStackConnectionEnabled() {
         return browserStackConnection;
     }
 
+    /**
+     * Sets the value of the browserStackConnection property.
+     *
+     */
     public void setBrowserStackConnection(boolean browserStackConnection) {
         this.browserStackConnection = browserStackConnection;
     }

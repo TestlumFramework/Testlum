@@ -1,7 +1,6 @@
 package com.knubisoft.cott.testing.framework.util;
 
 import com.knubisoft.cott.testing.model.global_config.AbstractDevice;
-import com.knubisoft.cott.testing.model.global_config.BrowserStack;
 import com.knubisoft.cott.testing.model.global_config.Capabilities;
 import io.appium.java_client.remote.MobileCapabilityType;
 import lombok.experimental.UtilityClass;
@@ -30,13 +29,6 @@ public class MobileDriverUtil {
             capabilities.getCapability()
                     .forEach(cap -> desiredCapabilities.setCapability(cap.getCapabilityName(), cap.getValue()));
         }
-    }
-
-    public void setBrowserStackConnection(final DesiredCapabilities desiredCapabilities,
-                                          final BrowserStack browserStack){
-        desiredCapabilities.setCapability("browserstack.user", browserStack.getBrowserStackLogin().getUsername());
-        desiredCapabilities.setCapability("browserstack.key", browserStack.getBrowserStackLogin().getPassword());
-        desiredCapabilities.setCapability("browserstack.local", "true");
     }
 
 }

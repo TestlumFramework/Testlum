@@ -118,6 +118,8 @@ public final class LogMessage {
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
     public static final String SCROLL_LOCATOR = format(TABLE_FORMAT, "Scroll locator", "{}");
     public static final String SCROLL_TYPE = format(TABLE_FORMAT, "Scroll type", "{}");
+    public static final String HOTKEY_COMMAND = format(TABLE_FORMAT, "Hotkey command", "{}");
+    public static final String HOTKEY_COMMAND_LOCATOR = format(TABLE_FORMAT, "Hotkey command locator", "{}");
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "Method", "{}");
     public static final String SMTP_HOST_LOG = format(TABLE_FORMAT, "SMTP Host", "{}");
     public static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");
@@ -157,7 +159,7 @@ public final class LogMessage {
 
     public static final String BROWSER_INFO = "%s | type = %s | version = %s";
     public static final String MOBILEBROWSER_INFO = "Device name = %s | platform = %s";
-    public static final String NATIVE_INFO = MOBILEBROWSER_INFO + " | app package = %s";
+    public static final String NATIVE_INFO = MOBILEBROWSER_INFO + " | udid = %s";
     public static final String EXTRACT_THEN_COMPARE = "Extract from web element then compare";
     public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a screenshot then compare";
 }

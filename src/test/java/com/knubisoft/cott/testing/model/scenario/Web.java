@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="navigate" type="{http://www.knubisoft.com/cott/testing/model/scenario}navigate"/&gt;
  *         &lt;element name="hovers" type="{http://www.knubisoft.com/cott/testing/model/scenario}hovers"/&gt;
  *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/cott/testing/model/scenario}switchToFrame"/&gt;
+ *         &lt;element name="hotKey" type="{http://www.knubisoft.com/cott/testing/model/scenario}hotKey"/&gt;
  *         &lt;element name="closeTab" type="{http://www.knubisoft.com/cott/testing/model/scenario}closeTab"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="clearCookiesAfterExecution" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
@@ -66,6 +67,8 @@ public class Web
         @XmlElement(name = "javascript", type = Javascript.class),
         @XmlElement(name = "navigate", type = Navigate.class),
         @XmlElement(name = "hovers", type = Hovers.class),
+        @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
+        @XmlElement(name = "hotKey", type = HotKey.class),
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
         @XmlElement(name = "closeTab", type = CloseTab.class)
     })
@@ -106,8 +109,9 @@ public class Web
      * {@link Navigate }
      * {@link Hovers }
      * {@link SwitchToFrame }
+     * {@link HotKey }
      * {@link CloseTab }
-     * 
+     *
      * 
      */
     public List<AbstractUiCommand> getClickOrInputOrAssert() {

@@ -1,6 +1,7 @@
 package com.knubisoft.cott.testing.framework.configuration.ui;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.MobileDriverUtil;
 import com.knubisoft.cott.testing.model.global_config.Mobilebrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
@@ -19,12 +20,28 @@ public class MobilebrowserDriverFactory {
     @SneakyThrows
     public WebDriver createDriver(final MobilebrowserDevice mobilebrowserDevice) {
         Mobilebrowser mobilebrowser = GlobalTestConfigurationProvider.provide().getMobilebrowser();
-        String serverUrl = mobilebrowser.getAppiumServerUrl();
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "5000");
         MobileDriverUtil.setCommonCapabilities(mobilebrowserDevice, desiredCapabilities);
-        WebDriver driver = new AppiumDriver(new URL(serverUrl), desiredCapabilities);
+        setPlatformCapabilities(mobilebrowserDevice, desiredCapabilities);
+        WebDriver driver = new AppiumDriver(new URL(mobilebrowser.getAppiumServerUrl()), desiredCapabilities);
         driver.get(mobilebrowser.getBaseUrl());
         return driver;
+    }
+
+    private void setPlatformCapabilities(final MobilebrowserDevice abstractDevice,
+                                         final DesiredCapabilities desiredCapabilities) {
+        switch (abstractDevice.getPlatformName()) {
+            case ANDROID:
+                MobileDriverUtil.setAutomation(desiredCapabilities, "Android", "uiautomator2");
+                desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Chrome");
+                break;
+            case IOS:
+                MobileDriverUtil.setAutomation(desiredCapabilities, "iOS", "XCUITest");
+                desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Safari");
+                break;
+            default:
+                throw new DefaultFrameworkException("The mobile platform name is undefined");
+
+        }
     }
 }

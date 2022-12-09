@@ -32,8 +32,14 @@ import javax.xml.bind.annotation.XmlType;
     Navigate.class,
     CloseTab.class,
     Scroll.class,
+    Image.class,
+    HotKey.class,
     CommandWithLocator.class,
-    Image.class
+    Tab.class,
+    Enter.class,
+    BackSpace.class,
+    Escape.class,
+    Space.class
 })
 public abstract class AbstractUiCommand
     extends AbstractCommand

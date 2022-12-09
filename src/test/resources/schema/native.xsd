@@ -18,6 +18,10 @@
                     <x:element name="clear" type="tns:clear"/>
                     <x:element name="image" type="tns:image"/>
                     <x:element name="navigate" type="tns:navigateNative"/>
+                    <x:element name="dragAndDrop" type="tns:dragAndDropNative"/>
+                    <x:element name="scroll" type="tns:scrollNative"/>
+                    <x:element name="scrollTo" type="tns:scrollToNative"/>
+                    <x:element name="swipe" type="tns:swipeNative"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>

@@ -438,6 +438,46 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DragAndDrop }
+     * 
+     */
+    public DragAndDrop createDragAndDrop() {
+        return new DragAndDrop();
+    }
+
+    /**
+     * Create an instance of {@link DragAndDropNative }
+     * 
+     */
+    public DragAndDropNative createDragAndDropNative() {
+        return new DragAndDropNative();
+    }
+
+    /**
+     * Create an instance of {@link ScrollNative }
+     * 
+     */
+    public ScrollNative createScrollNative() {
+        return new ScrollNative();
+    }
+
+    /**
+     * Create an instance of {@link ScrollToNative }
+     * 
+     */
+    public ScrollToNative createScrollToNative() {
+        return new ScrollToNative();
+    }
+
+    /**
+     * Create an instance of {@link SwipeNative }
+     * 
+     */
+    public SwipeNative createSwipeNative() {
+        return new SwipeNative();
+    }
+
+    /**
      * Create an instance of {@link HotKey }
      * 
      */

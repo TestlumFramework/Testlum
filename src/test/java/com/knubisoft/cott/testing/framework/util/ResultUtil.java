@@ -14,6 +14,7 @@ import com.knubisoft.cott.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.cott.testing.model.scenario.RmqHeaders;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
+import com.knubisoft.cott.testing.model.scenario.ScrollNative;
 import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.SendRmqMessage;
@@ -93,6 +94,12 @@ public class ResultUtil {
     public static final String URL_TO_ACTUAL_IMAGE = "URL to actual image";
     public static final String ADDITIONAL_INFO = "Additional info";
     public static final String IMAGE_ATTACHED_TO_STEP = "Actual image attached to report step";
+    public static final String FROM_LOCATOR = "From element with locator";
+    public static final String FROM_LOCAL_FILE = "From local file";
+    public static final String TO_LOCATOR = "To element with locator";
+    public static final String SCROLL_TO_ELEMENT = "Scrolling to element with locator id";
+    public static final String PERFORM_SWIPE = "Perform swipe with direction";
+    public static final String AMOUNT_OF_SWIPES = "Amount of swipes";
     private static final String SCROLL_DIRECTION = "Scroll direction";
     private static final String SCROLL_MEASURE = "Scroll measure";
     private static final String SCROLL_TYPE = "Scroll type";
@@ -153,6 +160,7 @@ public class ResultUtil {
     private static final String IMAGE_COMPARISON_TYPE = "Image comparison type";
     private static final String IMAGE_LOCATOR = "Locator to element with image";
     private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
+
 
     public CommandResult createCommandResultForUiSubCommand(final int number, final String name, final String comment) {
         CommandResult subCommandResult = createNewCommandResultInstance(number);
@@ -398,6 +406,16 @@ public class ResultUtil {
         if (ScrollType.INNER.equals(scroll.getType())) {
             commandResult.put(LOCATOR_FOR_SCROLL, scroll.getLocator());
         }
+    }
+
+    public void addScrollNativeMetaDada(final ScrollNative scrollNative,
+                                        final CommandResult commandResult) {
+        commandResult.put(SCROLL_TYPE, scrollNative.getType());
+        if (ScrollType.INNER.equals(scrollNative.getType())) {
+            commandResult.put(LOCATOR_FOR_SCROLL, scrollNative.getLocator());
+        }
+        commandResult.put(SCROLL_DIRECTION, scrollNative.getDirection());
+        commandResult.put(VALUE, scrollNative.getValue());
     }
 
     public void addHoversMetaData(final Hovers hovers, final CommandResult result) {

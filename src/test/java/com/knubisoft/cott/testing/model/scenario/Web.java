@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="navigate" type="{http://www.knubisoft.com/cott/testing/model/scenario}navigate"/&gt;
  *         &lt;element name="hovers" type="{http://www.knubisoft.com/cott/testing/model/scenario}hovers"/&gt;
  *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/cott/testing/model/scenario}switchToFrame"/&gt;
+ *         &lt;element name="dragAndDrop" type="{http://www.knubisoft.com/cott/testing/model/scenario}dragAndDrop"/&gt;
  *         &lt;element name="hotKey" type="{http://www.knubisoft.com/cott/testing/model/scenario}hotKey"/&gt;
  *         &lt;element name="closeTab" type="{http://www.knubisoft.com/cott/testing/model/scenario}closeTab"/&gt;
  *       &lt;/choice&gt;
@@ -68,6 +69,7 @@ public class Web
         @XmlElement(name = "navigate", type = Navigate.class),
         @XmlElement(name = "hovers", type = Hovers.class),
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
+        @XmlElement(name = "dragAndDrop", type = DragAndDrop.class),
         @XmlElement(name = "hotKey", type = HotKey.class),
         @XmlElement(name = "closeTab", type = CloseTab.class)
     })
@@ -108,6 +110,7 @@ public class Web
      * {@link Navigate }
      * {@link Hovers }
      * {@link SwitchToFrame }
+     * {@link DragAndDrop }
      * {@link HotKey }
      * {@link CloseTab }
      * 

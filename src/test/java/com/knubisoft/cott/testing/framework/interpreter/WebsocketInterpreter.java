@@ -1,6 +1,6 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
-import com.knubisoft.cott.testing.framework.configuration.websocket.WebsocketMessageHandler;
+import com.knubisoft.cott.testing.framework.configuration.websocket.WebsocketConnectionManager;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.CompareBuilder;
@@ -8,21 +8,22 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependenc
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
+import com.knubisoft.cott.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.ScenarioUtil;
-import com.knubisoft.cott.testing.model.scenario.WebSocket;
-import com.knubisoft.cott.testing.model.scenario.WebSocketReceive;
-import com.knubisoft.cott.testing.model.scenario.WebSocketSend;
-import com.knubisoft.cott.testing.model.scenario.WebSocketTopic;
+import com.knubisoft.cott.testing.model.scenario.Websocket;
+import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
+import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
+import com.knubisoft.cott.testing.model.scenario.WebsocketSubscribe;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.stomp.StompSession;
 
-import java.util.HashMap;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,54 +32,51 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.knubisoft.cott.testing.framework.configuration.websocket.WebsocketConfiguration.WebsocketConnectionSupplier;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.CLOSE_BRACE;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.CLOSE_SQUARE_BRACKET;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEBSOCKET_CONNECTION_FAILURE;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEBSOCKET_NOT_ALL_MESSAGES_RECEIVED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SEND_ACTION;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUBSCRIBE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.UNABLE_TO_DISCONNECT_BECAUSE_CONNECTION_CLOSED;
 import static java.lang.String.format;
 
 @Slf4j
-@InterpreterForClass(WebSocket.class)
-public class WebsocketInterpreter extends AbstractInterpreter<WebSocket> {
-
-    private final Map<String, StompSession> aliasToStompSession = new HashMap<>();
-    private final Map<String, WebsocketMessageHandler> topicToMessageHandler = new HashMap<>();
-
-    private StompSession stompSession;
+@InterpreterForClass(Websocket.class)
+public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
     @Autowired(required = false)
-    private Map<String, WebsocketConnectionSupplier> websocketConnections;
+    public Map<String, WebsocketConnectionManager> wsConnectionSupplier;
 
     public WebsocketInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
     }
 
     @Override
-    protected void acceptImpl(final WebSocket websocket, final CommandResult commandResult) {
+    protected void acceptImpl(final Websocket websocket, final CommandResult commandResult) {
         List<CommandResult> subCommandsResultList = new LinkedList<>();
         commandResult.setSubCommandsResult(subCommandsResultList);
         processWebsockets(websocket, subCommandsResultList);
         ResultUtil.setExecutionResultIfSubCommandsFailed(commandResult);
     }
 
-    private void processWebsockets(final WebSocket websocket,
+    private void processWebsockets(final Websocket websocket,
                                    final List<CommandResult> subCommandsResultList) {
-        executeConnection(websocket);
-        subscribeToTopics(websocket);
+        openConnection(websocket);
         runActions(websocket, subCommandsResultList);
-        disconnectFromSessionIfEnabled(websocket);
+        disconnectIfEnabled(websocket);
     }
 
-    private void executeConnection(final WebSocket websocket) {
+    private void openConnection(final Websocket websocket) {
         String alias = websocket.getAlias();
+        LogUtil.logAlias(alias);
         try {
-            this.stompSession = aliasToStompSession.get(alias);
-            if (Objects.isNull(stompSession) || !stompSession.isConnected()) {
-                WebsocketConnectionSupplier websocketConnection = websocketConnections.get(alias);
-                this.stompSession = websocketConnection.get().get();
-                aliasToStompSession.put(alias, stompSession);
+            WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(alias);
+            if (!wsConnectionManager.isConnected()) {
+                wsConnectionManager.openConnection();
             }
         } catch (Exception e) {
             LogUtil.logException(e);
@@ -86,20 +84,11 @@ public class WebsocketInterpreter extends AbstractInterpreter<WebSocket> {
         }
     }
 
-    private void subscribeToTopics(final WebSocket websocket) {
-        websocket.getTopic().stream()
-                .distinct()
-                .map(WebSocketTopic::getValue)
-                .forEach(topic -> {
-                    WebsocketMessageHandler handler = new WebsocketMessageHandler();
-                    topicToMessageHandler.put(topic, handler);
-                    stompSession.subscribe(topic, handler);
-                });
-    }
-
-    private void runActions(final WebSocket websocket,
+    private void runActions(final Websocket websocket,
                             final List<CommandResult> subCommandsResultList) {
-        websocket.getSendOrReceive().forEach(action -> {
+        List<Object> websocketActions = Objects.isNull(websocket.getStomp())
+                ? websocket.getSendOrReceive() : websocket.getStomp().getSubscribeOrSendOrReceive();
+        websocketActions.forEach(action -> {
             LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action);
             CommandResult result = ResultUtil.createNewCommandResultInstance(dependencies.getPosition().intValue());
             processEachAction(action, websocket.getAlias(), result);
@@ -110,7 +99,6 @@ public class WebsocketInterpreter extends AbstractInterpreter<WebSocket> {
     private void processEachAction(final Object action,
                                    final String alias,
                                    final CommandResult result) {
-        LogUtil.logAlias(alias);
         StopWatch stopWatch = StopWatch.createStarted();
         try {
             executeAction(action, alias, result);
@@ -126,68 +114,75 @@ public class WebsocketInterpreter extends AbstractInterpreter<WebSocket> {
 
     private void executeAction(final Object action,
                                final String alias,
-                               final CommandResult result) {
-        if (action instanceof WebSocketSend) {
-            sendMessage((WebSocketSend) action, alias, result);
+                               final CommandResult result) throws IOException {
+        if (action instanceof WebsocketSend) {
+            sendMessage((WebsocketSend) action, alias, result);
+        } else if (action instanceof WebsocketReceive) {
+            receiveMessages((WebsocketReceive) action, alias, result);
         } else {
-            receiveMessages((WebSocketReceive) action, alias, result);
+            subscribeToTopic((WebsocketSubscribe) action, alias, result);
         }
     }
 
-    private void sendMessage(final WebSocketSend wsSend,
+    private void sendMessage(final WebsocketSend wsSend,
                              final String alias,
-                             final CommandResult result) {
+                             final CommandResult result) throws IOException {
         final String message = getMessageToSend(wsSend);
         ResultUtil.addWebsocketInfoForSendAction(wsSend, alias, message, result);
-        LogUtil.logWebsocketActionInfo(SEND_ACTION, wsSend.getEndpoint(), message);
-        stompSession.send(wsSend.getEndpoint(), message);
+        LogUtil.logWebsocketActionInfo(SEND_ACTION, wsSend.getComment(), wsSend.getEndpoint(), message);
 
-        if (Objects.nonNull(wsSend.getReceive())) {
-            receiveMessages(wsSend.getReceive(), alias, result);
-            ResultUtil.addWebsocketInfoForSendAndReceiveAction(result);
-        }
+        WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(alias);
+        wsConnectionManager.sendMessage(wsSend, message);
     }
 
-    private void receiveMessages(final WebSocketReceive wsReceive,
+    private void receiveMessages(final WebsocketReceive wsReceive,
                                  final String alias,
                                  final CommandResult result) {
         final String expectedContent = getExpectedContent(wsReceive);
         ResultUtil.addWebsocketInfoForReceiveAction(wsReceive, alias, result);
-        LogUtil.logWebsocketActionInfo(RECEIVE_ACTION, wsReceive.getTopic(), expectedContent);
+        LogUtil.logWebsocketActionInfo(RECEIVE_ACTION, wsReceive.getComment(), wsReceive.getTopic(), expectedContent);
 
-        final List<String> contentToCompare = getActualMessages(wsReceive);
-
-        result.setActual(PrettifyStringJson.getJSONResult(toString(contentToCompare)));
+        final List<Object> actualContent = getMessagesToCompare(wsReceive, alias);
+        result.setActual(PrettifyStringJson.getJSONResult(toString(actualContent)));
         result.setExpected(PrettifyStringJson.getJSONResult(expectedContent));
 
-        executeComparison(contentToCompare, expectedContent);
+        executeComparison(actualContent, expectedContent);
     }
 
-    private List<String> getActualMessages(final WebSocketReceive wsReceive) {
-        WebsocketMessageHandler handler = topicToMessageHandler.get(wsReceive.getTopic());
-        LinkedList<String> receivedMessages = handler.getReceivedMessages();
-
+    private List<Object> getMessagesToCompare(final WebsocketReceive wsReceive, final String alias) {
+        WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(alias);
+        LinkedList<String> receivedMessages = wsConnectionManager.receiveMessages(wsReceive.getTopic());
         checkMessagesReceived(wsReceive, receivedMessages);
 
-        return IntStream.range(0, wsReceive.getValuesNumber())
+        int messageCount = wsReceive.getCount();
+        if (messageCount == 0) {
+            return Collections.unmodifiableList(receivedMessages);
+        }
+        return IntStream.range(0, messageCount)
                 .mapToObj(id -> receivedMessages.pollFirst())
+                .filter(Objects::nonNull)
+                .map(this::toJsonObject)
                 .collect(Collectors.toList());
     }
 
     @SneakyThrows
-    private void checkMessagesReceived(final WebSocketReceive wsReceive,
+    private void checkMessagesReceived(final WebsocketReceive wsReceive,
                                        final LinkedList<String> receivedMessages) {
-        int requiredMessagesNumber = wsReceive.getValuesNumber();
-        if (requiredMessagesNumber > receivedMessages.size()) {
+        int requiredMessageCount = wsReceive.getCount();
+        if (requiredMessageCount > receivedMessages.size()) {
             TimeUnit.MILLISECONDS.sleep(wsReceive.getTimeoutMillis());
-            if (requiredMessagesNumber > receivedMessages.size()) {
-                log.error(format(
-                        WEBSOCKET_NOT_ALL_MESSAGES_RECEIVED, requiredMessagesNumber - receivedMessages.size()));
-            }
         }
     }
 
-    private void executeComparison(final List<String> actualContent,
+    private Object toJsonObject(final String content) {
+        if ((content.startsWith(OPEN_BRACE) && content.endsWith(CLOSE_BRACE))
+                || (content.startsWith(OPEN_SQUARE_BRACKET) && content.endsWith(CLOSE_SQUARE_BRACKET))) {
+            return JacksonMapperUtil.readValue(content, Object.class);
+        }
+        return content;
+    }
+
+    private void executeComparison(final List<Object> actualContent,
                                    final String expectedContent) {
         CompareBuilder comparator = newCompare()
                 .withExpected(expectedContent)
@@ -195,11 +190,19 @@ public class WebsocketInterpreter extends AbstractInterpreter<WebSocket> {
         comparator.exec();
     }
 
-    private String getMessageToSend(final WebSocketSend wsSend) {
+    private void subscribeToTopic(final WebsocketSubscribe wsSubscribe,
+                                  final String alias,
+                                  final CommandResult result) {
+        ResultUtil.addWebsocketInfoForSubscribeAction(wsSubscribe, alias, result);
+        LogUtil.logWebsocketActionInfo(SUBSCRIBE, wsSubscribe.getComment(), wsSubscribe.getTopic(), EMPTY);
+        wsConnectionSupplier.get(alias).subscribeTo(wsSubscribe.getTopic());
+    }
+
+    private String getMessageToSend(final WebsocketSend wsSend) {
         return getValue(wsSend.getMessage(), wsSend.getFile());
     }
 
-    private String getExpectedContent(final WebSocketReceive wsReceive) {
+    private String getExpectedContent(final WebsocketReceive wsReceive) {
         return getValue(wsReceive.getMessage(), wsReceive.getFile());
     }
 
@@ -209,11 +212,13 @@ public class WebsocketInterpreter extends AbstractInterpreter<WebSocket> {
                 : FileSearcher.searchFileToString(file, dependencies.getFile());
     }
 
-    private void disconnectFromSessionIfEnabled(final WebSocket websocket) {
-        boolean isDisconnectEnabled = websocket.isDisconnect() && Objects.nonNull(stompSession);
-        if (isDisconnectEnabled && stompSession.isConnected()) {
-            stompSession.disconnect();
-        } else if (isDisconnectEnabled && !stompSession.isConnected()) {
+    @SneakyThrows
+    private void disconnectIfEnabled(final Websocket websocket) {
+        boolean isDisconnectEnabled = websocket.isDisconnect();
+        WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(websocket.getAlias());
+        if (isDisconnectEnabled && wsConnectionManager.isConnected()) {
+            wsConnectionManager.closeConnection();
+        } else if (isDisconnectEnabled && !wsConnectionManager.isConnected()) {
             log.error(UNABLE_TO_DISCONNECT_BECAUSE_CONNECTION_CLOSED);
         }
     }

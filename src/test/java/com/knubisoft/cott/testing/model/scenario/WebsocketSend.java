@@ -8,12 +8,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for webSocketSend complex type.
+ * <p>Java class for websocketSend complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="webSocketSend"&gt;
+ * &lt;complexType name="websocketSend"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
@@ -21,9 +21,10 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;element name="message" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
  *           &lt;element name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}bodyFile"/&gt;
  *         &lt;/choice&gt;
- *         &lt;element name="receive" type="{http://www.knubisoft.com/cott/testing/model/scenario}webSocketReceive" minOccurs="0"/&gt;
+ *         &lt;element name="receive" type="{http://www.knubisoft.com/cott/testing/model/scenario}websocketReceive" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="endpoint" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}endpointPattern" /&gt;
+ *       &lt;attribute name="comment" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}stringMin10" /&gt;
+ *       &lt;attribute name="endpoint" type="{http://www.knubisoft.com/cott/testing/model/scenario}endpointPattern" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -32,17 +33,19 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "webSocketSend", propOrder = {
+@XmlType(name = "websocketSend", propOrder = {
     "message",
     "file",
     "receive"
 })
-public class WebSocketSend {
+public class WebsocketSend {
 
     protected String message;
     protected String file;
-    protected WebSocketReceive receive;
-    @XmlAttribute(name = "endpoint", required = true)
+    protected WebsocketReceive receive;
+    @XmlAttribute(name = "comment", required = true)
+    protected String comment;
+    @XmlAttribute(name = "endpoint")
     protected String endpoint;
 
     /**
@@ -98,10 +101,10 @@ public class WebSocketSend {
      * 
      * @return
      *     possible object is
-     *     {@link WebSocketReceive }
+     *     {@link WebsocketReceive }
      *     
      */
-    public WebSocketReceive getReceive() {
+    public WebsocketReceive getReceive() {
         return receive;
     }
 
@@ -110,11 +113,35 @@ public class WebSocketSend {
      * 
      * @param value
      *     allowed object is
-     *     {@link WebSocketReceive }
+     *     {@link WebsocketReceive }
      *     
      */
-    public void setReceive(WebSocketReceive value) {
+    public void setReceive(WebsocketReceive value) {
         this.receive = value;
+    }
+
+    /**
+     * Gets the value of the comment property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getComment() {
+        return comment;
+    }
+
+    /**
+     * Sets the value of the comment property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setComment(String value) {
+        this.comment = value;
     }
 
     /**

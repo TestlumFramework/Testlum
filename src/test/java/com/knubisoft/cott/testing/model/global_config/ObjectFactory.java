@@ -566,19 +566,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WebSockets }
+     * Create an instance of {@link Websockets }
      * 
      */
-    public WebSockets createWebSockets() {
-        return new WebSockets();
+    public Websockets createWebsockets() {
+        return new Websockets();
     }
 
     /**
-     * Create an instance of {@link WebSocket }
+     * Create an instance of {@link WebsocketApi }
      * 
      */
-    public WebSocket createWebSocket() {
-        return new WebSocket();
+    public WebsocketApi createWebsocketApi() {
+        return new WebsocketApi();
     }
 
     /**

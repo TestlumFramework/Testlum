@@ -32,7 +32,7 @@ public class MobilebrowserDriverFactory {
                                          final DesiredCapabilities desiredCapabilities) {
         switch (abstractDevice.getPlatformName()) {
             case ANDROID:
-                MobileDriverUtil.setAutomation(desiredCapabilities, "Android", "uiautomator");
+                MobileDriverUtil.setAutomation(desiredCapabilities, "Android", "uiautomator2");
                 desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Chrome");
                 break;
             case IOS:

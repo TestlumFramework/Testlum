@@ -230,11 +230,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WebSocket }
+     * Create an instance of {@link Websocket }
      * 
      */
-    public WebSocket createWebSocket() {
-        return new WebSocket();
+    public Websocket createWebsocket() {
+        return new Websocket();
     }
 
     /**
@@ -435,6 +435,46 @@ public class ObjectFactory {
      */
     public CompareWith createCompareWith() {
         return new CompareWith();
+    }
+
+    /**
+     * Create an instance of {@link DragAndDrop }
+     * 
+     */
+    public DragAndDrop createDragAndDrop() {
+        return new DragAndDrop();
+    }
+
+    /**
+     * Create an instance of {@link DragAndDropNative }
+     * 
+     */
+    public DragAndDropNative createDragAndDropNative() {
+        return new DragAndDropNative();
+    }
+
+    /**
+     * Create an instance of {@link ScrollNative }
+     * 
+     */
+    public ScrollNative createScrollNative() {
+        return new ScrollNative();
+    }
+
+    /**
+     * Create an instance of {@link ScrollToNative }
+     * 
+     */
+    public ScrollToNative createScrollToNative() {
+        return new ScrollToNative();
+    }
+
+    /**
+     * Create an instance of {@link SwipeNative }
+     * 
+     */
+    public SwipeNative createSwipeNative() {
+        return new SwipeNative();
     }
 
     /**
@@ -838,27 +878,35 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WebSocketTopic }
+     * Create an instance of {@link WebsocketStomp }
      * 
      */
-    public WebSocketTopic createWebSocketTopic() {
-        return new WebSocketTopic();
+    public WebsocketStomp createWebsocketStomp() {
+        return new WebsocketStomp();
     }
 
     /**
-     * Create an instance of {@link WebSocketSend }
+     * Create an instance of {@link WebsocketSubscribe }
      * 
      */
-    public WebSocketSend createWebSocketSend() {
-        return new WebSocketSend();
+    public WebsocketSubscribe createWebsocketSubscribe() {
+        return new WebsocketSubscribe();
     }
 
     /**
-     * Create an instance of {@link WebSocketReceive }
+     * Create an instance of {@link WebsocketSend }
      * 
      */
-    public WebSocketReceive createWebSocketReceive() {
-        return new WebSocketReceive();
+    public WebsocketSend createWebsocketSend() {
+        return new WebsocketSend();
+    }
+
+    /**
+     * Create an instance of {@link WebsocketReceive }
+     * 
+     */
+    public WebsocketReceive createWebsocketReceive() {
+        return new WebsocketReceive();
     }
 
 }

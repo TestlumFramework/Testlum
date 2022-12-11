@@ -14,6 +14,7 @@ import com.knubisoft.cott.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.cott.testing.model.scenario.RmqHeaders;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
+import com.knubisoft.cott.testing.model.scenario.ScrollNative;
 import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.SendRmqMessage;
@@ -23,8 +24,9 @@ import com.knubisoft.cott.testing.model.scenario.SesBody;
 import com.knubisoft.cott.testing.model.scenario.SesMessage;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
-import com.knubisoft.cott.testing.model.scenario.WebSocketReceive;
-import com.knubisoft.cott.testing.model.scenario.WebSocketSend;
+import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
+import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
+import com.knubisoft.cott.testing.model.scenario.WebsocketSubscribe;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
@@ -92,6 +94,12 @@ public class ResultUtil {
     public static final String URL_TO_ACTUAL_IMAGE = "URL to actual image";
     public static final String ADDITIONAL_INFO = "Additional info";
     public static final String IMAGE_ATTACHED_TO_STEP = "Actual image attached to report step";
+    public static final String FROM_LOCATOR = "From element with locator";
+    public static final String FROM_LOCAL_FILE = "From local file";
+    public static final String TO_LOCATOR = "To element with locator";
+    public static final String SCROLL_TO_ELEMENT = "Scrolling to element with locator id";
+    public static final String PERFORM_SWIPE = "Perform swipe with direction";
+    public static final String AMOUNT_OF_SWIPES = "Amount of swipes";
     private static final String SCROLL_DIRECTION = "Scroll direction";
     private static final String SCROLL_MEASURE = "Scroll measure";
     private static final String SCROLL_TYPE = "Scroll type";
@@ -109,12 +117,11 @@ public class ResultUtil {
     private static final String HEADERS_STATUS = "Headers status";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
     private static final String TOPIC = "Topic";
-    private static final String NUMBER_OF_VALUES = "Number of values";
+    private static final String NUMBER_OF_MESSAGES = "Number of messages";
     private static final String ROUTING_KEY = "Routing Key";
     private static final String EXCHANGE = "Exchange";
     private static final String ACTION = "Action";
     private static final String SEND = "Send";
-    private static final String COMMENT_FOR_WEBSOCKET_SEND_RECEIVE_ACTION = "Send and receive messages via websocket";
     private static final String COMMENT_FOR_WEBSOCKET_SEND_ACTION = "Send message via websocket";
     private static final String COMMENT_FOR_KAFKA_SEND_ACTION = "Send message to Kafka";
     private static final String COMMENT_FOR_RABBIT_SEND_ACTION = "Send message to RabbitMQ";
@@ -126,7 +133,7 @@ public class ResultUtil {
     private static final String BUCKET = "Bucket";
     private static final String CORRELATION_ID = "Correlation ID";
     private static final String RECEIVE = "Receive";
-    private static final String SEND_RECEIVE = "SendAndReceive";
+    private static final String SUBSCRIBE = "Subscribe";
     private static final String DATABASE = "Database";
     private static final String DATABASE_ALIAS = "Database alias";
     private static final String PATCHES = "Patches";
@@ -152,6 +159,7 @@ public class ResultUtil {
     private static final String IMAGE_COMPARISON_TYPE = "Image comparison type";
     private static final String IMAGE_LOCATOR = "Locator to element with image";
     private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
+
 
     public CommandResult createCommandResultForUiSubCommand(final int number, final String name, final String comment) {
         CommandResult subCommandResult = createNewCommandResultInstance(number);
@@ -320,30 +328,41 @@ public class ResultUtil {
         result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
     }
 
-    public void addWebsocketInfoForSendAction(final WebSocketSend sendAction,
+    public void addWebsocketInfoForSendAction(final WebsocketSend sendAction,
                                               final String alias,
                                               final String message,
                                               final CommandResult result) {
-        result.setCommandKey(SEND);
-        result.setComment(COMMENT_FOR_WEBSOCKET_SEND_ACTION);
-        addMessageBrokerGeneralMetaData(alias, SEND, ENDPOINT, sendAction.getEndpoint(), result);
+        addWebsocketGeneralInfo(SEND, sendAction.getComment(), alias, ENDPOINT, sendAction.getEndpoint(), result);
         result.put(MESSAGE_TO_SEND, message);
     }
 
-    public void addWebsocketInfoForReceiveAction(final WebSocketReceive receiveAction,
+    public void addWebsocketInfoForReceiveAction(final WebsocketReceive receiveAction,
                                                  final String alias,
                                                  final CommandResult result) {
-        result.setCommandKey(RECEIVE);
-        result.setComment(COMMENT_FOR_WEBSOCKET_RECEIVE_ACTION);
-        addMessageBrokerGeneralMetaData(alias, RECEIVE, TOPIC, receiveAction.getTopic(), result);
-        result.put(NUMBER_OF_VALUES, receiveAction.getValuesNumber());
+        addWebsocketGeneralInfo(RECEIVE, receiveAction.getComment(), alias, TOPIC, receiveAction.getTopic(), result);
+        result.put(NUMBER_OF_MESSAGES, receiveAction.getCount());
         result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
     }
 
-    public void addWebsocketInfoForSendAndReceiveAction(final CommandResult result) {
-        result.setCommandKey(SEND_RECEIVE);
-        result.setComment(COMMENT_FOR_WEBSOCKET_SEND_RECEIVE_ACTION);
-        result.put(ACTION, SEND_RECEIVE);
+    public void addWebsocketInfoForSubscribeAction(final WebsocketSubscribe subscribe,
+                                                   final String alias,
+                                                   final CommandResult result) {
+        addWebsocketGeneralInfo(SUBSCRIBE, subscribe.getComment(), alias, TOPIC, subscribe.getTopic(), result);
+    }
+
+    private static void addWebsocketGeneralInfo(final String action,
+                                                final String comment,
+                                                final String alias,
+                                                final String destination,
+                                                final String destinationValue,
+                                                final CommandResult result) {
+        result.setCommandKey(action);
+        result.setComment(comment);
+        result.put(ALIAS, alias);
+        result.put(ACTION, action);
+        if (StringUtils.isNotBlank(destinationValue)) {
+            result.put(destination, destinationValue);
+        }
     }
 
     public void addS3GeneralMetaData(final String alias,
@@ -397,6 +416,16 @@ public class ResultUtil {
         if (ScrollType.INNER.equals(scroll.getType())) {
             commandResult.put(LOCATOR_FOR_SCROLL, scroll.getLocator());
         }
+    }
+
+    public void addScrollNativeMetaDada(final ScrollNative scrollNative,
+                                        final CommandResult commandResult) {
+        commandResult.put(SCROLL_TYPE, scrollNative.getType());
+        if (ScrollType.INNER.equals(scrollNative.getType())) {
+            commandResult.put(LOCATOR_FOR_SCROLL, scrollNative.getLocator());
+        }
+        commandResult.put(SCROLL_DIRECTION, scrollNative.getDirection());
+        commandResult.put(VALUE, scrollNative.getValue());
     }
 
     public void addHoversMetaData(final Hovers hovers, final CommandResult result) {

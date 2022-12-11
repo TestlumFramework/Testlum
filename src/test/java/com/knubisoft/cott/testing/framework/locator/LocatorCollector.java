@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DUPLICATE_FILENAME_LOCATORS;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNABLE_PARSE_FILE_WITH_LOCATORS;
@@ -25,13 +24,14 @@ import static java.lang.String.format;
 public class LocatorCollector {
 
     private static final PageValidator PAGE_VALIDATOR = new PageValidator();
-    private final File pagesFolder;
+
+    private final Map<String, File> pageFiles;
 
     private final Map<String, File> componentFiles;
 
     public LocatorCollector() {
         TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
-        this.pagesFolder = resourceSettings.getPagesFolder();
+        this.pageFiles = collectFilesFromFolder(resourceSettings.getPagesFolder());
         this.componentFiles = collectFilesFromFolder(resourceSettings.getComponentsFolder());
     }
 
@@ -42,22 +42,8 @@ public class LocatorCollector {
 
     private Map<File, Page> collectFileToPageMap() {
         Map<File, Page> fileToPage = new LinkedHashMap<>();
-        collectFilesFromFolder(pagesFolder).values()
-                .forEach(each -> fileToPage.put(each, parseLocatorOrThrow(each)));
+        pageFiles.values().forEach(each -> fileToPage.put(each, parseLocatorOrThrow(each)));
         return fileToPage;
-    }
-
-    private Map<String, File> collectFilesFromFolder(final File filesource) {
-        Map<String, File> files = new HashMap<>();
-        FileUtils.listFiles(filesource, null, true)
-                .forEach(file -> {
-                    files.computeIfPresent(file.getName(), (key, value) -> {
-                        throw new DefaultFrameworkException(
-                                DUPLICATE_FILENAME_LOCATORS, filesource.getName(), file.getName());
-                    });
-                    files.put(file.getName(), file);
-                });
-        return Collections.unmodifiableMap(files);
     }
 
     private Page parseLocatorOrThrow(final File each) {
@@ -83,7 +69,7 @@ public class LocatorCollector {
     }
 
     private Component parseComponent(final Include include) {
-        File file = Objects.requireNonNull(componentFiles.get(include.getComponent()));
+        File file = componentFiles.get(include.getComponent());
         return XMLParsers.forComponentLocator().process(file);
     }
 
@@ -102,5 +88,18 @@ public class LocatorCollector {
         String prefix = each.getKey().getName().replace(TestResourceSettings.XML_SUFFIX, DelimiterConstant.EMPTY)
                 + DelimiterConstant.DOT;
         return prefix + locator.getLocatorId();
+    }
+
+    private Map<String, File> collectFilesFromFolder(final File filesource) {
+        Map<String, File> files = new HashMap<>();
+        FileUtils.listFiles(filesource, null, true)
+                .forEach(file -> {
+                    files.computeIfPresent(file.getName(), (key, value) -> {
+                        throw new DefaultFrameworkException(
+                                DUPLICATE_FILENAME_LOCATORS, filesource.getName(), file.getName());
+                    });
+                    files.put(file.getName(), file);
+                });
+        return Collections.unmodifiableMap(files);
     }
 }

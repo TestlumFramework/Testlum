@@ -142,6 +142,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Capabilities }
+     * 
+     */
+    public Capabilities createCapabilities() {
+        return new Capabilities();
+    }
+
+    /**
+     * Create an instance of {@link Capability }
+     * 
+     */
+    public Capability createCapability() {
+        return new Capability();
+    }
+
+    /**
      * Create an instance of {@link PostgresIntegration }
      * 
      */
@@ -462,22 +478,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Capabilities }
-     * 
-     */
-    public Capabilities createCapabilities() {
-        return new Capabilities();
-    }
-
-    /**
-     * Create an instance of {@link Capability }
-     * 
-     */
-    public Capability createCapability() {
-        return new Capability();
-    }
-
-    /**
      * Create an instance of {@link Chrome }
      * 
      */
@@ -566,19 +566,35 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WebSockets }
+     * Create an instance of {@link AndroidDevice }
      * 
      */
-    public WebSockets createWebSockets() {
-        return new WebSockets();
+    public AndroidDevice createAndroidDevice() {
+        return new AndroidDevice();
     }
 
     /**
-     * Create an instance of {@link WebSocket }
+     * Create an instance of {@link IosDevice }
      * 
      */
-    public WebSocket createWebSocket() {
-        return new WebSocket();
+    public IosDevice createIosDevice() {
+        return new IosDevice();
+    }
+
+    /**
+     * Create an instance of {@link Websockets }
+     * 
+     */
+    public Websockets createWebsockets() {
+        return new Websockets();
+    }
+
+    /**
+     * Create an instance of {@link WebsocketApi }
+     * 
+     */
+    public WebsocketApi createWebsocketApi() {
+        return new WebsocketApi();
     }
 
     /**

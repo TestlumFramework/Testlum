@@ -16,10 +16,8 @@ public final class LogMessage {
 
     public static final String SEND_ACTION = "send";
     public static final String RECEIVE_ACTION = "receive";
+    public static final String SUBSCRIBE = "subscribe";
 
-
-    public static final String DESTINATION_LOG = format(TABLE_FORMAT, "Destination", "{}");
-    public static final String SOURCE_LOG = format(TABLE_FORMAT, "Source", "{}");
     public static final String COMPARISON_FOR_STEP_WAS_SKIPPED = "Comparison for step [%s] was skipped";
 
     public static final String ANSI_GREEN = "\u001B[32m";
@@ -38,7 +36,6 @@ public final class LogMessage {
     public static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
     public static final String REPEAT_FINISHED_LOG = ANSI_CYAN + "------- Repeat is finished -------" + ANSI_RESET;
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
-    public static final String ATTRIBUTE_LOG = format(TABLE_FORMAT, "Attribute", "{}");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
     public static final String ERROR_SQL_QUERY = ANSI_RED + "Error while executing SQL query -> "
             + "{}" + ANSI_ORANGE + NEW_LOG_LINE + "{}" + ANSI_RESET;
@@ -79,9 +76,8 @@ public final class LogMessage {
     public static final String FAILED_VISITING_PATH_LOG = "Failed to visit path {}";
 
     public static final String WEBSOCKET_ACTION_INFO_LOG = format(TABLE_FORMAT,
-            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Destination", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Content", "{}");
+            "Comment", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Action", "{}");
 
     public static final String BROKER_ACTION_INFO_LOG = format(TABLE_FORMAT,
             "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
@@ -96,6 +92,8 @@ public final class LogMessage {
 
     public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
 
+    public static final String CONNECTION_ESTABLISHED = "Connection established: {}";
+    public static final String CONNECTION_CLOSED = "Connection closed: {}";
     public static final String UNABLE_TO_DISCONNECT_BECAUSE_CONNECTION_CLOSED = "Unable to disconnect session "
             + "because the connection was closed";
 
@@ -127,6 +125,10 @@ public final class LogMessage {
     public static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");
     public static final String SUBJECT_LOG = format(TABLE_FORMAT, "Subject", "{}");
     public static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
+    public static final String ATTRIBUTE_LOG = format(TABLE_FORMAT, "Attribute", "{}");
+    public static final String ACTION_LOG = format(TABLE_FORMAT, "Action", "{}");
+    public static final String DESTINATION_LOG = format(TABLE_FORMAT, "Destination", "{}");
+    public static final String SOURCE_LOG = format(TABLE_FORMAT, "Source", "{}");
     public static final String FROM_PHONE_NUMBER_LOG = format(TABLE_FORMAT, "'From' phone number", "{}");
     public static final String TO_PHONE_NUMBER_LOG = format(TABLE_FORMAT, "'To' phone number", "{}");
     public static final String MESSAGE_LOG = format(TABLE_FORMAT, "Message", "{}");
@@ -157,7 +159,7 @@ public final class LogMessage {
 
     public static final String BROWSER_INFO = "%s | type = %s | version = %s";
     public static final String MOBILEBROWSER_INFO = "Device name = %s | platform = %s";
-    public static final String NATIVE_INFO = MOBILEBROWSER_INFO + " | app package = %s";
+    public static final String NATIVE_INFO = MOBILEBROWSER_INFO + " | udid = %s";
     public static final String EXTRACT_THEN_COMPARE = "Extract from web element then compare";
     public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a screenshot then compare";
 }

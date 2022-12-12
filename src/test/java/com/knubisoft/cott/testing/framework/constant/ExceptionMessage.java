@@ -33,7 +33,9 @@ public class ExceptionMessage {
 
     public static final String WEBSOCKET_CONNECTION_FAILURE =
             "Something went wrong while connecting to websocket with name <%s>";
-    public static final String WEBSOCKET_NOT_ALL_MESSAGES_RECEIVED = "Not all messages received, remaining: %s";
+    public static final String UNEXPECTED_WEBSOCKET_MESSAGE_TYPE = "Unexpected websocket message type: %s";
+    public static final String WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND =
+            "Websocket message handler for topic %s not found";
 
     public static final String FUNCTION_FOR_COMMAND_NOT_FOUND = "Function for class %s not found. "
             + "Please register algorithm for interpreter";
@@ -61,6 +63,9 @@ public class ExceptionMessage {
     public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
     public static final String DATA_FOLDER_NOT_EXIST = "[data] folder does not exist";
     public static final String DUPLICATE_FILENAME = ANSI_RED + "The [data] folder and its subfolders contain "
+            + "files with duplicate filenames - %s. Every file should have a unique name" + ANSI_RESET;
+
+    public static final String DUPLICATE_FILENAME_LOCATORS = ANSI_RED + "The [%s] folder and its subfolders contain "
             + "files with duplicate filenames - %s. Every file should have a unique name" + ANSI_RESET;
     public static final String FILE_NOT_EXIST = ANSI_RED + "File %s does not exist in the [data] folder and its "
             + "subfolders by path %s" + ANSI_RESET;
@@ -137,12 +142,12 @@ public class ExceptionMessage {
             "Query result is empty. Perhaps your database is empty or there is no such value in the database";
     public static final String WEB_ELEMENT_ATTRIBUTE_NOT_EXIST = "Web element does not have attribute <%s>";
     public static final String FOUND_MORE_THEN_ONE_ELEMENT = "More than one element was found by locator <%s>";
+    public static final String ELEMENT_NOT_FOUND = "Element with locator <%s> was not found during 'scrollTo'";
+    public static final String FILE_NOT_FOUND = "File not found: %s";
     public static final String SCROLL_TYPE_NOT_FOUND = "Scroll type <%s> not supported";
     public static final String NO_LOCATOR_FOUND_FOR_INNER_SCROLL = "You didn't specify a locator for the inner scroll";
     public static final String INVALID_LOCATOR =
             "Locator type is not supported for INNER scroll. Your locator -> <%s>.";
-//    public static final String FOUND_MORE_THEN_ONE_ELEMENT = "More than one element was found by text <%s>";
-
     public static final String SAME_APPIUM_URL = "Can`t use the same Appium server URL for scenario with "
             + "<mobilebrowser> & <native> tags";
     public static final String SAME_MOBILE_DEVICES = "Can`t use the same mobile devices for scenario with "
@@ -153,4 +158,5 @@ public class ExceptionMessage {
             + "check your configuration in config file";
     public static final String MOBILEBROWSER_DRIVER_NOT_INIT = "The webDriver for <mobilebrowser> has not been "
             + "initialized, check your configuration in config file";
+
 }

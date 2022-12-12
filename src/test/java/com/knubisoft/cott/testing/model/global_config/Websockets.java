@@ -9,16 +9,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for webSockets complex type.
+ * <p>Java class for websockets complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="webSockets"&gt;
+ * &lt;complexType name="websockets"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;choice&gt;
- *         &lt;element name="websocket" type="{http://www.knubisoft.com/cott/testing/model/global-config}webSocket" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="api" type="{http://www.knubisoft.com/cott/testing/model/global-config}websocketApi" maxOccurs="unbounded"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -28,40 +28,40 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "webSockets", propOrder = {
-    "websocket"
+@XmlType(name = "websockets", propOrder = {
+    "api"
 })
-public class WebSockets {
+public class Websockets {
 
-    protected List<WebSocket> websocket;
+    protected List<WebsocketApi> api;
 
     /**
-     * Gets the value of the websocket property.
+     * Gets the value of the api property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the websocket property.
+     * This is why there is not a <CODE>set</CODE> method for the api property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getWebsocket().add(newItem);
+     *    getApi().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link WebSocket }
+     * {@link WebsocketApi }
      * 
      * 
      */
-    public List<WebSocket> getWebsocket() {
-        if (websocket == null) {
-            websocket = new ArrayList<WebSocket>();
+    public List<WebsocketApi> getApi() {
+        if (api == null) {
+            api = new ArrayList<WebsocketApi>();
         }
-        return this.websocket;
+        return this.api;
     }
 
 }

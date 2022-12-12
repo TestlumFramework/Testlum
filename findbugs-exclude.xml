@@ -68,7 +68,7 @@
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.configuration.websocket.GlobalStompSessionHandler"/>
+        <Class name="com.knubisoft.cott.testing.framework.configuration.websocket.ClientStompSessionHandler"/>
         <Bug pattern="BC_UNCONFIRMED_CAST"/>
     </Match>
 
@@ -84,6 +84,11 @@
 
     <Match>
         <Class name="com.knubisoft.cott.testing.framework.interpreter.lib.AbstractUiInterpreter"/>
+        <Bug pattern="BC_UNCONFIRMED_CAST"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.cott.testing.framework.configuration.ui.NativeDriverFactory"/>
         <Bug pattern="BC_UNCONFIRMED_CAST"/>
     </Match>
 </FindBugsFilter>

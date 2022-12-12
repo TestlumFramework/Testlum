@@ -7,6 +7,8 @@ import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
+import com.knubisoft.cott.testing.model.scenario.Assert;
+import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
@@ -39,6 +41,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.ATTRIBUTE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BODY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CLEAR_COOKIES_AFTER;
@@ -49,11 +52,15 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_L
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_FRAME;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.HOTKEY_COMMAND;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.HOTKEY_COMMAND_LOCATOR;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.IMAGE_COMPARISON_TYPE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.IMAGE_FOR_COMPARISON_LOG;
@@ -80,8 +87,8 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.SERVER_ER
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_HOST_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_PORT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SOURCE_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_FRAME;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUBJECT_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.SWITCH_TO_FRAME_LOCATOR;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
@@ -122,21 +129,22 @@ public class LogUtil {
                 format(TABLE_FORMAT, "Query", query.replaceAll("\\s{2,}", SPACE))));
     }
 
-    public void logBrokerActionInfo(final String action, final String queue, final String content) {
-        logActionInfo(LogMessage.BROKER_ACTION_INFO_LOG, action, queue, content);
+    public void logBrokerActionInfo(final String action, final String destination, final String content) {
+        log.info(LogMessage.BROKER_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), destination,
+                PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
-    public void logWebsocketActionInfo(final String action, final String destination, final String content) {
-        logActionInfo(LogMessage.WEBSOCKET_ACTION_INFO_LOG, action, destination, content);
-    }
-
-    public void logActionInfo(final String template,
-                              final String action,
-                              final String destination,
-                              final String content) {
-        log.info(template, action.toUpperCase(Locale.ROOT), destination, StringUtils.isNotBlank(content)
-                ? PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT)
-                : content);
+    public void logWebsocketActionInfo(final String action,
+                                       final String comment,
+                                       final String destination,
+                                       final String content) {
+        log.info(LogMessage.WEBSOCKET_ACTION_INFO_LOG, comment, action.toUpperCase(Locale.ROOT));
+        if (StringUtils.isNotBlank(destination)) {
+            log.info(DESTINATION_LOG, destination);
+        }
+        if (StringUtils.isNotBlank(content)) {
+            log.info(CONTENT_LOG, PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+        }
     }
 
     public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {
@@ -217,8 +225,21 @@ public class LogUtil {
         }
     }
 
+    public void startUiCommandsInFrame() {
+        log.info(START_UI_COMMANDS_IN_FRAME);
+    }
+
+    public void endUiCommandsInFrame() {
+        log.info(END_UI_COMMANDS_IN_FRAME);
+    }
+
     public void logSubCommand(final int position, final Object action) {
         log.info(COMMAND_LOG, position, action.getClass().getSimpleName());
+    }
+
+    public void logAssertTag(final Assert aAssert) {
+        log.info(ATTRIBUTE_LOG, aAssert.getAttribute());
+        log.info(CONTENT_LOG, aAssert.getContent());
     }
 
     public void logAlias(final String alias) {
@@ -275,10 +296,6 @@ public class LogUtil {
         }
     }
 
-    public void logSwitchToFrameInfo(final String locatorId) {
-        log.info(SWITCH_TO_FRAME_LOCATOR, locatorId);
-    }
-
     public void logNonParsedScenarioInfo(final String path, final String exception) {
         log.error(INVALID_SCENARIO_LOG, path, exception);
     }
@@ -311,6 +328,15 @@ public class LogUtil {
             log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
         } else {
             log.error(EXCEPTION_LOG, ex.toString());
+        }
+    }
+
+    public void logSqlException(final Exception ex, final String query) {
+        if (StringUtils.isNotBlank(ex.getMessage())) {
+            log.error(ERROR_SQL_QUERY, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE),
+                    SqlUtil.getBrokenQuery(ex, query).replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+        } else {
+            log.error(ERROR_SQL_QUERY, ex.toString().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
         }
     }
 
@@ -355,5 +381,12 @@ public class LogUtil {
 
     public void logErrorStructureGeneration(final String path, final Exception ex) {
         log.error(INITIAL_STRUCTURE_GENERATION_ERROR, path, ex);
+    }
+
+    public static void logHotKeyInfo(final AbstractUiCommand command) {
+        log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
+        if (command instanceof CommandWithLocator) {
+            log.info(HOTKEY_COMMAND_LOCATOR, ((CommandWithLocator) command).getLocatorId());
+        }
     }
 }

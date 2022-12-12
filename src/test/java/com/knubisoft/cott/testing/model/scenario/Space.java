@@ -7,12 +7,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for closeSecondTab complex type.
+ * <p>Java class for space complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="closeSecondTab"&gt;
+ * &lt;complexType name="space"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
  *     &lt;/extension&gt;
@@ -23,8 +23,8 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "closeSecondTab")
-public class CloseSecondTab
+@XmlType(name = "space")
+public class Space
     extends AbstractUiCommand
 {
 

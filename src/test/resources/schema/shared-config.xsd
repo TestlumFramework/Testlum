@@ -18,7 +18,7 @@
         </x:restriction>
     </x:simpleType>
 
-    <x:simpleType name="urlWebSocket" final="restriction">
+    <x:simpleType name="urlWebsocket" final="restriction">
         <x:restriction base="x:string">
             <x:pattern value="((wss?|https?)://.+)"/>
         </x:restriction>
@@ -101,18 +101,22 @@
 
     <x:complexType name="abstractDevice" abstract="true">
         <x:sequence>
+            <x:element name="capabilities" type="tns:capabilities" minOccurs="0"/>
             <x:element name="udid" type="tns:nonEmptyString"/>
             <x:element name="deviceName" type="tns:nonEmptyString"/>
         </x:sequence>
-        <x:attribute name="platformName" type="tns:platform" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
-    <x:simpleType name="platform">
-        <x:restriction base="x:string">
-            <x:enumeration value="ios"/>
-            <x:enumeration value="android"/>
-        </x:restriction>
-    </x:simpleType>
+    <x:complexType name="capabilities">
+        <x:sequence>
+            <x:element name="capability" type="tns:capability" maxOccurs="unbounded"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="capability">
+        <x:attribute name="capabilityName" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
 
 </x:schema>

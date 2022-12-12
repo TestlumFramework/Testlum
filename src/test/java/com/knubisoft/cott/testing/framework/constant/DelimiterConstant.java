@@ -13,6 +13,7 @@ public class DelimiterConstant {
     public static final String CLOSE_PARENTHESIS = ")";
     public static final String CLOSE_SQUARE_BRACKET = "]";
     public static final String OPEN_SQUARE_BRACKET = "[";
+    public static final String CLOSE_BRACE = "}";
     public static final String OPEN_BRACE = "{";
     public static final String EQUALS_MARK = "=";
     public static final String COLON = ":";

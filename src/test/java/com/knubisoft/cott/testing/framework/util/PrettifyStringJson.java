@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 
@@ -13,8 +14,8 @@ public class PrettifyStringJson {
 
     //use this method only to add value to CommandResult
     public String getJSONResult(final String json) {
-        if (StringUtils.isEmpty(json)) {
-            return "null";
+        if (StringUtils.isBlank(json)) {
+            return DelimiterConstant.EMPTY;
         }
         try {
             return getPrettyJSON(json);

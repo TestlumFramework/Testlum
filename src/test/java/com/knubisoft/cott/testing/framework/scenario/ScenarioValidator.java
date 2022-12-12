@@ -71,6 +71,7 @@ import com.knubisoft.cott.testing.model.scenario.StorageName;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.Ui;
 import com.knubisoft.cott.testing.model.scenario.Web;
+import com.knubisoft.cott.testing.model.scenario.Var;
 import com.knubisoft.cott.testing.model.scenario.When;
 import org.springframework.util.StringUtils;
 
@@ -87,6 +88,7 @@ import java.util.stream.Stream;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ALIAS_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.API_NOT_FOUND;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INTEGRATION_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_MOBILEBROWSER_DEVICE;
@@ -263,6 +265,11 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateIncludeAction(include, xmlFile);
         });
 
+        validatorMap.put(o -> o instanceof Var, (xmlFile, command) -> {
+            Var var = (Var) command;
+            validateVarCommand(xmlFile, var);
+        });
+
         validatorMap.put(o -> o instanceof Web, (xmlFile, command) -> {
             validateWebCommands((Web) command);
         });
@@ -337,6 +344,36 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .findFirst()
                 .orElseThrow(() -> new DefaultFrameworkException(ALIAS_NOT_FOUND, alias));
     }
+
+    //CHECKSTYLE:OFF
+    private void validateVarCommand(final File xmlFile, final Var var) {
+        if (Objects.nonNull(var.getRelationalDbResult())) {
+            String alias = var.getRelationalDbResult().getAlias();
+            List<? extends Integration> integrationsList;
+            switch (var.getRelationalDbResult().getDbType()) {
+                case POSTGRES:
+                    checkIntegrationExistence(integrations.getPostgresIntegration(), PostgresIntegration.class);
+                    integrationsList = integrations.getPostgresIntegration().getPostgres();
+                    break;
+                case MYSQL:
+                    checkIntegrationExistence(integrations.getMysqlIntegration(), MysqlIntegration.class);
+                    integrationsList = integrations.getMysqlIntegration().getMysql();
+                    break;
+                case ORACLE:
+                    checkIntegrationExistence(integrations.getOracleIntegration(), OracleIntegration.class);
+                    integrationsList = integrations.getOracleIntegration().getOracle();
+                    break;
+                case CLICKHOUSE:
+                    checkIntegrationExistence(integrations.getClickhouseIntegration(), ClickhouseIntegration.class);
+                    integrationsList = integrations.getClickhouseIntegration().getClickhouse();
+                    break;
+                default:
+                    throw new DefaultFrameworkException(DB_NOT_SUPPORTED, var.getRelationalDbResult().getDbType());
+            }
+            validateAlias(integrationsList, alias);
+        }
+    }
+    //CHECKSTYLE:ON
 
     private void validateElasticsearchCommand(final File xmlFile, final Elasticsearch elasticsearch) {
         Stream.of(elasticsearch.getPost(), elasticsearch.getGet(), elasticsearch.getPut(), elasticsearch.getDelete())

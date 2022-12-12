@@ -8,27 +8,22 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for webSocketSendReceive complex type.
+ * <p>Java class for websocketReceive complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="webSocketSendReceive"&gt;
+ * &lt;complexType name="websocketReceive"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;choice&gt;
- *           &lt;element name="message" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
- *           &lt;element name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}bodyFile"/&gt;
- *         &lt;/choice&gt;
- *         &lt;choice&gt;
- *           &lt;element name="expected" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
- *         &lt;/choice&gt;
- *       &lt;/sequence&gt;
- *       &lt;attribute name="endpoint" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}endpointPattern" /&gt;
- *       &lt;attribute name="topic" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}endpointPattern" /&gt;
- *       &lt;attribute name="valuesNumber" type="{http://www.w3.org/2001/XMLSchema}int" default="0" /&gt;
- *       &lt;attribute name="timeoutMillis" type="{http://www.w3.org/2001/XMLSchema}int" default="5000" /&gt;
+ *       &lt;choice&gt;
+ *         &lt;element name="message" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}expectedPattern"/&gt;
+ *       &lt;/choice&gt;
+ *       &lt;attribute name="comment" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}stringMin10" /&gt;
+ *       &lt;attribute name="topic" type="{http://www.knubisoft.com/cott/testing/model/scenario}endpointPattern" /&gt;
+ *       &lt;attribute name="count" type="{http://www.w3.org/2001/XMLSchema}int" default="0" /&gt;
+ *       &lt;attribute name="timeoutMillis" type="{http://www.w3.org/2001/XMLSchema}int" default="3000" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -37,22 +32,20 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "webSocketSendReceive", propOrder = {
+@XmlType(name = "websocketReceive", propOrder = {
     "message",
-    "file",
-    "expected"
+    "file"
 })
-public class WebSocketSendReceive {
+public class WebsocketReceive {
 
     protected String message;
     protected String file;
-    protected String expected;
-    @XmlAttribute(name = "endpoint", required = true)
-    protected String endpoint;
-    @XmlAttribute(name = "topic", required = true)
+    @XmlAttribute(name = "comment", required = true)
+    protected String comment;
+    @XmlAttribute(name = "topic")
     protected String topic;
-    @XmlAttribute(name = "valuesNumber")
-    protected Integer valuesNumber;
+    @XmlAttribute(name = "count")
+    protected Integer count;
     @XmlAttribute(name = "timeoutMillis")
     protected Integer timeoutMillis;
 
@@ -105,51 +98,27 @@ public class WebSocketSendReceive {
     }
 
     /**
-     * Gets the value of the expected property.
+     * Gets the value of the comment property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getExpected() {
-        return expected;
+    public String getComment() {
+        return comment;
     }
 
     /**
-     * Sets the value of the expected property.
+     * Sets the value of the comment property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setExpected(String value) {
-        this.expected = value;
-    }
-
-    /**
-     * Gets the value of the endpoint property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getEndpoint() {
-        return endpoint;
-    }
-
-    /**
-     * Sets the value of the endpoint property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setEndpoint(String value) {
-        this.endpoint = value;
+    public void setComment(String value) {
+        this.comment = value;
     }
 
     /**
@@ -177,31 +146,31 @@ public class WebSocketSendReceive {
     }
 
     /**
-     * Gets the value of the valuesNumber property.
+     * Gets the value of the count property.
      * 
      * @return
      *     possible object is
      *     {@link Integer }
      *     
      */
-    public int getValuesNumber() {
-        if (valuesNumber == null) {
+    public int getCount() {
+        if (count == null) {
             return  0;
         } else {
-            return valuesNumber;
+            return count;
         }
     }
 
     /**
-     * Sets the value of the valuesNumber property.
+     * Sets the value of the count property.
      * 
      * @param value
      *     allowed object is
      *     {@link Integer }
      *     
      */
-    public void setValuesNumber(Integer value) {
-        this.valuesNumber = value;
+    public void setCount(Integer value) {
+        this.count = value;
     }
 
     /**
@@ -214,7 +183,7 @@ public class WebSocketSendReceive {
      */
     public int getTimeoutMillis() {
         if (timeoutMillis == null) {
-            return  5000;
+            return  3000;
         } else {
             return timeoutMillis;
         }

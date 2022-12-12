@@ -230,11 +230,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WebSocket }
+     * Create an instance of {@link Websocket }
      * 
      */
-    public WebSocket createWebSocket() {
-        return new WebSocket();
+    public Websocket createWebsocket() {
+        return new Websocket();
     }
 
     /**
@@ -390,11 +390,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CloseSecondTab }
+     * Create an instance of {@link CloseTab }
      * 
      */
-    public CloseSecondTab createCloseSecondTab() {
-        return new CloseSecondTab();
+    public CloseTab createCloseTab() {
+        return new CloseTab();
     }
 
     /**
@@ -439,10 +439,130 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Refresh }
-     * 
+     *
      */
     public Refresh createRefresh() {
         return new Refresh();
+    }
+
+    /**
+     * Create an instance of {@link DragAndDrop }
+     *
+     */
+    public DragAndDrop createDragAndDrop() {
+        return new DragAndDrop();
+    }
+
+    /**
+     * Create an instance of {@link DragAndDropNative }
+     *
+     */
+    public DragAndDropNative createDragAndDropNative() {
+        return new DragAndDropNative();
+    }
+
+    /**
+     * Create an instance of {@link ScrollNative }
+     *
+     */
+    public ScrollNative createScrollNative() {
+        return new ScrollNative();
+    }
+
+    /**
+     * Create an instance of {@link ScrollToNative }
+     *
+     */
+    public ScrollToNative createScrollToNative() {
+        return new ScrollToNative();
+    }
+
+    /**
+     * Create an instance of {@link SwipeNative }
+     *
+     */
+    public SwipeNative createSwipeNative() {
+        return new SwipeNative();
+    }
+
+    /**
+     * Create an instance of {@link HotKey }
+     *
+     */
+    public HotKey createHotKey() {
+        return new HotKey();
+    }
+
+    /**
+     * Create an instance of {@link Copy }
+     *
+     */
+    public Copy createCopy() {
+        return new Copy();
+    }
+
+    /**
+     * Create an instance of {@link Paste }
+     *
+     */
+    public Paste createPaste() {
+        return new Paste();
+    }
+
+    /**
+     * Create an instance of {@link Cut }
+     *
+     */
+    public Cut createCut() {
+        return new Cut();
+    }
+
+    /**
+     * Create an instance of {@link Highlight }
+     *
+     */
+    public Highlight createHighlight() {
+        return new Highlight();
+    }
+
+    /**
+     * Create an instance of {@link Tab }
+     *
+     */
+    public Tab createTab() {
+        return new Tab();
+    }
+
+    /**
+     * Create an instance of {@link Enter }
+     *
+     */
+    public Enter createEnter() {
+        return new Enter();
+    }
+
+    /**
+     * Create an instance of {@link BackSpace }
+     *
+     */
+    public BackSpace createBackSpace() {
+        return new BackSpace();
+    }
+
+    /**
+     * Create an instance of {@link Escape }
+     *
+     */
+    public Escape createEscape() {
+        return new Escape();
+    }
+
+    /**
+     * Create an instance of {@link Space }
+     *
+     */
+    public Space createSpace() {
+        return new Space();
     }
 
     /**
@@ -766,27 +886,35 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WebSocketTopic }
+     * Create an instance of {@link WebsocketStomp }
      * 
      */
-    public WebSocketTopic createWebSocketTopic() {
-        return new WebSocketTopic();
+    public WebsocketStomp createWebsocketStomp() {
+        return new WebsocketStomp();
     }
 
     /**
-     * Create an instance of {@link WebSocketSend }
+     * Create an instance of {@link WebsocketSubscribe }
      * 
      */
-    public WebSocketSend createWebSocketSend() {
-        return new WebSocketSend();
+    public WebsocketSubscribe createWebsocketSubscribe() {
+        return new WebsocketSubscribe();
     }
 
     /**
-     * Create an instance of {@link WebSocketReceive }
+     * Create an instance of {@link WebsocketSend }
      * 
      */
-    public WebSocketReceive createWebSocketReceive() {
-        return new WebSocketReceive();
+    public WebsocketSend createWebsocketSend() {
+        return new WebsocketSend();
+    }
+
+    /**
+     * Create an instance of {@link WebsocketReceive }
+     *
+     */
+    public WebsocketReceive createWebsocketReceive() {
+        return new WebsocketReceive();
     }
 
 }

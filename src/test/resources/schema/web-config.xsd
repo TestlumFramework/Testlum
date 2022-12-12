@@ -90,17 +90,6 @@
             <x:element name="argument" type="tns:nonEmptyString" maxOccurs="unbounded"/>
         </x:sequence>
     </x:complexType>
-    
-    <x:complexType name="capabilities">
-        <x:sequence>
-            <x:element name="capability" type="tns:capability" maxOccurs="unbounded"/>
-        </x:sequence>
-    </x:complexType>
-
-    <x:complexType name="capability">
-        <x:attribute name="capabilityName" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
-    </x:complexType>
 
 
     <x:complexType name="chrome">

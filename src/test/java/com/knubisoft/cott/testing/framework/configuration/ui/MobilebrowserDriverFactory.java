@@ -5,25 +5,32 @@ import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.MobileDriverUtil;
 import com.knubisoft.cott.testing.model.global_config.Mobilebrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
-import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
+
+import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK_NATIVE_WEB_CONNECTION;
+import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK_URL;
 
 @UtilityClass
 public class MobilebrowserDriverFactory {
 
     @SneakyThrows
     public WebDriver createDriver(final MobilebrowserDevice mobilebrowserDevice) {
-        Mobilebrowser mobilebrowser = GlobalTestConfigurationProvider.provide().getMobilebrowser();
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         MobileDriverUtil.setCommonCapabilities(mobilebrowserDevice, desiredCapabilities);
+        Mobilebrowser mobilebrowser = GlobalTestConfigurationProvider.provide().getMobilebrowser();
+        if (BROWSER_STACK_NATIVE_WEB_CONNECTION) {
+            desiredCapabilities.setCapability("browserstack.local", "true");
+        }
         setPlatformCapabilities(mobilebrowserDevice, desiredCapabilities);
-        WebDriver driver = new AppiumDriver(new URL(mobilebrowser.getAppiumServerUrl()), desiredCapabilities);
+        WebDriver driver = new RemoteWebDriver(new URL(BROWSER_STACK_NATIVE_WEB_CONNECTION
+                ? BROWSER_STACK_URL : mobilebrowser.getAppiumServerUrl()), desiredCapabilities);
         driver.get(mobilebrowser.getBaseUrl());
         return driver;
     }
@@ -33,7 +40,7 @@ public class MobilebrowserDriverFactory {
         switch (abstractDevice.getPlatformName()) {
             case ANDROID:
                 MobileDriverUtil.setAutomation(desiredCapabilities, "Android", "uiautomator2");
-                desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Chrome");
+                desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "android");
                 break;
             case IOS:
                 MobileDriverUtil.setAutomation(desiredCapabilities, "iOS", "XCUITest");

@@ -18,7 +18,7 @@ import java.net.URL;
 import java.util.HashMap;
 
 import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK;
-import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK_CONNECTION;
+import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK_NATIVE_CONNECTION;
 import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK_URL;
 
 @UtilityClass
@@ -29,7 +29,7 @@ public class NativeDriverFactory {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         MobileDriverUtil.setCommonCapabilities(nativeDevice, desiredCapabilities);
         String serverUrl = GlobalTestConfigurationProvider.provide().getNative().getAppiumServerUrl();
-        if (BROWSER_STACK_CONNECTION) {
+        if (BROWSER_STACK_NATIVE_CONNECTION) {
             setBrowserStackCaps(desiredCapabilities);
         }
         if (nativeDevice instanceof IosDevice) {
@@ -37,7 +37,7 @@ public class NativeDriverFactory {
             return new IOSDriver(new URL(serverUrl), desiredCapabilities);
         }
         setAndroidCaps((AndroidDevice) nativeDevice, desiredCapabilities);
-        return new AndroidDriver(new URL(BROWSER_STACK_CONNECTION ? BROWSER_STACK_URL : serverUrl),
+        return new AndroidDriver(new URL(BROWSER_STACK_NATIVE_CONNECTION ? BROWSER_STACK_URL : serverUrl),
                 desiredCapabilities);
     }
 

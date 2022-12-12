@@ -40,6 +40,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK_URL;
+import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK_WEB_CONNECTION;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND;
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_VERSION;
 
@@ -117,7 +119,11 @@ public class WebDriverFactory {
     private WebDriver getRemoteDriver(final RemoteBrowser remoteBrowserSettings,
                                       final MutableCapabilities browserOptions) {
         browserOptions.setCapability(BROWSER_VERSION, remoteBrowserSettings.getBrowserVersion());
-        return new RemoteWebDriver(new URL(remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
+        if (BROWSER_STACK_WEB_CONNECTION) {
+            browserOptions.setCapability("browserstack.local", "true");
+        }
+        return new RemoteWebDriver(new URL(BROWSER_STACK_WEB_CONNECTION
+                ? BROWSER_STACK_URL : remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
     }
 
     private void setCapabilities(final AbstractBrowser browser, final MutableCapabilities driverOptions) {

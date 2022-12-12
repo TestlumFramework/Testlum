@@ -42,36 +42,41 @@ public class TestSetCollector {
 
         final Map<ScenarioStepsPredicate, ScenarioToArgumentsMethod> map = new HashMap<>();
 
-        map.put(s -> !(s.isWeb() && s.isMobilebrowser() && s.isNatives()), this::getArgumentsWithoutUiSteps);
+        map.put(s -> !s.isWeb() && !s.isMobilebrowser() && !s.isNatives(), this::getArgumentsWithoutUiSteps);
 
         map.put(s -> s.isWeb() && s.isMobilebrowser() && s.isNatives(),
                 entry -> nativeDevices.stream().flatMap(nativeDevice ->
                         mobilebrowserDevices.stream().flatMap(mobilebrowser ->
                                 browsers.stream().flatMap(browser ->
-                                        getArgumentsWithUiSteps(entry, browser, mobilebrowser, nativeDevice)))));
+                                        getArgumentsWithUiSteps(entry, browser, mobilebrowser, nativeDevice))))
+        );
         map.put(s -> s.isWeb() && s.isNatives(),
                 entry -> nativeDevices.stream().flatMap(nativeDevice ->
                         browsers.stream().flatMap(browser ->
-                                getArgumentsWithUiSteps(entry, browser, null, nativeDevice))));
+                                getArgumentsWithUiSteps(entry, browser, null, nativeDevice)))
+        );
         map.put(s -> s.isWeb() && s.isMobilebrowser(),
                 entry -> browsers.stream().flatMap(browser ->
                         mobilebrowserDevices.stream().flatMap(mobilebrowser ->
-                                getArgumentsWithUiSteps(entry, browser, mobilebrowser, null))));
+                                getArgumentsWithUiSteps(entry, browser, mobilebrowser, null)))
+        );
         map.put(s -> s.isMobilebrowser() && s.isNatives(),
                 entry -> nativeDevices.stream().flatMap(nativeDevice ->
                         mobilebrowserDevices.stream().flatMap(mobilebrowser ->
-                                getArgumentsWithUiSteps(entry, null, mobilebrowser, nativeDevice))));
-
+                                getArgumentsWithUiSteps(entry, null, mobilebrowser, nativeDevice)))
+        );
         map.put(ScenarioStepReader::isWeb,
                 entry -> browsers.stream().flatMap(browser ->
-                        getArgumentsWithUiSteps(entry, browser, null, null)));
+                        getArgumentsWithUiSteps(entry, browser, null, null))
+        );
         map.put(ScenarioStepReader::isMobilebrowser,
                 entry -> mobilebrowserDevices.stream().flatMap(mobilebrowser ->
-                        getArgumentsWithUiSteps(entry, null, mobilebrowser, null)));
+                        getArgumentsWithUiSteps(entry, null, mobilebrowser, null))
+        );
         map.put(ScenarioStepReader::isNatives,
                 entry -> nativeDevices.stream().flatMap(nativeDevice ->
-                        getArgumentsWithUiSteps(entry, null, null, nativeDevice)));
-
+                        getArgumentsWithUiSteps(entry, null, null, nativeDevice))
+        );
         this.stepsToArgumentsMethodMap = Collections.unmodifiableMap(map);
     }
 

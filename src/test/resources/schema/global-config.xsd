@@ -57,7 +57,7 @@
     <x:complexType name="integrations">
         <x:all>
             <x:element name="apis" type="tns:apis" minOccurs="0"/>
-            <x:element name="websockets" type="tns:webSockets" minOccurs="0"/>
+            <x:element name="websockets" type="tns:websockets" minOccurs="0"/>
             <x:element name="postgresIntegration" type="tns:postgresIntegration" minOccurs="0"/>
             <x:element name="clickhouseIntegration" type="tns:clickhouseIntegration" minOccurs="0"/>
             <x:element name="mysqlIntegration" type="tns:mysqlIntegration" minOccurs="0"/>

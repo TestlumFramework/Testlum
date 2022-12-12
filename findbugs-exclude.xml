@@ -68,7 +68,7 @@
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.configuration.websocket.GlobalStompSessionHandler"/>
+        <Class name="com.knubisoft.cott.testing.framework.configuration.websocket.ClientStompSessionHandler"/>
         <Bug pattern="BC_UNCONFIRMED_CAST"/>
     </Match>
 

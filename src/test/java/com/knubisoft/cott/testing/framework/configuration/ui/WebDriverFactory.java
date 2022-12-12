@@ -91,7 +91,7 @@ public class WebDriverFactory {
                                      final MutableCapabilities browserOptions,
                                      final WebDriverManager driverManager) {
         String driverVersion = localBrowserSettings.getDriverVersion();
-        if (StringUtils.isNotEmpty(localBrowserSettings.getDriverVersion())) {
+        if (StringUtils.isNotEmpty(driverVersion)) {
             driverManager.driverVersion(driverVersion);
         }
         return driverManager.capabilities(browserOptions).create();

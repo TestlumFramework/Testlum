@@ -1,14 +1,21 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.cott.testing.framework.constant.ExceptionMessage;
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.InnerScrollScript;
 import com.knubisoft.cott.testing.framework.util.JavascriptUtil;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
+import com.knubisoft.cott.testing.framework.util.PageScrollScript;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
+import org.openqa.selenium.WebDriver;
+
+import static java.lang.String.format;
 
 @ExecutorForClass(Scroll.class)
 public class ScrollWebExecutor extends AbstractUiExecutor<Scroll> {
@@ -21,7 +28,21 @@ public class ScrollWebExecutor extends AbstractUiExecutor<Scroll> {
     public void execute(final Scroll scroll, final CommandResult result) {
         ResultUtil.addScrollMetaData(scroll, result);
         LogUtil.logScrollInfo(scroll);
-        JavascriptUtil.executeScrollScript(scroll, dependencies.getDriver());
+        executeScrollScript(scroll, dependencies.getDriver());
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
+
+    private void executeScrollScript(final Scroll scroll, final WebDriver webDriver) {
+        switch (scroll.getType()) {
+            case INNER:
+                JavascriptUtil.executeJsScript(InnerScrollScript.getInnerScrollScript(scroll), webDriver);
+                break;
+            case PAGE:
+                JavascriptUtil.executeJsScript(PageScrollScript.getPageScrollScript(scroll), webDriver);
+                break;
+            default:
+                throw new DefaultFrameworkException(format(ExceptionMessage.SCROLL_TYPE_NOT_FOUND, scroll.getType()));
+        }
+    }
+
 }

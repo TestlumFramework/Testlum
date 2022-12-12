@@ -18,15 +18,14 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_I
 public class BrowserUtil {
 
     public List<AbstractBrowser> filterEnabledBrowsers() {
-        List<AbstractBrowser> filteredResult = GlobalTestConfigurationProvider.getBrowsers().stream()
+        return GlobalTestConfigurationProvider.getBrowsers().stream()
                 .filter(AbstractBrowser::isEnable)
                 .collect(Collectors.toList());
-        return filteredResult;
     }
 
     public void manageWindowSize(final AbstractBrowser browser, final WebDriver webDriver) {
         String browserWindowSize = browser.getBrowserWindowSize();
-        if (StringUtils.isNotEmpty(browser.getBrowserWindowSize())) {
+        if (StringUtils.isNotEmpty(browserWindowSize)) {
             String[] size = browserWindowSize.split(DelimiterConstant.X);
             int width = Integer.parseInt(size[0]);
             int height = Integer.parseInt(size[1]);

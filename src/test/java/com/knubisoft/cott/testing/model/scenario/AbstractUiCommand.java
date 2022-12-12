@@ -39,13 +39,12 @@ import javax.xml.bind.annotation.XmlType;
     SwipeNative.class,
     HotKey.class,
     CommandWithLocator.class,
-    Image.class,
-    Refresh.class
     Tab.class,
     Enter.class,
     BackSpace.class,
     Escape.class,
-    Space.class
+    Space.class,
+    Refresh.class
 })
 public abstract class AbstractUiCommand
     extends AbstractCommand

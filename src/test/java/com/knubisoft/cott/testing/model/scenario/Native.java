@@ -54,8 +54,7 @@ public class Native
         @XmlElement(name = "wait", type = Wait.class),
         @XmlElement(name = "clear", type = Clear.class),
         @XmlElement(name = "image", type = Image.class),
-        @XmlElement(name = "refresh", type = Refresh.class)
-        @XmlElement(name = "image", type = Image.class),
+        @XmlElement(name = "refresh", type = Refresh.class),
         @XmlElement(name = "dragAndDrop", type = DragAndDropNative.class),
         @XmlElement(name = "scroll", type = ScrollNative.class),
         @XmlElement(name = "scrollTo", type = ScrollToNative.class),
@@ -92,7 +91,7 @@ public class Native
      * {@link ScrollNative }
      * {@link ScrollToNative }
      * {@link SwipeNative }
-     *
+     * 
      * 
      */
     public List<AbstractUiCommand> getClickOrInputOrAssert() {

@@ -1,7 +1,6 @@
 package com.knubisoft.cott.testing.framework;
 
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
-import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.parser.CSVParser;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioCollector.MappingResult;
@@ -19,66 +18,20 @@ import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.provider.Arguments;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class TestSetCollector {
 
-    private final Map<ScenarioStepsPredicate, ScenarioToArgumentsMethod> stepsToArgumentsMethodMap;
-
-    public TestSetCollector() {
-        final List<AbstractBrowser> browsers = BrowserUtil.filterEnabledBrowsers();
-        final List<MobilebrowserDevice> mobilebrowserDevices = MobileUtil.filterEnabledMobilebrowserDevices();
-        final List<NativeDevice> nativeDevices = MobileUtil.filterEnabledNativeDevices();
-
-        final Map<ScenarioStepsPredicate, ScenarioToArgumentsMethod> map = new HashMap<>();
-
-        map.put(s -> !s.isWeb() && !s.isMobilebrowser() && !s.isNatives(), this::getArgumentsWithoutUiSteps);
-
-        map.put(s -> s.isWeb() && s.isMobilebrowser() && s.isNatives(),
-                entry -> nativeDevices.stream().flatMap(nativeDevice ->
-                        mobilebrowserDevices.stream().flatMap(mobilebrowser ->
-                                browsers.stream().flatMap(browser ->
-                                        getArgumentsWithUiSteps(entry, browser, mobilebrowser, nativeDevice))))
-        );
-        map.put(s -> s.isWeb() && s.isNatives(),
-                entry -> nativeDevices.stream().flatMap(nativeDevice ->
-                        browsers.stream().flatMap(browser ->
-                                getArgumentsWithUiSteps(entry, browser, null, nativeDevice)))
-        );
-        map.put(s -> s.isWeb() && s.isMobilebrowser(),
-                entry -> browsers.stream().flatMap(browser ->
-                        mobilebrowserDevices.stream().flatMap(mobilebrowser ->
-                                getArgumentsWithUiSteps(entry, browser, mobilebrowser, null)))
-        );
-        map.put(s -> s.isMobilebrowser() && s.isNatives(),
-                entry -> nativeDevices.stream().flatMap(nativeDevice ->
-                        mobilebrowserDevices.stream().flatMap(mobilebrowser ->
-                                getArgumentsWithUiSteps(entry, null, mobilebrowser, nativeDevice)))
-        );
-        map.put(ScenarioStepReader::isWeb,
-                entry -> browsers.stream().flatMap(browser ->
-                        getArgumentsWithUiSteps(entry, browser, null, null))
-        );
-        map.put(ScenarioStepReader::isMobilebrowser,
-                entry -> mobilebrowserDevices.stream().flatMap(mobilebrowser ->
-                        getArgumentsWithUiSteps(entry, null, mobilebrowser, null))
-        );
-        map.put(ScenarioStepReader::isNatives,
-                entry -> nativeDevices.stream().flatMap(nativeDevice ->
-                        getArgumentsWithUiSteps(entry, null, null, nativeDevice))
-        );
-        this.stepsToArgumentsMethodMap = Collections.unmodifiableMap(map);
-    }
+    private final List<AbstractBrowser> browsers = BrowserUtil.filterEnabledBrowsers();
+    private final List<MobilebrowserDevice> mobilebrowserDevices = MobileUtil.filterEnabledMobilebrowserDevices();
+    private final List<NativeDevice> nativeDevices = MobileUtil.filterEnabledNativeDevices();
 
     public Stream<Arguments> collect() {
         ScenarioCollector.Result result = new ScenarioCollector().collect();
@@ -87,16 +40,47 @@ public class TestSetCollector {
                 .flatMap(this::createArguments);
     }
 
+    //CHECKSTYLE:OFF
     private Stream<Arguments> createArguments(final MappingResult entry) {
         Scenario scenario = entry.scenario;
-        final ScenarioStepReader scenarioSteps = new ScenarioStepReader().checkSteps(scenario);
+        final ScenarioStepReader s = new ScenarioStepReader().checkSteps(scenario);
 
-        return stepsToArgumentsMethodMap.keySet().stream()
-                .filter(stepsPredicate -> stepsPredicate.test(scenarioSteps))
-                .map(stepsToArgumentsMethodMap::get)
-                .findFirst().orElseThrow(() -> new DefaultFrameworkException("//todo"))
-                .apply(entry);
+        if (s.isWeb()) {
+            if (s.isMobilebrowser()) {
+                if (s.isNatives()) {
+                    return nativeDevices.stream().flatMap(nativeDevice ->
+                            mobilebrowserDevices.stream().flatMap(mobilebrowser ->
+                                    browsers.stream().flatMap(browser ->
+                                            getArgumentsWithUiSteps(entry, browser, mobilebrowser, nativeDevice))));
+                }
+                return browsers.stream().flatMap(browser ->
+                        mobilebrowserDevices.stream().flatMap(mobilebrowser ->
+                                getArgumentsWithUiSteps(entry, browser, mobilebrowser, null)));
+            }
+            if (s.isNatives()) {
+                return nativeDevices.stream().flatMap(nativeDevice ->
+                        browsers.stream().flatMap(browser ->
+                                getArgumentsWithUiSteps(entry, browser, null, nativeDevice)));
+            }
+            return browsers.stream().flatMap(browser ->
+                    getArgumentsWithUiSteps(entry, browser, null, null));
+        }
+        if (s.isMobilebrowser()) {
+            if (s.isNatives()) {
+                return nativeDevices.stream().flatMap(nativeDevice ->
+                        mobilebrowserDevices.stream().flatMap(mobilebrowser ->
+                                getArgumentsWithUiSteps(entry, null, mobilebrowser, nativeDevice)));
+            }
+            return mobilebrowserDevices.stream().flatMap(mobilebrowser ->
+                    getArgumentsWithUiSteps(entry, null, mobilebrowser, null));
+        }
+        if (s.isNatives()) {
+            return nativeDevices.stream().flatMap(nativeDevice ->
+                    getArgumentsWithUiSteps(entry, null, null, nativeDevice));
+        }
+        return getArgumentsWithoutUiSteps(entry);
     }
+    //CHECKSTYLE:ON
 
     private Stream<Arguments> getArgumentsWithoutUiSteps(final MappingResult entry) {
         ScenarioArguments scenarioArguments = buildScenarioArguments(entry);
@@ -170,8 +154,4 @@ public class TestSetCollector {
     private boolean variationsExist(final MappingResult entry) {
         return Objects.nonNull(entry.scenario) && Objects.nonNull(entry.scenario.getVariations());
     }
-
-    private interface ScenarioStepsPredicate extends Predicate<ScenarioStepReader> { }
-
-    private interface ScenarioToArgumentsMethod extends Function<MappingResult, Stream<Arguments>> { }
 }

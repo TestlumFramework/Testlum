@@ -88,7 +88,6 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     }
 
     private void highlightCommand(final Highlight highlight, final CommandResult result) {
-        //Keys key = chooseKeyForOperatingSystem();
         action.keyDown(getElementForHotKey(highlight, result), key).sendKeys("a").keyUp(key).build().perform();
     }
 

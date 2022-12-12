@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -40,6 +41,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
 
     private final Map<HotKeyCommandPredicate, HotKeyCommand> hotKeyCmdMethods;
     private final Actions action;
+    private final Keys key;
 
     public HotKeyExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -56,6 +58,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
         commands.put(hotKey -> hotKey instanceof Space, (hotKey, result) -> singleKeyCommand(Keys.SPACE));
         hotKeyCmdMethods = Collections.unmodifiableMap(commands);
         action = new Actions(dependencies.getDriver());
+        key = chooseKeyForOperatingSystem();
     }
 
     @Override
@@ -85,25 +88,33 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     }
 
     private void highlightCommand(final Highlight highlight, final CommandResult result) {
-        action.keyDown(getElementForHotKey(highlight, result), Keys.COMMAND).sendKeys("a").build().perform();
+        //Keys key = chooseKeyForOperatingSystem();
+        action.keyDown(getElementForHotKey(highlight, result), key).sendKeys("a").keyUp(key).build().perform();
     }
 
     private void cutCommand(final Cut cut, final CommandResult result) {
-        action.keyDown(getElementForHotKey(cut, result), Keys.COMMAND).sendKeys("a").sendKeys("x").build().perform();
+        action.keyDown(getElementForHotKey(cut, result), key).sendKeys("a").sendKeys("x").keyUp(key).build().perform();
     }
 
     private void pasteCommand(final Paste paste, final CommandResult result) {
-        action.keyDown(getElementForHotKey(paste, result), Keys.COMMAND).sendKeys("v").build().perform();
+        action.keyDown(getElementForHotKey(paste, result), key).sendKeys("v").keyUp(key).build().perform();
     }
 
     private void copyCommand(final Copy copy, final CommandResult result) {
-        action.keyDown(getElementForHotKey(copy, result), Keys.COMMAND).sendKeys("a").sendKeys("c").build().perform();
+        action.keyDown(getElementForHotKey(copy, result), key).sendKeys("a").sendKeys("c").keyUp(key).build().perform();
     }
 
     private WebElement getElementForHotKey(final CommandWithLocator command, final CommandResult result) {
         Locator locator = GlobalLocators.getLocator(command.getLocatorId());
         result.put(HOTKEY_LOCATOR, locator.getLocatorId());
         return WebElementFinder.find(locator, dependencies.getDriver());
+    }
+
+    private Keys chooseKeyForOperatingSystem() {
+        String os = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
+        return (os.contains("win") || os.contains("nix") || os.contains("aix") || os.contains("nux"))
+                ? Keys.CONTROL
+                : Keys.COMMAND;
     }
 
     private interface HotKeyCommandPredicate extends Predicate<AbstractUiCommand> { }

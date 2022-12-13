@@ -24,8 +24,13 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.NATIVE_MOVE_T
 @Slf4j
 public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
 
+    private final Map<NavigateNativeDestination, KeyEvent> navigateMap;
     public NavigateNativeExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
+        navigateMap = new HashMap<>();
+        navigateMap.put(NavigateNativeDestination.HOME, new KeyEvent(AndroidKey.HOME));
+        navigateMap.put(NavigateNativeDestination.BACK, new KeyEvent(AndroidKey.BACK));
+        navigateMap.put(NavigateNativeDestination.OVERVIEW, new KeyEvent(AndroidKey.APP_SWITCH));
     }
 
     @Override
@@ -44,20 +49,6 @@ public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
 
     private void performAndroidNavigation(final NavigateNative navigateNative) {
         AndroidDriver driver = (AndroidDriver) dependencies.getDriver();
-        androidNavigateMap(driver).getOrDefault(navigateNative.getDestination(), destination -> {
-            throw new DefaultFrameworkException(NAVIGATE_DESTINATION_UNSUPPORTED + destination);
-        }).accept(new Object());
-    }
-
-    private Map<NavigateNativeDestination, Consumer<Object>> androidNavigateMap(
-            final AndroidDriver driver) {
-        Map<NavigateNativeDestination, Consumer<Object>> destinationToFunc = new HashMap<>();
-        destinationToFunc.put(NavigateNativeDestination.HOME,
-                home -> driver.pressKey(new KeyEvent(AndroidKey.HOME)));
-        destinationToFunc.put(NavigateNativeDestination.BACK,
-                back -> driver.pressKey(new KeyEvent(AndroidKey.BACK)));
-        destinationToFunc.put(NavigateNativeDestination.OVERVIEW,
-                overview -> driver.pressKey(new KeyEvent(AndroidKey.APP_SWITCH)));
-        return destinationToFunc;
+        driver.pressKey(navigateMap.get(navigateNative.getDestination()));
     }
 }

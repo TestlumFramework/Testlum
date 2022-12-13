@@ -42,6 +42,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION
 @Slf4j
 @RequiredArgsConstructor
 public class ScenarioRunner {
+
     private static final AtomicInteger SCENARIO_ID_GENERATOR = new AtomicInteger();
     private final AtomicInteger idGenerator = new AtomicInteger();
     private final ScenarioResult scenarioResult = new ScenarioResult();
@@ -69,7 +70,7 @@ public class ScenarioRunner {
     private void prepareScenarioResult() {
         Scenario scenario = scenarioArguments.getScenario();
         scenarioResult.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
-        scenarioResult.setPath(StringUtils.remove(scenarioArguments.getFile().getPath(), System.getProperty("PWD")));
+        scenarioResult.setPath(scenarioArguments.getFile().getPath());
         scenarioResult.setName(scenario.getOverview().getName());
         scenarioResult.setOverview(scenario.getOverview());
         scenarioResult.setTags(scenario.getTags());
@@ -187,7 +188,6 @@ public class ScenarioRunner {
                 createWebDriver(),
                 createNativeDriver(),
                 createMobilebrowserDriver(),
-                ctx,
                 scenarioArguments.getFile(),
                 new ScenarioContext(scenarioArguments.getVariation()),
                 idGenerator

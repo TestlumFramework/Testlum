@@ -33,9 +33,9 @@ public class MobileUtil {
                 nativeDevice.getUdid());
     }
 
-    public String getMobilebrowserDeviceInfo(final MobilebrowserDevice nativeDevice) {
+    public String getMobilebrowserDeviceInfo(final MobilebrowserDevice mobilebrowserDevice) {
         return String.format(MOBILEBROWSER_INFO,
-                nativeDevice.getDeviceName(),
-                nativeDevice.getPlatformName().value());
+                mobilebrowserDevice.getDeviceName(),
+                mobilebrowserDevice.getPlatformName().value());
     }
 }

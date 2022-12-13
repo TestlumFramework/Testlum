@@ -1,10 +1,11 @@
-package com.knubisoft.cott.testing.framework.scenario;
+package com.knubisoft.cott.testing.framework.util;
 
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.model.scenario.StorageName;
 import lombok.experimental.UtilityClass;
 
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNSUPPORTED_MIGRATION_FORMAT;
 import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.BSON_EXTENSION;
 import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.CSV_EXTENSION;
 import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.JSON_EXTENSION;
@@ -13,8 +14,6 @@ import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.SQ
 import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.TXT_EXTENSION;
 import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.XLSX_EXTENSION;
 import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.XLS_EXTENSION;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNSUPPORTED_MIGRATION_FORMAT;
 
 @UtilityClass
 public class DatasetValidator {

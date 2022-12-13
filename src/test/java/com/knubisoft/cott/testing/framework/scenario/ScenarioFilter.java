@@ -5,12 +5,7 @@ import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.cott.testing.model.global_config.TagValue;
-import com.knubisoft.cott.testing.model.scenario.Scenario;
-import com.knubisoft.cott.testing.model.scenario.Ui;
-import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -18,31 +13,18 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NO_ACTIVE_SCENARIOS_LOG;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NO_ENABLE_TAGS_LOG;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NO_ENABLE_TAGS_CONFIG;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NO_SCENARIOS_FILTERED_BY_TAGS;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VALID_SCENARIOS_NOT_FOUND;
 
-@Slf4j
-@UtilityClass
 public class ScenarioFilter {
 
-    public FiltrationResult filterScenarios(final Set<ScenarioCollector.MappingResult> original) {
-        original.removeIf(ScenarioFilter::isScenarioNonParsed);
+    public Set<ScenarioCollector.MappingResult> filterScenarios(final Set<ScenarioCollector.MappingResult> original) {
+        original.removeIf(this::isScenarioNonParsed);
         if (original.isEmpty()) {
             throw new DefaultFrameworkException(VALID_SCENARIOS_NOT_FOUND);
         }
-        Set<ScenarioCollector.MappingResult> validScenarios = filterValidScenarios(original);
-        return splitScenariosByType(validScenarios);
-    }
-
-    private FiltrationResult splitScenariosByType(final Set<ScenarioCollector.MappingResult> validScenarios) {
-        Set<ScenarioCollector.MappingResult> scenariosWithoutUiSteps = filterScenariosWithoutUiSteps(validScenarios);
-        if (validScenarios.size() == scenariosWithoutUiSteps.size()) {
-            return new FiltrationResult(Collections.emptySet(), scenariosWithoutUiSteps, true);
-        }
-        Set<ScenarioCollector.MappingResult> scenariosWithUiSteps =
-                filterBy(validScenarios, e -> scenarioContainsUiSteps(e.scenario));
-        return new FiltrationResult(scenariosWithUiSteps, scenariosWithoutUiSteps, false);
+        return filterValidScenarios(original);
     }
 
     private Set<ScenarioCollector.MappingResult> filterValidScenarios(
@@ -50,8 +32,12 @@ public class ScenarioFilter {
         Set<ScenarioCollector.MappingResult> activeScenarios = filterIsActive(validScenarios);
         Set<ScenarioCollector.MappingResult> scenariosWithOnlyThisEnabled = filterScenariosIfOnlyThis(activeScenarios);
         return scenariosWithOnlyThisEnabled.isEmpty()
-                ? scenariosByTags(activeScenarios)
+                ? filterScenariosByTags(activeScenarios)
                 : scenariosWithOnlyThisEnabled;
+    }
+
+    private Set<ScenarioCollector.MappingResult> filterIsActive(final Set<ScenarioCollector.MappingResult> original) {
+        return filterBy(original, e -> e.scenario.isActive());
     }
 
     private Set<ScenarioCollector.MappingResult> filterScenariosIfOnlyThis(
@@ -59,11 +45,7 @@ public class ScenarioFilter {
         return filterBy(original, e -> e.scenario.isOnlyThis());
     }
 
-    private Set<ScenarioCollector.MappingResult> filterIsActive(final Set<ScenarioCollector.MappingResult> original) {
-        return filterBy(original, e -> e.scenario.isActive());
-    }
-
-    private Set<ScenarioCollector.MappingResult> scenariosByTags(
+    private Set<ScenarioCollector.MappingResult> filterScenariosByTags(
             final Set<ScenarioCollector.MappingResult> activeScenarios) {
         RunScenariosByTag runScenariosByTag = GlobalTestConfigurationProvider.provide().getRunScenariosByTag();
         return runScenariosByTag.isEnable()
@@ -73,11 +55,11 @@ public class ScenarioFilter {
 
     private Set<ScenarioCollector.MappingResult> filterByTags(final Set<ScenarioCollector.MappingResult> original,
                                                               final List<String> enabledTags) {
-        Set<ScenarioCollector.MappingResult> filtered = filterBy(original, e -> isMatchesTags(e, enabledTags));
-        if (filtered.isEmpty()) {
-            throw new DefaultFrameworkException(NO_ACTIVE_SCENARIOS_LOG);
+        Set<ScenarioCollector.MappingResult> filteredByTags = filterBy(original, e -> isMatchesTags(e, enabledTags));
+        if (filteredByTags.isEmpty()) {
+            throw new DefaultFrameworkException(NO_SCENARIOS_FILTERED_BY_TAGS);
         }
-        return filtered;
+        return filteredByTags;
     }
 
     private boolean isMatchesTags(final ScenarioCollector.MappingResult entry, final List<String> enabledTags) {
@@ -86,17 +68,14 @@ public class ScenarioFilter {
     }
 
     private List<String> getEnabledTags(final List<TagValue> tags) {
-        List<String> enabledTags = tags.stream().filter(TagValue::isEnable)
-                .map(TagValue::getName).collect(Collectors.toList());
+        List<String> enabledTags = tags.stream()
+                .filter(TagValue::isEnable)
+                .map(TagValue::getName)
+                .collect(Collectors.toList());
         if (enabledTags.isEmpty()) {
-            throw new DefaultFrameworkException(NO_ENABLE_TAGS_LOG);
+            throw new DefaultFrameworkException(NO_ENABLE_TAGS_CONFIG);
         }
         return enabledTags;
-    }
-
-    private Set<ScenarioCollector.MappingResult> filterScenariosWithoutUiSteps(
-            final Set<ScenarioCollector.MappingResult> scenarios) {
-        return filterBy(scenarios, e -> !scenarioContainsUiSteps(e.scenario));
     }
 
     private LinkedHashSet<ScenarioCollector.MappingResult> filterBy(
@@ -105,11 +84,6 @@ public class ScenarioFilter {
         return scenarios.stream()
                 .filter(by)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    private boolean scenarioContainsUiSteps(final Scenario scenario) {
-        return scenario.getCommands().stream()
-                .anyMatch(command -> Ui.class.isAssignableFrom(command.getClass()));
     }
 
     private boolean isScenarioNonParsed(final ScenarioCollector.MappingResult entry) {

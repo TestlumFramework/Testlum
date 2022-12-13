@@ -69,9 +69,9 @@ public class ExceptionMessage {
             + "files with duplicate filenames - %s. Every file should have a unique name" + ANSI_RESET;
     public static final String FILE_NOT_EXIST = ANSI_RED + "File %s does not exist in the [data] folder and its "
             + "subfolders by path %s" + ANSI_RESET;
-    public static final String NO_ACTIVE_SCENARIOS_LOG = ANSI_RED + "There are no active scenarios by enabled tags"
-            + ANSI_RESET;
-    public static final String NO_ENABLE_TAGS_LOG = ANSI_RED + "There are no enable tags in runScriptByTag"
+    public static final String NO_SCENARIOS_FILTERED_BY_TAGS = ANSI_RED
+            + "There are no active scenarios by enabled tags" + ANSI_RESET;
+    public static final String NO_ENABLE_TAGS_CONFIG = ANSI_RED + "There are no enable tags in runScenariosByTag"
             + ANSI_RESET;
 
     public static final String CONFIG_FILE_NAME_INPUT_REQUIREMENTS =

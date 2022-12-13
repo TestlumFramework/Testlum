@@ -7,45 +7,58 @@
 
     <x:include schemaLocation="shared.xsd"/>
 
-    <x:complexType name="webSocket">
+    <x:complexType name="websocket">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
-                <x:sequence>
-                    <x:element name="topic" type="tns:webSocketTopic" minOccurs="0" maxOccurs="unbounded"/>
-                    <x:choice maxOccurs="unbounded">
-                        <x:element name="send" type="tns:webSocketSend" maxOccurs="unbounded"/>
-                        <x:element name="receive" type="tns:webSocketReceive" maxOccurs="unbounded"/>
+                <x:choice>
+                    <x:choice>
+                        <x:element name="stomp" type="tns:websocketStomp"/>
                     </x:choice>
-                </x:sequence>
+                    <x:choice maxOccurs="unbounded">
+                        <x:element name="send" type="tns:websocketSend"/>
+                        <x:element name="receive" type="tns:websocketReceive"/>
+                    </x:choice>
+                </x:choice>
                 <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
                 <x:attribute name="disconnect" type="x:boolean" default="true"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="webSocketTopic">
-        <x:attribute name="value" type="tns:endpointPattern" use="required"/>
+    <x:complexType name="websocketStomp">
+        <x:choice maxOccurs="unbounded">
+            <x:element name="subscribe" type="tns:websocketSubscribe"/>
+            <x:element name="send" type="tns:websocketSend"/>
+            <x:element name="receive" type="tns:websocketReceive"/>
+        </x:choice>
     </x:complexType>
 
-    <x:complexType name="webSocketSend">
+    <x:complexType name="websocketSubscribe">
+        <x:attribute name="comment" type="tns:stringMin10" use="required"/>
+        <x:attribute name="topic" type="tns:endpointPattern" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="websocketSend">
         <x:sequence>
             <x:choice>
                 <x:element name="message" type="tns:nonEmptyString"/>
                 <x:element name="file" type="tns:bodyFile"/>
             </x:choice>
-            <x:element name="receive" type="tns:webSocketReceive" minOccurs="0"/>
+            <x:element name="receive" type="tns:websocketReceive" minOccurs="0"/>
         </x:sequence>
-        <x:attribute name="endpoint" type="tns:endpointPattern" use="required"/>
+        <x:attribute name="comment" type="tns:stringMin10" use="required"/>
+        <x:attribute name="endpoint" type="tns:endpointPattern"/>
     </x:complexType>
 
-    <x:complexType name="webSocketReceive">
+    <x:complexType name="websocketReceive">
         <x:choice>
             <x:element name="message" type="tns:nonEmptyString"/>
             <x:element name="file" type="tns:expectedPattern"/>
         </x:choice>
-        <x:attribute name="topic" type="tns:endpointPattern" use="required"/>
-        <x:attribute name="valuesNumber" type="x:int" default="0"/>
-        <x:attribute name="timeoutMillis" type="x:int" default="5000"/>
+        <x:attribute name="comment" type="tns:stringMin10" use="required"/>
+        <x:attribute name="topic" type="tns:endpointPattern"/>
+        <x:attribute name="count" type="x:int" default="0"/>
+        <x:attribute name="timeoutMillis" type="x:int" default="3000"/>
     </x:complexType>
 
 </x:schema>

@@ -7,18 +7,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependenc
 import com.knubisoft.cott.testing.framework.locator.GlobalLocators;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.pages.Locator;
-import com.knubisoft.cott.testing.model.scenario.CompareWith;
-import com.knubisoft.cott.testing.model.scenario.Image;
 import io.appium.java_client.AppiumDriver;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.time.Duration;
-import java.time.LocalTime;
-import java.util.Base64;
-import java.util.Objects;
-import javax.imageio.ImageIO;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +23,17 @@ import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.Base64;
+import java.util.Objects;
+
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SCROLL_TO_ELEMENT_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEB_ELEMENT_ATTRIBUTE_NOT_EXIST;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.HIGHLIGHT_SCRIPT;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.URL_TO_IMAGE_LOG;
-import static com.knubisoft.cott.testing.framework.util.ResultUtil.URL_TO_ACTUAL_IMAGE;
 import static java.lang.String.format;
 import static org.openqa.selenium.interactions.PointerInput.Origin.viewport;
 
@@ -111,7 +106,8 @@ public class UiUtil {
         }
     }
 
-    private void tryToCopyScreenshotFileToFolder(final File screenshot, final File screenshotsFolder,
+    private void tryToCopyScreenshotFileToFolder(final File screenshot,
+                                                 final File screenshotsFolder,
                                                  final ExecutorDependencies dependencies) {
         try {
             copyScreenshotFileToFolder(screenshot, screenshotsFolder, dependencies);
@@ -123,8 +119,7 @@ public class UiUtil {
 
     private void copyScreenshotFileToFolder(final File screenshot,
                                             final File screenshotsFolder,
-                                            final ExecutorDependencies dependencies)
-            throws IOException {
+                                            final ExecutorDependencies dependencies) throws IOException {
         String screenshotFileName = format(TestResourceSettings.SCREENSHOT_NAME_TO_SAVE,
                 LocalTime.now(),
                 dependencies.getPosition().get());
@@ -132,7 +127,7 @@ public class UiUtil {
         FileUtils.copyFile(screenshot, newScreenshot);
     }
 
-    private File takeScreenshot(final WebDriver webDriver) {
+    public File takeScreenshot(final WebDriver webDriver) {
         return ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.FILE);
     }
 
@@ -144,18 +139,6 @@ public class UiUtil {
             String encodedScreenshot = Base64.getEncoder().encodeToString(screenshotContent);
             result.setBase64Screenshot(encodedScreenshot);
         }
-    }
-
-    @SneakyThrows
-    public BufferedImage getActualImage(final WebDriver webDriver,
-                                        final Image image,
-                                        final CommandResult result) {
-        CompareWith compareWith = image.getCompareWith();
-        if (Objects.nonNull(compareWith)) {
-            WebElement webElement = findWebElement(webDriver, compareWith.getLocator());
-            return UiUtil.extractImageFromElement(webElement, compareWith.getAttribute(), result);
-        }
-        return ImageIO.read(takeScreenshot(webDriver));
     }
 
     public String getElementAttribute(final WebElement webElement, final String attributeName) {
@@ -172,16 +155,6 @@ public class UiUtil {
             throw new DefaultFrameworkException(format(SCROLL_TO_ELEMENT_NOT_SUPPORTED, value));
         }
         return percent;
-    }
-
-    @SneakyThrows
-    private BufferedImage extractImageFromElement(final WebElement webElement,
-                                                  final String imageSourceAttribute,
-                                                  final CommandResult result) {
-        String urlToActualImage = getElementAttribute(webElement, imageSourceAttribute);
-        log.info(URL_TO_IMAGE_LOG, urlToActualImage);
-        result.put(URL_TO_ACTUAL_IMAGE, urlToActualImage);
-        return ImageIO.read(new URL(urlToActualImage));
     }
 
     public Sequence buildSequence(final Point start, final Point end, final int duration) {

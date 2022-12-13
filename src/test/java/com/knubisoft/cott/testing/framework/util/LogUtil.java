@@ -52,8 +52,8 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_L
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_FRAME;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
@@ -129,21 +129,22 @@ public class LogUtil {
                 format(TABLE_FORMAT, "Query", query.replaceAll("\\s{2,}", SPACE))));
     }
 
-    public void logBrokerActionInfo(final String action, final String queue, final String content) {
-        logActionInfo(LogMessage.BROKER_ACTION_INFO_LOG, action, queue, content);
+    public void logBrokerActionInfo(final String action, final String destination, final String content) {
+        log.info(LogMessage.BROKER_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), destination,
+                PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
-    public void logWebsocketActionInfo(final String action, final String destination, final String content) {
-        logActionInfo(LogMessage.WEBSOCKET_ACTION_INFO_LOG, action, destination, content);
-    }
-
-    public void logActionInfo(final String template,
-                              final String action,
-                              final String destination,
-                              final String content) {
-        log.info(template, action.toUpperCase(Locale.ROOT), destination, StringUtils.isNotBlank(content)
-                ? PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT)
-                : content);
+    public void logWebsocketActionInfo(final String action,
+                                       final String comment,
+                                       final String destination,
+                                       final String content) {
+        log.info(LogMessage.WEBSOCKET_ACTION_INFO_LOG, comment, action.toUpperCase(Locale.ROOT));
+        if (StringUtils.isNotBlank(destination)) {
+            log.info(DESTINATION_LOG, destination);
+        }
+        if (StringUtils.isNotBlank(content)) {
+            log.info(CONTENT_LOG, PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+        }
     }
 
     public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {

@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.scenario;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
@@ -31,6 +32,7 @@ import com.knubisoft.cott.testing.model.global_config.SesIntegration;
 import com.knubisoft.cott.testing.model.global_config.SmtpIntegration;
 import com.knubisoft.cott.testing.model.global_config.SqsIntegration;
 import com.knubisoft.cott.testing.model.global_config.TwilioIntegration;
+import com.knubisoft.cott.testing.model.global_config.Websockets;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.Body;
@@ -70,12 +72,16 @@ import com.knubisoft.cott.testing.model.scenario.Sqs;
 import com.knubisoft.cott.testing.model.scenario.StorageName;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.Ui;
-import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.Var;
+import com.knubisoft.cott.testing.model.scenario.Web;
+import com.knubisoft.cott.testing.model.scenario.Websocket;
+import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
+import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
 import com.knubisoft.cott.testing.model.scenario.When;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -260,6 +266,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateAlias(twilioIntegration.getTwilio(), twilio.getAlias());
         });
 
+        validatorMap.put(o -> o instanceof Websocket, (xmlFile, command) -> {
+            Websockets wsIntegration = integrations.getWebsockets();
+            checkIntegrationExistence(wsIntegration, Websockets.class);
+            Websocket websocket = (Websocket) command;
+            validateAlias(wsIntegration.getApi(), websocket.getAlias());
+            validateWebsocketCommand(xmlFile, websocket);
+        });
+
         validatorMap.put(o -> o instanceof Include, (xmlFile, command) -> {
             Include include = (Include) command;
             validateIncludeAction(include, xmlFile);
@@ -389,7 +403,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateRabbitCommand(final File xmlFile, final Rabbit rabbit) {
-        rabbit.getSendOrReceive().stream().map(this::getRabbitFilename).filter(StringUtils::hasText)
+        rabbit.getSendOrReceive().stream()
+                .map(this::getRabbitFilename)
+                .filter(StringUtils::hasText)
                 .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
     }
 
@@ -402,7 +418,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateKafkaCommand(final File xmlFile, final Kafka kafka) {
-        kafka.getSendOrReceive().stream().map(this::getKafkaFilename).filter(StringUtils::hasText)
+        kafka.getSendOrReceive().stream()
+                .map(this::getKafkaFilename)
+                .filter(StringUtils::hasText)
                 .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
     }
 
@@ -413,7 +431,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             return ((ReceiveKafkaMessage) kafkaCommand).getFile();
         }
     }
-
 
     private void validateWhenCommand(final File xmlFile, final When when) {
         Stream.of(when.getRequest(), when.getThen())
@@ -458,6 +475,36 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         if (response != null && response.getFile() != null) {
             FileSearcher.searchFileFromDir(xmlFile, response.getFile());
         }
+    }
+
+    private void validateWebsocketCommand(final File xmlFile, final Websocket websocket) {
+        List<Object> commands = new ArrayList<>();
+        if (Objects.nonNull(websocket.getStomp())) {
+            addWebsocketCommandsToCheck(websocket.getStomp().getSubscribeOrSendOrReceive(), commands);
+        } else {
+            addWebsocketCommandsToCheck(websocket.getSendOrReceive(), commands);
+        }
+        commands.stream()
+                .map(this::getWebsocketFilename)
+                .filter(StringUtils::hasText)
+                .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
+    }
+
+    private void addWebsocketCommandsToCheck(final List<Object> commandList, final List<Object> commands) {
+        commandList.stream()
+                .peek(commands::add)
+                .filter(ws -> ws instanceof WebsocketSend && Objects.nonNull(((WebsocketSend) ws).getReceive()))
+                .map(o -> ((WebsocketSend) o).getReceive())
+                .forEach(commands::add);
+    }
+
+    private String getWebsocketFilename(final Object command) {
+        if (command instanceof WebsocketSend) {
+            return ((WebsocketSend) command).getFile();
+        } else if (command instanceof WebsocketReceive) {
+            return ((WebsocketReceive) command).getFile();
+        }
+        return DelimiterConstant.EMPTY;
     }
 
     private void validateWebCommands(final Web command) {
@@ -529,11 +576,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private interface AbstractCommandPredicate extends Predicate<AbstractCommand> {
-
     }
 
     private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> {
-
     }
-
 }

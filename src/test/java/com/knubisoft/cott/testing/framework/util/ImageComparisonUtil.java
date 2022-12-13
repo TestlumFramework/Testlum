@@ -38,8 +38,8 @@ public class ImageComparisonUtil {
     }
 
     private File saveActualImage(final ImageComparisonResult comparisonResult,
-                                     final Image image,
-                                     final File directoryToSave) throws IOException {
+                                 final Image image,
+                                 final File directoryToSave) throws IOException {
         String expectedImageFullName = image.getFile();
         String imageExtension = FilenameUtils.getExtension(expectedImageFullName);
         File fileToSave = getFileToSave(directoryToSave, expectedImageFullName);

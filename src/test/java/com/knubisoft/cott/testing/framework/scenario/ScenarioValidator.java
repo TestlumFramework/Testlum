@@ -5,6 +5,7 @@ import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
+import com.knubisoft.cott.testing.framework.util.DatasetValidator;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.HttpUtil;
 import com.knubisoft.cott.testing.framework.util.MobileUtil;
@@ -70,8 +71,8 @@ import com.knubisoft.cott.testing.model.scenario.Sqs;
 import com.knubisoft.cott.testing.model.scenario.StorageName;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.Ui;
-import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.Var;
+import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.When;
 import org.springframework.util.StringUtils;
 
@@ -529,11 +530,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private interface AbstractCommandPredicate extends Predicate<AbstractCommand> {
-
     }
 
     private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> {
-
     }
-
 }

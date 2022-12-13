@@ -118,6 +118,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.browserstack</groupId>
+            <artifactId>browserstack-local-java</artifactId>
+            <version>1.0.6</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
             <version>1.18</version>

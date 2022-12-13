@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.configuration.ui;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.cott.testing.framework.util.BrowserStackUtil;
 import com.knubisoft.cott.testing.framework.util.MobileDriverUtil;
 import com.knubisoft.cott.testing.model.global_config.Mobilebrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
@@ -14,7 +15,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
 
-import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK_NATIVE_WEB_CONNECTION;
+import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BS_NATIVE_WEB_CONNECTION;
 import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK_URL;
 
 @UtilityClass
@@ -25,11 +26,12 @@ public class MobilebrowserDriverFactory {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         MobileDriverUtil.setCommonCapabilities(mobilebrowserDevice, desiredCapabilities);
         Mobilebrowser mobilebrowser = GlobalTestConfigurationProvider.provide().getMobilebrowser();
-        if (BROWSER_STACK_NATIVE_WEB_CONNECTION) {
+        if (BS_NATIVE_WEB_CONNECTION) {
             desiredCapabilities.setCapability("browserstack.local", "true");
+            BrowserStackUtil.startLocalServer();
         }
         setPlatformCapabilities(mobilebrowserDevice, desiredCapabilities);
-        WebDriver driver = new RemoteWebDriver(new URL(BROWSER_STACK_NATIVE_WEB_CONNECTION
+        WebDriver driver = new RemoteWebDriver(new URL(BS_NATIVE_WEB_CONNECTION
                 ? BROWSER_STACK_URL : mobilebrowser.getAppiumServerUrl()), desiredCapabilities);
         driver.get(mobilebrowser.getBaseUrl());
         return driver;

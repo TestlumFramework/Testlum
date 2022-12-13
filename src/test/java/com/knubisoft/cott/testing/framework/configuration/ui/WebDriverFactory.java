@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.configuration.ui;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.cott.testing.framework.util.BrowserStackUtil;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.BrowserInDocker;
@@ -41,7 +42,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK_URL;
-import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK_WEB_CONNECTION;
+import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BS_WEB_CONNECTION;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND;
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_VERSION;
 
@@ -119,10 +120,11 @@ public class WebDriverFactory {
     private WebDriver getRemoteDriver(final RemoteBrowser remoteBrowserSettings,
                                       final MutableCapabilities browserOptions) {
         browserOptions.setCapability(BROWSER_VERSION, remoteBrowserSettings.getBrowserVersion());
-        if (BROWSER_STACK_WEB_CONNECTION) {
+        if (BS_WEB_CONNECTION) {
             browserOptions.setCapability("browserstack.local", "true");
+            BrowserStackUtil.startLocalServer();
         }
-        return new RemoteWebDriver(new URL(BROWSER_STACK_WEB_CONNECTION
+        return new RemoteWebDriver(new URL(BS_WEB_CONNECTION
                 ? BROWSER_STACK_URL : remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
     }
 

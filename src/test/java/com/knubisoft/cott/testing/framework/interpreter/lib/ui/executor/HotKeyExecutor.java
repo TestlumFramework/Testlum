@@ -111,9 +111,9 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
 
     private Keys chooseKeyForOperatingSystem() {
         String os = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
-        return (os.contains("win") || os.contains("nix") || os.contains("aix") || os.contains("nux"))
-                ? Keys.CONTROL
-                : Keys.COMMAND;
+            return (os.contains("mac"))
+                    ? Keys.COMMAND
+                    : Keys.CONTROL;
     }
 
     private interface HotKeyCommandPredicate extends Predicate<AbstractUiCommand> { }

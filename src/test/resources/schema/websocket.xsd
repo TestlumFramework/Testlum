@@ -10,13 +10,15 @@
     <x:complexType name="websocket">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
-                <x:sequence>
-                    <x:element name="stomp" type="tns:websocketStomp" minOccurs="0"/>
-                    <x:choice minOccurs="0" maxOccurs="unbounded">
+                <x:choice>
+                    <x:choice>
+                        <x:element name="stomp" type="tns:websocketStomp"/>
+                    </x:choice>
+                    <x:choice maxOccurs="unbounded">
                         <x:element name="send" type="tns:websocketSend"/>
                         <x:element name="receive" type="tns:websocketReceive"/>
                     </x:choice>
-                </x:sequence>
+                </x:choice>
                 <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
                 <x:attribute name="disconnect" type="x:boolean" default="true"/>
             </x:extension>

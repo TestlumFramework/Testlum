@@ -5,9 +5,9 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependenc
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.scenario.WebView;
-import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.remote.SupportsContextSwitching;
 
+import java.util.Locale;
 import java.util.Set;
 
 @ExecutorForClass(WebView.class)
@@ -19,11 +19,10 @@ public class WebViewExecutor extends AbstractUiExecutor<WebView> {
 
     @Override
     public void execute(final WebView webView, final CommandResult result) {
-        AndroidDriver androidDriver = (AndroidDriver) dependencies.getDriver();
         SupportsContextSwitching driver = (SupportsContextSwitching) dependencies.getDriver();
         Set<String> contextNames = driver.getContextHandles();
         for (String contextName : contextNames) {
-            if (contextName.toLowerCase().contains("web")) {
+            if (contextName.toLowerCase(Locale.US).contains("web")) {
                 driver.context(contextName);
                 return;
             }

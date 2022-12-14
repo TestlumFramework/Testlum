@@ -1,6 +1,5 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib.ui.executor;
 
-import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -14,9 +13,7 @@ import io.appium.java_client.android.nativekey.KeyEvent;
 import io.appium.java_client.ios.IOSDriver;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NAVIGATE_DESTINATION_UNSUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.NATIVE_NAVIGATION_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NATIVE_MOVE_TO;
 
@@ -25,6 +22,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.NATIVE_MOVE_T
 public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
 
     private final Map<NavigateNativeDestination, KeyEvent> navigateMap;
+
     public NavigateNativeExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         navigateMap = new HashMap<>();

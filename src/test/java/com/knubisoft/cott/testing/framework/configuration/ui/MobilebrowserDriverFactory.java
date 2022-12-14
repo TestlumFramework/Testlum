@@ -19,7 +19,7 @@ import static com.knubisoft.cott.testing.framework.configuration.GlobalTestConfi
 
 @UtilityClass
 public class MobilebrowserDriverFactory {
-    public static final boolean BS_NATIVE_WEB_CONNECTION =
+    private static final boolean BS_NATIVE_WEB_CONNECTION =
             GlobalTestConfigurationProvider.getMobilebrowserSettings().isBrowserStackConnectionEnabled();
 
     @SneakyThrows

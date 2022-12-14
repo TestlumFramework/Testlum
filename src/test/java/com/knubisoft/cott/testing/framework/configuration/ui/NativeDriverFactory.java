@@ -23,7 +23,7 @@ import static com.knubisoft.cott.testing.framework.configuration.GlobalTestConfi
 
 @UtilityClass
 public class NativeDriverFactory {
-    public static final boolean BS_NATIVE_CONNECTION =
+    private static final boolean BS_NATIVE_CONNECTION =
             GlobalTestConfigurationProvider.getNativeSettings().isBrowserStackConnectionEnabled();
 
     @SneakyThrows

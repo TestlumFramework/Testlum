@@ -47,7 +47,7 @@ import static org.openqa.selenium.remote.CapabilityType.BROWSER_VERSION;
 
 @UtilityClass
 public class WebDriverFactory {
-    public static final boolean BS_WEB_CONNECTION =
+    private static final boolean BS_WEB_CONNECTION =
             GlobalTestConfigurationProvider.getBrowserSettings().isBrowserStackConnectionEnabled();
     private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;

@@ -41,14 +41,11 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider.getBrowserStackUrl;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND;
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_VERSION;
 
 @UtilityClass
 public class WebDriverFactory {
-    private static final boolean BS_WEB_CONNECTION =
-            GlobalTestConfigurationProvider.getBrowserSettings().isBrowserStackConnectionEnabled();
     private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;
 
@@ -120,12 +117,14 @@ public class WebDriverFactory {
     private WebDriver getRemoteDriver(final RemoteBrowser remoteBrowserSettings,
                                       final MutableCapabilities browserOptions) {
         browserOptions.setCapability(BROWSER_VERSION, remoteBrowserSettings.getBrowserVersion());
-        if (BS_WEB_CONNECTION) {
+        if (GlobalTestConfigurationProvider.getBrowserSettings().isBrowserStackEnabled()) {
             browserOptions.setCapability("browserstack.local", "true");
             BrowserStackUtil.startLocalServer();
         }
-        return new RemoteWebDriver(new URL(BS_WEB_CONNECTION
-                ? getBrowserStackUrl() : remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
+        return new RemoteWebDriver(
+                new URL(GlobalTestConfigurationProvider.getBrowserSettings().isBrowserStackEnabled()
+                        ? BrowserStackUtil.getBrowserStackUrl()
+                        : remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
     }
 
     private void setCapabilities(final AbstractBrowser browser, final MutableCapabilities driverOptions) {

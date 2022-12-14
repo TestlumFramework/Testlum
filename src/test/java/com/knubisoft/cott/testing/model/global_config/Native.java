@@ -114,7 +114,7 @@ public class Native {
      * Gets the value of the browserStackConnection property.
      *
      */
-    public boolean isBrowserStackConnectionEnabled() {
+    public boolean isBrowserStackEnabled() {
         return browserStackConnection;
     }
 

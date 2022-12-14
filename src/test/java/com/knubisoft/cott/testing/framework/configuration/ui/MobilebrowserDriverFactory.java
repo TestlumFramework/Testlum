@@ -15,25 +15,22 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
 
-import static com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider.getBrowserStackUrl;
-
 @UtilityClass
 public class MobilebrowserDriverFactory {
-    private static final boolean BS_NATIVE_WEB_CONNECTION =
-            GlobalTestConfigurationProvider.getMobilebrowserSettings().isBrowserStackConnectionEnabled();
 
     @SneakyThrows
     public WebDriver createDriver(final MobilebrowserDevice mobilebrowserDevice) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         MobileDriverUtil.setCommonCapabilities(mobilebrowserDevice, desiredCapabilities);
         Mobilebrowser mobilebrowser = GlobalTestConfigurationProvider.provide().getMobilebrowser();
-        if (BS_NATIVE_WEB_CONNECTION) {
+        if (GlobalTestConfigurationProvider.getMobilebrowserSettings().isBrowserStackEnabled()) {
             desiredCapabilities.setCapability("browserstack.local", "true");
             BrowserStackUtil.startLocalServer();
         }
         setPlatformCapabilities(mobilebrowserDevice, desiredCapabilities);
-        WebDriver driver = new RemoteWebDriver(new URL(BS_NATIVE_WEB_CONNECTION
-                ? getBrowserStackUrl() : mobilebrowser.getAppiumServerUrl()), desiredCapabilities);
+        WebDriver driver = new RemoteWebDriver(
+                new URL(GlobalTestConfigurationProvider.getMobilebrowserSettings().isBrowserStackEnabled()
+                ? BrowserStackUtil.getBrowserStackUrl() : mobilebrowser.getAppiumServerUrl()), desiredCapabilities);
         driver.get(mobilebrowser.getBaseUrl());
         return driver;
     }

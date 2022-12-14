@@ -122,7 +122,7 @@ public class Native {
      * Sets the value of the browserStackConnection property.
      *
      */
-    public void setBrowserStackConnection(boolean browserStackConnection) {
-        this.browserStackConnection = browserStackConnection;
+    public void setBrowserStackConnection(boolean value) {
+        this.browserStackConnection = value;
     }
 }

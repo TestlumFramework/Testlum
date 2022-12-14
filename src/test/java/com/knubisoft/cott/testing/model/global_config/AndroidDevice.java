@@ -1,10 +1,7 @@
 
 package com.knubisoft.cott.testing.model.global_config;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 
 /**
@@ -21,6 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="appPackage" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="appActivity" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
+ *       &lt;attribute name="playMarket" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -44,6 +42,8 @@ public class AndroidDevice
     protected String appPackage;
     @XmlElement(required = true)
     protected String appActivity;
+    @XmlAttribute(name = "playMarket", required = true)
+    protected boolean playMarket;
 
     /**
      * Gets the value of the app property.
@@ -117,4 +117,19 @@ public class AndroidDevice
         this.appActivity = value;
     }
 
+    /**
+     * Gets the value of the playMarket property.
+     *
+     */
+    public boolean isPlayMarketEnabled() {
+        return playMarket;
+    }
+
+    /**
+     * Sets the value of the playMarket property.
+     *
+     */
+    public void setPlayMarketEnabled(boolean value) {
+        this.playMarket = value;
+    }
 }

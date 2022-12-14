@@ -18,12 +18,13 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import java.net.URL;
 import java.util.HashMap;
 
-import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK;
-import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BS_NATIVE_CONNECTION;
-import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK_URL;
+import static com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider.getBrowserStack;
+import static com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider.getBrowserStackUrl;
 
 @UtilityClass
 public class NativeDriverFactory {
+    public static final boolean BS_NATIVE_CONNECTION =
+            GlobalTestConfigurationProvider.getNativeSettings().isBrowserStackConnectionEnabled();
 
     @SneakyThrows
     public WebDriver createDriver(final NativeDevice nativeDevice) {
@@ -35,10 +36,10 @@ public class NativeDriverFactory {
         }
         if (nativeDevice instanceof IosDevice) {
             setIosCaps((IosDevice) nativeDevice, desiredCapabilities);
-            return new IOSDriver(new URL(BS_NATIVE_CONNECTION ? BROWSER_STACK_URL : serverUrl), desiredCapabilities);
+            return new IOSDriver(new URL(BS_NATIVE_CONNECTION ? getBrowserStackUrl() : serverUrl), desiredCapabilities);
         }
         setAndroidCaps((AndroidDevice) nativeDevice, desiredCapabilities);
-        return new AndroidDriver(new URL(BS_NATIVE_CONNECTION ? BROWSER_STACK_URL : serverUrl),
+        return new AndroidDriver(new URL(BS_NATIVE_CONNECTION ? getBrowserStackUrl() : serverUrl),
                 desiredCapabilities);
     }
 
@@ -48,6 +49,12 @@ public class NativeDriverFactory {
         desiredCapabilities.setCapability(MobileCapabilityType.APP, nativeDevice.getApp());
         desiredCapabilities.setCapability("appPackage", nativeDevice.getAppPackage());
         desiredCapabilities.setCapability("appActivity", nativeDevice.getAppActivity());
+        if (nativeDevice.isPlayMarketEnabled()) {
+            desiredCapabilities.setCapability("browserstack.appStoreConfiguration", new HashMap<String, String>() {{
+                put("username", getBrowserStack().getPlayMarketLogin().getUsername());
+                put("password", getBrowserStack().getPlayMarketLogin().getPassword());
+            }});
+        }
     }
 
     private void setIosCaps(final IosDevice nativeDevice, final DesiredCapabilities desiredCapabilities) {
@@ -56,10 +63,6 @@ public class NativeDriverFactory {
     }
 
     private void setBrowserStackCaps(final DesiredCapabilities desiredCapabilities) {
-        desiredCapabilities.setCapability("browserstack.appStoreConfiguration", new HashMap<String, String>() {{
-            put("username", BROWSER_STACK.getPlayMarketLogin().getUsername());
-            put("password", BROWSER_STACK.getPlayMarketLogin().getPassword());
-        }});
         desiredCapabilities.setCapability("browserstack.local", "true");
         BrowserStackUtil.startLocalServer();
     }

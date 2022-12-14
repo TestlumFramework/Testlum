@@ -15,11 +15,12 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
 
-import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BS_NATIVE_WEB_CONNECTION;
-import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK_URL;
+import static com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider.getBrowserStackUrl;
 
 @UtilityClass
 public class MobilebrowserDriverFactory {
+    public static final boolean BS_NATIVE_WEB_CONNECTION =
+            GlobalTestConfigurationProvider.getMobilebrowserSettings().isBrowserStackConnectionEnabled();
 
     @SneakyThrows
     public WebDriver createDriver(final MobilebrowserDevice mobilebrowserDevice) {
@@ -32,7 +33,7 @@ public class MobilebrowserDriverFactory {
         }
         setPlatformCapabilities(mobilebrowserDevice, desiredCapabilities);
         WebDriver driver = new RemoteWebDriver(new URL(BS_NATIVE_WEB_CONNECTION
-                ? BROWSER_STACK_URL : mobilebrowser.getAppiumServerUrl()), desiredCapabilities);
+                ? getBrowserStackUrl() : mobilebrowser.getAppiumServerUrl()), desiredCapabilities);
         driver.get(mobilebrowser.getBaseUrl());
         return driver;
     }
@@ -42,7 +43,7 @@ public class MobilebrowserDriverFactory {
         switch (abstractDevice.getPlatformName()) {
             case ANDROID:
                 MobileDriverUtil.setAutomation(desiredCapabilities, "Android", "uiautomator2");
-                desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "android");
+                desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Chrome");
                 break;
             case IOS:
                 MobileDriverUtil.setAutomation(desiredCapabilities, "iOS", "XCUITest");

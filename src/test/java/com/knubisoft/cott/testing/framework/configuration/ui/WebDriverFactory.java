@@ -41,14 +41,14 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK_URL;
-import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BS_WEB_CONNECTION;
+import static com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider.getBrowserStackUrl;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND;
 import static org.openqa.selenium.remote.CapabilityType.BROWSER_VERSION;
 
 @UtilityClass
 public class WebDriverFactory {
-
+    public static final boolean BS_WEB_CONNECTION =
+            GlobalTestConfigurationProvider.getBrowserSettings().isBrowserStackConnectionEnabled();
     private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;
 
@@ -125,7 +125,7 @@ public class WebDriverFactory {
             BrowserStackUtil.startLocalServer();
         }
         return new RemoteWebDriver(new URL(BS_WEB_CONNECTION
-                ? BROWSER_STACK_URL : remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
+                ? getBrowserStackUrl() : remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
     }
 
     private void setCapabilities(final AbstractBrowser browser, final MutableCapabilities driverOptions) {

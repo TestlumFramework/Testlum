@@ -6,7 +6,7 @@ import lombok.experimental.UtilityClass;
 
 import java.util.HashMap;
 
-import static com.knubisoft.cott.testing.framework.constant.BrowserStackConstant.BROWSER_STACK;
+import static com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider.getBrowserStack;
 
 @UtilityClass
 public class BrowserStackUtil {
@@ -14,7 +14,7 @@ public class BrowserStackUtil {
     private static final HashMap<String, String> BS_LOCAL_ARGS = new HashMap<>();
 
     public void startLocalServer() {
-        BS_LOCAL_ARGS.put("key", BROWSER_STACK.getBrowserStackLogin().getPassword());
+        BS_LOCAL_ARGS.put("key", getBrowserStack().getBrowserStackLogin().getPassword());
         try {
             BS_LOCAL.start(BS_LOCAL_ARGS);
         } catch (Exception e) {

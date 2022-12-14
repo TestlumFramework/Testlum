@@ -61,6 +61,10 @@ public class GlobalTestConfigurationProvider {
     public static BrowserStack getBrowserStack() {
         return GlobalTestConfigurationProvider.provide().getBrowserStack();
     }
+    public static String getBrowserStackUrl() {
+        return "https://" + getBrowserStack().getBrowserStackLogin().getUsername()
+                + ":" + getBrowserStack().getBrowserStackLogin().getPassword() + "@hub-cloud.browserstack.com/wd/hub";
+    }
 
     public static Integrations getIntegrations() {
         return GlobalTestConfigurationProvider.provide().getIntegrations();

@@ -48,6 +48,7 @@ import javax.xml.bind.annotation.XmlType;
     Sendgrid.class,
     Ses.class,
     Dynamo.class,
+    Graphql.class,
     Websocket.class,
     Var.class,
     Shell.class,

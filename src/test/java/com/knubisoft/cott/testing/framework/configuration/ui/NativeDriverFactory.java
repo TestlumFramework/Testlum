@@ -46,8 +46,8 @@ public class NativeDriverFactory {
         desiredCapabilities.setCapability("appActivity", nativeDevice.getAppActivity());
         if (nativeDevice.isPlayMarketEnabled()) {
             desiredCapabilities.setCapability("browserstack.appStoreConfiguration", new HashMap<String, String>() {{
-                put("username", getBrowserStack().getPlayMarketLogin().getUsername());
-                put("password", getBrowserStack().getPlayMarketLogin().getPassword());
+                put("username", getBrowserStack().getPlayMarket().getUsername());
+                put("password", getBrowserStack().getPlayMarket().getPassword());
             }});
         }
         if (GlobalTestConfigurationProvider.getNativeSettings().isBrowserStackEnabled()) {

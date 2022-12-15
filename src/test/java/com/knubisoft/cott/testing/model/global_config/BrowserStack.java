@@ -16,8 +16,9 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="browserStackLogin" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserStackLogin"/&gt;
- *         &lt;element name="playMarketLogin" type="{http://www.knubisoft.com/cott/testing/model/global-config}playMarketLogin"/&gt;
+ *         &lt;element name="username" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="password" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="playMarket" type="{http://www.knubisoft.com/cott/testing/model/global-config}playMarketLogin"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -28,38 +29,64 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "browserStack", propOrder = {
-        "browserStackLogin",
-        "playMarketLogin"
+        "username",
+        "password",
+        "playMarket"
 })
 public class BrowserStack {
-
     @XmlElement(required = true)
-    protected BrowserStackLogin browserStackLogin;
+    protected String username;
     @XmlElement(required = true)
-    protected PlayMarketLogin playMarketLogin;
+    protected String password;
+    @XmlElement(required = true)
+    protected PlayMarket playMarket;
 
     /**
-     * Gets the value of the browserStackLogin property.
+     * Gets the value of the username property.
      *
      * @return
      *     possible object is
-     *     {@link BrowserStackLogin }
+     *     {@link String }
      *
      */
-    public BrowserStackLogin getBrowserStackLogin() {
-        return browserStackLogin;
+    public String getUsername() {
+        return username;
     }
 
     /**
-     * Sets the value of the browserStackLogin property.
+     * Sets the value of the username property.
      *
      * @param value
      *     allowed object is
-     *     {@link BrowserStackLogin }
+     *     {@link String }
      *
      */
-    public void setBrowserStackLogin(BrowserStackLogin value) {
-        this.browserStackLogin = value;
+    public void setUsername(String value) {
+        this.username = value;
+    }
+
+    /**
+     * Gets the value of the password property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * Sets the value of the password property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setPassword(String value) {
+        this.password = value;
     }
 
     /**
@@ -67,11 +94,11 @@ public class BrowserStack {
      *
      * @return
      *     possible object is
-     *     {@link PlayMarketLogin }
+     *     {@link PlayMarket }
      *
      */
-    public PlayMarketLogin getPlayMarketLogin() {
-        return playMarketLogin;
+    public PlayMarket getPlayMarket() {
+        return playMarket;
     }
 
     /**
@@ -79,10 +106,10 @@ public class BrowserStack {
      *
      * @param value
      *     allowed object is
-     *     {@link PlayMarketLogin }
+     *     {@link PlayMarket }
      *
      */
-    public void setPlayMarketLogin(PlayMarketLogin value) {
-        this.playMarketLogin = value;
+    public void setPlayMarketLogin(PlayMarket value) {
+        this.playMarket = value;
     }
 }

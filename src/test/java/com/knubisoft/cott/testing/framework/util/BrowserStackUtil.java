@@ -12,18 +12,14 @@ import static com.knubisoft.cott.testing.framework.configuration.GlobalTestConfi
 public class BrowserStackUtil {
     private static final Local BS_LOCAL = new Local();
     private static final HashMap<String, String> BS_LOCAL_ARGS = new HashMap<>();
-    private static final String USERNAME = getBrowserStack().getBrowserStackLogin().getUsername();
-    private static final String PASSWORD = getBrowserStack().getBrowserStackLogin().getPassword();
+
     public String getBrowserStackUrl() {
-        if (USERNAME != null && PASSWORD != null) {
-            return "https://" + USERNAME + ":" + PASSWORD + "@hub-cloud.browserstack.com/wd/hub";
-        } else {
-            throw new DefaultFrameworkException();
-        }
+        return "https://" + getBrowserStack().getUsername() + ":" + getBrowserStack().getPassword()
+                + "@hub-cloud.browserstack.com/wd/hub";
     }
 
     public void startLocalServer() {
-        BS_LOCAL_ARGS.put("key", getBrowserStack().getBrowserStackLogin().getPassword());
+        BS_LOCAL_ARGS.put("key", getBrowserStack().getPassword());
         try {
             BS_LOCAL.start(BS_LOCAL_ARGS);
         } catch (Exception e) {

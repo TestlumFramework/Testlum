@@ -1,17 +1,14 @@
 package com.knubisoft.cott.testing.model.global_config;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 /**
- * <p>Java class for authorization complex type.
+ * <p>Java class for playMarketLogin complex type.
  *
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
- * &lt;complexType name="authorization"&gt;
+ * &lt;complexType name="playMarketLogin"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
@@ -25,13 +22,12 @@ import javax.xml.bind.annotation.XmlType;
  *
  *
  */
-
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "authorization", propOrder = {
+@XmlType(name = "playMarketLogin", propOrder = {
         "username",
         "password"
 })
-public class Authorization {
+public class PlayMarket {
     @XmlElement(required = true)
     protected String username;
     @XmlElement(required = true)

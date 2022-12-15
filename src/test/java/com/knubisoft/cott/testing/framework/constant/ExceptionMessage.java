@@ -145,7 +145,6 @@ public class ExceptionMessage {
     public static final String ELEMENT_NOT_FOUND = "Element with locator <%s> was not found during 'scrollTo'";
     public static final String FILE_NOT_FOUND = "File not found: %s";
     public static final String SCROLL_TYPE_NOT_FOUND = "Scroll type <%s> not supported";
-    public static final String NAVIGATE_DESTINATION_UNSUPPORTED = "Native moving destination is unsupported";
     public static final String NO_LOCATOR_FOUND_FOR_INNER_SCROLL = "You didn't specify a locator for the inner scroll";
     public static final String INVALID_LOCATOR =
             "Locator type is not supported for INNER scroll. Your locator -> <%s>.";

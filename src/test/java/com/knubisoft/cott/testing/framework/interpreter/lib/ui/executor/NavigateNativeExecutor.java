@@ -11,6 +11,7 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
 import io.appium.java_client.ios.IOSDriver;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +22,15 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.NATIVE_MOVE_T
 @Slf4j
 public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
 
-    private final Map<NavigateNativeDestination, KeyEvent> navigateMap;
+    private final Map<NavigateNativeDestination, AndroidKey> navigateToKayMap;
 
     public NavigateNativeExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        navigateMap = new HashMap<>();
-        navigateMap.put(NavigateNativeDestination.HOME, new KeyEvent(AndroidKey.HOME));
-        navigateMap.put(NavigateNativeDestination.BACK, new KeyEvent(AndroidKey.BACK));
-        navigateMap.put(NavigateNativeDestination.OVERVIEW, new KeyEvent(AndroidKey.APP_SWITCH));
+        Map<NavigateNativeDestination, AndroidKey> navigateMap = new HashMap<>();
+        navigateMap.put(NavigateNativeDestination.HOME, AndroidKey.HOME);
+        navigateMap.put(NavigateNativeDestination.BACK, AndroidKey.BACK);
+        navigateMap.put(NavigateNativeDestination.OVERVIEW, AndroidKey.APP_SWITCH);
+        this.navigateToKayMap = Collections.unmodifiableMap(navigateMap);
     }
 
     @Override
@@ -36,7 +38,7 @@ public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
         result.put(NATIVE_MOVE_TO, navigateNative.getDestination());
         log.info(NATIVE_NAVIGATION_LOG, navigateNative.getDestination());
         if (dependencies.getDriver() instanceof AndroidDriver) {
-            performAndroidNavigation(navigateNative);
+            performAndroidNavigation(navigateNative, (AndroidDriver) dependencies.getDriver());
         }
         if (dependencies.getDriver() instanceof IOSDriver) {
             IOSDriver driver = (IOSDriver) dependencies.getDriver();
@@ -45,8 +47,8 @@ public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
-    private void performAndroidNavigation(final NavigateNative navigateNative) {
-        AndroidDriver driver = (AndroidDriver) dependencies.getDriver();
-        driver.pressKey(navigateMap.get(navigateNative.getDestination()));
+    private void performAndroidNavigation(final NavigateNative navigateNative,
+                                          final AndroidDriver driver) {
+        driver.pressKey(new KeyEvent(navigateToKayMap.get(navigateNative.getDestination())));
     }
 }

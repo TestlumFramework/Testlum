@@ -50,6 +50,8 @@ public abstract class AbstractDevice {
     protected String deviceName;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
+    @XmlAttribute(name = "browserStack", required = true)
+    protected boolean browserStackEnabled;
 
     /**
      * Gets the value of the capabilities property.
@@ -137,6 +139,22 @@ public abstract class AbstractDevice {
      */
     public void setEnabled(boolean value) {
         this.enabled = value;
+    }
+
+    /**
+     * Gets the value of the browserStack property.
+     *
+     */
+    public boolean isBrowserStackEnabled() {
+        return browserStackEnabled;
+    }
+
+    /**
+     * Sets the value of the browserStack property.
+     *
+     */
+    public void setBrowserStackEnabled(boolean value) {
+        this.browserStackEnabled = value;
     }
 
 }

@@ -33,6 +33,8 @@ public class RemoteBrowser {
     protected String browserVersion;
     @XmlAttribute(name = "remoteBrowserURL", required = true)
     protected String remoteBrowserURL;
+    @XmlAttribute(name = "browserStack", required = true)
+    protected boolean browserStackEnabled;
 
     /**
      * Gets the value of the browserVersion property.
@@ -82,4 +84,19 @@ public class RemoteBrowser {
         this.remoteBrowserURL = value;
     }
 
+    /**
+     * Gets the value of the browserStack property.
+     *
+     */
+    public boolean isBrowserStackEnabled() {
+        return browserStackEnabled;
+    }
+
+    /**
+     * Sets the value of the browserStack property.
+     *
+     */
+    public void setBrowserStackEnabled(boolean value) {
+        this.browserStackEnabled = value;
+    }
 }

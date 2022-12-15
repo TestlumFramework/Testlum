@@ -106,6 +106,7 @@
             <x:element name="deviceName" type="tns:nonEmptyString"/>
         </x:sequence>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:attribute name="browserStack" type="x:boolean" use="required"/>
     </x:complexType>
 
     <x:complexType name="capabilities">

@@ -30,12 +30,12 @@ public class NativeDriverFactory {
         String serverUrl = GlobalTestConfigurationProvider.provide().getNative().getAppiumServerUrl();
         if (nativeDevice instanceof IosDevice) {
             setIosCaps((IosDevice) nativeDevice, desiredCapabilities);
-            return new IOSDriver(new URL(GlobalTestConfigurationProvider.getNativeSettings().isBrowserStackEnabled()
-                            ? BrowserStackUtil.getBrowserStackUrl() : serverUrl), desiredCapabilities);
+            return new IOSDriver(new URL(nativeDevice.isBrowserStackEnabled() ? BrowserStackUtil.getBrowserStackUrl()
+                    : serverUrl), desiredCapabilities);
         }
         setAndroidCaps((AndroidDevice) nativeDevice, desiredCapabilities);
-        return new AndroidDriver(new URL(GlobalTestConfigurationProvider.getNativeSettings().isBrowserStackEnabled()
-                        ? BrowserStackUtil.getBrowserStackUrl() : serverUrl), desiredCapabilities);
+        return new AndroidDriver(new URL(nativeDevice.isBrowserStackEnabled() ? BrowserStackUtil.getBrowserStackUrl()
+                : serverUrl), desiredCapabilities);
     }
 
     private static void setAndroidCaps(final AndroidDevice nativeDevice,
@@ -44,21 +44,21 @@ public class NativeDriverFactory {
         desiredCapabilities.setCapability(MobileCapabilityType.APP, nativeDevice.getApp());
         desiredCapabilities.setCapability("appPackage", nativeDevice.getAppPackage());
         desiredCapabilities.setCapability("appActivity", nativeDevice.getAppActivity());
-        if (nativeDevice.isPlayMarketEnabled()) {
-            desiredCapabilities.setCapability("browserstack.appStoreConfiguration", new HashMap<String, String>() {{
-                put("username", getBrowserStack().getPlayMarket().getUsername());
-                put("password", getBrowserStack().getPlayMarket().getPassword());
-            }});
-        }
-        if (GlobalTestConfigurationProvider.getNativeSettings().isBrowserStackEnabled()) {
+        if (nativeDevice.isBrowserStackEnabled()) {
             setBrowserStackCaps(desiredCapabilities);
+            if (nativeDevice.isPlayMarketEnabled()) {
+                desiredCapabilities.setCapability("browserstack.appStoreConfiguration", new HashMap<String, String>() {{
+                    put("username", getBrowserStack().getPlayMarket().getUsername());
+                    put("password", getBrowserStack().getPlayMarket().getPassword());
+                }});
+            }
         }
     }
 
     private void setIosCaps(final IosDevice nativeDevice, final DesiredCapabilities desiredCapabilities) {
         MobileDriverUtil.setAutomation(desiredCapabilities, "iOS", "XCUITest");
         desiredCapabilities.setCapability(MobileCapabilityType.APP, nativeDevice.getApp());
-        if (GlobalTestConfigurationProvider.getNativeSettings().isBrowserStackEnabled()) {
+        if (nativeDevice.isBrowserStackEnabled()) {
             setBrowserStackCaps(desiredCapabilities);
         }
     }

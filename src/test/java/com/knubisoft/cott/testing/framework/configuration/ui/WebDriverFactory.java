@@ -117,13 +117,12 @@ public class WebDriverFactory {
     private WebDriver getRemoteDriver(final RemoteBrowser remoteBrowserSettings,
                                       final MutableCapabilities browserOptions) {
         browserOptions.setCapability(BROWSER_VERSION, remoteBrowserSettings.getBrowserVersion());
-        if (GlobalTestConfigurationProvider.getBrowserSettings().isBrowserStackEnabled()) {
+        if (remoteBrowserSettings.isBrowserStackEnabled()) {
             browserOptions.setCapability("browserstack.local", "true");
             BrowserStackUtil.startLocalServer();
         }
         return new RemoteWebDriver(
-                new URL(GlobalTestConfigurationProvider.getBrowserSettings().isBrowserStackEnabled()
-                        ? BrowserStackUtil.getBrowserStackUrl()
+                new URL(remoteBrowserSettings.isBrowserStackEnabled() ? BrowserStackUtil.getBrowserStackUrl()
                         : remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
     }
 

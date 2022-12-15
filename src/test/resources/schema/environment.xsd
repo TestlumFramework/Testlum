@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/cott/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/cott/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared-config.xsd"/>
+    <x:include schemaLocation="postgres-integration.xsd"/>
+    <x:include schemaLocation="clickhouse-integration.xsd"/>
+    <x:include schemaLocation="mysql-integration.xsd"/>
+    <x:include schemaLocation="oracle-integration.xsd"/>
+    <x:include schemaLocation="redis-integration.xsd"/>
+    <x:include schemaLocation="mongo-integration.xsd"/>
+    <x:include schemaLocation="s3-integration.xsd"/>
+    <x:include schemaLocation="sqs-integration.xsd"/>
+    <x:include schemaLocation="kafka-integration.xsd"/>
+    <x:include schemaLocation="rabbitmq-integration.xsd"/>
+    <x:include schemaLocation="dynamo-integration.xsd"/>
+    <x:include schemaLocation="elasticsearch-integration.xsd"/>
+    <x:include schemaLocation="sendgrid-integration.xsd"/>
+    <x:include schemaLocation="ses-integration.xsd"/>
+    <x:include schemaLocation="smtp-integration.xsd"/>
+    <x:include schemaLocation="twilio-integration.xsd"/>
+    <x:include schemaLocation="web-config.xsd"/>
+    <x:include schemaLocation="mobilebrowser-config.xsd"/>
+    <x:include schemaLocation="native-config.xsd"/>
+    <x:include schemaLocation="websocket-integration.xsd"/>
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:annotation>
+        <x:appinfo>
+            <jaxb:bindings
+                    node="/x:schema/x:element[@name='environment']//x:complexType//x:sequence">
+            </jaxb:bindings>
+        </x:appinfo>
+    </x:annotation>
+
+    <x:element name="environment">
+        <x:complexType>
+            <x:sequence>
+                <x:element name="web" type="tns:web" minOccurs="0"/>
+                <x:element name="mobilebrowser" type="tns:mobilebrowser" minOccurs="0"/>
+                <x:element name="native" type="tns:native" minOccurs="0"/>
+                <x:element name="auth" type="tns:auth"/>
+                <x:element name="integrations" type="tns:integrations" minOccurs="0"/>
+            </x:sequence>
+        </x:complexType>
+    </x:element>
+
+    <x:complexType name="integrations">
+        <x:all>
+            <x:element name="apis" type="tns:apis" minOccurs="0"/>
+            <x:element name="websockets" type="tns:websockets" minOccurs="0"/>
+            <x:element name="postgresIntegration" type="tns:postgresIntegration" minOccurs="0"/>
+            <x:element name="clickhouseIntegration" type="tns:clickhouseIntegration" minOccurs="0"/>
+            <x:element name="mysqlIntegration" type="tns:mysqlIntegration" minOccurs="0"/>
+            <x:element name="oracleIntegration" type="tns:oracleIntegration" minOccurs="0"/>
+            <x:element name="redisIntegration" type="tns:redisIntegration" minOccurs="0"/>
+            <x:element name="mongoIntegration" type="tns:mongoIntegration" minOccurs="0"/>
+            <x:element name="s3Integration" type="tns:s3Integration" minOccurs="0"/>
+            <x:element name="sqsIntegration" type="tns:sqsIntegration" minOccurs="0"/>
+            <x:element name="kafkaIntegration" type="tns:kafkaIntegration" minOccurs="0"/>
+            <x:element name="rabbitmqIntegration" type="tns:rabbitmqIntegration" minOccurs="0"/>
+            <x:element name="dynamoIntegration" type="tns:dynamoIntegration" minOccurs="0"/>
+            <x:element name="elasticsearchIntegration" type="tns:elasticsearchIntegration" minOccurs="0"/>
+            <x:element name="sendgridIntegration" type="tns:sendgridIntegration" minOccurs="0"/>
+            <x:element name="sesIntegration" type="tns:sesIntegration" minOccurs="0"/>
+            <x:element name="smtpIntegration" type="tns:smtpIntegration" minOccurs="0"/>
+            <x:element name="twilioIntegration" type="tns:twilioIntegration" minOccurs="0"/>
+        </x:all>
+    </x:complexType>
+
+    <x:complexType name="apis">
+        <x:choice>
+            <x:element name="api" type="tns:api" maxOccurs="unbounded"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="api">
+        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+        <x:attribute name="url" type="tns:url" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="auth">
+        <x:attribute name="autoLogout" type="x:boolean" default="true"/>
+        <x:attribute name="authStrategy" type="tns:authStrategies" default="default"/>
+        <x:attribute name="authCustomClassName" type="tns:nonEmptyString"/>
+    </x:complexType>
+
+    <x:simpleType name="authStrategies">
+        <x:restriction base="x:string">
+            <x:enumeration value="basic"/>
+            <x:enumeration value="jwt"/>
+            <!--            <x:enumeration value="oauth2"/>-->
+            <x:enumeration value="custom"/>
+            <x:enumeration value="default"/>
+        </x:restriction>
+    </x:simpleType>
+
+
+</x:schema>

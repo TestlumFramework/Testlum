@@ -30,35 +30,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GlobalTestConfiguration }
+     * Create an instance of {@link Environment }
      * 
      */
-    public GlobalTestConfiguration createGlobalTestConfiguration() {
-        return new GlobalTestConfiguration();
-    }
-
-    /**
-     * Create an instance of {@link DelayBetweenScenariosRuns }
-     * 
-     */
-    public DelayBetweenScenariosRuns createDelayBetweenScenariosRuns() {
-        return new DelayBetweenScenariosRuns();
-    }
-
-    /**
-     * Create an instance of {@link RunScenariosByTag }
-     * 
-     */
-    public RunScenariosByTag createRunScenariosByTag() {
-        return new RunScenariosByTag();
-    }
-
-    /**
-     * Create an instance of {@link Report }
-     * 
-     */
-    public Report createReport() {
-        return new Report();
+    public Environment createEnvironment() {
+        return new Environment();
     }
 
     /**
@@ -99,6 +75,46 @@ public class ObjectFactory {
      */
     public Integrations createIntegrations() {
         return new Integrations();
+    }
+
+    /**
+     * Create an instance of {@link GlobalTestConfiguration }
+     * 
+     */
+    public GlobalTestConfiguration createGlobalTestConfiguration() {
+        return new GlobalTestConfiguration();
+    }
+
+    /**
+     * Create an instance of {@link DelayBetweenScenariosRuns }
+     * 
+     */
+    public DelayBetweenScenariosRuns createDelayBetweenScenariosRuns() {
+        return new DelayBetweenScenariosRuns();
+    }
+
+    /**
+     * Create an instance of {@link RunScenariosByTag }
+     * 
+     */
+    public RunScenariosByTag createRunScenariosByTag() {
+        return new RunScenariosByTag();
+    }
+
+    /**
+     * Create an instance of {@link Report }
+     * 
+     */
+    public Report createReport() {
+        return new Report();
+    }
+
+    /**
+     * Create an instance of {@link Environments }
+     * 
+     */
+    public Environments createEnvironments() {
+        return new Environments();
     }
 
     /**
@@ -598,6 +614,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Apis }
+     * 
+     */
+    public Apis createApis() {
+        return new Apis();
+    }
+
+    /**
+     * Create an instance of {@link Api }
+     * 
+     */
+    public Api createApi() {
+        return new Api();
+    }
+
+    /**
      * Create an instance of {@link ExtentReports }
      * 
      */
@@ -638,19 +670,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Apis }
+     * Create an instance of {@link Env }
      * 
      */
-    public Apis createApis() {
-        return new Apis();
-    }
-
-    /**
-     * Create an instance of {@link Api }
-     * 
-     */
-    public Api createApi() {
-        return new Api();
+    public Env createEnv() {
+        return new Env();
     }
 
 }

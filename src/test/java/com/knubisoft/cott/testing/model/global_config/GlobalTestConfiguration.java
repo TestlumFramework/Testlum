@@ -22,11 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="delayBetweenScenariosRuns" type="{http://www.knubisoft.com/cott/testing/model/global-config}delayBetweenScenariosRuns" minOccurs="0"/&gt;
  *         &lt;element name="runScenariosByTag" type="{http://www.knubisoft.com/cott/testing/model/global-config}runScenariosByTag"/&gt;
  *         &lt;element name="report" type="{http://www.knubisoft.com/cott/testing/model/global-config}report"/&gt;
- *         &lt;element name="web" type="{http://www.knubisoft.com/cott/testing/model/global-config}web" minOccurs="0"/&gt;
- *         &lt;element name="mobilebrowser" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowser" minOccurs="0"/&gt;
- *         &lt;element name="native" type="{http://www.knubisoft.com/cott/testing/model/global-config}native" minOccurs="0"/&gt;
- *         &lt;element name="auth" type="{http://www.knubisoft.com/cott/testing/model/global-config}auth"/&gt;
- *         &lt;element name="integrations" type="{http://www.knubisoft.com/cott/testing/model/global-config}integrations" minOccurs="0"/&gt;
+ *         &lt;element name="environments" type="{http://www.knubisoft.com/cott/testing/model/global-config}environments"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -41,11 +37,7 @@ import javax.xml.bind.annotation.XmlType;
     "delayBetweenScenariosRuns",
     "runScenariosByTag",
     "report",
-    "web",
-    "mobilebrowser",
-    "_native",
-    "auth",
-    "integrations"
+    "environments"
 })
 @XmlRootElement(name = "globalTestConfiguration")
 public class GlobalTestConfiguration {
@@ -56,13 +48,8 @@ public class GlobalTestConfiguration {
     protected RunScenariosByTag runScenariosByTag;
     @XmlElement(required = true)
     protected Report report;
-    protected Web web;
-    protected Mobilebrowser mobilebrowser;
-    @XmlElement(name = "native")
-    protected Native _native;
     @XmlElement(required = true)
-    protected Auth auth;
-    protected Integrations integrations;
+    protected Environments environments;
 
     /**
      * Gets the value of the stopScenarioOnFailure property.
@@ -153,123 +140,27 @@ public class GlobalTestConfiguration {
     }
 
     /**
-     * Gets the value of the web property.
+     * Gets the value of the environments property.
      * 
      * @return
      *     possible object is
-     *     {@link Web }
+     *     {@link Environments }
      *     
      */
-    public Web getWeb() {
-        return web;
+    public Environments getEnvironments() {
+        return environments;
     }
 
     /**
-     * Sets the value of the web property.
+     * Sets the value of the environments property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Web }
+     *     {@link Environments }
      *     
      */
-    public void setWeb(Web value) {
-        this.web = value;
-    }
-
-    /**
-     * Gets the value of the mobilebrowser property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Mobilebrowser }
-     *     
-     */
-    public Mobilebrowser getMobilebrowser() {
-        return mobilebrowser;
-    }
-
-    /**
-     * Sets the value of the mobilebrowser property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Mobilebrowser }
-     *     
-     */
-    public void setMobilebrowser(Mobilebrowser value) {
-        this.mobilebrowser = value;
-    }
-
-    /**
-     * Gets the value of the native property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Native }
-     *     
-     */
-    public Native getNative() {
-        return _native;
-    }
-
-    /**
-     * Sets the value of the native property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Native }
-     *     
-     */
-    public void setNative(Native value) {
-        this._native = value;
-    }
-
-    /**
-     * Gets the value of the auth property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Auth }
-     *     
-     */
-    public Auth getAuth() {
-        return auth;
-    }
-
-    /**
-     * Sets the value of the auth property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Auth }
-     *     
-     */
-    public void setAuth(Auth value) {
-        this.auth = value;
-    }
-
-    /**
-     * Gets the value of the integrations property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integrations }
-     *     
-     */
-    public Integrations getIntegrations() {
-        return integrations;
-    }
-
-    /**
-     * Sets the value of the integrations property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integrations }
-     *     
-     */
-    public void setIntegrations(Integrations value) {
-        this.integrations = value;
+    public void setEnvironments(Environments value) {
+        this.environments = value;
     }
 
 }

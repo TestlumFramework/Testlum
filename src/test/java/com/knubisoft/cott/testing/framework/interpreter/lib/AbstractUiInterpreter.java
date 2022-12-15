@@ -11,6 +11,8 @@ import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.cott.testing.model.scenario.SwitchToFrame;
 import com.knubisoft.cott.testing.model.scenario.Ui;
+import com.knubisoft.cott.testing.model.scenario.WebView;
+import io.appium.java_client.remote.SupportsContextSwitching;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.openqa.selenium.WebDriver;
@@ -62,6 +64,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
         executeUiCommand(uiCommand, subCommandResult, dependencies);
         result.getSubCommandsResult().add(subCommandResult);
         processIfSwitchToFrame(uiCommand, result, dependencies);
+        processIfWebView(uiCommand, result, dependencies);
     }
 
     private void executeUiCommand(final AbstractUiCommand uiCommand,
@@ -89,6 +92,17 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
             LogUtil.startUiCommandsInFrame();
             runCommands(((SwitchToFrame) uiCommand).getClickOrInputOrAssert(), result, dependencies);
             LogUtil.endUiCommandsInFrame();
+        }
+    }
+
+    private void processIfWebView(final AbstractUiCommand uiCommand,
+                                  final CommandResult result,
+                                  final ExecutorDependencies dependencies) {
+        if (uiCommand instanceof WebView) {
+            LogUtil.startUiCommandsInWebView();
+            runCommands(((WebView) uiCommand).getClickOrInputOrAssert(), result, dependencies);
+            ((SupportsContextSwitching) dependencies.getDriver()).context("NATIVE_APP");
+            LogUtil.endUiCommandsInWebView();
         }
     }
 

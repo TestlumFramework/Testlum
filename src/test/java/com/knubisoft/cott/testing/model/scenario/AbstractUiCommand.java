@@ -43,7 +43,8 @@ import javax.xml.bind.annotation.XmlType;
     Enter.class,
     BackSpace.class,
     Escape.class,
-    Space.class
+    Space.class,
+    WebView.class
 })
 public abstract class AbstractUiCommand
     extends AbstractCommand

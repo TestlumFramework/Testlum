@@ -11,11 +11,13 @@ import com.knubisoft.cott.testing.framework.util.GraphQlUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.model.scenario.Graphql;
 import lombok.SneakyThrows;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 @InterpreterForClass(Graphql.class)
 public class GraphQLInterpreter extends AbstractInterpreter<Graphql> {
@@ -41,31 +43,29 @@ public class GraphQLInterpreter extends AbstractInterpreter<Graphql> {
 
     @SneakyThrows
     private String getActual(final Graphql graphql) {
-        OkHttpClient client = new OkHttpClient();
+        CloseableHttpClient client = HttpClients.createDefault();
         Gson gson = new Gson();
         GraphQlUtil graphQlUtil = new GraphQlUtil();
         String actual = null;
         for (String each : graphql.getQuery()) {
             graphQlUtil.setQuery(each);
             String jsonQuery = gson.toJson(graphQlUtil);
-            Response response = getResponse(graphql, client, jsonQuery);
-            actual = response.body().string();
+            HttpResponse response = getResponse(graphql, client, jsonQuery);
+            actual = EntityUtils.toString(response.getEntity());
         }
         return actual;
     }
 
     @SneakyThrows
-    private static Response getResponse(final Graphql graphql,
-                                        final OkHttpClient client,
-                                        final String jsonQuery) {
-        Request post = new Request.Builder()
-                .url(graphql.getEndpoint())
-                .post(RequestBody.create(jsonQuery,
-                        MediaType.parse("application/json")))
-                .build();
-        Response response = client.newCall(post).execute();
-        if (response.code() != VALID_RESPONSE) {
-            throw new DefaultFrameworkException("Query execution failed, response code: %S", response.code());
+    private static HttpResponse getResponse(final Graphql graphql,
+                                            final CloseableHttpClient client,
+                                            final String jsonQuery) {
+        HttpPost post = new HttpPost(graphql.getEndpoint());
+        post.setEntity(new StringEntity(jsonQuery, ContentType.APPLICATION_JSON));
+        HttpResponse response = client.execute(post);
+        if (response.getStatusLine().getStatusCode() != VALID_RESPONSE) {
+            throw new DefaultFrameworkException("Query execution failed, response code: %S",
+                    response.getStatusLine().getStatusCode());
         }
         return response;
     }

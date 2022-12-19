@@ -91,4 +91,14 @@
         <Class name="com.knubisoft.cott.testing.framework.configuration.ui.NativeDriverFactory"/>
         <Bug pattern="BC_UNCONFIRMED_CAST"/>
     </Match>
+
+    <Match>
+        <Class name="com.knubisoft.cott.testing.framework.util.UiUtil"/>
+        <Bug pattern="BC_UNCONFIRMED_CAST"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.cott.testing.framework.interpreter.lib.ui.executor.WebViewExecutor"/>
+        <Bug pattern="REC_CATCH_EXCEPTION"/>
+    </Match>
 </FindBugsFilter>

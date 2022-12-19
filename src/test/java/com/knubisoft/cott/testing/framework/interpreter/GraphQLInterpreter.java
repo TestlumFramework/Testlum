@@ -21,7 +21,7 @@ import okhttp3.Response;
 public class GraphQLInterpreter extends AbstractInterpreter<Graphql> {
 
 
-    public static final int VALID_RESPONCE = 200;
+    public static final int VALID_RESPONSE = 200;
 
     public GraphQLInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -35,7 +35,7 @@ public class GraphQLInterpreter extends AbstractInterpreter<Graphql> {
                 .withActual(actual)
                 .withExpectedFile(graphql.getFile());
         compare.exec();
-        result.setActual(PrettifyStringJson.getJSONResult(toString(actual)));
+        result.setActual(PrettifyStringJson.getJSONResult(actual));
         result.setExpected(PrettifyStringJson.getJSONResult(compare.getExpected()));
     }
 
@@ -64,7 +64,7 @@ public class GraphQLInterpreter extends AbstractInterpreter<Graphql> {
                         MediaType.parse("application/json")))
                 .build();
         Response response = client.newCall(post).execute();
-        if (response.code() != VALID_RESPONCE) {
+        if (response.code() != VALID_RESPONSE) {
             throw new DefaultFrameworkException("Query execution failed, response code: %S", response.code());
         }
         return response;

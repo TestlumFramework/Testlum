@@ -16,13 +16,13 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.NATIVE_NAVIGATION_LOG;
-import static com.knubisoft.cott.testing.framework.util.ResultUtil.NATIVE_MOVE_TO;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.NATIVE_NAVIGATE_TO;
 
 @ExecutorForClass(NavigateNative.class)
 @Slf4j
 public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
 
-    private final Map<NavigateNativeDestination, AndroidKey> navigateToKayMap;
+    private final Map<NavigateNativeDestination, AndroidKey> navigateToKeyMap;
 
     public NavigateNativeExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -30,12 +30,12 @@ public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
         navigateMap.put(NavigateNativeDestination.HOME, AndroidKey.HOME);
         navigateMap.put(NavigateNativeDestination.BACK, AndroidKey.BACK);
         navigateMap.put(NavigateNativeDestination.OVERVIEW, AndroidKey.APP_SWITCH);
-        this.navigateToKayMap = Collections.unmodifiableMap(navigateMap);
+        this.navigateToKeyMap = Collections.unmodifiableMap(navigateMap);
     }
 
     @Override
     public void execute(final NavigateNative navigateNative, final CommandResult result) {
-        result.put(NATIVE_MOVE_TO, navigateNative.getDestination());
+        result.put(NATIVE_NAVIGATE_TO, navigateNative.getDestination());
         log.info(NATIVE_NAVIGATION_LOG, navigateNative.getDestination());
         if (dependencies.getDriver() instanceof AndroidDriver) {
             performAndroidNavigation(navigateNative, (AndroidDriver) dependencies.getDriver());
@@ -49,6 +49,7 @@ public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
 
     private void performAndroidNavigation(final NavigateNative navigateNative,
                                           final AndroidDriver driver) {
-        driver.pressKey(new KeyEvent(navigateToKayMap.get(navigateNative.getDestination())));
+        driver.pressKey(new KeyEvent(
+                navigateToKeyMap.get(navigateNative.getDestination())));
     }
 }

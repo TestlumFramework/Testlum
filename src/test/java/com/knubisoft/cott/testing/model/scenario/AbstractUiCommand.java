@@ -45,7 +45,6 @@ import javax.xml.bind.annotation.XmlType;
     Escape.class,
     Space.class,
     Refresh.class,
-    Space.class,
     WebView.class
 })
 public abstract class AbstractUiCommand

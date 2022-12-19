@@ -558,19 +558,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link WebView }
+     * 
+     */
+    public WebView createWebView() {
+        return new WebView();
+    }
+
+    /**
      * Create an instance of {@link NavigateNative }
      * 
      */
     public NavigateNative createNavigateNative() {
         return new NavigateNative();
-    }
-
-    /**
-     * Create an instance of {@link WebView }
-     *
-     */
-    public WebView createWebView() {
-        return new WebView();
     }
 
     /**

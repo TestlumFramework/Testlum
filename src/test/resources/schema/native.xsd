@@ -21,6 +21,30 @@
                     <x:element name="scroll" type="tns:scrollNative"/>
                     <x:element name="scrollTo" type="tns:scrollToNative"/>
                     <x:element name="swipe" type="tns:swipeNative"/>
+                    <x:element name="webView" type="tns:webView"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="webView">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice maxOccurs="unbounded" minOccurs="0">
+                    <x:element name="click" type="tns:click"/>
+                    <x:element name="input" type="tns:input"/>
+                    <x:element name="assert" type="tns:assert"/>
+                    <x:element name="dropDown" type="tns:dropDown"/>
+                    <x:element name="wait" type="tns:wait"/>
+                    <x:element name="clear" type="tns:clear"/>
+                    <x:element name="scroll" type="tns:scroll"/>
+                    <x:element name="scrollTo" type="tns:scrollTo"/>
+                    <x:element name="image" type="tns:image"/>
+                    <x:element name="javascript" type="tns:javascript"/>
+                    <x:element name="navigate" type="tns:navigate"/>
+                    <x:element name="hovers" type="tns:hovers"/>
+                    <x:element name="closeTab" type="tns:closeTab"/>
+                    <x:element name="switchToFrame" type="tns:switchToFrame"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>

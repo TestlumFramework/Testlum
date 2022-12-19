@@ -11,26 +11,29 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for native complex type.
+ * <p>Java class for webView complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="native"&gt;
+ * &lt;complexType name="webView"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}ui"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
  *         &lt;element name="click" type="{http://www.knubisoft.com/cott/testing/model/scenario}click"/&gt;
  *         &lt;element name="input" type="{http://www.knubisoft.com/cott/testing/model/scenario}input"/&gt;
  *         &lt;element name="assert" type="{http://www.knubisoft.com/cott/testing/model/scenario}assert"/&gt;
+ *         &lt;element name="dropDown" type="{http://www.knubisoft.com/cott/testing/model/scenario}dropDown"/&gt;
  *         &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}wait"/&gt;
  *         &lt;element name="clear" type="{http://www.knubisoft.com/cott/testing/model/scenario}clear"/&gt;
+ *         &lt;element name="scroll" type="{http://www.knubisoft.com/cott/testing/model/scenario}scroll"/&gt;
+ *         &lt;element name="scrollTo" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollTo"/&gt;
  *         &lt;element name="image" type="{http://www.knubisoft.com/cott/testing/model/scenario}image"/&gt;
- *         &lt;element name="dragAndDrop" type="{http://www.knubisoft.com/cott/testing/model/scenario}dragAndDropNative"/&gt;
- *         &lt;element name="scroll" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollNative"/&gt;
- *         &lt;element name="scrollTo" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollToNative"/&gt;
- *         &lt;element name="swipe" type="{http://www.knubisoft.com/cott/testing/model/scenario}swipeNative"/&gt;
- *         &lt;element name="webView" type="{http://www.knubisoft.com/cott/testing/model/scenario}webView"/&gt;
+ *         &lt;element name="javascript" type="{http://www.knubisoft.com/cott/testing/model/scenario}javascript"/&gt;
+ *         &lt;element name="navigate" type="{http://www.knubisoft.com/cott/testing/model/scenario}navigate"/&gt;
+ *         &lt;element name="hovers" type="{http://www.knubisoft.com/cott/testing/model/scenario}hovers"/&gt;
+ *         &lt;element name="closeTab" type="{http://www.knubisoft.com/cott/testing/model/scenario}closeTab"/&gt;
+ *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/cott/testing/model/scenario}switchToFrame"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -40,25 +43,28 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "native", propOrder = {
+@XmlType(name = "webView", propOrder = {
     "clickOrInputOrAssert"
 })
-public class Native
-    extends Ui
+public class WebView
+    extends AbstractUiCommand
 {
 
     @XmlElements({
         @XmlElement(name = "click", type = Click.class),
         @XmlElement(name = "input", type = Input.class),
         @XmlElement(name = "assert", type = Assert.class),
+        @XmlElement(name = "dropDown", type = DropDown.class),
         @XmlElement(name = "wait", type = Wait.class),
         @XmlElement(name = "clear", type = Clear.class),
+        @XmlElement(name = "scroll", type = Scroll.class),
+        @XmlElement(name = "scrollTo", type = ScrollTo.class),
         @XmlElement(name = "image", type = Image.class),
-        @XmlElement(name = "dragAndDrop", type = DragAndDropNative.class),
-        @XmlElement(name = "scroll", type = ScrollNative.class),
-        @XmlElement(name = "scrollTo", type = ScrollToNative.class),
-        @XmlElement(name = "swipe", type = SwipeNative.class),
-        @XmlElement(name = "webView", type = WebView.class)
+        @XmlElement(name = "javascript", type = Javascript.class),
+        @XmlElement(name = "navigate", type = Navigate.class),
+        @XmlElement(name = "hovers", type = Hovers.class),
+        @XmlElement(name = "closeTab", type = CloseTab.class),
+        @XmlElement(name = "switchToFrame", type = SwitchToFrame.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
 
@@ -83,14 +89,17 @@ public class Native
      * {@link Click }
      * {@link Input }
      * {@link Assert }
+     * {@link DropDown }
      * {@link Wait }
      * {@link Clear }
+     * {@link Scroll }
+     * {@link ScrollTo }
      * {@link Image }
-     * {@link DragAndDropNative }
-     * {@link ScrollNative }
-     * {@link ScrollToNative }
-     * {@link SwipeNative }
-     * {@link WebView }
+     * {@link Javascript }
+     * {@link Navigate }
+     * {@link Hovers }
+     * {@link CloseTab }
+     * {@link SwitchToFrame }
      * 
      * 
      */

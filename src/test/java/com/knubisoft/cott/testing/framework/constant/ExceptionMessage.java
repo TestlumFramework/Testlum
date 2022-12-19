@@ -159,4 +159,6 @@ public class ExceptionMessage {
     public static final String MOBILEBROWSER_DRIVER_NOT_INIT = "The webDriver for <mobilebrowser> has not been "
             + "initialized, check your configuration in config file";
 
+    public static final String CANNOT_SWITCH_TO_WEBVIEW = "Can not switch to the web view. Web context was not found";
+
 }

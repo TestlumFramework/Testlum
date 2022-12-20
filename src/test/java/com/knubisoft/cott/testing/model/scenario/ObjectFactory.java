@@ -206,6 +206,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Lambda }
+     * 
+     */
+    public Lambda createLambda() {
+        return new Lambda();
+    }
+
+    /**
      * Create an instance of {@link Sendgrid }
      * 
      */

@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="sqs" type="{http://www.knubisoft.com/cott/testing/model/scenario}sqs"/&gt;
  *         &lt;element name="clickhouse" type="{http://www.knubisoft.com/cott/testing/model/scenario}clickhouse"/&gt;
  *         &lt;element name="elasticsearch" type="{http://www.knubisoft.com/cott/testing/model/scenario}elasticsearch"/&gt;
+ *         &lt;element name="lambda" type="{http://www.knubisoft.com/cott/testing/model/scenario}lambda"/&gt;
  *         &lt;element name="sendgrid" type="{http://www.knubisoft.com/cott/testing/model/scenario}sendgrid"/&gt;
  *         &lt;element name="ses" type="{http://www.knubisoft.com/cott/testing/model/scenario}ses"/&gt;
  *         &lt;element name="dynamo" type="{http://www.knubisoft.com/cott/testing/model/scenario}dynamo"/&gt;
@@ -81,6 +82,7 @@ public class Repeat
         @XmlElement(name = "sqs", type = Sqs.class),
         @XmlElement(name = "clickhouse", type = Clickhouse.class),
         @XmlElement(name = "elasticsearch", type = Elasticsearch.class),
+        @XmlElement(name = "lambda", type = Lambda.class),
         @XmlElement(name = "sendgrid", type = Sendgrid.class),
         @XmlElement(name = "ses", type = Ses.class),
         @XmlElement(name = "dynamo", type = Dynamo.class),
@@ -129,6 +131,7 @@ public class Repeat
      * {@link Sqs }
      * {@link Clickhouse }
      * {@link Elasticsearch }
+     * {@link Lambda }
      * {@link Sendgrid }
      * {@link Ses }
      * {@link Dynamo }

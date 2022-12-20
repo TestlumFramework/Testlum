@@ -45,6 +45,7 @@ import javax.xml.bind.annotation.XmlType;
     Sqs.class,
     Clickhouse.class,
     Elasticsearch.class,
+    Lambda.class,
     Sendgrid.class,
     Ses.class,
     Dynamo.class,

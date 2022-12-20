@@ -17,6 +17,8 @@
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="clear" type="tns:clear"/>
                     <x:element name="image" type="tns:image"/>
+                    <x:element name="refresh" type="tns:refresh"/>
+                    <x:element name="navigate" type="tns:navigateNative"/>
                     <x:element name="dragAndDrop" type="tns:dragAndDropNative"/>
                     <x:element name="scroll" type="tns:scrollNative"/>
                     <x:element name="scrollTo" type="tns:scrollToNative"/>
@@ -49,5 +51,21 @@
             </x:extension>
         </x:complexContent>
     </x:complexType>
+
+    <x:complexType name="navigateNative">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="destination" type="tns:navigateNativeDestination" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="navigateNativeDestination">
+        <x:restriction base="x:string">
+            <x:enumeration value="back"/>
+            <x:enumeration value="home"/>
+            <x:enumeration value="overview"/>
+        </x:restriction>
+    </x:simpleType>
 
 </x:schema>

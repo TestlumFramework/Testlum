@@ -44,6 +44,7 @@ import javax.xml.bind.annotation.XmlType;
     BackSpace.class,
     Escape.class,
     Space.class,
+    Refresh.class,
     WebView.class,
     NavigateNative.class
 })

@@ -558,6 +558,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Refresh }
+     * 
+     */
+    public Refresh createRefresh() {
+        return new Refresh();
+    }
+
+    /**
      * Create an instance of {@link WebView }
      * 
      */

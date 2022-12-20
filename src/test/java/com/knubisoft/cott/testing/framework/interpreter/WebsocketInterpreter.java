@@ -49,7 +49,7 @@ import static java.lang.String.format;
 public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
     @Autowired(required = false)
-    public Map<String, WebsocketConnectionManager> wsConnectionSupplier;
+    private Map<String, WebsocketConnectionManager> wsConnectionSupplier;
 
     public WebsocketInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);

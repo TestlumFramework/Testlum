@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}wait"/&gt;
  *         &lt;element name="clear" type="{http://www.knubisoft.com/cott/testing/model/scenario}clear"/&gt;
  *         &lt;element name="image" type="{http://www.knubisoft.com/cott/testing/model/scenario}image"/&gt;
+ *         &lt;element name="navigate" type="{http://www.knubisoft.com/cott/testing/model/scenario}navigateNative"/&gt;
  *         &lt;element name="dragAndDrop" type="{http://www.knubisoft.com/cott/testing/model/scenario}dragAndDropNative"/&gt;
  *         &lt;element name="scroll" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollNative"/&gt;
  *         &lt;element name="scrollTo" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollToNative"/&gt;
@@ -54,6 +55,7 @@ public class Native
         @XmlElement(name = "wait", type = Wait.class),
         @XmlElement(name = "clear", type = Clear.class),
         @XmlElement(name = "image", type = Image.class),
+        @XmlElement(name = "navigate", type = NavigateNative.class),
         @XmlElement(name = "dragAndDrop", type = DragAndDropNative.class),
         @XmlElement(name = "scroll", type = ScrollNative.class),
         @XmlElement(name = "scrollTo", type = ScrollToNative.class),
@@ -86,6 +88,7 @@ public class Native
      * {@link Wait }
      * {@link Clear }
      * {@link Image }
+     * {@link NavigateNative }
      * {@link DragAndDropNative }
      * {@link ScrollNative }
      * {@link ScrollToNative }

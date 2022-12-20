@@ -566,6 +566,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link NavigateNative }
+     * 
+     */
+    public NavigateNative createNavigateNative() {
+        return new NavigateNative();
+    }
+
+    /**
      * Create an instance of {@link SendRmqMessage }
      * 
      */

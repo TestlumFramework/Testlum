@@ -66,7 +66,7 @@ public class WebDriverFactory {
                 .map(webDriverFunction -> webDriverFunction.apply(browser))
                 .peek(driver -> BrowserUtil.manageWindowSize(browser, driver))
                 .findFirst().orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
-        webDriver.get(GlobalTestConfigurationProvider.provide().getWeb().getBaseUrl());
+        webDriver.get(GlobalTestConfigurationProvider.provideEnv().getWeb().getBaseUrl());
         return webDriver;
     }
 

@@ -65,7 +65,7 @@ public class JwtAuth extends AbstractAuthStrategy {
     }
 
     private String getBaseApiUrl(final Auth auth) {
-        return GlobalTestConfigurationProvider.provide().getIntegrations().getApis().getApi().stream()
+        return GlobalTestConfigurationProvider.provideEnv().getIntegrations().getApis().getApi().stream()
                 .filter(api -> api.getAlias().equalsIgnoreCase(auth.getApiAlias()))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("Alias doesn't exist."))

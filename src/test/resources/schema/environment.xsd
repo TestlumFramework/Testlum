@@ -5,6 +5,14 @@
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
+    <x:annotation>
+        <x:appinfo>
+            <jaxb:bindings
+                    node="/x:schema/x:element[@name='environment']//x:complexType//x:sequence">
+            </jaxb:bindings>
+        </x:appinfo>
+    </x:annotation>
+
     <x:include schemaLocation="shared-config.xsd"/>
     <x:include schemaLocation="postgres-integration.xsd"/>
     <x:include schemaLocation="clickhouse-integration.xsd"/>
@@ -27,14 +35,6 @@
     <x:include schemaLocation="native-config.xsd"/>
     <x:include schemaLocation="websocket-integration.xsd"/>
     <x:include schemaLocation="shared-config.xsd"/>
-
-    <x:annotation>
-        <x:appinfo>
-            <jaxb:bindings
-                    node="/x:schema/x:element[@name='environment']//x:complexType//x:sequence">
-            </jaxb:bindings>
-        </x:appinfo>
-    </x:annotation>
 
     <x:element name="environment">
         <x:complexType>

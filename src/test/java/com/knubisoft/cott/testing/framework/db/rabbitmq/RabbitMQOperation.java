@@ -4,7 +4,7 @@ import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfiguratio
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.db.source.Source;
-import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
+import com.knubisoft.cott.testing.model.global_config.Environment;
 import com.knubisoft.cott.testing.model.global_config.Rabbitmq;
 import com.rabbitmq.http.client.Client;
 import com.rabbitmq.http.client.domain.QueueInfo;
@@ -21,12 +21,12 @@ import static java.lang.String.format;
 public class RabbitMQOperation implements StorageOperation {
 
     private final Map<String, Client> client;
-    private final GlobalTestConfiguration globalConfiguration;
+    private final Environment globalConfiguration;
 
     public RabbitMQOperation(@Autowired(required = false) @Qualifier("rabbitMqClient")
                              final Map<String, Client> client) {
         this.client = client;
-        this.globalConfiguration = GlobalTestConfigurationProvider.provide();
+        this.globalConfiguration = GlobalTestConfigurationProvider.provideEnv();
     }
 
     @Override

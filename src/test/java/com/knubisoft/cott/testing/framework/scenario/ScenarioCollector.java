@@ -108,7 +108,7 @@ public class ScenarioCollector {
         auth.setLoginEndpoint(authCommand.getLoginEndpoint());
         updatedCommand.add(auth);
         updatedCommand.addAll(authCommand.getCommands());
-        if (GlobalTestConfigurationProvider.provide().getAuth().isAutoLogout()) {
+        if (GlobalTestConfigurationProvider.provideEnv().getAuth().isAutoLogout()) {
             updatedCommand.add(new Logout());
         }
     }

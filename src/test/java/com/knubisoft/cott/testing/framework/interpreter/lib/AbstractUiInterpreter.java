@@ -7,7 +7,7 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.ScenarioUtil;
-import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
+import com.knubisoft.cott.testing.model.global_config.Environment;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.cott.testing.model.scenario.SwitchToFrame;
 import com.knubisoft.cott.testing.model.scenario.Ui;
@@ -132,8 +132,8 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
             return driverFunction.apply(interpreterDependencies);
         }
 
-        private static GlobalTestConfiguration globalTestConfig() {
-            return GlobalTestConfigurationProvider.provide();
+        private static Environment globalTestConfig() {
+            return GlobalTestConfigurationProvider.provideEnv();
         }
     }
 }

@@ -19,7 +19,7 @@ public class MobilebrowserDriverFactory {
 
     @SneakyThrows
     public WebDriver createDriver(final MobilebrowserDevice mobilebrowserDevice) {
-        Mobilebrowser mobilebrowser = GlobalTestConfigurationProvider.provide().getMobilebrowser();
+        Mobilebrowser mobilebrowser = GlobalTestConfigurationProvider.provideEnv().getMobilebrowser();
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         MobileDriverUtil.setCommonCapabilities(mobilebrowserDevice, desiredCapabilities);
         setPlatformCapabilities(mobilebrowserDevice, desiredCapabilities);

@@ -10,6 +10,7 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.COMPONENTS_FOLDER_NOT_EXIST;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DATA_FOLDER_NOT_EXIST;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ENVIRONMENT_FOLDER_NOT_EXIST;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FOLDER_LOCATION_ERROR_MESSAGE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.PAGES_FOLDER_NOT_EXIST;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SCENARIOS_FOLDER_NOT_EXIST;
@@ -32,6 +33,7 @@ public class TestResourceSettings {
     public static final String LOCATORS_COMPONENTS_FOLDER = "locators/component";
     public static final String SCENARIOS_FOLDER = "scenarios";
     public static final String DATA_FOLDER = "data";
+    public static final String ENVIRONMENT_FOLDER = "environment";
 
     public static final String CONFIG_EXAMPLE_FILENAME = "global-config-example.xml";
     public static final String EXPECTED_EXAMPLE_FILENAME = "expected_1.json";
@@ -51,6 +53,7 @@ public class TestResourceSettings {
     private final File scenariosFolder;
     private final File configFile;
     private final File dataFolder;
+    private final File environmentFolder;
 
     private TestResourceSettings(final String configFileName, final String pathToTestResources) {
         this.testResourcesFolder = new File(pathToTestResources);
@@ -59,6 +62,7 @@ public class TestResourceSettings {
         this.componentsFolder = subFolder(LOCATORS_COMPONENTS_FOLDER, COMPONENTS_FOLDER_NOT_EXIST);
         this.scenariosFolder = subFolder(SCENARIOS_FOLDER, SCENARIOS_FOLDER_NOT_EXIST);
         this.dataFolder = subFolder(DATA_FOLDER, DATA_FOLDER_NOT_EXIST);
+        this.environmentFolder = subFolder(ENVIRONMENT_FOLDER, ENVIRONMENT_FOLDER_NOT_EXIST);
     }
 
     public static void init(final String configFileName, final String pathToTestResources) {

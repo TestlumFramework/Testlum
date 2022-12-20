@@ -13,7 +13,7 @@ import org.apache.commons.lang3.NotImplementedException;
 @UtilityClass
 public class AuthFactory {
     public AuthStrategy create(final InterpreterDependencies dependencies) {
-        final Auth auth = GlobalTestConfigurationProvider.provide().getAuth();
+        final Auth auth = GlobalTestConfigurationProvider.provideEnv().getAuth();
         // TODO i.doroshenko add OAUTH_2 to switch-case
         switch (auth.getAuthStrategy()) {
             case BASIC:

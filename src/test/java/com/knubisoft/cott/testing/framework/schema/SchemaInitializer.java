@@ -17,6 +17,8 @@ public class SchemaInitializer {
     public static final Schema PAGES_SCHEMA = initSchema("schema/pages.xsd");
     public static final Schema SCENARIO_SCHEMA = initSchema("schema/scenario.xsd");
 
+    public static final Schema ENVIRONMENT_SCHEMA = initSchema("schema/environment.xsd");
+
     @SneakyThrows
     public Schema initSchema(final String path) {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);

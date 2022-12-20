@@ -23,7 +23,7 @@ public class NativeDriverFactory {
     public WebDriver createDriver(final NativeDevice nativeDevice) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         MobileDriverUtil.setCommonCapabilities(nativeDevice, desiredCapabilities);
-        String serverUrl = GlobalTestConfigurationProvider.provide().getNative().getAppiumServerUrl();
+        String serverUrl = GlobalTestConfigurationProvider.provideEnv().getNative().getAppiumServerUrl();
         if (nativeDevice instanceof IosDevice) {
             MobileDriverUtil.setAutomation(desiredCapabilities, "iOS", "XCUITest");
             desiredCapabilities.setCapability(MobileCapabilityType.APP, ((IosDevice) nativeDevice).getApp());

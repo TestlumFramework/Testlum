@@ -53,6 +53,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.CREDENTIA
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_FRAME;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_WEBVIEW;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
@@ -88,6 +89,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_HOST
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_PORT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SOURCE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_FRAME;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_WEBVIEW;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUBJECT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
@@ -231,6 +233,14 @@ public class LogUtil {
 
     public void endUiCommandsInFrame() {
         log.info(END_UI_COMMANDS_IN_FRAME);
+    }
+
+    public static void startUiCommandsInWebView() {
+        log.info(START_UI_COMMANDS_IN_WEBVIEW);
+    }
+
+    public void endUiCommandsInWebView() {
+        log.info(END_UI_COMMANDS_IN_WEBVIEW);
     }
 
     public void logSubCommand(final int position, final Object action) {

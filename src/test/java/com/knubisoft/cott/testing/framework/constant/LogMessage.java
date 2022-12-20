@@ -48,6 +48,11 @@ public final class LogMessage {
             ANSI_CYAN + "------- Start ui commands in frame -------" + ANSI_RESET;
     public static final String END_UI_COMMANDS_IN_FRAME =
             ANSI_CYAN + "------- End ui commands in frame -------" + ANSI_RESET;
+
+    public static final String START_UI_COMMANDS_IN_WEBVIEW =
+            ANSI_CYAN + "------- Start ui commands in web view -------" + ANSI_RESET;
+    public static final String END_UI_COMMANDS_IN_WEBVIEW =
+            ANSI_CYAN + "------- End ui commands in web view -------" + ANSI_RESET;
     public static final String INVALID_SCENARIO_LOG = ANSI_RED + LINE
             + NEW_LOG_LINE + format(TABLE_FORMAT, "Invalid scenario", "{}")
             + NEW_LOG_LINE + format(TABLE_FORMAT, "Exception", "{}") + NEW_LOG_LINE

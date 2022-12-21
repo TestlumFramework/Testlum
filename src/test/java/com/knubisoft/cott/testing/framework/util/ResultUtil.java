@@ -371,7 +371,7 @@ public class ResultUtil {
                                          final CommandResult result) {
         result.put(ALIAS, alias);
         result.put(LAMBDA_FUNCTION_NAME, functionName);
-        result.put(LAMBDA_PAYLOAD, payload);
+        result.put(LAMBDA_PAYLOAD, PrettifyStringJson.getJSONResult(payload));
     }
 
     public void addS3GeneralMetaData(final String alias,

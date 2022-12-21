@@ -286,6 +286,38 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Response }
+     * 
+     */
+    public Response createResponse() {
+        return new Response();
+    }
+
+    /**
+     * Create an instance of {@link Body }
+     * 
+     */
+    public Body createBody() {
+        return new Body();
+    }
+
+    /**
+     * Create an instance of {@link Param }
+     * 
+     */
+    public Param createParam() {
+        return new Param();
+    }
+
+    /**
+     * Create an instance of {@link Multipart }
+     * 
+     */
+    public Multipart createMultipart() {
+        return new Multipart();
+    }
+
+    /**
      * Create an instance of {@link Header }
      * 
      */
@@ -299,14 +331,6 @@ public class ObjectFactory {
      */
     public File createFile() {
         return new File();
-    }
-
-    /**
-     * Create an instance of {@link Param }
-     * 
-     */
-    public Param createParam() {
-        return new Param();
     }
 
     /**
@@ -654,94 +678,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Get }
-     * 
-     */
-    public Get createGet() {
-        return new Get();
-    }
-
-    /**
-     * Create an instance of {@link Post }
-     * 
-     */
-    public Post createPost() {
-        return new Post();
-    }
-
-    /**
-     * Create an instance of {@link Put }
-     * 
-     */
-    public Put createPut() {
-        return new Put();
-    }
-
-    /**
-     * Create an instance of {@link Patch }
-     * 
-     */
-    public Patch createPatch() {
-        return new Patch();
-    }
-
-    /**
-     * Create an instance of {@link Trace }
-     * 
-     */
-    public Trace createTrace() {
-        return new Trace();
-    }
-
-    /**
-     * Create an instance of {@link Delete }
-     * 
-     */
-    public Delete createDelete() {
-        return new Delete();
-    }
-
-    /**
-     * Create an instance of {@link Head }
-     * 
-     */
-    public Head createHead() {
-        return new Head();
-    }
-
-    /**
-     * Create an instance of {@link Options }
-     * 
-     */
-    public Options createOptions() {
-        return new Options();
-    }
-
-    /**
-     * Create an instance of {@link Response }
-     * 
-     */
-    public Response createResponse() {
-        return new Response();
-    }
-
-    /**
-     * Create an instance of {@link Body }
-     * 
-     */
-    public Body createBody() {
-        return new Body();
-    }
-
-    /**
-     * Create an instance of {@link Multipart }
-     * 
-     */
-    public Multipart createMultipart() {
-        return new Multipart();
-    }
-
-    /**
      * Create an instance of {@link ElasticsearchGetRequest }
      * 
      */
@@ -902,6 +838,70 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Get }
+     * 
+     */
+    public Get createGet() {
+        return new Get();
+    }
+
+    /**
+     * Create an instance of {@link Post }
+     * 
+     */
+    public Post createPost() {
+        return new Post();
+    }
+
+    /**
+     * Create an instance of {@link Put }
+     * 
+     */
+    public Put createPut() {
+        return new Put();
+    }
+
+    /**
+     * Create an instance of {@link Patch }
+     * 
+     */
+    public Patch createPatch() {
+        return new Patch();
+    }
+
+    /**
+     * Create an instance of {@link Trace }
+     * 
+     */
+    public Trace createTrace() {
+        return new Trace();
+    }
+
+    /**
+     * Create an instance of {@link Delete }
+     * 
+     */
+    public Delete createDelete() {
+        return new Delete();
+    }
+
+    /**
+     * Create an instance of {@link Head }
+     * 
+     */
+    public Head createHead() {
+        return new Head();
+    }
+
+    /**
+     * Create an instance of {@link Options }
+     * 
+     */
+    public Options createOptions() {
+        return new Options();
+    }
+
+    /**
      * Create an instance of {@link Logout }
      * 
      */
@@ -939,6 +939,14 @@ public class ObjectFactory {
      */
     public WebsocketReceive createWebsocketReceive() {
         return new WebsocketReceive();
+    }
+
+    /**
+     * Create an instance of {@link LambdaBody }
+     * 
+     */
+    public LambdaBody createLambdaBody() {
+        return new LambdaBody();
     }
 
 }

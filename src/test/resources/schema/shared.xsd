@@ -75,11 +75,41 @@
         </x:restriction>
     </x:simpleType>
 
-    <x:simpleType name="code" final="restriction">
-        <x:restriction base="x:int">
-            <x:pattern value="[2-5]\d{2}"/>
-        </x:restriction>
-    </x:simpleType>
+    <x:complexType name="response">
+        <x:sequence>
+            <x:element name="header" type="tns:header" minOccurs="0" maxOccurs="unbounded"/>
+        </x:sequence>
+        <x:attribute name="code" type="tns:codePattern" default="200"/>
+        <x:attribute name="file" type="tns:expectedPattern"/>
+    </x:complexType>
+
+    <x:complexType name="body">
+        <x:choice>
+            <x:element name="param" type="tns:param" minOccurs="0" maxOccurs="unbounded"/>
+            <x:element name="multipart" type="tns:multipart" minOccurs="0"/>
+            <x:element name="from" type="tns:file" minOccurs="0"/>
+            <x:element name="raw" type="x:string" minOccurs="0"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="param">
+        <x:simpleContent>
+            <x:extension base="x:string">
+                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="data" type="x:string" use="required"/>
+            </x:extension>
+        </x:simpleContent>
+    </x:complexType>
+
+    <x:complexType name="multipart">
+        <x:simpleContent>
+            <x:extension base="x:string">
+                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="path" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="fileName" type="tns:nonEmptyString"/>
+            </x:extension>
+        </x:simpleContent>
+    </x:complexType>
 
     <x:complexType name="header">
         <x:simpleContent>
@@ -97,8 +127,14 @@
     </x:simpleType>
 
     <x:complexType name="file">
-        <x:attribute name="file" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="file" type="tns:jsonFileExtension" use="required"/>
     </x:complexType>
+
+    <x:simpleType name="codePattern" final="restriction">
+        <x:restriction base="x:int">
+            <x:pattern value="[2-5]\d{2}"/>
+        </x:restriction>
+    </x:simpleType>
 
     <x:simpleType name="jsFileExtension">
         <x:restriction base="x:string">
@@ -116,15 +152,6 @@
             <x:pattern value=".+(\.(jpg|jpeg|png|JPG|JPEG|PNG|))"/>
         </x:restriction>
     </x:simpleType>
-
-    <x:complexType name="param">
-        <x:simpleContent>
-            <x:extension base="x:string">
-                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="data" type="x:string" use="required"/>
-            </x:extension>
-        </x:simpleContent>
-    </x:complexType>
 
     <x:simpleType name="scenarioLocator">
         <x:restriction base="x:string">
@@ -156,7 +183,7 @@
             <x:pattern value="\d+|\{{2}([a-zA-Z\d_\-]+)\}{2}"/>
         </x:restriction>
     </x:simpleType>
-    
+
     <x:simpleType name="tabPattern">
         <x:restriction base="x:int">
             <x:pattern value="[2-9]|[1-9][0-9]"/>

@@ -47,6 +47,7 @@ import com.knubisoft.cott.testing.model.scenario.Include;
 import com.knubisoft.cott.testing.model.scenario.Javascript;
 import com.knubisoft.cott.testing.model.scenario.Kafka;
 import com.knubisoft.cott.testing.model.scenario.Lambda;
+import com.knubisoft.cott.testing.model.scenario.LambdaBody;
 import com.knubisoft.cott.testing.model.scenario.Migrate;
 import com.knubisoft.cott.testing.model.scenario.Mobilebrowser;
 import com.knubisoft.cott.testing.model.scenario.Mongo;
@@ -458,16 +459,15 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateSendgridCommand(final File xmlFile, final Sendgrid sendgrid) {
         SendgridInfo sendgridInfo = SendGridUtil.getSendgridMethodMetadata(sendgrid).getHttpInfo();
         Response response = sendgridInfo.getResponse();
-        if (response != null && response.getFile() != null) {
+        if (Objects.nonNull(response) && StringUtils.hasText(response.getFile())) {
             FileSearcher.searchFileFromDir(xmlFile, response.getFile());
         }
 
         SendgridWithBody commandWithBody = (SendgridWithBody) sendgridInfo;
         Body body = commandWithBody.getBody();
-        if (body != null && body.getFrom() != null) {
+        if (Objects.nonNull(body) && Objects.nonNull(body.getFrom())) {
             FileSearcher.searchFileFromDir(xmlFile, body.getFrom().getFile());
         }
-
     }
 
     private void validateExistsDatasets(final Migrate migrate) {
@@ -483,7 +483,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
         HttpInfo httpInfo = HttpUtil.getHttpMethodMetadata(http).getHttpInfo();
         Response response = httpInfo.getResponse();
-        if (response != null && response.getFile() != null) {
+        if (Objects.nonNull(response) && StringUtils.hasText(response.getFile())) {
             FileSearcher.searchFileFromDir(xmlFile, response.getFile());
         }
     }
@@ -519,10 +519,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateLambdaCommand(final File xmlFile, final Lambda lambda) {
-        Stream.of(lambda.getFile(), lambda.getPayload())
-                .filter(StringUtils::hasText)
-                .filter(fileName -> fileName.endsWith(JSON_EXTENSION))
-                .forEach(fileName -> FileSearcher.searchFileFromDir(xmlFile, fileName));
+        Response response = lambda.getResponse();
+        if (Objects.nonNull(response) && StringUtils.hasText(response.getFile())) {
+            FileSearcher.searchFileFromDir(xmlFile, response.getFile());
+        }
+        LambdaBody body = lambda.getBody();
+        if (Objects.nonNull(body) && Objects.nonNull(body.getFrom())) {
+            FileSearcher.searchFileFromDir(xmlFile, body.getFrom().getFile());
+        }
     }
 
     private void validateWebCommands(final Web command) {

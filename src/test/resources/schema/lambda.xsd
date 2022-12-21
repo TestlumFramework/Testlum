@@ -10,14 +10,20 @@
     <x:complexType name="lambda">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
-                <x:choice>
-                    <x:element name="payload" type="tns:nonEmptyString"/>
-                </x:choice>
+                <x:sequence>
+                    <x:element name="body" type="tns:lambdaBody"/>
+                    <x:element name="response" type="tns:response"/>
+                </x:sequence>
                 <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
                 <x:attribute name="functionName" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="file" type="tns:expectedPattern" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
+    <x:complexType name="lambdaBody">
+        <x:choice>
+            <x:element name="from" type="tns:file"/>
+            <x:element name="raw" type="tns:nonEmptyString"/>
+        </x:choice>
+    </x:complexType>
 </x:schema>

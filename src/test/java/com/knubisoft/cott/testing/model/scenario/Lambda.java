@@ -4,6 +4,7 @@ package com.knubisoft.cott.testing.model.scenario;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -16,12 +17,12 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="lambda"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
- *       &lt;choice&gt;
- *         &lt;element name="payload" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
- *       &lt;/choice&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="body" type="{http://www.knubisoft.com/cott/testing/model/scenario}lambdaBody"/&gt;
+ *         &lt;element name="response" type="{http://www.knubisoft.com/cott/testing/model/scenario}response"/&gt;
+ *       &lt;/sequence&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}aliasPattern" /&gt;
  *       &lt;attribute name="functionName" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="file" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}expectedPattern" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -31,42 +32,68 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "lambda", propOrder = {
-    "payload"
+    "body",
+    "response"
 })
 public class Lambda
     extends AbstractCommand
 {
 
-    protected String payload;
+    @XmlElement(required = true)
+    protected LambdaBody body;
+    @XmlElement(required = true)
+    protected Response response;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
     @XmlAttribute(name = "functionName", required = true)
     protected String functionName;
-    @XmlAttribute(name = "file", required = true)
-    protected String file;
 
     /**
-     * Gets the value of the payload property.
+     * Gets the value of the body property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link LambdaBody }
      *     
      */
-    public String getPayload() {
-        return payload;
+    public LambdaBody getBody() {
+        return body;
     }
 
     /**
-     * Sets the value of the payload property.
+     * Sets the value of the body property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link LambdaBody }
      *     
      */
-    public void setPayload(String value) {
-        this.payload = value;
+    public void setBody(LambdaBody value) {
+        this.body = value;
+    }
+
+    /**
+     * Gets the value of the response property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Response }
+     *     
+     */
+    public Response getResponse() {
+        return response;
+    }
+
+    /**
+     * Sets the value of the response property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Response }
+     *     
+     */
+    public void setResponse(Response value) {
+        this.response = value;
     }
 
     /**
@@ -115,30 +142,6 @@ public class Lambda
      */
     public void setFunctionName(String value) {
         this.functionName = value;
-    }
-
-    /**
-     * Gets the value of the file property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getFile() {
-        return file;
-    }
-
-    /**
-     * Sets the value of the file property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setFile(String value) {
-        this.file = value;
     }
 
 }

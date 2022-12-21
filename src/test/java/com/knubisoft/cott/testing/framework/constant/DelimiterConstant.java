@@ -16,6 +16,7 @@ public class DelimiterConstant {
     public static final String CLOSE_BRACE = "}";
     public static final String OPEN_BRACE = "{";
     public static final String EQUALS_MARK = "=";
+    public static final String SEMICOLON = ";";
     public static final String COLON = ":";
     public static final String QUESTION_MARK = "?";
     public static final String COMMA = ",";

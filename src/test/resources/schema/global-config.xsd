@@ -32,7 +32,7 @@
     <x:annotation>
         <x:appinfo>
             <jaxb:bindings
-                node="/x:schema/x:element[@name='globalTestConfiguration']//x:complexType//x:sequence">
+                    node="/x:schema/x:element[@name='globalTestConfiguration']//x:complexType//x:sequence">
             </jaxb:bindings>
         </x:appinfo>
     </x:annotation>
@@ -47,7 +47,7 @@
                 <x:element name="web" type="tns:web" minOccurs="0"/>
                 <x:element name="mobilebrowser" type="tns:mobilebrowser" minOccurs="0"/>
                 <x:element name="native" type="tns:native" minOccurs="0"/>
-                <x:element name="browserStack" type="tns:browserStack" minOccurs="0"/>
+                <x:element name="browserStackLogin" type="tns:browserStackLogin" minOccurs="0"/>
                 <x:element name="auth" type="tns:auth"/>
                 <x:element name="integrations" type="tns:integrations" minOccurs="0"/>
             </x:sequence>

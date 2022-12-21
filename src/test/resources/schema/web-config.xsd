@@ -49,6 +49,7 @@
             <x:element name="localBrowser" type="tns:localBrowser"/>
             <x:element name="browserInDocker" type="tns:browserInDocker"/>
             <x:element name="remoteBrowser" type="tns:remoteBrowser"/>
+            <x:element name="remoteBrowserStack" type="tns:remoteBrowserStack"/>
         </x:choice>
     </x:complexType>
 
@@ -68,7 +69,10 @@
     <x:complexType name="remoteBrowser">
         <x:attribute name="browserVersion" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="remoteBrowserURL" type="tns:url" use="required"/>
-        <x:attribute name="browserStack" type="x:boolean" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="remoteBrowserStack">
+        <x:attribute name="browserVersion" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
     <x:complexType name="screenRecording">

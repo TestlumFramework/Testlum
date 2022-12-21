@@ -13,6 +13,7 @@
             <x:element name="deviceSettings" type="tns:mobilebrowserDeviceSettings"/>
         </x:sequence>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:attribute name="browserStack" type="x:boolean" use="required"/>
     </x:complexType>
 
     <x:complexType name="mobilebrowserDeviceSettings">

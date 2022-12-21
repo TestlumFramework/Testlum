@@ -6,11 +6,11 @@
 
     <x:include schemaLocation="shared-config.xsd"/>
 
-    <x:complexType name="browserStack">
+    <x:complexType name="browserStackLogin">
         <x:sequence>
-            <x:element name="username" type="x:string" />
+            <x:element name="username" type="x:string"/>
             <x:element name="password" type="tns:nonEmptyString"/>
-            <x:element name="playMarket" type="tns:playMarketLogin"/>
+            <x:element name="playMarketLogin" type="tns:playMarketLogin"/>
         </x:sequence>
     </x:complexType>
 

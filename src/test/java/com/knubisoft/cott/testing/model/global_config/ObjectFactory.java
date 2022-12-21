@@ -542,14 +542,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link NativeDeviceSettings }
-     * 
-     */
-    public NativeDeviceSettings createNativeDeviceSettings() {
-        return new NativeDeviceSettings();
-    }
-
-    /**
      * Create an instance of {@link NativeDevices }
      * 
      */

@@ -22,7 +22,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="browserSettings" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserSettings"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *       &lt;attribute name="browserStackConnection" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -43,8 +42,6 @@ public class Web {
     protected BrowserSettings browserSettings;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
-    @XmlAttribute(name = "browserStackConnection", required = true)
-    protected boolean browserStackConnection;
 
     /**
      * Gets the value of the baseUrl property.
@@ -108,21 +105,5 @@ public class Web {
      */
     public void setEnabled(boolean value) {
         this.enabled = value;
-    }
-
-    /**
-     * Gets the value of the browserStackConnection property.
-     *
-     */
-    public boolean isBrowserStackEnabled() {
-        return browserStackConnection;
-    }
-
-    /**
-     * Sets the value of the browserStackConnection property.
-     *
-     */
-    public void setBrowserStackConnection(boolean browserStackConnection) {
-        this.browserStackConnection = browserStackConnection;
     }
 }

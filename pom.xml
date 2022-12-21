@@ -119,12 +119,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.browserstack</groupId>
-            <artifactId>browserstack-local-java</artifactId>
-            <version>${browserstack-local.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
             <version>1.18</version>
@@ -902,6 +896,11 @@
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.browserstack</groupId>
+            <artifactId>browserstack-local-java</artifactId>
+            <version>${browserstack-local.version}</version>
         </dependency>
     </dependencies>
 

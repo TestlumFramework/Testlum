@@ -19,6 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="localBrowser" type="{http://www.knubisoft.com/cott/testing/model/global-config}localBrowser"/&gt;
  *         &lt;element name="browserInDocker" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserInDocker"/&gt;
  *         &lt;element name="remoteBrowser" type="{http://www.knubisoft.com/cott/testing/model/global-config}remoteBrowser"/&gt;
+ *         &lt;element name="remoteBrowserStack" type="{http://www.knubisoft.com/cott/testing/model/global-config}remoteBrowserStack"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -31,13 +32,15 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "browserType", propOrder = {
     "localBrowser",
     "browserInDocker",
-    "remoteBrowser"
+    "remoteBrowser",
+    "remoteBrowserStack"
 })
 public class BrowserType {
 
     protected LocalBrowser localBrowser;
     protected BrowserInDocker browserInDocker;
     protected RemoteBrowser remoteBrowser;
+    protected RemoteBrowserStack remoteBrowserStack;
 
     /**
      * Gets the value of the localBrowser property.
@@ -111,4 +114,27 @@ public class BrowserType {
         this.remoteBrowser = value;
     }
 
+    /**
+     * Gets the value of the remoteBrowserStack property.
+     *
+     * @return
+     *     possible object is
+     *     {@link RemoteBrowserStack }
+     *
+     */
+    public RemoteBrowserStack getRemoteBrowserStack() {
+        return remoteBrowserStack;
+    }
+
+    /**
+     * Sets the value of the remoteBrowserStack property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link RemoteBrowserStack }
+     *
+     */
+    public void setRemoteBrowserStack(RemoteBrowserStack value) {
+        this.remoteBrowserStack = value;
+    }
 }

@@ -14,11 +14,11 @@ import javax.xml.bind.annotation.*;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}nativeDevice"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="app" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
- *         &lt;element name="appPackage" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
- *         &lt;element name="appActivity" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="appPackage" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
+ *         &lt;element name="appActivity" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
+ *         &lt;element name="app" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
+ *         &lt;element name="playMarketLogin" type="{http://www.knubisoft.com/cott/testing/model/global-config}boolean" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="playMarket" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -28,46 +28,22 @@ import javax.xml.bind.annotation.*;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "androidDevice", propOrder = {
-    "app",
     "appPackage",
-    "appActivity"
+    "appActivity",
+    "app"
 })
 public class AndroidDevice
     extends NativeDevice
 {
 
     @XmlElement(required = true)
-    protected String app;
-    @XmlElement(required = true)
     protected String appPackage;
     @XmlElement(required = true)
     protected String appActivity;
-    @XmlAttribute(name = "playMarket", required = true)
-    protected boolean playMarket;
-
-    /**
-     * Gets the value of the app property.
-     *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
-     */
-    public String getApp() {
-        return app;
-    }
-
-    /**
-     * Sets the value of the app property.
-     *
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *
-     */
-    public void setApp(String value) {
-        this.app = value;
-    }
+    @XmlElement(required = true)
+    protected String app;
+    @XmlAttribute(name = "playMarketLogin", required = true)
+    protected boolean playMarketLoginEnabled;
 
     /**
      * Gets the value of the appPackage property.
@@ -118,18 +94,40 @@ public class AndroidDevice
     }
 
     /**
-     * Gets the value of the playMarket property.
+     * Gets the value of the app property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
      *
      */
-    public boolean isPlayMarketEnabled() {
-        return playMarket;
+    public String getApp() {
+        return app;
     }
 
     /**
-     * Sets the value of the playMarket property.
+     * Sets the value of the app property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
      *
      */
-    public void setPlayMarketEnabled(boolean value) {
-        this.playMarket = value;
+    public void setApp(String value) {
+        this.app = value;
+    }
+
+    /**
+     * Gets the value of the playMarketLoginEnabled property.
+     */
+    public boolean isPlayMarketLoginEnabled() {
+        return playMarketLoginEnabled;
+    }
+
+    /**
+     * Sets the value of the playMarketLoginEnabled property.
+     */
+    public void setPlayMarketLoginEnabled(boolean value) {
+        this.playMarketLoginEnabled = value;
     }
 }

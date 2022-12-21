@@ -6,6 +6,7 @@ import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import lombok.experimental.UtilityClass;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.MOBILEBROWSER_INFO;
@@ -38,4 +39,27 @@ public class MobileUtil {
                 mobilebrowserDevice.getDeviceName(),
                 mobilebrowserDevice.getPlatformName().value());
     }
+
+    public ConnectionType getConnectionType() {
+        if (Objects.nonNull(
+                GlobalTestConfigurationProvider.provide().getNative().getConnectionType().getAppiumServer())) {
+            return ConnectionType.APPIUM;
+        }
+        return ConnectionType.BROWSER_STACK;
+    }
+    public enum ConnectionType {
+        APPIUM("appium server"),
+        BROWSER_STACK("browserStack");
+
+        private final String typeName;
+
+        ConnectionType(final String typeName) {
+            this.typeName = typeName;
+        }
+
+        public String getTypeName() {
+            return typeName;
+        }
+    }
+
 }

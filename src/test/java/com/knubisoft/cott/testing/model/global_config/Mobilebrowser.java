@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="deviceSettings" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowserDeviceSettings"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *       &lt;attribute name="browserStackConnection" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="browserStack" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -47,8 +47,8 @@ public class Mobilebrowser {
     protected MobilebrowserDeviceSettings deviceSettings;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
-    @XmlAttribute(name = "browserStackConnection", required = true)
-    protected boolean browserStackConnection;
+    @XmlAttribute(name = "browserStack", required = true)
+    protected boolean browserStackEnabled;
 
     /**
      * Gets the value of the baseUrl property.
@@ -143,14 +143,14 @@ public class Mobilebrowser {
      *
      */
     public boolean isBrowserStackEnabled() {
-        return browserStackConnection;
+        return browserStackEnabled;
     }
 
     /**
      * Sets the value of the browserStackConnection property.
      *
      */
-    public void setBrowserStackConnection(boolean browserStackConnection) {
-        this.browserStackConnection = browserStackConnection;
+    public void setBrowserStackEnabled(boolean browserStackEnabled) {
+        this.browserStackEnabled = browserStackEnabled;
     }
 }

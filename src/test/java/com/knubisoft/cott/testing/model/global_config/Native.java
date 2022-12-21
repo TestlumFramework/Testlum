@@ -10,93 +10,59 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * <p>Java class for native complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="native"&gt;
  *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}settings"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="appiumServerUrl" type="{http://www.knubisoft.com/cott/testing/model/global-config}url"/&gt;
- *         &lt;element name="deviceSettings" type="{http://www.knubisoft.com/cott/testing/model/global-config}nativeDeviceSettings"/&gt;
+ *         &lt;element name="connectionType" type="{http://www.knubisoft.com/cott/testing/model/global-config}connectionType"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *       &lt;attribute name="browserStackConnection" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *     &lt;/restriction&gt;
+ *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "native", propOrder = {
-    "appiumServerUrl",
-    "deviceSettings"
+    "connectionType"
 })
-public class Native {
+public class Native extends Settings {
 
     @XmlElement(required = true)
-    protected String appiumServerUrl;
-    @XmlElement(required = true)
-    protected NativeDeviceSettings deviceSettings;
+    protected ConnectionType connectionType;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
-    @XmlAttribute(name = "browserStackConnection", required = true)
-    protected boolean browserStackConnection;
 
     /**
-     * Gets the value of the appiumServerUrl property.
-     * 
+     * Gets the value of the connectionType property.
+     *
      * @return
      *     possible object is
-     *     {@link String }
-     *     
+     *     {@link ConnectionType }
+     *
      */
-    public String getAppiumServerUrl() {
-        return appiumServerUrl;
+    public ConnectionType getConnectionType() {
+        return connectionType;
     }
 
     /**
-     * Sets the value of the appiumServerUrl property.
-     * 
+     * Sets the value of the connectionType property.
+     *
      * @param value
      *     allowed object is
-     *     {@link String }
-     *     
+     *     {@link ConnectionType }
+     *
      */
-    public void setAppiumServerUrl(String value) {
-        this.appiumServerUrl = value;
-    }
-
-    /**
-     * Gets the value of the deviceSettings property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link NativeDeviceSettings }
-     *     
-     */
-    public NativeDeviceSettings getDeviceSettings() {
-        return deviceSettings;
-    }
-
-    /**
-     * Sets the value of the deviceSettings property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link NativeDeviceSettings }
-     *     
-     */
-    public void setDeviceSettings(NativeDeviceSettings value) {
-        this.deviceSettings = value;
+    public void setConnectionType(ConnectionType value) {
+        this.connectionType = value;
     }
 
     /**
      * Gets the value of the enabled property.
-     * 
      */
     public boolean isEnabled() {
         return enabled;
@@ -104,25 +70,8 @@ public class Native {
 
     /**
      * Sets the value of the enabled property.
-     * 
      */
     public void setEnabled(boolean value) {
         this.enabled = value;
-    }
-
-    /**
-     * Gets the value of the browserStackConnection property.
-     *
-     */
-    public boolean isBrowserStackEnabled() {
-        return browserStackConnection;
-    }
-
-    /**
-     * Sets the value of the browserStackConnection property.
-     *
-     */
-    public void setBrowserStackConnection(boolean value) {
-        this.browserStackConnection = value;
     }
 }

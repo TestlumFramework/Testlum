@@ -3,6 +3,7 @@ package com.knubisoft.cott.testing.framework.configuration.ui;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.util.BrowserStackUtil;
 import com.knubisoft.cott.testing.framework.util.MobileDriverUtil;
+import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.model.global_config.AndroidDevice;
 import com.knubisoft.cott.testing.model.global_config.IosDevice;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
@@ -18,8 +19,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import java.net.URL;
 import java.util.HashMap;
 
-import static com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider.getBrowserStack;
-
 @UtilityClass
 public class NativeDriverFactory {
 
@@ -27,45 +26,54 @@ public class NativeDriverFactory {
     public WebDriver createDriver(final NativeDevice nativeDevice) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         MobileDriverUtil.setCommonCapabilities(nativeDevice, desiredCapabilities);
-        String serverUrl = GlobalTestConfigurationProvider.provide().getNative().getAppiumServerUrl();
+        MobileUtil.ConnectionType connectionType = MobileUtil.getConnectionType();
+        String serverUrl = setServerUrl(connectionType);
         if (nativeDevice instanceof IosDevice) {
-            setIosCaps((IosDevice) nativeDevice, desiredCapabilities);
-            return new IOSDriver(new URL(nativeDevice.isBrowserStackEnabled() ? BrowserStackUtil.getBrowserStackUrl()
-                    : serverUrl), desiredCapabilities);
+            setIosCaps((IosDevice) nativeDevice, desiredCapabilities, connectionType);
+            return new IOSDriver(new URL(serverUrl), desiredCapabilities);
         }
-        setAndroidCaps((AndroidDevice) nativeDevice, desiredCapabilities);
-        return new AndroidDriver(new URL(nativeDevice.isBrowserStackEnabled() ? BrowserStackUtil.getBrowserStackUrl()
-                : serverUrl), desiredCapabilities);
+        setAndroidCaps((AndroidDevice) nativeDevice, desiredCapabilities, connectionType);
+        return new AndroidDriver(new URL(serverUrl), desiredCapabilities);
+    }
+
+    private static String setServerUrl(final MobileUtil.ConnectionType connectionType) {
+        if (connectionType == MobileUtil.ConnectionType.APPIUM) {
+            return GlobalTestConfigurationProvider.provide().getNative()
+                    .getConnectionType().getAppiumServer().getServerUrl();
+        }
+        return BrowserStackUtil.getBrowserStackUrl();
     }
 
     private static void setAndroidCaps(final AndroidDevice nativeDevice,
-                                       final DesiredCapabilities desiredCapabilities) {
+                                       final DesiredCapabilities desiredCapabilities,
+                                       final MobileUtil.ConnectionType connectionType) {
         MobileDriverUtil.setAutomation(desiredCapabilities, "Android", "uiautomator2");
-        desiredCapabilities.setCapability(MobileCapabilityType.APP, nativeDevice.getApp());
-        desiredCapabilities.setCapability("appPackage", nativeDevice.getAppPackage());
-        desiredCapabilities.setCapability("appActivity", nativeDevice.getAppActivity());
-        if (nativeDevice.isBrowserStackEnabled()) {
-            setBrowserStackCaps(desiredCapabilities);
-            if (nativeDevice.isPlayMarketEnabled()) {
-                desiredCapabilities.setCapability("browserstack.appStoreConfiguration", new HashMap<String, String>() {{
-                    put("username", getBrowserStack().getPlayMarket().getUsername());
-                    put("password", getBrowserStack().getPlayMarket().getPassword());
-                }});
+        if (connectionType == MobileUtil.ConnectionType.BROWSER_STACK) {
+            desiredCapabilities.setCapability(MobileCapabilityType.APP, nativeDevice.getApp());
+            BrowserStackUtil.startLocalServer(desiredCapabilities);
+            if (nativeDevice.isPlayMarketLoginEnabled()) {
+                setPlayMarketCredentials(desiredCapabilities);
             }
         }
+        desiredCapabilities.setCapability("udid", nativeDevice.getUdid());
+        desiredCapabilities.setCapability("appPackage", nativeDevice.getAppPackage());
+        desiredCapabilities.setCapability("appActivity", nativeDevice.getAppActivity());
     }
 
-    private void setIosCaps(final IosDevice nativeDevice, final DesiredCapabilities desiredCapabilities) {
+    private static void setPlayMarketCredentials(final DesiredCapabilities desiredCapabilities) {
+        desiredCapabilities.setCapability("browserstack.appStoreConfiguration", new HashMap<String, String>() {{
+            put("username", GlobalTestConfigurationProvider.getBrowserStack().getPlayMarketLogin().getUsername());
+            put("password", GlobalTestConfigurationProvider.getBrowserStack().getPlayMarketLogin().getPassword());
+        }});
+    }
+
+    private void setIosCaps(final IosDevice nativeDevice,
+                            final DesiredCapabilities desiredCapabilities,
+                            final MobileUtil.ConnectionType connectionType) {
         MobileDriverUtil.setAutomation(desiredCapabilities, "iOS", "XCUITest");
         desiredCapabilities.setCapability(MobileCapabilityType.APP, nativeDevice.getApp());
-        if (nativeDevice.isBrowserStackEnabled()) {
-            setBrowserStackCaps(desiredCapabilities);
+        if (connectionType == MobileUtil.ConnectionType.BROWSER_STACK) {
+            BrowserStackUtil.startLocalServer(desiredCapabilities);
         }
     }
-
-    private void setBrowserStackCaps(final DesiredCapabilities desiredCapabilities) {
-        desiredCapabilities.setCapability("browserstack.local", "true");
-        BrowserStackUtil.startLocalServer();
-    }
-
 }

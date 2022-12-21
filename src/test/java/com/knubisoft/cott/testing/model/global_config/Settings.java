@@ -22,7 +22,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="takeScreenshots" type="{http://www.knubisoft.com/cott/testing/model/global-config}takeScreenshot"/&gt;
  *         &lt;element name="elementAutowait" type="{http://www.knubisoft.com/cott/testing/model/global-config}elementAutowait"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -38,7 +37,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlSeeAlso({
     BrowserSettings.class,
     MobilebrowserDeviceSettings.class,
-    NativeDeviceSettings.class
+    Native.class
 })
 public class Settings {
 
@@ -46,8 +45,6 @@ public class Settings {
     protected TakeScreenshot takeScreenshots;
     @XmlElement(required = true)
     protected ElementAutowait elementAutowait;
-    @XmlAttribute(name = "enabled")
-    protected Boolean enabled;
 
     /**
      * Gets the value of the takeScreenshots property.
@@ -95,30 +92,6 @@ public class Settings {
      */
     public void setElementAutowait(ElementAutowait value) {
         this.elementAutowait = value;
-    }
-
-    /**
-     * Gets the value of the enabled property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public Boolean isEnabled() {
-        return enabled;
-    }
-
-    /**
-     * Sets the value of the enabled property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setEnabled(Boolean value) {
-        this.enabled = value;
     }
 
 }

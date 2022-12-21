@@ -45,7 +45,7 @@ import javax.xml.bind.annotation.XmlType;
     "web",
     "mobilebrowser",
     "_native",
-    "browserStack",
+    "browserStackLogin",
     "auth",
     "integrations"
 })
@@ -62,7 +62,7 @@ public class GlobalTestConfiguration {
     protected Mobilebrowser mobilebrowser;
     @XmlElement(name = "native")
     protected Native _native;
-    protected BrowserStack browserStack;
+    protected BrowserStackLogin browserStackLogin;
     @XmlElement(required = true)
     protected Auth auth;
     protected Integrations integrations;
@@ -232,11 +232,11 @@ public class GlobalTestConfiguration {
      *
      * @return
      *     possible object is
-     *     {@link BrowserStack }
+     *     {@link BrowserStackLogin }
      *
      */
-    public BrowserStack getBrowserStack() {
-        return browserStack;
+    public BrowserStackLogin getBrowserStack() {
+        return browserStackLogin;
     }
 
     /**
@@ -244,11 +244,11 @@ public class GlobalTestConfiguration {
      *
      * @param value
      *     allowed object is
-     *     {@link BrowserStack }
+     *     {@link BrowserStackLogin }
      *
      */
-    public void setBrowserStack(BrowserStack value) {
-        this.browserStack = value;
+    public void setBrowserStack(BrowserStackLogin value) {
+        this.browserStackLogin = value;
     }
 
     /**

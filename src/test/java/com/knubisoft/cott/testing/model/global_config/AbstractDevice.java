@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="capabilities" type="{http://www.knubisoft.com/cott/testing/model/global-config}capabilities" minOccurs="0"/&gt;
- *         &lt;element name="udid" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="udid" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
  *         &lt;element name="deviceName" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
@@ -50,8 +50,6 @@ public abstract class AbstractDevice {
     protected String deviceName;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
-    @XmlAttribute(name = "browserStack", required = true)
-    protected boolean browserStackEnabled;
 
     /**
      * Gets the value of the capabilities property.
@@ -139,22 +137,6 @@ public abstract class AbstractDevice {
      */
     public void setEnabled(boolean value) {
         this.enabled = value;
-    }
-
-    /**
-     * Gets the value of the browserStack property.
-     *
-     */
-    public boolean isBrowserStackEnabled() {
-        return browserStackEnabled;
-    }
-
-    /**
-     * Sets the value of the browserStack property.
-     *
-     */
-    public void setBrowserStackEnabled(boolean value) {
-        this.browserStackEnabled = value;
     }
 
 }

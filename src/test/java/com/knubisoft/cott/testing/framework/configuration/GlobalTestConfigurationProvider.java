@@ -1,8 +1,9 @@
 package com.knubisoft.cott.testing.framework.configuration;
 
 import com.knubisoft.cott.testing.framework.parser.XMLParsers;
+import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
-import com.knubisoft.cott.testing.model.global_config.BrowserStack;
+import com.knubisoft.cott.testing.model.global_config.BrowserStackLogin;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Mobilebrowser;
@@ -33,8 +34,12 @@ public class GlobalTestConfigurationProvider {
     }
 
     public static List<NativeDevice> getNativeDevices() {
-        if (getNativeSettings() != null) {
-            return getNativeSettings().getDeviceSettings().getDevices().getAndroidOrIos();
+        MobileUtil.ConnectionType connectionType = MobileUtil.getConnectionType();
+        if (connectionType == MobileUtil.ConnectionType.APPIUM && getNativeSettings() != null) {
+            return getNativeSettings().getConnectionType().getAppiumServer().getDevices().getAndroidOrIos();
+        }
+        if (connectionType == MobileUtil.ConnectionType.BROWSER_STACK && getNativeSettings() != null) {
+            return getNativeSettings().getConnectionType().getBrowserStack().getDevices().getAndroidOrIos();
         }
         return Collections.emptyList();
     }
@@ -58,7 +63,7 @@ public class GlobalTestConfigurationProvider {
         return GlobalTestConfigurationProvider.provide().getNative();
     }
 
-    public static BrowserStack getBrowserStack() {
+    public static BrowserStackLogin getBrowserStack() {
         return GlobalTestConfigurationProvider.provide().getBrowserStack();
     }
 

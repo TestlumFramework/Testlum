@@ -19,6 +19,7 @@ import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSubscribe;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -207,7 +208,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     }
 
     private String getValue(final String message, final String file) {
-        return Objects.nonNull(message)
+        return StringUtils.isNotBlank(message)
                 ? message
                 : FileSearcher.searchFileToString(file, dependencies.getFile());
     }

@@ -5,18 +5,18 @@
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
-  <x:include schemaLocation="shared.xsd"/>
+    <x:include schemaLocation="shared.xsd"/>
 
-  <x:complexType name="shell">
-    <x:complexContent>
-      <x:extension base="tns:abstractCommand">
-        <x:sequence>
-          <x:element name="shellFile" type="x:string" minOccurs="0" maxOccurs="unbounded"/>
-          <x:element name="shellCommand" type="x:string" minOccurs="0" maxOccurs="unbounded"/>
-        </x:sequence>
-        <x:attribute name="file" type="tns:nonEmptyString"/>
-      </x:extension>
-    </x:complexContent>
-  </x:complexType>
+    <x:complexType name="shell">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:sequence>
+                    <x:element name="shellFile" type="x:string" minOccurs="0" maxOccurs="unbounded"/>
+                    <x:element name="shellCommand" type="x:string" minOccurs="0" maxOccurs="unbounded"/>
+                </x:sequence>
+                <x:attribute name="file" type="tns:expectedPattern"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
 
 </x:schema>

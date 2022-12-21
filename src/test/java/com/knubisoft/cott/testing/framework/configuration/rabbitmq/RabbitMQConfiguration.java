@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.configuration.rabbitmq;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
+import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Rabbitmq;
 import com.rabbitmq.http.client.Client;
 import com.rabbitmq.http.client.ClientParameters;
@@ -26,7 +27,6 @@ import java.util.Map;
 public class RabbitMQConfiguration {
     private static final String SCHEMA = "http://";
     private static final String API_PATH = "/api";
-    private static final String COLON = ":";
 
     private final List<Rabbitmq> rabbitmqIntegration = GlobalTestConfigurationProvider
             .getIntegrations().getRabbitmqIntegration().getRabbitmq();
@@ -45,7 +45,7 @@ public class RabbitMQConfiguration {
     }
 
     private ClientParameters createClientParameters(final Rabbitmq rabbitmq) throws MalformedURLException {
-        final String url = SCHEMA + rabbitmq.getHost() + COLON + rabbitmq.getApiPort() + API_PATH;
+        final String url = SCHEMA + rabbitmq.getHost() + DelimiterConstant.COLON + rabbitmq.getApiPort() + API_PATH;
         return new ClientParameters()
                 .url(url)
                 .username(rabbitmq.getUsername())

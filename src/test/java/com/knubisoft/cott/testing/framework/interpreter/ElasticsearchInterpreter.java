@@ -60,9 +60,9 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     }
 
     @SneakyThrows
-    protected Response getActual(final ElasticSearchRequest elasticSearchRequest,
-                                 final HttpMethod httpMethod,
-                                 final String alias) {
+    private Response getActual(final ElasticSearchRequest elasticSearchRequest,
+                               final HttpMethod httpMethod,
+                               final String alias) {
         LogUtil.logHttpInfo(alias, httpMethod.name(), elasticSearchRequest.getEndpoint());
         Request request = buildRequest(elasticSearchRequest, httpMethod);
         try {
@@ -73,11 +73,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         }
     }
 
-    protected ElasticSearchResponse getExpected(final ElasticSearchRequest elasticSearchRequest) {
-        return elasticSearchRequest.getResponse();
-    }
-
-    protected void compare(final ElasticSearchResponse expected, final Response actual, final CommandResult result) {
+    private void compare(final ElasticSearchResponse expected, final Response actual, final CommandResult result) {
         HttpValidator httpValidator = new HttpValidator(this);
         httpValidator.validateCode(expected.getCode(), actual.getStatusLine().getStatusCode());
         validateHeadersIfExists(expected, actual, httpValidator);

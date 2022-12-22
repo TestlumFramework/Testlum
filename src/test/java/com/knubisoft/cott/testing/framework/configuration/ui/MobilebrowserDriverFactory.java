@@ -24,7 +24,7 @@ public class MobilebrowserDriverFactory {
         MobileDriverUtil.setCommonCapabilities(mobilebrowserDevice, desiredCapabilities);
         Mobilebrowser mobilebrowser = GlobalTestConfigurationProvider.provide().getMobilebrowser();
         if (mobilebrowser.isBrowserStackEnabled()) {
-            BrowserStackUtil.startLocalServer(desiredCapabilities);
+            desiredCapabilities.setCapability("browserstack.local", "true");
         }
         setPlatformCapabilities(mobilebrowserDevice, desiredCapabilities);
         WebDriver driver = new RemoteWebDriver(

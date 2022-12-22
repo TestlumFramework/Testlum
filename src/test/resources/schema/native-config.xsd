@@ -9,19 +9,13 @@
     <x:complexType name="native">
         <x:complexContent>
             <x:extension base="tns:settings">
-                <x:sequence>
-                    <x:element name="connectionType" type="tns:connectionType"/>
-                </x:sequence>
+                <x:choice>
+                    <x:element name="appiumServer" type="tns:appiumServer"/>
+                    <x:element name="browserStack" type="tns:browserStackNative"/>
+                </x:choice>
                 <x:attribute name="enabled" type="x:boolean" use="required"/>
             </x:extension>
         </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="connectionType">
-        <x:choice>
-            <x:element name="appiumServer" type="tns:appiumServer"/>
-            <x:element name="browserStack" type="tns:browserStack"/>
-        </x:choice>
     </x:complexType>
 
     <x:complexType name="appiumServer">
@@ -31,7 +25,7 @@
         </x:sequence>
     </x:complexType>
 
-    <x:complexType name="browserStack">
+    <x:complexType name="browserStackNative">
         <x:sequence>
             <x:element name="devices" type="tns:nativeDevices"/>
         </x:sequence>
@@ -58,7 +52,7 @@
                     <x:element name="appActivity" type="tns:nonEmptyString" minOccurs="0"/>
                     <x:element name="app" type="tns:nonEmptyString" minOccurs="0"/>
                 </x:sequence>
-                <x:attribute name="playMarketLogin" type="x:boolean"/>
+                <x:attribute name="playMarketLogin" type="x:boolean" default="false"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

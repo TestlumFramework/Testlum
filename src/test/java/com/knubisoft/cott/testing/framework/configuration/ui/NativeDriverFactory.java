@@ -38,8 +38,7 @@ public class NativeDriverFactory {
 
     private static String setServerUrl(final MobileUtil.ConnectionType connectionType) {
         if (connectionType == MobileUtil.ConnectionType.APPIUM) {
-            return GlobalTestConfigurationProvider.provide().getNative()
-                    .getConnectionType().getAppiumServer().getServerUrl();
+            return GlobalTestConfigurationProvider.provide().getNative().getAppiumServer().getServerUrl();
         }
         return BrowserStackUtil.getBrowserStackUrl();
     }
@@ -50,14 +49,15 @@ public class NativeDriverFactory {
         MobileDriverUtil.setAutomation(desiredCapabilities, "Android", "uiautomator2");
         if (connectionType == MobileUtil.ConnectionType.BROWSER_STACK) {
             desiredCapabilities.setCapability(MobileCapabilityType.APP, nativeDevice.getApp());
-            BrowserStackUtil.startLocalServer(desiredCapabilities);
+            desiredCapabilities.setCapability("browserstack.local", "true");
             if (nativeDevice.isPlayMarketLoginEnabled()) {
                 setPlayMarketCredentials(desiredCapabilities);
             }
         }
-        desiredCapabilities.setCapability("udid", nativeDevice.getUdid());
-        desiredCapabilities.setCapability("appPackage", nativeDevice.getAppPackage());
-        desiredCapabilities.setCapability("appActivity", nativeDevice.getAppActivity());
+        if (connectionType == MobileUtil.ConnectionType.APPIUM) {
+            desiredCapabilities.setCapability("appPackage", nativeDevice.getAppPackage());
+            desiredCapabilities.setCapability("appActivity", nativeDevice.getAppActivity());
+        }
     }
 
     private static void setPlayMarketCredentials(final DesiredCapabilities desiredCapabilities) {
@@ -73,7 +73,7 @@ public class NativeDriverFactory {
         MobileDriverUtil.setAutomation(desiredCapabilities, "iOS", "XCUITest");
         desiredCapabilities.setCapability(MobileCapabilityType.APP, nativeDevice.getApp());
         if (connectionType == MobileUtil.ConnectionType.BROWSER_STACK) {
-            BrowserStackUtil.startLocalServer(desiredCapabilities);
+            desiredCapabilities.setCapability("browserstack.local", "true");
         }
     }
 }

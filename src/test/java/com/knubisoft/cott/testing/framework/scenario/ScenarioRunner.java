@@ -13,7 +13,6 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterScanner;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.MockDriver;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.report.ScenarioResult;
-import com.knubisoft.cott.testing.framework.util.BrowserStackUtil;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.ScenarioArguments;

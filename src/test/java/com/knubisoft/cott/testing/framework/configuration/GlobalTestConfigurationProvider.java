@@ -36,10 +36,10 @@ public class GlobalTestConfigurationProvider {
     public static List<NativeDevice> getNativeDevices() {
         MobileUtil.ConnectionType connectionType = MobileUtil.getConnectionType();
         if (connectionType == MobileUtil.ConnectionType.APPIUM && getNativeSettings() != null) {
-            return getNativeSettings().getConnectionType().getAppiumServer().getDevices().getAndroidOrIos();
+            return getNativeSettings().getAppiumServer().getDevices().getAndroidOrIos();
         }
         if (connectionType == MobileUtil.ConnectionType.BROWSER_STACK && getNativeSettings() != null) {
-            return getNativeSettings().getConnectionType().getBrowserStack().getDevices().getAndroidOrIos();
+            return getNativeSettings().getBrowserStack().getDevices().getAndroidOrIos();
         }
         return Collections.emptyList();
     }

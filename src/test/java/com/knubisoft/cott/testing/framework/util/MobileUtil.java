@@ -1,6 +1,7 @@
 package com.knubisoft.cott.testing.framework.util;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import lombok.experimental.UtilityClass;
@@ -41,11 +42,13 @@ public class MobileUtil {
     }
 
     public ConnectionType getConnectionType() {
-        if (Objects.nonNull(
-                GlobalTestConfigurationProvider.provide().getNative().getConnectionType().getAppiumServer())) {
-            return ConnectionType.APPIUM;
+        if (Objects.nonNull(GlobalTestConfigurationProvider.getNativeSettings())) {
+            if (Objects.nonNull(GlobalTestConfigurationProvider.getNativeSettings().getAppiumServer())) {
+                return ConnectionType.APPIUM;
+            }
+            return ConnectionType.BROWSER_STACK;
         }
-        return ConnectionType.BROWSER_STACK;
+        throw new DefaultFrameworkException("No connection");
     }
     public enum ConnectionType {
         APPIUM("appium server"),

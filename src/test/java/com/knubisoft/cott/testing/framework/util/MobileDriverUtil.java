@@ -11,6 +11,7 @@ public class MobileDriverUtil {
     public void setCommonCapabilities(final AbstractDevice abstractDevice,
                                       final DesiredCapabilities desiredCapabilities) {
         desiredCapabilities.setCapability(MobileCapabilityType.DEVICE_NAME, abstractDevice.getDeviceName());
+        desiredCapabilities.setCapability("udid", abstractDevice.getUdid());
         desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "5000");
         setAdditionalCapabilities(abstractDevice, desiredCapabilities);
     }

@@ -17,9 +17,10 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="native"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}settings"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="connectionType" type="{http://www.knubisoft.com/cott/testing/model/global-config}connectionType"/&gt;
- *       &lt;/sequence&gt;
+ *       &lt;choice&gt;
+ *         &lt;element name="appiumServer" type="{http://www.knubisoft.com/cott/testing/model/global-config}appiumServer"/&gt;
+ *         &lt;element name="browserStack" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserStack"/&gt;
+ *       &lt;/choice&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -28,37 +29,64 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "native", propOrder = {
-    "connectionType"
+        "appiumServer",
+        "browserStack"
 })
 public class Native extends Settings {
 
     @XmlElement(required = true)
-    protected ConnectionType connectionType;
+    protected AppiumServer appiumServer;
+    @XmlElement(required = true)
+    protected BrowserStack browserStack;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
 
     /**
-     * Gets the value of the connectionType property.
+     * Gets the value of the appiumServer property.
      *
      * @return
      *     possible object is
-     *     {@link ConnectionType }
+     *     {@link AppiumServer }
      *
      */
-    public ConnectionType getConnectionType() {
-        return connectionType;
+    public AppiumServer getAppiumServer() {
+        return appiumServer;
     }
 
     /**
-     * Sets the value of the connectionType property.
+     * Sets the value of the appiumServer property.
      *
      * @param value
      *     allowed object is
-     *     {@link ConnectionType }
+     *     {@link AppiumServer }
      *
      */
-    public void setConnectionType(ConnectionType value) {
-        this.connectionType = value;
+    public void setAppiumServer(AppiumServer value) {
+        this.appiumServer = value;
+    }
+
+    /**
+     * Gets the value of the browserStack property.
+     *
+     * @return
+     *     possible object is
+     *     {@link BrowserStack }
+     *
+     */
+    public BrowserStack getBrowserStack() {
+        return browserStack;
+    }
+
+    /**
+     * Sets the value of the browserStack property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link BrowserStack }
+     *
+     */
+    public void setBrowserStack(BrowserStack value) {
+        this.browserStack = value;
     }
 
     /**

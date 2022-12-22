@@ -1,7 +1,6 @@
 package com.knubisoft.cott.testing.framework.util;
 
 import lombok.experimental.UtilityClass;
-import org.openqa.selenium.MutableCapabilities;
 
 import java.util.Objects;
 
@@ -16,9 +15,5 @@ public class BrowserStackUtil {
                     + "@hub-cloud.browserstack.com/wd/hub";
         }
         return "BrowserStack is empty";
-    }
-
-    public void startLocalServer(final MutableCapabilities desiredCapabilities) {
-        desiredCapabilities.setCapability("browserstack.local", "true");
     }
 }

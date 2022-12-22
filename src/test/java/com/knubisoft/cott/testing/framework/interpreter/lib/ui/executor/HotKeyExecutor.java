@@ -21,6 +21,7 @@ import com.knubisoft.cott.testing.model.scenario.HotKey;
 import com.knubisoft.cott.testing.model.scenario.Paste;
 import com.knubisoft.cott.testing.model.scenario.Space;
 import com.knubisoft.cott.testing.model.scenario.Tab;
+import org.apache.commons.lang3.SystemUtils;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -29,7 +30,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -41,24 +41,23 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
 
     private final Map<HotKeyCommandPredicate, HotKeyCommand> hotKeyCmdMethods;
     private final Actions action;
-    private final Keys key;
+    private final Keys ctrlKey;
 
     public HotKeyExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         Map<HotKeyCommandPredicate, HotKeyCommand> commands = new HashMap<>();
-        commands.put(hotKey -> hotKey instanceof Copy, (hotKey, result) -> copyCommand((Copy) hotKey, result));
-        commands.put(hotKey -> hotKey instanceof Paste, (hotKey, result) -> pasteCommand((Paste) hotKey, result));
-        commands.put(hotKey -> hotKey instanceof Cut, (hotKey, result) -> cutCommand((Cut) hotKey, result));
-        commands.put(hotKey -> hotKey instanceof Highlight, (hotKey, result) ->
-                highlightCommand((Highlight) hotKey, result));
-        commands.put(hotKey -> hotKey instanceof Tab, (hotKey, result) -> singleKeyCommand(Keys.TAB));
-        commands.put(hotKey -> hotKey instanceof Enter, (hotKey, result) -> singleKeyCommand(Keys.ENTER));
-        commands.put(hotKey -> hotKey instanceof BackSpace, (hotKey, result) -> singleKeyCommand(Keys.BACK_SPACE));
-        commands.put(hotKey -> hotKey instanceof Escape, (hotKey, result) -> singleKeyCommand(Keys.ESCAPE));
-        commands.put(hotKey -> hotKey instanceof Space, (hotKey, result) -> singleKeyCommand(Keys.SPACE));
+        commands.put(key -> key instanceof Copy, (key, result) -> copyCommand((Copy) key, result));
+        commands.put(key -> key instanceof Paste, (key, result) -> pasteCommand((Paste) key, result));
+        commands.put(key -> key instanceof Cut, (key, result) -> cutCommand((Cut) key, result));
+        commands.put(key -> key instanceof Highlight, (key, result) -> highlightCommand((Highlight) key, result));
+        commands.put(key -> key instanceof Tab, (key, result) -> singleKeyCommand(Keys.TAB));
+        commands.put(key -> key instanceof Enter, (key, result) -> singleKeyCommand(Keys.ENTER));
+        commands.put(key -> key instanceof BackSpace, (key, result) -> singleKeyCommand(Keys.BACK_SPACE));
+        commands.put(key -> key instanceof Escape, (key, result) -> singleKeyCommand(Keys.ESCAPE));
+        commands.put(key -> key instanceof Space, (key, result) -> singleKeyCommand(Keys.SPACE));
         hotKeyCmdMethods = Collections.unmodifiableMap(commands);
         action = new Actions(dependencies.getDriver());
-        key = chooseKeyForOperatingSystem();
+        ctrlKey = chooseKeyForOperatingSystem();
     }
 
     @Override
@@ -72,8 +71,8 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     }
 
     private void executeHotKeyCommand(final AbstractUiCommand command,
-                                       final HotKeyExecutor.HotKeyCommand hotKeyCmdMethod,
-                                       final List<CommandResult> subCommandsResult) {
+                                      final HotKeyExecutor.HotKeyCommand hotKeyCmdMethod,
+                                      final List<CommandResult> subCommandsResult) {
         CommandResult subCommandResult = ResultUtil.createCommandResultForUiSubCommand(
                 dependencies.getPosition().intValue(),
                 command.getClass().getSimpleName(),
@@ -88,19 +87,21 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     }
 
     private void highlightCommand(final Highlight highlight, final CommandResult result) {
-        action.keyDown(getElementForHotKey(highlight, result), key).sendKeys("a").keyUp(key).build().perform();
+        action.keyDown(getElementForHotKey(highlight, result), ctrlKey).sendKeys("a").keyUp(ctrlKey).build().perform();
     }
 
     private void cutCommand(final Cut cut, final CommandResult result) {
-        action.keyDown(getElementForHotKey(cut, result), key).sendKeys("a").sendKeys("x").keyUp(key).build().perform();
+        action.keyDown(getElementForHotKey(cut, result), ctrlKey)
+                .sendKeys("a").sendKeys("x").keyUp(ctrlKey).build().perform();
     }
 
     private void pasteCommand(final Paste paste, final CommandResult result) {
-        action.keyDown(getElementForHotKey(paste, result), key).sendKeys("v").keyUp(key).build().perform();
+        action.keyDown(getElementForHotKey(paste, result), ctrlKey).sendKeys("v").keyUp(ctrlKey).build().perform();
     }
 
     private void copyCommand(final Copy copy, final CommandResult result) {
-        action.keyDown(getElementForHotKey(copy, result), key).sendKeys("a").sendKeys("c").keyUp(key).build().perform();
+        action.keyDown(getElementForHotKey(copy, result), ctrlKey)
+                .sendKeys("a").sendKeys("c").keyUp(ctrlKey).build().perform();
     }
 
     private WebElement getElementForHotKey(final CommandWithLocator command, final CommandResult result) {
@@ -110,10 +111,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     }
 
     private Keys chooseKeyForOperatingSystem() {
-        String os = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
-            return (os.contains("mac"))
-                    ? Keys.COMMAND
-                    : Keys.CONTROL;
+        return SystemUtils.IS_OS_MAC_OSX ? Keys.COMMAND : Keys.CONTROL;
     }
 
     private interface HotKeyCommandPredicate extends Predicate<AbstractUiCommand> { }

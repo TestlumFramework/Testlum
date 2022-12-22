@@ -350,6 +350,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link LambdaIntegration }
+     * 
+     */
+    public LambdaIntegration createLambdaIntegration() {
+        return new LambdaIntegration();
+    }
+
+    /**
+     * Create an instance of {@link Lambda }
+     * 
+     */
+    public Lambda createLambda() {
+        return new Lambda();
+    }
+
+    /**
      * Create an instance of {@link SendgridIntegration }
      * 
      */

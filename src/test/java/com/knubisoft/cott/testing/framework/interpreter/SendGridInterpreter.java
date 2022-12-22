@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
+import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
@@ -58,13 +59,11 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         setContextBody(actual.getBody());
     }
 
-    protected ApiResponse getExpected(final SendgridInfo sendgridInfo) {
+    private ApiResponse getExpected(final SendgridInfo sendgridInfo) {
         com.knubisoft.cott.testing.model.scenario.Response response = sendgridInfo.getResponse();
         Map<String, String> headers = getHeaders(sendgridInfo);
-        if (response.getFile() == null) {
-            return new ApiResponse(response.getCode(), headers, StringUtils.EMPTY);
-        }
-        String body = FileSearcher.searchFileToString(response.getFile(), dependencies.getFile());
+        String body = StringUtils.isBlank(response.getFile())
+                ? DelimiterConstant.EMPTY : FileSearcher.searchFileToString(response.getFile(), dependencies.getFile());
         return new ApiResponse(response.getCode(), headers, body);
     }
 

@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="rabbitmqIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}rabbitmqIntegration" minOccurs="0"/&gt;
  *         &lt;element name="dynamoIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}dynamoIntegration" minOccurs="0"/&gt;
  *         &lt;element name="elasticsearchIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}elasticsearchIntegration" minOccurs="0"/&gt;
+ *         &lt;element name="lambdaIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}lambdaIntegration" minOccurs="0"/&gt;
  *         &lt;element name="sendgridIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}sendgridIntegration" minOccurs="0"/&gt;
  *         &lt;element name="sesIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}sesIntegration" minOccurs="0"/&gt;
  *         &lt;element name="smtpIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}smtpIntegration" minOccurs="0"/&gt;
@@ -62,6 +63,7 @@ public class Integrations {
     protected RabbitmqIntegration rabbitmqIntegration;
     protected DynamoIntegration dynamoIntegration;
     protected ElasticsearchIntegration elasticsearchIntegration;
+    protected LambdaIntegration lambdaIntegration;
     protected SendgridIntegration sendgridIntegration;
     protected SesIntegration sesIntegration;
     protected SmtpIntegration smtpIntegration;
@@ -401,6 +403,30 @@ public class Integrations {
      */
     public void setElasticsearchIntegration(ElasticsearchIntegration value) {
         this.elasticsearchIntegration = value;
+    }
+
+    /**
+     * Gets the value of the lambdaIntegration property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link LambdaIntegration }
+     *     
+     */
+    public LambdaIntegration getLambdaIntegration() {
+        return lambdaIntegration;
+    }
+
+    /**
+     * Sets the value of the lambdaIntegration property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link LambdaIntegration }
+     *     
+     */
+    public void setLambdaIntegration(LambdaIntegration value) {
+        this.lambdaIntegration = value;
     }
 
     /**

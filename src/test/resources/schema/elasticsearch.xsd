@@ -6,7 +6,6 @@
           elementFormDefault="qualified" jaxb:version="2.1">
 
     <x:include schemaLocation="shared.xsd"/>
-    <x:include schemaLocation="http.xsd"/>
 
     <x:complexType name="elasticsearch">
         <x:complexContent>
@@ -98,8 +97,7 @@
             <x:element name="header" type="tns:header" minOccurs="0" maxOccurs="unbounded"/>
             <x:element name="warning" type="tns:elasticSearchResponseWarning" minOccurs="0" maxOccurs="unbounded"/>
         </x:sequence>
-
-        <x:attribute name="code" type="tns:code" default="200"/>
+        <x:attribute name="code" type="tns:codePattern" default="200"/>
         <x:attribute name="file" type="tns:expectedPattern"/>
     </x:complexType>
 

@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlType;
     Rabbitmq.class,
     Dynamo.class,
     Elasticsearch.class,
+    Lambda.class,
     Sendgrid.class,
     Ses.class,
     Smtp.class,

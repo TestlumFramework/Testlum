@@ -114,6 +114,8 @@ public class ResultUtil {
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
     private static final String BODY_OF_REQUEST = "Body of request";
+    private static final String LAMBDA_FUNCTION_NAME = "Function name";
+    private static final String LAMBDA_PAYLOAD = "Payload";
     private static final String HEADERS_STATUS = "Headers status";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
     private static final String TOPIC = "Topic";
@@ -122,10 +124,8 @@ public class ResultUtil {
     private static final String EXCHANGE = "Exchange";
     private static final String ACTION = "Action";
     private static final String SEND = "Send";
-    private static final String COMMENT_FOR_WEBSOCKET_SEND_ACTION = "Send message via websocket";
     private static final String COMMENT_FOR_KAFKA_SEND_ACTION = "Send message to Kafka";
     private static final String COMMENT_FOR_RABBIT_SEND_ACTION = "Send message to RabbitMQ";
-    private static final String COMMENT_FOR_WEBSOCKET_RECEIVE_ACTION = "Receive messages via websocket";
     private static final String COMMENT_FOR_KAFKA_RECEIVE_ACTION = "Receive message from Kafka";
     private static final String COMMENT_FOR_RABBIT_RECEIVE_ACTION = "Receive message from RabbitMQ";
     private static final String TIMEOUT_MILLIS = "Timeout millis";
@@ -144,7 +144,6 @@ public class ResultUtil {
     private static final String HEADER_TEMPLATE = "%s: %s";
     private static final String MOVE_TO_EMPTY_SPACE = "Move to empty space after execution";
     private static final String HOVER_NUMBER_TEMPLATE = "Hover #%d";
-    private static final String COMMANDS_FOR_REPEAT = "Commands for repeat";
     private static final String STEP_FAILED = "Step failed";
     private static final String FAILED = "failed";
     private static final String SUCCESSFULLY = "successfully";
@@ -363,6 +362,15 @@ public class ResultUtil {
         if (StringUtils.isNotBlank(destinationValue)) {
             result.put(destination, destinationValue);
         }
+    }
+
+    public void addLambdaGeneralMetaData(final String alias,
+                                         final String functionName,
+                                         final String payload,
+                                         final CommandResult result) {
+        result.put(ALIAS, alias);
+        result.put(LAMBDA_FUNCTION_NAME, functionName);
+        result.put(LAMBDA_PAYLOAD, PrettifyStringJson.getJSONResult(payload));
     }
 
     public void addS3GeneralMetaData(final String alias,

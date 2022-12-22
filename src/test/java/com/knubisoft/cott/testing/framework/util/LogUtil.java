@@ -7,8 +7,8 @@ import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
-import com.knubisoft.cott.testing.model.scenario.Assert;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
+import com.knubisoft.cott.testing.model.scenario.Assert;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
@@ -70,6 +70,8 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.INITIAL_S
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.INITIAL_STRUCTURE_GENERATION_SUCCESS;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.INVALID_CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.INVALID_SCENARIO_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.LAMBDA_FUNCTION_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.LAMBDA_PAYLOAD_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.LOCAL_STORAGE_KEY;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.MESSAGE_LOG;
@@ -147,6 +149,13 @@ public class LogUtil {
         if (StringUtils.isNotBlank(content)) {
             log.info(CONTENT_LOG, PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
+    }
+
+    public void logLambdaInfo(final String alias, final String functionName, final String payload) {
+        log.info(ALIAS_LOG, alias);
+        log.info(LAMBDA_FUNCTION_LOG, functionName);
+        log.info(LAMBDA_PAYLOAD_LOG,
+                PrettifyStringJson.getJSONResult(payload).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
     public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {

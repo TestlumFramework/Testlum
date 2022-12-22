@@ -17,6 +17,7 @@
     <x:include schemaLocation="rabbitmq-integration.xsd"/>
     <x:include schemaLocation="dynamo-integration.xsd"/>
     <x:include schemaLocation="elasticsearch-integration.xsd"/>
+    <x:include schemaLocation="lambda-integration.xsd"/>
     <x:include schemaLocation="sendgrid-integration.xsd"/>
     <x:include schemaLocation="ses-integration.xsd"/>
     <x:include schemaLocation="smtp-integration.xsd"/>
@@ -68,6 +69,7 @@
             <x:element name="rabbitmqIntegration" type="tns:rabbitmqIntegration" minOccurs="0"/>
             <x:element name="dynamoIntegration" type="tns:dynamoIntegration" minOccurs="0"/>
             <x:element name="elasticsearchIntegration" type="tns:elasticsearchIntegration" minOccurs="0"/>
+            <x:element name="lambdaIntegration" type="tns:lambdaIntegration" minOccurs="0"/>
             <x:element name="sendgridIntegration" type="tns:sendgridIntegration" minOccurs="0"/>
             <x:element name="sesIntegration" type="tns:sesIntegration" minOccurs="0"/>
             <x:element name="smtpIntegration" type="tns:smtpIntegration" minOccurs="0"/>

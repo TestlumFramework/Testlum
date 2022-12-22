@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.RETHROWN_ERRORS_LOG;
 import static java.lang.String.format;
@@ -33,7 +34,7 @@ public final class HttpValidator {
     }
 
     public void validateHeaders(final Map<String, String> expectedHeaders, final Map<String, String> actualHeaderMap) {
-        if (expectedHeaders != null) {
+        if (Objects.nonNull(expectedHeaders)) {
             try {
                 expectedHeaders.entrySet().forEach(each -> validateHeader(each, actualHeaderMap));
             } catch (RuntimeException e) {
@@ -59,9 +60,11 @@ public final class HttpValidator {
     }
 
     public void validateBody(final String expectedBody, final String actualBody) {
-        if (expectedBody != null) {
+        if (Objects.nonNull(expectedBody)) {
             try {
-                TreeComparator.compare(expectedBody, actualBody);
+                final String newActual = StringPrettifier.prettify(actualBody);
+                final String newExpected = StringPrettifier.prettify(expectedBody);
+                TreeComparator.compare(newExpected, newActual);
             } catch (ComparisonException e) {
                 result.add(format(ExceptionMessage.HTTP_BODY_EXPECTED_BUT_WAS, cut(expectedBody), cut(actualBody)));
                 interpreter.save(actualBody);

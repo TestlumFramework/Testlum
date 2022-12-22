@@ -28,7 +28,8 @@ public class MobilebrowserDriverFactory {
         }
         setPlatformCapabilities(mobilebrowserDevice, desiredCapabilities);
         WebDriver driver = new RemoteWebDriver(
-                new URL(mobilebrowser.isBrowserStackEnabled() ? BrowserStackUtil.getBrowserStackUrl()
+                new URL(mobilebrowser.isBrowserStackEnabled()
+                        ? BrowserStackUtil.getBrowserStackUrl()
                         : mobilebrowser.getAppiumServerUrl()), desiredCapabilities);
         driver.get(mobilebrowser.getBaseUrl());
         return driver;

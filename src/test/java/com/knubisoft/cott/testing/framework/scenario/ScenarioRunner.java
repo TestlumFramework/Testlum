@@ -90,7 +90,6 @@ public class ScenarioRunner {
                 dependencies.getNativeDriver().quit();
                 dependencies.getWebDriver().quit();
                 dependencies.getMobilebrowserDriver().quit();
-                BrowserStackUtil.closeLocalServer();
             }
         }
     }

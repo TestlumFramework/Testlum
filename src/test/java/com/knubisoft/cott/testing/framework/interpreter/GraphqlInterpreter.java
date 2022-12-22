@@ -1,0 +1,112 @@
+package com.knubisoft.cott.testing.framework.interpreter;
+
+import com.google.gson.Gson;
+import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
+import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
+import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.FileSearcher;
+import com.knubisoft.cott.testing.framework.util.GraphqlUtil;
+import com.knubisoft.cott.testing.framework.util.HttpValidator;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
+import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
+import com.knubisoft.cott.testing.framework.util.ResultUtil;
+import com.knubisoft.cott.testing.model.scenario.Graphql;
+import com.knubisoft.cott.testing.model.scenario.GraphqlBody;
+import com.knubisoft.cott.testing.model.scenario.Header;
+import com.knubisoft.cott.testing.model.scenario.Response;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+
+@Slf4j
+@InterpreterForClass(Graphql.class)
+public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
+
+    public GraphqlInterpreter(final InterpreterDependencies dependencies) {
+        super(dependencies);
+    }
+
+    @SneakyThrows
+    @Override
+    public void acceptImpl(final Graphql graphql, final CommandResult result) {
+        String body = getBody(graphql.getBody());
+        ResultUtil.addGraphQlMetaData(graphql.getAlias(), graphql.getEndpoint(), body, result);
+        LogUtil.logGraphqlInfo(graphql.getAlias(), graphql.getEndpoint(), body);
+        HttpResponse response = getResponse(graphql, body);
+        compareResult(graphql.getResponse(), response, result);
+    }
+
+    @SneakyThrows
+    private void compareResult(final Response expected,
+                               final HttpResponse actual,
+                               final CommandResult result) {
+        HttpValidator httpValidator = new HttpValidator(this);
+        httpValidator.validateCode(expected.getCode(), actual.getStatusLine().getStatusCode());
+        validateBody(expected, EntityUtils.toString(actual.getEntity()), httpValidator, result);
+        validateHeaders(expected, actual.getAllHeaders(), httpValidator);
+    }
+
+    private void validateHeaders(final Response expected,
+                                 final org.apache.http.Header[] allHeaders,
+                                 final HttpValidator httpValidator) {
+        if (!expected.getHeader().isEmpty()) {
+            httpValidator.validateHeaders(getExpectedHeaders(expected), getActualHeaders(allHeaders));
+        }
+    }
+
+    private Map<String, String> getExpectedHeaders(final Response expected) {
+        return expected.getHeader().stream().collect(Collectors.toMap(Header::getName, Header::getData));
+    }
+
+    private Map<String, String> getActualHeaders(final org.apache.http.Header[] allHeaders) {
+        Map<String, String> actualHeaders = new HashMap<>();
+        Arrays.stream(allHeaders).map(header -> actualHeaders.put(header.getName(), header.getValue()));
+        return actualHeaders;
+    }
+
+    private void validateBody(final Response expected,
+                              final String actualBody,
+                              final HttpValidator httpValidator,
+                              final CommandResult result) {
+        String body = StringUtils.isBlank(expected.getFile())
+                ? DelimiterConstant.EMPTY
+                : FileSearcher.searchFileToString(expected.getFile(), dependencies.getFile());
+        result.setActual(PrettifyStringJson.getJSONResult(actualBody));
+        result.setExpected(PrettifyStringJson.getJSONResult(body));
+        httpValidator.validateBody(body, actualBody);
+    }
+
+    private String getBody(final GraphqlBody body) {
+        return StringUtils.isNotBlank(body.getRaw())
+                ? wrapRawBody(body.getRaw())
+                : FileSearcher.searchFileToString(body.getFrom().getFile(), dependencies.getFile());
+    }
+
+    private String wrapRawBody(final String body) {
+        Gson gson = new Gson();
+        GraphqlUtil queryUtil = new GraphqlUtil(body);
+        return gson.toJson(queryUtil);
+    }
+
+    @SneakyThrows
+    private HttpResponse getResponse(final Graphql graphql, final String body) {
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpPost post = new HttpPost(graphql.getEndpoint());
+        post.setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
+        return client.execute(post);
+
+    }
+}

@@ -941,4 +941,12 @@ public class ObjectFactory {
         return new WebsocketReceive();
     }
 
+    /**
+     * Create an instance of {@link GraphqlBody }
+     * 
+     */
+    public GraphqlBody createGraphqlBody() {
+        return new GraphqlBody();
+    }
+
 }

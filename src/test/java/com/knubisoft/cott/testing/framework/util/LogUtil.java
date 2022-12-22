@@ -399,4 +399,10 @@ public class LogUtil {
             log.info(HOTKEY_COMMAND_LOCATOR, ((CommandWithLocator) command).getLocatorId());
         }
     }
+
+    public static void logGraphqlInfo(final String alias, final String endpoint, final String body) {
+        log.info(ALIAS_LOG, alias);
+        log.info(ENDPOINT_LOG, endpoint);
+        log.info(BODY_LOG, body);
+    }
 }

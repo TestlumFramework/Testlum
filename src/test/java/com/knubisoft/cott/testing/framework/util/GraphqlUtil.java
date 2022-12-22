@@ -1,10 +1,12 @@
 package com.knubisoft.cott.testing.framework.util;
 
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
-public class GraphQlUtil {
+public class GraphqlUtil {
     private String query;
+
+    public GraphqlUtil(final String query) {
+        this.query = query;
+    }
 }

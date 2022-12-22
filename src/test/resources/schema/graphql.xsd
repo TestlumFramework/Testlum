@@ -6,18 +6,27 @@
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
     <x:include schemaLocation="shared.xsd"/>
+    <x:include schemaLocation="http.xsd"/>
 
     <x:complexType name="graphql">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:sequence>
-                    <x:element name="query" type="x:string" maxOccurs="unbounded"/>
+                    <x:element name="body" type="tns:graphqlBody"/>
+                    <x:element name="response" type="tns:response"/>
                 </x:sequence>
-                <x:attribute name="file" type="tns:expectedPattern" use="required"/>
                 <x:attribute name="endpoint" type="tns:nonEmptyString" use="required"/>
                 <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
+
+    <x:complexType name="graphqlBody">
+        <x:choice>
+            <x:element name="from" type="tns:file"/>
+            <x:element name="raw" type="tns:nonEmptyString"/>
+        </x:choice>
+    </x:complexType>
+
 
 </x:schema>

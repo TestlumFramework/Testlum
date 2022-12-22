@@ -6,7 +6,6 @@
           elementFormDefault="qualified" jaxb:version="2.1">
 
     <x:include schemaLocation="shared.xsd"/>
-    <x:include schemaLocation="http.xsd"/>
 
     <x:complexType name="sendgrid">
         <x:complexContent>

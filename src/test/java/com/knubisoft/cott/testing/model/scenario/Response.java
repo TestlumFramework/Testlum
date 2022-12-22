@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence&gt;
  *         &lt;element name="header" type="{http://www.knubisoft.com/cott/testing/model/scenario}header" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="code" type="{http://www.knubisoft.com/cott/testing/model/scenario}code" default="200" /&gt;
+ *       &lt;attribute name="code" type="{http://www.knubisoft.com/cott/testing/model/scenario}codePattern" default="200" /&gt;
  *       &lt;attribute name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}expectedPattern" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;

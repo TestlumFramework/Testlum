@@ -84,7 +84,7 @@ public class CompareBuilder {
             TreeComparator.compare(newExpected, newActual);
         } catch (ComparisonException e) {
             save(actual);
-            throw new DefaultFrameworkException(e);
+            throw e;
         }
     }
 

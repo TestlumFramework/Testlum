@@ -48,15 +48,11 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
         execShellFiles(shellFiles, shell, result);
     }
 
-    private void execShellCommand(final List<String> shellCommands, final Shell shell,
-                                  final CommandResult result) {
-        shellCommands.forEach(shellCommand -> {
-            execShellCommandOrThrow(shellCommand, shell, result);
-        });
+    private void execShellCommand(final List<String> shellCommands, final Shell shell, final CommandResult result) {
+        shellCommands.forEach(shellCommand -> execShellCommandOrThrow(shellCommand, shell, result));
     }
 
-    private void execShellCommandOrThrow(final String shellCommand, final Shell shell,
-                                  final CommandResult result) {
+    private void execShellCommandOrThrow(final String shellCommand, final Shell shell, final CommandResult result) {
         try {
             log.info(SHELL_COMMAND_LOG, shellCommand);
             Process process = Runtime.getRuntime().exec(shellCommand);
@@ -66,15 +62,11 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
         }
     }
 
-    private void execShellFiles(final List<String> shellFiles, final Shell shell,
-                                final CommandResult result) {
-        shellFiles.forEach(shellFile -> {
-            execShellFileOrThrow(shellFile, shell, result);
-        });
+    private void execShellFiles(final List<String> shellFiles, final Shell shell, final CommandResult result) {
+        shellFiles.forEach(shellFile -> execShellFileOrThrow(shellFile, shell, result));
     }
 
-    private void execShellFileOrThrow(final String shellFile, final Shell shell,
-                                      final CommandResult result) {
+    private void execShellFileOrThrow(final String shellFile, final Shell shell, final CommandResult result) {
         try {
             Process process = getProcessorForFile(shellFile);
             processExpectedAndActual(process.waitFor(), shell, result);
@@ -87,23 +79,21 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
         File shellFileByPath = FileSearcher.searchFileFromDataFolder(shellFile);
         log.info(SHELL_FILE_LOG, new String(Files.readAllBytes(shellFileByPath.toPath()), StandardCharsets.UTF_8)
                 .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
-        return SystemUtils.IS_OS_WINDOWS
-                ? Runtime.getRuntime().exec(String.format(EXEC_WINDOWS_COMMAND,
-                shellFileByPath.getAbsolutePath()))
-                : Runtime.getRuntime().exec(String.format(EXEC_LINUX_COMMAND,
-                shellFileByPath.getAbsolutePath()));
+        String command = SystemUtils.IS_OS_WINDOWS
+                ? String.format(EXEC_WINDOWS_COMMAND, shellFileByPath.getAbsolutePath())
+                : String.format(EXEC_LINUX_COMMAND, shellFileByPath.getAbsolutePath());
+        return Runtime.getRuntime().exec(command);
     }
 
-    private void processExpectedAndActual(final int expectedCode, final Shell shell,
-                                          final CommandResult result) {
-        String actual = PrettifyStringJson.getJSONResult(String.format(EXPECTED_RESULT, expectedCode));
-        String expected = PrettifyStringJson.getJSONResult(getContentIfFile(shell.getFile()));
-        CompareBuilder compare = newCompare()
-            .withActual(actual)
-            .withExpected(expected);
-        compare.exec();
+    private void processExpectedAndActual(final int expectedCode, final Shell shell, final CommandResult result) {
+        String actual = String.format(EXPECTED_RESULT, expectedCode);
+        String expectedContent = getContentIfFile(shell.getFile());
+        result.setActual(PrettifyStringJson.getJSONResult(actual));
+        result.setExpected(PrettifyStringJson.getJSONResult(expectedContent));
 
-        result.setActual(actual);
-        result.setExpected(expected);
+        CompareBuilder compare = newCompare()
+                .withActual(actual)
+                .withExpected(expectedContent);
+        compare.exec();
     }
 }

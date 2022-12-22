@@ -71,7 +71,7 @@
         <kafka-clients.version>2.7.1</kafka-clients.version>
         <jedis.version>3.3.0</jedis.version>
         <HikariCP.version>4.0.2</HikariCP.version>
-        <software.amazon.awssdk.dynamodb.version>2.16.74</software.amazon.awssdk.dynamodb.version>
+        <software.amazon.awssdk.version>2.18.35</software.amazon.awssdk.version>
         <elasticsearch-rest-client.version>7.13.1</elasticsearch-rest-client.version>
         <elasticsearch-rest-high-level-client.version>7.13.1</elasticsearch-rest-high-level-client.version>
         <ru.yandex.clickhouse.version>0.3.1</ru.yandex.clickhouse.version>
@@ -273,8 +273,14 @@
 
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
+            <artifactId>lambda</artifactId>
+            <version>${software.amazon.awssdk.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
             <artifactId>dynamodb</artifactId>
-            <version>${software.amazon.awssdk.dynamodb.version}</version>
+            <version>${software.amazon.awssdk.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>

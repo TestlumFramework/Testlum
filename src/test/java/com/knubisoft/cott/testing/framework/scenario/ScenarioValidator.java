@@ -20,6 +20,7 @@ import com.knubisoft.cott.testing.model.global_config.ElasticsearchIntegration;
 import com.knubisoft.cott.testing.model.global_config.Integration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.KafkaIntegration;
+import com.knubisoft.cott.testing.model.global_config.LambdaIntegration;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.MongoIntegration;
 import com.knubisoft.cott.testing.model.global_config.MysqlIntegration;
@@ -45,6 +46,8 @@ import com.knubisoft.cott.testing.model.scenario.HttpInfo;
 import com.knubisoft.cott.testing.model.scenario.Include;
 import com.knubisoft.cott.testing.model.scenario.Javascript;
 import com.knubisoft.cott.testing.model.scenario.Kafka;
+import com.knubisoft.cott.testing.model.scenario.Lambda;
+import com.knubisoft.cott.testing.model.scenario.LambdaBody;
 import com.knubisoft.cott.testing.model.scenario.Migrate;
 import com.knubisoft.cott.testing.model.scenario.Mobilebrowser;
 import com.knubisoft.cott.testing.model.scenario.Mongo;
@@ -275,6 +278,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateWebsocketCommand(xmlFile, websocket);
         });
 
+        validatorMap.put(o -> o instanceof Lambda, (xmlFile, command) -> {
+            LambdaIntegration lambdaIntegration = integrations.getLambdaIntegration();
+            checkIntegrationExistence(lambdaIntegration, LambdaIntegration.class);
+            Lambda lambda = (Lambda) command;
+            validateAlias(lambdaIntegration.getLambda(), lambda.getAlias());
+            validateLambdaCommand(xmlFile, lambda);
+        });
+
         validatorMap.put(o -> o instanceof Include, (xmlFile, command) -> {
             Include include = (Include) command;
             validateIncludeAction(include, xmlFile);
@@ -449,16 +460,15 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateSendgridCommand(final File xmlFile, final Sendgrid sendgrid) {
         SendgridInfo sendgridInfo = SendGridUtil.getSendgridMethodMetadata(sendgrid).getHttpInfo();
         Response response = sendgridInfo.getResponse();
-        if (response != null && response.getFile() != null) {
+        if (Objects.nonNull(response) && StringUtils.hasText(response.getFile())) {
             FileSearcher.searchFileFromDir(xmlFile, response.getFile());
         }
 
         SendgridWithBody commandWithBody = (SendgridWithBody) sendgridInfo;
         Body body = commandWithBody.getBody();
-        if (body != null && body.getFrom() != null) {
+        if (Objects.nonNull(body) && Objects.nonNull(body.getFrom())) {
             FileSearcher.searchFileFromDir(xmlFile, body.getFrom().getFile());
         }
-
     }
 
     private void validateExistsDatasets(final Migrate migrate) {
@@ -474,7 +484,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
         HttpInfo httpInfo = HttpUtil.getHttpMethodMetadata(http).getHttpInfo();
         Response response = httpInfo.getResponse();
-        if (response != null && response.getFile() != null) {
+        if (Objects.nonNull(response) && StringUtils.hasText(response.getFile())) {
             FileSearcher.searchFileFromDir(xmlFile, response.getFile());
         }
     }
@@ -507,6 +517,17 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             return ((WebsocketReceive) command).getFile();
         }
         return DelimiterConstant.EMPTY;
+    }
+
+    private void validateLambdaCommand(final File xmlFile, final Lambda lambda) {
+        Response response = lambda.getResponse();
+        if (Objects.nonNull(response) && StringUtils.hasText(response.getFile())) {
+            FileSearcher.searchFileFromDir(xmlFile, response.getFile());
+        }
+        LambdaBody body = lambda.getBody();
+        if (Objects.nonNull(body) && Objects.nonNull(body.getFrom())) {
+            FileSearcher.searchFileFromDir(xmlFile, body.getFrom().getFile());
+        }
     }
 
     private void validateWebCommands(final Web command) {
@@ -577,9 +598,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .forEach(v -> v.accept(configFile, command));
     }
 
-    private interface AbstractCommandPredicate extends Predicate<AbstractCommand> {
-    }
-
-    private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> {
-    }
+    private interface AbstractCommandPredicate extends Predicate<AbstractCommand> { }
+    private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> { }
 }

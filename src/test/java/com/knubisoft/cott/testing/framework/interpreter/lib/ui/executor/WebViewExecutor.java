@@ -24,14 +24,10 @@ public class WebViewExecutor extends AbstractUiExecutor<WebView> {
     public void execute(final WebView webView, final CommandResult result) {
         SupportsContextSwitching driver = (SupportsContextSwitching) dependencies.getDriver();
         Set<String> contextNames = driver.getContextHandles();
-        try {
-            driver.context(contextNames.stream()
-                    .filter(context -> context.toLowerCase(Locale.US).contains("web"))
-                    .findFirst()
-                    .orElseThrow(DefaultFrameworkException::new));
-        } catch (Exception exception) {
-            throw new DefaultFrameworkException(CANNOT_SWITCH_TO_WEBVIEW);
-        }
-
+        String contextName = contextNames.stream()
+                .filter(context -> context.toLowerCase(Locale.US).contains("web"))
+                .findFirst()
+                .orElseThrow(() -> new DefaultFrameworkException(CANNOT_SWITCH_TO_WEBVIEW));
+        driver.context(contextName);
     }
 }

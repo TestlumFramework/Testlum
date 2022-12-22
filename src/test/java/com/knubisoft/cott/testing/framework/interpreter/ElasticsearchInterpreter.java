@@ -3,20 +3,20 @@ package com.knubisoft.cott.testing.framework.interpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
+import com.knubisoft.cott.testing.framework.util.HttpUtil;
+import com.knubisoft.cott.testing.framework.util.HttpValidator;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
+import com.knubisoft.cott.testing.model.scenario.Body;
+import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequest;
 import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequestWithBody;
+import com.knubisoft.cott.testing.model.scenario.ElasticSearchResponse;
 import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
 import com.knubisoft.cott.testing.model.scenario.Header;
 import com.knubisoft.cott.testing.model.scenario.Param;
-import com.knubisoft.cott.testing.framework.report.CommandResult;
-import com.knubisoft.cott.testing.framework.util.HttpUtil;
-import com.knubisoft.cott.testing.framework.util.HttpValidator;
-import com.knubisoft.cott.testing.model.scenario.Body;
-import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequest;
-import com.knubisoft.cott.testing.model.scenario.ElasticSearchResponse;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
@@ -60,7 +60,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     }
 
     @SneakyThrows
-    protected Response getActual(final ElasticSearchRequest elasticSearchRequest,
+    private Response getActual(final ElasticSearchRequest elasticSearchRequest,
                                final HttpMethod httpMethod,
                                final String alias) {
         LogUtil.logHttpInfo(alias, httpMethod.name(), elasticSearchRequest.getEndpoint());
@@ -73,14 +73,10 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         }
     }
 
-    protected ElasticSearchResponse getExpected(final ElasticSearchRequest elasticSearchRequest) {
-        return elasticSearchRequest.getResponse();
-    }
-
-    protected void compare(final ElasticSearchResponse expected, final Response actual, final CommandResult result) {
+    private void compare(final ElasticSearchResponse expected, final Response actual, final CommandResult result) {
         HttpValidator httpValidator = new HttpValidator(this);
         httpValidator.validateCode(expected.getCode(), actual.getStatusLine().getStatusCode());
-        validateIfEmptyHeader(expected, actual, httpValidator);
+        validateHeadersIfExists(expected, actual, httpValidator);
         validateBodyIfFile(expected, actual, httpValidator, result);
         httpValidator.rethrowOnErrors();
     }
@@ -101,9 +97,9 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         }
     }
 
-    private void validateIfEmptyHeader(final ElasticSearchResponse expected,
-                                       final Response actual,
-                                       final HttpValidator httpValidator) {
+    private void validateHeadersIfExists(final ElasticSearchResponse expected,
+                                         final Response actual,
+                                         final HttpValidator httpValidator) {
         if (!expected.getHeader().isEmpty()) {
             Map<String, String> actualHeaderMap = Arrays.stream(actual.getHeaders())
                     .collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));

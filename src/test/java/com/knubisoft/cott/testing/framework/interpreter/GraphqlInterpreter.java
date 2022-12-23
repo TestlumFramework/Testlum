@@ -1,13 +1,11 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
-import com.google.gson.Gson;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
-import com.knubisoft.cott.testing.framework.util.GraphqlUtil;
 import com.knubisoft.cott.testing.framework.util.HttpValidator;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
@@ -20,6 +18,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -90,15 +90,10 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     }
 
     private String getBody(final GraphqlBody body) {
-        return StringUtils.isNotBlank(body.getRaw())
-                ? wrapRawBody(body.getRaw())
+        String rawBody = StringUtils.isNotBlank(body.getRaw())
+                ? body.getRaw()
                 : FileSearcher.searchFileToString(body.getFrom().getFile(), dependencies.getFile());
-    }
-
-    private String wrapRawBody(final String body) {
-        Gson gson = new Gson();
-        GraphqlUtil queryUtil = new GraphqlUtil(body);
-        return gson.toJson(queryUtil);
+        return toString(new QueryBody(rawBody));
     }
 
     @SneakyThrows
@@ -108,5 +103,11 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         post.setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
         return client.execute(post);
 
+    }
+
+    @AllArgsConstructor
+    @Getter
+    private static class QueryBody {
+        private String query;
     }
 }

@@ -1,6 +1,8 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
+import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
@@ -15,7 +17,6 @@ import com.knubisoft.cott.testing.model.scenario.GraphqlBody;
 import com.knubisoft.cott.testing.model.scenario.Header;
 import com.knubisoft.cott.testing.model.scenario.Response;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -24,20 +25,18 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import static java.lang.String.format;
 
 @Slf4j
 @InterpreterForClass(Graphql.class)
 public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
-    @Autowired(required = false)
-    private Map<String, String> apiUrls;
-
     public GraphqlInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
     }
@@ -61,14 +60,14 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         String actualBody = EntityUtils.toString(actual.getEntity());
         setContextBody(actualBody);
         validateBody(expected, actualBody, httpValidator, result);
-        validateHeaders(expected, actual.getAllHeaders(), httpValidator);
+        validateHeaders(expected, actual, httpValidator);
     }
 
     private void validateHeaders(final Response expected,
-                                 final org.apache.http.Header[] allHeaders,
+                                 final HttpResponse actual,
                                  final HttpValidator httpValidator) {
         if (!expected.getHeader().isEmpty()) {
-            httpValidator.validateHeaders(getExpectedHeaders(expected), getActualHeaders(allHeaders));
+            httpValidator.validateHeaders(getExpectedHeaders(expected), getActualHeaders(actual));
         }
     }
 
@@ -76,10 +75,9 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         return expected.getHeader().stream().collect(Collectors.toMap(Header::getName, Header::getData));
     }
 
-    private Map<String, String> getActualHeaders(final org.apache.http.Header[] allHeaders) {
-        Map<String, String> actualHeaders = new HashMap<>();
-        Arrays.stream(allHeaders).map(header -> actualHeaders.put(header.getName(), header.getValue()));
-        return actualHeaders;
+    private Map<String, String> getActualHeaders(final HttpResponse actual) {
+        return Arrays.stream(actual.getAllHeaders())
+                .collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
     }
 
     private void validateBody(final Response expected,
@@ -103,12 +101,24 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
 
     @SneakyThrows
     private HttpResponse getResponse(final Graphql graphql, final String body) {
-        String url = apiUrls.get(graphql.getAlias()) + graphql.getEndpoint();
+
+        String url = getFullUrl(graphql);
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost post = new HttpPost(url);
         post.setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
         return client.execute(post);
 
+    }
+
+    private String getFullUrl(final Graphql graphql) {
+        String url = GlobalTestConfigurationProvider.getIntegrations().getGraphqlIntegration().getGraphql()
+                .stream()
+                .filter(o -> o.getAlias().equalsIgnoreCase(graphql.getAlias()))
+                .findFirst()
+                .orElseThrow(() -> new DefaultFrameworkException(
+                        format("Cannot find api with alias \"%s\"", graphql.getAlias())))
+                .getUrl();
+        return url + graphql.getEndpoint();
     }
 
     @AllArgsConstructor

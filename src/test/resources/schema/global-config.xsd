@@ -22,6 +22,7 @@
     <x:include schemaLocation="ses-integration.xsd"/>
     <x:include schemaLocation="smtp-integration.xsd"/>
     <x:include schemaLocation="twilio-integration.xsd"/>
+    <x:include schemaLocation="graphql-integration.xsd"/>
     <x:include schemaLocation="web-config.xsd"/>
     <x:include schemaLocation="mobilebrowser-config.xsd"/>
     <x:include schemaLocation="native-config.xsd"/>
@@ -74,6 +75,7 @@
             <x:element name="sesIntegration" type="tns:sesIntegration" minOccurs="0"/>
             <x:element name="smtpIntegration" type="tns:smtpIntegration" minOccurs="0"/>
             <x:element name="twilioIntegration" type="tns:twilioIntegration" minOccurs="0"/>
+            <x:element name="graphqlIntegration" type="tns:graphqlIntegration" minOccurs="0"/>
         </x:all>
     </x:complexType>
 

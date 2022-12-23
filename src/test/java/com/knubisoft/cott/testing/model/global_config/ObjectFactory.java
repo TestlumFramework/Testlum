@@ -430,6 +430,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GraphqlIntegration }
+     * 
+     */
+    public GraphqlIntegration createGraphqlIntegration() {
+        return new GraphqlIntegration();
+    }
+
+    /**
+     * Create an instance of {@link Graphql }
+     * 
+     */
+    public Graphql createGraphql() {
+        return new Graphql();
+    }
+
+    /**
      * Create an instance of {@link BrowserSettings }
      * 
      */

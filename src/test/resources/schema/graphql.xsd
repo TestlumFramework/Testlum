@@ -13,9 +13,9 @@
             <x:extension base="tns:abstractCommand">
                 <x:sequence>
                     <x:element name="body" type="tns:graphqlBody"/>
-                    <x:element name="response" type="tns:response"/>
+                    <x:element name="response" type="tns:response" minOccurs="0"/>
                 </x:sequence>
-                <x:attribute name="endpoint" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="endpoint" type="tns:endpointPattern" use="required"/>
                 <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
             </x:extension>
         </x:complexContent>

@@ -30,10 +30,13 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
 @InterpreterForClass(Graphql.class)
 public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
+    @Autowired(required = false)
+    private Map<String, String> apiUrls;
 
     public GraphqlInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -55,7 +58,9 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
                                final CommandResult result) {
         HttpValidator httpValidator = new HttpValidator(this);
         httpValidator.validateCode(expected.getCode(), actual.getStatusLine().getStatusCode());
-        validateBody(expected, EntityUtils.toString(actual.getEntity()), httpValidator, result);
+        String actualBody = EntityUtils.toString(actual.getEntity());
+        setContextBody(actualBody);
+        validateBody(expected, actualBody, httpValidator, result);
         validateHeaders(expected, actual.getAllHeaders(), httpValidator);
     }
 
@@ -93,13 +98,14 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         String rawBody = StringUtils.isNotBlank(body.getRaw())
                 ? body.getRaw()
                 : FileSearcher.searchFileToString(body.getFrom().getFile(), dependencies.getFile());
-        return toString(new QueryBody(rawBody));
+        return inject(toString(new QueryBody(rawBody)));
     }
 
     @SneakyThrows
     private HttpResponse getResponse(final Graphql graphql, final String body) {
+        String url = apiUrls.get(graphql.getAlias()) + graphql.getEndpoint();
         CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost post = new HttpPost(graphql.getEndpoint());
+        HttpPost post = new HttpPost(url);
         post.setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
         return client.execute(post);
 

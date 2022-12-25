@@ -1,7 +1,6 @@
 package com.knubisoft.cott.testing.framework.configuration;
 
 import com.knubisoft.cott.testing.framework.parser.XMLParsers;
-import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.BrowserStackLogin;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
@@ -34,11 +33,10 @@ public class GlobalTestConfigurationProvider {
     }
 
     public static List<NativeDevice> getNativeDevices() {
-        MobileUtil.ConnectionType connectionType = MobileUtil.getConnectionType();
-        if (connectionType == MobileUtil.ConnectionType.APPIUM && getNativeSettings() != null) {
+        if (getNativeSettings() != null && getNativeSettings().getAppiumServer() != null) {
             return getNativeSettings().getAppiumServer().getDevices().getAndroidOrIos();
         }
-        if (connectionType == MobileUtil.ConnectionType.BROWSER_STACK && getNativeSettings() != null) {
+        if (getNativeSettings() != null && getNativeSettings().getBrowserStack() != null) {
             return getNativeSettings().getBrowserStack().getDevices().getAndroidOrIos();
         }
         return Collections.emptyList();

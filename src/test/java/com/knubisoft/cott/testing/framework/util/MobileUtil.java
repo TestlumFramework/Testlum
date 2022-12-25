@@ -1,13 +1,11 @@
 package com.knubisoft.cott.testing.framework.util;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import lombok.experimental.UtilityClass;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.MOBILEBROWSER_INFO;
@@ -39,30 +37,6 @@ public class MobileUtil {
         return String.format(MOBILEBROWSER_INFO,
                 mobilebrowserDevice.getDeviceName(),
                 mobilebrowserDevice.getPlatformName().value());
-    }
-
-    public ConnectionType getConnectionType() {
-        if (Objects.nonNull(GlobalTestConfigurationProvider.getNativeSettings())) {
-            if (Objects.nonNull(GlobalTestConfigurationProvider.getNativeSettings().getAppiumServer())) {
-                return ConnectionType.APPIUM;
-            }
-            return ConnectionType.BROWSER_STACK;
-        }
-        throw new DefaultFrameworkException("No connection");
-    }
-    public enum ConnectionType {
-        APPIUM("appium server"),
-        BROWSER_STACK("browserStack");
-
-        private final String typeName;
-
-        ConnectionType(final String typeName) {
-            this.typeName = typeName;
-        }
-
-        public String getTypeName() {
-            return typeName;
-        }
     }
 
 }

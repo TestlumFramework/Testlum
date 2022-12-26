@@ -40,6 +40,7 @@
     <x:element name="globalTestConfiguration">
         <x:complexType>
             <x:sequence>
+                <x:element name="stripeCustomerId" type="tns:nonEmptyString"/>
                 <x:element name="stopScenarioOnFailure" type="x:boolean"/>
                 <x:element name="delayBetweenScenariosRuns" type="tns:delayBetweenScenariosRuns" minOccurs="0"/>
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>

@@ -23,6 +23,7 @@ public class TestRunner implements Runner {
         String configFileName = ArgumentsUtils.getConfigurationFileName(args[0]);
         String pathToTestResources = ArgumentsUtils.getPathToTestResources(args[1]);
         TestResourceSettings.init(configFileName, pathToTestResources);
+        new StripeService().checkSubscription();
         TestExecutionSummary testExecutionSummary = runTests();
         LogUtil.logTestExecutionSummary(testExecutionSummary);
         if (SystemInfo.TESTING_IN_PIPELINE) {

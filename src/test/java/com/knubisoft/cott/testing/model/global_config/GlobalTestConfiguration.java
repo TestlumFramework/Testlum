@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="web" type="{http://www.knubisoft.com/cott/testing/model/global-config}web" minOccurs="0"/&gt;
  *         &lt;element name="mobilebrowser" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowser" minOccurs="0"/&gt;
  *         &lt;element name="native" type="{http://www.knubisoft.com/cott/testing/model/global-config}native" minOccurs="0"/&gt;
- *         &lt;element name="browserStack" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserStack" minOccurs="0"/>
+ *         &lt;element name="browserStackLogin" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserStackLogin" minOccurs="0"/&gt;
  *         &lt;element name="auth" type="{http://www.knubisoft.com/cott/testing/model/global-config}auth"/&gt;
  *         &lt;element name="integrations" type="{http://www.knubisoft.com/cott/testing/model/global-config}integrations" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
@@ -228,26 +228,26 @@ public class GlobalTestConfiguration {
     }
 
     /**
-     * Gets the value of the browserStack property.
-     *
+     * Gets the value of the browserStackLogin property.
+     * 
      * @return
      *     possible object is
      *     {@link BrowserStackLogin }
-     *
+     *     
      */
-    public BrowserStackLogin getBrowserStack() {
+    public BrowserStackLogin getBrowserStackLogin() {
         return browserStackLogin;
     }
 
     /**
-     * Sets the value of the browserStack property.
-     *
+     * Sets the value of the browserStackLogin property.
+     * 
      * @param value
      *     allowed object is
      *     {@link BrowserStackLogin }
-     *
+     *     
      */
-    public void setBrowserStack(BrowserStackLogin value) {
+    public void setBrowserStackLogin(BrowserStackLogin value) {
         this.browserStackLogin = value;
     }
 

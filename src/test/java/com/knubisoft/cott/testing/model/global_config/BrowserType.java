@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="localBrowser" type="{http://www.knubisoft.com/cott/testing/model/global-config}localBrowser"/&gt;
  *         &lt;element name="browserInDocker" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserInDocker"/&gt;
  *         &lt;element name="remoteBrowser" type="{http://www.knubisoft.com/cott/testing/model/global-config}remoteBrowser"/&gt;
- *         &lt;element name="remoteBrowserStack" type="{http://www.knubisoft.com/cott/testing/model/global-config}remoteBrowserStack"/&gt;
+ *         &lt;element name="browserStack" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserStackWeb"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -33,14 +33,14 @@ import javax.xml.bind.annotation.XmlType;
     "localBrowser",
     "browserInDocker",
     "remoteBrowser",
-    "remoteBrowserStack"
+    "browserStack"
 })
 public class BrowserType {
 
     protected LocalBrowser localBrowser;
     protected BrowserInDocker browserInDocker;
     protected RemoteBrowser remoteBrowser;
-    protected RemoteBrowserStack remoteBrowserStack;
+    protected BrowserStackWeb browserStack;
 
     /**
      * Gets the value of the localBrowser property.
@@ -115,26 +115,27 @@ public class BrowserType {
     }
 
     /**
-     * Gets the value of the remoteBrowserStack property.
-     *
+     * Gets the value of the browserStack property.
+     * 
      * @return
      *     possible object is
-     *     {@link RemoteBrowserStack }
-     *
+     *     {@link BrowserStackWeb }
+     *     
      */
-    public RemoteBrowserStack getRemoteBrowserStack() {
-        return remoteBrowserStack;
+    public BrowserStackWeb getBrowserStack() {
+        return browserStack;
     }
 
     /**
-     * Sets the value of the remoteBrowserStack property.
-     *
+     * Sets the value of the browserStack property.
+     * 
      * @param value
      *     allowed object is
-     *     {@link RemoteBrowserStack }
-     *
+     *     {@link BrowserStackWeb }
+     *     
      */
-    public void setRemoteBrowserStack(RemoteBrowserStack value) {
-        this.remoteBrowserStack = value;
+    public void setBrowserStack(BrowserStackWeb value) {
+        this.browserStack = value;
     }
+
 }

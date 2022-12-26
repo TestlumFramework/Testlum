@@ -106,4 +106,5 @@ public class Web {
     public void setEnabled(boolean value) {
         this.enabled = value;
     }
+
 }

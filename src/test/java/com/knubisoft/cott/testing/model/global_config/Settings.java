@@ -3,7 +3,6 @@ package com.knubisoft.cott.testing.model.global_config;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
@@ -35,9 +34,9 @@ import javax.xml.bind.annotation.XmlType;
     "elementAutowait"
 })
 @XmlSeeAlso({
+    Native.class,
     BrowserSettings.class,
-    MobilebrowserDeviceSettings.class,
-    Native.class
+    MobilebrowserDeviceSettings.class
 })
 public class Settings {
 

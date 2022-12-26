@@ -61,8 +61,8 @@ public class GlobalTestConfigurationProvider {
         return GlobalTestConfigurationProvider.provide().getNative();
     }
 
-    public static BrowserStackLogin getBrowserStack() {
-        return GlobalTestConfigurationProvider.provide().getBrowserStack();
+    public static BrowserStackLogin getBrowserStackLogin() {
+        return GlobalTestConfigurationProvider.provide().getBrowserStackLogin();
     }
 
     public static Integrations getIntegrations() {

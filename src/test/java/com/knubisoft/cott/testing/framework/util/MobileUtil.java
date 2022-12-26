@@ -38,5 +38,4 @@ public class MobileUtil {
                 mobilebrowserDevice.getDeviceName(),
                 mobilebrowserDevice.getPlatformName().value());
     }
-
 }

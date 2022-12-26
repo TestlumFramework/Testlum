@@ -44,7 +44,6 @@ import javax.xml.bind.annotation.XmlType;
 public abstract class AbstractDevice {
 
     protected Capabilities capabilities;
-    @XmlElement(required = true)
     protected String udid;
     @XmlElement(required = true)
     protected String deviceName;

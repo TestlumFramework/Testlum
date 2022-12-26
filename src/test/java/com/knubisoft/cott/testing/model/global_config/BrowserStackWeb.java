@@ -8,16 +8,15 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for remoteBrowser complex type.
+ * <p>Java class for browserStackWeb complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="remoteBrowser"&gt;
+ * &lt;complexType name="browserStackWeb"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="browserVersion" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" /&gt;
- *       &lt;attribute name="remoteBrowserURL" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}url" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -26,13 +25,11 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "remoteBrowser")
-public class RemoteBrowser {
+@XmlType(name = "browserStackWeb")
+public class BrowserStackWeb {
 
     @XmlAttribute(name = "browserVersion", required = true)
     protected String browserVersion;
-    @XmlAttribute(name = "remoteBrowserURL", required = true)
-    protected String remoteBrowserURL;
 
     /**
      * Gets the value of the browserVersion property.
@@ -56,30 +53,6 @@ public class RemoteBrowser {
      */
     public void setBrowserVersion(String value) {
         this.browserVersion = value;
-    }
-
-    /**
-     * Gets the value of the remoteBrowserURL property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getRemoteBrowserURL() {
-        return remoteBrowserURL;
-    }
-
-    /**
-     * Sets the value of the remoteBrowserURL property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setRemoteBrowserURL(String value) {
-        this.remoteBrowserURL = value;
     }
 
 }

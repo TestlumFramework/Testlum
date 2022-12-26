@@ -148,7 +148,7 @@ public class WebDriverFactory {
                                              final MutableCapabilities browserOptions) {
         browserOptions.setCapability("browserstack.local", "true");
         browserOptions.setCapability("browserVersion",
-                browser.getBrowserType().getRemoteBrowserStack().getBrowserVersion());
+                browser.getBrowserType().getBrowserStack().getBrowserVersion());
     }
 
     private interface WebDriverInitializer<T extends AbstractBrowser> {

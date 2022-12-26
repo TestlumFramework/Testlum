@@ -86,6 +86,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link BrowserStackLogin }
+     * 
+     */
+    public BrowserStackLogin createBrowserStackLogin() {
+        return new BrowserStackLogin();
+    }
+
+    /**
      * Create an instance of {@link Auth }
      * 
      */
@@ -478,6 +486,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link BrowserStackWeb }
+     * 
+     */
+    public BrowserStackWeb createBrowserStackWeb() {
+        return new BrowserStackWeb();
+    }
+
+    /**
      * Create an instance of {@link ScreenRecording }
      * 
      */
@@ -558,6 +574,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AppiumServer }
+     * 
+     */
+    public AppiumServer createAppiumServer() {
+        return new AppiumServer();
+    }
+
+    /**
+     * Create an instance of {@link BrowserStackNative }
+     * 
+     */
+    public BrowserStackNative createBrowserStackNative() {
+        return new BrowserStackNative();
+    }
+
+    /**
      * Create an instance of {@link NativeDevices }
      * 
      */
@@ -587,6 +619,14 @@ public class ObjectFactory {
      */
     public IosDevice createIosDevice() {
         return new IosDevice();
+    }
+
+    /**
+     * Create an instance of {@link PlayMarketLogin }
+     * 
+     */
+    public PlayMarketLogin createPlayMarketLogin() {
+        return new PlayMarketLogin();
     }
 
     /**

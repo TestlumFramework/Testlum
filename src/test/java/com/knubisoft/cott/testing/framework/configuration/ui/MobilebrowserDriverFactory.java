@@ -23,12 +23,12 @@ public class MobilebrowserDriverFactory {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         MobileDriverUtil.setCommonCapabilities(mobilebrowserDevice, desiredCapabilities);
         Mobilebrowser mobilebrowser = GlobalTestConfigurationProvider.provide().getMobilebrowser();
-        if (mobilebrowser.isBrowserStackEnabled()) {
+        if (mobilebrowser.isBrowserStack()) {
             desiredCapabilities.setCapability("browserstack.local", "true");
         }
         setPlatformCapabilities(mobilebrowserDevice, desiredCapabilities);
         WebDriver driver = new RemoteWebDriver(
-                new URL(mobilebrowser.isBrowserStackEnabled()
+                new URL(mobilebrowser.isBrowserStack()
                         ? BrowserStackUtil.getBrowserStackUrl()
                         : mobilebrowser.getAppiumServerUrl()), desiredCapabilities);
         driver.get(mobilebrowser.getBaseUrl());

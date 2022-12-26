@@ -48,7 +48,7 @@ public class Mobilebrowser {
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
     @XmlAttribute(name = "browserStack", required = true)
-    protected boolean browserStackEnabled;
+    protected boolean browserStack;
 
     /**
      * Gets the value of the baseUrl property.
@@ -139,18 +139,19 @@ public class Mobilebrowser {
     }
 
     /**
-     * Gets the value of the browserStackConnection property.
-     *
+     * Gets the value of the browserStack property.
+     * 
      */
-    public boolean isBrowserStackEnabled() {
-        return browserStackEnabled;
+    public boolean isBrowserStack() {
+        return browserStack;
     }
 
     /**
-     * Sets the value of the browserStackConnection property.
-     *
+     * Sets the value of the browserStack property.
+     * 
      */
-    public void setBrowserStackEnabled(boolean browserStackEnabled) {
-        this.browserStackEnabled = browserStackEnabled;
+    public void setBrowserStack(boolean value) {
+        this.browserStack = value;
     }
+
 }

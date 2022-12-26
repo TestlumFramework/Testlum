@@ -47,7 +47,7 @@ public class NativeDriverFactory {
         if (GlobalTestConfigurationProvider.provide().getNative().getBrowserStack() != null) {
             desiredCapabilities.setCapability(MobileCapabilityType.APP, nativeDevice.getApp());
             desiredCapabilities.setCapability("browserstack.local", "true");
-            if (nativeDevice.isPlayMarketLoginEnabled()) {
+            if (nativeDevice.isPlayMarketLogin()) {
                 setPlayMarketCredentials(desiredCapabilities);
             }
         }
@@ -59,8 +59,8 @@ public class NativeDriverFactory {
 
     private static void setPlayMarketCredentials(final DesiredCapabilities desiredCapabilities) {
         desiredCapabilities.setCapability("browserstack.appStoreConfiguration", new HashMap<String, String>() {{
-            put("username", GlobalTestConfigurationProvider.getBrowserStack().getPlayMarketLogin().getUsername());
-            put("password", GlobalTestConfigurationProvider.getBrowserStack().getPlayMarketLogin().getPassword());
+            put("username", GlobalTestConfigurationProvider.getBrowserStackLogin().getPlayMarketLogin().getUsername());
+            put("password", GlobalTestConfigurationProvider.getBrowserStackLogin().getPlayMarketLogin().getPassword());
         }});
     }
 

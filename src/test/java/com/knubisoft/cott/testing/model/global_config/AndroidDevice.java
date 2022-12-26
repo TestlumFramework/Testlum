@@ -1,7 +1,10 @@
 
 package com.knubisoft.cott.testing.model.global_config;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -17,8 +20,8 @@ import javax.xml.bind.annotation.*;
  *         &lt;element name="appPackage" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
  *         &lt;element name="appActivity" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
  *         &lt;element name="app" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
- *         &lt;element name="playMarketLogin" type="{http://www.knubisoft.com/cott/testing/model/global-config}boolean" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
+ *       &lt;attribute name="playMarketLogin" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -36,14 +39,11 @@ public class AndroidDevice
     extends NativeDevice
 {
 
-    @XmlElement(required = true)
     protected String appPackage;
-    @XmlElement(required = true)
     protected String appActivity;
-    @XmlElement(required = true)
     protected String app;
-    @XmlAttribute(name = "playMarketLogin", required = true)
-    protected boolean playMarketLoginEnabled;
+    @XmlAttribute(name = "playMarketLogin")
+    protected Boolean playMarketLogin;
 
     /**
      * Gets the value of the appPackage property.
@@ -95,11 +95,11 @@ public class AndroidDevice
 
     /**
      * Gets the value of the app property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link String }
-     *
+     *     
      */
     public String getApp() {
         return app;
@@ -107,27 +107,42 @@ public class AndroidDevice
 
     /**
      * Sets the value of the app property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link String }
-     *
+     *     
      */
     public void setApp(String value) {
         this.app = value;
     }
 
     /**
-     * Gets the value of the playMarketLoginEnabled property.
+     * Gets the value of the playMarketLogin property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
      */
-    public boolean isPlayMarketLoginEnabled() {
-        return playMarketLoginEnabled;
+    public boolean isPlayMarketLogin() {
+        if (playMarketLogin == null) {
+            return false;
+        } else {
+            return playMarketLogin;
+        }
     }
 
     /**
-     * Sets the value of the playMarketLoginEnabled property.
+     * Sets the value of the playMarketLogin property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
      */
-    public void setPlayMarketLoginEnabled(boolean value) {
-        this.playMarketLoginEnabled = value;
+    public void setPlayMarketLogin(Boolean value) {
+        this.playMarketLogin = value;
     }
+
 }

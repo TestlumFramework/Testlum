@@ -8,16 +8,15 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for appiumServer complex type.
+ * <p>Java class for browserStackNative complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="appiumServer"&gt;
+ * &lt;complexType name="browserStackNative"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="serverUrl" type="{http://www.knubisoft.com/cott/testing/model/global-config}url"/&gt;
  *         &lt;element name="devices" type="{http://www.knubisoft.com/cott/testing/model/global-config}nativeDevices"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
@@ -28,40 +27,13 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "appiumServer", propOrder = {
-    "serverUrl",
+@XmlType(name = "browserStackNative", propOrder = {
     "devices"
 })
-public class AppiumServer {
+public class BrowserStackNative {
 
-    @XmlElement(required = true)
-    protected String serverUrl;
     @XmlElement(required = true)
     protected NativeDevices devices;
-
-    /**
-     * Gets the value of the serverUrl property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getServerUrl() {
-        return serverUrl;
-    }
-
-    /**
-     * Sets the value of the serverUrl property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setServerUrl(String value) {
-        this.serverUrl = value;
-    }
 
     /**
      * Gets the value of the devices property.

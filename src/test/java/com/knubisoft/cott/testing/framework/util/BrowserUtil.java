@@ -50,7 +50,7 @@ public class BrowserUtil {
         if (Objects.nonNull(browser.getBrowserType().getBrowserInDocker())) {
             return BrowserType.IN_DOCKER;
         }
-        if (Objects.nonNull(browser.getBrowserType().getRemoteBrowserStack())) {
+        if (Objects.nonNull(browser.getBrowserType().getBrowserStack())) {
             return BrowserType.BROWSER_STACK;
         }
         return BrowserType.LOCAL;
@@ -64,7 +64,7 @@ public class BrowserUtil {
             return browser.getBrowserType().getBrowserInDocker().getBrowserVersion();
         }
         if (browserType == BrowserType.BROWSER_STACK) {
-            return browser.getBrowserType().getRemoteBrowserStack().getBrowserVersion();
+            return browser.getBrowserType().getBrowserStack().getBrowserVersion();
         }
         String version = browser.getBrowserType().getLocalBrowser().getDriverVersion();
         return StringUtils.isEmpty(version) ? "no version specified (the latest version is used)" : version;

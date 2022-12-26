@@ -1,12 +1,17 @@
+
 package com.knubisoft.cott.testing.model.global_config;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+
 
 /**
  * <p>Java class for playMarketLogin complex type.
- *
+ * 
  * <p>The following schema fragment specifies the expected content contained within this class.
- *
+ * 
  * <pre>
  * &lt;complexType name="playMarketLogin"&gt;
  *   &lt;complexContent&gt;
@@ -19,15 +24,16 @@ import javax.xml.bind.annotation.*;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- *
- *
+ * 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "playMarketLogin", propOrder = {
-        "username",
-        "password"
+    "username",
+    "password"
 })
 public class PlayMarketLogin {
+
     @XmlElement(required = true)
     protected String username;
     @XmlElement(required = true)
@@ -35,11 +41,11 @@ public class PlayMarketLogin {
 
     /**
      * Gets the value of the username property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link String }
-     *
+     *     
      */
     public String getUsername() {
         return username;
@@ -47,11 +53,11 @@ public class PlayMarketLogin {
 
     /**
      * Sets the value of the username property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link String }
-     *
+     *     
      */
     public void setUsername(String value) {
         this.username = value;
@@ -59,11 +65,11 @@ public class PlayMarketLogin {
 
     /**
      * Gets the value of the password property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link String }
-     *
+     *     
      */
     public String getPassword() {
         return password;
@@ -71,13 +77,14 @@ public class PlayMarketLogin {
 
     /**
      * Sets the value of the password property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link String }
-     *
+     *     
      */
     public void setPassword(String value) {
         this.password = value;
     }
+
 }

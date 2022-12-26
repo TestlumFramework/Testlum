@@ -44,7 +44,7 @@ import javax.xml.bind.annotation.XmlType;
     Ses.class,
     Smtp.class,
     Twilio.class,
-    Graphql.class,
+    GraphqlApi.class,
     WebsocketApi.class
 })
 public abstract class Integration {

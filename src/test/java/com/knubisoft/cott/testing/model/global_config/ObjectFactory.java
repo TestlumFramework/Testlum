@@ -438,11 +438,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Graphql }
+     * Create an instance of {@link GraphqlApi }
      * 
      */
-    public Graphql createGraphql() {
-        return new Graphql();
+    public GraphqlApi createGraphqlApi() {
+        return new GraphqlApi();
     }
 
     /**

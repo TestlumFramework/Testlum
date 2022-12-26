@@ -44,28 +44,27 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     @SneakyThrows
     @Override
     public void acceptImpl(final Graphql graphql, final CommandResult result) {
-        String body = getBody(graphql.getBody());
-        ResultUtil.addGraphQlMetaData(graphql.getAlias(), graphql.getEndpoint(), body, result);
-        LogUtil.logGraphqlInfo(graphql.getAlias(), graphql.getEndpoint(), body);
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            HttpResponse response = getResponse(graphql, body, client);
-            compareResult(graphql.getResponse(), response, result);
-        }
+        String query = getQuery(graphql.getBody());
+        ResultUtil.addGraphQlMetaData(graphql.getAlias(), graphql.getEndpoint(), query, result);
+        LogUtil.logGraphqlInfo(graphql.getAlias(), graphql.getEndpoint(), query);
+        HttpResponse response = getResponse(graphql, query);
+        compareResult(graphql.getResponse(), response, result);
     }
 
-    private String getBody(final GraphqlBody body) {
+    private String getQuery(final GraphqlBody body) {
         String rawBody = StringUtils.isNotBlank(body.getRaw())
                 ? body.getRaw()
                 : FileSearcher.searchFileToString(body.getFrom().getFile(), dependencies.getFile());
-        return inject(toString(new QueryBody(rawBody)));
+        return inject(rawBody);
     }
 
     @SneakyThrows
-    private HttpResponse getResponse(final Graphql graphql,
-                                     final String body,
-                                     final CloseableHttpClient client) {
+    private HttpResponse getResponse(final Graphql graphql, final String query) {
+        String body = toString(new QueryBody(query));
         HttpPost post = buildHttpPost(graphql, body);
-        return client.execute(post);
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            return client.execute(post);
+        }
     }
 
     private HttpPost buildHttpPost(final Graphql graphql, final String body) {
@@ -108,6 +107,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         result.setActual(PrettifyStringJson.getJSONResult(actualBody));
         result.setExpected(PrettifyStringJson.getJSONResult(body));
         httpValidator.validateBody(body, actualBody);
+        httpValidator.rethrowOnErrors();
     }
 
     private void validateHeaders(final Response expected,

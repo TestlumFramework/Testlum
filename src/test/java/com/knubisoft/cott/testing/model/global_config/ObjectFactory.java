@@ -550,11 +550,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link MobilebrowserDeviceSettings }
+     * Create an instance of {@link MobilebrowserAppiumServer }
      * 
      */
-    public MobilebrowserDeviceSettings createMobilebrowserDeviceSettings() {
-        return new MobilebrowserDeviceSettings();
+    public MobilebrowserAppiumServer createMobilebrowserAppiumServer() {
+        return new MobilebrowserAppiumServer();
+    }
+
+    /**
+     * Create an instance of {@link MobilebrowserBrowserStack }
+     * 
+     */
+    public MobilebrowserBrowserStack createMobilebrowserBrowserStack() {
+        return new MobilebrowserBrowserStack();
     }
 
     /**
@@ -574,19 +582,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AppiumServer }
+     * Create an instance of {@link NativeAppiumServer }
      * 
      */
-    public AppiumServer createAppiumServer() {
-        return new AppiumServer();
+    public NativeAppiumServer createNativeAppiumServer() {
+        return new NativeAppiumServer();
     }
 
     /**
-     * Create an instance of {@link BrowserStackNative }
+     * Create an instance of {@link NativeBrowserStack }
      * 
      */
-    public BrowserStackNative createBrowserStackNative() {
-        return new BrowserStackNative();
+    public NativeBrowserStack createNativeBrowserStack() {
+        return new NativeBrowserStack();
     }
 
     /**

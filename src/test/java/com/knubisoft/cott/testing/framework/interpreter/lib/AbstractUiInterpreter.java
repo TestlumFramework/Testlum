@@ -126,7 +126,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
                 InterpreterDependencies::getWebDriver),
         NATIVE(() -> globalTestConfig().getNative().getTakeScreenshots().isEnable(),
                 InterpreterDependencies::getNativeDriver),
-        MOBILE_BROWSER(() -> globalTestConfig().getMobilebrowser().getDeviceSettings().getTakeScreenshots().isEnable(),
+        MOBILE_BROWSER(() -> globalTestConfig().getMobilebrowser().getTakeScreenshots().isEnable(),
                 InterpreterDependencies::getMobilebrowserDriver);
 
         private final Supplier<Boolean> screenshotFunction;

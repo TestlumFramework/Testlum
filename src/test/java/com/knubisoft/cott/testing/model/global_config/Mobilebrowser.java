@@ -16,15 +16,16 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="mobilebrowser"&gt;
  *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}settings"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="baseUrl" type="{http://www.knubisoft.com/cott/testing/model/global-config}url"/&gt;
- *         &lt;element name="appiumServerUrl" type="{http://www.knubisoft.com/cott/testing/model/global-config}url"/&gt;
- *         &lt;element name="deviceSettings" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowserDeviceSettings"/&gt;
+ *         &lt;choice&gt;
+ *           &lt;element name="appiumServer" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowserAppiumServer"/&gt;
+ *           &lt;element name="browserStack" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowserBrowserStack"/&gt;
+ *         &lt;/choice&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *       &lt;attribute name="browserStack" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *     &lt;/restriction&gt;
+ *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -34,21 +35,19 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "mobilebrowser", propOrder = {
     "baseUrl",
-    "appiumServerUrl",
-    "deviceSettings"
+    "appiumServer",
+    "browserStack"
 })
-public class Mobilebrowser {
+public class Mobilebrowser
+    extends Settings
+{
 
     @XmlElement(required = true)
     protected String baseUrl;
-    @XmlElement(required = true)
-    protected String appiumServerUrl;
-    @XmlElement(required = true)
-    protected MobilebrowserDeviceSettings deviceSettings;
+    protected MobilebrowserAppiumServer appiumServer;
+    protected MobilebrowserBrowserStack browserStack;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
-    @XmlAttribute(name = "browserStack", required = true)
-    protected boolean browserStack;
 
     /**
      * Gets the value of the baseUrl property.
@@ -75,51 +74,51 @@ public class Mobilebrowser {
     }
 
     /**
-     * Gets the value of the appiumServerUrl property.
+     * Gets the value of the appiumServer property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link MobilebrowserAppiumServer }
      *     
      */
-    public String getAppiumServerUrl() {
-        return appiumServerUrl;
+    public MobilebrowserAppiumServer getAppiumServer() {
+        return appiumServer;
     }
 
     /**
-     * Sets the value of the appiumServerUrl property.
+     * Sets the value of the appiumServer property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link MobilebrowserAppiumServer }
      *     
      */
-    public void setAppiumServerUrl(String value) {
-        this.appiumServerUrl = value;
+    public void setAppiumServer(MobilebrowserAppiumServer value) {
+        this.appiumServer = value;
     }
 
     /**
-     * Gets the value of the deviceSettings property.
+     * Gets the value of the browserStack property.
      * 
      * @return
      *     possible object is
-     *     {@link MobilebrowserDeviceSettings }
+     *     {@link MobilebrowserBrowserStack }
      *     
      */
-    public MobilebrowserDeviceSettings getDeviceSettings() {
-        return deviceSettings;
+    public MobilebrowserBrowserStack getBrowserStack() {
+        return browserStack;
     }
 
     /**
-     * Sets the value of the deviceSettings property.
+     * Sets the value of the browserStack property.
      * 
      * @param value
      *     allowed object is
-     *     {@link MobilebrowserDeviceSettings }
+     *     {@link MobilebrowserBrowserStack }
      *     
      */
-    public void setDeviceSettings(MobilebrowserDeviceSettings value) {
-        this.deviceSettings = value;
+    public void setBrowserStack(MobilebrowserBrowserStack value) {
+        this.browserStack = value;
     }
 
     /**
@@ -136,22 +135,6 @@ public class Mobilebrowser {
      */
     public void setEnabled(boolean value) {
         this.enabled = value;
-    }
-
-    /**
-     * Gets the value of the browserStack property.
-     * 
-     */
-    public boolean isBrowserStack() {
-        return browserStack;
-    }
-
-    /**
-     * Sets the value of the browserStack property.
-     * 
-     */
-    public void setBrowserStack(boolean value) {
-        this.browserStack = value;
     }
 
 }

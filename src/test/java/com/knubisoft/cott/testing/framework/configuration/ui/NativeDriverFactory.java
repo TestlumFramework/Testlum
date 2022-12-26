@@ -34,14 +34,14 @@ public class NativeDriverFactory {
         return new AndroidDriver(new URL(serverUrl), desiredCapabilities);
     }
 
-    private static String setServerUrl() {
-        if (GlobalTestConfigurationProvider.provide().getNative().getAppiumServer() != null) {
-            return GlobalTestConfigurationProvider.provide().getNative().getAppiumServer().getServerUrl();
+    private String setServerUrl() {
+        if (GlobalTestConfigurationProvider.getNativeSettings().getAppiumServer() != null) {
+            return GlobalTestConfigurationProvider.getNativeSettings().getAppiumServer().getServerUrl();
         }
         return BrowserStackUtil.getBrowserStackUrl();
     }
 
-    private static void setAndroidCaps(final AndroidDevice nativeDevice,
+    private void setAndroidCaps(final AndroidDevice nativeDevice,
                                        final DesiredCapabilities desiredCapabilities) {
         MobileDriverUtil.setAutomation(desiredCapabilities, "Android", "uiautomator2");
         if (GlobalTestConfigurationProvider.provide().getNative().getBrowserStack() != null) {
@@ -57,7 +57,7 @@ public class NativeDriverFactory {
         }
     }
 
-    private static void setPlayMarketCredentials(final DesiredCapabilities desiredCapabilities) {
+    private void setPlayMarketCredentials(final DesiredCapabilities desiredCapabilities) {
         desiredCapabilities.setCapability("browserstack.appStoreConfiguration", new HashMap<String, String>() {{
             put("username", GlobalTestConfigurationProvider.getBrowserStackLogin().getPlayMarketLogin().getUsername());
             put("password", GlobalTestConfigurationProvider.getBrowserStackLogin().getPlayMarketLogin().getPassword());

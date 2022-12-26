@@ -17,8 +17,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}settings"&gt;
  *       &lt;choice&gt;
- *         &lt;element name="appiumServer" type="{http://www.knubisoft.com/cott/testing/model/global-config}appiumServer"/&gt;
- *         &lt;element name="browserStack" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserStackNative"/&gt;
+ *         &lt;element name="appiumServer" type="{http://www.knubisoft.com/cott/testing/model/global-config}nativeAppiumServer"/&gt;
+ *         &lt;element name="browserStack" type="{http://www.knubisoft.com/cott/testing/model/global-config}nativeBrowserStack"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/extension&gt;
@@ -37,8 +37,8 @@ public class Native
     extends Settings
 {
 
-    protected AppiumServer appiumServer;
-    protected BrowserStackNative browserStack;
+    protected NativeAppiumServer appiumServer;
+    protected NativeBrowserStack browserStack;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
 
@@ -47,10 +47,10 @@ public class Native
      * 
      * @return
      *     possible object is
-     *     {@link AppiumServer }
+     *     {@link NativeAppiumServer }
      *     
      */
-    public AppiumServer getAppiumServer() {
+    public NativeAppiumServer getAppiumServer() {
         return appiumServer;
     }
 
@@ -59,10 +59,10 @@ public class Native
      * 
      * @param value
      *     allowed object is
-     *     {@link AppiumServer }
+     *     {@link NativeAppiumServer }
      *     
      */
-    public void setAppiumServer(AppiumServer value) {
+    public void setAppiumServer(NativeAppiumServer value) {
         this.appiumServer = value;
     }
 
@@ -71,10 +71,10 @@ public class Native
      * 
      * @return
      *     possible object is
-     *     {@link BrowserStackNative }
+     *     {@link NativeBrowserStack }
      *     
      */
-    public BrowserStackNative getBrowserStack() {
+    public NativeBrowserStack getBrowserStack() {
         return browserStack;
     }
 
@@ -83,10 +83,10 @@ public class Native
      * 
      * @param value
      *     allowed object is
-     *     {@link BrowserStackNative }
+     *     {@link NativeBrowserStack }
      *     
      */
-    public void setBrowserStack(BrowserStackNative value) {
+    public void setBrowserStack(NativeBrowserStack value) {
         this.browserStack = value;
     }
 

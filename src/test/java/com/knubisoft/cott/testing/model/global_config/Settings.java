@@ -34,9 +34,9 @@ import javax.xml.bind.annotation.XmlType;
     "elementAutowait"
 })
 @XmlSeeAlso({
+    Mobilebrowser.class,
     Native.class,
-    BrowserSettings.class,
-    MobilebrowserDeviceSettings.class
+    BrowserSettings.class
 })
 public class Settings {
 

@@ -334,7 +334,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateNativeAndMobilebrowserConfig() {
-        if (GlobalTestConfigurationProvider.getMobilebrowserSettings().getAppiumServerUrl()
+        if (GlobalTestConfigurationProvider.getMobilebrowserSettings().getAppiumServer().getAppiumServerUrl()
                 .equals(GlobalTestConfigurationProvider.provide().getNative().getAppiumServer().getServerUrl())) {
             throw new DefaultFrameworkException(SAME_APPIUM_URL);
         }

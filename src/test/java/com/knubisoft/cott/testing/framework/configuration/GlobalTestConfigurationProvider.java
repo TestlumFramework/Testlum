@@ -43,8 +43,11 @@ public class GlobalTestConfigurationProvider {
     }
 
     public static List<MobilebrowserDevice> getMobilebrowserDevices() {
-        if (getMobilebrowserSettings() != null) {
-            return getMobilebrowserSettings().getDeviceSettings().getDevices().getDevice();
+        if (getMobilebrowserSettings() != null && getMobilebrowserSettings().getAppiumServer() != null) {
+            return getMobilebrowserSettings().getAppiumServer().getDevices().getDevice();
+        }
+        if (getMobilebrowserSettings() != null && getMobilebrowserSettings().getBrowserStack() != null) {
+            return getMobilebrowserSettings().getBrowserStack().getDevices().getDevice();
         }
         return Collections.emptyList();
     }

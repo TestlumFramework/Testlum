@@ -10,22 +10,22 @@
         <x:complexContent>
             <x:extension base="tns:settings">
                 <x:choice>
-                    <x:element name="appiumServer" type="tns:appiumServer"/>
-                    <x:element name="browserStack" type="tns:browserStackNative"/>
+                    <x:element name="appiumServer" type="tns:nativeAppiumServer"/>
+                    <x:element name="browserStack" type="tns:nativeBrowserStack"/>
                 </x:choice>
                 <x:attribute name="enabled" type="x:boolean" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="appiumServer">
+    <x:complexType name="nativeAppiumServer">
         <x:sequence>
             <x:element name="serverUrl" type="tns:url"/>
             <x:element name="devices" type="tns:nativeDevices"/>
         </x:sequence>
     </x:complexType>
 
-    <x:complexType name="browserStackNative">
+    <x:complexType name="nativeBrowserStack">
         <x:sequence>
             <x:element name="devices" type="tns:nativeDevices"/>
         </x:sequence>

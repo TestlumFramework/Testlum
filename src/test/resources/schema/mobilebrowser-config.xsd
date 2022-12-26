@@ -7,23 +7,31 @@
     <x:include schemaLocation="shared-config.xsd"/>
 
     <x:complexType name="mobilebrowser">
-        <x:sequence>
-            <x:element name="baseUrl" type="tns:url"/>
-            <x:element name="appiumServerUrl" type="tns:url"/>
-            <x:element name="deviceSettings" type="tns:mobilebrowserDeviceSettings"/>
-        </x:sequence>
-        <x:attribute name="enabled" type="x:boolean" use="required"/>
-        <x:attribute name="browserStack" type="x:boolean" use="required"/>
-    </x:complexType>
-
-    <x:complexType name="mobilebrowserDeviceSettings">
         <x:complexContent>
             <x:extension base="tns:settings">
                 <x:sequence>
-                    <x:element name="devices" type="tns:mobilebrowserDevices"/>
+                    <x:element name="baseUrl" type="tns:url"/>
+                    <x:choice>
+                        <x:element name="appiumServer" type="tns:mobilebrowserAppiumServer"/>
+                        <x:element name="browserStack" type="tns:mobilebrowserBrowserStack"/>
+                    </x:choice>
                 </x:sequence>
+                <x:attribute name="enabled" type="x:boolean" use="required"/>
             </x:extension>
         </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="mobilebrowserAppiumServer">
+        <x:sequence>
+            <x:element name="appiumServerUrl" type="tns:url"/>
+            <x:element name="devices" type="tns:mobilebrowserDevices"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="mobilebrowserBrowserStack">
+        <x:sequence>
+        <x:element name="devices" type="tns:mobilebrowserDevices"/>
+        </x:sequence>
     </x:complexType>
 
     <x:complexType name="mobilebrowserDevices">

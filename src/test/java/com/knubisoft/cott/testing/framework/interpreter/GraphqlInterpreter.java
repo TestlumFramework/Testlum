@@ -50,8 +50,6 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpResponse response = getResponse(graphql, body, client);
             compareResult(graphql.getResponse(), response, result);
-        } catch (Exception e) {
-            throw new DefaultFrameworkException(e);
         }
     }
 

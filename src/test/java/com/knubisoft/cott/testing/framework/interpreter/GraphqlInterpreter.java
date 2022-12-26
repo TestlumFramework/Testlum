@@ -24,7 +24,6 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpPost;
@@ -33,7 +32,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.springframework.http.MediaType;
 import static java.lang.String.format;
 
 @Slf4j
@@ -49,8 +47,12 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         String body = getBody(graphql.getBody());
         ResultUtil.addGraphQlMetaData(graphql.getAlias(), graphql.getEndpoint(), body, result);
         LogUtil.logGraphqlInfo(graphql.getAlias(), graphql.getEndpoint(), body);
-        HttpResponse response = getResponse(graphql, body);
-        compareResult(graphql.getResponse(), response, result);
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpResponse response = getResponse(graphql, body, client);
+            compareResult(graphql.getResponse(), response, result);
+        } catch (Exception e) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 
     private String getBody(final GraphqlBody body) {
@@ -61,17 +63,16 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     }
 
     @SneakyThrows
-    private HttpResponse getResponse(final Graphql graphql, final String body) {
-        CloseableHttpClient client = HttpClients.createDefault();
+    private HttpResponse getResponse(final Graphql graphql,
+                                     final String body,
+                                     final CloseableHttpClient client) {
         HttpPost post = buildHttpPost(graphql, body);
         return client.execute(post);
-
     }
 
     private HttpPost buildHttpPost(final Graphql graphql, final String body) {
         String url = getFullUrl(graphql);
         HttpPost post = new HttpPost(url);
-        post.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         post.setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
         return post;
     }

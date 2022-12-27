@@ -44,14 +44,14 @@ public class NativeDriverFactory {
     private void setAndroidCaps(final AndroidDevice nativeDevice,
                                        final DesiredCapabilities desiredCapabilities) {
         MobileDriverUtil.setAutomation(desiredCapabilities, "Android", "uiautomator2");
-        if (GlobalTestConfigurationProvider.provide().getNative().getBrowserStack() != null) {
+        if (GlobalTestConfigurationProvider.getNativeSettings().getBrowserStack() != null) {
             desiredCapabilities.setCapability(MobileCapabilityType.APP, nativeDevice.getApp());
             desiredCapabilities.setCapability("browserstack.local", "true");
             if (nativeDevice.isPlayMarketLogin()) {
                 setPlayMarketCredentials(desiredCapabilities);
             }
         }
-        if (GlobalTestConfigurationProvider.provide().getNative().getAppiumServer() != null) {
+        if (GlobalTestConfigurationProvider.getNativeSettings().getAppiumServer() != null) {
             desiredCapabilities.setCapability("appPackage", nativeDevice.getAppPackage());
             desiredCapabilities.setCapability("appActivity", nativeDevice.getAppActivity());
         }
@@ -68,7 +68,7 @@ public class NativeDriverFactory {
                             final DesiredCapabilities desiredCapabilities) {
         MobileDriverUtil.setAutomation(desiredCapabilities, "iOS", "XCUITest");
         desiredCapabilities.setCapability(MobileCapabilityType.APP, nativeDevice.getApp());
-        if (GlobalTestConfigurationProvider.provide().getNative().getBrowserStack() != null) {
+        if (GlobalTestConfigurationProvider.getNativeSettings().getBrowserStack() != null) {
             desiredCapabilities.setCapability("browserstack.local", "true");
         }
     }

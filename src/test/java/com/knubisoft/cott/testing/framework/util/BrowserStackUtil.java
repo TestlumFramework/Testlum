@@ -11,8 +11,8 @@ import static java.lang.String.format;
 
 @UtilityClass
 public class BrowserStackUtil {
-    private final BrowserStackLogin BROWSER_STACK_LOGIN = GlobalTestConfigurationProvider.getBrowserStackLogin();
-    private final String BROWSER_STACK_URL_TEMPLATE = "https://%s:%s@hub-cloud.browserstack.com/wd/hub";
+    private static final BrowserStackLogin BROWSER_STACK_LOGIN = GlobalTestConfigurationProvider.getBrowserStackLogin();
+    private static final String BROWSER_STACK_URL_TEMPLATE = "https://%s:%s@hub-cloud.browserstack.com/wd/hub";
 
     public String getBrowserStackUrl() {
         if (Objects.nonNull(BROWSER_STACK_LOGIN)) {

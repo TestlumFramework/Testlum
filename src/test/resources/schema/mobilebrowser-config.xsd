@@ -23,7 +23,7 @@
 
     <x:complexType name="mobilebrowserAppiumServer">
         <x:sequence>
-            <x:element name="appiumServerUrl" type="tns:url"/>
+            <x:element name="serverUrl" type="tns:url"/>
             <x:element name="devices" type="tns:mobilebrowserDevices"/>
         </x:sequence>
     </x:complexType>

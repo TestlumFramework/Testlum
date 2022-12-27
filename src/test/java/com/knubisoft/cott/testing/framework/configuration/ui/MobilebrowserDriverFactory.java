@@ -35,7 +35,7 @@ public class MobilebrowserDriverFactory {
 
     private static String setServerUrl() {
         if (GlobalTestConfigurationProvider.getMobilebrowserSettings().getAppiumServer() != null) {
-            return GlobalTestConfigurationProvider.getMobilebrowserSettings().getAppiumServer().getAppiumServerUrl();
+            return GlobalTestConfigurationProvider.getMobilebrowserSettings().getAppiumServer().getServerUrl();
         }
         return BrowserStackUtil.getBrowserStackUrl();
     }

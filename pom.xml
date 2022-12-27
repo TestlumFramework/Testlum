@@ -93,7 +93,6 @@
         <com.twilio.sdk.version>9.0.0-rc.3</com.twilio.sdk.version>
         <image-comparison.version>4.4.0</image-comparison.version>
         <appium-client.version>8.1.1</appium-client.version>
-        <browserstack-local.version>1.0.6</browserstack-local.version>
         <skipGenerateModels>true</skipGenerateModels>
     </properties>
 
@@ -902,11 +901,6 @@
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.browserstack</groupId>
-            <artifactId>browserstack-local-java</artifactId>
-            <version>${browserstack-local.version}</version>
         </dependency>
     </dependencies>
 

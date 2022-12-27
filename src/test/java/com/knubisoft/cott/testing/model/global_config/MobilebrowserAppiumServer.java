@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="appiumServerUrl" type="{http://www.knubisoft.com/cott/testing/model/global-config}url"/&gt;
+ *         &lt;element name="serverUrl" type="{http://www.knubisoft.com/cott/testing/model/global-config}url"/&gt;
  *         &lt;element name="devices" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowserDevices"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
@@ -29,38 +29,38 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "mobilebrowserAppiumServer", propOrder = {
-    "appiumServerUrl",
+    "serverUrl",
     "devices"
 })
 public class MobilebrowserAppiumServer {
 
     @XmlElement(required = true)
-    protected String appiumServerUrl;
+    protected String serverUrl;
     @XmlElement(required = true)
     protected MobilebrowserDevices devices;
 
     /**
-     * Gets the value of the appiumServerUrl property.
+     * Gets the value of the serverUrl property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getAppiumServerUrl() {
-        return appiumServerUrl;
+    public String getServerUrl() {
+        return serverUrl;
     }
 
     /**
-     * Sets the value of the appiumServerUrl property.
+     * Sets the value of the serverUrl property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setAppiumServerUrl(String value) {
-        this.appiumServerUrl = value;
+    public void setServerUrl(String value) {
+        this.serverUrl = value;
     }
 
     /**

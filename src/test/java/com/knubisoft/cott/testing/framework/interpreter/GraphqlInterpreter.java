@@ -6,6 +6,7 @@ import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.cott.testing.framework.interpreter.lib.http.ApiResponse;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.HttpValidator;
@@ -47,7 +48,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         String query = getQuery(graphql.getBody());
         ResultUtil.addGraphQlMetaData(graphql.getAlias(), graphql.getEndpoint(), query, result);
         LogUtil.logGraphqlInfo(graphql.getAlias(), graphql.getEndpoint(), query);
-        HttpResponse response = getResponse(graphql, query);
+        ApiResponse response = getResponse(graphql, query);
         compareResult(graphql.getResponse(), response, result);
     }
 
@@ -59,12 +60,22 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     }
 
     @SneakyThrows
-    private HttpResponse getResponse(final Graphql graphql, final String query) {
+    private ApiResponse getResponse(final Graphql graphql, final String query) {
         String body = toString(new QueryBody(query));
         HttpPost post = buildHttpPost(graphql, body);
         try (CloseableHttpClient client = HttpClients.createDefault()) {
-            return client.execute(post);
+            HttpResponse response = client.execute(post);
+            return convertToApiResponse(response);
         }
+    }
+
+    @SneakyThrows
+    private ApiResponse convertToApiResponse(final HttpResponse response) {
+        int code = response.getStatusLine().getStatusCode();
+        Object body = EntityUtils.toString(response.getEntity());
+        Map<String, String> headers = Arrays.stream(response.getAllHeaders())
+                .collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
+        return new ApiResponse(code, headers, body);
     }
 
     private HttpPost buildHttpPost(final Graphql graphql, final String body) {
@@ -87,11 +98,11 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
 
     @SneakyThrows
     private void compareResult(final Response expected,
-                               final HttpResponse actual,
+                               final ApiResponse actual,
                                final CommandResult result) {
         HttpValidator httpValidator = new HttpValidator(this);
-        httpValidator.validateCode(expected.getCode(), actual.getStatusLine().getStatusCode());
-        String actualBody = EntityUtils.toString(actual.getEntity());
+        httpValidator.validateCode(expected.getCode(), actual.getCode());
+        String actualBody = String.valueOf(actual.getBody());
         setContextBody(actualBody);
         validateBody(expected, actualBody, httpValidator, result);
         validateHeaders(expected, actual, httpValidator);
@@ -111,10 +122,10 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     }
 
     private void validateHeaders(final Response expected,
-                                 final HttpResponse actual,
+                                 final ApiResponse actual,
                                  final HttpValidator httpValidator) {
         if (!expected.getHeader().isEmpty()) {
-            httpValidator.validateHeaders(getExpectedHeaders(expected), getActualHeaders(actual));
+            httpValidator.validateHeaders(getExpectedHeaders(expected), actual.getHeaders());
         }
     }
 
@@ -122,10 +133,6 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         return expected.getHeader().stream().collect(Collectors.toMap(Header::getName, Header::getData));
     }
 
-    private Map<String, String> getActualHeaders(final HttpResponse actual) {
-        return Arrays.stream(actual.getAllHeaders())
-                .collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
-    }
 
     @AllArgsConstructor
     @Getter

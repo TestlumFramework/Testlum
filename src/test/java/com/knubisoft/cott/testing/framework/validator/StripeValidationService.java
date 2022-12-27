@@ -1,17 +1,17 @@
-package com.knubisoft.cott.runner.impl;
+package com.knubisoft.cott.testing.framework.validator;
 
-import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
+import com.knubisoft.cott.testing.model.global_config.SubscriptionType;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import com.stripe.model.Subscription;
 import com.stripe.net.RequestOptions;
 import com.stripe.param.CustomerRetrieveParams;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
-public class StripeService {
+public class StripeValidationService implements SubscriptionValidator {
 
     private static final String COTT_ACCOUNT = "acct_1MEAdcDGir2utiID";
     private static final String STRIPE_API_KEY = "sk_test_"
@@ -19,8 +19,9 @@ public class StripeService {
     private static final int CONNECT_TIMEOUT_MILLIS = 30 * 1000;
     private static final int READ_TIMEOUT_MILLIS = 40 * 1000;
 
-    public void checkSubscription() {
-        String customerId = getStripeCustomerId();
+    @Override
+    public void checkSubscription(final GlobalTestConfiguration globalTestConfig) {
+        String customerId = getStripeCustomerId(globalTestConfig);
         Customer customer = retrieveCustomer(customerId);
         List<Subscription> subscriptions = customer.getSubscriptions().getData();
 
@@ -30,16 +31,15 @@ public class StripeService {
 
         if (!isActiveSubscription) {
             throw new DefaultFrameworkException("No active subscription found for"
-                    + " customer with id='%s' email='%s'", customerId, customer.getEmail());
+                    + " customer by id='%s' with email='%s'", customerId, customer.getEmail());
         }
     }
 
-    private String getStripeCustomerId() {
-        String stripeCustomerId = GlobalTestConfigurationProvider.provide().getStripeCustomerId();
-        if (StringUtils.isBlank(stripeCustomerId)) {
-            throw new DefaultFrameworkException("Cannot find StripeCustomerId configuration");
+    private String getStripeCustomerId(final GlobalTestConfiguration globalTestConfig) {
+        if (SubscriptionType.STRIPE == globalTestConfig.getSubscription().getType()) {
+            return globalTestConfig.getSubscription().getId();
         }
-        return stripeCustomerId;
+        throw new DefaultFrameworkException("Cannot find StripeCustomerId configuration");
     }
 
     private Customer retrieveCustomer(final String customerId) {

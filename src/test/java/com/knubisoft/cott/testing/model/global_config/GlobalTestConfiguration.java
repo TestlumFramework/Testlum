@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="stripeCustomerId" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="subscription" type="{http://www.knubisoft.com/cott/testing/model/global-config}subscription"/&gt;
  *         &lt;element name="stopScenarioOnFailure" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *         &lt;element name="delayBetweenScenariosRuns" type="{http://www.knubisoft.com/cott/testing/model/global-config}delayBetweenScenariosRuns" minOccurs="0"/&gt;
  *         &lt;element name="runScenariosByTag" type="{http://www.knubisoft.com/cott/testing/model/global-config}runScenariosByTag"/&gt;
@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "stripeCustomerId",
+    "subscription",
     "stopScenarioOnFailure",
     "delayBetweenScenariosRuns",
     "runScenariosByTag",
@@ -53,7 +53,7 @@ import javax.xml.bind.annotation.XmlType;
 public class GlobalTestConfiguration {
 
     @XmlElement(required = true)
-    protected String stripeCustomerId;
+    protected Subscription subscription;
     protected boolean stopScenarioOnFailure;
     protected DelayBetweenScenariosRuns delayBetweenScenariosRuns;
     @XmlElement(required = true)
@@ -69,27 +69,27 @@ public class GlobalTestConfiguration {
     protected Integrations integrations;
 
     /**
-     * Gets the value of the stripeCustomerId property.
+     * Gets the value of the subscription property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Subscription }
      *     
      */
-    public String getStripeCustomerId() {
-        return stripeCustomerId;
+    public Subscription getSubscription() {
+        return subscription;
     }
 
     /**
-     * Sets the value of the stripeCustomerId property.
+     * Sets the value of the subscription property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Subscription }
      *     
      */
-    public void setStripeCustomerId(String value) {
-        this.stripeCustomerId = value;
+    public void setSubscription(Subscription value) {
+        this.subscription = value;
     }
 
     /**

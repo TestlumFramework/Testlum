@@ -40,7 +40,7 @@
     <x:element name="globalTestConfiguration">
         <x:complexType>
             <x:sequence>
-                <x:element name="stripeCustomerId" type="tns:nonEmptyString"/>
+                <x:element name="subscription" type="tns:subscription"/>
                 <x:element name="stopScenarioOnFailure" type="x:boolean"/>
                 <x:element name="delayBetweenScenariosRuns" type="tns:delayBetweenScenariosRuns" minOccurs="0"/>
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
@@ -117,4 +117,17 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:complexType name="subscription">
+        <x:choice>
+            <x:element name="id" type="tns:nonEmptyString"/>
+        </x:choice>
+        <x:attribute name="type" type="tns:subscriptionType" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="subscriptionType">
+        <x:restriction base="x:string">
+            <x:enumeration value="stripe"/>
+            <x:enumeration value="free"/>
+        </x:restriction>
+    </x:simpleType>
 </x:schema>

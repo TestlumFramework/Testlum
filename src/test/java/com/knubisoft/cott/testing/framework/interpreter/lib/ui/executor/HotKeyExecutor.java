@@ -27,11 +27,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-import ru.yandex.clickhouse.util.apache.StringUtils;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.HOTKEY_LOCATOR;
 
 @ExecutorForClass(HotKey.class)
@@ -85,33 +85,30 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     }
 
     private void highlightCommand(final Highlight highlight, final CommandResult result) {
-        WebElement element = StringUtils.isBlank(highlight.getLocatorId())
-                ? getActiveElement()
-                : getElementForHotKey(highlight.getLocatorId(), result);
-        action.keyDown(element, ctrlKey).sendKeys("a").keyUp(ctrlKey).build().perform();
+        action.keyDown(getWebElement(highlight.getLocatorId(), result), ctrlKey)
+                .sendKeys("a").keyUp(ctrlKey).build().perform();
     }
 
     private void cutCommand(final Cut cut, final CommandResult result) {
-        WebElement element = StringUtils.isBlank(cut.getLocatorId())
-                ? getActiveElement()
-                : getElementForHotKey(cut.getLocatorId(), result);
-        action.keyDown(element, ctrlKey)
+        action.keyDown(getWebElement(cut.getLocatorId(), result), ctrlKey)
                 .sendKeys("a").sendKeys("x").keyUp(ctrlKey).build().perform();
     }
 
     private void pasteCommand(final Paste paste, final CommandResult result) {
-        WebElement element = StringUtils.isBlank(paste.getLocatorId())
-                ? getActiveElement()
-                : getElementForHotKey(paste.getLocatorId(), result);
-        action.keyDown(element, ctrlKey).sendKeys("v").keyUp(ctrlKey).build().perform();
+        action.keyDown(getWebElement(paste.getLocatorId(), result), ctrlKey)
+                .sendKeys("v").keyUp(ctrlKey).build().perform();
     }
 
     private void copyCommand(final Copy copy, final CommandResult result) {
-        WebElement element = StringUtils.isBlank(copy.getLocatorId())
-                ? getActiveElement()
-                : getElementForHotKey(copy.getLocatorId(), result);
-        action.keyDown(element, ctrlKey)
+        action.keyDown(getWebElement(copy.getLocatorId(), result), ctrlKey)
                 .sendKeys("a").sendKeys("c").keyUp(ctrlKey).build().perform();
+    }
+
+
+    private WebElement getWebElement(final String locator, final CommandResult result) {
+        return StringUtils.isBlank(locator)
+                ? getActiveElement()
+                : getElementForHotKey(locator, result);
     }
 
     private WebElement getActiveElement() {
@@ -128,9 +125,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
         return SystemUtils.IS_OS_MAC_OSX ? Keys.COMMAND : Keys.CONTROL;
     }
 
-    private interface HotKeyCommandPredicate extends Predicate<AbstractUiCommand> {
-    }
+    private interface HotKeyCommandPredicate extends Predicate<AbstractUiCommand> { }
 
-    private interface HotKeyCommand extends BiConsumer<AbstractUiCommand, CommandResult> {
-    }
+    private interface HotKeyCommand extends BiConsumer<AbstractUiCommand, CommandResult> { }
 }

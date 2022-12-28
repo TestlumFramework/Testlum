@@ -17,6 +17,7 @@ import com.knubisoft.cott.testing.model.scenario.Graphql;
 import com.knubisoft.cott.testing.model.scenario.GraphqlBody;
 import com.knubisoft.cott.testing.model.scenario.Header;
 import com.knubisoft.cott.testing.model.scenario.Response;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,8 +60,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         return inject(rawBody);
     }
 
-    @SneakyThrows
-    private ApiResponse getResponse(final Graphql graphql, final String query) {
+    private ApiResponse getResponse(final Graphql graphql, final String query) throws IOException {
         String body = toString(new QueryBody(query));
         HttpPost post = buildHttpPost(graphql, body);
         try (CloseableHttpClient client = HttpClients.createDefault()) {
@@ -69,8 +69,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         }
     }
 
-    @SneakyThrows
-    private ApiResponse convertToApiResponse(final HttpResponse response) {
+    private ApiResponse convertToApiResponse(final HttpResponse response) throws IOException {
         int code = response.getStatusLine().getStatusCode();
         Object body = EntityUtils.toString(response.getEntity());
         Map<String, String> headers = Arrays.stream(response.getAllHeaders())
@@ -96,7 +95,6 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         return url + graphql.getEndpoint();
     }
 
-    @SneakyThrows
     private void compareResult(final Response expected,
                                final ApiResponse actual,
                                final CommandResult result) {

@@ -22,6 +22,7 @@
         <org.spring.boot.version>2.4.3</org.spring.boot.version>
         <org.spring.version>5.3.4</org.spring.version>
         <io.jsonwebtoken.version>0.11.2</io.jsonwebtoken.version>
+        <com.stripe-java.version>22.3.0</com.stripe-java.version>
 
         <jackson.version>2.13.3</jackson.version>
         <javax.xml.jaxp-api.version>1.4.2</javax.xml.jaxp-api.version>
@@ -118,9 +119,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.tika</groupId>
-            <artifactId>tika-core</artifactId>
-            <version>1.18</version>
+            <groupId>com.stripe</groupId>
+            <artifactId>stripe-java</artifactId>
+            <version>${com.stripe-java.version}</version>
         </dependency>
 
         <dependency>

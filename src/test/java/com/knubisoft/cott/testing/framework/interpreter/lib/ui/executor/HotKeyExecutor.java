@@ -85,45 +85,37 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     }
 
     private void highlightCommand(final Highlight highlight, final CommandResult result) {
-        if (StringUtils.isBlank(highlight.getLocatorId())) {
-            action.keyDown(getActiveElement(), ctrlKey).sendKeys("a").keyUp(ctrlKey).build().perform();
-        } else {
-            action.keyDown(getElementForHotKey(highlight.getLocatorId(), result), ctrlKey)
-                    .sendKeys("a").keyUp(ctrlKey).build().perform();
-        }
+        WebElement element = StringUtils.isBlank(highlight.getLocatorId())
+                ? getActiveElement()
+                : getElementForHotKey(highlight.getLocatorId(), result);
+        action.keyDown(element, ctrlKey).sendKeys("a").keyUp(ctrlKey).build().perform();
+    }
+
+    private void cutCommand(final Cut cut, final CommandResult result) {
+        WebElement element = StringUtils.isBlank(cut.getLocatorId())
+                ? getActiveElement()
+                : getElementForHotKey(cut.getLocatorId(), result);
+        action.keyDown(element, ctrlKey)
+                .sendKeys("a").sendKeys("x").keyUp(ctrlKey).build().perform();
+    }
+
+    private void pasteCommand(final Paste paste, final CommandResult result) {
+        WebElement element = StringUtils.isBlank(paste.getLocatorId())
+                ? getActiveElement()
+                : getElementForHotKey(paste.getLocatorId(), result);
+        action.keyDown(element, ctrlKey).sendKeys("v").keyUp(ctrlKey).build().perform();
+    }
+
+    private void copyCommand(final Copy copy, final CommandResult result) {
+        WebElement element = StringUtils.isBlank(copy.getLocatorId())
+                ? getActiveElement()
+                : getElementForHotKey(copy.getLocatorId(), result);
+        action.keyDown(element, ctrlKey)
+                .sendKeys("a").sendKeys("c").keyUp(ctrlKey).build().perform();
     }
 
     private WebElement getActiveElement() {
         return dependencies.getDriver().switchTo().activeElement();
-    }
-
-    private void cutCommand(final Cut cut, final CommandResult result) {
-        if (StringUtils.isBlank(cut.getLocatorId())) {
-            action.keyDown(getActiveElement(), ctrlKey)
-                    .sendKeys("a").sendKeys("x").keyUp(ctrlKey).build().perform();
-        } else {
-            action.keyDown(getElementForHotKey(cut.getLocatorId(), result), ctrlKey)
-                    .sendKeys("a").sendKeys("x").keyUp(ctrlKey).build().perform();
-        }
-    }
-
-    private void pasteCommand(final Paste paste, final CommandResult result) {
-        if (StringUtils.isBlank(paste.getLocatorId())) {
-            action.keyDown(getActiveElement(), ctrlKey).sendKeys("v").keyUp(ctrlKey).build().perform();
-        } else {
-            action.keyDown(getElementForHotKey(paste.getLocatorId(), result), ctrlKey)
-                    .sendKeys("v").keyUp(ctrlKey).build().perform();
-        }
-    }
-
-    private void copyCommand(final Copy copy, final CommandResult result) {
-        if (StringUtils.isBlank(copy.getLocatorId())) {
-            action.keyDown(getActiveElement(), ctrlKey)
-                    .sendKeys("a").sendKeys("c").keyUp(ctrlKey).build().perform();
-        } else {
-            action.keyDown(getElementForHotKey(copy.getLocatorId(), result), ctrlKey)
-                    .sendKeys("a").sendKeys("c").keyUp(ctrlKey).build().perform();
-        }
     }
 
     private WebElement getElementForHotKey(final String locatorId, final CommandResult result) {

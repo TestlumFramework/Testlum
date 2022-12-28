@@ -313,19 +313,25 @@
 
     <x:complexType name="paste">
         <x:complexContent>
-            <x:extension base="tns:commandWithLocator"/>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="locatorId" type="tns:scenarioLocator" use="optional"/>
+            </x:extension>
         </x:complexContent>
     </x:complexType>
 
     <x:complexType name="cut">
         <x:complexContent>
-            <x:extension base="tns:commandWithLocator"/>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="locatorId" type="tns:scenarioLocator" use="optional"/>
+            </x:extension>
         </x:complexContent>
     </x:complexType>
 
     <x:complexType name="highlight">
         <x:complexContent>
-            <x:extension base="tns:commandWithLocator"/>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="locatorId" type="tns:scenarioLocator" use="optional"/>
+            </x:extension>
         </x:complexContent>
     </x:complexType>
 

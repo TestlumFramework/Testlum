@@ -438,6 +438,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GraphqlIntegration }
+     * 
+     */
+    public GraphqlIntegration createGraphqlIntegration() {
+        return new GraphqlIntegration();
+    }
+
+    /**
+     * Create an instance of {@link GraphqlApi }
+     * 
+     */
+    public GraphqlApi createGraphqlApi() {
+        return new GraphqlApi();
+    }
+
+    /**
      * Create an instance of {@link BrowserSettings }
      * 
      */

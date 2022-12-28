@@ -48,6 +48,7 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;element name="sendgrid" type="{http://www.knubisoft.com/cott/testing/model/scenario}sendgrid"/&gt;
  *           &lt;element name="ses" type="{http://www.knubisoft.com/cott/testing/model/scenario}ses"/&gt;
  *           &lt;element name="dynamo" type="{http://www.knubisoft.com/cott/testing/model/scenario}dynamo"/&gt;
+ *           &lt;element name="graphql" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphql"/&gt;
  *           &lt;element name="websocket" type="{http://www.knubisoft.com/cott/testing/model/scenario}websocket"/&gt;
  *           &lt;element name="var" type="{http://www.knubisoft.com/cott/testing/model/scenario}var"/&gt;
  *           &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}wait"/&gt;
@@ -103,6 +104,7 @@ public class Scenario {
         @XmlElement(name = "sendgrid", type = Sendgrid.class),
         @XmlElement(name = "ses", type = Ses.class),
         @XmlElement(name = "dynamo", type = Dynamo.class),
+        @XmlElement(name = "graphql", type = Graphql.class),
         @XmlElement(name = "websocket", type = Websocket.class),
         @XmlElement(name = "var", type = Var.class),
         @XmlElement(name = "wait", type = Wait.class),
@@ -207,6 +209,7 @@ public class Scenario {
      * {@link Sendgrid }
      * {@link Ses }
      * {@link Dynamo }
+     * {@link Graphql }
      * {@link Websocket }
      * {@link Var }
      * {@link Wait }

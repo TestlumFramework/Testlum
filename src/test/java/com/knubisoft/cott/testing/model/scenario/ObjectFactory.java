@@ -238,6 +238,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Graphql }
+     * 
+     */
+    public Graphql createGraphql() {
+        return new Graphql();
+    }
+
+    /**
      * Create an instance of {@link Websocket }
      * 
      */
@@ -939,6 +947,14 @@ public class ObjectFactory {
      */
     public WebsocketReceive createWebsocketReceive() {
         return new WebsocketReceive();
+    }
+
+    /**
+     * Create an instance of {@link GraphqlBody }
+     * 
+     */
+    public GraphqlBody createGraphqlBody() {
+        return new GraphqlBody();
     }
 
     /**

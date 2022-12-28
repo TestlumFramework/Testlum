@@ -27,14 +27,6 @@ import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSubscribe;
-import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.junit.platform.launcher.listeners.TestExecutionSummary;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -42,7 +34,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-
+import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.platform.launcher.listeners.TestExecutionSummary;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static java.lang.String.format;
@@ -115,6 +113,7 @@ public class ResultUtil {
     private static final String DISABLE = "Disable";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
+    private static final String BODY_OF_REQUEST = "Body of request";
     private static final String LAMBDA_FUNCTION_NAME = "Function name";
     private static final String LAMBDA_PAYLOAD = "Payload";
     private static final String HEADERS_STATUS = "Headers status";
@@ -509,5 +508,14 @@ public class ResultUtil {
         } else {
             result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
         }
+    }
+
+    public static void addGraphQlMetaData(final String alias,
+                                          final String endpoint,
+                                          final String body,
+                                          final CommandResult result) {
+        result.put(ALIAS, alias);
+        result.put(ENDPOINT, endpoint);
+        result.put(BODY_OF_REQUEST, body);
     }
 }

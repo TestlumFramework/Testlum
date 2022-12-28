@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="sesIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}sesIntegration" minOccurs="0"/&gt;
  *         &lt;element name="smtpIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}smtpIntegration" minOccurs="0"/&gt;
  *         &lt;element name="twilioIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}twilioIntegration" minOccurs="0"/&gt;
+ *         &lt;element name="graphqlIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}graphqlIntegration" minOccurs="0"/&gt;
  *       &lt;/all&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -68,6 +69,7 @@ public class Integrations {
     protected SesIntegration sesIntegration;
     protected SmtpIntegration smtpIntegration;
     protected TwilioIntegration twilioIntegration;
+    protected GraphqlIntegration graphqlIntegration;
 
     /**
      * Gets the value of the apis property.
@@ -523,6 +525,30 @@ public class Integrations {
      */
     public void setTwilioIntegration(TwilioIntegration value) {
         this.twilioIntegration = value;
+    }
+
+    /**
+     * Gets the value of the graphqlIntegration property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link GraphqlIntegration }
+     *     
+     */
+    public GraphqlIntegration getGraphqlIntegration() {
+        return graphqlIntegration;
+    }
+
+    /**
+     * Sets the value of the graphqlIntegration property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link GraphqlIntegration }
+     *     
+     */
+    public void setGraphqlIntegration(GraphqlIntegration value) {
+        this.graphqlIntegration = value;
     }
 
 }

@@ -27,13 +27,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.HOTKEY_COMMAND_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.HOTKEY_LOCATOR;
 
+@Slf4j
 @ExecutorForClass(HotKey.class)
 public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
 
@@ -118,6 +121,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     private WebElement getElementForHotKey(final String locatorId, final CommandResult result) {
         Locator locator = GlobalLocators.getLocator(locatorId);
         result.put(HOTKEY_LOCATOR, locator.getLocatorId());
+        log.info(HOTKEY_COMMAND_LOCATOR, locator.getLocatorId());
         return WebElementFinder.find(locator, dependencies.getDriver());
     }
 

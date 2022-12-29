@@ -36,11 +36,7 @@ import javax.xml.bind.annotation.XmlType;
     Clear.class,
     SwitchToFrame.class,
     ScrollTo.class,
-    ScrollToNative.class,
-    Copy.class,
-    Paste.class,
-    Cut.class,
-    Highlight.class
+    ScrollToNative.class
 })
 public abstract class CommandWithLocator
     extends AbstractUiCommand

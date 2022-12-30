@@ -5,6 +5,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecuto
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.SwipeDirection;
 import com.knubisoft.cott.testing.model.scenario.SwipeNative;
@@ -12,6 +13,7 @@ import io.appium.java_client.AppiumDriver;
 import java.util.Collections;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.interactions.Sequence;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SWIPE_TYPE_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.AMOUNT_OF_SWIPES;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.PERFORM_SWIPE;
 
@@ -29,6 +31,7 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
     public void execute(final SwipeNative swipeNative, final CommandResult result) {
         result.put(AMOUNT_OF_SWIPES, swipeNative.getQuantity());
         result.put(PERFORM_SWIPE, swipeNative.getDirection());
+        LogUtil.logSwipeNativeInfo(swipeNative);
         performSwipe(swipeNative);
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
@@ -54,7 +57,7 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
             case RIGHT:
                 return new Point(start.getX() - DEFAULT_SWIPE_VALUE, start.getY());
             default:
-                throw new DefaultFrameworkException("Invalid swipe direction: <%s>", direction);
+                throw new DefaultFrameworkException(SWIPE_TYPE_NOT_FOUND, direction);
         }
     }
 }

@@ -19,6 +19,7 @@ import com.knubisoft.cott.testing.model.scenario.Scroll;
 import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
+import com.knubisoft.cott.testing.model.scenario.SwipeNative;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.Ui;
 import lombok.SneakyThrows;
@@ -41,6 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.AMOUNT_OF_SWIPES;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ATTRIBUTE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BODY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
@@ -93,6 +95,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.SOURCE_LO
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_FRAME;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_WEBVIEW;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUBJECT_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SWIPE_DIRECTION;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
@@ -413,5 +416,10 @@ public class LogUtil {
         log.info(ALIAS_LOG, alias);
         log.info(ENDPOINT_LOG, endpoint);
         log.info(BODY_LOG, body.replaceAll(SPACE, EMPTY).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+    }
+
+    public static void logSwipeNativeInfo(final SwipeNative swipeNative) {
+        log.info(AMOUNT_OF_SWIPES, swipeNative.getQuantity());
+        log.info(SWIPE_DIRECTION, swipeNative.getDirection());
     }
 }

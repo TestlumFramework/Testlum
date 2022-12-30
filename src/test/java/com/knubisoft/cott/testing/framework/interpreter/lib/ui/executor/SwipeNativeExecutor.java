@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -42,9 +43,16 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
         }
     }
 
-    private static Point getEndPoint(final SwipeDirection direction, final Point start) {
-        return SwipeDirection.RIGHT.equals(direction)
-                ? new Point(start.getX() - DEFAULT_SWIPE_VALUE, start.getY())
-                : new Point(start.getX() + DEFAULT_SWIPE_VALUE, start.getY());
+    private Point getEndPoint(final SwipeDirection direction, final Point start) {
+        switch (direction) {
+            case UP: return new Point(start.getX(), start.getY() - DEFAULT_SWIPE_VALUE);
+            case DOWN: return new Point(start.getX(), start.getY() + DEFAULT_SWIPE_VALUE);
+            case LEFT: return new Point(start.getX() + DEFAULT_SWIPE_VALUE, start.getY());
+            case RIGHT: return new Point(start.getX() - DEFAULT_SWIPE_VALUE, start.getY());
+            default: throw new DefaultFrameworkException("Invalid swipe direction: <%s>", direction);
+        }
+//        return SwipeDirection.RIGHT.equals(direction)
+//                ? new Point(start.getX() - DEFAULT_SWIPE_VALUE, start.getY())
+//                : new Point(start.getX() + DEFAULT_SWIPE_VALUE, start.getY());
     }
 }

@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
  *     &lt;enumeration value="right"/&gt;
  *     &lt;enumeration value="left"/&gt;
+ *     &lt;enumeration value="up"/&gt;
+ *     &lt;enumeration value="down"/&gt;
  *   &lt;/restriction&gt;
  * &lt;/simpleType&gt;
  * </pre>
@@ -28,7 +30,11 @@ public enum SwipeDirection {
     @XmlEnumValue("right")
     RIGHT("right"),
     @XmlEnumValue("left")
-    LEFT("left");
+    LEFT("left"),
+    @XmlEnumValue("up")
+    UP("up"),
+    @XmlEnumValue("down")
+    DOWN("down");
     private final String value;
 
     SwipeDirection(String v) {

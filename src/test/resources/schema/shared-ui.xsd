@@ -287,4 +287,10 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:complexType name="refresh">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand"/>
+        </x:complexContent>
+    </x:complexType>
+
 </x:schema>

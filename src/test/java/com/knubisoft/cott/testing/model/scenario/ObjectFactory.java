@@ -518,6 +518,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Refresh }
+     * 
+     */
+    public Refresh createRefresh() {
+        return new Refresh();
+    }
+
+    /**
      * Create an instance of {@link HotKey }
      * 
      */
@@ -595,14 +603,6 @@ public class ObjectFactory {
      */
     public Space createSpace() {
         return new Space();
-    }
-
-    /**
-     * Create an instance of {@link Refresh }
-     * 
-     */
-    public Refresh createRefresh() {
-        return new Refresh();
     }
 
     /**

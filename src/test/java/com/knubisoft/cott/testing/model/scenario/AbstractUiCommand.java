@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlType;
     ScrollNative.class,
     CommandWithLocator.class,
     SwipeNative.class,
+    Refresh.class,
     HotKey.class,
     Copy.class,
     Paste.class,
@@ -48,7 +49,6 @@ import javax.xml.bind.annotation.XmlType;
     BackSpace.class,
     Escape.class,
     Space.class,
-    Refresh.class,
     WebView.class,
     NavigateNative.class
 })

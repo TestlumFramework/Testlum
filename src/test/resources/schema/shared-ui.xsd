@@ -284,6 +284,8 @@
         <x:restriction base="x:string">
             <x:enumeration value="right"/>
             <x:enumeration value="left"/>
+            <x:enumeration value="up"/>
+            <x:enumeration value="down"/>
         </x:restriction>
     </x:simpleType>
 

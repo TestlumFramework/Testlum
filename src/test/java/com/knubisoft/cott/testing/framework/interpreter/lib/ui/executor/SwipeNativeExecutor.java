@@ -51,8 +51,5 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
             case RIGHT: return new Point(start.getX() - DEFAULT_SWIPE_VALUE, start.getY());
             default: throw new DefaultFrameworkException("Invalid swipe direction: <%s>", direction);
         }
-//        return SwipeDirection.RIGHT.equals(direction)
-//                ? new Point(start.getX() - DEFAULT_SWIPE_VALUE, start.getY())
-//                : new Point(start.getX() + DEFAULT_SWIPE_VALUE, start.getY());
     }
 }

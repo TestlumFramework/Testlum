@@ -32,8 +32,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.URL_TO_ACTUAL
 @ExecutorForClass(Image.class)
 public class CompareImageExecutor extends AbstractUiExecutor<Image> {
 
-    public static final String APPIUM_LOCALHOST_ALIAS = "http://\\d+\\.\\d+\\.\\d+\\.\\d+:";
-    public static final String HTTP_LOCALHOST = "http://localhost:";
+    public static final String APPIUM_LOCALHOST_ALIAS = "10\\.0\\.2\\.2";
 
     public CompareImageExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -67,7 +66,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
                                                   final String imageSourceAttribute,
                                                   final CommandResult result) throws IOException {
         String urlToActualImage = UiUtil.getElementAttribute(webElement, imageSourceAttribute)
-                .replaceAll(APPIUM_LOCALHOST_ALIAS, HTTP_LOCALHOST);
+                .replaceAll(APPIUM_LOCALHOST_ALIAS, "localhost");
         log.info(URL_TO_IMAGE_LOG, urlToActualImage);
         result.put(URL_TO_ACTUAL_IMAGE, urlToActualImage);
         return ImageIO.read(new URL(urlToActualImage));

@@ -19,10 +19,8 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}settings"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="baseUrl" type="{http://www.knubisoft.com/cott/testing/model/global-config}url"/&gt;
- *         &lt;choice&gt;
- *           &lt;element name="appiumServer" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowserAppiumServer"/&gt;
- *           &lt;element name="browserStack" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowserBrowserStack"/&gt;
- *         &lt;/choice&gt;
+ *         &lt;element name="connection" type="{http://www.knubisoft.com/cott/testing/model/global-config}connectionType"/&gt;
+ *         &lt;element name="devices" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowserDevices"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/extension&gt;
@@ -35,8 +33,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "mobilebrowser", propOrder = {
     "baseUrl",
-    "appiumServer",
-    "browserStack"
+    "connection",
+    "devices"
 })
 public class Mobilebrowser
     extends Settings
@@ -44,8 +42,10 @@ public class Mobilebrowser
 
     @XmlElement(required = true)
     protected String baseUrl;
-    protected MobilebrowserAppiumServer appiumServer;
-    protected MobilebrowserBrowserStack browserStack;
+    @XmlElement(required = true)
+    protected ConnectionType connection;
+    @XmlElement(required = true)
+    protected MobilebrowserDevices devices;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
 
@@ -74,51 +74,51 @@ public class Mobilebrowser
     }
 
     /**
-     * Gets the value of the appiumServer property.
+     * Gets the value of the connection property.
      * 
      * @return
      *     possible object is
-     *     {@link MobilebrowserAppiumServer }
+     *     {@link ConnectionType }
      *     
      */
-    public MobilebrowserAppiumServer getAppiumServer() {
-        return appiumServer;
+    public ConnectionType getConnection() {
+        return connection;
     }
 
     /**
-     * Sets the value of the appiumServer property.
+     * Sets the value of the connection property.
      * 
      * @param value
      *     allowed object is
-     *     {@link MobilebrowserAppiumServer }
+     *     {@link ConnectionType }
      *     
      */
-    public void setAppiumServer(MobilebrowserAppiumServer value) {
-        this.appiumServer = value;
+    public void setConnection(ConnectionType value) {
+        this.connection = value;
     }
 
     /**
-     * Gets the value of the browserStack property.
+     * Gets the value of the devices property.
      * 
      * @return
      *     possible object is
-     *     {@link MobilebrowserBrowserStack }
+     *     {@link MobilebrowserDevices }
      *     
      */
-    public MobilebrowserBrowserStack getBrowserStack() {
-        return browserStack;
+    public MobilebrowserDevices getDevices() {
+        return devices;
     }
 
     /**
-     * Sets the value of the browserStack property.
+     * Sets the value of the devices property.
      * 
      * @param value
      *     allowed object is
-     *     {@link MobilebrowserBrowserStack }
+     *     {@link MobilebrowserDevices }
      *     
      */
-    public void setBrowserStack(MobilebrowserBrowserStack value) {
-        this.browserStack = value;
+    public void setDevices(MobilebrowserDevices value) {
+        this.devices = value;
     }
 
     /**

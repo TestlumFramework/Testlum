@@ -99,12 +99,54 @@
     </x:complexType>
 
     <x:complexType name="abstractDevice" abstract="true">
-        <x:sequence>
+        <x:choice>
             <x:element name="capabilities" type="tns:capabilities" minOccurs="0"/>
-            <x:element name="udid" type="tns:nonEmptyString" minOccurs="0"/>
-            <x:element name="deviceName" type="tns:nonEmptyString"/>
-        </x:sequence>
+        </x:choice>
+        <x:attribute name="platformName" type="tns:platform" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="platform">
+        <x:restriction base="x:string">
+            <x:enumeration value="android"/>
+            <x:enumeration value="ios"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="connectionType">
+        <x:choice>
+            <x:element name="appiumServer" type="tns:appiumServer"/>
+            <x:element name="browserStack"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="appiumServer">
+        <x:choice>
+            <x:element name="serverUrl" type="tns:url"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="abstractCapabilities" abstract="true">
+        <x:sequence>
+            <x:element name="deviceName" type="tns:nonEmptyString"/>
+            <x:element name="platformVersion" type="tns:nonEmptyString"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="appiumCapabilities">
+        <x:complexContent>
+            <x:extension base="tns:abstractCapabilities">
+                <x:choice>
+                    <x:element name="udid" type="tns:nonEmptyString"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="browserStackCapabilities">
+        <x:complexContent>
+            <x:extension base="tns:abstractCapabilities"/>
+        </x:complexContent>
     </x:complexType>
 
     <x:complexType name="capabilities">
@@ -114,7 +156,7 @@
     </x:complexType>
 
     <x:complexType name="capability">
-        <x:attribute name="capabilityName" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 

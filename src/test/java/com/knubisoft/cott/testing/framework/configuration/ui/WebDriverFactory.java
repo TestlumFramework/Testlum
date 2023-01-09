@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.configuration.ui;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.cott.testing.framework.util.BrowserStackUtil;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.BrowserInDocker;
@@ -45,7 +46,6 @@ import static org.openqa.selenium.remote.CapabilityType.BROWSER_VERSION;
 
 @UtilityClass
 public class WebDriverFactory {
-
     private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;
 
@@ -70,6 +70,7 @@ public class WebDriverFactory {
         return webDriver;
     }
 
+    @SneakyThrows
     private WebDriver getWebDriver(final AbstractBrowser browser,
                                    final MutableCapabilities browserOptions,
                                    final WebDriverManager driverManager) {
@@ -78,13 +79,21 @@ public class WebDriverFactory {
         if (browserType == BrowserUtil.BrowserType.REMOTE) {
             return getRemoteDriver(browser.getBrowserType().getRemoteBrowser(), browserOptions);
         }
+        if (browserType == BrowserUtil.BrowserType.BROWSER_STACK) {
+            return getRemoteDriverForBrowserStack(browser, browserOptions);
+        }
         if (browserType == BrowserUtil.BrowserType.IN_DOCKER) {
-            WebDriverManager browserInDocker = StringUtils.isNotEmpty(browser.getBrowserWindowSize())
-                    ? driverManager.browserInDocker().dockerScreenResolution(browser.getBrowserWindowSize()
-                    + DEFAULT_DOCKER_SCREEN_COLORS_DEPTH) : driverManager.browserInDocker();
+            WebDriverManager browserInDocker = setScreenResolution(browser, driverManager);
             return getBrowserInDocker(browser.getBrowserType().getBrowserInDocker(), browserOptions, browserInDocker);
         }
         return getLocalDriver(browser.getBrowserType().getLocalBrowser(), browserOptions, driverManager);
+    }
+
+    private WebDriverManager setScreenResolution(final AbstractBrowser browser,
+                                                        final WebDriverManager driverManager) {
+        return StringUtils.isNotEmpty(browser.getBrowserWindowSize())
+                ? driverManager.browserInDocker().dockerScreenResolution(browser.getBrowserWindowSize()
+                + DEFAULT_DOCKER_SCREEN_COLORS_DEPTH) : driverManager.browserInDocker();
     }
 
     private WebDriver getLocalDriver(final LocalBrowser localBrowserSettings,
@@ -120,12 +129,26 @@ public class WebDriverFactory {
         return new RemoteWebDriver(new URL(remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
     }
 
+    @SneakyThrows
+    private WebDriver getRemoteDriverForBrowserStack(final AbstractBrowser browser,
+                                      final MutableCapabilities browserOptions) {
+        setBrowserStackCapabilities(browser, browserOptions);
+        return new RemoteWebDriver(new URL(BrowserStackUtil.getBrowserStackUrl()), browserOptions);
+    }
+
     private void setCapabilities(final AbstractBrowser browser, final MutableCapabilities driverOptions) {
         Capabilities capabilities = browser.getCapabilities();
         if (capabilities != null) {
             capabilities.getCapability()
                     .forEach(cap -> driverOptions.setCapability(cap.getCapabilityName(), cap.getValue()));
         }
+    }
+
+    private void setBrowserStackCapabilities(final AbstractBrowser browser,
+                                             final MutableCapabilities browserOptions) {
+        browserOptions.setCapability("browserstack.local", "true");
+        browserOptions.setCapability("browserVersion",
+                browser.getBrowserType().getBrowserStack().getBrowserVersion());
     }
 
     private interface WebDriverInitializer<T extends AbstractBrowser> {

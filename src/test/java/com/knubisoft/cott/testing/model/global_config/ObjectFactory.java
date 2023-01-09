@@ -94,6 +94,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link BrowserStackLogin }
+     * 
+     */
+    public BrowserStackLogin createBrowserStackLogin() {
+        return new BrowserStackLogin();
+    }
+
+    /**
      * Create an instance of {@link Auth }
      * 
      */
@@ -502,6 +510,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link BrowserStackWeb }
+     * 
+     */
+    public BrowserStackWeb createBrowserStackWeb() {
+        return new BrowserStackWeb();
+    }
+
+    /**
      * Create an instance of {@link ScreenRecording }
      * 
      */
@@ -558,11 +574,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link MobilebrowserDeviceSettings }
+     * Create an instance of {@link MobilebrowserAppiumServer }
      * 
      */
-    public MobilebrowserDeviceSettings createMobilebrowserDeviceSettings() {
-        return new MobilebrowserDeviceSettings();
+    public MobilebrowserAppiumServer createMobilebrowserAppiumServer() {
+        return new MobilebrowserAppiumServer();
+    }
+
+    /**
+     * Create an instance of {@link MobilebrowserBrowserStack }
+     * 
+     */
+    public MobilebrowserBrowserStack createMobilebrowserBrowserStack() {
+        return new MobilebrowserBrowserStack();
     }
 
     /**
@@ -582,11 +606,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link NativeDeviceSettings }
+     * Create an instance of {@link NativeAppiumServer }
      * 
      */
-    public NativeDeviceSettings createNativeDeviceSettings() {
-        return new NativeDeviceSettings();
+    public NativeAppiumServer createNativeAppiumServer() {
+        return new NativeAppiumServer();
+    }
+
+    /**
+     * Create an instance of {@link NativeBrowserStack }
+     * 
+     */
+    public NativeBrowserStack createNativeBrowserStack() {
+        return new NativeBrowserStack();
     }
 
     /**
@@ -619,6 +651,14 @@ public class ObjectFactory {
      */
     public IosDevice createIosDevice() {
         return new IosDevice();
+    }
+
+    /**
+     * Create an instance of {@link PlayMarketLogin }
+     * 
+     */
+    public PlayMarketLogin createPlayMarketLogin() {
+        return new PlayMarketLogin();
     }
 
     /**

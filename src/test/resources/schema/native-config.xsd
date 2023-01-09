@@ -7,21 +7,28 @@
     <x:include schemaLocation="shared-config.xsd"/>
 
     <x:complexType name="native">
-        <x:sequence>
-            <x:element name="appiumServerUrl" type="tns:url"/>
-            <x:element name="deviceSettings" type="tns:nativeDeviceSettings"/>
-        </x:sequence>
-        <x:attribute name="enabled" type="x:boolean" use="required"/>
-    </x:complexType>
-
-    <x:complexType name="nativeDeviceSettings">
         <x:complexContent>
             <x:extension base="tns:settings">
-                <x:sequence>
-                    <x:element name="devices" type="tns:nativeDevices"/>
-                </x:sequence>
+                <x:choice>
+                    <x:element name="appiumServer" type="tns:nativeAppiumServer"/>
+                    <x:element name="browserStack" type="tns:nativeBrowserStack"/>
+                </x:choice>
+                <x:attribute name="enabled" type="x:boolean" use="required"/>
             </x:extension>
         </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="nativeAppiumServer">
+        <x:sequence>
+            <x:element name="serverUrl" type="tns:url"/>
+            <x:element name="devices" type="tns:nativeDevices"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="nativeBrowserStack">
+        <x:sequence>
+            <x:element name="devices" type="tns:nativeDevices"/>
+        </x:sequence>
     </x:complexType>
 
     <x:complexType name="nativeDevices">
@@ -30,7 +37,7 @@
             <x:element name="ios" type="tns:iosDevice"/>
         </x:choice>
     </x:complexType>
-    
+
     <x:complexType name="nativeDevice">
         <x:complexContent>
             <x:extension base="tns:abstractDevice"/>
@@ -41,9 +48,11 @@
         <x:complexContent>
             <x:extension base="tns:nativeDevice">
                 <x:sequence>
-                    <x:element name="appPackage" type="tns:nonEmptyString"/>
-                    <x:element name="appActivity" type="tns:nonEmptyString"/>
+                    <x:element name="appPackage" type="tns:nonEmptyString" minOccurs="0"/>
+                    <x:element name="appActivity" type="tns:nonEmptyString" minOccurs="0"/>
+                    <x:element name="app" type="tns:nonEmptyString" minOccurs="0"/>
                 </x:sequence>
+                <x:attribute name="playMarketLogin" type="x:boolean" default="false"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

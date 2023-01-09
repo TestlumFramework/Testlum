@@ -1,6 +1,7 @@
 package com.knubisoft.cott.testing.framework.configuration.ui;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.cott.testing.framework.util.BrowserStackUtil;
 import com.knubisoft.cott.testing.framework.util.MobileDriverUtil;
 import com.knubisoft.cott.testing.model.global_config.AndroidDevice;
 import com.knubisoft.cott.testing.model.global_config.IosDevice;
@@ -15,6 +16,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.net.URL;
+import java.util.HashMap;
 
 @UtilityClass
 public class NativeDriverFactory {
@@ -23,17 +25,51 @@ public class NativeDriverFactory {
     public WebDriver createDriver(final NativeDevice nativeDevice) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         MobileDriverUtil.setCommonCapabilities(nativeDevice, desiredCapabilities);
-        String serverUrl = GlobalTestConfigurationProvider.provide().getNative().getAppiumServerUrl();
+        String serverUrl = setServerUrl();
         if (nativeDevice instanceof IosDevice) {
-            MobileDriverUtil.setAutomation(desiredCapabilities, "iOS", "XCUITest");
-            desiredCapabilities.setCapability(MobileCapabilityType.APP, ((IosDevice) nativeDevice).getApp());
+            setIosCaps((IosDevice) nativeDevice, desiredCapabilities);
             return new IOSDriver(new URL(serverUrl), desiredCapabilities);
         }
-        AndroidDevice device = (AndroidDevice) nativeDevice;
-        MobileDriverUtil.setAutomation(desiredCapabilities, "Android", "uiautomator2");
-        desiredCapabilities.setCapability("appPackage", device.getAppPackage());
-        desiredCapabilities.setCapability("appActivity", device.getAppActivity());
+        setAndroidCaps((AndroidDevice) nativeDevice, desiredCapabilities);
         return new AndroidDriver(new URL(serverUrl), desiredCapabilities);
     }
 
+    private String setServerUrl() {
+        if (GlobalTestConfigurationProvider.getNativeSettings().getAppiumServer() != null) {
+            return GlobalTestConfigurationProvider.getNativeSettings().getAppiumServer().getServerUrl();
+        }
+        return BrowserStackUtil.getBrowserStackUrl();
+    }
+
+    private void setAndroidCaps(final AndroidDevice nativeDevice,
+                                       final DesiredCapabilities desiredCapabilities) {
+        MobileDriverUtil.setAutomation(desiredCapabilities, "Android", "uiautomator2");
+        if (GlobalTestConfigurationProvider.getNativeSettings().getBrowserStack() != null) {
+            desiredCapabilities.setCapability(MobileCapabilityType.APP, nativeDevice.getApp());
+            desiredCapabilities.setCapability("browserstack.local", "true");
+            if (nativeDevice.isPlayMarketLogin()) {
+                setPlayMarketCredentials(desiredCapabilities);
+            }
+        }
+        if (GlobalTestConfigurationProvider.getNativeSettings().getAppiumServer() != null) {
+            desiredCapabilities.setCapability("appPackage", nativeDevice.getAppPackage());
+            desiredCapabilities.setCapability("appActivity", nativeDevice.getAppActivity());
+        }
+    }
+
+    private void setPlayMarketCredentials(final DesiredCapabilities desiredCapabilities) {
+        desiredCapabilities.setCapability("browserstack.appStoreConfiguration", new HashMap<String, String>() {{
+            put("username", GlobalTestConfigurationProvider.getBrowserStackLogin().getPlayMarketLogin().getUsername());
+            put("password", GlobalTestConfigurationProvider.getBrowserStackLogin().getPlayMarketLogin().getPassword());
+        }});
+    }
+
+    private void setIosCaps(final IosDevice nativeDevice,
+                            final DesiredCapabilities desiredCapabilities) {
+        MobileDriverUtil.setAutomation(desiredCapabilities, "iOS", "XCUITest");
+        desiredCapabilities.setCapability(MobileCapabilityType.APP, nativeDevice.getApp());
+        if (GlobalTestConfigurationProvider.getNativeSettings().getBrowserStack() != null) {
+            desiredCapabilities.setCapability("browserstack.local", "true");
+        }
+    }
 }

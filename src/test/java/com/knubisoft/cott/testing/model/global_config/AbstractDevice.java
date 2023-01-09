@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="capabilities" type="{http://www.knubisoft.com/cott/testing/model/global-config}capabilities" minOccurs="0"/&gt;
- *         &lt;element name="udid" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="udid" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
  *         &lt;element name="deviceName" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
@@ -44,7 +44,6 @@ import javax.xml.bind.annotation.XmlType;
 public abstract class AbstractDevice {
 
     protected Capabilities capabilities;
-    @XmlElement(required = true)
     protected String udid;
     @XmlElement(required = true)
     protected String deviceName;

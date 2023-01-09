@@ -4,7 +4,6 @@ package com.knubisoft.cott.testing.model.global_config;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -16,13 +15,13 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="native"&gt;
  *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="appiumServerUrl" type="{http://www.knubisoft.com/cott/testing/model/global-config}url"/&gt;
- *         &lt;element name="deviceSettings" type="{http://www.knubisoft.com/cott/testing/model/global-config}nativeDeviceSettings"/&gt;
- *       &lt;/sequence&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}settings"&gt;
+ *       &lt;choice&gt;
+ *         &lt;element name="appiumServer" type="{http://www.knubisoft.com/cott/testing/model/global-config}nativeAppiumServer"/&gt;
+ *         &lt;element name="browserStack" type="{http://www.knubisoft.com/cott/testing/model/global-config}nativeBrowserStack"/&gt;
+ *       &lt;/choice&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *     &lt;/restriction&gt;
+ *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -31,64 +30,64 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "native", propOrder = {
-    "appiumServerUrl",
-    "deviceSettings"
+    "appiumServer",
+    "browserStack"
 })
-public class Native {
+public class Native
+    extends Settings
+{
 
-    @XmlElement(required = true)
-    protected String appiumServerUrl;
-    @XmlElement(required = true)
-    protected NativeDeviceSettings deviceSettings;
+    protected NativeAppiumServer appiumServer;
+    protected NativeBrowserStack browserStack;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
 
     /**
-     * Gets the value of the appiumServerUrl property.
+     * Gets the value of the appiumServer property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link NativeAppiumServer }
      *     
      */
-    public String getAppiumServerUrl() {
-        return appiumServerUrl;
+    public NativeAppiumServer getAppiumServer() {
+        return appiumServer;
     }
 
     /**
-     * Sets the value of the appiumServerUrl property.
+     * Sets the value of the appiumServer property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link NativeAppiumServer }
      *     
      */
-    public void setAppiumServerUrl(String value) {
-        this.appiumServerUrl = value;
+    public void setAppiumServer(NativeAppiumServer value) {
+        this.appiumServer = value;
     }
 
     /**
-     * Gets the value of the deviceSettings property.
+     * Gets the value of the browserStack property.
      * 
      * @return
      *     possible object is
-     *     {@link NativeDeviceSettings }
+     *     {@link NativeBrowserStack }
      *     
      */
-    public NativeDeviceSettings getDeviceSettings() {
-        return deviceSettings;
+    public NativeBrowserStack getBrowserStack() {
+        return browserStack;
     }
 
     /**
-     * Sets the value of the deviceSettings property.
+     * Sets the value of the browserStack property.
      * 
      * @param value
      *     allowed object is
-     *     {@link NativeDeviceSettings }
+     *     {@link NativeBrowserStack }
      *     
      */
-    public void setDeviceSettings(NativeDeviceSettings value) {
-        this.deviceSettings = value;
+    public void setBrowserStack(NativeBrowserStack value) {
+        this.browserStack = value;
     }
 
     /**

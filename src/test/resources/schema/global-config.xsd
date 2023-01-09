@@ -26,6 +26,7 @@
     <x:include schemaLocation="web-config.xsd"/>
     <x:include schemaLocation="mobilebrowser-config.xsd"/>
     <x:include schemaLocation="native-config.xsd"/>
+    <x:include schemaLocation="browserstack-config.xsd"/>
     <x:include schemaLocation="websocket-integration.xsd"/>
     <x:include schemaLocation="report.xsd"/>
     <x:include schemaLocation="shared-config.xsd"/>
@@ -33,7 +34,7 @@
     <x:annotation>
         <x:appinfo>
             <jaxb:bindings
-                node="/x:schema/x:element[@name='globalTestConfiguration']//x:complexType//x:sequence">
+                    node="/x:schema/x:element[@name='globalTestConfiguration']//x:complexType//x:sequence">
             </jaxb:bindings>
         </x:appinfo>
     </x:annotation>
@@ -49,6 +50,7 @@
                 <x:element name="web" type="tns:web" minOccurs="0"/>
                 <x:element name="mobilebrowser" type="tns:mobilebrowser" minOccurs="0"/>
                 <x:element name="native" type="tns:native" minOccurs="0"/>
+                <x:element name="browserStackLogin" type="tns:browserStackLogin" minOccurs="0"/>
                 <x:element name="auth" type="tns:auth"/>
                 <x:element name="integrations" type="tns:integrations" minOccurs="0"/>
             </x:sequence>

@@ -50,6 +50,9 @@ public class BrowserUtil {
         if (Objects.nonNull(browser.getBrowserType().getBrowserInDocker())) {
             return BrowserType.IN_DOCKER;
         }
+        if (Objects.nonNull(browser.getBrowserType().getBrowserStack())) {
+            return BrowserType.BROWSER_STACK;
+        }
         return BrowserType.LOCAL;
     }
 
@@ -60,6 +63,9 @@ public class BrowserUtil {
         if (browserType == BrowserType.IN_DOCKER) {
             return browser.getBrowserType().getBrowserInDocker().getBrowserVersion();
         }
+        if (browserType == BrowserType.BROWSER_STACK) {
+            return browser.getBrowserType().getBrowserStack().getBrowserVersion();
+        }
         String version = browser.getBrowserType().getLocalBrowser().getDriverVersion();
         return StringUtils.isEmpty(version) ? "no version specified (the latest version is used)" : version;
     }
@@ -67,7 +73,8 @@ public class BrowserUtil {
     public enum BrowserType {
         LOCAL("local browser"),
         REMOTE("remote browser"),
-        IN_DOCKER("browser in docker");
+        IN_DOCKER("browser in docker"),
+        BROWSER_STACK("browserStack");
 
         private final String typeName;
 

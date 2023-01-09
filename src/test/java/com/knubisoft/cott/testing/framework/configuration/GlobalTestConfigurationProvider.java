@@ -3,7 +3,6 @@ package com.knubisoft.cott.testing.framework.configuration;
 import com.knubisoft.cott.testing.framework.parser.XMLParsers;
 import com.knubisoft.cott.testing.framework.validator.GlobalTestConfigValidator;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
-import com.knubisoft.cott.testing.model.global_config.BrowserStackLogin;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Mobilebrowser;
@@ -16,6 +15,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GlobalTestConfigurationProvider {
@@ -27,33 +27,27 @@ public class GlobalTestConfigurationProvider {
     }
 
     public static List<AbstractBrowser> getBrowsers() {
-        if (getBrowserSettings() != null) {
-            return getBrowserSettings().getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari();
+        if (Objects.nonNull(getWebSettings())) {
+            return getWebSettings().getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari();
         }
         return Collections.emptyList();
     }
 
     public static List<NativeDevice> getNativeDevices() {
-        if (getNativeSettings() != null && getNativeSettings().getAppiumServer() != null) {
-            return getNativeSettings().getAppiumServer().getDevices().getAndroidOrIos();
-        }
-        if (getNativeSettings() != null && getNativeSettings().getBrowserStack() != null) {
-            return getNativeSettings().getBrowserStack().getDevices().getAndroidOrIos();
+        if (Objects.nonNull(getNativeSettings())) {
+            return getNativeSettings().getDevices().getDevice();
         }
         return Collections.emptyList();
     }
 
     public static List<MobilebrowserDevice> getMobilebrowserDevices() {
-        if (getMobilebrowserSettings() != null && getMobilebrowserSettings().getAppiumServer() != null) {
-            return getMobilebrowserSettings().getAppiumServer().getDevices().getDevice();
-        }
-        if (getMobilebrowserSettings() != null && getMobilebrowserSettings().getBrowserStack() != null) {
-            return getMobilebrowserSettings().getBrowserStack().getDevices().getDevice();
+        if (Objects.nonNull(getMobilebrowserSettings())) {
+            return getMobilebrowserSettings().getDevices().getDevice();
         }
         return Collections.emptyList();
     }
 
-    public static Web getBrowserSettings() {
+    public static Web getWebSettings() {
         return GlobalTestConfigurationProvider.provide().getWeb();
     }
 
@@ -63,10 +57,6 @@ public class GlobalTestConfigurationProvider {
 
     public static Native getNativeSettings() {
         return GlobalTestConfigurationProvider.provide().getNative();
-    }
-
-    public static BrowserStackLogin getBrowserStackLogin() {
-        return GlobalTestConfigurationProvider.provide().getBrowserStackLogin();
     }
 
     public static Integrations getIntegrations() {

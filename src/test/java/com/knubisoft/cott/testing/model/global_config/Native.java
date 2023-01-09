@@ -4,6 +4,7 @@ package com.knubisoft.cott.testing.model.global_config;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -16,10 +17,10 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="native"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}settings"&gt;
- *       &lt;choice&gt;
- *         &lt;element name="appiumServer" type="{http://www.knubisoft.com/cott/testing/model/global-config}nativeAppiumServer"/&gt;
- *         &lt;element name="browserStack" type="{http://www.knubisoft.com/cott/testing/model/global-config}nativeBrowserStack"/&gt;
- *       &lt;/choice&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="connection" type="{http://www.knubisoft.com/cott/testing/model/global-config}connectionType"/&gt;
+ *         &lt;element name="devices" type="{http://www.knubisoft.com/cott/testing/model/global-config}nativeDevices"/&gt;
+ *       &lt;/sequence&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -30,64 +31,66 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "native", propOrder = {
-    "appiumServer",
-    "browserStack"
+    "connection",
+    "devices"
 })
 public class Native
     extends Settings
 {
 
-    protected NativeAppiumServer appiumServer;
-    protected NativeBrowserStack browserStack;
+    @XmlElement(required = true)
+    protected ConnectionType connection;
+    @XmlElement(required = true)
+    protected NativeDevices devices;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
 
     /**
-     * Gets the value of the appiumServer property.
+     * Gets the value of the connection property.
      * 
      * @return
      *     possible object is
-     *     {@link NativeAppiumServer }
+     *     {@link ConnectionType }
      *     
      */
-    public NativeAppiumServer getAppiumServer() {
-        return appiumServer;
+    public ConnectionType getConnection() {
+        return connection;
     }
 
     /**
-     * Sets the value of the appiumServer property.
+     * Sets the value of the connection property.
      * 
      * @param value
      *     allowed object is
-     *     {@link NativeAppiumServer }
+     *     {@link ConnectionType }
      *     
      */
-    public void setAppiumServer(NativeAppiumServer value) {
-        this.appiumServer = value;
+    public void setConnection(ConnectionType value) {
+        this.connection = value;
     }
 
     /**
-     * Gets the value of the browserStack property.
+     * Gets the value of the devices property.
      * 
      * @return
      *     possible object is
-     *     {@link NativeBrowserStack }
+     *     {@link NativeDevices }
      *     
      */
-    public NativeBrowserStack getBrowserStack() {
-        return browserStack;
+    public NativeDevices getDevices() {
+        return devices;
     }
 
     /**
-     * Sets the value of the browserStack property.
+     * Sets the value of the devices property.
      * 
      * @param value
      *     allowed object is
-     *     {@link NativeBrowserStack }
+     *     {@link NativeDevices }
      *     
      */
-    public void setBrowserStack(NativeBrowserStack value) {
-        this.browserStack = value;
+    public void setDevices(NativeDevices value) {
+        this.devices = value;
     }
 
     /**

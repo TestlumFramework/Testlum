@@ -2,11 +2,12 @@ package com.knubisoft.cott.testing.framework.configuration.ui;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.util.BrowserStackUtil;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
+import com.knubisoft.cott.testing.framework.util.MobileDriverUtil;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.BrowserInDocker;
 import com.knubisoft.cott.testing.model.global_config.BrowserOptionsArguments;
+import com.knubisoft.cott.testing.model.global_config.BrowserStackWeb;
 import com.knubisoft.cott.testing.model.global_config.Capabilities;
 import com.knubisoft.cott.testing.model.global_config.Chrome;
 import com.knubisoft.cott.testing.model.global_config.Edge;
@@ -31,6 +32,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.opera.OperaOptions;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariOptions;
 
@@ -42,7 +44,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND;
-import static org.openqa.selenium.remote.CapabilityType.BROWSER_VERSION;
 
 @UtilityClass
 public class WebDriverFactory {
@@ -66,7 +67,7 @@ public class WebDriverFactory {
                 .map(webDriverFunction -> webDriverFunction.apply(browser))
                 .peek(driver -> BrowserUtil.manageWindowSize(browser, driver))
                 .findFirst().orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
-        webDriver.get(GlobalTestConfigurationProvider.provide().getWeb().getBaseUrl());
+        webDriver.get(GlobalTestConfigurationProvider.getWebSettings().getBaseUrl());
         return webDriver;
     }
 
@@ -75,35 +76,40 @@ public class WebDriverFactory {
                                    final MutableCapabilities browserOptions,
                                    final WebDriverManager driverManager) {
         setCapabilities(browser, browserOptions);
-        BrowserUtil.BrowserType browserType = BrowserUtil.getBrowserType(browser);
-        if (browserType == BrowserUtil.BrowserType.REMOTE) {
-            return getRemoteDriver(browser.getBrowserType().getRemoteBrowser(), browserOptions);
+        switch (BrowserUtil.getBrowserType(browser)) {
+            case BROWSER_STACK:
+                return getBrowserStackDriver(browser.getBrowserType().getBrowserStack(), browserOptions);
+            case REMOTE:
+                return getRemoteDriver(browser.getBrowserType().getRemoteBrowser(), browserOptions);
+            case IN_DOCKER:
+                WebDriverManager webDriverManager = setScreenResolution(browser, driverManager);
+                return getBrowserInDocker(browser.getBrowserType().getBrowserInDocker(),
+                        browserOptions, webDriverManager);
+            default:
+                return getLocalDriver(browser.getBrowserType().getLocalBrowser(), browserOptions, driverManager);
         }
-        if (browserType == BrowserUtil.BrowserType.BROWSER_STACK) {
-            return getRemoteDriverForBrowserStack(browser, browserOptions);
-        }
-        if (browserType == BrowserUtil.BrowserType.IN_DOCKER) {
-            WebDriverManager browserInDocker = setScreenResolution(browser, driverManager);
-            return getBrowserInDocker(browser.getBrowserType().getBrowserInDocker(), browserOptions, browserInDocker);
-        }
-        return getLocalDriver(browser.getBrowserType().getLocalBrowser(), browserOptions, driverManager);
+    }
+
+    @SneakyThrows
+    private WebDriver getBrowserStackDriver(final BrowserStackWeb browserStack,
+                                            final MutableCapabilities browserOptions) {
+        browserOptions.setCapability("browserstack.local", Boolean.TRUE);
+        browserOptions.setCapability(CapabilityType.BROWSER_VERSION, browserStack.getBrowserVersion());
+        return new RemoteWebDriver(new URL(MobileDriverUtil.getBrowserStackUrl()), browserOptions);
+    }
+
+    @SneakyThrows
+    private WebDriver getRemoteDriver(final RemoteBrowser remoteBrowserSettings,
+                                      final MutableCapabilities browserOptions) {
+        browserOptions.setCapability(CapabilityType.BROWSER_VERSION, remoteBrowserSettings.getBrowserVersion());
+        return new RemoteWebDriver(new URL(remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
     }
 
     private WebDriverManager setScreenResolution(final AbstractBrowser browser,
-                                                        final WebDriverManager driverManager) {
+                                                 final WebDriverManager driverManager) {
         return StringUtils.isNotEmpty(browser.getBrowserWindowSize())
                 ? driverManager.browserInDocker().dockerScreenResolution(browser.getBrowserWindowSize()
                 + DEFAULT_DOCKER_SCREEN_COLORS_DEPTH) : driverManager.browserInDocker();
-    }
-
-    private WebDriver getLocalDriver(final LocalBrowser localBrowserSettings,
-                                     final MutableCapabilities browserOptions,
-                                     final WebDriverManager driverManager) {
-        String driverVersion = localBrowserSettings.getDriverVersion();
-        if (StringUtils.isNotEmpty(driverVersion)) {
-            driverManager.driverVersion(driverVersion);
-        }
-        return driverManager.capabilities(browserOptions).create();
     }
 
     private WebDriver getBrowserInDocker(final BrowserInDocker browserInDockerSettings,
@@ -121,34 +127,21 @@ public class WebDriverFactory {
         return browserInDockerSettings.isEnableVNC() ? driverManager.enableVnc().create() : driverManager.create();
     }
 
-
-    @SneakyThrows
-    private WebDriver getRemoteDriver(final RemoteBrowser remoteBrowserSettings,
-                                      final MutableCapabilities browserOptions) {
-        browserOptions.setCapability(BROWSER_VERSION, remoteBrowserSettings.getBrowserVersion());
-        return new RemoteWebDriver(new URL(remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
-    }
-
-    @SneakyThrows
-    private WebDriver getRemoteDriverForBrowserStack(final AbstractBrowser browser,
-                                      final MutableCapabilities browserOptions) {
-        setBrowserStackCapabilities(browser, browserOptions);
-        return new RemoteWebDriver(new URL(BrowserStackUtil.getBrowserStackUrl()), browserOptions);
+    private WebDriver getLocalDriver(final LocalBrowser localBrowserSettings,
+                                     final MutableCapabilities browserOptions,
+                                     final WebDriverManager driverManager) {
+        String driverVersion = localBrowserSettings.getDriverVersion();
+        if (StringUtils.isNotEmpty(driverVersion)) {
+            driverManager.driverVersion(driverVersion);
+        }
+        return driverManager.capabilities(browserOptions).create();
     }
 
     private void setCapabilities(final AbstractBrowser browser, final MutableCapabilities driverOptions) {
         Capabilities capabilities = browser.getCapabilities();
         if (capabilities != null) {
-            capabilities.getCapability()
-                    .forEach(cap -> driverOptions.setCapability(cap.getCapabilityName(), cap.getValue()));
+            capabilities.getCapability().forEach(cap -> driverOptions.setCapability(cap.getName(), cap.getValue()));
         }
-    }
-
-    private void setBrowserStackCapabilities(final AbstractBrowser browser,
-                                             final MutableCapabilities browserOptions) {
-        browserOptions.setCapability("browserstack.local", "true");
-        browserOptions.setCapability("browserVersion",
-                browser.getBrowserType().getBrowserStack().getBrowserVersion());
     }
 
     private interface WebDriverInitializer<T extends AbstractBrowser> {

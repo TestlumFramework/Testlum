@@ -14,8 +14,8 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="platform"&gt;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *     &lt;enumeration value="ios"/&gt;
  *     &lt;enumeration value="android"/&gt;
+ *     &lt;enumeration value="ios"/&gt;
  *   &lt;/restriction&gt;
  * &lt;/simpleType&gt;
  * </pre>
@@ -25,10 +25,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum Platform {
 
-    @XmlEnumValue("ios")
-    IOS("ios"),
     @XmlEnumValue("android")
-    ANDROID("android");
+    ANDROID("android"),
+    @XmlEnumValue("ios")
+    IOS("ios");
     private final String value;
 
     Platform(String v) {

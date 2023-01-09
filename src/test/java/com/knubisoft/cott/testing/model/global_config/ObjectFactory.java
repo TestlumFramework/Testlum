@@ -158,6 +158,38 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ConnectionType }
+     * 
+     */
+    public ConnectionType createConnectionType() {
+        return new ConnectionType();
+    }
+
+    /**
+     * Create an instance of {@link AppiumServer }
+     * 
+     */
+    public AppiumServer createAppiumServer() {
+        return new AppiumServer();
+    }
+
+    /**
+     * Create an instance of {@link AppiumCapabilities }
+     * 
+     */
+    public AppiumCapabilities createAppiumCapabilities() {
+        return new AppiumCapabilities();
+    }
+
+    /**
+     * Create an instance of {@link BrowserStackCapabilities }
+     * 
+     */
+    public BrowserStackCapabilities createBrowserStackCapabilities() {
+        return new BrowserStackCapabilities();
+    }
+
+    /**
      * Create an instance of {@link Capabilities }
      * 
      */
@@ -574,22 +606,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link MobilebrowserAppiumServer }
-     * 
-     */
-    public MobilebrowserAppiumServer createMobilebrowserAppiumServer() {
-        return new MobilebrowserAppiumServer();
-    }
-
-    /**
-     * Create an instance of {@link MobilebrowserBrowserStack }
-     * 
-     */
-    public MobilebrowserBrowserStack createMobilebrowserBrowserStack() {
-        return new MobilebrowserBrowserStack();
-    }
-
-    /**
      * Create an instance of {@link MobilebrowserDevices }
      * 
      */
@@ -603,22 +619,6 @@ public class ObjectFactory {
      */
     public MobilebrowserDevice createMobilebrowserDevice() {
         return new MobilebrowserDevice();
-    }
-
-    /**
-     * Create an instance of {@link NativeAppiumServer }
-     * 
-     */
-    public NativeAppiumServer createNativeAppiumServer() {
-        return new NativeAppiumServer();
-    }
-
-    /**
-     * Create an instance of {@link NativeBrowserStack }
-     * 
-     */
-    public NativeBrowserStack createNativeBrowserStack() {
-        return new NativeBrowserStack();
     }
 
     /**
@@ -638,27 +638,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AndroidDevice }
+     * Create an instance of {@link AppiumNativeCapabilities }
      * 
      */
-    public AndroidDevice createAndroidDevice() {
-        return new AndroidDevice();
+    public AppiumNativeCapabilities createAppiumNativeCapabilities() {
+        return new AppiumNativeCapabilities();
     }
 
     /**
-     * Create an instance of {@link IosDevice }
+     * Create an instance of {@link BrowserStackNativeCapabilities }
      * 
      */
-    public IosDevice createIosDevice() {
-        return new IosDevice();
+    public BrowserStackNativeCapabilities createBrowserStackNativeCapabilities() {
+        return new BrowserStackNativeCapabilities();
     }
 
     /**
-     * Create an instance of {@link PlayMarketLogin }
+     * Create an instance of {@link GooglePlayLogin }
      * 
      */
-    public PlayMarketLogin createPlayMarketLogin() {
-        return new PlayMarketLogin();
+    public GooglePlayLogin createGooglePlayLogin() {
+        return new GooglePlayLogin();
     }
 
     /**

@@ -11,27 +11,12 @@
             <x:extension base="tns:settings">
                 <x:sequence>
                     <x:element name="baseUrl" type="tns:url"/>
-                    <x:choice>
-                        <x:element name="appiumServer" type="tns:mobilebrowserAppiumServer"/>
-                        <x:element name="browserStack" type="tns:mobilebrowserBrowserStack"/>
-                    </x:choice>
+                    <x:element name="connection" type="tns:connectionType"/>
+                    <x:element name="devices" type="tns:mobilebrowserDevices"/>
                 </x:sequence>
                 <x:attribute name="enabled" type="x:boolean" use="required"/>
             </x:extension>
         </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="mobilebrowserAppiumServer">
-        <x:sequence>
-            <x:element name="serverUrl" type="tns:url"/>
-            <x:element name="devices" type="tns:mobilebrowserDevices"/>
-        </x:sequence>
-    </x:complexType>
-
-    <x:complexType name="mobilebrowserBrowserStack">
-        <x:sequence>
-        <x:element name="devices" type="tns:mobilebrowserDevices"/>
-        </x:sequence>
     </x:complexType>
 
     <x:complexType name="mobilebrowserDevices">
@@ -43,17 +28,11 @@
     <x:complexType name="mobilebrowserDevice">
         <x:complexContent>
             <x:extension base="tns:abstractDevice">
-                <x:sequence>
-                </x:sequence>
-                <x:attribute name="platformName" type="tns:platform" use="required"/>
+                <x:choice>
+                    <x:element name="appiumCapabilities" type="tns:appiumCapabilities"/>
+                    <x:element name="browserStackCapabilities" type="tns:browserStackCapabilities"/>
+                </x:choice>
             </x:extension>
         </x:complexContent>
     </x:complexType>
-
-    <x:simpleType name="platform">
-        <x:restriction base="x:string">
-            <x:enumeration value="ios"/>
-            <x:enumeration value="android"/>
-        </x:restriction>
-    </x:simpleType>
 </x:schema>

@@ -4,7 +4,6 @@ package com.knubisoft.cott.testing.model.global_config;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
@@ -18,11 +17,10 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="abstractDevice"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
+ *       &lt;choice&gt;
  *         &lt;element name="capabilities" type="{http://www.knubisoft.com/cott/testing/model/global-config}capabilities" minOccurs="0"/&gt;
- *         &lt;element name="udid" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
- *         &lt;element name="deviceName" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
- *       &lt;/sequence&gt;
+ *       &lt;/choice&gt;
+ *       &lt;attribute name="platformName" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}platform" /&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -33,9 +31,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "abstractDevice", propOrder = {
-    "capabilities",
-    "udid",
-    "deviceName"
+    "capabilities"
 })
 @XmlSeeAlso({
     MobilebrowserDevice.class,
@@ -44,9 +40,8 @@ import javax.xml.bind.annotation.XmlType;
 public abstract class AbstractDevice {
 
     protected Capabilities capabilities;
-    protected String udid;
-    @XmlElement(required = true)
-    protected String deviceName;
+    @XmlAttribute(name = "platformName", required = true)
+    protected Platform platformName;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
 
@@ -75,51 +70,27 @@ public abstract class AbstractDevice {
     }
 
     /**
-     * Gets the value of the udid property.
+     * Gets the value of the platformName property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Platform }
      *     
      */
-    public String getUdid() {
-        return udid;
+    public Platform getPlatformName() {
+        return platformName;
     }
 
     /**
-     * Sets the value of the udid property.
+     * Sets the value of the platformName property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Platform }
      *     
      */
-    public void setUdid(String value) {
-        this.udid = value;
-    }
-
-    /**
-     * Gets the value of the deviceName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDeviceName() {
-        return deviceName;
-    }
-
-    /**
-     * Sets the value of the deviceName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDeviceName(String value) {
-        this.deviceName = value;
+    public void setPlatformName(Platform value) {
+        this.platformName = value;
     }
 
     /**

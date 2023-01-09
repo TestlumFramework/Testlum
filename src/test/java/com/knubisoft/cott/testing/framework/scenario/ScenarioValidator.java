@@ -12,8 +12,8 @@ import com.knubisoft.cott.testing.framework.util.HttpUtil;
 import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.framework.util.SendGridUtil;
 import com.knubisoft.cott.testing.framework.validator.XMLValidator;
-import com.knubisoft.cott.testing.model.global_config.AbstractDevice;
 import com.knubisoft.cott.testing.model.global_config.Apis;
+import com.knubisoft.cott.testing.model.global_config.AppiumCapabilities;
 import com.knubisoft.cott.testing.model.global_config.ClickhouseIntegration;
 import com.knubisoft.cott.testing.model.global_config.DynamoIntegration;
 import com.knubisoft.cott.testing.model.global_config.ElasticsearchIntegration;
@@ -24,6 +24,7 @@ import com.knubisoft.cott.testing.model.global_config.LambdaIntegration;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.MongoIntegration;
 import com.knubisoft.cott.testing.model.global_config.MysqlIntegration;
+import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.global_config.OracleIntegration;
 import com.knubisoft.cott.testing.model.global_config.PostgresIntegration;
 import com.knubisoft.cott.testing.model.global_config.RabbitmqIntegration;
@@ -75,13 +76,11 @@ import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.Sqs;
 import com.knubisoft.cott.testing.model.scenario.StorageName;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
-import com.knubisoft.cott.testing.model.scenario.Ui;
 import com.knubisoft.cott.testing.model.scenario.Var;
 import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
-import com.knubisoft.cott.testing.model.scenario.When;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -110,9 +109,7 @@ import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.JS
 
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
-
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
-
     private final Integrations integrations = GlobalTestConfigurationProvider.getIntegrations();
 
     public ScenarioValidator() {
@@ -154,11 +151,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             S3 s3 = (S3) command;
             validateAlias(s3Integration.getS3(), s3.getAlias());
             validateS3Command(xmlFile, s3);
-        });
-
-        validatorMap.put(o -> o instanceof When, (xmlFile, command) -> {
-            When when = (When) command;
-            validateWhenCommand(xmlFile, when);
         });
 
         validatorMap.put(o -> o instanceof Postgres, (xmlFile, command) -> {
@@ -314,35 +306,45 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     @Override
     public void validate(final Scenario scenario, final File xmlFile) {
         if (scenario.isActive()) {
-            List<AbstractCommand> uiCommands = getUiCommands(scenario.getCommands());
-            if (!uiCommands.isEmpty() && containsNativeAndMobileTags(uiCommands)) {
-                validateNativeAndMobilebrowserConfig();
-            }
-            scenario.getCommands().forEach(it -> validateCommand(it, xmlFile));
+            validateIfContainsNativeAndMobileCommands(scenario.getCommands());
+            scenario.getCommands().forEach(command -> validateCommand(command, xmlFile));
         }
     }
 
-    private List<AbstractCommand> getUiCommands(final List<AbstractCommand> scenarioCommands) {
-        return scenarioCommands.stream().filter(abstractCommand ->
-                        Ui.class.isAssignableFrom(abstractCommand.getClass()))
-                .collect(Collectors.toList());
+    private void validateIfContainsNativeAndMobileCommands(final List<AbstractCommand> commands) {
+        boolean containsNativeAndMobileCommands =
+                commands.stream().anyMatch(command -> command instanceof Native)
+                        && commands.stream().anyMatch(command -> command instanceof Mobilebrowser);
+        if (containsNativeAndMobileCommands && MobileUtil.isNativeAndMobilebrowserConfigEnabled()) {
+            validateNativeAndMobileAppiumConfig();
+        }
     }
 
-    private boolean containsNativeAndMobileTags(final List<AbstractCommand> uiCommands) {
-        return uiCommands.stream().anyMatch(abstractCommand -> abstractCommand instanceof Native)
-                && uiCommands.stream().anyMatch(abstractCommand -> abstractCommand instanceof Mobilebrowser);
-    }
-
-    private void validateNativeAndMobilebrowserConfig() {
-        if (GlobalTestConfigurationProvider.getMobilebrowserSettings().getAppiumServer().getServerUrl()
-                .equals(GlobalTestConfigurationProvider.provide().getNative().getAppiumServer().getServerUrl())) {
+    private void validateNativeAndMobileAppiumConfig() {
+        boolean isSameUrl = GlobalTestConfigurationProvider.getMobilebrowserSettings()
+                .getConnection().getAppiumServer().getServerUrl()
+                .equals(GlobalTestConfigurationProvider.getNativeSettings().getConnection()
+                        .getAppiumServer().getServerUrl());
+        if (isSameUrl) {
             throw new DefaultFrameworkException(SAME_APPIUM_URL);
         }
-        if (MobileUtil.filterEnabledMobilebrowserDevices().stream().map(MobilebrowserDevice::getUdid)
-                .anyMatch(deviceUdid -> MobileUtil.filterEnabledNativeDevices().stream()
-                        .map(AbstractDevice::getUdid).collect(Collectors.toList()).contains(deviceUdid))) {
+        if (isSameNativeAndMobileDevices()) {
             throw new DefaultFrameworkException(SAME_MOBILE_DEVICES);
         }
+    }
+
+    private boolean isSameNativeAndMobileDevices() {
+        List<String> nativeUdids = MobileUtil.filterEnabledNativeDevices().stream()
+                .map(NativeDevice::getAppiumCapabilities)
+                .filter(Objects::nonNull)
+                .map(AppiumCapabilities::getUdid)
+                .collect(Collectors.toList());
+
+        return MobileUtil.filterEnabledMobilebrowserDevices().stream()
+                .map(MobilebrowserDevice::getAppiumCapabilities)
+                .filter(Objects::nonNull)
+                .map(AppiumCapabilities::getUdid)
+                .anyMatch(nativeUdids::contains);
     }
 
     private void validateFileExistenceInDataFolder(final String commandFile) {
@@ -444,12 +446,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
-    private void validateWhenCommand(final File xmlFile, final When when) {
-        Stream.of(when.getRequest(), when.getThen())
-                .filter(StringUtils::hasText)
-                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
-    }
-
     private void validateS3Command(final File xmlFile, final S3 s3) {
         Stream.of(s3.getDownload(), s3.getUpload())
                 .filter(StringUtils::hasText)
@@ -531,7 +527,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateWebCommands(final Web command) {
         if (BrowserUtil.filterEnabledBrowsers().isEmpty()
-                || !GlobalTestConfigurationProvider.getBrowserSettings().isEnabled()) {
+                || !GlobalTestConfigurationProvider.getWebSettings().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_BROWSERS);
         }
         command.getClickOrInputOrAssert().forEach(o -> {

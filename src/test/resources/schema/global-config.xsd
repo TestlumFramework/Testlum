@@ -34,7 +34,7 @@
     <x:annotation>
         <x:appinfo>
             <jaxb:bindings
-                    node="/x:schema/x:element[@name='globalTestConfiguration']//x:complexType//x:sequence">
+                node="/x:schema/x:element[@name='globalTestConfiguration']//x:complexType//x:sequence">
             </jaxb:bindings>
         </x:appinfo>
     </x:annotation>

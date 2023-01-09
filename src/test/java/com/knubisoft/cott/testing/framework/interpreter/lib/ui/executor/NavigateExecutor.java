@@ -62,6 +62,6 @@ public class NavigateExecutor extends AbstractUiExecutor<Navigate> {
         if (dependencies.getDriver() instanceof AppiumDriver) {
             return GlobalTestConfigurationProvider.getMobilebrowserSettings().getBaseUrl() + path;
         }
-        return GlobalTestConfigurationProvider.getBrowserSettings().getBaseUrl() + path;
+        return GlobalTestConfigurationProvider.getWebSettings().getBaseUrl() + path;
     }
 }

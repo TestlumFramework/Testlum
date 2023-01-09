@@ -130,6 +130,9 @@ public class UiUtil {
     public File takeScreenshot(final WebDriver webDriver) {
         return ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.FILE);
     }
+    public File takeScreenshot(final WebElement webElement) {
+        return webElement.getScreenshotAs(OutputType.FILE);
+    }
 
     @SneakyThrows
     public void putScreenshotToResult(final CommandResult result, final File screenshot) {

@@ -33,6 +33,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.URL_TO_ACTUAL
 public class CompareImageExecutor extends AbstractUiExecutor<Image> {
 
     public static final String APPIUM_LOCALHOST_ALIAS = "10\\.0\\.2\\.2";
+    public static final String MOBILE_WEB_SCREENSHOT = "mobileImage.screenshot";
 
     public CompareImageExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -57,7 +58,10 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         CompareWith compareWith = image.getCompareWith();
         if (Objects.nonNull(compareWith)) {
             WebElement webElement = UiUtil.findWebElement(webDriver, compareWith.getLocator());
-            return extractImageFromElement(webElement, compareWith.getAttribute(), result);
+            if (compareWith.getLocator().equals(MOBILE_WEB_SCREENSHOT)) {
+                return extractImageFromElement(webElement, compareWith.getAttribute(), result);
+            }
+            return ImageIO.read(UiUtil.takeScreenshot(webElement));
         }
         return ImageIO.read(UiUtil.takeScreenshot(webDriver));
     }

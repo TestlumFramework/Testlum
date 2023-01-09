@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GlobalTestConfigurationProvider {
@@ -26,27 +27,27 @@ public class GlobalTestConfigurationProvider {
     }
 
     public static List<AbstractBrowser> getBrowsers() {
-        if (getBrowserSettings() != null) {
-            return getBrowserSettings().getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari();
+        if (Objects.nonNull(getWebSettings())) {
+            return getWebSettings().getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari();
         }
         return Collections.emptyList();
     }
 
     public static List<NativeDevice> getNativeDevices() {
-        if (getNativeSettings() != null) {
-            return getNativeSettings().getDeviceSettings().getDevices().getAndroidOrIos();
+        if (Objects.nonNull(getNativeSettings())) {
+            return getNativeSettings().getDevices().getDevice();
         }
         return Collections.emptyList();
     }
 
     public static List<MobilebrowserDevice> getMobilebrowserDevices() {
-        if (getMobilebrowserSettings() != null) {
-            return getMobilebrowserSettings().getDeviceSettings().getDevices().getDevice();
+        if (Objects.nonNull(getMobilebrowserSettings())) {
+            return getMobilebrowserSettings().getDevices().getDevice();
         }
         return Collections.emptyList();
     }
 
-    public static Web getBrowserSettings() {
+    public static Web getWebSettings() {
         return GlobalTestConfigurationProvider.provide().getWeb();
     }
 

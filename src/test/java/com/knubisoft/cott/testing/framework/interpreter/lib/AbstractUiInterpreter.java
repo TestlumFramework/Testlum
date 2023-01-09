@@ -124,9 +124,9 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
     public enum UiType {
         WEB(() -> globalTestConfig().getWeb().getBrowserSettings().getTakeScreenshots().isEnable(),
                 InterpreterDependencies::getWebDriver),
-        NATIVE(() -> globalTestConfig().getNative().getDeviceSettings().getTakeScreenshots().isEnable(),
+        NATIVE(() -> globalTestConfig().getNative().getTakeScreenshots().isEnable(),
                 InterpreterDependencies::getNativeDriver),
-        MOBILE_BROWSER(() -> globalTestConfig().getMobilebrowser().getDeviceSettings().getTakeScreenshots().isEnable(),
+        MOBILE_BROWSER(() -> globalTestConfig().getMobilebrowser().getTakeScreenshots().isEnable(),
                 InterpreterDependencies::getMobilebrowserDriver);
 
         private final Supplier<Boolean> screenshotFunction;

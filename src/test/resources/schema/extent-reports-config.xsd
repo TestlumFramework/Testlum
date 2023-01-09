@@ -7,11 +7,11 @@
 
     <x:include schemaLocation="shared-config.xsd"/>
 
-    <x:complexType name="extentReports" >
+    <x:complexType name="extentReports">
         <x:choice>
             <x:sequence>
-            <x:element name="htmlReportGenerator" type="tns:htmlReportGenerator"/>
-            <x:element name="klovServerReportGenerator" type="tns:klovServerReportGenerator" minOccurs="0"/>
+                <x:element name="htmlReportGenerator" type="tns:htmlReportGenerator"/>
+                <x:element name="klovServerReportGenerator" type="tns:klovServerReportGenerator" minOccurs="0"/>
             </x:sequence>
         </x:choice>
         <x:attribute name="projectName" type="tns:nonEmptyString" use="required"/>

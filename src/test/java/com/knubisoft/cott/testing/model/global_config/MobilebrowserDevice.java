@@ -3,7 +3,6 @@ package com.knubisoft.cott.testing.model.global_config;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -16,9 +15,10 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="mobilebrowserDevice"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}abstractDevice"&gt;
- *       &lt;sequence&gt;
- *       &lt;/sequence&gt;
- *       &lt;attribute name="platformName" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}platform" /&gt;
+ *       &lt;choice&gt;
+ *         &lt;element name="appiumCapabilities" type="{http://www.knubisoft.com/cott/testing/model/global-config}appiumCapabilities"/&gt;
+ *         &lt;element name="browserStackCapabilities" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserStackCapabilities"/&gt;
+ *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -27,36 +27,63 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "mobilebrowserDevice")
+@XmlType(name = "mobilebrowserDevice", propOrder = {
+    "appiumCapabilities",
+    "browserStackCapabilities"
+})
 public class MobilebrowserDevice
     extends AbstractDevice
 {
 
-    @XmlAttribute(name = "platformName", required = true)
-    protected Platform platformName;
+    protected AppiumCapabilities appiumCapabilities;
+    protected BrowserStackCapabilities browserStackCapabilities;
 
     /**
-     * Gets the value of the platformName property.
+     * Gets the value of the appiumCapabilities property.
      * 
      * @return
      *     possible object is
-     *     {@link Platform }
+     *     {@link AppiumCapabilities }
      *     
      */
-    public Platform getPlatformName() {
-        return platformName;
+    public AppiumCapabilities getAppiumCapabilities() {
+        return appiumCapabilities;
     }
 
     /**
-     * Sets the value of the platformName property.
+     * Sets the value of the appiumCapabilities property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Platform }
+     *     {@link AppiumCapabilities }
      *     
      */
-    public void setPlatformName(Platform value) {
-        this.platformName = value;
+    public void setAppiumCapabilities(AppiumCapabilities value) {
+        this.appiumCapabilities = value;
+    }
+
+    /**
+     * Gets the value of the browserStackCapabilities property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link BrowserStackCapabilities }
+     *     
+     */
+    public BrowserStackCapabilities getBrowserStackCapabilities() {
+        return browserStackCapabilities;
+    }
+
+    /**
+     * Sets the value of the browserStackCapabilities property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BrowserStackCapabilities }
+     *     
+     */
+    public void setBrowserStackCapabilities(BrowserStackCapabilities value) {
+        this.browserStackCapabilities = value;
     }
 
 }

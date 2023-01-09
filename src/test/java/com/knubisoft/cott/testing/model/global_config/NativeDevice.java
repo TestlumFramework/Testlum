@@ -3,7 +3,6 @@ package com.knubisoft.cott.testing.model.global_config;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -16,6 +15,10 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="nativeDevice"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}abstractDevice"&gt;
+ *       &lt;choice&gt;
+ *         &lt;element name="appiumCapabilities" type="{http://www.knubisoft.com/cott/testing/model/global-config}appiumNativeCapabilities"/&gt;
+ *         &lt;element name="browserStackCapabilities" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserStackNativeCapabilities"/&gt;
+ *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -24,14 +27,63 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "nativeDevice")
-@XmlSeeAlso({
-    AndroidDevice.class,
-    IosDevice.class
+@XmlType(name = "nativeDevice", propOrder = {
+    "appiumCapabilities",
+    "browserStackCapabilities"
 })
 public class NativeDevice
     extends AbstractDevice
 {
 
+    protected AppiumNativeCapabilities appiumCapabilities;
+    protected BrowserStackNativeCapabilities browserStackCapabilities;
+
+    /**
+     * Gets the value of the appiumCapabilities property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link AppiumNativeCapabilities }
+     *     
+     */
+    public AppiumNativeCapabilities getAppiumCapabilities() {
+        return appiumCapabilities;
+    }
+
+    /**
+     * Sets the value of the appiumCapabilities property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link AppiumNativeCapabilities }
+     *     
+     */
+    public void setAppiumCapabilities(AppiumNativeCapabilities value) {
+        this.appiumCapabilities = value;
+    }
+
+    /**
+     * Gets the value of the browserStackCapabilities property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link BrowserStackNativeCapabilities }
+     *     
+     */
+    public BrowserStackNativeCapabilities getBrowserStackCapabilities() {
+        return browserStackCapabilities;
+    }
+
+    /**
+     * Sets the value of the browserStackCapabilities property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BrowserStackNativeCapabilities }
+     *     
+     */
+    public void setBrowserStackCapabilities(BrowserStackNativeCapabilities value) {
+        this.browserStackCapabilities = value;
+    }
 
 }

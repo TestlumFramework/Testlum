@@ -1,39 +1,109 @@
 package com.knubisoft.cott.testing.framework.configuration.ui;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.MobileDriverUtil;
-import com.knubisoft.cott.testing.model.global_config.AndroidDevice;
-import com.knubisoft.cott.testing.model.global_config.IosDevice;
+import com.knubisoft.cott.testing.model.global_config.AppiumNativeCapabilities;
+import com.knubisoft.cott.testing.model.global_config.BrowserStackNativeCapabilities;
+import com.knubisoft.cott.testing.model.global_config.GooglePlayLogin;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
-
+import com.knubisoft.cott.testing.model.global_config.Platform;
+import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
+import io.appium.java_client.remote.AndroidMobileCapabilityType;
 import io.appium.java_client.remote.MobileCapabilityType;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 @UtilityClass
 public class NativeDriverFactory {
 
-    @SneakyThrows
     public WebDriver createDriver(final NativeDevice nativeDevice) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        MobileDriverUtil.setCommonCapabilities(nativeDevice, desiredCapabilities);
-        String serverUrl = GlobalTestConfigurationProvider.provide().getNative().getAppiumServerUrl();
-        if (nativeDevice instanceof IosDevice) {
-            MobileDriverUtil.setAutomation(desiredCapabilities, "iOS", "XCUITest");
-            desiredCapabilities.setCapability(MobileCapabilityType.APP, ((IosDevice) nativeDevice).getApp());
-            return new IOSDriver(new URL(serverUrl), desiredCapabilities);
-        }
-        AndroidDevice device = (AndroidDevice) nativeDevice;
-        MobileDriverUtil.setAutomation(desiredCapabilities, "Android", "uiautomator2");
-        desiredCapabilities.setCapability("appPackage", device.getAppPackage());
-        desiredCapabilities.setCapability("appActivity", device.getAppActivity());
-        return new AndroidDriver(new URL(serverUrl), desiredCapabilities);
+        MobileDriverUtil.setDefaultCapabilities(nativeDevice, desiredCapabilities);
+        return getNativeWebDriver(nativeDevice, desiredCapabilities);
     }
 
+    @SneakyThrows
+    private AppiumDriver getNativeWebDriver(final NativeDevice nativeDevice,
+                                            final DesiredCapabilities desiredCapabilities) {
+        String serverUrl = MobileDriverUtil.getServerUrl(
+                GlobalTestConfigurationProvider.getNativeSettings().getConnection());
+        if (Platform.ANDROID == nativeDevice.getPlatformName()) {
+            setAndroidCapabilities(nativeDevice, desiredCapabilities);
+            return new AndroidDriver(new URL(serverUrl), desiredCapabilities);
+        } else if (Platform.IOS == nativeDevice.getPlatformName()) {
+            setIosCapabilities(nativeDevice, desiredCapabilities);
+            return new IOSDriver(new URL(serverUrl), desiredCapabilities);
+        }
+        throw new DefaultFrameworkException("Unknown mobile platform name: ", nativeDevice.getPlatformName());
+    }
+
+    private void setAndroidCapabilities(final NativeDevice nativeDevice,
+                                        final DesiredCapabilities desiredCapabilities) {
+        if (Objects.nonNull(nativeDevice.getAppiumCapabilities())) {
+            setAppiumCapabilities(nativeDevice, desiredCapabilities);
+            setAppiumAndroidApp(desiredCapabilities, nativeDevice.getAppiumCapabilities());
+        } else if (Objects.nonNull(nativeDevice.getBrowserStackCapabilities())) {
+            setBrowserStackCapabilities(nativeDevice, desiredCapabilities);
+            setGooglePlayStoreCredentials(desiredCapabilities,
+                    nativeDevice.getBrowserStackCapabilities().getGooglePlayLogin());
+        }
+        desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, "uiautomator2");
+    }
+
+    private void setIosCapabilities(final NativeDevice nativeDevice,
+                                    final DesiredCapabilities desiredCapabilities) {
+        if (Objects.nonNull(nativeDevice.getAppiumCapabilities())) {
+            setAppiumCapabilities(nativeDevice, desiredCapabilities);
+        } else if (Objects.nonNull(nativeDevice.getBrowserStackCapabilities())) {
+            setBrowserStackCapabilities(nativeDevice, desiredCapabilities);
+        }
+        desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, "XCUITest");
+    }
+
+    private void setAppiumCapabilities(final NativeDevice nativeDevice,
+                                       final DesiredCapabilities desiredCapabilities) {
+        AppiumNativeCapabilities capabilities = nativeDevice.getAppiumCapabilities();
+        MobileDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
+        desiredCapabilities.setCapability(MobileCapabilityType.UDID, capabilities.getUdid());
+        if (StringUtils.isNotBlank(capabilities.getApp())) {
+            desiredCapabilities.setCapability(MobileCapabilityType.APP, capabilities.getApp());
+        }
+    }
+
+    private void setBrowserStackCapabilities(final NativeDevice nativeDevice,
+                                             final DesiredCapabilities desiredCapabilities) {
+        BrowserStackNativeCapabilities capabilities = nativeDevice.getBrowserStackCapabilities();
+        MobileDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
+        desiredCapabilities.setCapability(MobileCapabilityType.APP, capabilities.getApp());
+        desiredCapabilities.setCapability("browserstack.local", Boolean.TRUE);
+    }
+
+    private void setAppiumAndroidApp(final DesiredCapabilities desiredCapabilities,
+                                     final AppiumNativeCapabilities capabilities) {
+        if (StringUtils.isNoneBlank(capabilities.getAppPackage(), capabilities.getAppActivity())) {
+            desiredCapabilities.setCapability(AndroidMobileCapabilityType.APP_PACKAGE, capabilities.getAppPackage());
+            desiredCapabilities.setCapability(AndroidMobileCapabilityType.APP_ACTIVITY, capabilities.getAppActivity());
+        }
+    }
+
+    private void setGooglePlayStoreCredentials(final DesiredCapabilities desiredCapabilities,
+                                               final GooglePlayLogin googlePlayLogin) {
+        if (Objects.nonNull(googlePlayLogin)) {
+            Map<String, String> map = new HashMap<>();
+            map.put("username", googlePlayLogin.getEmail());
+            map.put("password", googlePlayLogin.getPassword());
+            desiredCapabilities.setCapability("browserstack.appStoreConfiguration", map);
+        }
+    }
 }

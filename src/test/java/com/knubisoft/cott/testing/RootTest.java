@@ -10,8 +10,10 @@ import com.knubisoft.cott.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.cott.testing.framework.report.ReportGenerator;
 import com.knubisoft.cott.testing.framework.report.ScenarioResult;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioRunner;
+import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.framework.util.FileRemover;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
+import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.DelayBetweenScenariosRuns;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
 import lombok.SneakyThrows;
@@ -22,6 +24,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -31,6 +36,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.TestContextManager;
 
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -56,11 +63,47 @@ public class RootTest {
         return new TestSetCollector().collect();
     }
 
+    public static Stream<Arguments> prepareWebInParallel() {
+        return new TestSetCollector().onlyWeb();
+    }
+
+    private static CopyOnWriteArrayList<AbstractBrowser> browsers = new CopyOnWriteArrayList<>(BrowserUtil.filterEnabledBrowsers());
+
     @BeforeAll
     @SneakyThrows
     public void beforeAll() {
         new TestContextManager(getClass()).prepareTestInstance(this);
         FileRemover.clearActualFiles(TestResourceSettings.getInstance().getScenariosFolder());
+    }
+
+    @DisplayName("Execution of test scenarios in parallel:")
+    @EnabledIf("isWeb")
+    @Execution(ExecutionMode.CONCURRENT)
+    @ParameterizedTest(name = "[{index}] path -- {0}")
+    @MethodSource("prepareWebInParallel")
+    @SneakyThrows
+    void parallelExec(final Named<ScenarioArguments> arguments) {
+        ScenarioArguments scenarioArguments = arguments.getPayload();
+        AbstractBrowser browser;
+        while (true) {
+            Optional<AbstractBrowser> browser1 = browsers.stream().filter(AbstractBrowser::isEnable).findFirst();
+            if (browser1.isPresent()) {
+                browser = browser1.get();
+                break;
+            }
+            wait(300);
+        }
+        scenarioArguments.setBrowser(browser);
+        browser.setEnable(false);
+        StopWatch stopWatch = StopWatch.createStarted();
+        ScenarioRunner scenarioRunner = new ScenarioRunner(scenarioArguments, ctx);
+        ctx.getAutowireCapableBeanFactory().autowireBean(scenarioRunner);
+        setTestScenarioResult(stopWatch, scenarioRunner);
+        browser.setEnable(true);
+    }
+
+    private boolean isWeb() {
+        return GlobalTestConfigurationProvider.isWebParallel();
     }
 
     @DisplayName("Execution of test scenarios:")

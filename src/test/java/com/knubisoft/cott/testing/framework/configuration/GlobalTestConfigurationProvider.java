@@ -62,6 +62,10 @@ public class GlobalTestConfigurationProvider {
         return GlobalTestConfigurationProvider.provide().getIntegrations();
     }
 
+    public static boolean isWebParallel() {
+        return getBrowserSettings().getBrowserSettings().isParallelExecution();
+    }
+
     private static GlobalTestConfiguration init() {
         return XMLParsers.forGlobalTestConfiguration()
                 .process(TestResourceSettings.getInstance().getConfigFile(), new GlobalTestConfigValidator());

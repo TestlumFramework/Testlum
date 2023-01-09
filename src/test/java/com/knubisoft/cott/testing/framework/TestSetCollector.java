@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework;
 
+import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.parser.CSVParser;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioCollector;
@@ -13,6 +14,7 @@ import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
+import com.knubisoft.cott.testing.model.scenario.Web;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.provider.Arguments;
@@ -36,8 +38,19 @@ public class TestSetCollector {
     public Stream<Arguments> collect() {
         ScenarioCollector.Result result = new ScenarioCollector().collect();
         Set<MappingResult> validScenarios = new ScenarioFilter().filterScenarios(result.get());
+        if (GlobalTestConfigurationProvider.isWebParallel()) {
+            return validScenarios.stream()
+                    .filter(r -> !containsOnlyWeb(r.scenario)).flatMap(this::createArguments);
+        }
         return validScenarios.stream()
                 .flatMap(this::createArguments);
+    }
+
+    public Stream<Arguments> onlyWeb() {
+        ScenarioCollector.Result result = new ScenarioCollector().collect();
+        Set<MappingResult> validScenarios = new ScenarioFilter().filterScenarios(result.get());
+        return validScenarios.stream().filter(s -> containsOnlyWeb(s.scenario))
+                .flatMap(this::getArgumentsForParallelWeb);
     }
 
     //CHECKSTYLE:OFF
@@ -82,6 +95,9 @@ public class TestSetCollector {
     }
     //CHECKSTYLE:ON
 
+    private Stream<Arguments> getArgumentsForParallelWeb(final MappingResult entry) {
+        return getArgumentsWithUiSteps(entry, null, null, null);
+    }
     private Stream<Arguments> getArgumentsWithoutUiSteps(final MappingResult entry) {
         ScenarioArguments scenarioArguments = buildScenarioArguments(entry);
         return Stream.of(convertToNamedArguments(scenarioArguments));
@@ -153,5 +169,9 @@ public class TestSetCollector {
 
     private boolean variationsExist(final MappingResult entry) {
         return Objects.nonNull(entry.scenario) && Objects.nonNull(entry.scenario.getVariations());
+    }
+
+    private boolean containsOnlyWeb(final Scenario scenario) {
+        return scenario.getCommands().stream().allMatch(abstractCommand -> abstractCommand instanceof Web);
     }
 }

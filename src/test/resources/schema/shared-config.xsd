@@ -85,6 +85,7 @@
 
     <x:complexType name="settings">
         <x:sequence>
+            <x:element name="parallelExecution" type="x:boolean" default="false" minOccurs="0"/>
             <x:element name="takeScreenshots" type="tns:takeScreenshot"/>
             <x:element name="elementAutowait" type="tns:elementAutowait"/>
         </x:sequence>

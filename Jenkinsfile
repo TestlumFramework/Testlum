@@ -14,7 +14,7 @@ pipeline {
                      defaultValue: 'master',
                      name: 'BRANCH_SITE',
                      type: 'PT_BRANCH',
-                     useRepository: '.*site-sample.git')    
+                     useRepository: '.*site-sample-v2-api.git')
     }
     environment {
         SERVICE = "testing-tool"
@@ -65,7 +65,7 @@ pipeline {
     stage('start site') {
         steps {
             dir("site") {
-                sh "docker-compose -f docker-compose.yaml up -d --force-recreate && docker-compose -f docker-compose-selenium-grid.yaml up -d --force-recreate"
+                sh "docker-compose -f docker-compose-jenkins.yaml up -d --force-recreate && docker-compose -f docker-compose-selenium-grid.yaml up -d --force-recreate"
             }
         }
     }

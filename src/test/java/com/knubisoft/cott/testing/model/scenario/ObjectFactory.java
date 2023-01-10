@@ -207,7 +207,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Lambda }
-     * 
+     *
      */
     public Lambda createLambda() {
         return new Lambda();
@@ -239,7 +239,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Graphql }
-     * 
+     *
      */
     public Graphql createGraphql() {
         return new Graphql();
@@ -295,7 +295,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Response }
-     * 
+     *
      */
     public Response createResponse() {
         return new Response();
@@ -303,7 +303,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Body }
-     * 
+     *
      */
     public Body createBody() {
         return new Body();
@@ -311,7 +311,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Param }
-     * 
+     *
      */
     public Param createParam() {
         return new Param();
@@ -319,7 +319,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Multipart }
-     * 
+     *
      */
     public Multipart createMultipart() {
         return new Multipart();
@@ -479,7 +479,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link DragAndDrop }
-     * 
+     *
      */
     public DragAndDrop createDragAndDrop() {
         return new DragAndDrop();
@@ -487,7 +487,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link DragAndDropNative }
-     * 
+     *
      */
     public DragAndDropNative createDragAndDropNative() {
         return new DragAndDropNative();
@@ -495,7 +495,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ScrollNative }
-     * 
+     *
      */
     public ScrollNative createScrollNative() {
         return new ScrollNative();
@@ -503,7 +503,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link ScrollToNative }
-     * 
+     *
      */
     public ScrollToNative createScrollToNative() {
         return new ScrollToNative();
@@ -511,7 +511,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link SwipeNative }
-     * 
+     *
      */
     public SwipeNative createSwipeNative() {
         return new SwipeNative();
@@ -519,7 +519,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Refresh }
-     * 
+     *
      */
     public Refresh createRefresh() {
         return new Refresh();
@@ -527,7 +527,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link HotKey }
-     * 
+     *
      */
     public HotKey createHotKey() {
         return new HotKey();
@@ -535,7 +535,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Copy }
-     * 
+     *
      */
     public Copy createCopy() {
         return new Copy();
@@ -543,7 +543,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Paste }
-     * 
+     *
      */
     public Paste createPaste() {
         return new Paste();
@@ -551,7 +551,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Cut }
-     * 
+     *
      */
     public Cut createCut() {
         return new Cut();
@@ -559,7 +559,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Highlight }
-     * 
+     *
      */
     public Highlight createHighlight() {
         return new Highlight();
@@ -567,7 +567,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Tab }
-     * 
+     *
      */
     public Tab createTab() {
         return new Tab();
@@ -575,7 +575,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Enter }
-     * 
+     *
      */
     public Enter createEnter() {
         return new Enter();
@@ -583,7 +583,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link BackSpace }
-     * 
+     *
      */
     public BackSpace createBackSpace() {
         return new BackSpace();
@@ -591,7 +591,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Escape }
-     * 
+     *
      */
     public Escape createEscape() {
         return new Escape();
@@ -599,7 +599,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Space }
-     * 
+     *
      */
     public Space createSpace() {
         return new Space();
@@ -607,7 +607,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link WebView }
-     * 
+     *
      */
     public WebView createWebView() {
         return new WebView();
@@ -615,7 +615,15 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link NavigateNative }
-     * 
+     *
+     */
+    public NavigateNative createNavigateNative() {
+        return new NavigateNative();
+    }
+
+    /**
+     * Create an instance of {@link NavigateNative }
+     *
      */
     public NavigateNative createNavigateNative() {
         return new NavigateNative();
@@ -847,7 +855,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Get }
-     * 
+     *
      */
     public Get createGet() {
         return new Get();
@@ -855,7 +863,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Post }
-     * 
+     *
      */
     public Post createPost() {
         return new Post();
@@ -863,7 +871,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Put }
-     * 
+     *
      */
     public Put createPut() {
         return new Put();
@@ -871,7 +879,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Patch }
-     * 
+     *
      */
     public Patch createPatch() {
         return new Patch();
@@ -879,7 +887,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Trace }
-     * 
+     *
      */
     public Trace createTrace() {
         return new Trace();
@@ -887,7 +895,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Delete }
-     * 
+     *
      */
     public Delete createDelete() {
         return new Delete();
@@ -895,7 +903,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Head }
-     * 
+     *
      */
     public Head createHead() {
         return new Head();
@@ -903,7 +911,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Options }
-     * 
+     *
      */
     public Options createOptions() {
         return new Options();
@@ -919,7 +927,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link WebsocketStomp }
-     * 
+     *
      */
     public WebsocketStomp createWebsocketStomp() {
         return new WebsocketStomp();
@@ -951,7 +959,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link GraphqlBody }
-     * 
+     *
      */
     public GraphqlBody createGraphqlBody() {
         return new GraphqlBody();
@@ -959,7 +967,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link LambdaBody }
-     * 
+     *
      */
     public LambdaBody createLambdaBody() {
         return new LambdaBody();

@@ -13,6 +13,8 @@ import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
 import com.knubisoft.cott.testing.model.scenario.Image;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.ios.IOSDriver;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
@@ -33,7 +35,6 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.URL_TO_ACTUAL
 public class CompareImageExecutor extends AbstractUiExecutor<Image> {
 
     public static final String APPIUM_LOCALHOST_ALIAS = "10\\.0\\.2\\.2";
-    public static final String MOBILE_WEB_SCREENSHOT = "mobileImage.screenshot";
 
     public CompareImageExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -58,10 +59,10 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         CompareWith compareWith = image.getCompareWith();
         if (Objects.nonNull(compareWith)) {
             WebElement webElement = UiUtil.findWebElement(webDriver, compareWith.getLocator());
-            if (compareWith.getLocator().equals(MOBILE_WEB_SCREENSHOT)) {
-                return extractImageFromElement(webElement, compareWith.getAttribute(), result);
+            if (webDriver instanceof AndroidDriver || webDriver instanceof IOSDriver) {
+                return ImageIO.read(UiUtil.takeScreenshot(webElement));
             }
-            return ImageIO.read(UiUtil.takeScreenshot(webElement));
+            return extractImageFromElement(webElement, compareWith.getAttribute(), result);
         }
         return ImageIO.read(UiUtil.takeScreenshot(webDriver));
     }

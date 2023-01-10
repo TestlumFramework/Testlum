@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlType;
     DragAndDropNative.class,
     ScrollNative.class,
     CommandWithLocator.class,
+<<<<<<< Updated upstream
     SwipeNative.class,
     Refresh.class,
     HotKey.class,
@@ -51,6 +52,9 @@ import javax.xml.bind.annotation.XmlType;
     Space.class,
     WebView.class,
     NavigateNative.class,
+=======
+    Image.class,
+>>>>>>> Stashed changes
     NavigateNative.class
 })
 public abstract class AbstractUiCommand

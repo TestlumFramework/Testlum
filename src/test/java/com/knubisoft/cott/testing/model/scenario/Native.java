@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="swipe" type="{http://www.knubisoft.com/cott/testing/model/scenario}swipeNative"/&gt;
  *         &lt;element name="webView" type="{http://www.knubisoft.com/cott/testing/model/scenario}webView"/&gt;
  *         &lt;element name="navigate" type="{http://www.knubisoft.com/cott/testing/model/scenario}navigateNative"/&gt;
+ *         &lt;element name="navigate" type="{http://www.knubisoft.com/cott/testing/model/scenario}navigateNative"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -64,6 +65,8 @@ public class Native
         @XmlElement(name = "scrollTo", type = ScrollToNative.class),
         @XmlElement(name = "swipe", type = SwipeNative.class),
         @XmlElement(name = "webView", type = WebView.class)
+        @XmlElement(name = "image", type = Image.class),
+        @XmlElement(name = "navigate", type = NavigateNative.class)
         @XmlElement(name = "image", type = Image.class),
         @XmlElement(name = "navigate", type = NavigateNative.class)
     })
@@ -102,7 +105,9 @@ public class Native
      * {@link WebView }
      * {@link NavigateNative }
      *
-     * 
+     * {@link NavigateNative }
+     *
+     *
      */
     public List<AbstractUiCommand> getClickOrInputOrAssert() {
         if (clickOrInputOrAssert == null) {

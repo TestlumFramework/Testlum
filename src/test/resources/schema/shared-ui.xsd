@@ -246,6 +246,7 @@
             <x:enumeration value="overview"/>
         </x:restriction>
     </x:simpleType>
+<<<<<<< Updated upstream
 
     <x:complexType name="dragAndDrop">
         <x:complexContent>
@@ -310,5 +311,7 @@
             <x:extension base="tns:abstractUiCommand"/>
         </x:complexContent>
     </x:complexType>
+=======
+>>>>>>> Stashed changes
 
 </x:schema>

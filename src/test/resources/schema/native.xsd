@@ -17,6 +17,7 @@
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="clear" type="tns:clear"/>
                     <x:element name="image" type="tns:image"/>
+<<<<<<< Updated upstream
                     <x:element name="refresh" type="tns:refresh"/>
                     <x:element name="navigate" type="tns:navigateNative"/>
                     <x:element name="dragAndDrop" type="tns:dragAndDropNative"/>
@@ -24,6 +25,9 @@
                     <x:element name="scrollTo" type="tns:scrollToNative"/>
                     <x:element name="swipe" type="tns:swipeNative"/>
                     <x:element name="webView" type="tns:webView"/>
+=======
+                    <x:element name="navigate" type="tns:navigateNative"/>
+>>>>>>> Stashed changes
                 </x:choice>
             </x:extension>
         </x:complexContent>

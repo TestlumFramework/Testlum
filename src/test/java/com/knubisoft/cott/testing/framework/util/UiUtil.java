@@ -171,6 +171,6 @@ public class UiUtil {
 
     public Point getCenterPoint(final WebDriver driver) {
         Dimension dimension = driver.manage().window().getSize();
-        return new Point(dimension.height / 2, dimension.height / 2);
+        return new Point(dimension.width / 2, dimension.height / 2);
     }
 }

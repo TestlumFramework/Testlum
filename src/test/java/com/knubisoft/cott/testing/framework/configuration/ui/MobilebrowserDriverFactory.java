@@ -13,6 +13,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
 import java.util.Objects;
@@ -32,7 +33,7 @@ public class MobilebrowserDriverFactory {
     private WebDriver getMobilebrowserWebDriver(final DesiredCapabilities desiredCapabilities) {
         Mobilebrowser mobilebrowserSettings = GlobalTestConfigurationProvider.getMobilebrowserSettings();
         String serverUrl = MobileDriverUtil.getServerUrl(mobilebrowserSettings.getConnection());
-        WebDriver driver = new AppiumDriver(new URL(serverUrl), desiredCapabilities);
+        WebDriver driver = new RemoteWebDriver(new URL(serverUrl), desiredCapabilities);
         driver.get(mobilebrowserSettings.getBaseUrl());
         return driver;
     }

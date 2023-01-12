@@ -1,6 +1,5 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib.ui.executor;
 
-import com.google.common.collect.ImmutableMap;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -52,7 +51,7 @@ public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
     private void performIOSNavigation(final NavigateNative navigateNative, final IOSDriver driver) {
         switch (navigateNative.getDestination()) {
             case HOME:
-                driver.executeScript("mobile: pressButton", ImmutableMap.of("name", "home"));
+                driver.executeScript("mobile: pressButton", Collections.singletonMap("name", "home"));
                 break;
             case BACK:
                 driver.navigate().back();

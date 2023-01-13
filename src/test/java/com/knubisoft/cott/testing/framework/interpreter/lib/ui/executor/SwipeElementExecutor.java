@@ -8,7 +8,7 @@ import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.SwipeElement;
 import com.knubisoft.cott.testing.model.scenario.SwipeElementDirection;
-import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.AppiumDriver;
 import java.util.Collections;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
@@ -20,8 +20,8 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.SWIPE_VALUE;
 public class SwipeElementExecutor extends AbstractUiExecutor<SwipeElement> {
 
 
-    public static final int PERCENTS = 100;
-    public static final int ACTION_DURATION = 500;
+    private static final int PERCENTS = 100;
+    private static final int ACTION_DURATION = 250;
 
     public SwipeElementExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -37,7 +37,7 @@ public class SwipeElementExecutor extends AbstractUiExecutor<SwipeElement> {
     }
 
     private void performElementSwipe(final SwipeElement swipeElement) {
-        AndroidDriver driver = (AndroidDriver) dependencies.getDriver();
+        AppiumDriver driver = (AppiumDriver) dependencies.getDriver();
         Dimension screenDimensions = driver.manage().window().getSize();
         int swipeValue = screenDimensions.width * swipeElement.getValueInPercents() / PERCENTS;
         Point start = UiUtil.findWebElement(driver, swipeElement.getLocatorId()).getLocation();

@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -15,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NAVIGATE_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.NATIVE_NAVIGATION_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NATIVE_NAVIGATE_TO;
 
@@ -41,10 +43,25 @@ public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
             performAndroidNavigation(navigateNative, (AndroidDriver) dependencies.getDriver());
         }
         if (dependencies.getDriver() instanceof IOSDriver) {
-            IOSDriver driver = (IOSDriver) dependencies.getDriver();
-            //TODO performIosNavigation
+            performIOSNavigation(navigateNative, (IOSDriver) dependencies.getDriver());
         }
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+    }
+
+    private void performIOSNavigation(final NavigateNative navigateNative, final IOSDriver driver) {
+        switch (navigateNative.getDestination()) {
+            case HOME:
+                driver.executeScript("mobile: pressButton", Collections.singletonMap("name", "home"));
+                break;
+            case BACK:
+                driver.navigate().back();
+                break;
+            case OVERVIEW:
+                throw new DefaultFrameworkException("Overview unfortunately is not supported in IOS");
+            default:
+                throw new DefaultFrameworkException(NAVIGATE_NOT_SUPPORTED,
+                        navigateNative.getDestination().value());
+        }
     }
 
     private void performAndroidNavigation(final NavigateNative navigateNative,

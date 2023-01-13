@@ -20,7 +20,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.PERFORM_SWIPE
 @ExecutorForClass(SwipeNative.class)
 public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
 
-    private static final int DEFAULT_SWIPE_VALUE = 750;
+    private static final int DEFAULT_SWIPE_VALUE = 1000;
     private static final int ACTION_DURATION = 250;
 
     public SwipeNativeExecutor(final ExecutorDependencies dependencies) {

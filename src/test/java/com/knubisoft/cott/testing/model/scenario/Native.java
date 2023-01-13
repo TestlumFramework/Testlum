@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="scrollTo" type="{http://www.knubisoft.com/cott/testing/model/scenario}scrollToNative"/&gt;
  *         &lt;element name="swipe" type="{http://www.knubisoft.com/cott/testing/model/scenario}swipeNative"/&gt;
  *         &lt;element name="webView" type="{http://www.knubisoft.com/cott/testing/model/scenario}webView"/&gt;
+ *         &lt;element name="swipeElement" type="{http://www.knubisoft.com/cott/testing/model/scenario}swipeElement"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -62,7 +63,8 @@ public class Native
         @XmlElement(name = "scroll", type = ScrollNative.class),
         @XmlElement(name = "scrollTo", type = ScrollToNative.class),
         @XmlElement(name = "swipe", type = SwipeNative.class),
-        @XmlElement(name = "webView", type = WebView.class)
+        @XmlElement(name = "webView", type = WebView.class),
+        @XmlElement(name = "swipeElement", type = SwipeElement.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
 
@@ -97,6 +99,7 @@ public class Native
      * {@link ScrollToNative }
      * {@link SwipeNative }
      * {@link WebView }
+     * {@link SwipeElement }
      * 
      * 
      */

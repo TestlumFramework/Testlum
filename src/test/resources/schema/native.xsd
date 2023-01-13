@@ -24,6 +24,7 @@
                     <x:element name="scrollTo" type="tns:scrollToNative"/>
                     <x:element name="swipe" type="tns:swipeNative"/>
                     <x:element name="webView" type="tns:webView"/>
+                    <x:element name="swipeElement" type="tns:swipeElement"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>
@@ -65,6 +66,28 @@
             <x:enumeration value="back"/>
             <x:enumeration value="home"/>
             <x:enumeration value="overview"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="swipeElement">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
+                <x:attribute name="direction" type="tns:swipeElementDirection" use="required"/>
+                <x:attribute name="valueInPercents" type="tns:percentsPattern" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+    
+    <x:simpleType name="percentsPattern">
+        <x:restriction base="x:int">
+            <x:pattern value="[1-9][0-9]|100"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="swipeElementDirection">
+        <x:restriction base="x:string">
+            <x:enumeration value="right"/>
+            <x:enumeration value="left"/>
         </x:restriction>
     </x:simpleType>
 

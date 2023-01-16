@@ -17,6 +17,9 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;attribute name="direction" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}swipeDirection" /&gt;
+ *       &lt;attribute name="valueInPercents" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}percentsPattern" /&gt;
+ *       &lt;attribute name="type" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}swipeType" /&gt;
+ *       &lt;attribute name="locator" type="{http://www.knubisoft.com/cott/testing/model/scenario}scenarioLocator" /&gt;
  *       &lt;attribute name="quantity" type="{http://www.w3.org/2001/XMLSchema}int" default="1" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -33,6 +36,12 @@ public class SwipeNative
 
     @XmlAttribute(name = "direction", required = true)
     protected SwipeDirection direction;
+    @XmlAttribute(name = "valueInPercents", required = true)
+    protected int valueInPercents;
+    @XmlAttribute(name = "type", required = true)
+    protected SwipeType type;
+    @XmlAttribute(name = "locator")
+    protected String locator;
     @XmlAttribute(name = "quantity")
     protected Integer quantity;
 
@@ -58,6 +67,70 @@ public class SwipeNative
      */
     public void setDirection(SwipeDirection value) {
         this.direction = value;
+    }
+
+    /**
+     * Gets the value of the valueInPercents property.
+     * 
+     */
+    public int getValueInPercents() {
+        return valueInPercents;
+    }
+
+    /**
+     * Sets the value of the valueInPercents property.
+     * 
+     */
+    public void setValueInPercents(int value) {
+        this.valueInPercents = value;
+    }
+
+    /**
+     * Gets the value of the type property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link SwipeType }
+     *     
+     */
+    public SwipeType getType() {
+        return type;
+    }
+
+    /**
+     * Sets the value of the type property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link SwipeType }
+     *     
+     */
+    public void setType(SwipeType value) {
+        this.type = value;
+    }
+
+    /**
+     * Gets the value of the locator property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getLocator() {
+        return locator;
+    }
+
+    /**
+     * Sets the value of the locator property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setLocator(String value) {
+        this.locator = value;
     }
 
     /**

@@ -7,31 +7,31 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for swipeElementDirection.
+ * <p>Java class for swipeType.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="swipeElementDirection"&gt;
+ * &lt;simpleType name="swipeType"&gt;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *     &lt;enumeration value="right"/&gt;
- *     &lt;enumeration value="left"/&gt;
+ *     &lt;enumeration value="element"/&gt;
+ *     &lt;enumeration value="page"/&gt;
  *   &lt;/restriction&gt;
  * &lt;/simpleType&gt;
  * </pre>
  * 
  */
-@XmlType(name = "swipeElementDirection")
+@XmlType(name = "swipeType")
 @XmlEnum
-public enum SwipeElementDirection {
+public enum SwipeType {
 
-    @XmlEnumValue("right")
-    RIGHT("right"),
-    @XmlEnumValue("left")
-    LEFT("left");
+    @XmlEnumValue("element")
+    ELEMENT("element"),
+    @XmlEnumValue("page")
+    PAGE("page");
     private final String value;
 
-    SwipeElementDirection(String v) {
+    SwipeType(String v) {
         value = v;
     }
 
@@ -39,8 +39,8 @@ public enum SwipeElementDirection {
         return value;
     }
 
-    public static SwipeElementDirection fromValue(String v) {
-        for (SwipeElementDirection c: SwipeElementDirection.values()) {
+    public static SwipeType fromValue(String v) {
+        for (SwipeType c: SwipeType.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

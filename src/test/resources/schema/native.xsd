@@ -24,7 +24,6 @@
                     <x:element name="scrollTo" type="tns:scrollToNative"/>
                     <x:element name="swipe" type="tns:swipeNative"/>
                     <x:element name="webView" type="tns:webView"/>
-                    <x:element name="swipeElement" type="tns:swipeElement"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>
@@ -69,25 +68,37 @@
         </x:restriction>
     </x:simpleType>
 
-    <x:complexType name="swipeElement">
+    <x:complexType name="swipeNative">
         <x:complexContent>
-            <x:extension base="tns:commandWithLocator">
-                <x:attribute name="direction" type="tns:swipeElementDirection" use="required"/>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="direction" type="tns:swipeDirection" use="required"/>
                 <x:attribute name="valueInPercents" type="tns:percentsPattern" use="required"/>
+                <x:attribute name="type" type="tns:swipeType" use="required"/>
+                <x:attribute name="locator" type="tns:scenarioLocator"/>
+                <x:attribute name="quantity" type="x:int" default="1"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
+
+    <x:simpleType name="swipeDirection">
+        <x:restriction base="x:string">
+            <x:enumeration value="right"/>
+            <x:enumeration value="left"/>
+            <x:enumeration value="up"/>
+            <x:enumeration value="down"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="swipeType">
+        <x:restriction base="x:string">
+            <x:enumeration value="element"/>
+            <x:enumeration value="page"/>
+        </x:restriction>
+    </x:simpleType>
     
     <x:simpleType name="percentsPattern">
         <x:restriction base="x:int">
             <x:pattern value="[1-9][0-9]|100"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="swipeElementDirection">
-        <x:restriction base="x:string">
-            <x:enumeration value="right"/>
-            <x:enumeration value="left"/>
         </x:restriction>
     </x:simpleType>
 

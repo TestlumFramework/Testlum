@@ -14,13 +14,13 @@ pipeline {
                      defaultValue: 'master',
                      name: 'BRANCH_SITE',
                      type: 'PT_BRANCH',
-                     useRepository: '.*site-sample.git')    
+                     useRepository: '.*site-sample-v2-api.git')
     }
     environment {
         SERVICE = "testing-tool"
         SITE = "site-sample"
         TAG = "${GIT_COMMIT}"
-        SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/cott/site-sample.git"
+        SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/cott/site-sample-v2-api.git"
         URL_TESTING_TOOL = "ssh://git@bitbucket.knubisoft.com:7999/cott/cost-optimization-testing-tool.git"
         URL_TESTING_TOOL_SCENARIOS = "ssh://git@bitbucket.knubisoft.com:7999/cott/cott-test-resources.git"
         GIT_CREDENTIALS_ID = "bitbucket"
@@ -65,7 +65,7 @@ pipeline {
     stage('start site') {
         steps {
             dir("site") {
-                sh "docker-compose -f docker-compose.yaml up -d --force-recreate && docker-compose -f docker-compose-selenium-grid.yaml up -d --force-recreate"
+                sh "docker-compose -f docker-compose-jenkins.yaml up -d --force-recreate && docker-compose -f docker-compose-selenium-grid.yaml up -d --force-recreate"
             }
         }
     }

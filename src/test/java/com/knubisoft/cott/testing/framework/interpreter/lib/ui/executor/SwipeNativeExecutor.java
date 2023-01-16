@@ -48,12 +48,25 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
 
     private Sequence prepareSwipe(final SwipeNative swipeNative, final AppiumDriver driver) {
         Dimension screenDimensions = driver.manage().window().getSize();
-        int swipeValue = screenDimensions.width * swipeNative.getValueInPercents() / PERCENTS;
+        int swipeValue = getSwipeValue(swipeNative, screenDimensions);
         Point start = SwipeType.PAGE.equals(swipeNative.getType())
                 ? UiUtil.getCenterPoint(driver)
                 : getElementLocation(swipeNative, driver);
         Point end = getEndPoint(swipeNative.getDirection(), start, swipeValue);
         return UiUtil.buildSequence(start, end, ACTION_DURATION);
+    }
+
+    private int getSwipeValue(final SwipeNative swipeNative, final Dimension screenDimensions) {
+        switch (swipeNative.getDirection()) {
+            case UP:
+            case DOWN:
+                return screenDimensions.height * swipeNative.getValueInPercents() / PERCENTS;
+            case LEFT:
+            case RIGHT:
+                return screenDimensions.width * swipeNative.getValueInPercents() / PERCENTS;
+            default:
+                throw new DefaultFrameworkException(SWIPE_TYPE_NOT_FOUND, swipeNative.getDirection());
+        }
     }
 
     private Point getElementLocation(final SwipeNative swipeNative, final AppiumDriver driver) {

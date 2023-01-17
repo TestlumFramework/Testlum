@@ -22,7 +22,7 @@ public class MobileDriverUtil {
     private static final String BROWSER_STACK_URL_TEMPLATE = "https://%s:%s@hub-cloud.browserstack.com/wd/hub";
 
     public String getBrowserStackUrl() {
-        BrowserStackLogin browserStack = GlobalTestConfigurationProvider.provide().getBrowserStackLogin();
+        BrowserStackLogin browserStack = GlobalTestConfigurationProvider.provideUi().getBrowserStackLogin();
         if (Objects.nonNull(browserStack)) {
             return format(BROWSER_STACK_URL_TEMPLATE, browserStack.getUsername(), browserStack.getAccessKey());
         }

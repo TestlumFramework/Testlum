@@ -7,7 +7,6 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.ScenarioUtil;
-import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.cott.testing.model.scenario.SwitchToFrame;
 import com.knubisoft.cott.testing.model.scenario.Ui;
@@ -122,11 +121,11 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
     }
 
     public enum UiType {
-        WEB(() -> globalTestConfig().getWeb().getBrowserSettings().getTakeScreenshots().isEnable(),
+        WEB(() -> ui().getWeb().getBrowserSettings().getTakeScreenshots().isEnable(),
                 InterpreterDependencies::getWebDriver),
-        NATIVE(() -> globalTestConfig().getNative().getTakeScreenshots().isEnable(),
+        NATIVE(() -> ui().getNative().getTakeScreenshots().isEnable(),
                 InterpreterDependencies::getNativeDriver),
-        MOBILE_BROWSER(() -> globalTestConfig().getMobilebrowser().getTakeScreenshots().isEnable(),
+        MOBILE_BROWSER(() -> ui().getMobilebrowser().getTakeScreenshots().isEnable(),
                 InterpreterDependencies::getMobilebrowserDriver);
 
         private final Supplier<Boolean> screenshotFunction;
@@ -146,8 +145,8 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
             return driverFunction.apply(interpreterDependencies);
         }
 
-        private static GlobalTestConfiguration globalTestConfig() {
-            return GlobalTestConfigurationProvider.provide();
+        private static com.knubisoft.cott.testing.model.global_config.Ui ui() {
+            return GlobalTestConfigurationProvider.provideUi();
         }
     }
 }

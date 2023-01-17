@@ -39,13 +39,13 @@ import javax.xml.bind.annotation.XmlType;
     Rabbitmq.class,
     Dynamo.class,
     Elasticsearch.class,
-    Lambda.class,
     Sendgrid.class,
     Ses.class,
     Smtp.class,
     Twilio.class,
-    GraphqlApi.class,
-    WebsocketApi.class
+    WebsocketApi.class,
+    Lambda.class,
+    GraphqlApi.class
 })
 public abstract class Integration {
 

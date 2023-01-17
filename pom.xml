@@ -1075,6 +1075,8 @@
                         <source>${project.basedir}/src/test/resources/schema/scenario.xsd</source>
                         <source>${project.basedir}/src/test/resources/schema/global-config.xsd</source>
                         <source>${project.basedir}/src/test/resources/schema/pages.xsd</source>
+                        <source>${project.basedir}/src/test/resources/schema/integration-config.xsd</source>
+                        <source>${project.basedir}/src/test/resources/schema/ui-config.xsd</source>
                     </sources>
                     <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
                 </configuration>

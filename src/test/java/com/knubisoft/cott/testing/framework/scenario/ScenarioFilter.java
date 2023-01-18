@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NO_ENABLE_TAGS_CONFIG;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NO_SCENARIOS_FILTERED_BY_TAGS;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.STOP_IF_NON_PARSED_SCENARIO;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VALID_SCENARIOS_NOT_FOUND;
 
 public class ScenarioFilter {
@@ -89,6 +90,10 @@ public class ScenarioFilter {
     private boolean isScenarioNonParsed(final ScenarioCollector.MappingResult entry) {
         if (Objects.nonNull(entry.scenario)) {
             return false;
+        }
+        if (GlobalTestConfigurationProvider.provide().isStopIfInvalidScenario()) {
+            throw new DefaultFrameworkException(STOP_IF_NON_PARSED_SCENARIO,
+                    entry.file.getPath(), entry.exception.getMessage());
         }
         LogUtil.logNonParsedScenarioInfo(entry.file.getPath(), entry.exception.getMessage());
         return true;

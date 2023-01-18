@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence&gt;
  *         &lt;element name="subscription" type="{http://www.knubisoft.com/cott/testing/model/global-config}subscription"/&gt;
  *         &lt;element name="stopScenarioOnFailure" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="stopIfInvalidScenario" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *         &lt;element name="delayBetweenScenariosRuns" type="{http://www.knubisoft.com/cott/testing/model/global-config}delayBetweenScenariosRuns" minOccurs="0"/&gt;
  *         &lt;element name="runScenariosByTag" type="{http://www.knubisoft.com/cott/testing/model/global-config}runScenariosByTag"/&gt;
  *         &lt;element name="report" type="{http://www.knubisoft.com/cott/testing/model/global-config}report"/&gt;
@@ -38,6 +39,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {
     "subscription",
     "stopScenarioOnFailure",
+    "stopIfInvalidScenario",
     "delayBetweenScenariosRuns",
     "runScenariosByTag",
     "report",
@@ -51,6 +53,7 @@ public class GlobalTestConfiguration {
     @XmlElement(required = true)
     protected Subscription subscription;
     protected boolean stopScenarioOnFailure;
+    protected boolean stopIfInvalidScenario;
     protected DelayBetweenScenariosRuns delayBetweenScenariosRuns;
     @XmlElement(required = true)
     protected RunScenariosByTag runScenariosByTag;
@@ -101,6 +104,22 @@ public class GlobalTestConfiguration {
      */
     public void setStopScenarioOnFailure(boolean value) {
         this.stopScenarioOnFailure = value;
+    }
+
+    /**
+     * Gets the value of the stopIfInvalidScenario property.
+     * 
+     */
+    public boolean isStopIfInvalidScenario() {
+        return stopIfInvalidScenario;
+    }
+
+    /**
+     * Sets the value of the stopIfInvalidScenario property.
+     * 
+     */
+    public void setStopIfInvalidScenario(boolean value) {
+        this.stopIfInvalidScenario = value;
     }
 
     /**

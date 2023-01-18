@@ -22,6 +22,7 @@
             <x:sequence>
                 <x:element name="subscription" type="tns:subscription"/>
                 <x:element name="stopScenarioOnFailure" type="x:boolean"/>
+                <x:element name="stopIfInvalidScenario" type="x:boolean"/>
                 <x:element name="delayBetweenScenariosRuns" type="tns:delayBetweenScenariosRuns" minOccurs="0"/>
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
                 <x:element name="report" type="tns:report"/>

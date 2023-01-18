@@ -165,4 +165,6 @@ public class ExceptionMessage {
 
     public static final String CANNOT_SWITCH_TO_WEBVIEW = "Can not switch to the web view. Web context was not found";
 
+    public static final String STOP_IF_NON_PARSED_SCENARIO = ANSI_RED
+            + "The execution was stopped because of isStopIfInvalidScenario\nScenario: %s\nMessage:%s" + ANSI_RESET;
 }

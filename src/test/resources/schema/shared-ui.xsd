@@ -271,24 +271,6 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="swipeNative">
-        <x:complexContent>
-            <x:extension base="tns:abstractUiCommand">
-                <x:attribute name="direction" type="tns:swipeDirection" use="required"/>
-                <x:attribute name="quantity" type="x:int" default="1"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
-    <x:simpleType name="swipeDirection">
-        <x:restriction base="x:string">
-            <x:enumeration value="right"/>
-            <x:enumeration value="left"/>
-            <x:enumeration value="up"/>
-            <x:enumeration value="down"/>
-        </x:restriction>
-    </x:simpleType>
-
     <x:complexType name="refresh">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand"/>

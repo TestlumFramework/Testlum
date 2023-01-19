@@ -75,6 +75,8 @@ import com.knubisoft.cott.testing.model.scenario.Shell;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.Sqs;
 import com.knubisoft.cott.testing.model.scenario.StorageName;
+import com.knubisoft.cott.testing.model.scenario.SwipeNative;
+import com.knubisoft.cott.testing.model.scenario.SwipeType;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.Var;
 import com.knubisoft.cott.testing.model.scenario.Web;
@@ -297,7 +299,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         });
 
         validatorMap.put(o -> o instanceof Native, (xmlFile, command) -> {
-            validateNativeCommands();
+            validateNativeCommands((Native) command);
         });
 
         this.abstractCommandValidatorsMap = Collections.unmodifiableMap(validatorMap);
@@ -539,10 +541,21 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         });
     }
 
-    private void validateNativeCommands() {
+    private void validateNativeCommands(final Native command) {
         if (MobileUtil.filterEnabledNativeDevices().isEmpty()
                 || !GlobalTestConfigurationProvider.getNativeSettings().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_NATIVE_DEVICE);
+        }
+        command.getClickOrInputOrAssert().forEach(o -> {
+            if (o instanceof SwipeNative && ((SwipeNative) o).getType() == SwipeType.ELEMENT) {
+                validateSwipeNativeCommand((SwipeNative) o);
+            }
+        });
+    }
+
+    private void validateSwipeNativeCommand(final SwipeNative swipeNative) {
+        if (StringUtils.hasText(swipeNative.getLocator())) {
+            throw new DefaultFrameworkException(ExceptionMessage.NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE);
         }
     }
 
@@ -561,7 +574,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateScrollCommand(final Scroll scroll) {
-        if (scroll.getLocator().isEmpty()) {
+        if (StringUtils.hasText(scroll.getLocator())) {
             throw new DefaultFrameworkException(ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
         }
     }

@@ -510,14 +510,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SwipeNative }
-     * 
-     */
-    public SwipeNative createSwipeNative() {
-        return new SwipeNative();
-    }
-
-    /**
      * Create an instance of {@link Refresh }
      * 
      */
@@ -619,6 +611,14 @@ public class ObjectFactory {
      */
     public NavigateNative createNavigateNative() {
         return new NavigateNative();
+    }
+
+    /**
+     * Create an instance of {@link SwipeNative }
+     * 
+     */
+    public SwipeNative createSwipeNative() {
+        return new SwipeNative();
     }
 
     /**

@@ -23,6 +23,7 @@ import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.SesBody;
 import com.knubisoft.cott.testing.model.scenario.SesMessage;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
+import com.knubisoft.cott.testing.model.scenario.SwipeNative;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
@@ -98,7 +99,11 @@ public class ResultUtil {
     public static final String TO_LOCATOR = "To element with locator";
     public static final String SCROLL_TO_ELEMENT = "Scrolling to element with locator id";
     public static final String PERFORM_SWIPE = "Perform swipe with direction";
-    public static final String AMOUNT_OF_SWIPES = "Amount of swipes";
+    public static final String PERFORM_ELEMENT_SWIPE = "Performing element swipe with direction";
+    private static final String SWIPE_VALUE = "Swipe value in percent due to screen dimensions";
+    private static final String SWIPE_QUANTITY = "Quantity of swipes";
+    private static final String SWIPE_TYPE = "Swipe type";
+    private static final String SWIPE_LOCATOR = "Locator for swipe";
     private static final String SCROLL_DIRECTION = "Scroll direction";
     private static final String SCROLL_MEASURE = "Scroll measure";
     private static final String SCROLL_TYPE = "Scroll type";
@@ -517,5 +522,15 @@ public class ResultUtil {
         result.put(ALIAS, alias);
         result.put(ENDPOINT, endpoint);
         result.put(BODY_OF_REQUEST, body);
+    }
+
+    public static void addSwipeMetaData(final SwipeNative swipeNative, final CommandResult result) {
+        result.put(SWIPE_TYPE, swipeNative.getType().value());
+        result.put(SWIPE_QUANTITY, swipeNative.getQuantity());
+        result.put(PERFORM_SWIPE, swipeNative.getDirection());
+        result.put(SWIPE_VALUE, swipeNative.getPercent());
+        if (StringUtils.isNotBlank(swipeNative.getLocator())) {
+            result.put(SWIPE_LOCATOR, swipeNative.getLocator());
+        }
     }
 }

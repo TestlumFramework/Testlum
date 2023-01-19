@@ -13,11 +13,9 @@ import com.knubisoft.cott.testing.model.scenario.SwipeNative;
 import com.knubisoft.cott.testing.model.scenario.SwipeType;
 import io.appium.java_client.AppiumDriver;
 import java.util.Collections;
-import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.interactions.Sequence;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.CANNOT_SWIPE_ELEMENT;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SWIPE_TYPE_NOT_FOUND;
 
 @ExecutorForClass(SwipeNative.class)
@@ -51,7 +49,7 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
         int swipeValue = getSwipeValue(swipeNative, screenDimensions);
         Point start = SwipeType.PAGE == swipeNative.getType()
                 ? UiUtil.getCenterPoint(driver)
-                : getElementLocation(swipeNative, driver);
+                : UiUtil.findWebElement(driver, swipeNative.getLocator()).getLocation();
         Point end = getEndPoint(swipeNative.getDirection(), start, swipeValue);
         return UiUtil.buildSequence(start, end, ACTION_DURATION);
     }
@@ -67,13 +65,6 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
             default:
                 throw new DefaultFrameworkException(SWIPE_TYPE_NOT_FOUND, swipeNative.getDirection());
         }
-    }
-
-    private Point getElementLocation(final SwipeNative swipeNative, final AppiumDriver driver) {
-        if (StringUtils.isNotBlank(swipeNative.getLocator())) {
-            return UiUtil.findWebElement(driver, swipeNative.getLocator()).getLocation();
-        }
-        throw new DefaultFrameworkException(CANNOT_SWIPE_ELEMENT);
     }
 
     private Point getEndPoint(final SwipeDirection direction, final Point start, final int swipeValue) {

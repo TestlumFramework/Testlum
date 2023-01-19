@@ -1,7 +1,9 @@
 package com.knubisoft.cott.testing.framework.interpreter;
+
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractUiInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.cott.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.scenario.Native;
 

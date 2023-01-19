@@ -1,8 +1,8 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib;
 
-import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorProvider;
+import com.knubisoft.cott.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
@@ -19,8 +19,6 @@ import org.openqa.selenium.html5.WebStorage;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLEAR_COOKIES_AFTER_EXECUTION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLEAR_LOCAL_STORAGE_BY_KEY;
@@ -38,6 +36,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
                 .scenarioContext(dependencies.getScenarioContext())
                 .position(dependencies.getPosition())
                 .takeScreenshots(uiType.isScreenshotsEnabled())
+                .uiType(uiType)
                 .build();
     }
 
@@ -117,36 +116,6 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
         result.put(CLEAR_COOKIES_AFTER_EXECUTION, clearCookies);
         if (clearCookies) {
             driver.manage().deleteAllCookies();
-        }
-    }
-
-    public enum UiType {
-        WEB(() -> ui().getWeb().getBrowserSettings().getTakeScreenshots().isEnable(),
-                InterpreterDependencies::getWebDriver),
-        NATIVE(() -> ui().getNative().getTakeScreenshots().isEnable(),
-                InterpreterDependencies::getNativeDriver),
-        MOBILE_BROWSER(() -> ui().getMobilebrowser().getTakeScreenshots().isEnable(),
-                InterpreterDependencies::getMobilebrowserDriver);
-
-        private final Supplier<Boolean> screenshotFunction;
-        private final Function<InterpreterDependencies, WebDriver> driverFunction;
-
-        UiType(final Supplier<Boolean> screenshotFunction,
-               final Function<InterpreterDependencies, WebDriver> driverFunction) {
-            this.screenshotFunction = screenshotFunction;
-            this.driverFunction = driverFunction;
-        }
-
-        public boolean isScreenshotsEnabled() {
-            return screenshotFunction.get();
-        }
-
-        public WebDriver getAppropriateDriver(final InterpreterDependencies interpreterDependencies) {
-            return driverFunction.apply(interpreterDependencies);
-        }
-
-        private static com.knubisoft.cott.testing.model.global_config.Ui ui() {
-            return GlobalTestConfigurationProvider.provideUi();
         }
     }
 }

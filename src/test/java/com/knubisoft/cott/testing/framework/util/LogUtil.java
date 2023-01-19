@@ -40,7 +40,6 @@ import software.amazon.awssdk.http.HttpStatusCode;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.AMOUNT_OF_SWIPES;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ATTRIBUTE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BODY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
@@ -93,6 +92,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.START_UI_
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_WEBVIEW;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUBJECT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SWIPE_DIRECTION;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SWIPE_QUANTITY;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SWIPE_TYPE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SWIPE_VALUE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TABLE_FORMAT;
@@ -416,10 +416,10 @@ public class LogUtil {
 
     public static void logSwipeNativeInfo(final SwipeNative swipeNative) {
         log.info(SWIPE_TYPE, swipeNative.getType());
-        log.info(AMOUNT_OF_SWIPES, swipeNative.getQuantity());
+        log.info(SWIPE_QUANTITY, swipeNative.getQuantity());
         log.info(SWIPE_DIRECTION, swipeNative.getDirection());
-        log.info(SWIPE_VALUE, swipeNative.getValueInPercents());
-        if (!StringUtils.isBlank(swipeNative.getLocator())) {
+        log.info(SWIPE_VALUE, swipeNative.getPercent());
+        if (StringUtils.isNotBlank(swipeNative.getLocator())) {
             log.info(LOCATOR_LOG, swipeNative.getLocator());
         }
     }

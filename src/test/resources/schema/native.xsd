@@ -74,7 +74,7 @@
                 <x:attribute name="direction" type="tns:swipeDirection" use="required"/>
                 <x:attribute name="type" type="tns:swipeType" use="required"/>
                 <x:attribute name="locator" type="tns:scenarioLocator"/>
-                <x:attribute name="valueInPercents" type="tns:percentsPattern" default="70"/>
+                <x:attribute name="percent" type="tns:percentsPattern" default="70"/>
                 <x:attribute name="quantity" type="x:int" default="1"/>
             </x:extension>
         </x:complexContent>

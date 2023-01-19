@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="direction" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}swipeDirection" /&gt;
  *       &lt;attribute name="type" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}swipeType" /&gt;
  *       &lt;attribute name="locator" type="{http://www.knubisoft.com/cott/testing/model/scenario}scenarioLocator" /&gt;
- *       &lt;attribute name="valueInPercents" type="{http://www.knubisoft.com/cott/testing/model/scenario}percentsPattern" default="70" /&gt;
+ *       &lt;attribute name="percent" type="{http://www.knubisoft.com/cott/testing/model/scenario}percentsPattern" default="70" /&gt;
  *       &lt;attribute name="quantity" type="{http://www.w3.org/2001/XMLSchema}int" default="1" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -40,8 +40,8 @@ public class SwipeNative
     protected SwipeType type;
     @XmlAttribute(name = "locator")
     protected String locator;
-    @XmlAttribute(name = "valueInPercents")
-    protected Integer valueInPercents;
+    @XmlAttribute(name = "percent")
+    protected Integer percent;
     @XmlAttribute(name = "quantity")
     protected Integer quantity;
 
@@ -118,31 +118,31 @@ public class SwipeNative
     }
 
     /**
-     * Gets the value of the valueInPercents property.
+     * Gets the value of the percent property.
      * 
      * @return
      *     possible object is
      *     {@link Integer }
      *     
      */
-    public int getValueInPercents() {
-        if (valueInPercents == null) {
+    public int getPercent() {
+        if (percent == null) {
             return  70;
         } else {
-            return valueInPercents;
+            return percent;
         }
     }
 
     /**
-     * Sets the value of the valueInPercents property.
+     * Sets the value of the percent property.
      * 
      * @param value
      *     allowed object is
      *     {@link Integer }
      *     
      */
-    public void setValueInPercents(Integer value) {
-        this.valueInPercents = value;
+    public void setPercent(Integer value) {
+        this.percent = value;
     }
 
     /**

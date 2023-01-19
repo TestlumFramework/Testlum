@@ -58,10 +58,10 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
         switch (swipeNative.getDirection()) {
             case UP:
             case DOWN:
-                return screenDimensions.height * swipeNative.getValueInPercents() / PERCENTS;
+                return screenDimensions.height * swipeNative.getPercent() / PERCENTS;
             case LEFT:
             case RIGHT:
-                return screenDimensions.width * swipeNative.getValueInPercents() / PERCENTS;
+                return screenDimensions.width * swipeNative.getPercent() / PERCENTS;
             default:
                 throw new DefaultFrameworkException(SWIPE_TYPE_NOT_FOUND, swipeNative.getDirection());
         }

@@ -101,7 +101,7 @@ public class ResultUtil {
     public static final String PERFORM_SWIPE = "Perform swipe with direction";
     public static final String PERFORM_ELEMENT_SWIPE = "Performing element swipe with direction";
     private static final String SWIPE_VALUE = "Swipe value in percent due to screen dimensions";
-    private static final String AMOUNT_OF_SWIPES = "Amount of swipes";
+    private static final String SWIPE_QUANTITY = "Quantity of swipes";
     private static final String SWIPE_TYPE = "Swipe type";
     private static final String SWIPE_LOCATOR = "Locator for swipe";
     private static final String SCROLL_DIRECTION = "Scroll direction";
@@ -526,10 +526,10 @@ public class ResultUtil {
 
     public static void addSwipeMetaData(final SwipeNative swipeNative, final CommandResult result) {
         result.put(SWIPE_TYPE, swipeNative.getType().value());
-        result.put(AMOUNT_OF_SWIPES, swipeNative.getQuantity());
+        result.put(SWIPE_QUANTITY, swipeNative.getQuantity());
         result.put(PERFORM_SWIPE, swipeNative.getDirection());
-        result.put(SWIPE_VALUE, swipeNative.getValueInPercents());
-        if (!StringUtils.isBlank(swipeNative.getLocator())) {
+        result.put(SWIPE_VALUE, swipeNative.getPercent());
+        if (StringUtils.isNotBlank(swipeNative.getLocator())) {
             result.put(SWIPE_LOCATOR, swipeNative.getLocator());
         }
     }

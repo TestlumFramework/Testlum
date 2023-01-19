@@ -124,7 +124,7 @@ public final class LogMessage {
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
     public static final String SCROLL_LOCATOR = format(TABLE_FORMAT, "Scroll locator", "{}");
     public static final String SCROLL_TYPE = format(TABLE_FORMAT, "Scroll type", "{}");
-    public static final String AMOUNT_OF_SWIPES = format(TABLE_FORMAT, "Amount of swipes", "{}");
+    public static final String SWIPE_QUANTITY = format(TABLE_FORMAT, "Quantity of swipes", "{}");
     public static final String SWIPE_DIRECTION = format(TABLE_FORMAT, "Swipe direction", "{}");
     public static final String SWIPE_VALUE = format(TABLE_FORMAT, "Swipe value in %", "{}");
     public static final String SWIPE_TYPE = format(TABLE_FORMAT, "Swipe type", "{}");

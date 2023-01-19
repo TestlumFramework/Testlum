@@ -45,8 +45,9 @@ public class UiUtil {
 
     private static final int TIME_TO_WAIT = GlobalTestConfigurationProvider.provide()
             .getWeb().getBrowserSettings().getElementAutowait().getSeconds();
-
     private static final String FILE_PATH_PREFIX = "file:";
+    private static final String APPIUM_LOCALHOST_ALIAS = "10.0.2.2";
+    private static final String LOCALHOST = "localhost";
 
     public String resolveSendKeysType(final String value, final WebElement element, final File fromDir) {
         if (value.startsWith(FILE_PATH_PREFIX)) {
@@ -55,6 +56,10 @@ public class UiUtil {
         }
         element.clear();
         return value;
+    }
+
+    public String resolveHostIfNeeded(final String url) {
+        return url.replaceAll(APPIUM_LOCALHOST_ALIAS, LOCALHOST);
     }
 
     public WebElement findWebElement(final WebDriver webDriver, final String locatorId) {
@@ -130,6 +135,7 @@ public class UiUtil {
     public File takeScreenshot(final WebDriver webDriver) {
         return ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.FILE);
     }
+
     public File takeScreenshot(final WebElement webElement) {
         return webElement.getScreenshotAs(OutputType.FILE);
     }

@@ -4,6 +4,7 @@ import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
+import com.knubisoft.cott.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.ImageComparator;
@@ -13,8 +14,6 @@ import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
 import com.knubisoft.cott.testing.model.scenario.Image;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.ios.IOSDriver;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
@@ -33,8 +32,6 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.URL_TO_ACTUAL
 @Slf4j
 @ExecutorForClass(Image.class)
 public class CompareImageExecutor extends AbstractUiExecutor<Image> {
-
-    public static final String APPIUM_LOCALHOST_ALIAS = "10\\.0\\.2\\.2";
 
     public CompareImageExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -59,7 +56,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         CompareWith compareWith = image.getCompareWith();
         if (Objects.nonNull(compareWith)) {
             WebElement webElement = UiUtil.findWebElement(webDriver, compareWith.getLocator());
-            if (webDriver instanceof AndroidDriver || webDriver instanceof IOSDriver) {
+            if (UiType.NATIVE == dependencies.getUiType()) {
                 return ImageIO.read(UiUtil.takeScreenshot(webElement));
             }
             return extractImageFromElement(webElement, compareWith.getAttribute(), result);
@@ -70,8 +67,8 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
     private BufferedImage extractImageFromElement(final WebElement webElement,
                                                   final String imageSourceAttribute,
                                                   final CommandResult result) throws IOException {
-        String urlToActualImage = UiUtil.getElementAttribute(webElement, imageSourceAttribute)
-                .replaceAll(APPIUM_LOCALHOST_ALIAS, "localhost");
+        String urlToActualImage = UiUtil.resolveHostIfNeeded(
+                UiUtil.getElementAttribute(webElement, imageSourceAttribute));
         log.info(URL_TO_IMAGE_LOG, urlToActualImage);
         result.put(URL_TO_ACTUAL_IMAGE, urlToActualImage);
         return ImageIO.read(new URL(urlToActualImage));

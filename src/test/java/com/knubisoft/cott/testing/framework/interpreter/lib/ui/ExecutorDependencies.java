@@ -17,4 +17,5 @@ public class ExecutorDependencies {
     private final AtomicInteger position;
     private final WebDriver driver;
     private final boolean takeScreenshots;
+    private final UiType uiType;
 }

@@ -4,6 +4,7 @@ import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
+import com.knubisoft.cott.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.ImageComparator;
@@ -55,6 +56,9 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         CompareWith compareWith = image.getCompareWith();
         if (Objects.nonNull(compareWith)) {
             WebElement webElement = UiUtil.findWebElement(webDriver, compareWith.getLocator());
+            if (UiType.NATIVE == dependencies.getUiType()) {
+                return ImageIO.read(UiUtil.takeScreenshot(webElement));
+            }
             return extractImageFromElement(webElement, compareWith.getAttribute(), result);
         }
         return ImageIO.read(UiUtil.takeScreenshot(webDriver));
@@ -64,6 +68,9 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
                                                   final String imageSourceAttribute,
                                                   final CommandResult result) throws IOException {
         String urlToActualImage = UiUtil.getElementAttribute(webElement, imageSourceAttribute);
+        if (UiType.MOBILE_BROWSER == dependencies.getUiType()) {
+            urlToActualImage = UiUtil.resolveHostIfNeeded(urlToActualImage);
+        }
         log.info(URL_TO_IMAGE_LOG, urlToActualImage);
         result.put(URL_TO_ACTUAL_IMAGE, urlToActualImage);
         return ImageIO.read(new URL(urlToActualImage));

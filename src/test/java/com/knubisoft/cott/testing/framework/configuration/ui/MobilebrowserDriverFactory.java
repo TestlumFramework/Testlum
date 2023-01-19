@@ -4,6 +4,7 @@ import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfiguratio
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.MobileDriverUtil;
 import com.knubisoft.cott.testing.model.global_config.AppiumCapabilities;
+import com.knubisoft.cott.testing.model.global_config.ConnectionType;
 import com.knubisoft.cott.testing.model.global_config.Mobilebrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.Platform;
@@ -13,6 +14,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
 import java.util.Objects;
@@ -31,8 +33,14 @@ public class MobilebrowserDriverFactory {
     @SneakyThrows
     private WebDriver getMobilebrowserWebDriver(final DesiredCapabilities desiredCapabilities) {
         Mobilebrowser mobilebrowserSettings = GlobalTestConfigurationProvider.getMobilebrowserSettings();
-        String serverUrl = MobileDriverUtil.getServerUrl(mobilebrowserSettings.getConnection());
-        WebDriver driver = new AppiumDriver(new URL(serverUrl), desiredCapabilities);
+        ConnectionType connectionType = mobilebrowserSettings.getConnection();
+        String serverUrl = MobileDriverUtil.getServerUrl(connectionType);
+        WebDriver driver;
+        if (Objects.nonNull(connectionType.getAppiumServer())) {
+            driver = new AppiumDriver(new URL(serverUrl), desiredCapabilities);
+        } else {
+            driver = new RemoteWebDriver(new URL(serverUrl), desiredCapabilities);
+        }
         driver.get(mobilebrowserSettings.getBaseUrl());
         return driver;
     }

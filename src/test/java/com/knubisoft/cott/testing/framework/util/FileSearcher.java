@@ -26,7 +26,8 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FIL
 @Slf4j
 public final class FileSearcher {
     private static final File TEST_RESOURCES_FOLDER = TestResourceSettings.getInstance().getTestResourcesFolder();
-    private static final Map<String, File> DATA_FOLDER_FILES = collectFilesFromDataFolder();
+    private static final Map<String, File> DATA_FOLDER_FILES = collectFilesFromFolder(TestResourceSettings
+            .getInstance().getDataFolder());
 
     public File searchFileFromDir(final File fromDir, final String name) {
         final String targetName = name.startsWith(DelimiterConstant.SLASH_SEPARATOR)
@@ -52,6 +53,28 @@ public final class FileSearcher {
         return file;
     }
 
+    public File getFileFromConfigFolder(final String configFile) {
+        File file = FileSearcher.collectFilesFromFolder(TestResourceSettings.getInstance()
+                .getConfigFolder()).get(configFile);
+        if (Objects.isNull(file)) {
+            throw new DefaultFrameworkException(FILE_NOT_EXIST, configFile,
+                    TestResourceSettings.getInstance().getConfigFolder().getAbsolutePath());
+        }
+        return file;
+    }
+
+    public Map<String, File> collectFilesFromFolder(final File folder) {
+        Map<String, File> files = new HashMap<>();
+        FileUtils.listFiles(folder, null, true)
+                .forEach(file -> {
+                    files.computeIfPresent(file.getName(), (key, value) -> {
+                        throw new DefaultFrameworkException(DUPLICATE_FILENAME, folder.getName(), file.getName());
+                    });
+                    files.put(file.getName(), file);
+                });
+        return Collections.unmodifiableMap(files);
+    }
+
     private Optional<File> find(final File fromDir, final FilenameFilter filter) {
         if (TEST_RESOURCES_FOLDER.equals(fromDir)) {
             return Optional.empty();
@@ -63,15 +86,4 @@ public final class FileSearcher {
         return find(fromDir.getParentFile(), filter);
     }
 
-    private static Map<String, File> collectFilesFromDataFolder() {
-        Map<String, File> files = new HashMap<>();
-        FileUtils.listFiles(TestResourceSettings.getInstance().getDataFolder(), null, true)
-                .forEach(file -> {
-                    files.computeIfPresent(file.getName(), (key, value) -> {
-                        throw new DefaultFrameworkException(DUPLICATE_FILENAME, file.getName());
-                    });
-                    files.put(file.getName(), file);
-                });
-        return Collections.unmodifiableMap(files);
-    }
 }

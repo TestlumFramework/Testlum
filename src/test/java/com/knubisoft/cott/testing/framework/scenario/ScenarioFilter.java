@@ -21,7 +21,10 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VAL
 public class ScenarioFilter {
 
     public Set<ScenarioCollector.MappingResult> filterScenarios(final Set<ScenarioCollector.MappingResult> original) {
-        original.removeIf(this::isScenarioNonParsed);
+        boolean containsNonParsed = original.removeIf(this::isScenarioNonParsed);
+        if (GlobalTestConfigurationProvider.provide().isStopIfInvalidScenario() && containsNonParsed) {
+            throw new DefaultFrameworkException(STOP_IF_NON_PARSED_SCENARIO);
+        }
         if (original.isEmpty()) {
             throw new DefaultFrameworkException(VALID_SCENARIOS_NOT_FOUND);
         }
@@ -90,10 +93,6 @@ public class ScenarioFilter {
     private boolean isScenarioNonParsed(final ScenarioCollector.MappingResult entry) {
         if (Objects.nonNull(entry.scenario)) {
             return false;
-        }
-        if (GlobalTestConfigurationProvider.provide().isStopIfInvalidScenario()) {
-            throw new DefaultFrameworkException(STOP_IF_NON_PARSED_SCENARIO,
-                    entry.file.getPath(), entry.exception.getMessage());
         }
         LogUtil.logNonParsedScenarioInfo(entry.file.getPath(), entry.exception.getMessage());
         return true;

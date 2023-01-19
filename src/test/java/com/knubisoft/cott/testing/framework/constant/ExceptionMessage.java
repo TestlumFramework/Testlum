@@ -63,16 +63,16 @@ public class ExceptionMessage {
     public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
     public static final String DATA_FOLDER_NOT_EXIST = "[data] folder does not exist";
     public static final String CONFIG_FOLDER_NOT_EXIST = "[config] folder does not exist";
-    public static final String DUPLICATE_FILENAME = ANSI_RED + "The [data] folder and its subfolders contain "
-            + "files with duplicate filenames - %s. Every file should have a unique name" + ANSI_RESET;
-
-    public static final String DUPLICATE_FILENAME_LOCATORS = ANSI_RED + "The [%s] folder and its subfolders contain "
+    public static final String DUPLICATE_FILENAME = ANSI_RED + "The [%s] folder and its subfolders contain "
             + "files with duplicate filenames - %s. Every file should have a unique name" + ANSI_RESET;
     public static final String FILE_NOT_EXIST = ANSI_RED + "File %s does not exist in the [data] folder and its "
             + "subfolders by path %s" + ANSI_RESET;
     public static final String NO_SCENARIOS_FILTERED_BY_TAGS = ANSI_RED
             + "There are no active scenarios by enabled tags" + ANSI_RESET;
     public static final String NO_ENABLE_TAGS_CONFIG = ANSI_RED + "There are no enable tags in runScenariosByTag"
+            + ANSI_RESET;
+    public static final String DISABLED_IN_CONFIG = ANSI_RED
+            + "{} are disabled in config file. Scenarios with {} steps will be invalid"
             + ANSI_RESET;
 
     public static final String CONFIG_FILE_NAME_INPUT_REQUIREMENTS =
@@ -166,5 +166,5 @@ public class ExceptionMessage {
     public static final String CANNOT_SWITCH_TO_WEBVIEW = "Can not switch to the web view. Web context was not found";
 
     public static final String STOP_IF_NON_PARSED_SCENARIO = ANSI_RED
-            + "The execution was stopped because of isStopIfInvalidScenario\nScenario: %s\nMessage:%s" + ANSI_RESET;
+            + "The execution was stopped because of isStopIfInvalidScenario" + ANSI_RESET;
 }

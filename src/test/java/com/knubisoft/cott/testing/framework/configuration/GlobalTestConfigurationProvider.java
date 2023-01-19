@@ -15,12 +15,15 @@ import com.knubisoft.cott.testing.model.global_config.Ui;
 import com.knubisoft.cott.testing.model.global_config.Web;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DISABLED_IN_CONFIG;
+
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GlobalTestConfigurationProvider {
 
@@ -85,20 +88,20 @@ public class GlobalTestConfigurationProvider {
     private static Integrations initIntegrations() {
         ConfigFiles configFile = GlobalTestConfigurationProvider.provide().getIntegrations();
         if (configFile.isEnable()) {
-            File integrationsFile = FileSearcher.searchFileFromDir(TestResourceSettings.getInstance().getConfigFolder(),
-                    configFile.getFile());
-            return XMLParsers.forIntegrations().process(integrationsFile);
+            return XMLParsers.forIntegrations().process(FileSearcher.getFileFromConfigFolder(configFile.getFile()));
         }
+        log.warn(DISABLED_IN_CONFIG, "Integrations", "integrations");
         return new Integrations();
     }
 
     private static Ui initUi() {
         ConfigFiles configFile = GlobalTestConfigurationProvider.provide().getUi();
         if (configFile.isEnable()) {
-            File uiFile = FileSearcher.searchFileFromDir(TestResourceSettings.getInstance().getConfigFolder(),
-                    configFile.getFile());
-            return XMLParsers.forUi().process(uiFile);
+            return XMLParsers.forUi().process(FileSearcher.getFileFromConfigFolder(configFile.getFile()));
         }
+        log.warn(DISABLED_IN_CONFIG, "UI", "ui");
         return new Ui();
     }
+
+
 }

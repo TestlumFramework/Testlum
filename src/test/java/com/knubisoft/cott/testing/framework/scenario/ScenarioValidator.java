@@ -554,7 +554,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateSwipeNativeCommand(final SwipeNative swipeNative) {
-        if (StringUtils.hasText(swipeNative.getLocator())) {
+        if (!StringUtils.hasText(swipeNative.getLocator())) {
             throw new DefaultFrameworkException(ExceptionMessage.NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE);
         }
     }
@@ -574,7 +574,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateScrollCommand(final Scroll scroll) {
-        if (StringUtils.hasText(scroll.getLocator())) {
+        if (!StringUtils.hasText(scroll.getLocator())) {
             throw new DefaultFrameworkException(ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
         }
     }

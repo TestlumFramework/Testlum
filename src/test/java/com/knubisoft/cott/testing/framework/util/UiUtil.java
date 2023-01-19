@@ -45,7 +45,9 @@ public class UiUtil {
 
     private static final int TIME_TO_WAIT = GlobalTestConfigurationProvider.provide()
             .getWeb().getBrowserSettings().getElementAutowait().getSeconds();
+
     private static final String FILE_PATH_PREFIX = "file:";
+
     private static final String APPIUM_LOCALHOST_ALIAS = "10.0.2.2";
     private static final String LOCALHOST = "localhost";
 
@@ -155,7 +157,7 @@ public class UiUtil {
     }
 
     public String resolveHostIfNeeded(final String url) {
-         return url.replaceAll(APPIUM_LOCALHOST_ALIAS, LOCALHOST);
+        return url.replaceAll(APPIUM_LOCALHOST_ALIAS, LOCALHOST);
     }
 
     public float calculatePercentageValue(final String value) {

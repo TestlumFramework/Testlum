@@ -67,8 +67,10 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
     private BufferedImage extractImageFromElement(final WebElement webElement,
                                                   final String imageSourceAttribute,
                                                   final CommandResult result) throws IOException {
-        String urlToActualImage = UiUtil.resolveHostIfNeeded(
-                UiUtil.getElementAttribute(webElement, imageSourceAttribute));
+        String urlToActualImage = UiUtil.getElementAttribute(webElement, imageSourceAttribute);
+        if (UiType.MOBILE_BROWSER == dependencies.getUiType()) {
+            urlToActualImage = UiUtil.resolveHostIfNeeded(urlToActualImage);
+        }
         log.info(URL_TO_IMAGE_LOG, urlToActualImage);
         result.put(URL_TO_ACTUAL_IMAGE, urlToActualImage);
         return ImageIO.read(new URL(urlToActualImage));

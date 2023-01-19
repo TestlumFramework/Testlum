@@ -58,10 +58,6 @@ public class UiUtil {
         return value;
     }
 
-    public String resolveHostIfNeeded(final String url) {
-        return url.replaceAll(APPIUM_LOCALHOST_ALIAS, LOCALHOST);
-    }
-
     public WebElement findWebElement(final WebDriver webDriver, final String locatorId) {
         Locator locator = GlobalLocators.getLocator(locatorId);
         return WebElementFinder.find(locator, webDriver);
@@ -156,6 +152,10 @@ public class UiUtil {
             throw new DefaultFrameworkException(WEB_ELEMENT_ATTRIBUTE_NOT_EXIST, attributeName);
         }
         return attribute;
+    }
+
+    public String resolveHostIfNeeded(final String url) {
+         return url.replaceAll(APPIUM_LOCALHOST_ALIAS, LOCALHOST);
     }
 
     public float calculatePercentageValue(final String value) {

@@ -13,7 +13,6 @@
         </x:appinfo>
     </x:annotation>
 
-    <x:include schemaLocation="shared-config.xsd"/>
     <x:include schemaLocation="postgres-integration.xsd"/>
     <x:include schemaLocation="clickhouse-integration.xsd"/>
     <x:include schemaLocation="mysql-integration.xsd"/>
@@ -33,7 +32,6 @@
     <x:include schemaLocation="websocket-integration.xsd"/>
     <x:include schemaLocation="lambda-integration.xsd"/>
     <x:include schemaLocation="graphql-integration.xsd"/>
-    <x:include schemaLocation="shared-config.xsd"/>
 
     <x:element name="integrations">
         <x:complexType>

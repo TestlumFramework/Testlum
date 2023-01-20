@@ -30,59 +30,43 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GlobalTestConfiguration }
+     * Create an instance of {@link Ui }
      * 
      */
-    public GlobalTestConfiguration createGlobalTestConfiguration() {
-        return new GlobalTestConfiguration();
+    public Ui createUi() {
+        return new Ui();
     }
 
     /**
-     * Create an instance of {@link Subscription }
+     * Create an instance of {@link Web }
      * 
      */
-    public Subscription createSubscription() {
-        return new Subscription();
+    public Web createWeb() {
+        return new Web();
     }
 
     /**
-     * Create an instance of {@link DelayBetweenScenariosRuns }
+     * Create an instance of {@link Mobilebrowser }
      * 
      */
-    public DelayBetweenScenariosRuns createDelayBetweenScenariosRuns() {
-        return new DelayBetweenScenariosRuns();
+    public Mobilebrowser createMobilebrowser() {
+        return new Mobilebrowser();
     }
 
     /**
-     * Create an instance of {@link RunScenariosByTag }
+     * Create an instance of {@link Native }
      * 
      */
-    public RunScenariosByTag createRunScenariosByTag() {
-        return new RunScenariosByTag();
+    public Native createNative() {
+        return new Native();
     }
 
     /**
-     * Create an instance of {@link Report }
+     * Create an instance of {@link BrowserStackLogin }
      * 
      */
-    public Report createReport() {
-        return new Report();
-    }
-
-    /**
-     * Create an instance of {@link Auth }
-     * 
-     */
-    public Auth createAuth() {
-        return new Auth();
-    }
-
-    /**
-     * Create an instance of {@link ConfigFiles }
-     * 
-     */
-    public ConfigFiles createConfigFiles() {
-        return new ConfigFiles();
+    public BrowserStackLogin createBrowserStackLogin() {
+        return new BrowserStackLogin();
     }
 
     /**
@@ -254,43 +238,59 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Ui }
+     * Create an instance of {@link GlobalTestConfiguration }
      * 
      */
-    public Ui createUi() {
-        return new Ui();
+    public GlobalTestConfiguration createGlobalTestConfiguration() {
+        return new GlobalTestConfiguration();
     }
 
     /**
-     * Create an instance of {@link Web }
+     * Create an instance of {@link Subscription }
      * 
      */
-    public Web createWeb() {
-        return new Web();
+    public Subscription createSubscription() {
+        return new Subscription();
     }
 
     /**
-     * Create an instance of {@link Mobilebrowser }
+     * Create an instance of {@link DelayBetweenScenariosRuns }
      * 
      */
-    public Mobilebrowser createMobilebrowser() {
-        return new Mobilebrowser();
+    public DelayBetweenScenariosRuns createDelayBetweenScenariosRuns() {
+        return new DelayBetweenScenariosRuns();
     }
 
     /**
-     * Create an instance of {@link Native }
+     * Create an instance of {@link RunScenariosByTag }
      * 
      */
-    public Native createNative() {
-        return new Native();
+    public RunScenariosByTag createRunScenariosByTag() {
+        return new RunScenariosByTag();
     }
 
     /**
-     * Create an instance of {@link BrowserStackLogin }
+     * Create an instance of {@link Report }
      * 
      */
-    public BrowserStackLogin createBrowserStackLogin() {
-        return new BrowserStackLogin();
+    public Report createReport() {
+        return new Report();
+    }
+
+    /**
+     * Create an instance of {@link Auth }
+     * 
+     */
+    public Auth createAuth() {
+        return new Auth();
+    }
+
+    /**
+     * Create an instance of {@link ConfigFiles }
+     * 
+     */
+    public ConfigFiles createConfigFiles() {
+        return new ConfigFiles();
     }
 
     /**
@@ -419,166 +419,6 @@ public class ObjectFactory {
      */
     public KlovServer createKlovServer() {
         return new KlovServer();
-    }
-
-    /**
-     * Create an instance of {@link Postgres }
-     * 
-     */
-    public Postgres createPostgres() {
-        return new Postgres();
-    }
-
-    /**
-     * Create an instance of {@link Clickhouse }
-     * 
-     */
-    public Clickhouse createClickhouse() {
-        return new Clickhouse();
-    }
-
-    /**
-     * Create an instance of {@link Mysql }
-     * 
-     */
-    public Mysql createMysql() {
-        return new Mysql();
-    }
-
-    /**
-     * Create an instance of {@link Oracle }
-     * 
-     */
-    public Oracle createOracle() {
-        return new Oracle();
-    }
-
-    /**
-     * Create an instance of {@link Redis }
-     * 
-     */
-    public Redis createRedis() {
-        return new Redis();
-    }
-
-    /**
-     * Create an instance of {@link Mongo }
-     * 
-     */
-    public Mongo createMongo() {
-        return new Mongo();
-    }
-
-    /**
-     * Create an instance of {@link S3 }
-     * 
-     */
-    public S3 createS3() {
-        return new S3();
-    }
-
-    /**
-     * Create an instance of {@link Sqs }
-     * 
-     */
-    public Sqs createSqs() {
-        return new Sqs();
-    }
-
-    /**
-     * Create an instance of {@link Kafka }
-     * 
-     */
-    public Kafka createKafka() {
-        return new Kafka();
-    }
-
-    /**
-     * Create an instance of {@link Rabbitmq }
-     * 
-     */
-    public Rabbitmq createRabbitmq() {
-        return new Rabbitmq();
-    }
-
-    /**
-     * Create an instance of {@link Dynamo }
-     * 
-     */
-    public Dynamo createDynamo() {
-        return new Dynamo();
-    }
-
-    /**
-     * Create an instance of {@link Elasticsearch }
-     * 
-     */
-    public Elasticsearch createElasticsearch() {
-        return new Elasticsearch();
-    }
-
-    /**
-     * Create an instance of {@link Sendgrid }
-     * 
-     */
-    public Sendgrid createSendgrid() {
-        return new Sendgrid();
-    }
-
-    /**
-     * Create an instance of {@link Ses }
-     * 
-     */
-    public Ses createSes() {
-        return new Ses();
-    }
-
-    /**
-     * Create an instance of {@link Smtp }
-     * 
-     */
-    public Smtp createSmtp() {
-        return new Smtp();
-    }
-
-    /**
-     * Create an instance of {@link Twilio }
-     * 
-     */
-    public Twilio createTwilio() {
-        return new Twilio();
-    }
-
-    /**
-     * Create an instance of {@link WebsocketApi }
-     * 
-     */
-    public WebsocketApi createWebsocketApi() {
-        return new WebsocketApi();
-    }
-
-    /**
-     * Create an instance of {@link Lambda }
-     * 
-     */
-    public Lambda createLambda() {
-        return new Lambda();
-    }
-
-    /**
-     * Create an instance of {@link GraphqlApi }
-     * 
-     */
-    public GraphqlApi createGraphqlApi() {
-        return new GraphqlApi();
-    }
-
-    /**
-     * Create an instance of {@link Api }
-     * 
-     */
-    public Api createApi() {
-        return new Api();
     }
 
     /**
@@ -747,6 +587,166 @@ public class ObjectFactory {
      */
     public GooglePlayLogin createGooglePlayLogin() {
         return new GooglePlayLogin();
+    }
+
+    /**
+     * Create an instance of {@link Postgres }
+     * 
+     */
+    public Postgres createPostgres() {
+        return new Postgres();
+    }
+
+    /**
+     * Create an instance of {@link Clickhouse }
+     * 
+     */
+    public Clickhouse createClickhouse() {
+        return new Clickhouse();
+    }
+
+    /**
+     * Create an instance of {@link Mysql }
+     * 
+     */
+    public Mysql createMysql() {
+        return new Mysql();
+    }
+
+    /**
+     * Create an instance of {@link Oracle }
+     * 
+     */
+    public Oracle createOracle() {
+        return new Oracle();
+    }
+
+    /**
+     * Create an instance of {@link Redis }
+     * 
+     */
+    public Redis createRedis() {
+        return new Redis();
+    }
+
+    /**
+     * Create an instance of {@link Mongo }
+     * 
+     */
+    public Mongo createMongo() {
+        return new Mongo();
+    }
+
+    /**
+     * Create an instance of {@link S3 }
+     * 
+     */
+    public S3 createS3() {
+        return new S3();
+    }
+
+    /**
+     * Create an instance of {@link Sqs }
+     * 
+     */
+    public Sqs createSqs() {
+        return new Sqs();
+    }
+
+    /**
+     * Create an instance of {@link Kafka }
+     * 
+     */
+    public Kafka createKafka() {
+        return new Kafka();
+    }
+
+    /**
+     * Create an instance of {@link Rabbitmq }
+     * 
+     */
+    public Rabbitmq createRabbitmq() {
+        return new Rabbitmq();
+    }
+
+    /**
+     * Create an instance of {@link Dynamo }
+     * 
+     */
+    public Dynamo createDynamo() {
+        return new Dynamo();
+    }
+
+    /**
+     * Create an instance of {@link Elasticsearch }
+     * 
+     */
+    public Elasticsearch createElasticsearch() {
+        return new Elasticsearch();
+    }
+
+    /**
+     * Create an instance of {@link Sendgrid }
+     * 
+     */
+    public Sendgrid createSendgrid() {
+        return new Sendgrid();
+    }
+
+    /**
+     * Create an instance of {@link Ses }
+     * 
+     */
+    public Ses createSes() {
+        return new Ses();
+    }
+
+    /**
+     * Create an instance of {@link Smtp }
+     * 
+     */
+    public Smtp createSmtp() {
+        return new Smtp();
+    }
+
+    /**
+     * Create an instance of {@link Twilio }
+     * 
+     */
+    public Twilio createTwilio() {
+        return new Twilio();
+    }
+
+    /**
+     * Create an instance of {@link WebsocketApi }
+     * 
+     */
+    public WebsocketApi createWebsocketApi() {
+        return new WebsocketApi();
+    }
+
+    /**
+     * Create an instance of {@link Lambda }
+     * 
+     */
+    public Lambda createLambda() {
+        return new Lambda();
+    }
+
+    /**
+     * Create an instance of {@link GraphqlApi }
+     * 
+     */
+    public GraphqlApi createGraphqlApi() {
+        return new GraphqlApi();
+    }
+
+    /**
+     * Create an instance of {@link Api }
+     * 
+     */
+    public Api createApi() {
+        return new Api();
     }
 
 }

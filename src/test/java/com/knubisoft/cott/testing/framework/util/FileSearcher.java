@@ -20,14 +20,15 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DUPLICATE_FILENAME;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FILE_NOT_EXIST;
 
 @UtilityClass
 @Slf4j
 public final class FileSearcher {
     private static final File TEST_RESOURCES_FOLDER = TestResourceSettings.getInstance().getTestResourcesFolder();
-    private static final Map<String, File> DATA_FOLDER_FILES = collectFilesFromFolder(TestResourceSettings
-            .getInstance().getDataFolder());
+    private static final File DATA_FOLDER = TestResourceSettings.getInstance().getDataFolder();
+    private static final File CONFIG_FOLDER = TestResourceSettings.getInstance().getConfigFolder();
+    private static final Map<String, File> DATA_FOLDER_FILES = collectFilesFromFolder(DATA_FOLDER);
+    private static final Map<String, File> CONFIG_FOLDER_FILES = collectFilesFromFolder(CONFIG_FOLDER);
 
     public File searchFileFromDir(final File fromDir, final String name) {
         final String targetName = name.startsWith(DelimiterConstant.SLASH_SEPARATOR)
@@ -47,18 +48,15 @@ public final class FileSearcher {
                 ? fileName.substring(1) : fileName;
         File file = DATA_FOLDER_FILES.get(targetName);
         if (Objects.isNull(file)) {
-            throw new DefaultFrameworkException(FILE_NOT_EXIST, fileName,
-                    TestResourceSettings.getInstance().getDataFolder().getAbsolutePath());
+            throw new FileLinkingException(DATA_FOLDER, DATA_FOLDER, targetName);
         }
         return file;
     }
 
     public File getFileFromConfigFolder(final String configFile) {
-        File file = FileSearcher.collectFilesFromFolder(TestResourceSettings.getInstance()
-                .getConfigFolder()).get(configFile);
+        File file = CONFIG_FOLDER_FILES.get(configFile);
         if (Objects.isNull(file)) {
-            throw new DefaultFrameworkException(FILE_NOT_EXIST, configFile,
-                    TestResourceSettings.getInstance().getConfigFolder().getAbsolutePath());
+            throw new FileLinkingException(CONFIG_FOLDER, CONFIG_FOLDER, configFile);
         }
         return file;
     }

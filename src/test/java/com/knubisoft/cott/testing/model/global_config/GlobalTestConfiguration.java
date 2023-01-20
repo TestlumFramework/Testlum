@@ -25,8 +25,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="runScenariosByTag" type="{http://www.knubisoft.com/cott/testing/model/global-config}runScenariosByTag"/&gt;
  *         &lt;element name="report" type="{http://www.knubisoft.com/cott/testing/model/global-config}report"/&gt;
  *         &lt;element name="auth" type="{http://www.knubisoft.com/cott/testing/model/global-config}auth"/&gt;
- *         &lt;element name="ui" type="{http://www.knubisoft.com/cott/testing/model/global-config}configFiles"/&gt;
- *         &lt;element name="integrations" type="{http://www.knubisoft.com/cott/testing/model/global-config}configFiles"/&gt;
+ *         &lt;element name="uiConfigurations" type="{http://www.knubisoft.com/cott/testing/model/global-config}configFiles"/&gt;
+ *         &lt;element name="integrationsConfigurations" type="{http://www.knubisoft.com/cott/testing/model/global-config}configFiles"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -44,8 +44,8 @@ import javax.xml.bind.annotation.XmlType;
     "runScenariosByTag",
     "report",
     "auth",
-    "ui",
-    "integrations"
+    "uiConfigurations",
+    "integrationsConfigurations"
 })
 @XmlRootElement(name = "globalTestConfiguration")
 public class GlobalTestConfiguration {
@@ -62,9 +62,9 @@ public class GlobalTestConfiguration {
     @XmlElement(required = true)
     protected Auth auth;
     @XmlElement(required = true)
-    protected ConfigFiles ui;
+    protected ConfigFiles uiConfigurations;
     @XmlElement(required = true)
-    protected ConfigFiles integrations;
+    protected ConfigFiles integrationsConfigurations;
 
     /**
      * Gets the value of the subscription property.
@@ -219,51 +219,51 @@ public class GlobalTestConfiguration {
     }
 
     /**
-     * Gets the value of the ui property.
+     * Gets the value of the uiConfigurations property.
      * 
      * @return
      *     possible object is
      *     {@link ConfigFiles }
      *     
      */
-    public ConfigFiles getUi() {
-        return ui;
+    public ConfigFiles getUiConfigurations() {
+        return uiConfigurations;
     }
 
     /**
-     * Sets the value of the ui property.
+     * Sets the value of the uiConfigurations property.
      * 
      * @param value
      *     allowed object is
      *     {@link ConfigFiles }
      *     
      */
-    public void setUi(ConfigFiles value) {
-        this.ui = value;
+    public void setUiConfigurations(ConfigFiles value) {
+        this.uiConfigurations = value;
     }
 
     /**
-     * Gets the value of the integrations property.
+     * Gets the value of the integrationsConfigurations property.
      * 
      * @return
      *     possible object is
      *     {@link ConfigFiles }
      *     
      */
-    public ConfigFiles getIntegrations() {
-        return integrations;
+    public ConfigFiles getIntegrationsConfigurations() {
+        return integrationsConfigurations;
     }
 
     /**
-     * Sets the value of the integrations property.
+     * Sets the value of the integrationsConfigurations property.
      * 
      * @param value
      *     allowed object is
      *     {@link ConfigFiles }
      *     
      */
-    public void setIntegrations(ConfigFiles value) {
-        this.integrations = value;
+    public void setIntegrationsConfigurations(ConfigFiles value) {
+        this.integrationsConfigurations = value;
     }
 
 }

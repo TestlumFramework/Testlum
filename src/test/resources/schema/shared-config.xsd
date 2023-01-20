@@ -44,7 +44,7 @@
 
     <x:simpleType name="xmlFileExtension">
         <x:restriction base="x:string">
-            <x:pattern value=".+(\.xml)"/>
+            <x:pattern value="|.+(\.xml)"/>
         </x:restriction>
     </x:simpleType>
 

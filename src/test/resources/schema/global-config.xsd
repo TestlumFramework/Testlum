@@ -27,8 +27,8 @@
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
                 <x:element name="report" type="tns:report"/>
                 <x:element name="auth" type="tns:auth"/>
-                <x:element name="ui" type="tns:configFiles"/>
-                <x:element name="integrations" type="tns:configFiles"/>
+                <x:element name="uiConfigurations" type="tns:configFiles"/>
+                <x:element name="integrationsConfigurations" type="tns:configFiles"/>
             </x:sequence>
         </x:complexType>
     </x:element>

@@ -74,6 +74,8 @@ public class ExceptionMessage {
     public static final String DISABLED_IN_CONFIG = ANSI_RED
             + "{} are disabled in config file. Scenarios with {} steps will be invalid"
             + ANSI_RESET;
+    public static final String INTEGRATIONS_FILE_NOT_SPECIFIED = "Integrations configurations file should be specified";
+    public static final String UI_FILE_NOT_SPECIFIED = "UI configurations file should be specified";
 
     public static final String CONFIG_FILE_NAME_INPUT_REQUIREMENTS =
             "Use one of the options: -c={configuration-file-name} or --config={configuration-file-name}\n"

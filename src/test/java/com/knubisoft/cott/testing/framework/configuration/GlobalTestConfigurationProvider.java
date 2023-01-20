@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.configuration;
 
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.parser.XMLParsers;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.validator.GlobalTestConfigValidator;
@@ -16,12 +17,15 @@ import com.knubisoft.cott.testing.model.global_config.Web;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DISABLED_IN_CONFIG;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INTEGRATIONS_FILE_NOT_SPECIFIED;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UI_FILE_NOT_SPECIFIED;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -86,8 +90,11 @@ public class GlobalTestConfigurationProvider {
     }
 
     private static Integrations initIntegrations() {
-        ConfigFiles configFile = GlobalTestConfigurationProvider.provide().getIntegrations();
+        ConfigFiles configFile = GlobalTestConfigurationProvider.provide().getIntegrationsConfigurations();
         if (configFile.isEnable()) {
+            if (StringUtils.isBlank(configFile.getFile())) {
+                throw new DefaultFrameworkException(INTEGRATIONS_FILE_NOT_SPECIFIED);
+            }
             return XMLParsers.forIntegrations().process(FileSearcher.getFileFromConfigFolder(configFile.getFile()));
         }
         log.warn(DISABLED_IN_CONFIG, "Integrations", "integrations");
@@ -95,8 +102,11 @@ public class GlobalTestConfigurationProvider {
     }
 
     private static Ui initUi() {
-        ConfigFiles configFile = GlobalTestConfigurationProvider.provide().getUi();
+        ConfigFiles configFile = GlobalTestConfigurationProvider.provide().getUiConfigurations();
         if (configFile.isEnable()) {
+            if (StringUtils.isBlank(configFile.getFile())) {
+                throw new DefaultFrameworkException(UI_FILE_NOT_SPECIFIED);
+            }
             return XMLParsers.forUi().process(FileSearcher.getFileFromConfigFolder(configFile.getFile()));
         }
         log.warn(DISABLED_IN_CONFIG, "UI", "ui");

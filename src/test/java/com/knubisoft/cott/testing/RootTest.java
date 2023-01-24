@@ -9,9 +9,12 @@ import com.knubisoft.cott.testing.framework.context.SpringTestContext;
 import com.knubisoft.cott.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.cott.testing.framework.report.ReportGenerator;
 import com.knubisoft.cott.testing.framework.report.ScenarioResult;
+import com.knubisoft.cott.testing.framework.report.extentreports.ExtentReportsGenerator;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioRunner;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.framework.util.FileRemover;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
+import com.knubisoft.cott.testing.framework.util.WaitUtil;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.DelayBetweenScenariosRuns;
@@ -35,6 +38,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.TestContextManager;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -42,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 @SpringBootTest(classes = SpringTestContext.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class RootTest {
     @Autowired
     private NameToAdapterAlias nameToAdapterAlias;
@@ -53,11 +58,11 @@ public class RootTest {
     @Autowired
     private SystemDataStoreCleaner systemDataStoreCleaner;
 
-    @Autowired
-    private GlobalScenarioStatCollector globalScenarioStatCollector;
+    //    @Autowired
+    private static GlobalScenarioStatCollector globalScenarioStatCollector = new GlobalScenarioStatCollector();
 
-    @Autowired
-    private ReportGenerator reportGenerator;
+    //    @Autowired
+    private static ReportGenerator reportGenerator = new ExtentReportsGenerator();
 
     public static Stream<Arguments> prepareTestData() {
         return new TestSetCollector().collect();
@@ -71,28 +76,31 @@ public class RootTest {
 
     @BeforeAll
     @SneakyThrows
-    public void beforeAll() {
-        new TestContextManager(getClass()).prepareTestInstance(this);
+    static void beforeAll() {
+        new TestContextManager(RootTest.class).prepareTestInstance(RootTest.class);
         FileRemover.clearActualFiles(TestResourceSettings.getInstance().getScenariosFolder());
     }
 
     @DisplayName("Execution of test scenarios in parallel:")
-    @EnabledIf("isWeb")
-    @Execution(ExecutionMode.CONCURRENT)
+//    @EnabledIf("isWeb")
+//    @Execution(ExecutionMode.CONCURRENT)
     @ParameterizedTest(name = "[{index}] path -- {0}")
     @MethodSource("prepareWebInParallel")
     @SneakyThrows
     void parallelExec(final Named<ScenarioArguments> arguments) {
         ScenarioArguments scenarioArguments = arguments.getPayload();
         AbstractBrowser browser;
-        while (true) {
-            Optional<AbstractBrowser> browser1 = browsers.stream().filter(AbstractBrowser::isEnable).findFirst();
-            if (browser1.isPresent()) {
-                browser = browser1.get();
-                break;
+//        synchronized (browsers) {
+            LogUtil.logAlias("!!!!!!!! " + Thread.currentThread().getName());
+            while (true) {
+                Optional<AbstractBrowser> browser1 = browsers.stream().filter(AbstractBrowser::isEnable).findFirst();
+                if (browser1.isPresent()) {
+                    browser = browser1.get();
+                    break;
+                }
+                Thread.sleep(500);
             }
-            wait(300);
-        }
+//        }
         scenarioArguments.setBrowser(browser);
         browser.setEnable(false);
         StopWatch stopWatch = StopWatch.createStarted();
@@ -102,22 +110,22 @@ public class RootTest {
         browser.setEnable(true);
     }
 
-    private boolean isWeb() {
+    private static boolean isWeb() {
         return GlobalTestConfigurationProvider.isWebParallel();
     }
 
-    @DisplayName("Execution of test scenarios:")
-    @ParameterizedTest(name = "[{index}] path -- {0}")
-    @MethodSource("prepareTestData")
-    @SneakyThrows
-    void execution(final Named<ScenarioArguments> arguments) {
-        ScenarioArguments scenarioArguments = arguments.getPayload();
-        cleanDatabases(scenarioArguments.getScenario());
-        StopWatch stopWatch = StopWatch.createStarted();
-        ScenarioRunner scenarioRunner = new ScenarioRunner(scenarioArguments, ctx);
-        ctx.getAutowireCapableBeanFactory().autowireBean(scenarioRunner);
-        setTestScenarioResult(stopWatch, scenarioRunner);
-    }
+//    @DisplayName("Execution of test scenarios:")
+//    @ParameterizedTest(name = "[{index}] path -- {0}")
+//    @MethodSource("prepareTestData")
+//    @SneakyThrows
+//    void execution(final Named<ScenarioArguments> arguments) {
+//        ScenarioArguments scenarioArguments = arguments.getPayload();
+//        cleanDatabases(scenarioArguments.getScenario());
+//        StopWatch stopWatch = StopWatch.createStarted();
+//        ScenarioRunner scenarioRunner = new ScenarioRunner(scenarioArguments, ctx);
+//        ctx.getAutowireCapableBeanFactory().autowireBean(scenarioRunner);
+//        setTestScenarioResult(stopWatch, scenarioRunner);
+//    }
 
     private void setTestScenarioResult(final StopWatch stopWatch, final ScenarioRunner scenarioRunner) {
         ScenarioResult result = globalScenarioStatCollector.addAndReturn(scenarioRunner.run());
@@ -145,7 +153,7 @@ public class RootTest {
     }
 
     @AfterAll
-    public void afterAll() {
+    public static void afterAll() {
         reportGenerator.generateReport(globalScenarioStatCollector);
     }
 }

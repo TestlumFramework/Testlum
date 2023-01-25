@@ -251,7 +251,7 @@ public class LogUtil {
         log.info(END_UI_COMMANDS_IN_FRAME);
     }
 
-    public static void startUiCommandsInWebView() {
+    public void startUiCommandsInWebView() {
         log.info(START_UI_COMMANDS_IN_WEBVIEW);
     }
 
@@ -388,7 +388,7 @@ public class LogUtil {
         log.info(MESSAGE_LOG, twilio.getMessage());
     }
 
-    public static void logImageComparisonInfo(final Image image) {
+    public void logImageComparisonInfo(final Image image) {
         log.info(IMAGE_FOR_COMPARISON_LOG, image.getFile());
         log.info(HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
         CompareWith compareWith = image.getCompareWith();
@@ -409,17 +409,17 @@ public class LogUtil {
         log.error(INITIAL_STRUCTURE_GENERATION_ERROR, path, ex);
     }
 
-    public static void logHotKeyInfo(final AbstractUiCommand command) {
+    public void logHotKeyInfo(final AbstractUiCommand command) {
         log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
     }
 
-    public static void logGraphqlInfo(final String alias, final String endpoint, final String body) {
+    public void logGraphqlInfo(final String alias, final String endpoint, final String body) {
         log.info(ALIAS_LOG, alias);
         log.info(ENDPOINT_LOG, endpoint);
         log.info(BODY_LOG, body.replaceAll(SPACE, EMPTY).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
-    public static void logSwipeNativeInfo(final SwipeNative swipeNative) {
+    public void logSwipeNativeInfo(final SwipeNative swipeNative) {
         log.info(SWIPE_TYPE, swipeNative.getType());
         log.info(SWIPE_QUANTITY, swipeNative.getQuantity());
         log.info(SWIPE_DIRECTION, swipeNative.getDirection());
@@ -429,7 +429,7 @@ public class LogUtil {
         }
     }
 
-    public static void addScrollNativeInfo(final ScrollNative scrollNative) {
+    public void logScrollNativeInfo(final ScrollNative scrollNative) {
         log.info(SCROLL_TYPE, scrollNative.getType());
         log.info(SCROLL_DIRECTION_LOG, scrollNative.getDirection());
         log.info(SCROLL_VALUE, scrollNative.getValue());
@@ -438,7 +438,7 @@ public class LogUtil {
         }
     }
 
-    public static void addDragAndDropNativeInfo(final DragAndDropNative dragAndDropNative) {
+    public void logDragAndDropNativeInfo(final DragAndDropNative dragAndDropNative) {
         log.info(DRAGGING_FROM, dragAndDropNative.getFromLocatorId());
         log.info(DROPPING_TO, dragAndDropNative.getToLocatorId());
     }

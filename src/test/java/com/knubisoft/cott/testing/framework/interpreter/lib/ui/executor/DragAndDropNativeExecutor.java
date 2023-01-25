@@ -27,7 +27,7 @@ public class DragAndDropNativeExecutor extends AbstractUiExecutor<DragAndDropNat
     public void execute(final DragAndDropNative dragAndDropNative, final CommandResult result) {
         result.put(FROM_LOCATOR, dragAndDropNative.getFromLocatorId());
         result.put(TO_LOCATOR, dragAndDropNative.getToLocatorId());
-        LogUtil.addDragAndDropNativeInfo(dragAndDropNative);
+        LogUtil.logDragAndDropNativeInfo(dragAndDropNative);
         performDragAndDrop(dragAndDropNative);
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }

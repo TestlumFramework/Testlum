@@ -32,7 +32,7 @@ public class ScrollNativeExecutor extends AbstractUiExecutor<ScrollNative> {
                 ? scrollNative.getValue()
                 : -scrollNative.getValue();
         ResultUtil.addScrollNativeMetaDada(scrollNative, result);
-        LogUtil.addScrollNativeInfo(scrollNative);
+        LogUtil.logScrollNativeInfo(scrollNative);
         Point start = getStartPoint(scrollNative, driver);
         Sequence scroll = UiUtil.buildSequence(start, new Point(0, scrollValue), ACTION_DURATION);
         driver.perform(Collections.singletonList(scroll));

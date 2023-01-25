@@ -12,10 +12,12 @@ import com.knubisoft.cott.testing.model.scenario.Assert;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
+import com.knubisoft.cott.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.Overview;
 import com.knubisoft.cott.testing.model.scenario.OverviewPart;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
+import com.knubisoft.cott.testing.model.scenario.ScrollNative;
 import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
@@ -50,6 +52,8 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_F
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATION_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.DRAGGING_FROM;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.DROPPING_TO;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_FRAME;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_WEBVIEW;
@@ -83,6 +87,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_BY
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_DIRECTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_LOCATOR;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_TYPE;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_VALUE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SERVER_ERROR_RESPONSE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_HOST_LOG;
@@ -422,5 +427,19 @@ public class LogUtil {
         if (StringUtils.isNotBlank(swipeNative.getLocator())) {
             log.info(LOCATOR_LOG, swipeNative.getLocator());
         }
+    }
+
+    public static void addScrollNativeInfo(final ScrollNative scrollNative) {
+        log.info(SCROLL_TYPE, scrollNative.getType());
+        log.info(SCROLL_DIRECTION_LOG, scrollNative.getDirection());
+        log.info(SCROLL_VALUE, scrollNative.getValue());
+        if (StringUtils.isNotBlank(scrollNative.getLocator())) {
+            log.info(SCROLL_LOCATOR, scrollNative.getLocator());
+        }
+    }
+
+    public static void addDragAndDropNativeInfo(final DragAndDropNative dragAndDropNative) {
+        log.info(DRAGGING_FROM, dragAndDropNative.getFromLocatorId());
+        log.info(DROPPING_TO, dragAndDropNative.getToLocatorId());
     }
 }

@@ -64,6 +64,7 @@ import com.knubisoft.cott.testing.model.scenario.Response;
 import com.knubisoft.cott.testing.model.scenario.S3;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
+import com.knubisoft.cott.testing.model.scenario.ScrollNative;
 import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.SendRmqMessage;
@@ -83,8 +84,6 @@ import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
-import org.springframework.util.StringUtils;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -96,7 +95,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import org.springframework.util.StringUtils;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ALIAS_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.API_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
@@ -104,6 +103,7 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INT
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_MOBILEBROWSER_DEVICE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_NATIVE_DEVICE;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SAME_APPIUM_URL;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SAME_MOBILE_DEVICES;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF;
@@ -550,7 +550,16 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             if (o instanceof SwipeNative && ((SwipeNative) o).getType() == SwipeType.ELEMENT) {
                 validateSwipeNativeCommand((SwipeNative) o);
             }
+            if (o instanceof ScrollNative && ((ScrollNative) o).getType() == ScrollType.INNER) {
+                validateScrollNativeCommand((ScrollNative) o);
+            }
         });
+    }
+
+    private void validateScrollNativeCommand(final ScrollNative scrollNative) {
+        if (!StringUtils.hasText(scrollNative.getLocator())) {
+            throw new DefaultFrameworkException(NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
+        }
     }
 
     private void validateSwipeNativeCommand(final SwipeNative swipeNative) {

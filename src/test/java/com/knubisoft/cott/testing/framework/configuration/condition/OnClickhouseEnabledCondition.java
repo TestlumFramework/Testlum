@@ -15,7 +15,7 @@ public class OnClickhouseEnabledCondition implements Condition {
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
         final ClickhouseIntegration clickhouseIntegration =
-                GlobalTestConfigurationProvider.getIntegrations().getClickhouseIntegration();
+                GlobalTestConfigurationProvider.getDefaultIntegration().getClickhouseIntegration();
         if (Objects.nonNull(clickhouseIntegration)) {
             return clickhouseIntegration.getClickhouse().stream().anyMatch(Clickhouse::isEnabled);
         }

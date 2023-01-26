@@ -63,6 +63,7 @@ public class ExceptionMessage {
     public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
     public static final String DATA_FOLDER_NOT_EXIST = "[data] folder does not exist";
     public static final String CONFIG_FOLDER_NOT_EXIST = "[config] folder does not exist";
+    public static final String ENV_FOLDER_NOT_EXIST = "Environment folder does not exist";
     public static final String DUPLICATE_FILENAME = ANSI_RED + "The [%s] folder and its subfolders contain "
             + "files with duplicate filenames - %s. Every file should have a unique name" + ANSI_RESET;
     public static final String FILE_NOT_EXIST = ANSI_RED + "File %s does not exist in the [data] folder and its "

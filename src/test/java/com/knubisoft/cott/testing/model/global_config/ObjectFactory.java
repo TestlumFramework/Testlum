@@ -286,11 +286,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ConfigFiles }
+     * Create an instance of {@link Environments }
      * 
      */
-    public ConfigFiles createConfigFiles() {
-        return new ConfigFiles();
+    public Environments createEnvironments() {
+        return new Environments();
     }
 
     /**
@@ -747,6 +747,22 @@ public class ObjectFactory {
      */
     public Api createApi() {
         return new Api();
+    }
+
+    /**
+     * Create an instance of {@link ConfigFiles }
+     * 
+     */
+    public ConfigFiles createConfigFiles() {
+        return new ConfigFiles();
+    }
+
+    /**
+     * Create an instance of {@link Environment }
+     * 
+     */
+    public Environment createEnvironment() {
+        return new Environment();
     }
 
 }

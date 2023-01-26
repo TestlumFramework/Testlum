@@ -15,7 +15,7 @@ public class OnDynamoEnabledCondition implements Condition {
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
         final DynamoIntegration dynamoIntegration =
-                GlobalTestConfigurationProvider.getIntegrations().getDynamoIntegration();
+                GlobalTestConfigurationProvider.getDefaultIntegration().getDynamoIntegration();
         if (Objects.nonNull(dynamoIntegration)) {
             return dynamoIntegration.getDynamo()
                     .stream().anyMatch(Dynamo::isEnabled);

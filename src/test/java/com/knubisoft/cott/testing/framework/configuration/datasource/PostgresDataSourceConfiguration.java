@@ -2,7 +2,9 @@ package com.knubisoft.cott.testing.framework.configuration.datasource;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnPostgresEnabledCondition;
+import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.util.DataSourceUtil;
+import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Postgres;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -19,12 +21,18 @@ public class PostgresDataSourceConfiguration {
     @Conditional({OnPostgresEnabledCondition.class})
     public Map<String, DataSource> postgresDataSource() {
         Map<String, DataSource> postgresIntegration = new HashMap<>();
-        for (Postgres dataSource
-                : GlobalTestConfigurationProvider.getIntegrations().getPostgresIntegration().getPostgres()) {
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach((s, integrations) -> collectDataSource(postgresIntegration, s, integrations));
+        return postgresIntegration;
+    }
+
+    private void collectDataSource(final Map<String, DataSource> postgresIntegration,
+                                   final String envName, final Integrations integrations) {
+        for (Postgres dataSource : integrations.getPostgresIntegration().getPostgres()) {
             if (dataSource.isEnabled()) {
-                postgresIntegration.put(dataSource.getAlias(), DataSourceUtil.getHikariDataSource(dataSource));
+                postgresIntegration.put(envName + DelimiterConstant.UNDERSCORE + dataSource.getAlias(),
+                        DataSourceUtil.getHikariDataSource(dataSource));
             }
         }
-        return postgresIntegration;
     }
 }

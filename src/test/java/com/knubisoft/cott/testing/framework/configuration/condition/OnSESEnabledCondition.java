@@ -14,7 +14,8 @@ public class OnSESEnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        final SesIntegration sesIntegration = GlobalTestConfigurationProvider.getIntegrations().getSesIntegration();
+        final SesIntegration sesIntegration = GlobalTestConfigurationProvider.getDefaultIntegration()
+                .getSesIntegration();
         if (Objects.nonNull(sesIntegration)) {
             return sesIntegration.getSes()
                     .stream().anyMatch(Ses::isEnabled);

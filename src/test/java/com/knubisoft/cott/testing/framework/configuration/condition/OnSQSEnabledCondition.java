@@ -14,7 +14,8 @@ public class OnSQSEnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
-        final SqsIntegration sqsIntegration = GlobalTestConfigurationProvider.getIntegrations().getSqsIntegration();
+        final SqsIntegration sqsIntegration = GlobalTestConfigurationProvider.getDefaultIntegration()
+                .getSqsIntegration();
         if (Objects.nonNull(sqsIntegration)) {
             return sqsIntegration.getSqs()
                     .stream().anyMatch(Sqs::isEnabled);

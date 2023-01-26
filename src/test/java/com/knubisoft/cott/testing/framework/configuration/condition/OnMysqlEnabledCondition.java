@@ -16,7 +16,7 @@ public class OnMysqlEnabledCondition implements Condition {
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
 
         final MysqlIntegration mysqlIntegration =
-                GlobalTestConfigurationProvider.getIntegrations().getMysqlIntegration();
+                GlobalTestConfigurationProvider.getDefaultIntegration().getMysqlIntegration();
         if (Objects.nonNull(mysqlIntegration)) {
             return mysqlIntegration.getMysql()
                     .stream().anyMatch(Mysql::isEnabled);

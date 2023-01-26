@@ -13,7 +13,7 @@ public class OnLambdaEnabledCondition implements Condition {
 
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        final LambdaIntegration lambdaIntegration = GlobalTestConfigurationProvider.getIntegrations()
+        final LambdaIntegration lambdaIntegration = GlobalTestConfigurationProvider.getDefaultIntegration()
                 .getLambdaIntegration();
         if (Objects.nonNull(lambdaIntegration)) {
             return lambdaIntegration.getLambda().stream().anyMatch(Lambda::isEnabled);

@@ -15,7 +15,7 @@ public class OnElasticEnabledCondition implements Condition {
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
         final ElasticsearchIntegration elasticsearchIntegration =
-                GlobalTestConfigurationProvider.getIntegrations().getElasticsearchIntegration();
+                GlobalTestConfigurationProvider.getDefaultIntegration().getElasticsearchIntegration();
         if (Objects.nonNull(elasticsearchIntegration)) {
             return elasticsearchIntegration.getElasticsearch()
                     .stream().anyMatch(Elasticsearch::isEnabled);

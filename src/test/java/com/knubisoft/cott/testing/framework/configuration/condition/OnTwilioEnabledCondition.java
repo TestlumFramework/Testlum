@@ -14,7 +14,7 @@ public class OnTwilioEnabledCondition implements Condition {
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
         final TwilioIntegration twilioIntegration =
-                GlobalTestConfigurationProvider.getIntegrations().getTwilioIntegration();
+                GlobalTestConfigurationProvider.getDefaultIntegration().getTwilioIntegration();
         if (Objects.nonNull(twilioIntegration)) {
             return twilioIntegration.getTwilio().stream().anyMatch(Integration::isEnabled);
         }

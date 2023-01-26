@@ -3,11 +3,14 @@ package com.knubisoft.cott.testing.framework.configuration;
 import lombok.Getter;
 
 import java.io.File;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.COMPONENTS_FOLDER_NOT_EXIST;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.CONFIG_FOLDER_NOT_EXIST;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DATA_FOLDER_NOT_EXIST;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ENV_FOLDER_NOT_EXIST;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FOLDER_LOCATION_ERROR_MESSAGE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.PAGES_FOLDER_NOT_EXIST;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SCENARIOS_FOLDER_NOT_EXIST;
@@ -22,6 +25,7 @@ public class TestResourceSettings {
     public static final String SCREENSHOT_FILENAME = "screenshot.jpg";
     public static final String SCREENSHOT_NAME_TO_SAVE = "%s_action_%s_" + SCREENSHOT_FILENAME;
     public static final String XML_SUFFIX = ".xml";
+    public static final String ENV_FOLDER = "config/%s";
 
     public static final String SCREENSHOT_FOLDER = "/screenshots";
     public static final String SCHEMAS_FOLDER = "schema";
@@ -41,6 +45,7 @@ public class TestResourceSettings {
     private final File configFile;
     private final File dataFolder;
     private final File configFolder;
+    private final List<File> envFolders;
 
     private TestResourceSettings(final String configFileName, final String pathToTestResources) {
         this.testResourcesFolder = new File(pathToTestResources);
@@ -50,6 +55,7 @@ public class TestResourceSettings {
         this.scenariosFolder = subFolder(SCENARIOS_FOLDER, SCENARIOS_FOLDER_NOT_EXIST);
         this.dataFolder = subFolder(DATA_FOLDER, DATA_FOLDER_NOT_EXIST);
         this.configFolder = subFolder(CONFIG_FOLDER, CONFIG_FOLDER_NOT_EXIST);
+        this.envFolders = collectEnvFolders();
     }
 
     public static void init(final String configFileName, final String pathToTestResources) {
@@ -65,5 +71,11 @@ public class TestResourceSettings {
         checkArgument(folder.exists(),
                 String.format(FOLDER_LOCATION_ERROR_MESSAGE, errorMessage, folder.getAbsolutePath()));
         return folder;
+    }
+
+    private List<File> collectEnvFolders() {
+        return GlobalTestConfigurationProvider.getEnabledEnvironments().stream()
+                .map(env -> subFolder(String.format(ENV_FOLDER, env.getFolder()), ENV_FOLDER_NOT_EXIST))
+                .collect(Collectors.toList());
     }
 }

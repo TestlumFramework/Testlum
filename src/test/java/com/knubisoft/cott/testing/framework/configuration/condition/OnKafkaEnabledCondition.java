@@ -14,7 +14,7 @@ public class OnKafkaEnabledCondition implements Condition {
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
         final KafkaIntegration kafkaIntegration =
-                GlobalTestConfigurationProvider.getIntegrations().getKafkaIntegration();
+                GlobalTestConfigurationProvider.getDefaultIntegration().getKafkaIntegration();
         if (Objects.nonNull(kafkaIntegration)) {
             return kafkaIntegration.getKafka()
                     .stream().anyMatch(Kafka::isEnabled);

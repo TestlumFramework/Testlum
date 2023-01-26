@@ -13,7 +13,8 @@ public class OnSmtpEnabledCondition implements Condition {
 
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        final SmtpIntegration smtpIntegration = GlobalTestConfigurationProvider.getIntegrations().getSmtpIntegration();
+        final SmtpIntegration smtpIntegration = GlobalTestConfigurationProvider.getDefaultIntegration()
+                .getSmtpIntegration();
         if (Objects.nonNull(smtpIntegration)) {
             return smtpIntegration.getSmtp().stream().anyMatch(Integration::isEnabled);
         }

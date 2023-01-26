@@ -95,7 +95,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link GraphqlIntegration }
-     * 
+     *
      */
     public GraphqlIntegration createGraphqlIntegration() {
         return new GraphqlIntegration();
@@ -286,11 +286,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ConfigFiles }
+     * Create an instance of {@link Environments }
      * 
      */
-    public ConfigFiles createConfigFiles() {
-        return new ConfigFiles();
+    public Environments createEnvironments() {
+        return new Environments();
     }
 
     /**
@@ -591,7 +591,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Api }
-     * 
+     *
      */
     public Api createApi() {
         return new Api();
@@ -599,7 +599,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link GraphqlApi }
-     * 
+     *
      */
     public GraphqlApi createGraphqlApi() {
         return new GraphqlApi();
@@ -607,7 +607,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link WebsocketApi }
-     * 
+     *
      */
     public WebsocketApi createWebsocketApi() {
         return new WebsocketApi();
@@ -711,7 +711,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Lambda }
-     * 
+     *
      */
     public Lambda createLambda() {
         return new Lambda();
@@ -747,6 +747,22 @@ public class ObjectFactory {
      */
     public Twilio createTwilio() {
         return new Twilio();
+    }
+
+    /**
+     * Create an instance of {@link ConfigFiles }
+     *
+     */
+    public ConfigFiles createConfigFiles() {
+        return new ConfigFiles();
+    }
+
+    /**
+     * Create an instance of {@link Environment }
+     *
+     */
+    public Environment createEnvironment() {
+        return new Environment();
     }
 
 }

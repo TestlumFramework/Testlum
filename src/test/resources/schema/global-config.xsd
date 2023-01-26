@@ -27,8 +27,7 @@
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
                 <x:element name="report" type="tns:report"/>
                 <x:element name="auth" type="tns:auth"/>
-                <x:element name="uiConfigurations" type="tns:configFiles"/>
-                <x:element name="integrationsConfigurations" type="tns:configFiles"/>
+                <x:element name="environments" type="tns:environments"/>
             </x:sequence>
         </x:complexType>
     </x:element>
@@ -76,6 +75,21 @@
 
     <x:complexType name="configFiles">
         <x:attribute name="file" type="tns:xmlFileExtension" use="required"/>
+        <x:attribute name="enable" type="x:boolean" use="required"/>
+    </x:complexType>
+    
+    <x:complexType name="environments">
+        <x:sequence>
+            <x:element name="environment" type="tns:environment" maxOccurs="unbounded"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="environment">
+        <x:sequence>
+            <x:element name="uiConfigurations" type="tns:configFiles" minOccurs="0"/>
+            <x:element name="integrationsConfigurations" type="tns:configFiles" minOccurs="0"/>
+        </x:sequence>
+        <x:attribute name="folder" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="enable" type="x:boolean" use="required"/>
     </x:complexType>
 </x:schema>

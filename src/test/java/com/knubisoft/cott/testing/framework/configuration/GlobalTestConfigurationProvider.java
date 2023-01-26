@@ -6,6 +6,7 @@ import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.validator.GlobalTestConfigValidator;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.ConfigFiles;
+import com.knubisoft.cott.testing.model.global_config.Environment;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Mobilebrowser;
@@ -20,8 +21,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DISABLED_IN_CONFIG;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INTEGRATIONS_FILE_NOT_SPECIFIED;
@@ -32,19 +36,31 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UI_
 public class GlobalTestConfigurationProvider {
 
     private static final GlobalTestConfiguration GLOBAL_TEST_CONFIGURATION = init();
-    private static final Integrations INTEGRATIONS = initIntegrations();
-    private static final Ui UI = initUi();
+    private static final Map<String, Integrations> INTEGRATIONS = collectIntegrations();
+    private static final Map<String, Ui> UI = collectUiConfigs();
+    private static final List<Environment> ENVIRONMENTS = provide().getEnvironments().getEnvironment().stream()
+            .filter(Environment::isEnable).collect(Collectors.toList());
+    private static final Integrations DEFAULT_INTEGRATION = initIntegration(getEnabledEnvironments().get(0).getFolder(),
+            getEnabledEnvironments().get(0).getIntegrationsConfigurations());
 
     public static GlobalTestConfiguration provide() {
         return GLOBAL_TEST_CONFIGURATION;
     }
 
-    public static Integrations getIntegrations() {
+    public static Map<String, Integrations> getIntegrations() {
         return INTEGRATIONS;
     }
 
-    public static Ui provideUi() {
+    public static Map<String, Ui> provideUi() {
         return UI;
+    }
+
+    public static List<Environment> getEnabledEnvironments() {
+        return ENVIRONMENTS;
+    }
+
+    public static Integrations getDefaultIntegration() {
+        return DEFAULT_INTEGRATION;
     }
 
     public static List<AbstractBrowser> getBrowsers() {
@@ -89,25 +105,38 @@ public class GlobalTestConfigurationProvider {
                 .process(TestResourceSettings.getInstance().getConfigFile(), new GlobalTestConfigValidator());
     }
 
-    private static Integrations initIntegrations() {
-        ConfigFiles configFile = GlobalTestConfigurationProvider.provide().getIntegrationsConfigurations();
+    private static Map<String, Integrations> collectIntegrations() {
+        Map<String, Integrations> integrationsMap = new HashMap<>();
+        getEnabledEnvironments().forEach(env -> integrationsMap.put(env.getFolder(),
+                initIntegration(env.getFolder(), env.getIntegrationsConfigurations())));
+        return integrationsMap;
+    }
+
+    private static Map<String, Ui> collectUiConfigs() {
+        Map<String, Ui> integrationsMap = new HashMap<>();
+        getEnabledEnvironments().forEach(env -> integrationsMap.put(env.getFolder(),
+                initUi(env.getFolder(), env.getUiConfigurations())));
+        return integrationsMap;
+    }
+
+    private static Integrations initIntegration(final String folder, final ConfigFiles configFile) {
         if (configFile.isEnable()) {
             if (StringUtils.isBlank(configFile.getFile())) {
                 throw new DefaultFrameworkException(INTEGRATIONS_FILE_NOT_SPECIFIED);
             }
-            return XMLParsers.forIntegrations().process(FileSearcher.getFileFromConfigFolder(configFile.getFile()));
+            return XMLParsers.forIntegrations()
+                    .process(FileSearcher.searchFileFromEnvFolder(folder, configFile.getFile()));
         }
         log.warn(DISABLED_IN_CONFIG, "Integrations", "integrations");
         return new Integrations();
     }
 
-    private static Ui initUi() {
-        ConfigFiles configFile = GlobalTestConfigurationProvider.provide().getUiConfigurations();
+    private static Ui initUi(final String folder, final ConfigFiles configFile) {
         if (configFile.isEnable()) {
             if (StringUtils.isBlank(configFile.getFile())) {
                 throw new DefaultFrameworkException(UI_FILE_NOT_SPECIFIED);
             }
-            return XMLParsers.forUi().process(FileSearcher.getFileFromConfigFolder(configFile.getFile()));
+            return XMLParsers.forUi().process(FileSearcher.searchFileFromEnvFolder(folder, configFile.getFile()));
         }
         log.warn(DISABLED_IN_CONFIG, "UI", "ui");
         return new Ui();

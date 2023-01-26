@@ -15,7 +15,7 @@ public class OnMongoEnabledCondition implements Condition {
     public boolean matches(final ConditionContext conditionContext,
                            final AnnotatedTypeMetadata annotatedTypeMetadata) {
         final MongoIntegration mongoIntegration =
-                GlobalTestConfigurationProvider.getIntegrations().getMongoIntegration();
+                GlobalTestConfigurationProvider.getDefaultIntegration().getMongoIntegration();
         if (Objects.nonNull(mongoIntegration)) {
             return mongoIntegration.getMongo()
                     .stream().anyMatch(Mongo::isEnabled);

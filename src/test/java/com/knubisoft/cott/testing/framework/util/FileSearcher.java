@@ -15,6 +15,7 @@ import java.io.FilenameFilter;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -27,8 +28,9 @@ public final class FileSearcher {
     private static final File TEST_RESOURCES_FOLDER = TestResourceSettings.getInstance().getTestResourcesFolder();
     private static final File DATA_FOLDER = TestResourceSettings.getInstance().getDataFolder();
     private static final File CONFIG_FOLDER = TestResourceSettings.getInstance().getConfigFolder();
+    private static final List<File> ENV_FOLDERS = TestResourceSettings.getInstance().getEnvFolders();
     private static final Map<String, File> DATA_FOLDER_FILES = collectFilesFromFolder(DATA_FOLDER);
-    private static final Map<String, File> CONFIG_FOLDER_FILES = collectFilesFromFolder(CONFIG_FOLDER);
+    private static final Map<String, Map<String, File>> ENV_FOLDERS_FILES = collectFilesFromEnvFolders();
 
     public File searchFileFromDir(final File fromDir, final String name) {
         final String targetName = name.startsWith(DelimiterConstant.SLASH_SEPARATOR)
@@ -53,12 +55,18 @@ public final class FileSearcher {
         return file;
     }
 
-    public File getFileFromConfigFolder(final String configFile) {
-        File file = CONFIG_FOLDER_FILES.get(configFile);
+    public File searchFileFromEnvFolder(final String  folder, final String fileName) {
+        File file = ENV_FOLDERS_FILES.get(folder).get(fileName);
         if (Objects.isNull(file)) {
-            throw new FileLinkingException(CONFIG_FOLDER, CONFIG_FOLDER, configFile);
+            throw new DefaultFrameworkException("file not found in env folder");
         }
         return file;
+    }
+
+    public Map<String, Map<String, File>> collectFilesFromEnvFolders() {
+        Map<String, Map<String, File>> envsFiles = new HashMap<>();
+        ENV_FOLDERS.forEach(folder -> envsFiles.put(folder.getName(), collectFilesFromFolder(folder)));
+        return envsFiles;
     }
 
     public Map<String, File> collectFilesFromFolder(final File folder) {

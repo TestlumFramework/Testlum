@@ -7,7 +7,6 @@ import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnSESEnabledCondition;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Ses;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -16,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Configuration
 @Conditional({OnSESEnabledCondition.class})
@@ -48,7 +49,7 @@ public class SESConfiguration {
                 new BasicAWSCredentials(ses.getAccessKeyId(), ses.getSecretAccessKey());
         AWSStaticCredentialsProvider awsStaticCredentialsProvider =
                 new AWSStaticCredentialsProvider(basicAWSCredentials);
-        emailServiceMap.put(envName + DelimiterConstant.UNDERSCORE + ses.getAlias(), buildAmazonSes(endpointConfiguration,
+        emailServiceMap.put(envName + UNDERSCORE + ses.getAlias(), buildAmazonSes(endpointConfiguration,
                 awsStaticCredentialsProvider));
     }
 

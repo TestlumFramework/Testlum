@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Conditional({OnElasticEnabledCondition.class})
 @Component
@@ -21,10 +24,17 @@ public class AliasElasticsearchAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Elasticsearch elasticsearch
-                : GlobalTestConfigurationProvider.getIntegrations().getElasticsearchIntegration().getElasticsearch()) {
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach(((s, integrations) -> addToAliasMap(
+                        s, integrations.getElasticsearchIntegration().getElasticsearch(), aliasMap)));
+    }
+
+    private void addToAliasMap(final String envName,
+                               final List<Elasticsearch> elasticsearchList,
+                               final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
+        for (Elasticsearch elasticsearch : elasticsearchList) {
             if (elasticsearch.isEnabled()) {
-                aliasMap.put(elasticsearch.getAlias(), getMetadataElasticsearch(elasticsearch));
+                aliasMap.put(envName + UNDERSCORE + elasticsearch.getAlias(), getMetadataElasticsearch(elasticsearch));
             }
         }
     }

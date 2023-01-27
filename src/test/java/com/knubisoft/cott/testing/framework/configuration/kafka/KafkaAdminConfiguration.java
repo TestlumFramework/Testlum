@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.configuration.kafka;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnKafkaEnabledCondition;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Kafka;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -16,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Configuration
 @Conditional({OnKafkaEnabledCondition.class})
@@ -48,7 +49,7 @@ public class KafkaAdminConfiguration {
                                           final String envName) {
         Map<String, Object> configs = new HashMap<>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapAddress());
-        adminMap.put(envName + DelimiterConstant.UNDERSCORE + kafka.getAlias(),
+        adminMap.put(envName + UNDERSCORE + kafka.getAlias(),
                 new KafkaAdmin(configs));
     }
 
@@ -74,7 +75,7 @@ public class KafkaAdminConfiguration {
                                                 final String envName) {
         Map<String, Object> configs = new HashMap<>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapAddress());
-        clientMap.put(envName + DelimiterConstant.UNDERSCORE + kafka.getAlias(),
+        clientMap.put(envName + UNDERSCORE + kafka.getAlias(),
                 KafkaAdminClient.create(configs));
     }
 }

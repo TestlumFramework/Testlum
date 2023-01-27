@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.configuration.kafka;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnKafkaEnabledCondition;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Kafka;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -15,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.CLIENT_ID_CONFIG;
@@ -52,7 +52,7 @@ public class KafkaConsumerConfiguration {
                                              final String envName) {
         final Properties props = new Properties();
         configureProperties(props, kafka);
-        consumerMap.put(envName + DelimiterConstant.UNDERSCORE + kafka.getAlias(),
+        consumerMap.put(envName + UNDERSCORE + kafka.getAlias(),
                 new KafkaConsumer<>(props));
     }
 

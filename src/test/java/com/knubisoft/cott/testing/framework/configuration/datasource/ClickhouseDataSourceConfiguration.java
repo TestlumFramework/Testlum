@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.configuration.datasource;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnClickhouseEnabledCondition;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Clickhouse;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +13,8 @@ import ru.yandex.clickhouse.settings.ClickHouseProperties;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Configuration("clickhouseDataSourceConfiguration")
 @Conditional({OnClickhouseEnabledCondition.class})
@@ -34,7 +35,7 @@ public class ClickhouseDataSourceConfiguration {
             if (clickhouse.isEnabled()) {
                 ClickHouseProperties properties = clickHouseProperties(clickhouse);
                 String url = clickhouse.getConnectionUrl();
-                clickhouseIntegration.put(envName + DelimiterConstant.UNDERSCORE + clickhouse.getAlias(),
+                clickhouseIntegration.put(envName + UNDERSCORE + clickhouse.getAlias(),
                         new ClickHouseDataSource(url, properties));
             }
         }

@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.configuration.lambda;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnLambdaEnabledCondition;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Lambda;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -17,6 +16,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Configuration
 @Conditional({OnLambdaEnabledCondition.class})
@@ -36,7 +37,7 @@ public class LambdaConfiguration {
                                  final Map<String, LambdaClient> lambdaClientMap) {
         for (Lambda lambda : lambdas) {
             if (lambda.isEnabled()) {
-                lambdaClientMap.put(envName + DelimiterConstant.UNDERSCORE + lambda.getAlias(),
+                lambdaClientMap.put(envName + UNDERSCORE + lambda.getAlias(),
                         createLambdaClient(lambda));
             }
         }

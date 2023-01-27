@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Conditional({OnSendgridEnabledCondition.class})
 @Component
@@ -21,10 +24,17 @@ public class AliasSendGridAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Sendgrid sendgrid
-                : GlobalTestConfigurationProvider.getIntegrations().getSendgridIntegration().getSendgrid()) {
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach(((s, integrations) -> addToAliasMap(s, integrations.getSendgridIntegration().getSendgrid(),
+                        aliasMap)));
+    }
+
+    private void addToAliasMap(final String envName,
+                               final List<Sendgrid> sendgrids,
+                               final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
+        for (Sendgrid sendgrid : sendgrids) {
             if (sendgrid.isEnabled()) {
-                aliasMap.put(sendgrid.getAlias(), getMetadataSendGrid(sendgrid));
+                aliasMap.put(envName + UNDERSCORE + sendgrid.getAlias(), getMetadataSendGrid(sendgrid));
             }
         }
     }

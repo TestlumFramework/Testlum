@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 import static com.knubisoft.cott.testing.model.scenario.StorageName.DYNAMO;
 
 @Component
@@ -24,9 +26,17 @@ public class AliasDynamoAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Dynamo dynamo : GlobalTestConfigurationProvider.getIntegrations().getDynamoIntegration().getDynamo()) {
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach(((s, integrations) -> addToAliasMap(s, integrations.getDynamoIntegration().getDynamo(),
+                        aliasMap)));
+    }
+
+    private void addToAliasMap(final String envName,
+                               final List<Dynamo> dynamoList,
+                               final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
+        for (Dynamo dynamo : dynamoList) {
             if (dynamo.isEnabled()) {
-                aliasMap.put(DYNAMO + DelimiterConstant.UNDERSCORE + dynamo.getAlias(), getMetadataDynamo(dynamo));
+                aliasMap.put(envName + UNDERSCORE + DYNAMO + UNDERSCORE + dynamo.getAlias(), getMetadataDynamo(dynamo));
             }
         }
     }

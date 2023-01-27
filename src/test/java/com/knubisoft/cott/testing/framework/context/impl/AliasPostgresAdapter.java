@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
@@ -24,10 +25,18 @@ public class AliasPostgresAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Postgres postgres
-                : GlobalTestConfigurationProvider.getIntegrations().getPostgresIntegration().getPostgres()) {
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach(((s, integrations) -> addToAliasMap(s, integrations.getPostgresIntegration().getPostgres(),
+                        aliasMap)));
+    }
+
+    private void addToAliasMap(final String envName,
+                               final List<Postgres> postgresList,
+                               final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
+        for (Postgres postgres : postgresList) {
             if (postgres.isEnabled()) {
-                aliasMap.put(POSTGRES + UNDERSCORE + postgres.getAlias(), getMetadataPostgres(postgres));
+                aliasMap.put(envName + UNDERSCORE + POSTGRES + UNDERSCORE + postgres.getAlias(),
+                        getMetadataPostgres(postgres));
             }
         }
     }

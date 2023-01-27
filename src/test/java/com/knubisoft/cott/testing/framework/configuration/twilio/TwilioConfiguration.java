@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+
 @Configuration
 @Conditional(OnTwilioEnabledCondition.class)
 public class TwilioConfiguration {
@@ -29,7 +31,7 @@ public class TwilioConfiguration {
     private void addToMap(final String envName, final List<Twilio> twilios, final Map<String, Twilio> twilioMap) {
         twilios.stream()
                 .filter(Twilio::isEnabled)
-                .forEach(twilio -> twilioMap.put(envName + DelimiterConstant.UNDERSCORE + twilio.getAlias(),
+                .forEach(twilio -> twilioMap.put(envName + UNDERSCORE + twilio.getAlias(),
                         (Twilio) Function.identity()));
     }
 }

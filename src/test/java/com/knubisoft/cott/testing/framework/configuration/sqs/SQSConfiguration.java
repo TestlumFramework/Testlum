@@ -7,7 +7,6 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnSQSEnabledCondition;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Sqs;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -16,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Configuration
 @Conditional({OnSQSEnabledCondition.class})
@@ -44,7 +45,7 @@ public class SQSConfiguration {
                 new BasicAWSCredentials(sqs.getAccessKeyId(), sqs.getSecretAccessKey());
         AWSStaticCredentialsProvider awsStaticCredentialsProvider =
                 new AWSStaticCredentialsProvider(basicAWSCredentials);
-        properties.put(envName + DelimiterConstant.UNDERSCORE + sqs.getAlias(),
+        properties.put(envName + UNDERSCORE + sqs.getAlias(),
                 buildAmazonSQS(endpointConfiguration, awsStaticCredentialsProvider));
     }
 

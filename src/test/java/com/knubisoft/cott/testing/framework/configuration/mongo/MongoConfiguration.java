@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.configuration.mongo;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnMongoEnabledCondition;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -17,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Configuration
 @Conditional({OnMongoEnabledCondition.class})
@@ -49,7 +50,7 @@ public class MongoConfiguration {
                 mongo.getAuthenticationDatabase(),
                 mongo.getPassword().toCharArray());
         MongoClientOptions mongoClientOptions = MongoClientOptions.builder().build();
-        clients.put(envName + DelimiterConstant.UNDERSCORE + mongo.getAlias(),
+        clients.put(envName + UNDERSCORE + mongo.getAlias(),
                 new MongoClient(mongoAddress, credential, mongoClientOptions));
     }
 

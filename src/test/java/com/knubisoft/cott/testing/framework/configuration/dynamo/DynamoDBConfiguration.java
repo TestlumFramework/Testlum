@@ -7,7 +7,6 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnDynamoEnabledCondition;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Dynamo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -22,6 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Configuration
 @Conditional({OnDynamoEnabledCondition.class})
@@ -58,7 +59,7 @@ public class DynamoDBConfiguration {
                 dynamo.getSecretAccessKey());
         StaticCredentialsProvider staticCredentialsProvider = StaticCredentialsProvider
                 .create(awsBasicCredentials);
-        dbClientMap.put(envName + DelimiterConstant.UNDERSCORE + dynamo.getAlias(),
+        dbClientMap.put(envName + UNDERSCORE + dynamo.getAlias(),
                 buildDynamoDbClient(uri, region, staticCredentialsProvider));
     }
 
@@ -98,7 +99,7 @@ public class DynamoDBConfiguration {
                 new AwsClientBuilder.EndpointConfiguration(dynamo.getEndpoint(), dynamo.getRegion());
         AWSStaticCredentialsProvider awsStaticCredentialsProvider =
                 new AWSStaticCredentialsProvider(awsCredentials);
-        dynamoDBMap.put(envName + DelimiterConstant.UNDERSCORE + dynamo.getAlias(),
+        dynamoDBMap.put(envName + UNDERSCORE + dynamo.getAlias(),
                 buildAmazonDynamoDB(endpointConfiguration,
                 awsStaticCredentialsProvider));
     }

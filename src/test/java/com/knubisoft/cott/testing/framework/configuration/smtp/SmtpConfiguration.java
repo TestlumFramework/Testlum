@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.configuration.smtp;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnSmtpEnabledCondition;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Smtp;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -13,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Configuration
 @Conditional(OnSmtpEnabledCondition.class)
@@ -33,7 +34,7 @@ public class SmtpConfiguration {
                           final Map<String, JavaMailSenderImpl> senderMap) {
         smtpList.stream()
                 .filter(Smtp::isEnabled)
-                .forEach(smtp -> senderMap.put(envName + DelimiterConstant.UNDERSCORE + smtp.getAlias(),
+                .forEach(smtp -> senderMap.put(envName + UNDERSCORE + smtp.getAlias(),
                         createJavaMailSender(smtp)));
     }
 

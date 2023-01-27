@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.configuration.websocket;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnWebsocketEnabledCondition;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.WebsocketApi;
 import com.knubisoft.cott.testing.model.global_config.WebsocketProtocol;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +18,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Configuration
 @Conditional(OnWebsocketEnabledCondition.class)
@@ -38,10 +39,10 @@ public class WebsocketConfiguration {
                                         final Map<String, WebsocketConnectionManager> connectionSupplierMap) {
         for (WebsocketApi websocket : websocketApis) {
             if (websocket.isStomp()) {
-                connectionSupplierMap.put(envName + DelimiterConstant.UNDERSCORE + websocket.getAlias(),
+                connectionSupplierMap.put(envName + UNDERSCORE + websocket.getAlias(),
                         getWsStompConnectionManager(websocket.getUrl()));
             } else {
-                connectionSupplierMap.put(envName + DelimiterConstant.UNDERSCORE + websocket.getAlias(),
+                connectionSupplierMap.put(envName + UNDERSCORE + websocket.getAlias(),
                         getWsStandardConnectionManager(websocket.getUrl()));
             }
         }

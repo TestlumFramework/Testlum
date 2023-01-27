@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.configuration.kafka;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnKafkaEnabledCondition;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Kafka;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -15,6 +14,8 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Configuration
 @Conditional({OnKafkaEnabledCondition.class})
@@ -35,7 +36,7 @@ public class KafkaProducerConfiguration {
         for (Kafka kafka : kafkaList) {
             if (kafka.isEnabled()) {
                 Map<String, Object> configProps = createConfigProps(kafka);
-                producerMap.put(envName + DelimiterConstant.UNDERSCORE + kafka.getAlias(),
+                producerMap.put(envName + UNDERSCORE + kafka.getAlias(),
                         new KafkaProducer<>(configProps));
             }
         }

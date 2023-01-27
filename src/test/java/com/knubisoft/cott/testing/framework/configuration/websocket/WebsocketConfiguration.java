@@ -19,21 +19,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Configuration
 @Conditional(OnWebsocketEnabledCondition.class)
 public class WebsocketConfiguration {
 
-    private final Map<String, List<WebsocketApi>> websocketMap = GlobalTestConfigurationProvider.getIntegrations()
-            .entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey,
-                    entry -> entry.getValue().getWebsockets().getApi()));
-
     @Bean
     public Map<String, WebsocketConnectionManager> websocketConnectionSupplier() {
         final Map<String, WebsocketConnectionManager> connectionSupplierMap = new HashMap<>();
-        websocketMap.forEach((s, websocketApis) -> addWebsocketConnection(s, websocketApis, connectionSupplierMap));
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach((s, integrations) -> addWebsocketConnection(s,
+                        integrations.getWebsockets().getApi(), connectionSupplierMap));
         return connectionSupplierMap;
     }
 

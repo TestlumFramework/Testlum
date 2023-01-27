@@ -17,21 +17,17 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Configuration
 @Conditional({OnLambdaEnabledCondition.class})
 public class LambdaConfiguration {
 
-    private final Map<String, List<Lambda>> lambdaMap = GlobalTestConfigurationProvider.getIntegrations()
-            .entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey,
-                    entry -> entry.getValue().getLambdaIntegration().getLambda()));
-
     @Bean
     public Map<String, LambdaClient> awsLambdaClients() {
         final Map<String, LambdaClient> lambdaClientMap = new HashMap<>();
-        lambdaMap.forEach(((s, lambdas) -> addLambdaClient(s, lambdas, lambdaClientMap)));
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach(((s, integrations) -> addLambdaClient(s, integrations.getLambdaIntegration().getLambda(),
+                        lambdaClientMap)));
         return lambdaClientMap;
     }
 

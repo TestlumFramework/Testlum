@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG;
@@ -29,15 +28,12 @@ import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZE
 @Conditional({OnKafkaEnabledCondition.class})
 public class KafkaConsumerConfiguration {
 
-    private final Map<String, List<Kafka>> kafkaMap = GlobalTestConfigurationProvider.getIntegrations()
-            .entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey,
-                    entry -> entry.getValue().getKafkaIntegration().getKafka()));
-
     @Bean
     public Map<String, KafkaConsumer<String, String>> kafkaConsumer() {
         final Map<String, KafkaConsumer<String, String>> consumerMap = new HashMap<>();
-
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach(((s, integrations) -> addConsumer(s, integrations.getKafkaIntegration().getKafka(),
+                        consumerMap)));
         return consumerMap;
     }
 

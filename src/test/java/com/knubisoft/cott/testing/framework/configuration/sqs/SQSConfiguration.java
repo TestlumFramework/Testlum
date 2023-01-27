@@ -16,20 +16,16 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Configuration
 @Conditional({OnSQSEnabledCondition.class})
 public class SQSConfiguration {
 
-    private final Map<String, List<Sqs>> sqsMap = GlobalTestConfigurationProvider.getIntegrations()
-            .entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey,
-                    entry -> entry.getValue().getSqsIntegration().getSqs()));
     @Bean
     public Map<String, AmazonSQS> amazonSQS() {
         final Map<String, AmazonSQS> sqsIntegration = new HashMap<>();
-        sqsMap.forEach(((s, sqsList) -> addSqs(s, sqsList, sqsIntegration)));
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach(((s, integrations) -> addSqs(s, integrations.getSqsIntegration().getSqs(), sqsIntegration)));
         return sqsIntegration;
     }
 

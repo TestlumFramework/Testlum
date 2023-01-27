@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 @Configuration
 @Conditional(OnSmtpEnabledCondition.class)
@@ -25,10 +24,7 @@ public class SmtpConfiguration {
     public Map<String, JavaMailSenderImpl> javaMailSender() {
         Map<String, JavaMailSenderImpl> senderMap = new HashMap<>();
         GlobalTestConfigurationProvider.getIntegrations()
-                .entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        entry -> entry.getValue().getSmtpIntegration().getSmtp()))
-                .forEach(((s, smtpList) -> addToMap(s, smtpList, senderMap)));
+                .forEach(((s, integrations) -> addToMap(s, integrations.getSmtpIntegration().getSmtp(), senderMap)));
         return senderMap;
     }
 

@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Configuration
 @Conditional({OnSendgridEnabledCondition.class})
@@ -22,10 +21,8 @@ public class SendgridConfiguration {
     public Map<String, SendGrid> sendGrid() {
         Map<String, SendGrid> sendGridMap = new HashMap<>();
         GlobalTestConfigurationProvider.getIntegrations()
-                .entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        entry -> entry.getValue().getSendgridIntegration().getSendgrid()))
-                .forEach(((s, sendgrids) -> addToMap(s, sendgrids, sendGridMap)));
+                .forEach(((s, integrations) -> addToMap(s, integrations.getSendgridIntegration().getSendgrid(),
+                        sendGridMap)));
     return sendGridMap;
     }
 

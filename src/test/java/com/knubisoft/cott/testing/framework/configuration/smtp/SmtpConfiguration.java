@@ -2,12 +2,15 @@ package com.knubisoft.cott.testing.framework.configuration.smtp;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnSmtpEnabledCondition;
+import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Smtp;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -20,13 +23,22 @@ public class SmtpConfiguration {
 
     @Bean
     public Map<String, JavaMailSenderImpl> javaMailSender() {
-        return GlobalTestConfigurationProvider
-                .getIntegrations()
-                .getSmtpIntegration()
-                .getSmtp()
-                .stream()
+        Map<String, JavaMailSenderImpl> senderMap = new HashMap<>();
+        GlobalTestConfigurationProvider.getIntegrations()
+                .entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        entry -> entry.getValue().getSmtpIntegration().getSmtp()))
+                .forEach(((s, smtpList) -> addToMap(s, smtpList, senderMap)));
+        return senderMap;
+    }
+
+    private void addToMap(final String envName,
+                          final List<Smtp> smtpList,
+                          final Map<String, JavaMailSenderImpl> senderMap) {
+        smtpList.stream()
                 .filter(Smtp::isEnabled)
-                .collect(Collectors.toMap(Smtp::getAlias, this::createJavaMailSender));
+                .forEach(smtp -> senderMap.put(envName + DelimiterConstant.UNDERSCORE + smtp.getAlias(),
+                        createJavaMailSender(smtp)));
     }
 
     private JavaMailSenderImpl createJavaMailSender(final Smtp smtpSettings) {

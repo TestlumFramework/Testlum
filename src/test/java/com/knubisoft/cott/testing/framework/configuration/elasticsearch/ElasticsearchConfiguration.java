@@ -3,6 +3,7 @@ package com.knubisoft.cott.testing.framework.configuration.elasticsearch;
 import com.amazonaws.auth.AWS4Signer;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnElasticEnabledCondition;
+import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Elasticsearch;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -21,12 +22,15 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Configuration
 @Conditional({OnElasticEnabledCondition.class})
 public class ElasticsearchConfiguration {
-    private final List<Elasticsearch> elasticsearchList = GlobalTestConfigurationProvider.getIntegrations()
-            .getElasticsearchIntegration().getElasticsearch();
+    private final Map<String, List<Elasticsearch>> elasticsearchMap = GlobalTestConfigurationProvider.getIntegrations()
+            .entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey,
+                    entry -> entry.getValue().getElasticsearchIntegration().getElasticsearch()));
 
     @Bean
     public Map<String, RestClientBuilder> restClientBuilder(
@@ -62,13 +66,19 @@ public class ElasticsearchConfiguration {
     @Bean
     public Map<String, AWS4Signer> aws4Signer() {
         Map<String, AWS4Signer> signerMap = new HashMap<>();
+        elasticsearchMap.forEach(((s, elasticsearches) -> addAWS4Signer(s, elasticsearches, signerMap)));
+        return signerMap;
+    }
+
+    private void addAWS4Signer(final String envName,
+                               final List<Elasticsearch> elasticsearchList,
+                               final Map<String, AWS4Signer> signerMap) {
         for (Elasticsearch elasticsearch : elasticsearchList) {
             if (elasticsearch.isEnabled()) {
                 AWS4Signer signer = createAWS4Signer(elasticsearch);
-                signerMap.put(elasticsearch.getAlias(), signer);
+                signerMap.put(envName + DelimiterConstant.UNDERSCORE + elasticsearch.getAlias(), signer);
             }
         }
-        return signerMap;
     }
 
     @NotNull
@@ -82,19 +92,27 @@ public class ElasticsearchConfiguration {
     @Bean
     public Map<String, RestClientBuilder.HttpClientConfigCallback> httpClientConfigCallback() {
         final Map<String, RestClientBuilder.HttpClientConfigCallback> configCallbackMap = new HashMap<>();
+        elasticsearchMap.forEach(((s, elasticsearchList) ->
+                addClientConfigCallBack(s, elasticsearchList, configCallbackMap)));
+        return configCallbackMap;
+    }
+
+    private void addClientConfigCallBack(final String envName,
+                                         final List<Elasticsearch> elasticsearchList,
+                                         final Map<String, RestClientBuilder.HttpClientConfigCallback> configCallbackMap) {
         for (Elasticsearch elasticsearch : elasticsearchList) {
             if (elasticsearch.isEnabled()) {
-                createClientConfigCallBackAndPutIntoMap(configCallbackMap, elasticsearch);
+                createClientConfigCallBackAndPutIntoMap(configCallbackMap, elasticsearch, envName);
             }
         }
-        return configCallbackMap;
     }
 
     private void createClientConfigCallBackAndPutIntoMap(
             final Map<String, RestClientBuilder.HttpClientConfigCallback> configCallbackMap,
-            final Elasticsearch elasticsearch) {
+            final Elasticsearch elasticsearch,
+            final String envName) {
         final CredentialsProvider credentialsProvider = createCredentialsProvider(elasticsearch);
-        configCallbackMap.put(elasticsearch.getAlias(),
+        configCallbackMap.put(envName + DelimiterConstant.UNDERSCORE + elasticsearch.getAlias(),
                 httpAsyncClientBuilder -> httpAsyncClientBuilder
                         .setDefaultCredentialsProvider(credentialsProvider));
     }
@@ -111,17 +129,25 @@ public class ElasticsearchConfiguration {
     @Bean
     public Map<String, RestClientBuilder.RequestConfigCallback> requestConfigCallback() {
         Map<String, RestClientBuilder.RequestConfigCallback> configCallbackMap = new HashMap<>();
-        for (Elasticsearch elasticsearch : elasticsearchList) {
-            if (elasticsearch.isEnabled()) {
-                addRequestConfigCallback(configCallbackMap, elasticsearch);
-            }
-        }
+        elasticsearchMap.forEach(((s, elasticsearchList) ->
+                addRequestConfigCallback(s, elasticsearchList, configCallbackMap)));
         return configCallbackMap;
     }
 
-    private void addRequestConfigCallback(final Map<String, RestClientBuilder.RequestConfigCallback> configCallbackMap,
-                                          final Elasticsearch elasticsearch) {
-        configCallbackMap.put(elasticsearch.getAlias(), builder -> builder
+    private void addRequestConfigCallback(final String envName,
+                                          final List<Elasticsearch> elasticsearchList,
+                                          final Map<String, RestClientBuilder.RequestConfigCallback> configCallbackMap) {
+        for (Elasticsearch elasticsearch : elasticsearchList) {
+            if (elasticsearch.isEnabled()) {
+                addToRequestConfigMap(configCallbackMap, elasticsearch, envName);
+            }
+        }
+    }
+
+    private void addToRequestConfigMap(final Map<String, RestClientBuilder.RequestConfigCallback> configCallbackMap,
+                                          final Elasticsearch elasticsearch,
+                                          final String envName) {
+        configCallbackMap.put(envName + DelimiterConstant.UNDERSCORE + elasticsearch.getAlias(), builder -> builder
                 .setConnectTimeout(elasticsearch.getConnectionTimeout())
                 .setSocketTimeout(elasticsearch.getSocketTimeout()));
     }
@@ -129,12 +155,19 @@ public class ElasticsearchConfiguration {
     @Bean
     public Map<String, HttpHost> esHttpHost() {
         Map<String, HttpHost> hostMap = new HashMap<>();
+        elasticsearchMap.forEach(((s, elasticsearchList) -> addEsHttpHost(s, elasticsearchList, hostMap)));
+        return hostMap;
+    }
+
+    private void addEsHttpHost(final String envName,
+                               final List<Elasticsearch> elasticsearchList,
+                               final Map<String, HttpHost> hostMap) {
         for (Elasticsearch elasticsearch : elasticsearchList) {
             if (elasticsearch.isEnabled()) {
-                hostMap.put(elasticsearch.getAlias(), new HttpHost(elasticsearch.getHost(),
+                hostMap.put(envName + DelimiterConstant.UNDERSCORE +elasticsearch.getAlias(),
+                        new HttpHost(elasticsearch.getHost(),
                         elasticsearch.getPort(), elasticsearch.getScheme()));
             }
         }
-        return hostMap;
     }
 }

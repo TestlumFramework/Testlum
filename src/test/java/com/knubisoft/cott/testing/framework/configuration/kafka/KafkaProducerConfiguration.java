@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.configuration.kafka;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnKafkaEnabledCondition;
+import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Kafka;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -12,22 +13,36 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Configuration
 @Conditional({OnKafkaEnabledCondition.class})
 public class KafkaProducerConfiguration {
 
+    private final Map<String, List<Kafka>> kafkaMap = GlobalTestConfigurationProvider.getIntegrations()
+            .entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey,
+                    entry -> entry.getValue().getKafkaIntegration().getKafka()));
+
     @Bean
     public Map<String, KafkaProducer<String, String>> kafkaProducer() {
         Map<String, KafkaProducer<String, String>> producerMap = new HashMap<>();
-        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().getKafkaIntegration().getKafka()) {
+        kafkaMap.forEach(((s, kafkaList) -> addConfigProps(s, kafkaList, producerMap)));
+        return producerMap;
+    }
+
+    private void addConfigProps(final String envName,
+                                final List<Kafka> kafkaList,
+                                final Map<String, KafkaProducer<String, String>> producerMap) {
+        for (Kafka kafka : kafkaList) {
             if (kafka.isEnabled()) {
                 Map<String, Object> configProps = createConfigProps(kafka);
-                producerMap.put(kafka.getAlias(), new KafkaProducer<>(configProps));
+                producerMap.put(envName + DelimiterConstant.UNDERSCORE + kafka.getAlias(),
+                        new KafkaProducer<>(configProps));
             }
         }
-        return producerMap;
     }
 
     @NotNull

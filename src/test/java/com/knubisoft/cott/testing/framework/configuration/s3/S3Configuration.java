@@ -7,37 +7,50 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnS3EnabledCondition;
+import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.S3;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Configuration
 @Conditional({OnS3EnabledCondition.class})
 public class S3Configuration {
 
+    private final Map<String, List<S3>> s3Map = GlobalTestConfigurationProvider.getIntegrations()
+            .entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey,
+                    entry -> entry.getValue().getS3Integration().getS3()));
+
     @Bean
     public Map<String, AmazonS3> amazonS3() {
         Map<String, AmazonS3> s3Integration = new HashMap<>();
-        for (S3 s3 : GlobalTestConfigurationProvider.getIntegrations().getS3Integration().getS3()) {
-            if (s3.isEnabled()) {
-                createS3AndPutToMap(s3Integration, s3);
-            }
-        }
+        s3Map.forEach(((s, s3s) -> addS3(s, s3s, s3Integration)));
         return s3Integration;
     }
 
-    private void createS3AndPutToMap(final Map<String, AmazonS3> s3Map, final S3 s3) {
+    private void addS3(final String envName, final List<S3> s3s, final Map<String, AmazonS3> s3Integration) {
+        for (S3 s3 : s3s) {
+            if (s3.isEnabled()) {
+                createS3AndPutToMap(s3Integration, s3, envName);
+            }
+        }
+    }
+
+    private void createS3AndPutToMap(final Map<String, AmazonS3> s3Map, final S3 s3, final String envName) {
         AwsClientBuilder.EndpointConfiguration endpointConfiguration =
                 new AwsClientBuilder.EndpointConfiguration(s3.getEndpoint(), s3.getRegion());
         BasicAWSCredentials basicAWSCredentials =
                 new BasicAWSCredentials(s3.getAccessKeyId(), s3.getSecretAccessKey());
         AWSStaticCredentialsProvider awsStaticCredentialsProvider =
                 new AWSStaticCredentialsProvider(basicAWSCredentials);
-        s3Map.put(s3.getAlias(), buildAmazonS3(endpointConfiguration, awsStaticCredentialsProvider));
+        s3Map.put(envName + DelimiterConstant.UNDERSCORE + s3.getAlias(),
+                buildAmazonS3(endpointConfiguration, awsStaticCredentialsProvider));
     }
 
     private AmazonS3 buildAmazonS3(final AwsClientBuilder.EndpointConfiguration endpointConfiguration,

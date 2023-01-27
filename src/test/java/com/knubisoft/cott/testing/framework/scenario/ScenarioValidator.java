@@ -37,6 +37,7 @@ import com.knubisoft.cott.testing.model.global_config.SqsIntegration;
 import com.knubisoft.cott.testing.model.global_config.TwilioIntegration;
 import com.knubisoft.cott.testing.model.global_config.Websockets;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
+import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.Body;
 import com.knubisoft.cott.testing.model.scenario.Clickhouse;
@@ -93,6 +94,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.util.StringUtils;
@@ -112,6 +114,7 @@ import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.JS
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
+    private final Map<Class<? extends AbstractUiCommand>, Supplier> nativeLocatorExecptionMap;
     private final Integrations integrations = GlobalTestConfigurationProvider.getIntegrations();
 
     public ScenarioValidator() {
@@ -301,6 +304,16 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         validatorMap.put(o -> o instanceof Native, (xmlFile, command) -> {
             validateNativeCommands((Native) command);
         });
+
+        Map<Class<? extends AbstractUiCommand>, Supplier> nativeLocatorExecptionMap = new HashMap<>();
+        nativeLocatorExecptionMap.put(SwipeNative.class, () -> {
+            throw new DefaultFrameworkException(ExceptionMessage.NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE);
+        });
+        nativeLocatorExecptionMap.put(ScrollNative.class, () -> {
+            throw new DefaultFrameworkException(NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
+        });
+
+        this.nativeLocatorExecptionMap = Collections.unmodifiableMap(nativeLocatorExecptionMap);
 
         this.abstractCommandValidatorsMap = Collections.unmodifiableMap(validatorMap);
     }
@@ -548,23 +561,18 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
         command.getClickOrInputOrAssert().forEach(o -> {
             if (o instanceof SwipeNative && ((SwipeNative) o).getType() == SwipeType.ELEMENT) {
-                validateSwipeNativeCommand((SwipeNative) o);
+                validateNativeCommandWithLocator(o.getClass(), ((SwipeNative) o).getLocator());
             }
             if (o instanceof ScrollNative && ((ScrollNative) o).getType() == ScrollType.INNER) {
-                validateScrollNativeCommand((ScrollNative) o);
+                validateNativeCommandWithLocator(o.getClass(), ((ScrollNative) o).getLocator());
             }
         });
     }
 
-    private void validateScrollNativeCommand(final ScrollNative scrollNative) {
-        if (!StringUtils.hasText(scrollNative.getLocator())) {
-            throw new DefaultFrameworkException(NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
-        }
-    }
-
-    private void validateSwipeNativeCommand(final SwipeNative swipeNative) {
-        if (!StringUtils.hasText(swipeNative.getLocator())) {
-            throw new DefaultFrameworkException(ExceptionMessage.NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE);
+    private void validateNativeCommandWithLocator(final Class<? extends AbstractUiCommand> aClass,
+                                                  final String locator) {
+        if (!StringUtils.hasText(locator)) {
+            nativeLocatorExecptionMap.get(aClass).get();
         }
     }
 
@@ -615,6 +623,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .forEach(v -> v.accept(configFile, command));
     }
 
-    private interface AbstractCommandPredicate extends Predicate<AbstractCommand> { }
-    private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> { }
+    private interface AbstractCommandPredicate extends Predicate<AbstractCommand> {
+    }
+
+    private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> {
+    }
 }

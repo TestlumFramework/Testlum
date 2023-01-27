@@ -3,7 +3,6 @@ package com.knubisoft.cott.testing.framework.scenario;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.cott.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.framework.util.DatasetValidator;
@@ -537,7 +536,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             if (o instanceof Javascript) {
                 validateFileExistenceInDataFolder(((Javascript) o).getFile());
             } else if (o instanceof Scroll && ((Scroll) o).getType() == ScrollType.INNER) {
-                validateScrollCommand((Scroll) o);
+                validateLocator(((Scroll) o).getLocator(), NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
             }
         });
     }
@@ -549,16 +548,15 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
         command.getClickOrInputOrAssert().forEach(o -> {
             if (o instanceof SwipeNative && ((SwipeNative) o).getType() == SwipeType.ELEMENT) {
-                validateNativeCommandWithLocator(NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE, ((SwipeNative) o).getLocator());
+                validateLocator(((SwipeNative) o).getLocator(), NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE);
             }
             if (o instanceof ScrollNative && ((ScrollNative) o).getType() == ScrollType.INNER) {
-                validateNativeCommandWithLocator(NO_LOCATOR_FOUND_FOR_INNER_SCROLL, ((ScrollNative) o).getLocator());
+                validateLocator(((ScrollNative) o).getLocator(), NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
             }
         });
     }
 
-    private void validateNativeCommandWithLocator(final String exceptionMessage,
-                                                  final String locator) {
+    private void validateLocator(final String locator, final String exceptionMessage) {
         if (!StringUtils.hasText(locator)) {
             throw new DefaultFrameworkException(exceptionMessage);
         }
@@ -573,15 +571,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             if (o instanceof Javascript) {
                 validateFileExistenceInDataFolder(((Javascript) o).getFile());
             } else if (o instanceof Scroll && ((Scroll) o).getType() == ScrollType.INNER) {
-                validateScrollCommand((Scroll) o);
+                validateLocator(((Scroll) o).getLocator(), NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
             }
         });
-    }
-
-    private void validateScrollCommand(final Scroll scroll) {
-        if (!StringUtils.hasText(scroll.getLocator())) {
-            throw new DefaultFrameworkException(ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
-        }
     }
 
     private void validateShellCommand(final File xmlFile, final Shell shell) {

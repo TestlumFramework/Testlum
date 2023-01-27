@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.configuration.lambda;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnLambdaEnabledCondition;
+import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Lambda;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -14,21 +15,35 @@ import software.amazon.awssdk.services.lambda.LambdaClient;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Configuration
 @Conditional({OnLambdaEnabledCondition.class})
 public class LambdaConfiguration {
 
+    private final Map<String, List<Lambda>> lambdaMap = GlobalTestConfigurationProvider.getIntegrations()
+            .entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey,
+                    entry -> entry.getValue().getLambdaIntegration().getLambda()));
+
     @Bean
     public Map<String, LambdaClient> awsLambdaClients() {
         final Map<String, LambdaClient> lambdaClientMap = new HashMap<>();
-        for (Lambda lambda : GlobalTestConfigurationProvider.getIntegrations().getLambdaIntegration().getLambda()) {
+        lambdaMap.forEach(((s, lambdas) -> addLambdaClient(s, lambdas, lambdaClientMap)));
+        return lambdaClientMap;
+    }
+
+    private void addLambdaClient(final String envName,
+                                 final List<Lambda> lambdas,
+                                 final Map<String, LambdaClient> lambdaClientMap) {
+        for (Lambda lambda : lambdas) {
             if (lambda.isEnabled()) {
-                lambdaClientMap.put(lambda.getAlias(), createLambdaClient(lambda));
+                lambdaClientMap.put(envName + DelimiterConstant.UNDERSCORE + lambda.getAlias(),
+                        createLambdaClient(lambda));
             }
         }
-        return lambdaClientMap;
     }
 
     public LambdaClient createLambdaClient(final Lambda lambda) {

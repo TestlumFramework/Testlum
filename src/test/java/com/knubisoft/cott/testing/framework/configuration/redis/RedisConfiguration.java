@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.configuration.redis;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnRedisEnabledCondition;
+import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Redis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,22 +16,34 @@ import org.springframework.data.redis.connection.StringRedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Configuration
 @Conditional({OnRedisEnabledCondition.class})
 public class RedisConfiguration {
+
+    private final Map<String, List<Redis>> redisMap = GlobalTestConfigurationProvider.getIntegrations()
+            .entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey,
+                    entry -> entry.getValue().getRedisIntegration().getRedis()));
     @Bean
     public Map<String, RedisStandaloneConfiguration> redisStandaloneConfiguration() {
         final Map<String, RedisStandaloneConfiguration> redisIntegration = new HashMap<>();
-        for (Redis redis : GlobalTestConfigurationProvider.getIntegrations().getRedisIntegration().getRedis()) {
+        redisMap.forEach(((s, redis) -> addStandaloneConfig(s, redis, redisIntegration)));
+        return redisIntegration;
+    }
+
+    private void addStandaloneConfig(final String envName,
+                                     final List<Redis> redises,
+                                     final Map<String, RedisStandaloneConfiguration> redisIntegration) {
+        for (Redis redis : redises) {
             if (redis.isEnabled()) {
-                redisIntegration.put(redis.getAlias(),
+                redisIntegration.put(envName + DelimiterConstant.UNDERSCORE + redis.getAlias(),
                         new RedisStandaloneConfiguration(redis.getHost(), redis.getPort()));
             }
         }
-        return redisIntegration;
     }
 
     @Bean("redisConnectionFactory")

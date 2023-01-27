@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.configuration.mongo;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnMongoEnabledCondition;
+import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -20,24 +22,38 @@ import java.util.stream.Collectors;
 @Conditional({OnMongoEnabledCondition.class})
 public class MongoConfiguration {
 
+    private final Map<String, List<Mongo>> mongoMap = GlobalTestConfigurationProvider.getIntegrations()
+            .entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey,
+                    entry -> entry.getValue().getMongoIntegration().getMongo()));
+
     @Bean
     public Map<String, MongoClient> mongoClient() {
         final Map<String, MongoClient> clients = new HashMap<>();
-        for (Mongo mongo : GlobalTestConfigurationProvider.getIntegrations().getMongoIntegration().getMongo()) {
-            if (mongo.isEnabled()) {
-                createMongoClientAndPutIntoMap(clients, mongo);
-            }
-        }
+        mongoMap.forEach(((s, mongos) -> addMongoClient(s, mongos,  clients)));
         return clients;
     }
 
-    private void createMongoClientAndPutIntoMap(final Map<String, MongoClient> clients, final Mongo mongo) {
+    private void addMongoClient(final String envName,
+                                final List<Mongo> mongos,
+                                final Map<String, MongoClient> clients) {
+        for (Mongo mongo : mongos) {
+            if (mongo.isEnabled()) {
+                createMongoClientAndPutIntoMap(clients, mongo, envName);
+            }
+        }
+    }
+
+    private void createMongoClientAndPutIntoMap(final Map<String, MongoClient> clients,
+                                                final Mongo mongo,
+                                                final String envName) {
         ServerAddress mongoAddress = new ServerAddress(mongo.getHost(), mongo.getPort());
         MongoCredential credential = MongoCredential.createCredential(mongo.getUsername(),
                 mongo.getAuthenticationDatabase(),
                 mongo.getPassword().toCharArray());
         MongoClientOptions mongoClientOptions = MongoClientOptions.builder().build();
-        clients.put(mongo.getAlias(), new MongoClient(mongoAddress, credential, mongoClientOptions));
+        clients.put(envName + DelimiterConstant.UNDERSCORE + mongo.getAlias(),
+                new MongoClient(mongoAddress, credential, mongoClientOptions));
     }
 
     @Bean

@@ -24,14 +24,12 @@ import java.util.stream.Collectors;
 @Conditional({OnRedisEnabledCondition.class})
 public class RedisConfiguration {
 
-    private final Map<String, List<Redis>> redisMap = GlobalTestConfigurationProvider.getIntegrations()
-            .entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey,
-                    entry -> entry.getValue().getRedisIntegration().getRedis()));
     @Bean
     public Map<String, RedisStandaloneConfiguration> redisStandaloneConfiguration() {
         final Map<String, RedisStandaloneConfiguration> redisIntegration = new HashMap<>();
-        redisMap.forEach(((s, redis) -> addStandaloneConfig(s, redis, redisIntegration)));
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach(((s, integrations) -> addStandaloneConfig(s, integrations.getRedisIntegration().getRedis(),
+                        redisIntegration)));
         return redisIntegration;
     }
 

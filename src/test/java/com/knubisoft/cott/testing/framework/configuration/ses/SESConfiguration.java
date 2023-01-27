@@ -16,21 +16,16 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Configuration
 @Conditional({OnSESEnabledCondition.class})
 public class SESConfiguration {
 
-    private final Map<String, List<Ses>> sesMap = GlobalTestConfigurationProvider.getIntegrations()
-            .entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey,
-                    entry -> entry.getValue().getSesIntegration().getSes()));
-
     @Bean
     public Map<String, AmazonSimpleEmailService> amazonSimpleEmailService() {
         Map<String, AmazonSimpleEmailService> emailServiceMap = new HashMap<>();
-        sesMap.forEach(((s, sesList) -> addSes(s, sesList, emailServiceMap)));
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach(((s, integrations) -> addSes(s, integrations.getSesIntegration().getSes(), emailServiceMap)));
         return emailServiceMap;
     }
 

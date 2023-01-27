@@ -15,21 +15,17 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Configuration
 @Conditional({OnKafkaEnabledCondition.class})
 public class KafkaProducerConfiguration {
 
-    private final Map<String, List<Kafka>> kafkaMap = GlobalTestConfigurationProvider.getIntegrations()
-            .entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey,
-                    entry -> entry.getValue().getKafkaIntegration().getKafka()));
-
     @Bean
     public Map<String, KafkaProducer<String, String>> kafkaProducer() {
         Map<String, KafkaProducer<String, String>> producerMap = new HashMap<>();
-        kafkaMap.forEach(((s, kafkaList) -> addConfigProps(s, kafkaList, producerMap)));
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach(((s, integrations) -> addConfigProps(s, integrations.getKafkaIntegration().getKafka(),
+                        producerMap)));
         return producerMap;
     }
 

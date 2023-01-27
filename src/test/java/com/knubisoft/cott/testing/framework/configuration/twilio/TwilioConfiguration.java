@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Configuration
 @Conditional(OnTwilioEnabledCondition.class)
@@ -22,10 +21,8 @@ public class TwilioConfiguration {
     public Map<String, Twilio> twilio() {
         Map<String, Twilio> twilioMap = new HashMap<>();
         GlobalTestConfigurationProvider.getIntegrations()
-                .entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        entry -> entry.getValue().getTwilioIntegration().getTwilio()))
-                .forEach(((s, twilios) -> addToMap(s, twilios, twilioMap)));
+                .forEach(((s, integrations) -> addToMap(s, integrations.getTwilioIntegration().getTwilio(),
+                        twilioMap)));
         return twilioMap;
     }
 

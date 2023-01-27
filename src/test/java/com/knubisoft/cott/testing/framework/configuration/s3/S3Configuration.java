@@ -16,21 +16,16 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Configuration
 @Conditional({OnS3EnabledCondition.class})
 public class S3Configuration {
 
-    private final Map<String, List<S3>> s3Map = GlobalTestConfigurationProvider.getIntegrations()
-            .entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey,
-                    entry -> entry.getValue().getS3Integration().getS3()));
-
     @Bean
     public Map<String, AmazonS3> amazonS3() {
         Map<String, AmazonS3> s3Integration = new HashMap<>();
-        s3Map.forEach(((s, s3s) -> addS3(s, s3s, s3Integration)));
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach(((s, integrations) -> addS3(s, integrations.getS3Integration().getS3(), s3Integration)));
         return s3Integration;
     }
 

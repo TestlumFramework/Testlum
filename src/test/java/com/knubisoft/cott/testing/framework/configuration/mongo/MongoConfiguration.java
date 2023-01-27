@@ -22,15 +22,12 @@ import java.util.stream.Collectors;
 @Conditional({OnMongoEnabledCondition.class})
 public class MongoConfiguration {
 
-    private final Map<String, List<Mongo>> mongoMap = GlobalTestConfigurationProvider.getIntegrations()
-            .entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey,
-                    entry -> entry.getValue().getMongoIntegration().getMongo()));
-
     @Bean
     public Map<String, MongoClient> mongoClient() {
         final Map<String, MongoClient> clients = new HashMap<>();
-        mongoMap.forEach(((s, mongos) -> addMongoClient(s, mongos,  clients)));
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach(((s, integrations) -> addMongoClient(s, integrations.getMongoIntegration().getMongo(),
+                        clients)));
         return clients;
     }
 

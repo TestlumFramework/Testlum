@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Conditional({OnRabbitMQEnabledCondition.class})
 @Component
@@ -21,10 +24,17 @@ public class AliasRabbitAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Rabbitmq rabbitmq
-                : GlobalTestConfigurationProvider.getIntegrations().getRabbitmqIntegration().getRabbitmq()) {
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach(((s, integrations) -> addToAliasMap(s, integrations.getRabbitmqIntegration().getRabbitmq(),
+                        aliasMap)));
+    }
+
+    private void addToAliasMap(final String envName,
+                               final List<Rabbitmq> rabbitmqList,
+                               final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
+        for (Rabbitmq rabbitmq : rabbitmqList) {
             if (rabbitmq.isEnabled()) {
-                aliasMap.put(rabbitmq.getAlias(), getMetadataRabbit(rabbitmq));
+                aliasMap.put(envName + UNDERSCORE + rabbitmq.getAlias(), getMetadataRabbit(rabbitmq));
             }
         }
     }

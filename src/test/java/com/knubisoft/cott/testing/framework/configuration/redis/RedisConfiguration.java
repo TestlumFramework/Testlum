@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.configuration.redis;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnRedisEnabledCondition;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Redis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Configuration
 @Conditional({OnRedisEnabledCondition.class})
@@ -38,7 +39,7 @@ public class RedisConfiguration {
                                      final Map<String, RedisStandaloneConfiguration> redisIntegration) {
         for (Redis redis : redises) {
             if (redis.isEnabled()) {
-                redisIntegration.put(envName + DelimiterConstant.UNDERSCORE + redis.getAlias(),
+                redisIntegration.put(envName + UNDERSCORE + redis.getAlias(),
                         new RedisStandaloneConfiguration(redis.getHost(), redis.getPort()));
             }
         }

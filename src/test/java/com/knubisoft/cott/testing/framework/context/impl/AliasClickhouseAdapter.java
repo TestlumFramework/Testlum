@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
@@ -24,15 +25,23 @@ public class AliasClickhouseAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Clickhouse clickhouse
-                : GlobalTestConfigurationProvider.getIntegrations().getClickhouseIntegration().getClickhouse()) {
+       GlobalTestConfigurationProvider.getIntegrations()
+               .forEach(((s, integrations) -> addToAliasMap(s, integrations.getClickhouseIntegration().getClickhouse(),
+                       aliasMap)));
+    }
+
+    private void addToAliasMap(final String envName,
+                               final List<Clickhouse> clickhouseList,
+                               final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
+        for (Clickhouse clickhouse : clickhouseList) {
             if (clickhouse.isEnabled()) {
-                aliasMap.put(CLICKHOUSE + UNDERSCORE + clickhouse.getAlias(), getMetadataPostgres(clickhouse));
+                aliasMap.put(envName + UNDERSCORE + CLICKHOUSE + UNDERSCORE + clickhouse.getAlias(),
+                        getMetadataClickhouse(clickhouse));
             }
         }
     }
 
-    private NameToAdapterAlias.Metadata getMetadataPostgres(final Clickhouse clickhouse) {
+    private NameToAdapterAlias.Metadata getMetadataClickhouse(final Clickhouse clickhouse) {
         return NameToAdapterAlias.Metadata.builder()
                 .configuration(clickhouse)
                 .storageOperation(clickhouseOperation)

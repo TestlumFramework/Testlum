@@ -7,7 +7,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnS3EnabledCondition;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.S3;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -16,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Configuration
 @Conditional({OnS3EnabledCondition.class})
@@ -44,7 +45,7 @@ public class S3Configuration {
                 new BasicAWSCredentials(s3.getAccessKeyId(), s3.getSecretAccessKey());
         AWSStaticCredentialsProvider awsStaticCredentialsProvider =
                 new AWSStaticCredentialsProvider(basicAWSCredentials);
-        s3Map.put(envName + DelimiterConstant.UNDERSCORE + s3.getAlias(),
+        s3Map.put(envName + UNDERSCORE + s3.getAlias(),
                 buildAmazonS3(endpointConfiguration, awsStaticCredentialsProvider));
     }
 

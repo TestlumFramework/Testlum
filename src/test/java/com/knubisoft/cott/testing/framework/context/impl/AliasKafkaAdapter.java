@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Conditional({OnKafkaEnabledCondition.class})
 @Component
@@ -21,9 +24,17 @@ public class AliasKafkaAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().getKafkaIntegration().getKafka()) {
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach(((s, integrations) -> addToAliasMap(s, integrations.getKafkaIntegration().getKafka(),
+                        aliasMap)));
+    }
+
+    private void addToAliasMap(final String envName,
+                               final List<Kafka> kafkaList,
+                               final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
+        for (Kafka kafka : kafkaList) {
             if (kafka.isEnabled()) {
-                aliasMap.put(kafka.getAlias(), getMetadataKafka(kafka));
+                aliasMap.put(envName + UNDERSCORE + kafka.getAlias(), getMetadataKafka(kafka));
             }
         }
     }

@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.configuration.rabbitmq;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.Rabbitmq;
 import com.rabbitmq.http.client.Client;
 import com.rabbitmq.http.client.ClientParameters;
@@ -22,6 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.COLON;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Configuration
 @Conditional({OnRabbitMQEnabledCondition.class})
@@ -50,14 +52,14 @@ public class RabbitMQConfiguration {
         for (Rabbitmq rabbitmq : rabbitmqs) {
             if (rabbitmq.isEnabled()) {
                 ClientParameters clientParameters = createClientParameters(rabbitmq);
-                clients.put(envName + DelimiterConstant.UNDERSCORE + rabbitmq.getAlias(),
+                clients.put(envName + UNDERSCORE + rabbitmq.getAlias(),
                         new Client(clientParameters));
             }
         }
     }
 
     private ClientParameters createClientParameters(final Rabbitmq rabbitmq) throws MalformedURLException {
-        final String url = SCHEMA + rabbitmq.getHost() + DelimiterConstant.COLON + rabbitmq.getApiPort() + API_PATH;
+        final String url = SCHEMA + rabbitmq.getHost() + COLON + rabbitmq.getApiPort() + API_PATH;
         return new ClientParameters()
                 .url(url)
                 .username(rabbitmq.getUsername())
@@ -96,7 +98,7 @@ public class RabbitMQConfiguration {
         for (Rabbitmq rabbitmq : rabbitmqs) {
             if (rabbitmq.isEnabled()) {
                 CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-                connectionFactoryMap.put(envName + DelimiterConstant.UNDERSCORE + rabbitmq.getAlias(),
+                connectionFactoryMap.put(envName + UNDERSCORE + rabbitmq.getAlias(),
                         configureConnectionFactory(rabbitmq, connectionFactory));
             }
         }

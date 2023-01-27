@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.configuration.datasource;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnMysqlEnabledCondition;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.util.DataSourceUtil;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Mysql;
@@ -13,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Configuration
 @Conditional({OnMysqlEnabledCondition.class})
@@ -30,7 +31,7 @@ public class MysqlDataSourceConfiguration {
                                    final String envName, final Integrations integrations) {
         for (Mysql dataSource : integrations.getMysqlIntegration().getMysql()) {
             if (dataSource.isEnabled()) {
-                mysqlIntegration.put(envName + DelimiterConstant.UNDERSCORE + dataSource.getAlias(),
+                mysqlIntegration.put(envName + UNDERSCORE + dataSource.getAlias(),
                         DataSourceUtil.getHikariDataSource(dataSource));
             }
         }

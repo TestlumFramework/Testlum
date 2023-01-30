@@ -15,10 +15,9 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="swipeNative"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}commandWithOptionalLocator"&gt;
  *       &lt;attribute name="direction" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}swipeDirection" /&gt;
  *       &lt;attribute name="type" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}swipeType" /&gt;
- *       &lt;attribute name="locator" type="{http://www.knubisoft.com/cott/testing/model/scenario}scenarioLocator" /&gt;
  *       &lt;attribute name="percent" type="{http://www.knubisoft.com/cott/testing/model/scenario}percentsPattern" default="70" /&gt;
  *       &lt;attribute name="quantity" type="{http://www.w3.org/2001/XMLSchema}int" default="1" /&gt;
  *     &lt;/extension&gt;
@@ -31,15 +30,13 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "swipeNative")
 public class SwipeNative
-    extends AbstractUiCommand
+    extends CommandWithOptionalLocator
 {
 
     @XmlAttribute(name = "direction", required = true)
     protected SwipeDirection direction;
     @XmlAttribute(name = "type", required = true)
     protected SwipeType type;
-    @XmlAttribute(name = "locator")
-    protected String locator;
     @XmlAttribute(name = "percent")
     protected Integer percent;
     @XmlAttribute(name = "quantity")
@@ -91,30 +88,6 @@ public class SwipeNative
      */
     public void setType(SwipeType value) {
         this.type = value;
-    }
-
-    /**
-     * Gets the value of the locator property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getLocator() {
-        return locator;
-    }
-
-    /**
-     * Sets the value of the locator property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setLocator(String value) {
-        this.locator = value;
     }
 
     /**

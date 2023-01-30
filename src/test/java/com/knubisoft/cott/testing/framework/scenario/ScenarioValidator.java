@@ -36,9 +36,11 @@ import com.knubisoft.cott.testing.model.global_config.SqsIntegration;
 import com.knubisoft.cott.testing.model.global_config.TwilioIntegration;
 import com.knubisoft.cott.testing.model.global_config.Websockets;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
+import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.Body;
 import com.knubisoft.cott.testing.model.scenario.Clickhouse;
+import com.knubisoft.cott.testing.model.scenario.CommandWithOptionalLocator;
 import com.knubisoft.cott.testing.model.scenario.Dynamo;
 import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
 import com.knubisoft.cott.testing.model.scenario.Http;
@@ -83,6 +85,8 @@ import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
+import org.springframework.util.StringUtils;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,7 +98,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.springframework.util.StringUtils;
+
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ALIAS_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.API_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
@@ -532,11 +536,23 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 || !GlobalTestConfigurationProvider.getWebSettings().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_BROWSERS);
         }
-        command.getClickOrInputOrAssert().forEach(o -> {
+        validateSubCommands(command.getClickOrInputOrAssert());
+    }
+
+    private void validateMobilebrowserCommands(final Mobilebrowser command) {
+        if (MobileUtil.filterEnabledMobilebrowserDevices().isEmpty()
+                || !GlobalTestConfigurationProvider.getMobilebrowserSettings().isEnabled()) {
+            throw new DefaultFrameworkException(NOT_ENABLED_MOBILEBROWSER_DEVICE);
+        }
+        validateSubCommands(command.getClickOrInputOrAssert());
+    }
+
+    private void validateSubCommands(final List<AbstractUiCommand> subCommands) {
+        subCommands.forEach(o -> {
             if (o instanceof Javascript) {
                 validateFileExistenceInDataFolder(((Javascript) o).getFile());
-            } else if (o instanceof Scroll && ((Scroll) o).getType() == ScrollType.INNER) {
-                validateLocator(((Scroll) o).getLocator(), NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
+            } else if (o instanceof Scroll && ScrollType.INNER == ((Scroll) o).getType()) {
+                validateLocator((Scroll) o, NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
             }
         });
     }
@@ -547,33 +563,19 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             throw new DefaultFrameworkException(NOT_ENABLED_NATIVE_DEVICE);
         }
         command.getClickOrInputOrAssert().forEach(o -> {
-            if (o instanceof SwipeNative && ((SwipeNative) o).getType() == SwipeType.ELEMENT) {
-                validateLocator(((SwipeNative) o).getLocator(), NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE);
+            if (o instanceof SwipeNative && SwipeType.ELEMENT == ((SwipeNative) o).getType()) {
+                validateLocator((SwipeNative) o, NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE);
             }
-            if (o instanceof ScrollNative && ((ScrollNative) o).getType() == ScrollType.INNER) {
-                validateLocator(((ScrollNative) o).getLocator(), NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
+            if (o instanceof ScrollNative && ScrollType.INNER == ((ScrollNative) o).getType()) {
+                validateLocator((ScrollNative) o, NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
             }
         });
     }
 
-    private void validateLocator(final String locator, final String exceptionMessage) {
-        if (!StringUtils.hasText(locator)) {
+    private void validateLocator(final CommandWithOptionalLocator command, final String exceptionMessage) {
+        if (!StringUtils.hasText(command.getLocatorId())) {
             throw new DefaultFrameworkException(exceptionMessage);
         }
-    }
-
-    private void validateMobilebrowserCommands(final Mobilebrowser command) {
-        if (MobileUtil.filterEnabledMobilebrowserDevices().isEmpty()
-                || !GlobalTestConfigurationProvider.getMobilebrowserSettings().isEnabled()) {
-            throw new DefaultFrameworkException(NOT_ENABLED_MOBILEBROWSER_DEVICE);
-        }
-        command.getClickOrInputOrAssert().forEach(o -> {
-            if (o instanceof Javascript) {
-                validateFileExistenceInDataFolder(((Javascript) o).getFile());
-            } else if (o instanceof Scroll && ((Scroll) o).getType() == ScrollType.INNER) {
-                validateLocator(((Scroll) o).getLocator(), NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
-            }
-        });
     }
 
     private void validateShellCommand(final File xmlFile, final Shell shell) {
@@ -604,6 +606,5 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private interface AbstractCommandPredicate extends Predicate<AbstractCommand> { }
-
     private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> { }
 }

@@ -28,13 +28,6 @@ import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSubscribe;
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
@@ -42,6 +35,15 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static java.lang.String.format;
@@ -424,18 +426,18 @@ public class ResultUtil {
                                   final CommandResult commandResult) {
         commandResult.put(SCROLL_DIRECTION, scroll.getDirection());
         commandResult.put(SCROLL_MEASURE, scroll.getMeasure());
-        commandResult.put(VALUE, scroll.getValue().toString());
+        commandResult.put(VALUE, scroll.getValue());
         commandResult.put(SCROLL_TYPE, scroll.getType());
-        if (ScrollType.INNER.equals(scroll.getType())) {
-            commandResult.put(LOCATOR_FOR_SCROLL, scroll.getLocator());
+        if (ScrollType.INNER == scroll.getType()) {
+            commandResult.put(LOCATOR_FOR_SCROLL, scroll.getLocatorId());
         }
     }
 
     public void addScrollNativeMetaDada(final ScrollNative scrollNative,
                                         final CommandResult commandResult) {
         commandResult.put(SCROLL_TYPE, scrollNative.getType());
-        if (ScrollType.INNER.equals(scrollNative.getType())) {
-            commandResult.put(LOCATOR_FOR_SCROLL, scrollNative.getLocator());
+        if (ScrollType.INNER == scrollNative.getType()) {
+            commandResult.put(LOCATOR_FOR_SCROLL, scrollNative.getLocatorId());
         }
         commandResult.put(SCROLL_DIRECTION, scrollNative.getDirection());
         commandResult.put(VALUE, scrollNative.getValue());
@@ -529,8 +531,8 @@ public class ResultUtil {
         result.put(SWIPE_QUANTITY, swipeNative.getQuantity());
         result.put(PERFORM_SWIPE, swipeNative.getDirection());
         result.put(SWIPE_VALUE, swipeNative.getPercent());
-        if (StringUtils.isNotBlank(swipeNative.getLocator())) {
-            result.put(SWIPE_LOCATOR, swipeNative.getLocator());
+        if (StringUtils.isNotBlank(swipeNative.getLocatorId())) {
+            result.put(SWIPE_LOCATOR, swipeNative.getLocatorId());
         }
     }
 }

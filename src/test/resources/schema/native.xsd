@@ -70,10 +70,9 @@
 
     <x:complexType name="swipeNative">
         <x:complexContent>
-            <x:extension base="tns:abstractUiCommand">
+            <x:extension base="tns:commandWithOptionalLocator">
                 <x:attribute name="direction" type="tns:swipeDirection" use="required"/>
                 <x:attribute name="type" type="tns:swipeType" use="required"/>
-                <x:attribute name="locator" type="tns:scenarioLocator"/>
                 <x:attribute name="percent" type="tns:percentsPattern" default="70"/>
                 <x:attribute name="quantity" type="x:int" default="1"/>
             </x:extension>
@@ -95,7 +94,7 @@
             <x:enumeration value="page"/>
         </x:restriction>
     </x:simpleType>
-    
+
     <x:simpleType name="percentsPattern">
         <x:restriction base="x:int">
             <x:pattern value="[1-9][0-9]|100"/>

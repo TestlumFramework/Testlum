@@ -3,7 +3,6 @@ package com.knubisoft.cott.testing.framework.scenario;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.cott.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.framework.util.DatasetValidator;
@@ -64,6 +63,7 @@ import com.knubisoft.cott.testing.model.scenario.Response;
 import com.knubisoft.cott.testing.model.scenario.S3;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
+import com.knubisoft.cott.testing.model.scenario.ScrollNative;
 import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.SendRmqMessage;
@@ -83,8 +83,6 @@ import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
-import org.springframework.util.StringUtils;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -96,7 +94,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import org.springframework.util.StringUtils;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ALIAS_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.API_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
@@ -104,6 +102,8 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INT
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_MOBILEBROWSER_DEVICE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_NATIVE_DEVICE;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SAME_APPIUM_URL;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SAME_MOBILE_DEVICES;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF;
@@ -536,7 +536,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             if (o instanceof Javascript) {
                 validateFileExistenceInDataFolder(((Javascript) o).getFile());
             } else if (o instanceof Scroll && ((Scroll) o).getType() == ScrollType.INNER) {
-                validateScrollCommand((Scroll) o);
+                validateLocator(((Scroll) o).getLocator(), NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
             }
         });
     }
@@ -548,14 +548,17 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
         command.getClickOrInputOrAssert().forEach(o -> {
             if (o instanceof SwipeNative && ((SwipeNative) o).getType() == SwipeType.ELEMENT) {
-                validateSwipeNativeCommand((SwipeNative) o);
+                validateLocator(((SwipeNative) o).getLocator(), NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE);
+            }
+            if (o instanceof ScrollNative && ((ScrollNative) o).getType() == ScrollType.INNER) {
+                validateLocator(((ScrollNative) o).getLocator(), NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
             }
         });
     }
 
-    private void validateSwipeNativeCommand(final SwipeNative swipeNative) {
-        if (!StringUtils.hasText(swipeNative.getLocator())) {
-            throw new DefaultFrameworkException(ExceptionMessage.NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE);
+    private void validateLocator(final String locator, final String exceptionMessage) {
+        if (!StringUtils.hasText(locator)) {
+            throw new DefaultFrameworkException(exceptionMessage);
         }
     }
 
@@ -568,15 +571,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             if (o instanceof Javascript) {
                 validateFileExistenceInDataFolder(((Javascript) o).getFile());
             } else if (o instanceof Scroll && ((Scroll) o).getType() == ScrollType.INNER) {
-                validateScrollCommand((Scroll) o);
+                validateLocator(((Scroll) o).getLocator(), NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
             }
         });
-    }
-
-    private void validateScrollCommand(final Scroll scroll) {
-        if (!StringUtils.hasText(scroll.getLocator())) {
-            throw new DefaultFrameworkException(ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
-        }
     }
 
     private void validateShellCommand(final File xmlFile, final Shell shell) {
@@ -607,5 +604,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private interface AbstractCommandPredicate extends Predicate<AbstractCommand> { }
+
     private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> { }
 }

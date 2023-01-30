@@ -4,6 +4,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecuto
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.ScrollDirection;
@@ -31,6 +32,7 @@ public class ScrollNativeExecutor extends AbstractUiExecutor<ScrollNative> {
                 ? scrollNative.getValue()
                 : -scrollNative.getValue();
         ResultUtil.addScrollNativeMetaDada(scrollNative, result);
+        LogUtil.logScrollNativeInfo(scrollNative);
         Point start = getStartPoint(scrollNative, driver);
         Sequence scroll = UiUtil.buildSequence(start, new Point(0, scrollValue), ACTION_DURATION);
         driver.perform(Collections.singletonList(scroll));

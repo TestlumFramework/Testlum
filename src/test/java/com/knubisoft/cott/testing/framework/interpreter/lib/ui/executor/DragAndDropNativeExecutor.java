@@ -4,6 +4,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecuto
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.DragAndDropNative;
 import io.appium.java_client.AppiumDriver;
@@ -26,6 +27,7 @@ public class DragAndDropNativeExecutor extends AbstractUiExecutor<DragAndDropNat
     public void execute(final DragAndDropNative dragAndDropNative, final CommandResult result) {
         result.put(FROM_LOCATOR, dragAndDropNative.getFromLocatorId());
         result.put(TO_LOCATOR, dragAndDropNative.getToLocatorId());
+        LogUtil.logDragAndDropNativeInfo(dragAndDropNative);
         performDragAndDrop(dragAndDropNative);
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }

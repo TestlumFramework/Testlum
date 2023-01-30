@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+
 @Slf4j
 @InterpreterForClass(Postgres.class)
 public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
@@ -49,7 +51,8 @@ public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
         LogUtil.logAllQueries(queries, alias);
         ResultUtil.addDatabaseMetaData(alias, queries, result);
         StorageOperation.StorageOperationResult applyPostgres =
-                postgresSqlOperation.apply(new ListSource(queries), inject(alias));
+                postgresSqlOperation.apply(new ListSource(queries),
+                        dependencies.getEnvironment() + UNDERSCORE + inject(alias));
         return toString(applyPostgres.getRaw());
     }
 

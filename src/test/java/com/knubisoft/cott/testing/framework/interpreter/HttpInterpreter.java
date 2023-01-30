@@ -72,7 +72,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         HttpEntity body = getBody(httpInfo, isJson);
         LogUtil.logBodyContent(body);
         try {
-            return apiClient.call(httpMethod, url, headers, body, alias);
+            return apiClient.call(httpMethod, url, headers, body, alias, dependencies.getEnvironment());
         } catch (IOException e) {
             log.error(ERROR_LOG, e);
             throw new DefaultFrameworkException(e);

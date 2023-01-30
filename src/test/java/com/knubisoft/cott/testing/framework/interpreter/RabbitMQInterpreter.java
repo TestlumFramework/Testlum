@@ -30,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMAND_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.RECEIVE_ACTION;
@@ -85,14 +86,15 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                                       final Object action,
                                       final String alias) {
         log.info(ALIAS_LOG, alias);
+        String envName = dependencies.getEnvironment() + UNDERSCORE + alias;
         if (action instanceof SendRmqMessage) {
             SendRmqMessage sendAction = (SendRmqMessage) action;
             ResultUtil.addRabbitMQInfoForSendAction(sendAction, alias, subCommandResult);
-            sendMessage((SendRmqMessage) action, subCommandResult, alias);
+            sendMessage((SendRmqMessage) action, subCommandResult, envName);
         } else {
             ReceiveRmqMessage receiveAction = (ReceiveRmqMessage) action;
             ResultUtil.addRabbitMQInfoForReceiveAction(receiveAction, alias, subCommandResult);
-            receiveMessages((ReceiveRmqMessage) action, subCommandResult, alias);
+            receiveMessages((ReceiveRmqMessage) action, subCommandResult, envName);
         }
     }
 

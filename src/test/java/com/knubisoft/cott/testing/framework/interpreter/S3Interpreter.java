@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INCORRECT_S3_PROCESSING;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
 
@@ -60,8 +61,8 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
             final File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
             result.put("File name", fileName);
             LogUtil.logS3ActionInfo(UPLOAD_ACTION, bucket, key, fileName);
-            this.amazonS3.get(bucket).createBucket(bucket);
-            this.amazonS3.get(bucket).putObject(bucket, key, file);
+            this.amazonS3.get(dependencies.getEnvironment() + UNDERSCORE + bucket).createBucket(bucket);
+            this.amazonS3.get(dependencies.getEnvironment() + UNDERSCORE + bucket).putObject(bucket, key, file);
         } else if (s3.getDownload() != null) {
             ResultUtil.addS3GeneralMetaData(bucket, DOWNLOAD_ACTION, key, bucket, result);
             setContextBody(downloadAndCompareFile(bucket, key, inject(s3.getDownload()), result));
@@ -92,7 +93,8 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
 
     private Optional<String> downloadFile(final String bucket, final String key) throws IOException {
         try {
-            S3Object s3Object = amazonS3.get(bucket).getObject(bucket, key);
+            S3Object s3Object = amazonS3.get(dependencies.getEnvironment() + UNDERSCORE + bucket)
+                    .getObject(bucket, key);
             S3ObjectInputStream s3ObjectInputStream = s3Object.getObjectContent();
             String actual = IOUtils.toString(s3ObjectInputStream, StandardCharsets.UTF_8);
             return Optional.of(actual);

@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMAND_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.RECEIVE_ACTION;
@@ -97,14 +98,15 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                                     final Object action,
                                     final String alias) {
         log.info(ALIAS_LOG, alias);
+        String mapKey = dependencies.getEnvironment() + UNDERSCORE + alias;
         if (action instanceof SendKafkaMessage) {
             SendKafkaMessage sendAction = (SendKafkaMessage) action;
             ResultUtil.addKafkaInfoForSendAction(sendAction, alias, subCommandResult);
-            sendMessage(sendAction, subCommandResult, alias);
+            sendMessage(sendAction, subCommandResult, mapKey);
         } else {
             ReceiveKafkaMessage receiveAction = (ReceiveKafkaMessage) action;
             ResultUtil.addKafkaInfoForReceiveAction(receiveAction, alias, subCommandResult);
-            receiveMessages(receiveAction, subCommandResult, alias);
+            receiveMessages(receiveAction, subCommandResult, mapKey);
         }
     }
 

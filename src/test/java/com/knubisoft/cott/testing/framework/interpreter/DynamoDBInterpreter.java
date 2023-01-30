@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+
 @Slf4j
 @InterpreterForClass(Dynamo.class)
 public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
@@ -44,11 +46,12 @@ public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
 
     protected String getActual(final Dynamo ddb, final CommandResult result) {
         String alias = ddb.getAlias();
+        String dbKey = dependencies.getEnvironment() + UNDERSCORE + alias;
         List<String> queries = getDynamoQueryList(ddb);
         LogUtil.logAllQueries(queries, alias);
         ResultUtil.addDatabaseMetaData(alias, queries, result);
         StorageOperation.StorageOperationResult apply = dynamoDBOperation
-                .apply(new ListSource(queries), alias);
+                .apply(new ListSource(queries), dbKey);
         return JacksonMapperUtil.writeAsStringForDynamoDbOnly(apply.getRaw());
     }
 

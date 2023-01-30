@@ -108,7 +108,8 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     private String getDbResult(final RelationalDbResult dbResult, final String varName, final CommandResult result) {
-        String metadataKey = dbResult.getDbType().name() + UNDERSCORE + dbResult.getAlias();
+        String metadataKey = dependencies.getEnvironment() + UNDERSCORE + dbResult.getDbType().name()
+                + UNDERSCORE + dbResult.getAlias();
         StorageOperation storageOperation = nameToAdapterAlias.getByNameOrThrow(metadataKey).getStorageOperation();
         String valueResult = getActualRelationalDbResult(dbResult, storageOperation);
         ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, varName, dbResult.getQuery(), valueResult, result);
@@ -121,7 +122,8 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         List<String> singleQuery = new ArrayList<>(Collections.singletonList(relationalDbResult.getQuery()));
         LogUtil.logAllQueries(singleQuery, alias);
         StorageOperation.StorageOperationResult queryResult =
-                storageOperation.apply(new ListSource(singleQuery), inject(alias));
+                storageOperation.apply(new ListSource(singleQuery), dependencies.getEnvironment()
+                        + UNDERSCORE + inject(alias));
         return getResultValue(queryResult, getKeyOfQueryResultValue(queryResult));
     }
 

@@ -15,6 +15,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+
 @InterpreterForClass(Smtp.class)
 public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
 
@@ -27,7 +29,8 @@ public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
 
     @Override
     protected void acceptImpl(final Smtp smtp, final CommandResult result) {
-        JavaMailSenderImpl javaMailSender = javaMailSenderMap.get(smtp.getAlias());
+        JavaMailSenderImpl javaMailSender = javaMailSenderMap.get(dependencies.getEnvironment() + UNDERSCORE
+                + smtp.getAlias());
         LogUtil.logSmtpInfo(smtp, javaMailSender);
         ResultUtil.addSmtpMetaData(smtp, javaMailSender, result);
         sendEmail(smtp, javaMailSender);

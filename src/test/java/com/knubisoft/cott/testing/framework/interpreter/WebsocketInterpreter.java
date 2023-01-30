@@ -38,6 +38,7 @@ import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.CL
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEBSOCKET_CONNECTION_FAILURE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SEND_ACTION;
@@ -75,7 +76,8 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         String alias = websocket.getAlias();
         LogUtil.logAlias(alias);
         try {
-            WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(alias);
+            WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(dependencies.getEnvironment()
+                    + UNDERSCORE + alias);
             if (!wsConnectionManager.isConnected()) {
                 wsConnectionManager.openConnection();
             }
@@ -132,7 +134,8 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         ResultUtil.addWebsocketInfoForSendAction(wsSend, alias, message, result);
         LogUtil.logWebsocketActionInfo(SEND_ACTION, wsSend.getComment(), wsSend.getEndpoint(), message);
 
-        WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(alias);
+        WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(dependencies.getEnvironment()
+                + UNDERSCORE + alias);
         wsConnectionManager.sendMessage(wsSend, message);
     }
 
@@ -151,7 +154,8 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     }
 
     private List<Object> getMessagesToCompare(final WebsocketReceive wsReceive, final String alias) {
-        WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(alias);
+        WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(dependencies.getEnvironment()
+                + UNDERSCORE + alias);
         LinkedList<String> receivedMessages = wsConnectionManager.receiveMessages(wsReceive.getTopic());
         checkMessagesReceived(wsReceive, receivedMessages);
 
@@ -196,7 +200,8 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
                                   final CommandResult result) {
         ResultUtil.addWebsocketInfoForSubscribeAction(wsSubscribe, alias, result);
         LogUtil.logWebsocketActionInfo(SUBSCRIBE, wsSubscribe.getComment(), wsSubscribe.getTopic(), EMPTY);
-        wsConnectionSupplier.get(alias).subscribeTo(wsSubscribe.getTopic());
+        wsConnectionSupplier.get(dependencies.getEnvironment() + UNDERSCORE + alias)
+                .subscribeTo(wsSubscribe.getTopic());
     }
 
     private String getMessageToSend(final WebsocketSend wsSend) {
@@ -216,7 +221,8 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     @SneakyThrows
     private void disconnectIfEnabled(final Websocket websocket) {
         boolean isDisconnectEnabled = websocket.isDisconnect();
-        WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(websocket.getAlias());
+        WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(dependencies.getEnvironment()
+                + UNDERSCORE + websocket.getAlias());
         if (isDisconnectEnabled && wsConnectionManager.isConnected()) {
             wsConnectionManager.closeConnection();
         } else if (isDisconnectEnabled && !wsConnectionManager.isConnected()) {

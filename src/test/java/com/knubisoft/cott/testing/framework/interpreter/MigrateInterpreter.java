@@ -70,10 +70,12 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     private void applyDatasets(final List<Source> datasets,
                               final String storageName,
                               final String databaseName) {
+        String envName = dependencies.getEnvironment() + UNDERSCORE;
         if (!datasets.isEmpty()) {
             NameToAdapterAlias.Metadata metadata = nameToAdapterAlias
-                    .getByNameOrThrow(storageName + UNDERSCORE + databaseName);
-            metadata.getStorageOperation().apply(datasets, databaseName);
+                    .getByNameOrThrow(envName + storageName + UNDERSCORE
+                            + databaseName);
+            metadata.getStorageOperation().apply(datasets, envName + databaseName);
         }
     }
 }

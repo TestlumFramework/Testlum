@@ -35,6 +35,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+
 
 @Slf4j
 @InterpreterForClass(Elasticsearch.class)
@@ -65,8 +67,9 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
                                final String alias) {
         LogUtil.logHttpInfo(alias, httpMethod.name(), elasticSearchRequest.getEndpoint());
         Request request = buildRequest(elasticSearchRequest, httpMethod);
+        String dbKey = dependencies.getEnvironment() + UNDERSCORE + alias;
         try {
-            return restClient.get(alias).performRequest(request);
+            return restClient.get(dbKey).performRequest(request);
         } catch (ResponseException responseException) {
             log.error("Failed response", responseException);
             return responseException.getResponse();

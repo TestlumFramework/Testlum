@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+
 @Slf4j
 @InterpreterForClass(Clickhouse.class)
 public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
@@ -45,11 +47,12 @@ public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
 
     protected String getActual(final Clickhouse clickhouse, final CommandResult result) {
         String alias = clickhouse.getAlias();
+        String dbKey = dependencies.getEnvironment() + UNDERSCORE + alias;
         List<String> queries = getSqlList(clickhouse);
         LogUtil.logAllQueries(queries, alias);
         ResultUtil.addDatabaseMetaData(alias, queries, result);
         StorageOperation.StorageOperationResult applyClickhouse = clickhouseOperation.apply(new ListSource(queries),
-                alias);
+                dbKey);
         return toString(applyClickhouse.getRaw());
     }
 

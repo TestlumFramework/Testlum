@@ -44,9 +44,10 @@ public class ApiClient {
                             final String url,
                             final Map<String, String> headers,
                             final HttpEntity body,
-                            final String alias) throws IOException {
+                            final String alias,
+                            final String envName) throws IOException {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            return executeHttpRequest(httpMethod, url, headers, body, httpClient, alias);
+            return executeHttpRequest(httpMethod, url, headers, body, httpClient, alias, envName);
         }
     }
 
@@ -55,8 +56,9 @@ public class ApiClient {
                                            final Map<String, String> headers,
                                            final HttpEntity body,
                                            final CloseableHttpClient httpClient,
-                                           final String alias) throws IOException {
-        HttpUriRequest request = buildRequest(httpMethod, url, headers, body, alias);
+                                           final String alias,
+                                           final String envName) throws IOException {
+        HttpUriRequest request = buildRequest(httpMethod, url, headers, body, alias, envName);
         try (CloseableHttpResponse response = httpClient.execute(request)) {
             return convertToApiResponse(response);
         }
@@ -79,8 +81,9 @@ public class ApiClient {
                                         final String url,
                                         final Map<String, String> headers,
                                         final HttpEntity body,
-                                        final String alias) {
-        HttpUriRequest request = getHttpRequest(httpMethod, createFullURL(url, alias), body);
+                                        final String alias,
+                                        final String envName) {
+        HttpUriRequest request = getHttpRequest(httpMethod, createFullURL(url, envName, alias), body);
         addRequestHeaders(request, headers);
         return request;
     }
@@ -112,8 +115,8 @@ public class ApiClient {
     }
     //CHECKSTYLE:ON
 
-    private String createFullURL(final String url, final String alias) {
-        String apiUrl = GlobalTestConfigurationProvider.getIntegrations().getApis().getApi()
+    private String createFullURL(final String url, final String envName, final String alias) {
+        String apiUrl = GlobalTestConfigurationProvider.getIntegrations().get(envName).getApis().getApi()
                 .stream()
                 .filter(o -> o.getAlias().equalsIgnoreCase(alias))
                 .findFirst()

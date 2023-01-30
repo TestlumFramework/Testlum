@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+
 @Slf4j
 @InterpreterForClass(Ses.class)
 public class SESInterpreter extends AbstractInterpreter<Ses> {
@@ -43,13 +45,15 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
 
     private void verify(final Ses ses) {
         VerifyEmailAddressRequest verifyEmailAddressRequest = createVerifyEmailAddress(ses);
-        amazonSimpleEmailService.get(ses.getAlias()).verifyEmailAddress(verifyEmailAddressRequest);
+        amazonSimpleEmailService.get(dependencies.getEnvironment() + UNDERSCORE + ses.getAlias())
+                .verifyEmailAddress(verifyEmailAddressRequest);
     }
 
     private void sendEmail(final Ses ses) {
         SendEmailRequest sendEmailRequest = createSendEmailRequest(ses);
         LogUtil.logSESMessage(sendEmailRequest.getMessage());
-        amazonSimpleEmailService.get(ses.getAlias()).sendEmail(sendEmailRequest);
+        amazonSimpleEmailService.get(dependencies.getEnvironment() + UNDERSCORE + ses.getAlias())
+                .sendEmail(sendEmailRequest);
     }
 
     private VerifyEmailAddressRequest createVerifyEmailAddress(final Ses ses) {

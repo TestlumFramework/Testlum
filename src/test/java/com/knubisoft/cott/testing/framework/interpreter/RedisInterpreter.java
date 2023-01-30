@@ -18,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+
 @Slf4j
 @InterpreterForClass(Redis.class)
 public class RedisInterpreter extends AbstractInterpreter<Redis> {
@@ -46,10 +48,10 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
     protected String getActual(final Redis redis, final CommandResult result) {
         String alias = redis.getAlias();
         final List<String> queries = getRedisQueryList(redis);
-        LogUtil.logAllQueries(queries, redis.getAlias());
+        LogUtil.logAllQueries(queries, alias);
         ResultUtil.addDatabaseMetaData(alias, queries, result);
         final StorageOperation.StorageOperationResult apply = redisOperation.apply(new ListSource(queries),
-                alias);
+                dependencies.getEnvironment() + UNDERSCORE + alias);
         return toString(apply.getRaw());
     }
 

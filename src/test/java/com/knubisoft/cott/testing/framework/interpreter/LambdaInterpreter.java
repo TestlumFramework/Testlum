@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+
 
 @Slf4j
 @InterpreterForClass(Lambda.class)
@@ -69,7 +71,7 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
 
     private InvokeResponse invokeLambdaFunction(final InvokeRequest request, final String alias) {
         try {
-            return awsLambdaClients.get(alias).invoke(request);
+            return awsLambdaClients.get(dependencies.getEnvironment() + UNDERSCORE + alias).invoke(request);
         } catch (LambdaException e) {
             log.error(LogMessage.ERROR_LOG, e);
             throw e;

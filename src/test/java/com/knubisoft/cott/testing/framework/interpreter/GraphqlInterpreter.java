@@ -85,7 +85,8 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     }
 
     private String getFullUrl(final Graphql graphql) {
-        String url = GlobalTestConfigurationProvider.getIntegrations().getGraphqlIntegration().getApi()
+        String url = GlobalTestConfigurationProvider.getIntegrations().get(dependencies.getEnvironment()).getApis()
+                .getApi()
                 .stream()
                 .filter(o -> o.getAlias().equalsIgnoreCase(graphql.getAlias()))
                 .findFirst()

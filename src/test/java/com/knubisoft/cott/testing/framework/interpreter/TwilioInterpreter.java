@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+
 @InterpreterForClass(Twilio.class)
 public class TwilioInterpreter extends AbstractInterpreter<Twilio> {
 
@@ -26,7 +28,8 @@ public class TwilioInterpreter extends AbstractInterpreter<Twilio> {
 
     @Override
     protected void acceptImpl(final Twilio twilio, final CommandResult result) {
-        com.knubisoft.cott.testing.model.global_config.Twilio twilioSetting = twilioSettings.get(twilio.getAlias());
+        com.knubisoft.cott.testing.model.global_config.Twilio twilioSetting = twilioSettings
+                .get(dependencies.getEnvironment() + UNDERSCORE + twilio.getAlias());
         com.twilio.Twilio.init(twilioSetting.getAccountSid(), twilioSetting.getAuthToken());
         String twilioNumber = twilioSetting.getTwilioNumber();
         LogUtil.logTwilioInfo(twilio, twilioNumber);

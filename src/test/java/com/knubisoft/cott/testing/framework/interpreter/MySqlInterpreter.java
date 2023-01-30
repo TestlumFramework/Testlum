@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+
 @Slf4j
 @InterpreterForClass(Mysql.class)
 public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
@@ -49,7 +51,7 @@ public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
         LogUtil.logAllQueries(queries, alias);
         ResultUtil.addDatabaseMetaData(alias, queries, result);
         StorageOperation.StorageOperationResult applyMySql = mySqlOperation.apply(new ListSource(queries),
-                inject(alias));
+                dependencies.getEnvironment() + UNDERSCORE + inject(alias));
         return toString(applyMySql.getRaw());
     }
 

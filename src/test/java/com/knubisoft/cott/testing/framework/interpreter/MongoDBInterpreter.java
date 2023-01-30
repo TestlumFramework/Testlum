@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+
 @Slf4j
 @InterpreterForClass(Mongo.class)
 public class MongoDBInterpreter extends AbstractInterpreter<Mongo> {
@@ -46,10 +48,11 @@ public class MongoDBInterpreter extends AbstractInterpreter<Mongo> {
     private String getActual(final Mongo mongo, final CommandResult result) {
         String alias = mongo.getAlias();
         List<String> queries = getMongoQueryList(mongo);
-        LogUtil.logAllQueries(queries, mongo.getAlias());
+        LogUtil.logAllQueries(queries, alias);
         ResultUtil.addDatabaseMetaData(alias, queries, result);
         ListSource listSource = new ListSource(queries);
-        StorageOperation.StorageOperationResult apply = mongoOperation.apply(listSource, alias);
+        StorageOperation.StorageOperationResult apply = mongoOperation.apply(listSource,
+                dependencies.getEnvironment() + UNDERSCORE + alias);
         return toString(apply.getRaw());
     }
 

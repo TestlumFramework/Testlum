@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INCORRECT_SQS_PROCESSING;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.RECEIVE_ACTION;
@@ -76,7 +77,8 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     }
 
     private String receiveMessage(final String queueUrl, final String alias) {
-        ReceiveMessageResult receiveMessageResult = this.amazonSQS.get(alias).receiveMessage(queueUrl);
+        ReceiveMessageResult receiveMessageResult = this.amazonSQS.get(dependencies.getEnvironment() + UNDERSCORE
+                + alias).receiveMessage(queueUrl);
         Iterator<Message> messages = receiveMessageResult.getMessages().iterator();
         return Optional.ofNullable(messages.hasNext() ? messages.next() : null)
                 .map(Message::getBody)
@@ -92,10 +94,10 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         LogUtil.logBrokerActionInfo(SEND_ACTION, queue, message);
         result.put("Message to send", PrettifyStringJson.getJSONResult(message));
         String queueUrl = createQueueIfNotExists(queue, alias);
-        this.amazonSQS.get(alias).sendMessage(queueUrl, message);
+        this.amazonSQS.get(dependencies.getEnvironment() + UNDERSCORE + alias).sendMessage(queueUrl, message);
     }
 
     private String createQueueIfNotExists(final String queue, final String alias) {
-        return this.amazonSQS.get(alias).createQueue(queue).getQueueUrl();
+        return this.amazonSQS.get(dependencies.getEnvironment() + UNDERSCORE + alias).createQueue(queue).getQueueUrl();
     }
 }

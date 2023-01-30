@@ -25,15 +25,19 @@ public class InterpreterDependencies {
 
     private Authorization authorization;
 
+    private final String environment;
+
     public InterpreterDependencies(final WebDriver webDriver,
                                    final WebDriver nativeDriver,
                                    final WebDriver mobilebrowserDriver,
+                                   final String environment,
                                    final File file,
                                    final ScenarioContext scenarioContext,
                                    final AtomicInteger position) {
         this.webDriver = webDriver;
         this.nativeDriver = nativeDriver;
         this.mobilebrowserDriver = mobilebrowserDriver;
+        this.environment = environment;
         this.file = file;
         this.scenarioContext = scenarioContext;
         this.position = position;

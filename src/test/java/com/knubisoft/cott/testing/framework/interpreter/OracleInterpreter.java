@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
@@ -51,10 +52,10 @@ public class OracleInterpreter extends AbstractInterpreter<Oracle> {
     protected String getActual(final Oracle oracle, final CommandResult result) {
         String alias = oracle.getAlias();
         List<String> queries = getSqlList(oracle);
-        LogUtil.logAllQueries(queries, oracle.getAlias());
+        LogUtil.logAllQueries(queries, alias);
         ResultUtil.addDatabaseMetaData(alias, queries, result);
         StorageOperation.StorageOperationResult applyOracle = oracleOperation.apply(new ListSource(queries),
-                inject(alias));
+                dependencies.getEnvironment() + UNDERSCORE + inject(alias));
         return toString(applyOracle.getRaw());
     }
 

@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.ACTUAL_CODE;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CONTENT_TO_SEND;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.EXPECTED_CODE;
@@ -80,7 +81,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         result.put(CONTENT_TO_SEND, PrettifyStringJson.getJSONResult(body));
         LogUtil.logHttpInfo(alias, method.name(), sendgridInfo.getEndpoint());
         LogUtil.logBody(request.getBody());
-        return sendGrid.get(alias).api(request);
+        return sendGrid.get(dependencies.getEnvironment() + UNDERSCORE + alias).api(request);
     }
 
     private void compare(final ApiResponse expected, final Response actual, final CommandResult result) {

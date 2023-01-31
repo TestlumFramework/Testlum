@@ -12,6 +12,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ public class LambdaConfiguration {
     public LambdaClient createLambdaClient(final Lambda lambda) {
         AwsCredentials credentials = AwsBasicCredentials.create(lambda.getAccessKeyId(), lambda.getSecretAccessKey());
         return LambdaClient.builder()
+                .endpointOverride(URI.create(lambda.getEndpoint()))
                 .region(Region.of(lambda.getRegion()))
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))
                 .build();

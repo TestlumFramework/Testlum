@@ -18,7 +18,7 @@
             <x:extension base="tns:integration">
                 <x:sequence>
                     <x:element name="region" type="tns:nonEmptyString"/>
-                    <x:element name="endpoint" type="tns:nonEmptyString" minOccurs="0"/>
+                    <x:element name="endpoint" type="tns:nonEmptyString"/>
                     <x:element name="accessKeyId" type="tns:nonEmptyString"/>
                     <x:element name="secretAccessKey" type="tns:nonEmptyString"/>
                 </x:sequence>

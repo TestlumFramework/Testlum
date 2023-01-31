@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}integration"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="region" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
- *         &lt;element name="endpoint" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
+ *         &lt;element name="endpoint" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="accessKeyId" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="secretAccessKey" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
@@ -42,6 +42,7 @@ public class Lambda
 
     @XmlElement(required = true)
     protected String region;
+    @XmlElement(required = true)
     protected String endpoint;
     @XmlElement(required = true)
     protected String accessKeyId;

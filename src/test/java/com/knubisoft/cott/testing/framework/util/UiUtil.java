@@ -160,8 +160,8 @@ public class UiUtil {
         return url.replaceAll(APPIUM_LOCALHOST_ALIAS, LOCALHOST);
     }
 
-    public float calculatePercentageValue(final String value) {
-        float percent = Float.parseFloat(value) / MAX_PERCENTS_VALUE;
+    public float calculatePercentageValue(final float value) {
+        float percent = value / MAX_PERCENTS_VALUE;
         if (percent > 1) {
             throw new DefaultFrameworkException(format(SCROLL_TO_ELEMENT_NOT_SUPPORTED, value));
         }

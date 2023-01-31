@@ -21,9 +21,9 @@ public enum PageScrollScript {
     }
 
     public static String getPageScrollScript(final Scroll scroll) {
-        String value = scroll.getValue().toString();
-        boolean isUpDirection = ScrollDirection.UP.equals(scroll.getDirection());
-        if (ScrollMeasure.PERCENT.equals(scroll.getMeasure())) {
+        int value = scroll.getValue();
+        boolean isUpDirection = ScrollDirection.UP == scroll.getDirection();
+        if (ScrollMeasure.PERCENT == scroll.getMeasure()) {
             float percent = UiUtil.calculatePercentageValue(value);
             return format(VERTICAL_BY_PERCENT.getScript(), isUpDirection ? DelimiterConstant.DASH + percent : percent);
         }

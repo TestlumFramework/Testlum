@@ -13,7 +13,6 @@ import org.openqa.selenium.WebElement;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.CLICK_SCRIPT;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLICK_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLICK_METHOD;
-import static com.knubisoft.cott.testing.model.scenario.ClickMethod.JS;
 
 @ExecutorForClass(Click.class)
 public class ClickExecutor extends AbstractUiExecutor<Click> {
@@ -33,7 +32,7 @@ public class ClickExecutor extends AbstractUiExecutor<Click> {
     }
 
     private void clickWithMethod(final ClickMethod method, final WebElement element, final CommandResult result) {
-        if (method != null && method.equals(JS)) {
+        if (ClickMethod.JS == method) {
             result.put(CLICK_METHOD, "javascript");
             JavascriptUtil.executeJsScript(element, CLICK_SCRIPT, dependencies.getDriver());
         } else {

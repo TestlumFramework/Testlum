@@ -12,10 +12,12 @@ import com.knubisoft.cott.testing.model.scenario.SwipeDirection;
 import com.knubisoft.cott.testing.model.scenario.SwipeNative;
 import com.knubisoft.cott.testing.model.scenario.SwipeType;
 import io.appium.java_client.AppiumDriver;
-import java.util.Collections;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.interactions.Sequence;
+
+import java.util.Collections;
+
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SWIPE_TYPE_NOT_FOUND;
 
 @ExecutorForClass(SwipeNative.class)
@@ -49,7 +51,7 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
         int swipeValue = getSwipeValue(swipeNative, screenDimensions);
         Point start = SwipeType.PAGE == swipeNative.getType()
                 ? UiUtil.getCenterPoint(driver)
-                : UiUtil.findWebElement(driver, swipeNative.getLocator()).getLocation();
+                : UiUtil.findWebElement(driver, swipeNative.getLocatorId()).getLocation();
         Point end = getEndPoint(swipeNative.getDirection(), start, swipeValue);
         return UiUtil.buildSequence(start, end, ACTION_DURATION);
     }

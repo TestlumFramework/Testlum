@@ -238,7 +238,6 @@
                     <x:element name="filePath" type="tns:nonEmptyString"/>
                 </x:choice>
                 <x:attribute name="toLocatorId" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="dropFile" type="x:boolean" default="false"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

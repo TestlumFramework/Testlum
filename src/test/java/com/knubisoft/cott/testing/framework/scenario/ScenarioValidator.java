@@ -4,10 +4,12 @@ import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfiguratio
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.cott.testing.framework.parser.CSVParser;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.framework.util.DatasetValidator;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.HttpUtil;
+import com.knubisoft.cott.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.framework.util.SendGridUtil;
 import com.knubisoft.cott.testing.framework.validator.XMLValidator;
@@ -85,6 +87,7 @@ import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
+import java.util.Set;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -99,6 +102,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.SCENARIO_VARIATIONS_MAP;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ALIAS_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.API_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
@@ -314,7 +318,32 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         if (scenario.isActive()) {
             validateIfContainsNativeAndMobileCommands(scenario.getCommands());
             scenario.getCommands().forEach(command -> validateCommand(command, xmlFile));
+            if (StringUtils.hasText(scenario.getVariations())) {
+                validateVariations(scenario);
+            }
         }
+    }
+
+    private void validateVariations(final Scenario scenario) {
+        List<Map<String, String>> variationList = new CSVParser().parseVariations(scenario.getVariations());
+        if (variationList.isEmpty()) {
+            throw new DefaultFrameworkException("If variation is used, it could not be empty");
+        }
+        if (variationVariableIsPresent(scenario, variationList.get(0).keySet())) {
+            SCENARIO_VARIATIONS_MAP.put(scenario, variationList);
+        } else {
+            SCENARIO_VARIATIONS_MAP.put(scenario, variationList.subList(0, 1));
+        }
+    }
+
+    private boolean variationVariableIsPresent(final Scenario scenario, final Set<String> variationVariables) {
+        String jsonScenario = JacksonMapperUtil.writeValueAsString(scenario);
+        for (String var : variationVariables) {
+            if (jsonScenario.contains("{{" + var + "}}")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void validateIfContainsNativeAndMobileCommands(final List<AbstractCommand> commands) {

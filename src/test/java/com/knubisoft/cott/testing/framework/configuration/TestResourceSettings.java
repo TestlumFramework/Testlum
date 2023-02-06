@@ -1,5 +1,8 @@
 package com.knubisoft.cott.testing.framework.configuration;
 
+import com.knubisoft.cott.testing.model.scenario.Scenario;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 
 import java.io.File;
@@ -42,6 +45,8 @@ public class TestResourceSettings {
 
     public static final List<String> REQUIRED_FOLDER_NAMES = Collections.unmodifiableList(Arrays.asList(
             SCENARIOS_FOLDER, LOCATORS_PAGES_FOLDER, LOCATORS_COMPONENTS_FOLDER, REPORT_FOLDER, DATA_FOLDER));
+
+    public static final Map<Scenario, List<Map<String, String>>> SCENARIO_VARIATIONS_MAP = new HashMap<>();
 
     private static TestResourceSettings instance;
 

@@ -1,13 +1,10 @@
 package com.knubisoft.cott.testing.framework;
 
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
-import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.parser.CSVParser;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioFilter;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
-import com.knubisoft.cott.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.framework.util.ScenarioStepReader;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
@@ -25,6 +22,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.provider.Arguments;
+import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.SCENARIO_VARIATIONS_MAP;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class TestSetCollector {
@@ -148,24 +146,7 @@ public class TestSetCollector {
     }
 
     private List<Map<String, String>> getVariationList(final MappingResult entry) {
-        List<Map<String, String>> variationList = new CSVParser().parseVariations(entry.scenario.getVariations());
-        if (variationList.isEmpty()) {
-            throw new DefaultFrameworkException("If variation is used, it could not be empty");
-        }
-        String jsonScenario = JacksonMapperUtil.writeValueAsString(entry.scenario);
-        if (variationVariableIsPresent(jsonScenario, variationList.get(0).keySet())) {
-            return variationList;
-        }
-        return variationList.subList(0, 1);
-    }
-
-    private boolean variationVariableIsPresent(final String jsonScenario, final Set<String> variationVariables) {
-        for (String var : variationVariables) {
-            if (jsonScenario.contains("{{" + var + "}}")) {
-                return true;
-            }
-        }
-        return false;
+        return SCENARIO_VARIATIONS_MAP.get(entry.scenario);
     }
 
     private boolean variationsExist(final MappingResult entry) {

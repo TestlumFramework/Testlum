@@ -90,6 +90,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
             LogUtil.startUiCommandsInFrame();
             runCommands(((SwitchToFrame) uiCommand).getClickOrInputOrAssert(), result, dependencies);
             LogUtil.endUiCommandsInFrame();
+            dependencies.getDriver().switchTo().defaultContent();
         }
     }
 

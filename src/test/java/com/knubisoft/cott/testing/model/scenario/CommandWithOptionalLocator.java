@@ -29,11 +29,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "commandWithOptionalLocator")
 @XmlSeeAlso({
     Scroll.class,
-    ScrollNative.class,
     Copy.class,
     Paste.class,
     Cut.class,
     Highlight.class,
+    ScrollNative.class,
     SwipeNative.class
 })
 public abstract class CommandWithOptionalLocator

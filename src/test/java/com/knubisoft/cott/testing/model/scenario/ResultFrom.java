@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="resultFrom"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="type" type="{http://www.knubisoft.com/cott/testing/model/scenario}varType" /&gt;
+ *       &lt;attribute name="type" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}varType" /&gt;
  *       &lt;attribute name="value" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "resultFrom")
 public class ResultFrom {
 
-    @XmlAttribute(name = "type")
+    @XmlAttribute(name = "type", required = true)
     protected VarType type;
     @XmlAttribute(name = "value")
     protected String value;

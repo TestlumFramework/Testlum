@@ -18,6 +18,7 @@ import com.knubisoft.cott.testing.model.scenario.HttpInfo;
 import com.knubisoft.cott.testing.model.scenario.HttpInfoWithBody;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
+import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -67,9 +68,9 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                                     final String alias) {
         LogUtil.logHttpInfo(alias, httpMethod.name(), url);
         Map<String, String> headers = getHeaders(httpInfo);
-        boolean isJson = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .equalsIgnoreCase(MediaType.APPLICATION_JSON_VALUE);
-        HttpEntity body = getBody(httpInfo, isJson);
+        String typeValue = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        ContentType contentType = ContentType.create(typeValue);
+        HttpEntity body = getBody(httpInfo, contentType);
         LogUtil.logBodyContent(body);
         try {
             return apiClient.call(httpMethod, url, headers, body, alias);
@@ -87,12 +88,12 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         return HttpUtil.injectAndGetHeaders(headers, this);
     }
 
-    private HttpEntity getBody(final HttpInfo httpInfo, final boolean isJson) {
+    private HttpEntity getBody(final HttpInfo httpInfo, final ContentType contentType) {
         if (!(httpInfo instanceof HttpInfoWithBody)) {
             return null;
         }
         HttpInfoWithBody commandWithBody = (HttpInfoWithBody) httpInfo;
         Body body = commandWithBody.getBody();
-        return HttpUtil.extractBody(body, isJson, this, dependencies);
+        return HttpUtil.extractBody(body, contentType, this, dependencies);
     }
 }

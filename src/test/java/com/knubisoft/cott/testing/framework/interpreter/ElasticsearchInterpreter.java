@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
+import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RequestOptions;
@@ -158,6 +159,6 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         }
         ElasticSearchRequestWithBody requestWithBody = (ElasticSearchRequestWithBody) request;
         Body body = requestWithBody.getBody();
-        return HttpUtil.extractBody(body, true, this, dependencies);
+        return HttpUtil.extractBody(body, ContentType.APPLICATION_JSON, this, dependencies);
     }
 }

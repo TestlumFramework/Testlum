@@ -69,11 +69,11 @@ public final class HttpUtil {
     }
 
     public HttpEntity extractBody(final Body body,
-                                  final boolean isJson,
+                                  final ContentType contentType,
                                   final AbstractInterpreter<?> interpreter,
                                   final InterpreterDependencies dependencies) {
         try {
-            return injectAppropriatePart(body, isJson, interpreter, dependencies);
+            return injectAppropriatePart(body, contentType, interpreter, dependencies);
         } catch (IOException e) {
             throw new DefaultFrameworkException(e);
         }
@@ -105,27 +105,27 @@ public final class HttpUtil {
 
     //CHECKSTYLE:OFF
     private HttpEntity injectAppropriatePart(final Body body,
-                                             final boolean isJson,
+                                             final ContentType contentType,
                                              final AbstractInterpreter<?> interpreter,
                                              final InterpreterDependencies dependencies) throws IOException {
         if (body == null) {
-            return getStringEntity(StringUtils.EMPTY);
+            return getStringEntity(StringUtils.EMPTY, contentType);
         } else if (body.getRaw() != null) {
             String injected = interpreter.inject(body.getRaw());
-            return getStringEntity(injected);
+            return getStringEntity(injected, contentType);
         } else if (body.getFrom() != null) {
             return injectFromFile(body, interpreter, dependencies);
         } else if (body.getMultipart() != null) {
             return injectMultipartFile(body, dependencies);
         }
-        String param = getFromParam(isJson, body, interpreter);
+        String param = getFromParam(contentType, body, interpreter);
         String injected = interpreter.inject(param);
-        return getStringEntity(injected);
+        return getStringEntity(injected, contentType);
     }
     //CHECKSTYLE:ON
 
-    private HttpEntity getStringEntity(final String body) {
-        return new StringEntity(body, ContentType.APPLICATION_JSON);
+    private HttpEntity getStringEntity(final String body, final ContentType contentType) {
+        return new StringEntity(body, contentType);
     }
 
     private HttpEntity injectMultipartFile(final Body body,
@@ -175,13 +175,13 @@ public final class HttpUtil {
         return injected;
     }
 
-    private String getFromParam(final boolean isJson,
+    private String getFromParam(final ContentType contentType,
                                 final Body body,
                                 final AbstractInterpreter<?> interpreter) {
         Map<String, String> bodyParamMap = body.getParam().stream()
                 .collect(toMap(Param::getName, Param::getData, (k, v) -> k, LinkedHashMap::new));
 
-        if (isJson) {
+        if (ContentType.APPLICATION_JSON == contentType) {
             return interpreter.toString(bodyParamMap);
         }
         return bodyParamMap.entrySet().stream()

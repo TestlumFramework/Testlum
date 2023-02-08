@@ -37,6 +37,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INCORRECT_HTTP_PROCESSING;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toMap;
@@ -111,10 +113,10 @@ public final class HttpUtil {
         if (body == null) {
             return getStringEntity(StringUtils.EMPTY, contentType);
         } else if (body.getRaw() != null) {
-            String injected = interpreter.inject(body.getRaw());
+            String injected = interpreter.inject(body.getRaw().replaceAll(REGEX_MANY_SPACES, EMPTY));
             return getStringEntity(injected, contentType);
         } else if (body.getFrom() != null) {
-            return injectFromFile(body, interpreter, dependencies);
+            return injectFromFile(body, contentType, interpreter, dependencies);
         } else if (body.getMultipart() != null) {
             return injectMultipartFile(body, dependencies);
         }
@@ -140,10 +142,11 @@ public final class HttpUtil {
     }
 
     private HttpEntity injectFromFile(final Body body,
+                                      final ContentType contentType,
                                       final AbstractInterpreter<?> interpreter,
                                       final InterpreterDependencies dependencies) throws IOException {
         String injectedContent = injectFromFile(body, interpreter, dependencies.getFile());
-        return new StringEntity(injectedContent, ContentType.APPLICATION_JSON);
+        return getStringEntity(injectedContent, contentType);
     }
 
     public String injectFromFile(final Body body,

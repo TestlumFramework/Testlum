@@ -24,6 +24,7 @@ public class DelimiterConstant {
     public static final String LOGIC_LESS = "<";
     public static final String DOUBLE_BRACKETS = "((";
     public static final String REGEX_SPACE = "\\s";
+    public static final String REGEX_MANY_SPACES = "\\s{2,}";
     public static final String SLASH_SEPARATOR = "/";
     public static final String STRAIGHT_SLASH = "|";
     public static final String UNDERSCORE = "_";

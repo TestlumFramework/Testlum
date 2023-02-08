@@ -29,7 +29,9 @@ import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -115,15 +117,16 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     private Request buildRequest(final ElasticSearchRequest elasticSearchRequest,
                                  final HttpMethod httpMethod) {
         Map<String, String> headers = getHeaders(elasticSearchRequest);
+        String typeValue = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        ContentType contentType = ContentType.create(typeValue);
 
         Request request = new Request(httpMethod.name(), elasticSearchRequest.getEndpoint());
 
         Map<String, String> params = getParams(elasticSearchRequest);
         request.addParameters(params);
-
         setRequestOptions(headers, request);
 
-        HttpEntity body = getBody(elasticSearchRequest);
+        HttpEntity body = getBody(elasticSearchRequest, contentType);
         LogUtil.logBodyContent(body);
         request.setEntity(body);
         return request;
@@ -153,12 +156,12 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
                 .collect(Collectors.toMap(Param::getName, Param::getData));
     }
 
-    private HttpEntity getBody(final ElasticSearchRequest request) {
+    private HttpEntity getBody(final ElasticSearchRequest request, final ContentType contentType) {
         if (!(request instanceof ElasticSearchRequestWithBody)) {
             return null;
         }
         ElasticSearchRequestWithBody requestWithBody = (ElasticSearchRequestWithBody) request;
         Body body = requestWithBody.getBody();
-        return HttpUtil.extractBody(body, ContentType.APPLICATION_JSON, this, dependencies);
+        return HttpUtil.extractBody(body, contentType, this, dependencies);
     }
 }

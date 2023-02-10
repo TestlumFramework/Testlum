@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}integration"&gt;
  *       &lt;attribute name="url" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}urlWebsocket" /&gt;
- *       &lt;attribute name="stomp" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *       &lt;attribute name="protocol" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}websocketProtocol" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -33,8 +33,8 @@ public class WebsocketApi
 
     @XmlAttribute(name = "url", required = true)
     protected String url;
-    @XmlAttribute(name = "stomp")
-    protected Boolean stomp;
+    @XmlAttribute(name = "protocol", required = true)
+    protected WebsocketProtocol protocol;
 
     /**
      * Gets the value of the url property.
@@ -61,31 +61,27 @@ public class WebsocketApi
     }
 
     /**
-     * Gets the value of the stomp property.
+     * Gets the value of the protocol property.
      * 
      * @return
      *     possible object is
-     *     {@link Boolean }
+     *     {@link WebsocketProtocol }
      *     
      */
-    public boolean isStomp() {
-        if (stomp == null) {
-            return false;
-        } else {
-            return stomp;
-        }
+    public WebsocketProtocol getProtocol() {
+        return protocol;
     }
 
     /**
-     * Sets the value of the stomp property.
+     * Sets the value of the protocol property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Boolean }
+     *     {@link WebsocketProtocol }
      *     
      */
-    public void setStomp(Boolean value) {
-        this.stomp = value;
+    public void setProtocol(WebsocketProtocol value) {
+        this.protocol = value;
     }
 
 }

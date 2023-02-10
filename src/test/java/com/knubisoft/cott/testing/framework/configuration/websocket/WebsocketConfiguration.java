@@ -3,6 +3,7 @@ package com.knubisoft.cott.testing.framework.configuration.websocket;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnWebsocketEnabledCondition;
 import com.knubisoft.cott.testing.model.global_config.WebsocketApi;
+import com.knubisoft.cott.testing.model.global_config.WebsocketProtocol;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -26,9 +27,9 @@ public class WebsocketConfiguration {
     public Map<String, WebsocketConnectionManager> websocketConnectionSupplier() {
         final Map<String, WebsocketConnectionManager> connectionSupplierMap = new HashMap<>();
         for (WebsocketApi websocket : GlobalTestConfigurationProvider.getIntegrations().getWebsockets().getApi()) {
-            if (websocket.isStomp()) {
+            if (WebsocketProtocol.STOMP == websocket.getProtocol()) {
                 connectionSupplierMap.put(websocket.getAlias(), getWsStompConnectionManager(websocket.getUrl()));
-            } else {
+            } else if (WebsocketProtocol.STANDARD == websocket.getProtocol()) {
                 connectionSupplierMap.put(websocket.getAlias(), getWsStandardConnectionManager(websocket.getUrl()));
             }
         }

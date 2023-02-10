@@ -24,8 +24,8 @@ public class ClickExecutor extends AbstractUiExecutor<Click> {
     @Override
     public void execute(final Click click, final CommandResult result) {
         result.put(CLICK_LOCATOR, click.getLocatorId());
+        UiUtil.waitForElementVisibility(dependencies.getDriver(), click.getLocatorId());
         WebElement webElement = UiUtil.findWebElement(dependencies.getDriver(), click.getLocatorId());
-        UiUtil.waitForElementVisibility(dependencies.getDriver(), webElement);
         UiUtil.highlightElementIfRequired(click.isHighlight(), webElement, dependencies.getDriver());
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         clickWithMethod(click.getMethod(), webElement, result);

@@ -12,12 +12,8 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.By;
+import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -73,9 +69,9 @@ public class UiUtil {
         }
     }
 
-    public void waitForElementVisibility(final WebDriver driver, final WebElement element) {
+    public void waitForElementVisibility(final WebDriver driver, final String locatorId) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIME_TO_WAIT));
-        wait.until(ExpectedConditions.visibilityOf(element));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(findLocatorsPath(locatorId)));
     }
 
     public void waitForElementToBeClickable(final WebDriver driver, final WebElement element) {
@@ -180,5 +176,19 @@ public class UiUtil {
     public Point getCenterPoint(final WebDriver driver) {
         Dimension dimension = driver.manage().window().getSize();
         return new Point(dimension.width / 2, dimension.height / 2);
+    }
+
+    private By findLocatorsPath(final String locatorId) {
+        Locator locator = GlobalLocators.getLocator(locatorId);
+        if (Objects.nonNull(locator.getXpath())) {
+            return By.xpath(locator.getXpath());
+        } else if (Objects.nonNull(locator.getId())) {
+            return By.id(locator.getId());
+        } else if (Objects.nonNull(locator.getCssSelector())) {
+            return By.cssSelector(locator.getCssSelector());
+        } else if (Objects.nonNull(locator.getClazz())) {
+            return By.className(locator.getClazz());
+        }
+        return By.linkText(locator.getText().getValue());
     }
 }

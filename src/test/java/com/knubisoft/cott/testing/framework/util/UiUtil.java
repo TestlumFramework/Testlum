@@ -76,7 +76,7 @@ public class UiUtil {
 
     public void waitForElementVisibility(final WebDriver driver, final String locatorId) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIME_TO_WAIT));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(findLocatorsPath(locatorId)));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(getLocatorSource(locatorId)));
     }
 
     public void waitForElementToBeClickable(final WebDriver driver, final WebElement element) {
@@ -183,7 +183,7 @@ public class UiUtil {
         return new Point(dimension.width / 2, dimension.height / 2);
     }
 
-    private By findLocatorsPath(final String locatorId) {
+    private By getLocatorSource(final String locatorId) {
         Locator locator = GlobalLocators.getLocator(locatorId);
         if (Objects.nonNull(locator.getXpath())) {
             return By.xpath(locator.getXpath());

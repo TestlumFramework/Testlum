@@ -3,9 +3,6 @@ package com.knubisoft.cott.testing.framework.configuration;
 import lombok.Getter;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.COMPONENTS_FOLDER_NOT_EXIST;
@@ -32,16 +29,6 @@ public class TestResourceSettings {
     public static final String LOCATORS_COMPONENTS_FOLDER = "locators/component";
     public static final String SCENARIOS_FOLDER = "scenarios";
     public static final String DATA_FOLDER = "data";
-
-    public static final String CONFIG_EXAMPLE_FILENAME = "global-config-example.xml";
-    public static final String EXPECTED_EXAMPLE_FILENAME = "expected_1.json";
-    public static final String JS_SCRIPT_EXAMPLE_FILENAME = "greating.js";
-    public static final String SHELL_SCRIPT_EXAMPLE_FILENAME = "shell-1.sh";
-    public static final String TEST_SAMPLE_PATH = "initial-sample/";
-    public static final String EXAMPLE_TEST_FOLDER = SCENARIOS_FOLDER + "/default";
-
-    public static final List<String> REQUIRED_FOLDER_NAMES = Collections.unmodifiableList(Arrays.asList(
-            SCENARIOS_FOLDER, LOCATORS_PAGES_FOLDER, LOCATORS_COMPONENTS_FOLDER, REPORT_FOLDER, DATA_FOLDER));
 
     private static TestResourceSettings instance;
 

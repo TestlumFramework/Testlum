@@ -2,12 +2,12 @@ package com.knubisoft.cott.testing.framework.interpreter.lib.auth;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.AuthUtil;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.model.scenario.Auth;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
@@ -32,11 +32,10 @@ public class BasicAuth extends AbstractAuthStrategy {
         login(credentials, HEADER_BASIC);
     }
 
-    @SneakyThrows
     private String encodedCredentials(final Auth auth) {
         String credentials = AuthUtil.getCredentialsFromFile(auth.getCredentials());
         DocumentContext context = JsonPath.parse(credentials);
-        credentials = context.read(USERNAME_JPATH) + ":" + context.read(PASSWORD_JPATH);
+        credentials = context.read(USERNAME_JPATH) + DelimiterConstant.COLON + context.read(PASSWORD_JPATH);
         LogUtil.logAuthInfo(auth);
         return Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
     }

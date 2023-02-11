@@ -28,14 +28,9 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.ERROR_LOG;
-
 @Slf4j
 @InterpreterForClass(Http.class)
 public class HttpInterpreter extends AbstractInterpreter<Http> {
-
-    private static final String HTTP_PREFIX = "http";
-    private static final String FULL_URL_TEMPLATE = "%s%s";
 
     @Autowired
     private ApiClient apiClient;
@@ -63,19 +58,19 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     }
 
     protected ApiResponse getActual(final HttpInfo httpInfo,
-                                    final String url,
+                                    final String endpoint,
                                     final HttpMethod httpMethod,
                                     final String alias) {
-        LogUtil.logHttpInfo(alias, httpMethod.name(), url);
+        LogUtil.logHttpInfo(alias, httpMethod.name(), endpoint);
         Map<String, String> headers = getHeaders(httpInfo);
         String typeValue = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         ContentType contentType = ContentType.create(typeValue);
         HttpEntity body = getBody(httpInfo, contentType);
         LogUtil.logBodyContent(body);
         try {
-            return apiClient.call(httpMethod, url, headers, body, alias);
+            return apiClient.call(httpMethod, endpoint, headers, body, alias);
         } catch (IOException e) {
-            log.error(ERROR_LOG, e);
+            LogUtil.logError(e);
             throw new DefaultFrameworkException(e);
         }
     }

@@ -25,7 +25,6 @@
                 <x:sequence>
                     <x:element name="query" type="tns:variableQuery"/>
                 </x:sequence>
-                <x:attribute name="file" type="tns:nonEmptyString"/>
                 <x:attribute name="dbType" type="tns:relationalDB" use="required"/>
                 <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
             </x:extension>

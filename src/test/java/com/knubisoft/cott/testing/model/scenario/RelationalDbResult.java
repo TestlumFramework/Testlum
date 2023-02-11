@@ -20,7 +20,6 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence&gt;
  *         &lt;element name="query" type="{http://www.knubisoft.com/cott/testing/model/scenario}variableQuery"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="file" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="dbType" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}relationalDB" /&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}aliasPattern" /&gt;
  *     &lt;/extension&gt;
@@ -40,8 +39,6 @@ public class RelationalDbResult
 
     @XmlElement(required = true)
     protected String query;
-    @XmlAttribute(name = "file")
-    protected String file;
     @XmlAttribute(name = "dbType", required = true)
     protected RelationalDB dbType;
     @XmlAttribute(name = "alias", required = true)
@@ -69,30 +66,6 @@ public class RelationalDbResult
      */
     public void setQuery(String value) {
         this.query = value;
-    }
-
-    /**
-     * Gets the value of the file property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getFile() {
-        return file;
-    }
-
-    /**
-     * Sets the value of the file property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setFile(String value) {
-        this.file = value;
     }
 
     /**

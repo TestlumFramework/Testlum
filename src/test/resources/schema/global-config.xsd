@@ -5,6 +5,9 @@
           targetNamespace="http://www.knubisoft.com/cott/testing/model/global-config"
           elementFormDefault="qualified" jaxb:version="2.1">
 
+    <x:include schemaLocation="api-integration.xsd"/>
+    <x:include schemaLocation="graphql-integration.xsd"/>
+    <x:include schemaLocation="websocket-integration.xsd"/>
     <x:include schemaLocation="postgres-integration.xsd"/>
     <x:include schemaLocation="clickhouse-integration.xsd"/>
     <x:include schemaLocation="mysql-integration.xsd"/>
@@ -22,12 +25,10 @@
     <x:include schemaLocation="ses-integration.xsd"/>
     <x:include schemaLocation="smtp-integration.xsd"/>
     <x:include schemaLocation="twilio-integration.xsd"/>
-    <x:include schemaLocation="graphql-integration.xsd"/>
     <x:include schemaLocation="web-config.xsd"/>
     <x:include schemaLocation="mobilebrowser-config.xsd"/>
     <x:include schemaLocation="native-config.xsd"/>
     <x:include schemaLocation="browserstack-config.xsd"/>
-    <x:include schemaLocation="websocket-integration.xsd"/>
     <x:include schemaLocation="report.xsd"/>
     <x:include schemaLocation="shared-config.xsd"/>
 
@@ -82,15 +83,9 @@
         </x:all>
     </x:complexType>
 
-    <x:complexType name="apis">
-        <x:choice>
-            <x:element name="api" type="tns:api" maxOccurs="unbounded"/>
-        </x:choice>
-    </x:complexType>
-
-    <x:complexType name="api">
-        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
-        <x:attribute name="url" type="tns:url" use="required"/>
+    <x:complexType name="delayBetweenScenariosRuns">
+        <x:attribute name="seconds" type="x:positiveInteger" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
     <x:complexType name="runScenariosByTag">
@@ -104,11 +99,6 @@
         <x:attribute name="autoLogout" type="x:boolean" default="true"/>
         <x:attribute name="authStrategy" type="tns:authStrategies" default="default"/>
         <x:attribute name="authCustomClassName" type="tns:nonEmptyString"/>
-    </x:complexType>
-
-    <x:complexType name="delayBetweenScenariosRuns">
-        <x:attribute name="seconds" type="x:positiveInteger" use="required"/>
-        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
     <x:simpleType name="authStrategies">

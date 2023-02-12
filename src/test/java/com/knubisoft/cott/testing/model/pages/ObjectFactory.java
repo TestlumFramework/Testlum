@@ -30,6 +30,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Component }
+     * 
+     */
+    public Component createComponent() {
+        return new Component();
+    }
+
+    /**
+     * Create an instance of {@link Locators }
+     * 
+     */
+    public Locators createLocators() {
+        return new Locators();
+    }
+
+    /**
      * Create an instance of {@link Page }
      * 
      */
@@ -51,14 +67,6 @@ public class ObjectFactory {
      */
     public Include createInclude() {
         return new Include();
-    }
-
-    /**
-     * Create an instance of {@link Locators }
-     * 
-     */
-    public Locators createLocators() {
-        return new Locators();
     }
 
     /**

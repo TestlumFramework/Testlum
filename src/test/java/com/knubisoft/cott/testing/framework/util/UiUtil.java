@@ -187,11 +187,14 @@ public class UiUtil {
         Locator locator = GlobalLocators.getLocator(locatorId);
         if (Objects.nonNull(locator.getXpath())) {
             return By.xpath(locator.getXpath());
-        } else if (Objects.nonNull(locator.getId())) {
+        }
+        if (Objects.nonNull(locator.getId())) {
             return By.id(locator.getId());
-        } else if (Objects.nonNull(locator.getCssSelector())) {
+        }
+        if (Objects.nonNull(locator.getCssSelector())) {
             return By.cssSelector(locator.getCssSelector());
-        } else if (Objects.nonNull(locator.getClazz())) {
+        }
+        if (Objects.nonNull(locator.getClazz())) {
             return By.className(locator.getClazz());
         }
         return By.linkText(locator.getText().getValue());

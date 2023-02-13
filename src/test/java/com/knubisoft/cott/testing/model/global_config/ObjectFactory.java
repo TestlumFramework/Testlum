@@ -206,6 +206,54 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Apis }
+     * 
+     */
+    public Apis createApis() {
+        return new Apis();
+    }
+
+    /**
+     * Create an instance of {@link Api }
+     * 
+     */
+    public Api createApi() {
+        return new Api();
+    }
+
+    /**
+     * Create an instance of {@link GraphqlIntegration }
+     * 
+     */
+    public GraphqlIntegration createGraphqlIntegration() {
+        return new GraphqlIntegration();
+    }
+
+    /**
+     * Create an instance of {@link GraphqlApi }
+     * 
+     */
+    public GraphqlApi createGraphqlApi() {
+        return new GraphqlApi();
+    }
+
+    /**
+     * Create an instance of {@link Websockets }
+     * 
+     */
+    public Websockets createWebsockets() {
+        return new Websockets();
+    }
+
+    /**
+     * Create an instance of {@link WebsocketApi }
+     * 
+     */
+    public WebsocketApi createWebsocketApi() {
+        return new WebsocketApi();
+    }
+
+    /**
      * Create an instance of {@link PostgresIntegration }
      * 
      */
@@ -478,22 +526,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GraphqlIntegration }
-     * 
-     */
-    public GraphqlIntegration createGraphqlIntegration() {
-        return new GraphqlIntegration();
-    }
-
-    /**
-     * Create an instance of {@link GraphqlApi }
-     * 
-     */
-    public GraphqlApi createGraphqlApi() {
-        return new GraphqlApi();
-    }
-
-    /**
      * Create an instance of {@link BrowserSettings }
      * 
      */
@@ -662,22 +694,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Websockets }
-     * 
-     */
-    public Websockets createWebsockets() {
-        return new Websockets();
-    }
-
-    /**
-     * Create an instance of {@link WebsocketApi }
-     * 
-     */
-    public WebsocketApi createWebsocketApi() {
-        return new WebsocketApi();
-    }
-
-    /**
      * Create an instance of {@link ExtentReports }
      * 
      */
@@ -715,22 +731,6 @@ public class ObjectFactory {
      */
     public KlovServer createKlovServer() {
         return new KlovServer();
-    }
-
-    /**
-     * Create an instance of {@link Apis }
-     * 
-     */
-    public Apis createApis() {
-        return new Apis();
-    }
-
-    /**
-     * Create an instance of {@link Api }
-     * 
-     */
-    public Api createApi() {
-        return new Api();
     }
 
 }

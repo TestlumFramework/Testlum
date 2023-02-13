@@ -12,10 +12,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 @ExecutorForClass(Hovers.class)
 public class HoverExecutor extends AbstractUiExecutor<Hovers> {
 
@@ -29,24 +25,23 @@ public class HoverExecutor extends AbstractUiExecutor<Hovers> {
     public void execute(final Hovers hovers, final CommandResult result) {
         ResultUtil.addHoversMetaData(hovers, result);
         Actions actions = new Actions(dependencies.getDriver());
-        List<WebElement> webElements = hovers.getHover().stream()
+        hovers.getHover().stream()
                 .peek(hover -> LogUtil.logHover(dependencies.getPosition().incrementAndGet(), hover))
                 .map(hover -> UiUtil.findWebElement(dependencies.getDriver(), hover.getLocatorId()))
-                .collect(Collectors.toList());
-        webElements.forEach(webElement -> {
-            actions.moveToElement(webElement);
-            actions.perform();
-        });
+                .forEach(webElement -> performMovement(actions, webElement));
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         moveToEmptySpace(hovers.isMoveToEmptySpace(), actions);
     }
 
-    private void moveToEmptySpace(final Boolean isMoveToEmptySpace, final Actions actions) {
-        if (Objects.nonNull(isMoveToEmptySpace) && isMoveToEmptySpace) {
+    private void moveToEmptySpace(final boolean isMoveToEmptySpace, final Actions actions) {
+        if (isMoveToEmptySpace) {
             WebElement element = dependencies.getDriver().findElement(By.xpath(MOVE_TO_EMPTY_SPACE));
-            actions.moveToElement(element);
-            actions.perform();
+            performMovement(actions, element);
         }
     }
 
+    private void performMovement(final Actions actions, final WebElement webElement) {
+        actions.moveToElement(webElement);
+        actions.perform();
+    }
 }

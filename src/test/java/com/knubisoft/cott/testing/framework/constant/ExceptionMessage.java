@@ -124,7 +124,7 @@ public class ExceptionMessage {
             + "disabled. Please enable UI settings in config file or exclude scenarios with UI steps.";
 
     public static final String AUTH_WAS_NOT_DEFINED = "Authentication strategy has not been defined in the "
-            + "configuration file. Usage example: <auth strategy=“basic”.../>";
+            + "configuration file. Usage example: <auth strategy=\"basic\".../>";
 
     public static final String UNSUPPORTED_MIGRATION_FORMAT = "Unsupported data file format was found "
             + "in <migration> tag. For %s allowed extensions are: %s, %s";

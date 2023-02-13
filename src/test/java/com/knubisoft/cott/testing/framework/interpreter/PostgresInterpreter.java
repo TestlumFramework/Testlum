@@ -1,12 +1,12 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
+import com.knubisoft.cott.testing.framework.db.StorageOperation;
+import com.knubisoft.cott.testing.framework.db.source.ListSource;
+import com.knubisoft.cott.testing.framework.db.sql.PostgresSqlOperation;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
-import com.knubisoft.cott.testing.framework.db.StorageOperation;
-import com.knubisoft.cott.testing.framework.db.source.ListSource;
-import com.knubisoft.cott.testing.framework.db.sql.PostgresSqlOperation;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
@@ -54,9 +54,8 @@ public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
     }
 
     private List<String> getSqlList(final Postgres postgres) {
-        List<String> queriesPostgres = postgres.getQuery().stream()
+        return postgres.getQuery().stream()
                 .map(this::inject)
                 .collect(Collectors.toList());
-        return queriesPostgres;
     }
 }

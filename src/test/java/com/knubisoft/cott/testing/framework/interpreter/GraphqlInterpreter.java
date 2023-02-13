@@ -101,6 +101,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         setContextBody(actualBody);
         validateBody(expected, actualBody, httpValidator, result);
         validateHeaders(expected, actual, httpValidator);
+        httpValidator.rethrowOnErrors();
     }
 
     private void validateBody(final Response expected,
@@ -113,7 +114,6 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         result.setActual(PrettifyStringJson.getJSONResult(actualBody));
         result.setExpected(PrettifyStringJson.getJSONResult(body));
         httpValidator.validateBody(body, actualBody);
-        httpValidator.rethrowOnErrors();
     }
 
     private void validateHeaders(final Response expected,

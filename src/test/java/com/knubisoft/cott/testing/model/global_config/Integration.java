@@ -29,6 +29,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "integration")
 @XmlSeeAlso({
+    Api.class,
+    GraphqlApi.class,
+    WebsocketApi.class,
     Clickhouse.class,
     DatabaseConfig.class,
     Redis.class,
@@ -43,9 +46,7 @@ import javax.xml.bind.annotation.XmlType;
     Sendgrid.class,
     Ses.class,
     Smtp.class,
-    Twilio.class,
-    GraphqlApi.class,
-    WebsocketApi.class
+    Twilio.class
 })
 public abstract class Integration {
 

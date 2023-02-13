@@ -1,10 +1,10 @@
 package com.knubisoft.cott.testing.framework.db.sql;
 
-import com.knubisoft.cott.testing.framework.db.sql.executor.AbstractSqlExecutor;
-import com.knubisoft.cott.testing.framework.db.sql.executor.impl.OracleExecutor;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnOracleEnabledCondition;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.Source;
+import com.knubisoft.cott.testing.framework.db.sql.executor.AbstractSqlExecutor;
+import com.knubisoft.cott.testing.framework.db.sql.executor.impl.OracleExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

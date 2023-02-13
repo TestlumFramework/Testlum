@@ -2,7 +2,9 @@ package com.knubisoft.cott.testing.framework.interpreter.lib.http;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.cott.testing.framework.util.ConfigUtil;
 import com.knubisoft.cott.testing.framework.util.HttpUtil;
+import com.knubisoft.cott.testing.model.global_config.Api;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,39 +32,39 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_STATUS_CODE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNKNOWN_METHOD;
-import static java.lang.String.format;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_STATUS_CODE;
 
 @Slf4j
 @Component
 public class ApiClient {
 
     public ApiResponse call(final HttpMethod httpMethod,
-                            final String url,
+                            final String endpoint,
                             final Map<String, String> headers,
                             final HttpEntity body,
                             final String alias) throws IOException {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            return executeHttpRequest(httpMethod, url, headers, body, httpClient, alias);
+            return executeHttpRequest(httpMethod, endpoint, headers, body, httpClient, alias);
         }
     }
 
     private ApiResponse executeHttpRequest(final HttpMethod httpMethod,
-                                           final String url,
+                                           final String endpoint,
                                            final Map<String, String> headers,
                                            final HttpEntity body,
                                            final CloseableHttpClient httpClient,
                                            final String alias) throws IOException {
-        HttpUriRequest request = buildRequest(httpMethod, url, headers, body, alias);
+        HttpUriRequest request = buildRequest(httpMethod, endpoint, headers, body, alias);
         try (CloseableHttpResponse response = httpClient.execute(request)) {
             return convertToApiResponse(response);
         }
     }
 
-    private ApiResponse convertToApiResponse(final CloseableHttpResponse response) throws IOException {
+    private ApiResponse convertToApiResponse(final CloseableHttpResponse response) {
         Map<String, String> responseHeaders = new LinkedHashMap<>();
         for (Header each : response.getAllHeaders()) {
             responseHeaders.put(each.getName(), each.getValue());
@@ -71,55 +73,40 @@ public class ApiClient {
         Object responseBody = entity == null ? StringUtils.EMPTY : httpEntityToResponseBody(entity);
         log.info(HTTP_STATUS_CODE, response.getStatusLine().getStatusCode(),
                 response.getStatusLine().getReasonPhrase());
-        return new ApiResponse(response.getStatusLine().getStatusCode(),
-                responseHeaders, responseBody);
+        return new ApiResponse(response.getStatusLine().getStatusCode(), responseHeaders, responseBody);
     }
 
     private HttpUriRequest buildRequest(final HttpMethod httpMethod,
-                                        final String url,
+                                        final String endpoint,
                                         final Map<String, String> headers,
                                         final HttpEntity body,
                                         final String alias) {
-        HttpUriRequest request = getHttpRequest(httpMethod, createFullURL(url, alias), body);
+        HttpUriRequest request = getHttpRequest(httpMethod, createFullURL(endpoint, alias), body);
         addRequestHeaders(request, headers);
         return request;
     }
 
-    //CHECKSTYLE:OFF
     private HttpUriRequest getHttpRequest(final HttpMethod httpMethod,
                                           final String uri,
                                           final HttpEntity body) {
         switch (httpMethod) {
-            case GET:
-                return new HttpGet(uri);
-            case DELETE:
-                return new HttpDelete(uri);
-            case HEAD:
-                return new HttpHead(uri);
-            case OPTIONS:
-                return new HttpOptions(uri);
-            case POST:
-                return setRequestBody(new HttpPost(uri), body);
-            case PUT:
-                return setRequestBody(new HttpPut(uri), body);
-            case PATCH:
-                return setRequestBody(new HttpPatch(uri), body);
-            case TRACE:
-                return new HttpTrace(uri);
+            case GET: return new HttpGet(uri);
+            case DELETE: return new HttpDelete(uri);
+            case HEAD: return new HttpHead(uri);
+            case OPTIONS: return new HttpOptions(uri);
+            case TRACE: return new HttpTrace(uri);
+            case POST: return setRequestBody(new HttpPost(uri), body);
+            case PUT: return setRequestBody(new HttpPut(uri), body);
+            case PATCH: return setRequestBody(new HttpPatch(uri), body);
             default:
                 throw new DefaultFrameworkException(UNKNOWN_METHOD, httpMethod);
         }
     }
-    //CHECKSTYLE:ON
 
-    private String createFullURL(final String url, final String alias) {
-        String apiUrl = GlobalTestConfigurationProvider.getIntegrations().getApis().getApi()
-                .stream()
-                .filter(o -> o.getAlias().equalsIgnoreCase(alias))
-                .findFirst()
-                .orElseThrow(() -> new DefaultFrameworkException(format("Cannot find api with alias \"%s\"", alias)))
-                .getUrl();
-        return apiUrl + url;
+    private String createFullURL(final String endpoint, final String alias) {
+        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().getApis().getApi();
+        Api apiIntegration = (Api) ConfigUtil.findApiForAlias(apiList, alias);
+        return apiIntegration.getUrl() + endpoint;
     }
 
     private void addRequestHeaders(final HttpUriRequest request, final Map<String, String> headers) {

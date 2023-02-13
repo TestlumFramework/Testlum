@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;choice&gt;
  *         &lt;element name="hover" type="{http://www.knubisoft.com/cott/testing/model/scenario}hover" maxOccurs="unbounded"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="moveToEmptySpace" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="moveToEmptySpace" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -78,8 +78,12 @@ public class Hovers
      *     {@link Boolean }
      *     
      */
-    public Boolean isMoveToEmptySpace() {
-        return moveToEmptySpace;
+    public boolean isMoveToEmptySpace() {
+        if (moveToEmptySpace == null) {
+            return false;
+        } else {
+            return moveToEmptySpace;
+        }
     }
 
     /**

@@ -360,6 +360,10 @@ public class LogUtil {
         }
     }
 
+    public void logError(final Exception ex) {
+        log.error(LogMessage.ERROR_LOG, ex);
+    }
+
     public void logSqlException(final Exception ex, final String query) {
         if (StringUtils.isNotBlank(ex.getMessage())) {
             log.error(ERROR_SQL_QUERY, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE),

@@ -18,6 +18,12 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:simpleType name="urlWeb" final="restriction">
+        <x:restriction base="x:string">
+            <x:pattern value="https?://.+|chrome-extension://.+"/>
+        </x:restriction>
+    </x:simpleType>
+
     <x:simpleType name="urlWebsocket" final="restriction">
         <x:restriction base="x:string">
             <x:pattern value="((wss?|https?)://.+)"/>

@@ -7,11 +7,16 @@ import com.knubisoft.cott.testing.framework.scenario.ScenarioFilter;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.framework.util.ScenarioStepReader;
+import com.knubisoft.cott.testing.framework.variations.GlobalVariations;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Named;
+import org.junit.jupiter.params.provider.Arguments;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -19,10 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
-import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.Named;
-import org.junit.jupiter.params.provider.Arguments;
-import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.SCENARIO_VARIATIONS_MAP;
+
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class TestSetCollector {
@@ -146,7 +148,7 @@ public class TestSetCollector {
     }
 
     private List<Map<String, String>> getVariationList(final MappingResult entry) {
-        return SCENARIO_VARIATIONS_MAP.get(entry.scenario);
+        return GlobalVariations.getVariations(entry.scenario.getVariations());
     }
 
     private boolean variationsExist(final MappingResult entry) {

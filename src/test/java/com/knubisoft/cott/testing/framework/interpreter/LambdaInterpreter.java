@@ -1,7 +1,6 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.cott.testing.framework.constant.LogMessage;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
@@ -71,7 +70,7 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
         try {
             return awsLambdaClients.get(alias).invoke(request);
         } catch (LambdaException e) {
-            log.error(LogMessage.ERROR_LOG, e);
+            LogUtil.logError(e);
             throw e;
         }
     }

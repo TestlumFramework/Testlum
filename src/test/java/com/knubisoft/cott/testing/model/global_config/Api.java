@@ -15,10 +15,9 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="api"&gt;
  *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}aliasPattern" /&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}integration"&gt;
  *       &lt;attribute name="url" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}url" /&gt;
- *     &lt;/restriction&gt;
+ *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -27,36 +26,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "api")
-public class Api {
+public class Api
+    extends Integration
+{
 
-    @XmlAttribute(name = "alias", required = true)
-    protected String alias;
     @XmlAttribute(name = "url", required = true)
     protected String url;
-
-    /**
-     * Gets the value of the alias property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getAlias() {
-        return alias;
-    }
-
-    /**
-     * Sets the value of the alias property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setAlias(String value) {
-        this.alias = value;
-    }
 
     /**
      * Gets the value of the url property.

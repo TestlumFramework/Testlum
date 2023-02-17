@@ -6,6 +6,7 @@ import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.parser.CSVParser;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
+import com.knubisoft.cott.testing.framework.util.ConfigUtil;
 import com.knubisoft.cott.testing.framework.util.DatasetValidator;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.HttpUtil;
@@ -63,6 +64,7 @@ import com.knubisoft.cott.testing.model.scenario.Rabbit;
 import com.knubisoft.cott.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.cott.testing.model.scenario.Redis;
+import com.knubisoft.cott.testing.model.scenario.RelationalDbResult;
 import com.knubisoft.cott.testing.model.scenario.Response;
 import com.knubisoft.cott.testing.model.scenario.S3;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
@@ -87,7 +89,6 @@ import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
-import java.util.Set;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -97,14 +98,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.SCENARIO_VARIATIONS_MAP;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ALIAS_NOT_FOUND;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.API_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INTEGRATION_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
@@ -295,7 +295,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
         validatorMap.put(o -> o instanceof Var, (xmlFile, command) -> {
             Var var = (Var) command;
-            validateVarCommand(xmlFile, var);
+            validateVarCommand(var);
         });
 
         validatorMap.put(o -> o instanceof Web, (xmlFile, command) -> {
@@ -400,40 +400,36 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
-    private void validateAlias(final List<? extends Integration> integrationsList, final String alias) {
-        integrationsList.stream()
-                .filter(Integration::isEnabled)
-                .filter(o -> o.getAlias().equals(alias))
-                .findFirst()
-                .orElseThrow(() -> new DefaultFrameworkException(ALIAS_NOT_FOUND, alias));
+    private void validateAlias(final List<? extends Integration> integrationList, final String alias) {
+        ConfigUtil.checkIntegrationForAlias(integrationList, alias);
     }
 
     //CHECKSTYLE:OFF
-    private void validateVarCommand(final File xmlFile, final Var var) {
-        if (Objects.nonNull(var.getRelationalDbResult())) {
-            String alias = var.getRelationalDbResult().getAlias();
-            List<? extends Integration> integrationsList;
-            switch (var.getRelationalDbResult().getDbType()) {
+    private void validateVarCommand(final Var var) {
+        RelationalDbResult dbResult = var.getRelationalDbResult();
+        if (Objects.nonNull(dbResult)) {
+            List<? extends Integration> integrationList;
+            switch (dbResult.getDbType()) {
                 case POSTGRES:
                     checkIntegrationExistence(integrations.getPostgresIntegration(), PostgresIntegration.class);
-                    integrationsList = integrations.getPostgresIntegration().getPostgres();
+                    integrationList = integrations.getPostgresIntegration().getPostgres();
                     break;
                 case MYSQL:
                     checkIntegrationExistence(integrations.getMysqlIntegration(), MysqlIntegration.class);
-                    integrationsList = integrations.getMysqlIntegration().getMysql();
+                    integrationList = integrations.getMysqlIntegration().getMysql();
                     break;
                 case ORACLE:
                     checkIntegrationExistence(integrations.getOracleIntegration(), OracleIntegration.class);
-                    integrationsList = integrations.getOracleIntegration().getOracle();
+                    integrationList = integrations.getOracleIntegration().getOracle();
                     break;
                 case CLICKHOUSE:
                     checkIntegrationExistence(integrations.getClickhouseIntegration(), ClickhouseIntegration.class);
-                    integrationsList = integrations.getClickhouseIntegration().getClickhouse();
+                    integrationList = integrations.getClickhouseIntegration().getClickhouse();
                     break;
                 default:
-                    throw new DefaultFrameworkException(DB_NOT_SUPPORTED, var.getRelationalDbResult().getDbType());
+                    throw new DefaultFrameworkException(DB_NOT_SUPPORTED, dbResult.getDbType());
             }
-            validateAlias(integrationsList, alias);
+            validateAlias(integrationList, dbResult.getAlias());
         }
     }
     //CHECKSTYLE:ON
@@ -508,9 +504,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateHttpCommand(final File xmlFile, final Http http) {
-        integrations.getApis().getApi().stream()
-                .filter(s -> s.getAlias().equals(http.getAlias())).findFirst()
-                .orElseThrow(() -> new DefaultFrameworkException(API_NOT_FOUND, http.getAlias()));
+        ConfigUtil.findApiForAlias(integrations.getApis().getApi(), http.getAlias());
 
         HttpInfo httpInfo = HttpUtil.getHttpMethodMetadata(http).getHttpInfo();
         Response response = httpInfo.getResponse();

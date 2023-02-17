@@ -61,8 +61,8 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
                 uiCommand.getComment());
         executeUiCommand(uiCommand, subCommandResult, dependencies);
         result.getSubCommandsResult().add(subCommandResult);
-        processIfSwitchToFrame(uiCommand, result, dependencies);
-        processIfWebView(uiCommand, result, dependencies);
+        processIfSwitchToFrame(uiCommand, subCommandResult, dependencies);
+        processIfWebView(uiCommand, subCommandResult, dependencies);
     }
 
     private void executeUiCommand(final AbstractUiCommand uiCommand,
@@ -90,6 +90,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
             LogUtil.startUiCommandsInFrame();
             runCommands(((SwitchToFrame) uiCommand).getClickOrInputOrAssert(), result, dependencies);
             LogUtil.endUiCommandsInFrame();
+            dependencies.getDriver().switchTo().defaultContent();
         }
     }
 

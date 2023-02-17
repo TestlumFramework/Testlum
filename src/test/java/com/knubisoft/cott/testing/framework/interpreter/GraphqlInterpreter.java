@@ -2,25 +2,22 @@ package com.knubisoft.cott.testing.framework.interpreter;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.interpreter.lib.http.ApiResponse;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.ConfigUtil;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.HttpValidator;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
+import com.knubisoft.cott.testing.model.global_config.GraphqlApi;
 import com.knubisoft.cott.testing.model.scenario.Graphql;
 import com.knubisoft.cott.testing.model.scenario.GraphqlBody;
 import com.knubisoft.cott.testing.model.scenario.Header;
 import com.knubisoft.cott.testing.model.scenario.Response;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -34,7 +31,12 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import static java.lang.String.format;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @InterpreterForClass(Graphql.class)
@@ -85,14 +87,9 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     }
 
     private String getFullUrl(final Graphql graphql) {
-        String url = GlobalTestConfigurationProvider.getIntegrations().getGraphqlIntegration().getApi()
-                .stream()
-                .filter(o -> o.getAlias().equalsIgnoreCase(graphql.getAlias()))
-                .findFirst()
-                .orElseThrow(() -> new DefaultFrameworkException(
-                        format("Cannot find api with alias \"%s\"", graphql.getAlias())))
-                .getUrl();
-        return url + graphql.getEndpoint();
+        List<GraphqlApi> apiList = GlobalTestConfigurationProvider.getIntegrations().getGraphqlIntegration().getApi();
+        GraphqlApi graphqlApi = (GraphqlApi) ConfigUtil.findApiForAlias(apiList, graphql.getAlias());
+        return graphqlApi.getUrl() + graphql.getEndpoint();
     }
 
     private void compareResult(final Response expected,

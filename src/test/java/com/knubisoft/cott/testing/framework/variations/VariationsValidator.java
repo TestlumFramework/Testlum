@@ -13,7 +13,7 @@ public class VariationsValidator {
                                    final Scenario scenario,
                                    final File filePath) {
         if (variationList.isEmpty()) {
-            throw new DefaultFrameworkException("Variation file %s in the %s scenario is empty",
+            throw new DefaultFrameworkException("Variation %s file in the %s is empty",
                     scenario.getVariations(), filePath.getAbsolutePath());
         }
 

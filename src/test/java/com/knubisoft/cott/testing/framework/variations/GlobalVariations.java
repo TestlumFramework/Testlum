@@ -38,5 +38,7 @@ public class GlobalVariations {
         return variationList;
     }
 
-    private class VariationsMap extends HashMap<String, List<Map<String, String>>> { }
+    private class VariationsMap extends HashMap<String, List<Map<String, String>>> {
+        private static final long serialVersionUID = 1;
+    }
 }

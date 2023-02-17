@@ -44,6 +44,7 @@ import com.knubisoft.cott.testing.model.scenario.Clickhouse;
 import com.knubisoft.cott.testing.model.scenario.CommandWithOptionalLocator;
 import com.knubisoft.cott.testing.model.scenario.Dynamo;
 import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
+import com.knubisoft.cott.testing.model.scenario.FromSQL;
 import com.knubisoft.cott.testing.model.scenario.Http;
 import com.knubisoft.cott.testing.model.scenario.HttpInfo;
 import com.knubisoft.cott.testing.model.scenario.Include;
@@ -62,7 +63,6 @@ import com.knubisoft.cott.testing.model.scenario.Rabbit;
 import com.knubisoft.cott.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.cott.testing.model.scenario.Redis;
-import com.knubisoft.cott.testing.model.scenario.RelationalDbResult;
 import com.knubisoft.cott.testing.model.scenario.Response;
 import com.knubisoft.cott.testing.model.scenario.S3;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
@@ -87,8 +87,6 @@ import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
-import org.springframework.util.StringUtils;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -100,7 +98,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import org.springframework.util.StringUtils;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INTEGRATION_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
@@ -377,7 +375,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     //CHECKSTYLE:OFF
     private void validateVarCommand(final Var var) {
-        RelationalDbResult dbResult = var.getRelationalDbResult();
+        FromSQL dbResult = var.getFromSQL();
         if (Objects.nonNull(dbResult)) {
             List<? extends Integration> integrationList;
             switch (dbResult.getDbType()) {
@@ -600,5 +598,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private interface AbstractCommandPredicate extends Predicate<AbstractCommand> { }
+
     private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> { }
 }

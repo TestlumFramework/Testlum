@@ -8,7 +8,7 @@
     <x:annotation>
         <x:appinfo>
             <jaxb:bindings
-                node="/x:schema/x:element[@name='ui']//x:complexType//x:sequence">
+                node="/x:schema/x:element[@name='uis']//x:complexType//x:sequence">
             </jaxb:bindings>
         </x:appinfo>
     </x:annotation>
@@ -18,7 +18,7 @@
     <x:include schemaLocation="native-config.xsd"/>
     <x:include schemaLocation="browserstack-config.xsd"/>
 
-    <x:element name="ui">
+    <x:element name="uis">
         <x:complexType>
             <x:sequence>
                 <x:element name="web" type="tns:web" minOccurs="0"/>

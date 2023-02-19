@@ -38,10 +38,10 @@ public class WebsocketConfiguration {
                                         final List<WebsocketApi> websocketApis,
                                         final Map<String, WebsocketConnectionManager> connectionSupplierMap) {
         for (WebsocketApi websocket : websocketApis) {
-            if (websocket.isStomp()) {
+            if (WebsocketProtocol.STOMP == websocket.getProtocol()) {
                 connectionSupplierMap.put(envName + UNDERSCORE + websocket.getAlias(),
                         getWsStompConnectionManager(websocket.getUrl()));
-            } else {
+            } else if (WebsocketProtocol.STANDARD == websocket.getProtocol()) {
                 connectionSupplierMap.put(envName + UNDERSCORE + websocket.getAlias(),
                         getWsStandardConnectionManager(websocket.getUrl()));
             }

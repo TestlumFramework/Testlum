@@ -5,7 +5,7 @@ import com.knubisoft.cott.testing.framework.parser.XMLParsers;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.validator.GlobalTestConfigValidator;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
-import com.knubisoft.cott.testing.model.global_config.ConfigFiles;
+import com.knubisoft.cott.testing.model.global_config.ConfigFile;
 import com.knubisoft.cott.testing.model.global_config.Environment;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
@@ -13,7 +13,7 @@ import com.knubisoft.cott.testing.model.global_config.Mobilebrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.Native;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
-import com.knubisoft.cott.testing.model.global_config.Ui;
+import com.knubisoft.cott.testing.model.global_config.Uis;
 import com.knubisoft.cott.testing.model.global_config.Web;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -37,11 +37,11 @@ public class GlobalTestConfigurationProvider {
 
     private static final GlobalTestConfiguration GLOBAL_TEST_CONFIGURATION = init();
     private static final Map<String, Integrations> INTEGRATIONS = collectIntegrations();
-    private static final Map<String, Ui> UI = collectUiConfigs();
+    private static final Map<String, Uis> UIS = collectUiConfigs();
     private static final List<Environment> ENVIRONMENTS = provide().getEnvironments().getEnvironment().stream()
             .filter(Environment::isEnable).collect(Collectors.toList());
     private static final Integrations DEFAULT_INTEGRATION = initIntegration(getEnabledEnvironments().get(0).getFolder(),
-            getEnabledEnvironments().get(0).getIntegrationsConfigurations());
+            getEnabledEnvironments().get(0).getIntegrationsConfigFile());
 
     public static GlobalTestConfiguration provide() {
         return GLOBAL_TEST_CONFIGURATION;
@@ -51,8 +51,8 @@ public class GlobalTestConfigurationProvider {
         return INTEGRATIONS;
     }
 
-    public static Map<String, Ui> provideUi() {
-        return UI;
+    public static Map<String, Uis> provideUis() {
+        return UIS;
     }
 
     public static List<Environment> getEnabledEnvironments() {
@@ -108,18 +108,18 @@ public class GlobalTestConfigurationProvider {
     private static Map<String, Integrations> collectIntegrations() {
         Map<String, Integrations> integrationsMap = new HashMap<>();
         getEnabledEnvironments().forEach(env -> integrationsMap.put(env.getFolder(),
-                initIntegration(env.getFolder(), env.getIntegrationsConfigurations())));
+                initIntegration(env.getFolder(), env.getIntegrationsConfigFile())));
         return integrationsMap;
     }
 
-    private static Map<String, Ui> collectUiConfigs() {
-        Map<String, Ui> integrationsMap = new HashMap<>();
+    private static Map<String, Uis> collectUiConfigs() {
+        Map<String, Uis> integrationsMap = new HashMap<>();
         getEnabledEnvironments().forEach(env -> integrationsMap.put(env.getFolder(),
-                initUi(env.getFolder(), env.getUiConfigurations())));
+                initUis(env.getFolder(), env.getUisConfigFile())));
         return integrationsMap;
     }
 
-    private static Integrations initIntegration(final String folder, final ConfigFiles configFile) {
+    private static Integrations initIntegration(final String folder, final ConfigFile configFile) {
         if (configFile.isEnable()) {
             if (StringUtils.isBlank(configFile.getFile())) {
                 throw new DefaultFrameworkException(INTEGRATIONS_FILE_NOT_SPECIFIED);
@@ -131,15 +131,15 @@ public class GlobalTestConfigurationProvider {
         return new Integrations();
     }
 
-    private static Ui initUi(final String folder, final ConfigFiles configFile) {
+    private static Uis initUis(final String folder, final ConfigFile configFile) {
         if (configFile.isEnable()) {
             if (StringUtils.isBlank(configFile.getFile())) {
                 throw new DefaultFrameworkException(UI_FILE_NOT_SPECIFIED);
             }
-            return XMLParsers.forUi().process(FileSearcher.searchFileFromEnvFolder(folder, configFile.getFile()));
+            return XMLParsers.forUis().process(FileSearcher.searchFileFromEnvFolder(folder, configFile.getFile()));
         }
-        log.warn(DISABLED_IN_CONFIG, "UI", "ui");
-        return new Ui();
+        log.warn(DISABLED_IN_CONFIG, "UIs", "ui");
+        return new Uis();
     }
 
 

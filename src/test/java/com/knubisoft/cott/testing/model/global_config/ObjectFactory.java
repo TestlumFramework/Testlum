@@ -30,11 +30,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Ui }
+     * Create an instance of {@link Uis }
      * 
      */
-    public Ui createUi() {
-        return new Ui();
+    public Uis createUis() {
+        return new Uis();
     }
 
     /**
@@ -95,7 +95,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link GraphqlIntegration }
-     *
+     * 
      */
     public GraphqlIntegration createGraphqlIntegration() {
         return new GraphqlIntegration();
@@ -591,7 +591,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Api }
-     *
+     * 
      */
     public Api createApi() {
         return new Api();
@@ -599,7 +599,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link GraphqlApi }
-     *
+     * 
      */
     public GraphqlApi createGraphqlApi() {
         return new GraphqlApi();
@@ -607,7 +607,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link WebsocketApi }
-     *
+     * 
      */
     public WebsocketApi createWebsocketApi() {
         return new WebsocketApi();
@@ -711,7 +711,7 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link Lambda }
-     *
+     * 
      */
     public Lambda createLambda() {
         return new Lambda();
@@ -750,19 +750,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ConfigFiles }
-     *
-     */
-    public ConfigFiles createConfigFiles() {
-        return new ConfigFiles();
-    }
-
-    /**
      * Create an instance of {@link Environment }
-     *
+     * 
      */
     public Environment createEnvironment() {
         return new Environment();
+    }
+
+    /**
+     * Create an instance of {@link ConfigFile }
+     * 
+     */
+    public ConfigFile createConfigFile() {
+        return new ConfigFile();
     }
 
 }

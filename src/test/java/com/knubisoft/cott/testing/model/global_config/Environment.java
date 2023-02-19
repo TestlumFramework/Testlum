@@ -17,8 +17,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="uiConfigurations" type="{http://www.knubisoft.com/cott/testing/model/global-config}configFiles" minOccurs="0"/&gt;
- *         &lt;element name="integrationsConfigurations" type="{http://www.knubisoft.com/cott/testing/model/global-config}configFiles" minOccurs="0"/&gt;
+ *         &lt;element name="uisConfigFile" type="{http://www.knubisoft.com/cott/testing/model/global-config}configFile" minOccurs="0"/&gt;
+ *         &lt;element name="integrationsConfigFile" type="{http://www.knubisoft.com/cott/testing/model/global-config}configFile" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="folder" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" /&gt;
  *       &lt;attribute name="enable" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
@@ -31,64 +31,64 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "environment", propOrder = {
-    "uiConfigurations",
-    "integrationsConfigurations"
+    "uisConfigFile",
+    "integrationsConfigFile"
 })
 public class Environment {
 
-    protected ConfigFiles uiConfigurations;
-    protected ConfigFiles integrationsConfigurations;
+    protected ConfigFile uisConfigFile;
+    protected ConfigFile integrationsConfigFile;
     @XmlAttribute(name = "folder", required = true)
     protected String folder;
     @XmlAttribute(name = "enable", required = true)
     protected boolean enable;
 
     /**
-     * Gets the value of the uiConfigurations property.
+     * Gets the value of the uisConfigFile property.
      * 
      * @return
      *     possible object is
-     *     {@link ConfigFiles }
+     *     {@link ConfigFile }
      *     
      */
-    public ConfigFiles getUiConfigurations() {
-        return uiConfigurations;
+    public ConfigFile getUisConfigFile() {
+        return uisConfigFile;
     }
 
     /**
-     * Sets the value of the uiConfigurations property.
+     * Sets the value of the uisConfigFile property.
      * 
      * @param value
      *     allowed object is
-     *     {@link ConfigFiles }
+     *     {@link ConfigFile }
      *     
      */
-    public void setUiConfigurations(ConfigFiles value) {
-        this.uiConfigurations = value;
+    public void setUisConfigFile(ConfigFile value) {
+        this.uisConfigFile = value;
     }
 
     /**
-     * Gets the value of the integrationsConfigurations property.
+     * Gets the value of the integrationsConfigFile property.
      * 
      * @return
      *     possible object is
-     *     {@link ConfigFiles }
+     *     {@link ConfigFile }
      *     
      */
-    public ConfigFiles getIntegrationsConfigurations() {
-        return integrationsConfigurations;
+    public ConfigFile getIntegrationsConfigFile() {
+        return integrationsConfigFile;
     }
 
     /**
-     * Sets the value of the integrationsConfigurations property.
+     * Sets the value of the integrationsConfigFile property.
      * 
      * @param value
      *     allowed object is
-     *     {@link ConfigFiles }
+     *     {@link ConfigFile }
      *     
      */
-    public void setIntegrationsConfigurations(ConfigFiles value) {
-        this.integrationsConfigurations = value;
+    public void setIntegrationsConfigFile(ConfigFile value) {
+        this.integrationsConfigFile = value;
     }
 
     /**

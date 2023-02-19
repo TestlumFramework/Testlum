@@ -37,8 +37,8 @@ import javax.xml.bind.annotation.XmlType;
     "_native",
     "browserStackLogin"
 })
-@XmlRootElement(name = "ui")
-public class Ui {
+@XmlRootElement(name = "uis")
+public class Uis {
 
     protected Web web;
     protected Mobilebrowser mobilebrowser;

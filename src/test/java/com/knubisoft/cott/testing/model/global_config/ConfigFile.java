@@ -8,12 +8,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for configFiles complex type.
+ * <p>Java class for configFile complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="configFiles"&gt;
+ * &lt;complexType name="configFile"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="file" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}xmlFileExtension" /&gt;
@@ -26,8 +26,8 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "configFiles")
-public class ConfigFiles {
+@XmlType(name = "configFile")
+public class ConfigFile {
 
     @XmlAttribute(name = "file", required = true)
     protected String file;

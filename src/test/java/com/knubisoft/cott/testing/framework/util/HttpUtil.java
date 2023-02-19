@@ -37,6 +37,8 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INCORRECT_HTTP_PROCESSING;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toMap;
@@ -69,11 +71,11 @@ public final class HttpUtil {
     }
 
     public HttpEntity extractBody(final Body body,
-                                  final boolean isJson,
+                                  final ContentType contentType,
                                   final AbstractInterpreter<?> interpreter,
                                   final InterpreterDependencies dependencies) {
         try {
-            return injectAppropriatePart(body, isJson, interpreter, dependencies);
+            return injectAppropriatePart(body, contentType, interpreter, dependencies);
         } catch (IOException e) {
             throw new DefaultFrameworkException(e);
         }
@@ -105,27 +107,27 @@ public final class HttpUtil {
 
     //CHECKSTYLE:OFF
     private HttpEntity injectAppropriatePart(final Body body,
-                                             final boolean isJson,
+                                             final ContentType contentType,
                                              final AbstractInterpreter<?> interpreter,
                                              final InterpreterDependencies dependencies) throws IOException {
         if (body == null) {
-            return getStringEntity(StringUtils.EMPTY);
+            return getStringEntity(StringUtils.EMPTY, contentType);
         } else if (body.getRaw() != null) {
-            String injected = interpreter.inject(body.getRaw());
-            return getStringEntity(injected);
+            String injected = interpreter.inject(body.getRaw().replaceAll(REGEX_MANY_SPACES, EMPTY));
+            return getStringEntity(injected, contentType);
         } else if (body.getFrom() != null) {
-            return injectFromFile(body, interpreter, dependencies);
+            return injectFromFile(body, contentType, interpreter, dependencies);
         } else if (body.getMultipart() != null) {
             return injectMultipartFile(body, dependencies);
         }
-        String param = getFromParam(isJson, body, interpreter);
+        String param = getFromParam(contentType, body, interpreter);
         String injected = interpreter.inject(param);
-        return getStringEntity(injected);
+        return getStringEntity(injected, contentType);
     }
     //CHECKSTYLE:ON
 
-    private HttpEntity getStringEntity(final String body) {
-        return new StringEntity(body, ContentType.APPLICATION_JSON);
+    private HttpEntity getStringEntity(final String body, final ContentType contentType) {
+        return new StringEntity(body, contentType);
     }
 
     private HttpEntity injectMultipartFile(final Body body,
@@ -140,10 +142,11 @@ public final class HttpUtil {
     }
 
     private HttpEntity injectFromFile(final Body body,
+                                      final ContentType contentType,
                                       final AbstractInterpreter<?> interpreter,
                                       final InterpreterDependencies dependencies) throws IOException {
         String injectedContent = injectFromFile(body, interpreter, dependencies.getFile());
-        return new StringEntity(injectedContent, ContentType.APPLICATION_JSON);
+        return getStringEntity(injectedContent, contentType);
     }
 
     public String injectFromFile(final Body body,
@@ -175,13 +178,13 @@ public final class HttpUtil {
         return injected;
     }
 
-    private String getFromParam(final boolean isJson,
+    private String getFromParam(final ContentType contentType,
                                 final Body body,
                                 final AbstractInterpreter<?> interpreter) {
         Map<String, String> bodyParamMap = body.getParam().stream()
                 .collect(toMap(Param::getName, Param::getData, (k, v) -> k, LinkedHashMap::new));
 
-        if (isJson) {
+        if (ContentType.APPLICATION_JSON == contentType) {
             return interpreter.toString(bodyParamMap);
         }
         return bodyParamMap.entrySet().stream()

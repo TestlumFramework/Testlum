@@ -23,17 +23,11 @@ import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.SesBody;
 import com.knubisoft.cott.testing.model.scenario.SesMessage;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
+import com.knubisoft.cott.testing.model.scenario.SwipeNative;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSubscribe;
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
@@ -41,6 +35,15 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static java.lang.String.format;
@@ -65,6 +68,7 @@ public class ResultUtil {
     public static final String EXPRESSION = "Expression";
     public static final String NO_EXPRESSION = "No expression";
     public static final String CONSTANT = "Constant";
+    public static final String COOKIES = "Cookies";
     public static final String ASSERT_LOCATOR = "Locator for assert command";
     public static final String ASSERT_ATTRIBUTE = "Assert command attribute";
     public static final String CLICK_LOCATOR = "Locator for click command";
@@ -98,7 +102,11 @@ public class ResultUtil {
     public static final String TO_LOCATOR = "To element with locator";
     public static final String SCROLL_TO_ELEMENT = "Scrolling to element with locator id";
     public static final String PERFORM_SWIPE = "Perform swipe with direction";
-    public static final String AMOUNT_OF_SWIPES = "Amount of swipes";
+    public static final String PERFORM_ELEMENT_SWIPE = "Performing element swipe with direction";
+    private static final String SWIPE_VALUE = "Swipe value in percent due to screen dimensions";
+    private static final String SWIPE_QUANTITY = "Quantity of swipes";
+    private static final String SWIPE_TYPE = "Swipe type";
+    private static final String SWIPE_LOCATOR = "Locator for swipe";
     private static final String SCROLL_DIRECTION = "Scroll direction";
     private static final String SCROLL_MEASURE = "Scroll measure";
     private static final String SCROLL_TYPE = "Scroll type";
@@ -419,18 +427,18 @@ public class ResultUtil {
                                   final CommandResult commandResult) {
         commandResult.put(SCROLL_DIRECTION, scroll.getDirection());
         commandResult.put(SCROLL_MEASURE, scroll.getMeasure());
-        commandResult.put(VALUE, scroll.getValue().toString());
+        commandResult.put(VALUE, scroll.getValue());
         commandResult.put(SCROLL_TYPE, scroll.getType());
-        if (ScrollType.INNER.equals(scroll.getType())) {
-            commandResult.put(LOCATOR_FOR_SCROLL, scroll.getLocator());
+        if (ScrollType.INNER == scroll.getType()) {
+            commandResult.put(LOCATOR_FOR_SCROLL, scroll.getLocatorId());
         }
     }
 
     public void addScrollNativeMetaDada(final ScrollNative scrollNative,
                                         final CommandResult commandResult) {
         commandResult.put(SCROLL_TYPE, scrollNative.getType());
-        if (ScrollType.INNER.equals(scrollNative.getType())) {
-            commandResult.put(LOCATOR_FOR_SCROLL, scrollNative.getLocator());
+        if (ScrollType.INNER == scrollNative.getType()) {
+            commandResult.put(LOCATOR_FOR_SCROLL, scrollNative.getLocatorId());
         }
         commandResult.put(SCROLL_DIRECTION, scrollNative.getDirection());
         commandResult.put(VALUE, scrollNative.getValue());
@@ -517,5 +525,15 @@ public class ResultUtil {
         result.put(ALIAS, alias);
         result.put(ENDPOINT, endpoint);
         result.put(BODY_OF_REQUEST, body);
+    }
+
+    public static void addSwipeMetaData(final SwipeNative swipeNative, final CommandResult result) {
+        result.put(SWIPE_TYPE, swipeNative.getType().value());
+        result.put(SWIPE_QUANTITY, swipeNative.getQuantity());
+        result.put(PERFORM_SWIPE, swipeNative.getDirection());
+        result.put(SWIPE_VALUE, swipeNative.getPercent());
+        if (StringUtils.isNotBlank(swipeNative.getLocatorId())) {
+            result.put(SWIPE_LOCATOR, swipeNative.getLocatorId());
+        }
     }
 }

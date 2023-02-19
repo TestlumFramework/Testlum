@@ -7,31 +7,31 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for compareRule.
+ * <p>Java class for swipeType.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="compareRule"&gt;
+ * &lt;simpleType name="swipeType"&gt;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *     &lt;enumeration value="equals"/&gt;
- *     &lt;enumeration value="contains"/&gt;
+ *     &lt;enumeration value="element"/&gt;
+ *     &lt;enumeration value="page"/&gt;
  *   &lt;/restriction&gt;
  * &lt;/simpleType&gt;
  * </pre>
  * 
  */
-@XmlType(name = "compareRule")
+@XmlType(name = "swipeType")
 @XmlEnum
-public enum CompareRule {
+public enum SwipeType {
 
-    @XmlEnumValue("equals")
-    EQUALS("equals"),
-    @XmlEnumValue("contains")
-    CONTAINS("contains");
+    @XmlEnumValue("element")
+    ELEMENT("element"),
+    @XmlEnumValue("page")
+    PAGE("page");
     private final String value;
 
-    CompareRule(String v) {
+    SwipeType(String v) {
         value = v;
     }
 
@@ -39,8 +39,8 @@ public enum CompareRule {
         return value;
     }
 
-    public static CompareRule fromValue(String v) {
-        for (CompareRule c: CompareRule.values()) {
+    public static SwipeType fromValue(String v) {
+        for (SwipeType c: SwipeType.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

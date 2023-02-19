@@ -3,17 +3,17 @@ package com.knubisoft.cott.testing.framework.scenario;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.cott.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
+import com.knubisoft.cott.testing.framework.util.ConfigUtil;
 import com.knubisoft.cott.testing.framework.util.DatasetValidator;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.HttpUtil;
 import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.framework.util.SendGridUtil;
 import com.knubisoft.cott.testing.framework.validator.XMLValidator;
-import com.knubisoft.cott.testing.model.global_config.AbstractDevice;
 import com.knubisoft.cott.testing.model.global_config.Apis;
+import com.knubisoft.cott.testing.model.global_config.AppiumCapabilities;
 import com.knubisoft.cott.testing.model.global_config.ClickhouseIntegration;
 import com.knubisoft.cott.testing.model.global_config.DynamoIntegration;
 import com.knubisoft.cott.testing.model.global_config.ElasticsearchIntegration;
@@ -24,6 +24,7 @@ import com.knubisoft.cott.testing.model.global_config.LambdaIntegration;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.MongoIntegration;
 import com.knubisoft.cott.testing.model.global_config.MysqlIntegration;
+import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.global_config.OracleIntegration;
 import com.knubisoft.cott.testing.model.global_config.PostgresIntegration;
 import com.knubisoft.cott.testing.model.global_config.RabbitmqIntegration;
@@ -36,9 +37,11 @@ import com.knubisoft.cott.testing.model.global_config.SqsIntegration;
 import com.knubisoft.cott.testing.model.global_config.TwilioIntegration;
 import com.knubisoft.cott.testing.model.global_config.Websockets;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
+import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.Body;
 import com.knubisoft.cott.testing.model.scenario.Clickhouse;
+import com.knubisoft.cott.testing.model.scenario.CommandWithOptionalLocator;
 import com.knubisoft.cott.testing.model.scenario.Dynamo;
 import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
 import com.knubisoft.cott.testing.model.scenario.Http;
@@ -59,10 +62,12 @@ import com.knubisoft.cott.testing.model.scenario.Rabbit;
 import com.knubisoft.cott.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.cott.testing.model.scenario.Redis;
+import com.knubisoft.cott.testing.model.scenario.RelationalDbResult;
 import com.knubisoft.cott.testing.model.scenario.Response;
 import com.knubisoft.cott.testing.model.scenario.S3;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
+import com.knubisoft.cott.testing.model.scenario.ScrollNative;
 import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.SendRmqMessage;
@@ -74,14 +79,14 @@ import com.knubisoft.cott.testing.model.scenario.Shell;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.Sqs;
 import com.knubisoft.cott.testing.model.scenario.StorageName;
+import com.knubisoft.cott.testing.model.scenario.SwipeNative;
+import com.knubisoft.cott.testing.model.scenario.SwipeType;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
-import com.knubisoft.cott.testing.model.scenario.Ui;
 import com.knubisoft.cott.testing.model.scenario.Var;
 import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
-import com.knubisoft.cott.testing.model.scenario.When;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -96,13 +101,13 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ALIAS_NOT_FOUND;
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.API_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INTEGRATION_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_MOBILEBROWSER_DEVICE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_NATIVE_DEVICE;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SAME_APPIUM_URL;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SAME_MOBILE_DEVICES;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF;
@@ -110,9 +115,7 @@ import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.JS
 
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
-
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
-
     private final Integrations integrations = GlobalTestConfigurationProvider.getIntegrations();
 
     public ScenarioValidator() {
@@ -154,11 +157,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             S3 s3 = (S3) command;
             validateAlias(s3Integration.getS3(), s3.getAlias());
             validateS3Command(xmlFile, s3);
-        });
-
-        validatorMap.put(o -> o instanceof When, (xmlFile, command) -> {
-            When when = (When) command;
-            validateWhenCommand(xmlFile, when);
         });
 
         validatorMap.put(o -> o instanceof Postgres, (xmlFile, command) -> {
@@ -293,7 +291,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
         validatorMap.put(o -> o instanceof Var, (xmlFile, command) -> {
             Var var = (Var) command;
-            validateVarCommand(xmlFile, var);
+            validateVarCommand(var);
         });
 
         validatorMap.put(o -> o instanceof Web, (xmlFile, command) -> {
@@ -305,7 +303,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         });
 
         validatorMap.put(o -> o instanceof Native, (xmlFile, command) -> {
-            validateNativeCommands();
+            validateNativeCommands((Native) command);
         });
 
         this.abstractCommandValidatorsMap = Collections.unmodifiableMap(validatorMap);
@@ -314,35 +312,45 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     @Override
     public void validate(final Scenario scenario, final File xmlFile) {
         if (scenario.isActive()) {
-            List<AbstractCommand> uiCommands = getUiCommands(scenario.getCommands());
-            if (!uiCommands.isEmpty() && containsNativeAndMobileTags(uiCommands)) {
-                validateNativeAndMobilebrowserConfig();
-            }
-            scenario.getCommands().forEach(it -> validateCommand(it, xmlFile));
+            validateIfContainsNativeAndMobileCommands(scenario.getCommands());
+            scenario.getCommands().forEach(command -> validateCommand(command, xmlFile));
         }
     }
 
-    private List<AbstractCommand> getUiCommands(final List<AbstractCommand> scenarioCommands) {
-        return scenarioCommands.stream().filter(abstractCommand ->
-                        Ui.class.isAssignableFrom(abstractCommand.getClass()))
-                .collect(Collectors.toList());
+    private void validateIfContainsNativeAndMobileCommands(final List<AbstractCommand> commands) {
+        boolean containsNativeAndMobileCommands =
+                commands.stream().anyMatch(command -> command instanceof Native)
+                        && commands.stream().anyMatch(command -> command instanceof Mobilebrowser);
+        if (containsNativeAndMobileCommands && MobileUtil.isNativeAndMobilebrowserConfigEnabled()) {
+            validateNativeAndMobileAppiumConfig();
+        }
     }
 
-    private boolean containsNativeAndMobileTags(final List<AbstractCommand> uiCommands) {
-        return uiCommands.stream().anyMatch(abstractCommand -> abstractCommand instanceof Native)
-                && uiCommands.stream().anyMatch(abstractCommand -> abstractCommand instanceof Mobilebrowser);
-    }
-
-    private void validateNativeAndMobilebrowserConfig() {
-        if (GlobalTestConfigurationProvider.getMobilebrowserSettings().getAppiumServerUrl()
-                .equals(GlobalTestConfigurationProvider.getNativeSettings().getAppiumServerUrl())) {
+    private void validateNativeAndMobileAppiumConfig() {
+        boolean isSameUrl = GlobalTestConfigurationProvider.getMobilebrowserSettings()
+                .getConnection().getAppiumServer().getServerUrl()
+                .equals(GlobalTestConfigurationProvider.getNativeSettings().getConnection()
+                        .getAppiumServer().getServerUrl());
+        if (isSameUrl) {
             throw new DefaultFrameworkException(SAME_APPIUM_URL);
         }
-        if (MobileUtil.filterEnabledMobilebrowserDevices().stream().map(MobilebrowserDevice::getUdid)
-                .anyMatch(deviceUdid -> MobileUtil.filterEnabledNativeDevices().stream()
-                        .map(AbstractDevice::getUdid).collect(Collectors.toList()).contains(deviceUdid))) {
+        if (isSameNativeAndMobileDevices()) {
             throw new DefaultFrameworkException(SAME_MOBILE_DEVICES);
         }
+    }
+
+    private boolean isSameNativeAndMobileDevices() {
+        List<String> nativeUdids = MobileUtil.filterEnabledNativeDevices().stream()
+                .map(NativeDevice::getAppiumCapabilities)
+                .filter(Objects::nonNull)
+                .map(AppiumCapabilities::getUdid)
+                .collect(Collectors.toList());
+
+        return MobileUtil.filterEnabledMobilebrowserDevices().stream()
+                .map(MobilebrowserDevice::getAppiumCapabilities)
+                .filter(Objects::nonNull)
+                .map(AppiumCapabilities::getUdid)
+                .anyMatch(nativeUdids::contains);
     }
 
     private void validateFileExistenceInDataFolder(final String commandFile) {
@@ -363,40 +371,36 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
-    private void validateAlias(final List<? extends Integration> integrationsList, final String alias) {
-        integrationsList.stream()
-                .filter(Integration::isEnabled)
-                .filter(o -> o.getAlias().equals(alias))
-                .findFirst()
-                .orElseThrow(() -> new DefaultFrameworkException(ALIAS_NOT_FOUND, alias));
+    private void validateAlias(final List<? extends Integration> integrationList, final String alias) {
+        ConfigUtil.checkIntegrationForAlias(integrationList, alias);
     }
 
     //CHECKSTYLE:OFF
-    private void validateVarCommand(final File xmlFile, final Var var) {
-        if (Objects.nonNull(var.getRelationalDbResult())) {
-            String alias = var.getRelationalDbResult().getAlias();
-            List<? extends Integration> integrationsList;
-            switch (var.getRelationalDbResult().getDbType()) {
+    private void validateVarCommand(final Var var) {
+        RelationalDbResult dbResult = var.getRelationalDbResult();
+        if (Objects.nonNull(dbResult)) {
+            List<? extends Integration> integrationList;
+            switch (dbResult.getDbType()) {
                 case POSTGRES:
                     checkIntegrationExistence(integrations.getPostgresIntegration(), PostgresIntegration.class);
-                    integrationsList = integrations.getPostgresIntegration().getPostgres();
+                    integrationList = integrations.getPostgresIntegration().getPostgres();
                     break;
                 case MYSQL:
                     checkIntegrationExistence(integrations.getMysqlIntegration(), MysqlIntegration.class);
-                    integrationsList = integrations.getMysqlIntegration().getMysql();
+                    integrationList = integrations.getMysqlIntegration().getMysql();
                     break;
                 case ORACLE:
                     checkIntegrationExistence(integrations.getOracleIntegration(), OracleIntegration.class);
-                    integrationsList = integrations.getOracleIntegration().getOracle();
+                    integrationList = integrations.getOracleIntegration().getOracle();
                     break;
                 case CLICKHOUSE:
                     checkIntegrationExistence(integrations.getClickhouseIntegration(), ClickhouseIntegration.class);
-                    integrationsList = integrations.getClickhouseIntegration().getClickhouse();
+                    integrationList = integrations.getClickhouseIntegration().getClickhouse();
                     break;
                 default:
-                    throw new DefaultFrameworkException(DB_NOT_SUPPORTED, var.getRelationalDbResult().getDbType());
+                    throw new DefaultFrameworkException(DB_NOT_SUPPORTED, dbResult.getDbType());
             }
-            validateAlias(integrationsList, alias);
+            validateAlias(integrationList, dbResult.getAlias());
         }
     }
     //CHECKSTYLE:ON
@@ -444,12 +448,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
-    private void validateWhenCommand(final File xmlFile, final When when) {
-        Stream.of(when.getRequest(), when.getThen())
-                .filter(StringUtils::hasText)
-                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
-    }
-
     private void validateS3Command(final File xmlFile, final S3 s3) {
         Stream.of(s3.getDownload(), s3.getUpload())
                 .filter(StringUtils::hasText)
@@ -477,9 +475,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateHttpCommand(final File xmlFile, final Http http) {
-        integrations.getApis().getApi().stream()
-                .filter(s -> s.getAlias().equals(http.getAlias())).findFirst()
-                .orElseThrow(() -> new DefaultFrameworkException(API_NOT_FOUND, http.getAlias()));
+        ConfigUtil.findApiForAlias(integrations.getApis().getApi(), http.getAlias());
 
         HttpInfo httpInfo = HttpUtil.getHttpMethodMetadata(http).getHttpInfo();
         Response response = httpInfo.getResponse();
@@ -531,23 +527,10 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateWebCommands(final Web command) {
         if (BrowserUtil.filterEnabledBrowsers().isEmpty()
-                || !GlobalTestConfigurationProvider.getBrowserSettings().isEnabled()) {
+                || !GlobalTestConfigurationProvider.getWebSettings().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_BROWSERS);
         }
-        command.getClickOrInputOrAssert().forEach(o -> {
-            if (o instanceof Javascript) {
-                validateFileExistenceInDataFolder(((Javascript) o).getFile());
-            } else if (o instanceof Scroll && ((Scroll) o).getType() == ScrollType.INNER) {
-                validateScrollCommand((Scroll) o);
-            }
-        });
-    }
-
-    private void validateNativeCommands() {
-        if (MobileUtil.filterEnabledNativeDevices().isEmpty()
-                || !GlobalTestConfigurationProvider.getNativeSettings().isEnabled()) {
-            throw new DefaultFrameworkException(NOT_ENABLED_NATIVE_DEVICE);
-        }
+        validateSubCommands(command.getClickOrInputOrAssert());
     }
 
     private void validateMobilebrowserCommands(final Mobilebrowser command) {
@@ -555,18 +538,37 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 || !GlobalTestConfigurationProvider.getMobilebrowserSettings().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_MOBILEBROWSER_DEVICE);
         }
-        command.getClickOrInputOrAssert().forEach(o -> {
+        validateSubCommands(command.getClickOrInputOrAssert());
+    }
+
+    private void validateSubCommands(final List<AbstractUiCommand> subCommands) {
+        subCommands.forEach(o -> {
             if (o instanceof Javascript) {
                 validateFileExistenceInDataFolder(((Javascript) o).getFile());
-            } else if (o instanceof Scroll && ((Scroll) o).getType() == ScrollType.INNER) {
-                validateScrollCommand((Scroll) o);
+            } else if (o instanceof Scroll && ScrollType.INNER == ((Scroll) o).getType()) {
+                validateLocator((Scroll) o, NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
             }
         });
     }
 
-    private void validateScrollCommand(final Scroll scroll) {
-        if (scroll.getLocator().isEmpty()) {
-            throw new DefaultFrameworkException(ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
+    private void validateNativeCommands(final Native command) {
+        if (MobileUtil.filterEnabledNativeDevices().isEmpty()
+                || !GlobalTestConfigurationProvider.getNativeSettings().isEnabled()) {
+            throw new DefaultFrameworkException(NOT_ENABLED_NATIVE_DEVICE);
+        }
+        command.getClickOrInputOrAssert().forEach(o -> {
+            if (o instanceof SwipeNative && SwipeType.ELEMENT == ((SwipeNative) o).getType()) {
+                validateLocator((SwipeNative) o, NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE);
+            }
+            if (o instanceof ScrollNative && ScrollType.INNER == ((ScrollNative) o).getType()) {
+                validateLocator((ScrollNative) o, NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
+            }
+        });
+    }
+
+    private void validateLocator(final CommandWithOptionalLocator command, final String exceptionMessage) {
+        if (!StringUtils.hasText(command.getLocatorId())) {
+            throw new DefaultFrameworkException(exceptionMessage);
         }
     }
 

@@ -60,15 +60,15 @@ public enum InnerScrollScript {
     }
 
     public static String getInnerScrollScript(final Scroll scroll) {
-        Locator locator = GlobalLocators.getLocator(scroll.getLocator());
+        Locator locator = GlobalLocators.getLocator(scroll.getLocatorId());
         return Arrays.stream(InnerScrollScript.values())
                 .filter(e -> e.getLocatorTypePredicate().test(locator))
                 .findFirst()
                 .map(e -> {
                     String selector = e.locatorValue.apply(locator);
-                    String value = scroll.getValue().toString();
+                    int value = scroll.getValue();
                     ScrollDirection scrollDirection = scroll.getDirection();
-                    return ScrollMeasure.PERCENT.equals(scroll.getMeasure())
+                    return ScrollMeasure.PERCENT == scroll.getMeasure()
                             ? formatInnerPercentScript(e.getPercentageScript(), selector, value, scrollDirection)
                             : formatInnerPixelScript(e.getPixelScript(), selector, value, scrollDirection);
                 })
@@ -77,21 +77,21 @@ public enum InnerScrollScript {
 
     private static String formatInnerPixelScript(final String script,
                                                  final String selector,
-                                                 final String value,
+                                                 final int value,
                                                  final ScrollDirection scrollDirection) {
         return format(script,
                 selector,
-                ScrollDirection.UP.equals(scrollDirection) ? DelimiterConstant.DASH + value : value);
+                ScrollDirection.UP == scrollDirection ? DelimiterConstant.DASH + value : value);
     }
 
     private static String formatInnerPercentScript(final String script,
                                                    final String selector,
-                                                   final String value,
+                                                   final int value,
                                                    final ScrollDirection scrollDirection) {
         float percent = UiUtil.calculatePercentageValue(value);
         return format(script,
                 selector,
                 selector,
-                ScrollDirection.UP.equals(scrollDirection) ? DelimiterConstant.DASH + percent : percent);
+                ScrollDirection.UP == scrollDirection ? DelimiterConstant.DASH + percent : percent);
     }
 }

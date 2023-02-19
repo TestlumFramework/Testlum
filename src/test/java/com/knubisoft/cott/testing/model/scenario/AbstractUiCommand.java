@@ -31,26 +31,20 @@ import javax.xml.bind.annotation.XmlType;
     Hovers.class,
     Navigate.class,
     CloseTab.class,
-    Scroll.class,
-    Image.class,
-    DragAndDrop.class,
-    DragAndDropNative.class,
-    ScrollNative.class,
-    CommandWithLocator.class,
-    SwipeNative.class,
-    Refresh.class,
     HotKey.class,
-    Copy.class,
-    Paste.class,
-    Cut.class,
-    Highlight.class,
     Tab.class,
     Enter.class,
     BackSpace.class,
     Escape.class,
     Space.class,
+    Image.class,
+    DragAndDrop.class,
+    DragAndDropNative.class,
+    CommandWithLocator.class,
+    Refresh.class,
     WebView.class,
-    NavigateNative.class
+    NavigateNative.class,
+    CommandWithOptionalLocator.class
 })
 public abstract class AbstractUiCommand
     extends AbstractCommand

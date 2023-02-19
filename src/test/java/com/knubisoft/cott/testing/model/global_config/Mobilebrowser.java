@@ -16,14 +16,14 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="mobilebrowser"&gt;
  *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}settings"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="baseUrl" type="{http://www.knubisoft.com/cott/testing/model/global-config}url"/&gt;
- *         &lt;element name="appiumServerUrl" type="{http://www.knubisoft.com/cott/testing/model/global-config}url"/&gt;
- *         &lt;element name="deviceSettings" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowserDeviceSettings"/&gt;
+ *         &lt;element name="connection" type="{http://www.knubisoft.com/cott/testing/model/global-config}connectionType"/&gt;
+ *         &lt;element name="devices" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowserDevices"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *     &lt;/restriction&gt;
+ *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -33,17 +33,19 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "mobilebrowser", propOrder = {
     "baseUrl",
-    "appiumServerUrl",
-    "deviceSettings"
+    "connection",
+    "devices"
 })
-public class Mobilebrowser {
+public class Mobilebrowser
+    extends Settings
+{
 
     @XmlElement(required = true)
     protected String baseUrl;
     @XmlElement(required = true)
-    protected String appiumServerUrl;
+    protected ConnectionType connection;
     @XmlElement(required = true)
-    protected MobilebrowserDeviceSettings deviceSettings;
+    protected MobilebrowserDevices devices;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
 
@@ -72,51 +74,51 @@ public class Mobilebrowser {
     }
 
     /**
-     * Gets the value of the appiumServerUrl property.
+     * Gets the value of the connection property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ConnectionType }
      *     
      */
-    public String getAppiumServerUrl() {
-        return appiumServerUrl;
+    public ConnectionType getConnection() {
+        return connection;
     }
 
     /**
-     * Sets the value of the appiumServerUrl property.
+     * Sets the value of the connection property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ConnectionType }
      *     
      */
-    public void setAppiumServerUrl(String value) {
-        this.appiumServerUrl = value;
+    public void setConnection(ConnectionType value) {
+        this.connection = value;
     }
 
     /**
-     * Gets the value of the deviceSettings property.
+     * Gets the value of the devices property.
      * 
      * @return
      *     possible object is
-     *     {@link MobilebrowserDeviceSettings }
+     *     {@link MobilebrowserDevices }
      *     
      */
-    public MobilebrowserDeviceSettings getDeviceSettings() {
-        return deviceSettings;
+    public MobilebrowserDevices getDevices() {
+        return devices;
     }
 
     /**
-     * Sets the value of the deviceSettings property.
+     * Sets the value of the devices property.
      * 
      * @param value
      *     allowed object is
-     *     {@link MobilebrowserDeviceSettings }
+     *     {@link MobilebrowserDevices }
      *     
      */
-    public void setDeviceSettings(MobilebrowserDeviceSettings value) {
-        this.deviceSettings = value;
+    public void setDevices(MobilebrowserDevices value) {
+        this.devices = value;
     }
 
     /**

@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="capability"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="capabilityName" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" /&gt;
+ *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" /&gt;
  *       &lt;attribute name="value" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -29,33 +29,33 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "capability")
 public class Capability {
 
-    @XmlAttribute(name = "capabilityName", required = true)
-    protected String capabilityName;
+    @XmlAttribute(name = "name", required = true)
+    protected String name;
     @XmlAttribute(name = "value", required = true)
     protected String value;
 
     /**
-     * Gets the value of the capabilityName property.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getCapabilityName() {
-        return capabilityName;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Sets the value of the capabilityName property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setCapabilityName(String value) {
-        this.capabilityName = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
     /**

@@ -14,9 +14,10 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="varType"&gt;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *     &lt;enumeration value="value"/&gt;
+ *     &lt;enumeration value="constant"/&gt;
  *     &lt;enumeration value="jpath"/&gt;
  *     &lt;enumeration value="expression"/&gt;
+ *     &lt;enumeration value="cookie"/&gt;
  *   &lt;/restriction&gt;
  * &lt;/simpleType&gt;
  * </pre>
@@ -26,12 +27,14 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum VarType {
 
-    @XmlEnumValue("value")
-    VALUE("value"),
+    @XmlEnumValue("constant")
+    CONSTANT("constant"),
     @XmlEnumValue("jpath")
     JPATH("jpath"),
     @XmlEnumValue("expression")
-    EXPRESSION("expression");
+    EXPRESSION("expression"),
+    @XmlEnumValue("cookie")
+    COOKIE("cookie");
     private final String value;
 
     VarType(String v) {

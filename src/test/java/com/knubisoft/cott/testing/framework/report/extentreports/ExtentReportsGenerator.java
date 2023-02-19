@@ -6,13 +6,14 @@ import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.cott.testing.framework.report.ReportGenerator;
-import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.report.ScenarioResult;
 import com.knubisoft.cott.testing.framework.report.extentreports.model.ResultForComparison;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
+import com.knubisoft.cott.testing.model.global_config.AbstractCapabilities;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.scenario.Overview;
@@ -46,6 +47,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private static final String NATIVE_DEVICE = "Native device:";
     private static final String MOBILEBROWSER_DEVICE = "Mobilebrowser device:";
     private static final String DEVICE_PLATFORM = "Device platform:";
+    private static final String DEVICE_PLATFORM_VERSION = "Device platform version:";
     private static final String DEVICE_UDID = "Device udid:";
     private static final String APP_PACKAGE = "App package:";
     private static final String LINK_TEMPLATE = "<a href='%s'>%s<a/>";
@@ -165,20 +167,30 @@ public class ExtentReportsGenerator implements ReportGenerator {
     }
 
     private String[][] createTableWithNativeDeviceInfo(final NativeDevice nativeDevice) {
-        String[][] browserInfoTable = new String[TWO][TWO];
+        AbstractCapabilities capabilities = Objects.nonNull(nativeDevice.getAppiumCapabilities())
+                ? nativeDevice.getAppiumCapabilities()
+                : nativeDevice.getBrowserStackCapabilities();
+        String[][] browserInfoTable = new String[THREE][TWO];
         browserInfoTable[ZERO][ZERO] = format(BOLD_TEXT_TEMPLATE, NATIVE_DEVICE);
-        browserInfoTable[ZERO][ONE] = nativeDevice.getDeviceName();
+        browserInfoTable[ZERO][ONE] = capabilities.getDeviceName();
         browserInfoTable[ONE][ZERO] = format(BOLD_TEXT_TEMPLATE, DEVICE_PLATFORM);
-        browserInfoTable[ONE][ONE] = nativeDevice.getClass().getSimpleName();
+        browserInfoTable[ONE][ONE] = nativeDevice.getPlatformName().value();
+        browserInfoTable[TWO][ZERO] = format(BOLD_TEXT_TEMPLATE, DEVICE_PLATFORM_VERSION);
+        browserInfoTable[TWO][ONE] = capabilities.getPlatformVersion();
         return browserInfoTable;
     }
 
     private String[][] createTableWithMobilebrowserDeviceInfo(final MobilebrowserDevice mobilebrowserDevice) {
-        String[][] browserInfoTable = new String[TWO][TWO];
+        AbstractCapabilities capabilities = Objects.nonNull(mobilebrowserDevice.getAppiumCapabilities())
+                ? mobilebrowserDevice.getAppiumCapabilities()
+                : mobilebrowserDevice.getBrowserStackCapabilities();
+        String[][] browserInfoTable = new String[THREE][TWO];
         browserInfoTable[ZERO][ZERO] = format(BOLD_TEXT_TEMPLATE, MOBILEBROWSER_DEVICE);
-        browserInfoTable[ZERO][ONE] = mobilebrowserDevice.getDeviceName();
+        browserInfoTable[ZERO][ONE] = capabilities.getDeviceName();
         browserInfoTable[ONE][ZERO] = format(BOLD_TEXT_TEMPLATE, DEVICE_PLATFORM);
         browserInfoTable[ONE][ONE] = mobilebrowserDevice.getPlatformName().value();
+        browserInfoTable[TWO][ZERO] = format(BOLD_TEXT_TEMPLATE, DEVICE_PLATFORM_VERSION);
+        browserInfoTable[TWO][ONE] = capabilities.getPlatformVersion();
         return browserInfoTable;
     }
 
@@ -214,7 +226,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
         if (StringUtils.isNotEmpty(expected) && StringUtils.isNotEmpty(actual)) {
             ResultForComparison resultForComparison =
                     new ResultForComparison(format(PREFORMATTED_CODE_TEXT_TEMPLATE, expected),
-                    format(PREFORMATTED_CODE_TEXT_TEMPLATE, actual));
+                            format(PREFORMATTED_CODE_TEXT_TEMPLATE, actual));
             extentTest.info(MarkupHelper.toTable(resultForComparison));
         }
     }

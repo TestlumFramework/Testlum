@@ -5,9 +5,8 @@
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
-    <x:include schemaLocation="shared-config.xsd"/>
     <x:include schemaLocation="extent-reports-config.xsd"/>
-    
+
     <x:complexType name="report">
         <x:choice>
             <x:element name="extentReports" type="tns:extentReports"/>

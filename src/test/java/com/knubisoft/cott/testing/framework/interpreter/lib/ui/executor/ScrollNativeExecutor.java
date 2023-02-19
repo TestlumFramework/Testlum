@@ -4,16 +4,17 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecuto
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.ScrollDirection;
 import com.knubisoft.cott.testing.model.scenario.ScrollNative;
 import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import io.appium.java_client.AppiumDriver;
-import java.util.Collections;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.interactions.Sequence;
 
+import java.util.Collections;
 
 @ExecutorForClass(ScrollNative.class)
 public class ScrollNativeExecutor extends AbstractUiExecutor<ScrollNative> {
@@ -27,10 +28,11 @@ public class ScrollNativeExecutor extends AbstractUiExecutor<ScrollNative> {
     @Override
     public void execute(final ScrollNative scrollNative, final CommandResult result) {
         AppiumDriver driver = (AppiumDriver) dependencies.getDriver();
-        int scrollValue = ScrollDirection.UP.equals(scrollNative.getDirection())
+        int scrollValue = ScrollDirection.UP == scrollNative.getDirection()
                 ? scrollNative.getValue()
                 : -scrollNative.getValue();
         ResultUtil.addScrollNativeMetaDada(scrollNative, result);
+        LogUtil.logScrollNativeInfo(scrollNative);
         Point start = getStartPoint(scrollNative, driver);
         Sequence scroll = UiUtil.buildSequence(start, new Point(0, scrollValue), ACTION_DURATION);
         driver.perform(Collections.singletonList(scroll));
@@ -38,8 +40,8 @@ public class ScrollNativeExecutor extends AbstractUiExecutor<ScrollNative> {
     }
 
     private static Point getStartPoint(final ScrollNative scrollNative, final AppiumDriver driver) {
-        return ScrollType.INNER.equals(scrollNative.getType())
-                ? UiUtil.findWebElement(driver, scrollNative.getLocator()).getLocation()
+        return ScrollType.INNER == scrollNative.getType()
+                ? UiUtil.findWebElement(driver, scrollNative.getLocatorId()).getLocation()
                 : UiUtil.getCenterPoint(driver);
     }
 

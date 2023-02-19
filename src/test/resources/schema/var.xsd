@@ -13,7 +13,6 @@
                 <x:choice>
                     <x:element name="relationalDbResult" type="tns:relationalDbResult"/>
                     <x:element name="resultFrom" type="tns:resultFrom"/>
-
                 </x:choice>
                 <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
             </x:extension>
@@ -26,7 +25,6 @@
                 <x:sequence>
                     <x:element name="query" type="tns:variableQuery"/>
                 </x:sequence>
-                <x:attribute name="file" type="tns:nonEmptyString"/>
                 <x:attribute name="dbType" type="tns:relationalDB" use="required"/>
                 <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
             </x:extension>
@@ -34,15 +32,16 @@
     </x:complexType>
 
     <x:complexType name="resultFrom">
-        <x:attribute name="type" type="tns:varType"/>
+        <x:attribute name="type" type="tns:varType" use="required"/>
         <x:attribute name="value" type="tns:nonEmptyString"/>
     </x:complexType>
 
     <x:simpleType name="varType">
         <x:restriction base="x:string">
-            <x:enumeration value="value"/>
+            <x:enumeration value="constant"/>
             <x:enumeration value="jpath"/>
             <x:enumeration value="expression"/>
+            <x:enumeration value="cookie"/>
         </x:restriction>
     </x:simpleType>
 
@@ -61,4 +60,3 @@
         </x:restriction>
     </x:simpleType>
 </x:schema>
-

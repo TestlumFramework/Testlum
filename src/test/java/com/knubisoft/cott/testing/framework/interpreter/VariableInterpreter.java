@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.interpreter;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.ListSource;
@@ -16,6 +17,7 @@ import com.knubisoft.cott.testing.model.scenario.RelationalDbResult;
 import com.knubisoft.cott.testing.model.scenario.ResultFrom;
 import com.knubisoft.cott.testing.model.scenario.Var;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -27,12 +29,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
-import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VAR_QUERY_RESULT_ERROR;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_VARIABLE_WITH_PATH_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CONSTANT;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.COOKIES;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.EXPRESSION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.JSON_PATH;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NO_EXPRESSION;
@@ -78,8 +81,10 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
                 return getExpressionResult(resultFrom.getValue(), var.getName(), result);
             case JPATH:
                 return getJpathResult(resultFrom.getValue(), var.getName(), result);
-            case VALUE:
+            case CONSTANT:
                 return getValueResult(resultFrom.getValue(), var.getName(), result);
+            case COOKIE:
+                return getWebCookiesResult(var.getName(), result);
             default:
                 throw new DefaultFrameworkException("Type of 'Var' tag is not supported");
         }
@@ -87,7 +92,16 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
 
     private String getValueResult(final String value, final String varName, final CommandResult result) {
         String valueResult = inject(value);
-        ResultUtil.addVariableMetaData(CONSTANT, varName, NO_EXPRESSION, value, result);
+        ResultUtil.addVariableMetaData(CONSTANT, varName, NO_EXPRESSION, valueResult, result);
+        return valueResult;
+    }
+
+    private String getWebCookiesResult(final String varName, final CommandResult result) {
+        Set<Cookie> cookies = dependencies.getWebDriver().manage().getCookies();
+        String valueResult = cookies.stream()
+                .map(cookie -> String.join(DelimiterConstant.EQUALS_MARK, cookie.getName(), cookie.getValue()))
+                .collect(Collectors.joining(DelimiterConstant.SEMICOLON));
+        ResultUtil.addVariableMetaData(COOKIES, varName, NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 
@@ -108,7 +122,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     private String getDbResult(final RelationalDbResult dbResult, final String varName, final CommandResult result) {
-        String metadataKey = dbResult.getDbType().name() + UNDERSCORE + dbResult.getAlias();
+        String metadataKey = dbResult.getDbType().name() + DelimiterConstant.UNDERSCORE + dbResult.getAlias();
         StorageOperation storageOperation = nameToAdapterAlias.getByNameOrThrow(metadataKey).getStorageOperation();
         String valueResult = getActualRelationalDbResult(dbResult, storageOperation);
         ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, varName, dbResult.getQuery(), valueResult, result);
@@ -139,7 +153,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     private String getKeyOfQueryResultValue(final StorageOperation.StorageOperationResult applyRelationalDb) {
         ArrayList<StorageOperation.QueryResult> rawList =
                 (ArrayList<StorageOperation.QueryResult>) applyRelationalDb.getRaw();
-        String[] queryParts = rawList.get(0).getQuery().split(SPACE);
+        String[] queryParts = rawList.get(0).getQuery().split(DelimiterConstant.SPACE);
         return queryParts[1];
     }
 

@@ -124,7 +124,7 @@ public class ExceptionMessage {
             + "disabled. Please enable UI settings in config file or exclude scenarios with UI steps.";
 
     public static final String AUTH_WAS_NOT_DEFINED = "Authentication strategy has not been defined in the "
-            + "configuration file. Usage example: <auth strategy=“basic”.../>";
+            + "configuration file. Usage example: <auth strategy=\"basic\".../>";
 
     public static final String UNSUPPORTED_MIGRATION_FORMAT = "Unsupported data file format was found "
             + "in <migration> tag. For %s allowed extensions are: %s, %s";
@@ -147,6 +147,8 @@ public class ExceptionMessage {
     public static final String SCROLL_TYPE_NOT_FOUND = "Scroll type <%s> not supported";
     public static final String SWIPE_TYPE_NOT_FOUND = "Swipe direction <%s> is not supported";
     public static final String NO_LOCATOR_FOUND_FOR_INNER_SCROLL = "You didn't specify a locator for the inner scroll";
+    public static final String NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE = "You didn't specify a locator"
+            + " for the element swipe";
     public static final String INVALID_LOCATOR =
             "Locator type is not supported for INNER scroll. Your locator -> <%s>.";
     public static final String SAME_APPIUM_URL = "Can`t use the same Appium server URL for scenario with "

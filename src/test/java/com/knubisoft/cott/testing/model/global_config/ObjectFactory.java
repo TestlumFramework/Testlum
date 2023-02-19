@@ -94,6 +94,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link BrowserStackLogin }
+     * 
+     */
+    public BrowserStackLogin createBrowserStackLogin() {
+        return new BrowserStackLogin();
+    }
+
+    /**
      * Create an instance of {@link Auth }
      * 
      */
@@ -150,6 +158,38 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ConnectionType }
+     * 
+     */
+    public ConnectionType createConnectionType() {
+        return new ConnectionType();
+    }
+
+    /**
+     * Create an instance of {@link AppiumServer }
+     * 
+     */
+    public AppiumServer createAppiumServer() {
+        return new AppiumServer();
+    }
+
+    /**
+     * Create an instance of {@link AppiumCapabilities }
+     * 
+     */
+    public AppiumCapabilities createAppiumCapabilities() {
+        return new AppiumCapabilities();
+    }
+
+    /**
+     * Create an instance of {@link BrowserStackCapabilities }
+     * 
+     */
+    public BrowserStackCapabilities createBrowserStackCapabilities() {
+        return new BrowserStackCapabilities();
+    }
+
+    /**
      * Create an instance of {@link Capabilities }
      * 
      */
@@ -163,6 +203,54 @@ public class ObjectFactory {
      */
     public Capability createCapability() {
         return new Capability();
+    }
+
+    /**
+     * Create an instance of {@link Apis }
+     * 
+     */
+    public Apis createApis() {
+        return new Apis();
+    }
+
+    /**
+     * Create an instance of {@link Api }
+     * 
+     */
+    public Api createApi() {
+        return new Api();
+    }
+
+    /**
+     * Create an instance of {@link GraphqlIntegration }
+     * 
+     */
+    public GraphqlIntegration createGraphqlIntegration() {
+        return new GraphqlIntegration();
+    }
+
+    /**
+     * Create an instance of {@link GraphqlApi }
+     * 
+     */
+    public GraphqlApi createGraphqlApi() {
+        return new GraphqlApi();
+    }
+
+    /**
+     * Create an instance of {@link Websockets }
+     * 
+     */
+    public Websockets createWebsockets() {
+        return new Websockets();
+    }
+
+    /**
+     * Create an instance of {@link WebsocketApi }
+     * 
+     */
+    public WebsocketApi createWebsocketApi() {
+        return new WebsocketApi();
     }
 
     /**
@@ -438,22 +526,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GraphqlIntegration }
-     * 
-     */
-    public GraphqlIntegration createGraphqlIntegration() {
-        return new GraphqlIntegration();
-    }
-
-    /**
-     * Create an instance of {@link GraphqlApi }
-     * 
-     */
-    public GraphqlApi createGraphqlApi() {
-        return new GraphqlApi();
-    }
-
-    /**
      * Create an instance of {@link BrowserSettings }
      * 
      */
@@ -499,6 +571,14 @@ public class ObjectFactory {
      */
     public RemoteBrowser createRemoteBrowser() {
         return new RemoteBrowser();
+    }
+
+    /**
+     * Create an instance of {@link BrowserStackWeb }
+     * 
+     */
+    public BrowserStackWeb createBrowserStackWeb() {
+        return new BrowserStackWeb();
     }
 
     /**
@@ -558,14 +638,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link MobilebrowserDeviceSettings }
-     * 
-     */
-    public MobilebrowserDeviceSettings createMobilebrowserDeviceSettings() {
-        return new MobilebrowserDeviceSettings();
-    }
-
-    /**
      * Create an instance of {@link MobilebrowserDevices }
      * 
      */
@@ -579,14 +651,6 @@ public class ObjectFactory {
      */
     public MobilebrowserDevice createMobilebrowserDevice() {
         return new MobilebrowserDevice();
-    }
-
-    /**
-     * Create an instance of {@link NativeDeviceSettings }
-     * 
-     */
-    public NativeDeviceSettings createNativeDeviceSettings() {
-        return new NativeDeviceSettings();
     }
 
     /**
@@ -606,35 +670,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AndroidDevice }
+     * Create an instance of {@link AppiumNativeCapabilities }
      * 
      */
-    public AndroidDevice createAndroidDevice() {
-        return new AndroidDevice();
+    public AppiumNativeCapabilities createAppiumNativeCapabilities() {
+        return new AppiumNativeCapabilities();
     }
 
     /**
-     * Create an instance of {@link IosDevice }
+     * Create an instance of {@link BrowserStackNativeCapabilities }
      * 
      */
-    public IosDevice createIosDevice() {
-        return new IosDevice();
+    public BrowserStackNativeCapabilities createBrowserStackNativeCapabilities() {
+        return new BrowserStackNativeCapabilities();
     }
 
     /**
-     * Create an instance of {@link Websockets }
+     * Create an instance of {@link GooglePlayLogin }
      * 
      */
-    public Websockets createWebsockets() {
-        return new Websockets();
-    }
-
-    /**
-     * Create an instance of {@link WebsocketApi }
-     * 
-     */
-    public WebsocketApi createWebsocketApi() {
-        return new WebsocketApi();
+    public GooglePlayLogin createGooglePlayLogin() {
+        return new GooglePlayLogin();
     }
 
     /**
@@ -675,22 +731,6 @@ public class ObjectFactory {
      */
     public KlovServer createKlovServer() {
         return new KlovServer();
-    }
-
-    /**
-     * Create an instance of {@link Apis }
-     * 
-     */
-    public Apis createApis() {
-        return new Apis();
-    }
-
-    /**
-     * Create an instance of {@link Api }
-     * 
-     */
-    public Api createApi() {
-        return new Api();
     }
 
 }

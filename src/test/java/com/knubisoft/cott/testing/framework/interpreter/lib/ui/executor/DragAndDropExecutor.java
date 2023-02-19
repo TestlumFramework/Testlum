@@ -8,6 +8,7 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.DragAndDrop;
 import java.io.File;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -31,7 +32,7 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
     @Override
     public void execute(final DragAndDrop dragAndDrop, final CommandResult result) {
         WebElement target = UiUtil.findWebElement(driver, dragAndDrop.getToLocatorId());
-        if (dragAndDrop.isDropFile()) {
+        if (StringUtils.isNotBlank(dragAndDrop.getFilePath())) {
             dropFile(target, new File(dragAndDrop.getFilePath()));
             result.put(FROM_LOCAL_FILE, dragAndDrop.getFilePath());
         } else {

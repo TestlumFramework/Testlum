@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="description" type="{http://www.knubisoft.com/cott/testing/model/scenario}stringMin10"/&gt;
- *         &lt;element name="name" type="{http://www.knubisoft.com/cott/testing/model/scenario}stringMin1"/&gt;
+ *         &lt;element name="name" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
  *         &lt;element name="jira" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" minOccurs="0"/&gt;
  *         &lt;element name="developer" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" minOccurs="0"/&gt;
  *         &lt;element name="link" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" maxOccurs="unbounded" minOccurs="0"/&gt;

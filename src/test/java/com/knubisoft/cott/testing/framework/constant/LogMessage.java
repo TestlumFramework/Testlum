@@ -124,8 +124,13 @@ public final class LogMessage {
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
     public static final String SCROLL_LOCATOR = format(TABLE_FORMAT, "Scroll locator", "{}");
     public static final String SCROLL_TYPE = format(TABLE_FORMAT, "Scroll type", "{}");
-    public static final String AMOUNT_OF_SWIPES = format(TABLE_FORMAT, "Amount of swipes", "{}");
+    public static final String SCROLL_VALUE = format(TABLE_FORMAT, "Scroll value", "{}");
+    public static final String SWIPE_QUANTITY = format(TABLE_FORMAT, "Quantity of swipes", "{}");
     public static final String SWIPE_DIRECTION = format(TABLE_FORMAT, "Swipe direction", "{}");
+    public static final String SWIPE_VALUE = format(TABLE_FORMAT, "Swipe value in %", "{}");
+    public static final String SWIPE_TYPE = format(TABLE_FORMAT, "Swipe type", "{}");
+    public static final String DRAGGING_FROM = format(TABLE_FORMAT, "Dragging from locator", "{}");
+    public static final String DROPPING_TO = format(TABLE_FORMAT, "Dropping to locator", "{}");
     public static final String HOTKEY_COMMAND = format(TABLE_FORMAT, "Hotkey command", "{}");
     public static final String HOTKEY_COMMAND_LOCATOR = format(TABLE_FORMAT, "Hotkey command locator", "{}");
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "Method", "{}");
@@ -168,8 +173,10 @@ public final class LogMessage {
     public static final String JS_FILE_LOG = format(TABLE_FORMAT, "JS file", "{}");
 
     public static final String BROWSER_INFO = "%s | type = %s | version = %s";
-    public static final String MOBILEBROWSER_INFO = "Device name = %s | platform = %s";
-    public static final String NATIVE_INFO = MOBILEBROWSER_INFO + " | udid = %s";
+    public static final String MOBILEBROWSER_INFO = "Device name = %s | platform = %s | version = %s";
+    public static final String MOBILEBROWSER_APPIUM_INFO = MOBILEBROWSER_INFO + " | udid = %s";
+    public static final String NATIVE_INFO = "Device name = %s | platform = %s | version = %s";
+    public static final String NATIVE_APPIUM_INFO = NATIVE_INFO + " | udid = %s";
     public static final String EXTRACT_THEN_COMPARE = "Extract from web element then compare";
     public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a screenshot then compare";
 }

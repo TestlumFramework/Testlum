@@ -15,8 +15,10 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="swipeNative"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}commandWithOptionalLocator"&gt;
  *       &lt;attribute name="direction" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}swipeDirection" /&gt;
+ *       &lt;attribute name="type" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}swipeType" /&gt;
+ *       &lt;attribute name="percent" type="{http://www.knubisoft.com/cott/testing/model/scenario}percentsPattern" default="70" /&gt;
  *       &lt;attribute name="quantity" type="{http://www.w3.org/2001/XMLSchema}int" default="1" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -28,11 +30,15 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "swipeNative")
 public class SwipeNative
-    extends AbstractUiCommand
+    extends CommandWithOptionalLocator
 {
 
     @XmlAttribute(name = "direction", required = true)
     protected SwipeDirection direction;
+    @XmlAttribute(name = "type", required = true)
+    protected SwipeType type;
+    @XmlAttribute(name = "percent")
+    protected Integer percent;
     @XmlAttribute(name = "quantity")
     protected Integer quantity;
 
@@ -58,6 +64,58 @@ public class SwipeNative
      */
     public void setDirection(SwipeDirection value) {
         this.direction = value;
+    }
+
+    /**
+     * Gets the value of the type property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link SwipeType }
+     *     
+     */
+    public SwipeType getType() {
+        return type;
+    }
+
+    /**
+     * Sets the value of the type property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link SwipeType }
+     *     
+     */
+    public void setType(SwipeType value) {
+        this.type = value;
+    }
+
+    /**
+     * Gets the value of the percent property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public int getPercent() {
+        if (percent == null) {
+            return  70;
+        } else {
+            return percent;
+        }
+    }
+
+    /**
+     * Sets the value of the percent property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setPercent(Integer value) {
+        this.percent = value;
     }
 
     /**

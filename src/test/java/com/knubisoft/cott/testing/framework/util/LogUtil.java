@@ -12,10 +12,12 @@ import com.knubisoft.cott.testing.model.scenario.Assert;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
+import com.knubisoft.cott.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.Overview;
 import com.knubisoft.cott.testing.model.scenario.OverviewPart;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
+import com.knubisoft.cott.testing.model.scenario.ScrollNative;
 import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
@@ -40,9 +42,9 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.AMOUNT_OF_SWIPES;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ATTRIBUTE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BODY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
@@ -53,6 +55,8 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_F
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATION_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.DRAGGING_FROM;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.DROPPING_TO;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_FRAME;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_WEBVIEW;
@@ -86,6 +90,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_BY
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_DIRECTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_LOCATOR;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_TYPE;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SCROLL_VALUE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SERVER_ERROR_RESPONSE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SMTP_HOST_LOG;
@@ -95,6 +100,9 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.START_UI_
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_WEBVIEW;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SUBJECT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SWIPE_DIRECTION;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SWIPE_QUANTITY;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SWIPE_TYPE;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.SWIPE_VALUE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
@@ -132,7 +140,7 @@ public class LogUtil {
     public void logAllQueries(final List<String> queries, final String alias) {
         log.info(ALIAS_LOG, alias);
         queries.forEach(query -> log.info(
-                format(TABLE_FORMAT, "Query", query.replaceAll("\\s{2,}", SPACE))));
+                format(TABLE_FORMAT, "Query", query.replaceAll(REGEX_MANY_SPACES, SPACE))));
     }
 
     public void logBrokerActionInfo(final String action, final String destination, final String content) {
@@ -246,7 +254,7 @@ public class LogUtil {
         log.info(END_UI_COMMANDS_IN_FRAME);
     }
 
-    public static void startUiCommandsInWebView() {
+    public void startUiCommandsInWebView() {
         log.info(START_UI_COMMANDS_IN_WEBVIEW);
     }
 
@@ -310,10 +318,10 @@ public class LogUtil {
     public void logScrollInfo(final Scroll scroll) {
         log.info(SCROLL_DIRECTION_LOG, scroll.getDirection());
         log.info(SCROLL_BY_LOG, scroll.getMeasure());
-        log.info(VALUE_LOG, scroll.getValue().toString());
+        log.info(VALUE_LOG, scroll.getValue());
         log.info(SCROLL_TYPE, scroll.getType());
-        if (ScrollType.INNER.equals(scroll.getType())) {
-            log.info(SCROLL_LOCATOR, scroll.getLocator());
+        if (ScrollType.INNER == scroll.getType()) {
+            log.info(SCROLL_LOCATOR, scroll.getLocatorId());
         }
     }
 
@@ -352,6 +360,10 @@ public class LogUtil {
         }
     }
 
+    public void logError(final Exception ex) {
+        log.error(LogMessage.ERROR_LOG, ex);
+    }
+
     public void logSqlException(final Exception ex, final String query) {
         if (StringUtils.isNotBlank(ex.getMessage())) {
             log.error(ERROR_SQL_QUERY, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE),
@@ -383,7 +395,7 @@ public class LogUtil {
         log.info(MESSAGE_LOG, twilio.getMessage());
     }
 
-    public static void logImageComparisonInfo(final Image image) {
+    public void logImageComparisonInfo(final Image image) {
         log.info(IMAGE_FOR_COMPARISON_LOG, image.getFile());
         log.info(HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
         CompareWith compareWith = image.getCompareWith();
@@ -404,18 +416,37 @@ public class LogUtil {
         log.error(INITIAL_STRUCTURE_GENERATION_ERROR, path, ex);
     }
 
-    public static void logHotKeyInfo(final AbstractUiCommand command) {
+    public void logHotKeyInfo(final AbstractUiCommand command) {
         log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
     }
 
-    public static void logGraphqlInfo(final String alias, final String endpoint, final String body) {
+    public void logGraphqlInfo(final String alias, final String endpoint, final String body) {
         log.info(ALIAS_LOG, alias);
         log.info(ENDPOINT_LOG, endpoint);
         log.info(BODY_LOG, body.replaceAll(SPACE, EMPTY).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
-    public static void logSwipeNativeInfo(final SwipeNative swipeNative) {
-        log.info(AMOUNT_OF_SWIPES, swipeNative.getQuantity());
+    public void logSwipeNativeInfo(final SwipeNative swipeNative) {
+        log.info(SWIPE_TYPE, swipeNative.getType());
+        log.info(SWIPE_QUANTITY, swipeNative.getQuantity());
         log.info(SWIPE_DIRECTION, swipeNative.getDirection());
+        log.info(SWIPE_VALUE, swipeNative.getPercent());
+        if (StringUtils.isNotBlank(swipeNative.getLocatorId())) {
+            log.info(LOCATOR_LOG, swipeNative.getLocatorId());
+        }
+    }
+
+    public void logScrollNativeInfo(final ScrollNative scrollNative) {
+        log.info(SCROLL_TYPE, scrollNative.getType());
+        log.info(SCROLL_DIRECTION_LOG, scrollNative.getDirection());
+        log.info(SCROLL_VALUE, scrollNative.getValue());
+        if (StringUtils.isNotBlank(scrollNative.getLocatorId())) {
+            log.info(SCROLL_LOCATOR, scrollNative.getLocatorId());
+        }
+    }
+
+    public void logDragAndDropNativeInfo(final DragAndDropNative dragAndDropNative) {
+        log.info(DRAGGING_FROM, dragAndDropNative.getFromLocatorId());
+        log.info(DROPPING_TO, dragAndDropNative.getToLocatorId());
     }
 }

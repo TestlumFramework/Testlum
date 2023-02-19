@@ -21,7 +21,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="filePath" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="toLocatorId" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="dropFile" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -42,8 +41,6 @@ public class DragAndDrop
     protected String filePath;
     @XmlAttribute(name = "toLocatorId", required = true)
     protected String toLocatorId;
-    @XmlAttribute(name = "dropFile")
-    protected Boolean dropFile;
 
     /**
      * Gets the value of the fromLocatorId property.
@@ -115,34 +112,6 @@ public class DragAndDrop
      */
     public void setToLocatorId(String value) {
         this.toLocatorId = value;
-    }
-
-    /**
-     * Gets the value of the dropFile property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public boolean isDropFile() {
-        if (dropFile == null) {
-            return false;
-        } else {
-            return dropFile;
-        }
-    }
-
-    /**
-     * Sets the value of the dropFile property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setDropFile(Boolean value) {
-        this.dropFile = value;
     }
 
 }

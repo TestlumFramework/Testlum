@@ -8,7 +8,7 @@
 
     <x:complexType name="web">
         <x:sequence>
-            <x:element name="baseUrl" type="tns:url"/>
+            <x:element name="baseUrl" type="tns:urlWeb"/>
             <x:element name="browserSettings" type="tns:browserSettings"/>
         </x:sequence>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
@@ -49,6 +49,7 @@
             <x:element name="localBrowser" type="tns:localBrowser"/>
             <x:element name="browserInDocker" type="tns:browserInDocker"/>
             <x:element name="remoteBrowser" type="tns:remoteBrowser"/>
+            <x:element name="browserStack" type="tns:browserStackWeb"/>
         </x:choice>
     </x:complexType>
 
@@ -68,6 +69,10 @@
     <x:complexType name="remoteBrowser">
         <x:attribute name="browserVersion" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="remoteBrowserURL" type="tns:url" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="browserStackWeb">
+        <x:attribute name="browserVersion" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
     <x:complexType name="screenRecording">

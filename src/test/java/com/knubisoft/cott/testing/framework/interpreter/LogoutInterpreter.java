@@ -5,8 +5,8 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.interpreter.lib.auth.AuthStrategy;
-import com.knubisoft.cott.testing.model.scenario.Logout;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.model.scenario.Logout;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

@@ -48,6 +48,9 @@ public class UiUtil {
 
     private static final String FILE_PATH_PREFIX = "file:";
 
+    private static final String APPIUM_LOCALHOST_ALIAS = "10.0.2.2";
+    private static final String LOCALHOST = "localhost";
+
     public String resolveSendKeysType(final String value, final WebElement element, final File fromDir) {
         if (value.startsWith(FILE_PATH_PREFIX)) {
             File file = FileSearcher.searchFileFromDir(fromDir, value.substring(FILE_PATH_PREFIX.length()));
@@ -131,6 +134,10 @@ public class UiUtil {
         return ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.FILE);
     }
 
+    public File takeScreenshot(final WebElement webElement) {
+        return webElement.getScreenshotAs(OutputType.FILE);
+    }
+
     @SneakyThrows
     public void putScreenshotToResult(final CommandResult result, final File screenshot) {
         final MultipartFile image = ImageCompressor.compress(screenshot);
@@ -149,8 +156,12 @@ public class UiUtil {
         return attribute;
     }
 
-    public float calculatePercentageValue(final String value) {
-        float percent = Float.parseFloat(value) / MAX_PERCENTS_VALUE;
+    public String resolveHostIfNeeded(final String url) {
+        return url.replaceAll(APPIUM_LOCALHOST_ALIAS, LOCALHOST);
+    }
+
+    public float calculatePercentageValue(final float value) {
+        float percent = value / MAX_PERCENTS_VALUE;
         if (percent > 1) {
             throw new DefaultFrameworkException(format(SCROLL_TO_ELEMENT_NOT_SUPPORTED, value));
         }
@@ -168,6 +179,6 @@ public class UiUtil {
 
     public Point getCenterPoint(final WebDriver driver) {
         Dimension dimension = driver.manage().window().getSize();
-        return new Point(dimension.height / 2, dimension.height / 2);
+        return new Point(dimension.width / 2, dimension.height / 2);
     }
 }

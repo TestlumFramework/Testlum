@@ -5,11 +5,11 @@ import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
+import com.knubisoft.cott.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.Navigate;
 import com.knubisoft.cott.testing.model.scenario.NavigateCommand;
-import io.appium.java_client.AppiumDriver;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.regex.Pattern;
@@ -59,9 +59,9 @@ public class NavigateExecutor extends AbstractUiExecutor<Navigate> {
         if (HTTP_PATTERN.matcher(path).matches()) {
             return path;
         }
-        if (dependencies.getDriver() instanceof AppiumDriver) {
+        if (UiType.MOBILE_BROWSER == dependencies.getUiType()) {
             return GlobalTestConfigurationProvider.getMobilebrowserSettings().getBaseUrl() + path;
         }
-        return GlobalTestConfigurationProvider.getBrowserSettings().getBaseUrl() + path;
+        return GlobalTestConfigurationProvider.getWebSettings().getBaseUrl() + path;
     }
 }

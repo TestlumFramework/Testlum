@@ -192,9 +192,9 @@ public class LogUtil {
         }
     }
 
-    private void logOverviewPartInfo(final OverviewPart part, final String data) {
+    private void logOverviewPartInfo(final OverviewPart overviewPart, final String data) {
         if (StringUtils.isNotBlank(data)) {
-            log.info(LogMessage.OVERVIEW_INFO_LOG, part.getPartTitle(), data);
+            log.info(LogMessage.OVERVIEW_INFO_LOG, overviewPart.value(), data);
         }
     }
 

@@ -16,6 +16,8 @@ public class SchemaInitializer {
     public static final Schema GLOBAL_CONFIG_SCHEMA = initSchema("schema/global-config.xsd");
     public static final Schema PAGES_SCHEMA = initSchema("schema/pages.xsd");
     public static final Schema SCENARIO_SCHEMA = initSchema("schema/scenario.xsd");
+    public static final Schema INTEGRATION_SCHEMA = initSchema("schema/integration-config.xsd");
+    public static final Schema UI_SCHEMA = initSchema("schema/ui-config.xsd");
 
     @SneakyThrows
     public Schema initSchema(final String path) {

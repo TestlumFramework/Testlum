@@ -30,6 +30,214 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Ui }
+     * 
+     */
+    public Ui createUi() {
+        return new Ui();
+    }
+
+    /**
+     * Create an instance of {@link Web }
+     * 
+     */
+    public Web createWeb() {
+        return new Web();
+    }
+
+    /**
+     * Create an instance of {@link Mobilebrowser }
+     * 
+     */
+    public Mobilebrowser createMobilebrowser() {
+        return new Mobilebrowser();
+    }
+
+    /**
+     * Create an instance of {@link Native }
+     * 
+     */
+    public Native createNative() {
+        return new Native();
+    }
+
+    /**
+     * Create an instance of {@link BrowserStackLogin }
+     * 
+     */
+    public BrowserStackLogin createBrowserStackLogin() {
+        return new BrowserStackLogin();
+    }
+
+    /**
+     * Create an instance of {@link Integrations }
+     * 
+     */
+    public Integrations createIntegrations() {
+        return new Integrations();
+    }
+
+    /**
+     * Create an instance of {@link Apis }
+     * 
+     */
+    public Apis createApis() {
+        return new Apis();
+    }
+
+    /**
+     * Create an instance of {@link Websockets }
+     * 
+     */
+    public Websockets createWebsockets() {
+        return new Websockets();
+    }
+
+    /**
+     * Create an instance of {@link GraphqlIntegration }
+     * 
+     */
+    public GraphqlIntegration createGraphqlIntegration() {
+        return new GraphqlIntegration();
+    }
+
+    /**
+     * Create an instance of {@link PostgresIntegration }
+     * 
+     */
+    public PostgresIntegration createPostgresIntegration() {
+        return new PostgresIntegration();
+    }
+
+    /**
+     * Create an instance of {@link ClickhouseIntegration }
+     * 
+     */
+    public ClickhouseIntegration createClickhouseIntegration() {
+        return new ClickhouseIntegration();
+    }
+
+    /**
+     * Create an instance of {@link MysqlIntegration }
+     * 
+     */
+    public MysqlIntegration createMysqlIntegration() {
+        return new MysqlIntegration();
+    }
+
+    /**
+     * Create an instance of {@link OracleIntegration }
+     * 
+     */
+    public OracleIntegration createOracleIntegration() {
+        return new OracleIntegration();
+    }
+
+    /**
+     * Create an instance of {@link RedisIntegration }
+     * 
+     */
+    public RedisIntegration createRedisIntegration() {
+        return new RedisIntegration();
+    }
+
+    /**
+     * Create an instance of {@link MongoIntegration }
+     * 
+     */
+    public MongoIntegration createMongoIntegration() {
+        return new MongoIntegration();
+    }
+
+    /**
+     * Create an instance of {@link S3Integration }
+     * 
+     */
+    public S3Integration createS3Integration() {
+        return new S3Integration();
+    }
+
+    /**
+     * Create an instance of {@link SqsIntegration }
+     * 
+     */
+    public SqsIntegration createSqsIntegration() {
+        return new SqsIntegration();
+    }
+
+    /**
+     * Create an instance of {@link KafkaIntegration }
+     * 
+     */
+    public KafkaIntegration createKafkaIntegration() {
+        return new KafkaIntegration();
+    }
+
+    /**
+     * Create an instance of {@link RabbitmqIntegration }
+     * 
+     */
+    public RabbitmqIntegration createRabbitmqIntegration() {
+        return new RabbitmqIntegration();
+    }
+
+    /**
+     * Create an instance of {@link DynamoIntegration }
+     * 
+     */
+    public DynamoIntegration createDynamoIntegration() {
+        return new DynamoIntegration();
+    }
+
+    /**
+     * Create an instance of {@link ElasticsearchIntegration }
+     * 
+     */
+    public ElasticsearchIntegration createElasticsearchIntegration() {
+        return new ElasticsearchIntegration();
+    }
+
+    /**
+     * Create an instance of {@link LambdaIntegration }
+     * 
+     */
+    public LambdaIntegration createLambdaIntegration() {
+        return new LambdaIntegration();
+    }
+
+    /**
+     * Create an instance of {@link SendgridIntegration }
+     * 
+     */
+    public SendgridIntegration createSendgridIntegration() {
+        return new SendgridIntegration();
+    }
+
+    /**
+     * Create an instance of {@link SesIntegration }
+     * 
+     */
+    public SesIntegration createSesIntegration() {
+        return new SesIntegration();
+    }
+
+    /**
+     * Create an instance of {@link SmtpIntegration }
+     * 
+     */
+    public SmtpIntegration createSmtpIntegration() {
+        return new SmtpIntegration();
+    }
+
+    /**
+     * Create an instance of {@link TwilioIntegration }
+     * 
+     */
+    public TwilioIntegration createTwilioIntegration() {
+        return new TwilioIntegration();
+    }
+
+    /**
      * Create an instance of {@link GlobalTestConfiguration }
      * 
      */
@@ -70,38 +278,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Web }
-     * 
-     */
-    public Web createWeb() {
-        return new Web();
-    }
-
-    /**
-     * Create an instance of {@link Mobilebrowser }
-     * 
-     */
-    public Mobilebrowser createMobilebrowser() {
-        return new Mobilebrowser();
-    }
-
-    /**
-     * Create an instance of {@link Native }
-     * 
-     */
-    public Native createNative() {
-        return new Native();
-    }
-
-    /**
-     * Create an instance of {@link BrowserStackLogin }
-     * 
-     */
-    public BrowserStackLogin createBrowserStackLogin() {
-        return new BrowserStackLogin();
-    }
-
-    /**
      * Create an instance of {@link Auth }
      * 
      */
@@ -110,11 +286,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Integrations }
+     * Create an instance of {@link ConfigFiles }
      * 
      */
-    public Integrations createIntegrations() {
-        return new Integrations();
+    public ConfigFiles createConfigFiles() {
+        return new ConfigFiles();
     }
 
     /**
@@ -206,323 +382,43 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Apis }
+     * Create an instance of {@link ExtentReports }
      * 
      */
-    public Apis createApis() {
-        return new Apis();
+    public ExtentReports createExtentReports() {
+        return new ExtentReports();
     }
 
     /**
-     * Create an instance of {@link Api }
+     * Create an instance of {@link HtmlReportGenerator }
      * 
      */
-    public Api createApi() {
-        return new Api();
+    public HtmlReportGenerator createHtmlReportGenerator() {
+        return new HtmlReportGenerator();
     }
 
     /**
-     * Create an instance of {@link GraphqlIntegration }
+     * Create an instance of {@link KlovServerReportGenerator }
      * 
      */
-    public GraphqlIntegration createGraphqlIntegration() {
-        return new GraphqlIntegration();
+    public KlovServerReportGenerator createKlovServerReportGenerator() {
+        return new KlovServerReportGenerator();
     }
 
     /**
-     * Create an instance of {@link GraphqlApi }
+     * Create an instance of {@link Mongodb }
      * 
      */
-    public GraphqlApi createGraphqlApi() {
-        return new GraphqlApi();
+    public Mongodb createMongodb() {
+        return new Mongodb();
     }
 
     /**
-     * Create an instance of {@link Websockets }
+     * Create an instance of {@link KlovServer }
      * 
      */
-    public Websockets createWebsockets() {
-        return new Websockets();
-    }
-
-    /**
-     * Create an instance of {@link WebsocketApi }
-     * 
-     */
-    public WebsocketApi createWebsocketApi() {
-        return new WebsocketApi();
-    }
-
-    /**
-     * Create an instance of {@link PostgresIntegration }
-     * 
-     */
-    public PostgresIntegration createPostgresIntegration() {
-        return new PostgresIntegration();
-    }
-
-    /**
-     * Create an instance of {@link Postgres }
-     * 
-     */
-    public Postgres createPostgres() {
-        return new Postgres();
-    }
-
-    /**
-     * Create an instance of {@link ClickhouseIntegration }
-     * 
-     */
-    public ClickhouseIntegration createClickhouseIntegration() {
-        return new ClickhouseIntegration();
-    }
-
-    /**
-     * Create an instance of {@link Clickhouse }
-     * 
-     */
-    public Clickhouse createClickhouse() {
-        return new Clickhouse();
-    }
-
-    /**
-     * Create an instance of {@link MysqlIntegration }
-     * 
-     */
-    public MysqlIntegration createMysqlIntegration() {
-        return new MysqlIntegration();
-    }
-
-    /**
-     * Create an instance of {@link Mysql }
-     * 
-     */
-    public Mysql createMysql() {
-        return new Mysql();
-    }
-
-    /**
-     * Create an instance of {@link OracleIntegration }
-     * 
-     */
-    public OracleIntegration createOracleIntegration() {
-        return new OracleIntegration();
-    }
-
-    /**
-     * Create an instance of {@link Oracle }
-     * 
-     */
-    public Oracle createOracle() {
-        return new Oracle();
-    }
-
-    /**
-     * Create an instance of {@link RedisIntegration }
-     * 
-     */
-    public RedisIntegration createRedisIntegration() {
-        return new RedisIntegration();
-    }
-
-    /**
-     * Create an instance of {@link Redis }
-     * 
-     */
-    public Redis createRedis() {
-        return new Redis();
-    }
-
-    /**
-     * Create an instance of {@link MongoIntegration }
-     * 
-     */
-    public MongoIntegration createMongoIntegration() {
-        return new MongoIntegration();
-    }
-
-    /**
-     * Create an instance of {@link Mongo }
-     * 
-     */
-    public Mongo createMongo() {
-        return new Mongo();
-    }
-
-    /**
-     * Create an instance of {@link S3Integration }
-     * 
-     */
-    public S3Integration createS3Integration() {
-        return new S3Integration();
-    }
-
-    /**
-     * Create an instance of {@link S3 }
-     * 
-     */
-    public S3 createS3() {
-        return new S3();
-    }
-
-    /**
-     * Create an instance of {@link SqsIntegration }
-     * 
-     */
-    public SqsIntegration createSqsIntegration() {
-        return new SqsIntegration();
-    }
-
-    /**
-     * Create an instance of {@link Sqs }
-     * 
-     */
-    public Sqs createSqs() {
-        return new Sqs();
-    }
-
-    /**
-     * Create an instance of {@link KafkaIntegration }
-     * 
-     */
-    public KafkaIntegration createKafkaIntegration() {
-        return new KafkaIntegration();
-    }
-
-    /**
-     * Create an instance of {@link Kafka }
-     * 
-     */
-    public Kafka createKafka() {
-        return new Kafka();
-    }
-
-    /**
-     * Create an instance of {@link RabbitmqIntegration }
-     * 
-     */
-    public RabbitmqIntegration createRabbitmqIntegration() {
-        return new RabbitmqIntegration();
-    }
-
-    /**
-     * Create an instance of {@link Rabbitmq }
-     * 
-     */
-    public Rabbitmq createRabbitmq() {
-        return new Rabbitmq();
-    }
-
-    /**
-     * Create an instance of {@link DynamoIntegration }
-     * 
-     */
-    public DynamoIntegration createDynamoIntegration() {
-        return new DynamoIntegration();
-    }
-
-    /**
-     * Create an instance of {@link Dynamo }
-     * 
-     */
-    public Dynamo createDynamo() {
-        return new Dynamo();
-    }
-
-    /**
-     * Create an instance of {@link ElasticsearchIntegration }
-     * 
-     */
-    public ElasticsearchIntegration createElasticsearchIntegration() {
-        return new ElasticsearchIntegration();
-    }
-
-    /**
-     * Create an instance of {@link Elasticsearch }
-     * 
-     */
-    public Elasticsearch createElasticsearch() {
-        return new Elasticsearch();
-    }
-
-    /**
-     * Create an instance of {@link LambdaIntegration }
-     * 
-     */
-    public LambdaIntegration createLambdaIntegration() {
-        return new LambdaIntegration();
-    }
-
-    /**
-     * Create an instance of {@link Lambda }
-     * 
-     */
-    public Lambda createLambda() {
-        return new Lambda();
-    }
-
-    /**
-     * Create an instance of {@link SendgridIntegration }
-     * 
-     */
-    public SendgridIntegration createSendgridIntegration() {
-        return new SendgridIntegration();
-    }
-
-    /**
-     * Create an instance of {@link Sendgrid }
-     * 
-     */
-    public Sendgrid createSendgrid() {
-        return new Sendgrid();
-    }
-
-    /**
-     * Create an instance of {@link SesIntegration }
-     * 
-     */
-    public SesIntegration createSesIntegration() {
-        return new SesIntegration();
-    }
-
-    /**
-     * Create an instance of {@link Ses }
-     * 
-     */
-    public Ses createSes() {
-        return new Ses();
-    }
-
-    /**
-     * Create an instance of {@link SmtpIntegration }
-     * 
-     */
-    public SmtpIntegration createSmtpIntegration() {
-        return new SmtpIntegration();
-    }
-
-    /**
-     * Create an instance of {@link Smtp }
-     * 
-     */
-    public Smtp createSmtp() {
-        return new Smtp();
-    }
-
-    /**
-     * Create an instance of {@link TwilioIntegration }
-     * 
-     */
-    public TwilioIntegration createTwilioIntegration() {
-        return new TwilioIntegration();
-    }
-
-    /**
-     * Create an instance of {@link Twilio }
-     * 
-     */
-    public Twilio createTwilio() {
-        return new Twilio();
+    public KlovServer createKlovServer() {
+        return new KlovServer();
     }
 
     /**
@@ -694,43 +590,163 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ExtentReports }
+     * Create an instance of {@link Api }
      * 
      */
-    public ExtentReports createExtentReports() {
-        return new ExtentReports();
+    public Api createApi() {
+        return new Api();
     }
 
     /**
-     * Create an instance of {@link HtmlReportGenerator }
+     * Create an instance of {@link GraphqlApi }
      * 
      */
-    public HtmlReportGenerator createHtmlReportGenerator() {
-        return new HtmlReportGenerator();
+    public GraphqlApi createGraphqlApi() {
+        return new GraphqlApi();
     }
 
     /**
-     * Create an instance of {@link KlovServerReportGenerator }
+     * Create an instance of {@link WebsocketApi }
      * 
      */
-    public KlovServerReportGenerator createKlovServerReportGenerator() {
-        return new KlovServerReportGenerator();
+    public WebsocketApi createWebsocketApi() {
+        return new WebsocketApi();
     }
 
     /**
-     * Create an instance of {@link Mongodb }
+     * Create an instance of {@link Postgres }
      * 
      */
-    public Mongodb createMongodb() {
-        return new Mongodb();
+    public Postgres createPostgres() {
+        return new Postgres();
     }
 
     /**
-     * Create an instance of {@link KlovServer }
+     * Create an instance of {@link Clickhouse }
      * 
      */
-    public KlovServer createKlovServer() {
-        return new KlovServer();
+    public Clickhouse createClickhouse() {
+        return new Clickhouse();
+    }
+
+    /**
+     * Create an instance of {@link Mysql }
+     * 
+     */
+    public Mysql createMysql() {
+        return new Mysql();
+    }
+
+    /**
+     * Create an instance of {@link Oracle }
+     * 
+     */
+    public Oracle createOracle() {
+        return new Oracle();
+    }
+
+    /**
+     * Create an instance of {@link Redis }
+     * 
+     */
+    public Redis createRedis() {
+        return new Redis();
+    }
+
+    /**
+     * Create an instance of {@link Mongo }
+     * 
+     */
+    public Mongo createMongo() {
+        return new Mongo();
+    }
+
+    /**
+     * Create an instance of {@link S3 }
+     * 
+     */
+    public S3 createS3() {
+        return new S3();
+    }
+
+    /**
+     * Create an instance of {@link Sqs }
+     * 
+     */
+    public Sqs createSqs() {
+        return new Sqs();
+    }
+
+    /**
+     * Create an instance of {@link Kafka }
+     * 
+     */
+    public Kafka createKafka() {
+        return new Kafka();
+    }
+
+    /**
+     * Create an instance of {@link Rabbitmq }
+     * 
+     */
+    public Rabbitmq createRabbitmq() {
+        return new Rabbitmq();
+    }
+
+    /**
+     * Create an instance of {@link Dynamo }
+     * 
+     */
+    public Dynamo createDynamo() {
+        return new Dynamo();
+    }
+
+    /**
+     * Create an instance of {@link Elasticsearch }
+     * 
+     */
+    public Elasticsearch createElasticsearch() {
+        return new Elasticsearch();
+    }
+
+    /**
+     * Create an instance of {@link Lambda }
+     * 
+     */
+    public Lambda createLambda() {
+        return new Lambda();
+    }
+
+    /**
+     * Create an instance of {@link Sendgrid }
+     * 
+     */
+    public Sendgrid createSendgrid() {
+        return new Sendgrid();
+    }
+
+    /**
+     * Create an instance of {@link Ses }
+     * 
+     */
+    public Ses createSes() {
+        return new Ses();
+    }
+
+    /**
+     * Create an instance of {@link Smtp }
+     * 
+     */
+    public Smtp createSmtp() {
+        return new Smtp();
+    }
+
+    /**
+     * Create an instance of {@link Twilio }
+     * 
+     */
+    public Twilio createTwilio() {
+        return new Twilio();
     }
 
 }

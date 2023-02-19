@@ -42,6 +42,12 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:simpleType name="xmlFileExtension">
+        <x:restriction base="x:string">
+            <x:pattern value=".+(\.xml)"/>
+        </x:restriction>
+    </x:simpleType>
+
     <x:complexType name="tagValue">
         <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="enable" type="x:boolean" use="required"/>

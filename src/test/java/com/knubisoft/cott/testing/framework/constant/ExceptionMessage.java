@@ -164,4 +164,7 @@ public class ExceptionMessage {
 
     public static final String CANNOT_SWITCH_TO_WEBVIEW = "Can not switch to the web view. Web context was not found";
 
+    public static final String VARIATIONS_NOT_FOUND = "Variations for %s not found";
+    public static final String VARIATION_FILE_IS_EMPTY = "Variation %s file in the %s is empty";
+    public static final String VARIATIONS_NEVER_USED = "Variations are present but never used";
 }

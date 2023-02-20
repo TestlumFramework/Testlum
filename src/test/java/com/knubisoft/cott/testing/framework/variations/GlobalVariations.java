@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VARIATIONS_NOT_FOUND;
+
 @UtilityClass
 public class GlobalVariations {
 
@@ -33,7 +35,7 @@ public class GlobalVariations {
     public List<Map<String, String>> getVariations(final String fileName) {
         List<Map<String, String>> variationList = VARIATIONS.get(fileName);
         if (Objects.isNull(variationList)) {
-            throw new DefaultFrameworkException("Variations for %s not found", fileName);
+            throw new DefaultFrameworkException(VARIATIONS_NOT_FOUND, fileName);
         }
         return variationList;
     }

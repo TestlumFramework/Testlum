@@ -110,6 +110,7 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
     private Map<String, String> getInjectedHeaders(final Response expected) {
         Map<String, String> headers = expected.getHeader().stream()
                 .collect(Collectors.toMap(Header::getName, Header::getData));
+        headers.replaceAll((name, data) -> getContentIfFile(data));
         return HttpUtil.injectAndGetHeaders(headers, this);
     }
 }

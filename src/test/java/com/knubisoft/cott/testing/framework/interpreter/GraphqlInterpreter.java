@@ -9,6 +9,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.http.ApiResponse;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.ConfigUtil;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
+import com.knubisoft.cott.testing.framework.util.HttpUtil;
 import com.knubisoft.cott.testing.framework.util.HttpValidator;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
@@ -125,7 +126,10 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     }
 
     private Map<String, String> getExpectedHeaders(final Response expected) {
-        return expected.getHeader().stream().collect(Collectors.toMap(Header::getName, Header::getData));
+        Map<String, String> expectedHeaders
+                = expected.getHeader().stream().collect(Collectors.toMap(Header::getName, Header::getData));
+        expectedHeaders.replaceAll((name, data) -> getContentIfFile(data));
+        return HttpUtil.injectAndGetHeaders(expectedHeaders, this);
     }
 
 

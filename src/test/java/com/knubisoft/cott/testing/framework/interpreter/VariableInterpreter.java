@@ -18,13 +18,13 @@ import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.scenario.FromSQL;
 import com.knubisoft.cott.testing.model.scenario.Var;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
@@ -43,7 +43,6 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SLASH_SEPARATOR;
@@ -58,7 +57,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.JSON_PATH;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NO_EXPRESSION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.RELATIONAL_DB_QUERY;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.XML_PATH;
-import static java.util.Objects.*;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @InterpreterForClass(Var.class)
@@ -138,7 +137,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         String injectedExpression = inject(expression);
         ExpressionParser parser = new SpelExpressionParser();
         Expression exp = parser.parseExpression(injectedExpression);
-        String valueResult = requireNonNull(exp.getValue()).toString();
+        String valueResult = Objects.requireNonNull(exp.getValue()).toString();
         ResultUtil.addVariableMetaData(EXPRESSION, var.getName(), expression, valueResult, result);
         return valueResult;
     }

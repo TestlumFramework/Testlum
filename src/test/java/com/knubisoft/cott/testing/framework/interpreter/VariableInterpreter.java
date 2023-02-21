@@ -17,13 +17,14 @@ import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.scenario.FromSQL;
 import com.knubisoft.cott.testing.model.scenario.Var;
+
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
@@ -42,6 +43,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SLASH_SEPARATOR;
@@ -56,6 +58,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.JSON_PATH;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NO_EXPRESSION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.RELATIONAL_DB_QUERY;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.XML_PATH;
+import static java.util.Objects.*;
 
 @Slf4j
 @InterpreterForClass(Var.class)
@@ -67,13 +70,13 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     public VariableInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
         Map<VarFromPredicate, VarFromMethod> varMap = new HashMap<>();
-        varMap.put(var -> Objects.nonNull(var.getFromSQL()), this::getSQLResult);
-        varMap.put(var -> Objects.nonNull(var.getFromFile()), this::getFileResult);
-        varMap.put(var -> Objects.nonNull(var.getFromExpression()), this::getExpressionResult);
-        varMap.put(var -> Objects.nonNull(var.getFromConstant()), this::getValueResult);
-        varMap.put(var -> Objects.nonNull(var.getFromPath()), this::getPathResult);
-        varMap.put(var -> Objects.nonNull(var.getFromCookie()), this::getWebCookiesResult);
-        varMap.put(var -> Objects.nonNull(var.getFromDom()), this::getDomResult);
+        varMap.put(var -> nonNull(var.getFromSQL()), this::getSQLResult);
+        varMap.put(var -> nonNull(var.getFromFile()), this::getFileResult);
+        varMap.put(var -> nonNull(var.getFromExpression()), this::getExpressionResult);
+        varMap.put(var -> nonNull(var.getFromConstant()), this::getConstantResult);
+        varMap.put(var -> nonNull(var.getFromPath()), this::getPathResult);
+        varMap.put(var -> nonNull(var.getFromCookie()), this::getWebCookiesResult);
+        varMap.put(var -> nonNull(var.getFromDom()), this::getDomResult);
         varToMethodMap = Collections.unmodifiableMap(varMap);
     }
 
@@ -97,8 +100,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         return varToMethodMap.keySet().stream()
                 .filter(key -> key.test(var))
                 .findFirst()
-                .map(varToMethodMap::get)
-                .map(v -> v.apply(var, result)).get();
+                .map(varToMethodMap::get).get().apply(var, result);
     }
 
     private String getDomResult(final Var var, final CommandResult result) {
@@ -115,7 +117,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         return valueResult;
     }
 
-    private String getValueResult(final Var var, final CommandResult result) {
+    private String getConstantResult(final Var var, final CommandResult result) {
         String value = var.getFromConstant().getValue();
         String valueResult = inject(value);
         ResultUtil.addVariableMetaData(CONSTANT, var.getName(), NO_EXPRESSION, valueResult, result);
@@ -136,11 +138,12 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         String injectedExpression = inject(expression);
         ExpressionParser parser = new SpelExpressionParser();
         Expression exp = parser.parseExpression(injectedExpression);
-        String valueResult = Objects.requireNonNull(exp.getValue()).toString();
+        String valueResult = requireNonNull(exp.getValue()).toString();
         ResultUtil.addVariableMetaData(EXPRESSION, var.getName(), expression, valueResult, result);
         return valueResult;
     }
 
+    @SneakyThrows
     private String getPathResult(final Var var, final CommandResult result) {
         String path = var.getFromPath().getValue();
         if (path.startsWith(DOLLAR_SIGN)) {
@@ -153,8 +156,8 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
 
-    @SneakyThrows
-    private String evaluateXPath(final String path, final String varName, final CommandResult result) {
+
+    private String evaluateXPath(final String path, final String varName, final CommandResult result) throws Exception {
         DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document document = documentBuilder
                 .parse(new InputSource(new StringReader(dependencies.getScenarioContext().getBody())));

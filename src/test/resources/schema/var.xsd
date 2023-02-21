@@ -29,8 +29,14 @@
     </x:complexType>
 
     <x:complexType name="fromPath">
-        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="value" type="tns:path" use="required"/>
     </x:complexType>
+
+    <x:simpleType name="path">
+        <x:restriction base="x:string">
+            <x:pattern value="^/.+|^\$.+"/>
+        </x:restriction>
+    </x:simpleType>
 
     <x:complexType name="fromExpression">
         <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
@@ -43,8 +49,14 @@
     <x:complexType name="fromCookie"/>
 
     <x:complexType name="fromDom">
-        <x:attribute name="xpath" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="xpath" type="tns:xpath" use="required"/>
     </x:complexType>
+
+    <x:simpleType name="xpath">
+        <x:restriction base="x:string">
+            <x:pattern value="^/.+"/>
+        </x:restriction>
+    </x:simpleType>
 
     <x:complexType name="fromSQL">
         <x:sequence>

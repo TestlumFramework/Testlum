@@ -6,7 +6,10 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,12 +35,13 @@ public final class WebElementFinder {
         SEARCH_TYPES = Collections.unmodifiableMap(map);
     }
 
-    public WebElement find(final Locator locator, final WebDriver driver) {
+    public WebElement find(final Locator locator, final WebDriver driver, final int timeToWait) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeToWait));
         return SEARCH_TYPES.entrySet().stream()
                 .filter(l -> l.getKey().test(locator))
                 .findFirst()
                 .map(l -> l.getValue().apply(locator))
-                .map(driver::findElement)
+                .map(l -> wait.until(ExpectedConditions.visibilityOfElementLocated(l)))
                 .orElseThrow(() -> defaultFrameworkException(locator));
     }
 

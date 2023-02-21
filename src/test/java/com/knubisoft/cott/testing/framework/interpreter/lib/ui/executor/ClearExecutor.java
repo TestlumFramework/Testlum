@@ -21,8 +21,7 @@ public class ClearExecutor extends AbstractUiExecutor<Clear> {
     public void execute(final Clear clear, final CommandResult result) {
         String locatorId = clear.getLocatorId();
         result.put(CLEAR_LOCATOR, locatorId);
-        UiUtil.waitForElementVisibility(dependencies.getDriver(), locatorId);
-        WebElement element = UiUtil.findWebElement(dependencies.getDriver(), locatorId);
+        WebElement element = UiUtil.findWebElement(dependencies, locatorId);
         UiUtil.highlightElementIfRequired(clear.isHighlight(), element, dependencies.getDriver());
         element.clear();
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);

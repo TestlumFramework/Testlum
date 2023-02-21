@@ -12,7 +12,6 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
@@ -61,9 +60,9 @@ public class UiUtil {
         return value;
     }
 
-    public WebElement findWebElement(final WebDriver webDriver, final String locatorId) {
+    public WebElement findWebElement(final ExecutorDependencies dependencies, final String locatorId) {
         Locator locator = GlobalLocators.getLocator(locatorId);
-        return WebElementFinder.find(locator, webDriver);
+        return WebElementFinder.find(locator, dependencies.getDriver(), dependencies.getUiType().getAutoWait());
     }
 
     public void highlightElementIfRequired(final Boolean isHighlight,
@@ -74,10 +73,9 @@ public class UiUtil {
         }
     }
 
-    public void waitForElementVisibility(final WebDriver driver, final String locatorId) {
+    public void waitForElementVisibility(final WebDriver driver, final WebElement element) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIME_TO_WAIT));
-        Locator locator = GlobalLocators.getLocator(locatorId);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(getLocatorSource(locator)));
+        wait.until(ExpectedConditions.visibilityOf(element));
     }
 
     public void waitForElementToBeClickable(final WebDriver driver, final WebElement element) {
@@ -182,21 +180,5 @@ public class UiUtil {
     public Point getCenterPoint(final WebDriver driver) {
         Dimension dimension = driver.manage().window().getSize();
         return new Point(dimension.width / 2, dimension.height / 2);
-    }
-
-    private By getLocatorSource(final Locator locator) {
-        if (Objects.nonNull(locator.getXpath())) {
-            return By.xpath(locator.getXpath());
-        }
-        if (Objects.nonNull(locator.getId())) {
-            return By.id(locator.getId());
-        }
-        if (Objects.nonNull(locator.getCssSelector())) {
-            return By.cssSelector(locator.getCssSelector());
-        }
-        if (Objects.nonNull(locator.getClazz())) {
-            return By.className(locator.getClazz());
-        }
-        return By.linkText(locator.getText().getValue());
     }
 }

@@ -16,13 +16,13 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="fromSQL"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractResource"&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="query" type="{http://www.knubisoft.com/cott/testing/model/scenario}variableQuery"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="dbType" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}relationalDB" /&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}aliasPattern" /&gt;
- *     &lt;/extension&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -33,9 +33,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "fromSQL", propOrder = {
     "query"
 })
-public class FromSQL
-    extends AbstractResource
-{
+public class FromSQL {
 
     @XmlElement(required = true)
     protected String query;

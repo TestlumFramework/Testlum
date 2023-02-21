@@ -11,75 +11,47 @@
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:choice>
-                    <x:element name="fromSQL" type="tns:fromSQL"/>
                     <x:element name="fromFile" type="tns:fromFile"/>
                     <x:element name="fromPath" type="tns:fromPath"/>
                     <x:element name="fromExpression" type="tns:fromExpression"/>
                     <x:element name="fromConstant" type="tns:fromConstant"/>
                     <x:element name="fromCookie" type="tns:fromCookie"/>
                     <x:element name="fromDom" type="tns:fromDom"/>
+                    <x:element name="fromSQL" type="tns:fromSQL"/>
                 </x:choice>
                 <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="fromDom">
-        <x:complexContent>
-            <x:extension base="tns:abstractResource">
-                <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="fromConstant">
-        <x:complexContent>
-            <x:extension base="tns:abstractResource">
-                <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="fromCookie">
-        <x:complexContent>
-            <x:extension base="tns:abstractResource"/>
-        </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="fromExpression">
-        <x:complexContent>
-            <x:extension base="tns:abstractResource">
-                <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
     <x:complexType name="fromFile">
-        <x:complexContent>
-            <x:extension base="tns:abstractResource">
-                <x:attribute name="file" type="tns:jsonFileExtension" use="required"/>
-            </x:extension>
-        </x:complexContent>
+        <x:attribute name="fileName" type="tns:jsonFileExtension" use="required"/>
     </x:complexType>
 
     <x:complexType name="fromPath">
-        <x:complexContent>
-            <x:extension base="tns:abstractResource">
-                <x:attribute name="path" type="tns:nonEmptyString" use="required"/>
-            </x:extension>
-        </x:complexContent>
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="fromExpression">
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="fromConstant">
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="fromCookie"/>
+
+    <x:complexType name="fromDom">
+        <x:attribute name="xpath" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
     <x:complexType name="fromSQL">
-        <x:complexContent>
-            <x:extension base="tns:abstractResource">
-                <x:sequence>
-                    <x:element name="query" type="tns:variableQuery"/>
-                </x:sequence>
-                <x:attribute name="dbType" type="tns:relationalDB" use="required"/>
-                <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
-            </x:extension>
-        </x:complexContent>
+        <x:sequence>
+            <x:element name="query" type="tns:variableQuery"/>
+        </x:sequence>
+        <x:attribute name="dbType" type="tns:relationalDB" use="required"/>
+        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
     </x:complexType>
 
     <x:simpleType name="variableQuery">

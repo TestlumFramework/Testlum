@@ -38,8 +38,6 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="abstractResource" abstract="true"/>
-
     <x:simpleType name="nonEmptyString">
         <x:restriction base="x:string">
             <x:minLength value="1"/>

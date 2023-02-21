@@ -15,9 +15,9 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="fromFile"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractResource"&gt;
- *       &lt;attribute name="file" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}jsonFileExtension" /&gt;
- *     &lt;/extension&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;attribute name="fileName" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}jsonFileExtension" /&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -26,35 +26,33 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "fromFile")
-public class FromFile
-    extends AbstractResource
-{
+public class FromFile {
 
-    @XmlAttribute(name = "file", required = true)
-    protected String file;
+    @XmlAttribute(name = "fileName", required = true)
+    protected String fileName;
 
     /**
-     * Gets the value of the file property.
+     * Gets the value of the fileName property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getFile() {
-        return file;
+    public String getFileName() {
+        return fileName;
     }
 
     /**
-     * Sets the value of the file property.
+     * Sets the value of the fileName property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setFile(String value) {
-        this.file = value;
+    public void setFileName(String value) {
+        this.fileName = value;
     }
 
 }

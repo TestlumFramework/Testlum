@@ -14,8 +14,8 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="fromCookie"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractResource"&gt;
- *     &lt;/extension&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -24,9 +24,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "fromCookie")
-public class FromCookie
-    extends AbstractResource
-{
+public class FromCookie {
 
 
 }

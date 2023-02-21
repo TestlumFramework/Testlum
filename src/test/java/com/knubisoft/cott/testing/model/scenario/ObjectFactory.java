@@ -830,11 +830,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FromDom }
+     * Create an instance of {@link FromFile }
      * 
      */
-    public FromDom createFromDom() {
-        return new FromDom();
+    public FromFile createFromFile() {
+        return new FromFile();
+    }
+
+    /**
+     * Create an instance of {@link FromPath }
+     * 
+     */
+    public FromPath createFromPath() {
+        return new FromPath();
+    }
+
+    /**
+     * Create an instance of {@link FromExpression }
+     * 
+     */
+    public FromExpression createFromExpression() {
+        return new FromExpression();
     }
 
     /**
@@ -854,27 +870,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FromExpression }
+     * Create an instance of {@link FromDom }
      * 
      */
-    public FromExpression createFromExpression() {
-        return new FromExpression();
-    }
-
-    /**
-     * Create an instance of {@link FromFile }
-     * 
-     */
-    public FromFile createFromFile() {
-        return new FromFile();
-    }
-
-    /**
-     * Create an instance of {@link FromPath }
-     * 
-     */
-    public FromPath createFromPath() {
-        return new FromPath();
+    public FromDom createFromDom() {
+        return new FromDom();
     }
 
     /**

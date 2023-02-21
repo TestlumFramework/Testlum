@@ -17,13 +17,13 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
  *       &lt;choice&gt;
- *         &lt;element name="fromSQL" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromSQL"/&gt;
  *         &lt;element name="fromFile" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromFile"/&gt;
  *         &lt;element name="fromPath" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromPath"/&gt;
  *         &lt;element name="fromExpression" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromExpression"/&gt;
  *         &lt;element name="fromConstant" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromConstant"/&gt;
  *         &lt;element name="fromCookie" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromCookie"/&gt;
  *         &lt;element name="fromDom" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromDom"/&gt;
+ *         &lt;element name="fromSQL" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromSQL"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
@@ -35,51 +35,27 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "var", propOrder = {
-    "fromSQL",
     "fromFile",
     "fromPath",
     "fromExpression",
     "fromConstant",
     "fromCookie",
-    "fromDom"
+    "fromDom",
+    "fromSQL"
 })
 public class Var
     extends AbstractCommand
 {
 
-    protected FromSQL fromSQL;
     protected FromFile fromFile;
     protected FromPath fromPath;
     protected FromExpression fromExpression;
     protected FromConstant fromConstant;
     protected FromCookie fromCookie;
     protected FromDom fromDom;
+    protected FromSQL fromSQL;
     @XmlAttribute(name = "name", required = true)
     protected String name;
-
-    /**
-     * Gets the value of the fromSQL property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link FromSQL }
-     *     
-     */
-    public FromSQL getFromSQL() {
-        return fromSQL;
-    }
-
-    /**
-     * Sets the value of the fromSQL property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link FromSQL }
-     *     
-     */
-    public void setFromSQL(FromSQL value) {
-        this.fromSQL = value;
-    }
 
     /**
      * Gets the value of the fromFile property.
@@ -223,6 +199,30 @@ public class Var
      */
     public void setFromDom(FromDom value) {
         this.fromDom = value;
+    }
+
+    /**
+     * Gets the value of the fromSQL property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FromSQL }
+     *     
+     */
+    public FromSQL getFromSQL() {
+        return fromSQL;
+    }
+
+    /**
+     * Sets the value of the fromSQL property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FromSQL }
+     *     
+     */
+    public void setFromSQL(FromSQL value) {
+        this.fromSQL = value;
     }
 
     /**

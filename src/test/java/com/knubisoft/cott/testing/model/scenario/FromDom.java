@@ -15,9 +15,9 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="fromDom"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractResource"&gt;
- *       &lt;attribute name="locator" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
- *     &lt;/extension&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;attribute name="xpath" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -26,35 +26,33 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "fromDom")
-public class FromDom
-    extends AbstractResource
-{
+public class FromDom {
 
-    @XmlAttribute(name = "locator", required = true)
-    protected String locator;
+    @XmlAttribute(name = "xpath", required = true)
+    protected String xpath;
 
     /**
-     * Gets the value of the locator property.
+     * Gets the value of the xpath property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getLocator() {
-        return locator;
+    public String getXpath() {
+        return xpath;
     }
 
     /**
-     * Sets the value of the locator property.
+     * Sets the value of the xpath property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setLocator(String value) {
-        this.locator = value;
+    public void setXpath(String value) {
+        this.xpath = value;
     }
 
 }

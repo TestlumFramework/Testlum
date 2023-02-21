@@ -62,19 +62,19 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.XML_PATH;
 public class VariableInterpreter extends AbstractInterpreter<Var> {
     @Autowired(required = false)
     private NameToAdapterAlias nameToAdapterAlias;
-    private final Map<VarFromPredicate, VarFromMethod> abstractVarToMethodMap;
+    private final Map<VarFromPredicate, VarFromMethod> varToMethodMap;
 
     public VariableInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
-        Map<VarFromPredicate, VarFromMethod> varToMethodMap = new HashMap<>();
-        varToMethodMap.put(var -> Objects.nonNull(var.getFromSQL()), this::getDbResult);
-        varToMethodMap.put(var -> Objects.nonNull(var.getFromFile()), this::getFileResult);
-        varToMethodMap.put(var -> Objects.nonNull(var.getFromExpression()), this::getExpressionResult);
-        varToMethodMap.put(var -> Objects.nonNull(var.getFromConstant()), this::getValueResult);
-        varToMethodMap.put(var -> Objects.nonNull(var.getFromPath()), this::getPathResult);
-        varToMethodMap.put(var -> Objects.nonNull(var.getFromCookie()), this::getWebCookiesResult);
-        varToMethodMap.put(var -> Objects.nonNull(var.getFromDom()), this::getDomResult);
-        abstractVarToMethodMap = Collections.unmodifiableMap(varToMethodMap);
+        Map<VarFromPredicate, VarFromMethod> varMap = new HashMap<>();
+        varMap.put(var -> Objects.nonNull(var.getFromSQL()), this::getSQLResult);
+        varMap.put(var -> Objects.nonNull(var.getFromFile()), this::getFileResult);
+        varMap.put(var -> Objects.nonNull(var.getFromExpression()), this::getExpressionResult);
+        varMap.put(var -> Objects.nonNull(var.getFromConstant()), this::getValueResult);
+        varMap.put(var -> Objects.nonNull(var.getFromPath()), this::getPathResult);
+        varMap.put(var -> Objects.nonNull(var.getFromCookie()), this::getWebCookiesResult);
+        varMap.put(var -> Objects.nonNull(var.getFromDom()), this::getDomResult);
+        varToMethodMap = Collections.unmodifiableMap(varMap);
     }
 
     @Override
@@ -94,10 +94,10 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     private String getValueForContext(final Var var, final CommandResult result) {
-        return abstractVarToMethodMap.keySet().stream()
+        return varToMethodMap.keySet().stream()
                 .filter(key -> key.test(var))
                 .findFirst()
-                .map(abstractVarToMethodMap::get)
+                .map(varToMethodMap::get)
                 .map(v -> v.apply(var, result)).get();
     }
 
@@ -141,7 +141,6 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         return valueResult;
     }
 
-    @SneakyThrows
     private String getPathResult(final Var var, final CommandResult result) {
         String path = var.getFromPath().getValue();
         if (path.startsWith(DOLLAR_SIGN)) {
@@ -152,6 +151,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         }
         throw new DefaultFrameworkException("Path <%s> is not supported", path);
     }
+
 
     @SneakyThrows
     private String evaluateXPath(final String path, final String varName, final CommandResult result) {
@@ -171,19 +171,19 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         return valueResult;
     }
 
-    private String getDbResult(final Var var, final CommandResult result) {
+    private String getSQLResult(final Var var, final CommandResult result) {
         FromSQL fromSQL = var.getFromSQL();
         String metadataKey = fromSQL.getDbType().name() + DelimiterConstant.UNDERSCORE + fromSQL.getAlias();
         StorageOperation storageOperation = nameToAdapterAlias.getByNameOrThrow(metadataKey).getStorageOperation();
-        String valueResult = getActualRelationalDbResult(fromSQL, storageOperation);
+        String valueResult = getActualQueryResult(fromSQL, storageOperation);
         ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, var.getName(), fromSQL.getQuery(), valueResult, result);
         return valueResult;
     }
 
-    private String getActualRelationalDbResult(final FromSQL relationalDbResult,
-                                               final StorageOperation storageOperation) {
-        String alias = relationalDbResult.getAlias();
-        List<String> singleQuery = new ArrayList<>(Collections.singletonList(relationalDbResult.getQuery()));
+    private String getActualQueryResult(final FromSQL fromSQL,
+                                        final StorageOperation storageOperation) {
+        String alias = fromSQL.getAlias();
+        List<String> singleQuery = new ArrayList<>(Collections.singletonList(fromSQL.getQuery()));
         LogUtil.logAllQueries(singleQuery, alias);
         StorageOperation.StorageOperationResult queryResult =
                 storageOperation.apply(new ListSource(singleQuery), inject(alias));

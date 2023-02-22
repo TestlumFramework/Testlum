@@ -128,7 +128,6 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     private Map<String, String> getExpectedHeaders(final Response expected) {
         Map<String, String> expectedHeaders
                 = expected.getHeader().stream().collect(Collectors.toMap(Header::getName, Header::getData));
-        expectedHeaders.replaceAll((name, data) -> getContentIfFile(data));
         return HttpUtil.injectAndGetHeaders(expectedHeaders, this);
     }
 

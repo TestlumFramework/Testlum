@@ -25,7 +25,7 @@
     </x:complexType>
 
     <x:complexType name="fromFile">
-        <x:attribute name="fileName" type="tns:jsonFileExtension" use="required"/>
+        <x:attribute name="fileName" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
     <x:complexType name="fromPath">

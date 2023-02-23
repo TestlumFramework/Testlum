@@ -12,6 +12,7 @@ import com.knubisoft.cott.testing.framework.util.HttpUtil;
 import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.framework.util.SendGridUtil;
 import com.knubisoft.cott.testing.framework.validator.XMLValidator;
+import com.knubisoft.cott.testing.framework.variations.GlobalVariations;
 import com.knubisoft.cott.testing.model.global_config.Apis;
 import com.knubisoft.cott.testing.model.global_config.AppiumCapabilities;
 import com.knubisoft.cott.testing.model.global_config.ClickhouseIntegration;
@@ -312,8 +313,15 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     @Override
     public void validate(final Scenario scenario, final File xmlFile) {
         if (scenario.isActive()) {
+            validateVariationsIfExist(scenario, xmlFile);
             validateIfContainsNativeAndMobileCommands(scenario.getCommands());
             scenario.getCommands().forEach(command -> validateCommand(command, xmlFile));
+        }
+    }
+
+    private void validateVariationsIfExist(final Scenario scenario, final File xmlFile) {
+        if (StringUtils.hasText(scenario.getVariations())) {
+            GlobalVariations.process(scenario, xmlFile);
         }
     }
 

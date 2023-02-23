@@ -3,11 +3,13 @@ package com.knubisoft.cott.testing.framework.scenario;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.parser.XMLParsers;
+import com.knubisoft.cott.testing.framework.util.ConfigUtil;
+import com.knubisoft.cott.testing.framework.util.FileSearcher;
+import com.knubisoft.cott.testing.model.global_config.Api;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
+import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.Include;
 import com.knubisoft.cott.testing.model.scenario.Logout;
-import com.knubisoft.cott.testing.framework.util.FileSearcher;
-import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.Repeat;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
@@ -108,16 +110,24 @@ public class ScenarioCollector {
         auth.setLoginEndpoint(authCommand.getLoginEndpoint());
         updatedCommand.add(auth);
         updatedCommand.addAll(authCommand.getCommands());
-        if (GlobalTestConfigurationProvider.provide().getAuth().isAutoLogout()) {
-            updatedCommand.add(new Logout());
+        if (isAutoLogout(authCommand.getApiAlias())) {
+            Logout logout = new Logout();
+            logout.setAlias(authCommand.getApiAlias());
+            updatedCommand.add(logout);
         }
+    }
+
+    private boolean isAutoLogout(final String alias) {
+        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().getApis().getApi();
+        Api apiIntegration = (Api) ConfigUtil.findApiForAlias(apiList, alias);
+        return apiIntegration.getAuth().isAutoLogout();
     }
 
     private void addRepeatCommands(final List<AbstractCommand> updatedCommand,
                                    final Repeat repeatCommand) {
         int times = repeatCommand.getTimes().intValue();
         for (int i = 0; i < times; i++) {
-           repeatCommand.getCommands().forEach(command -> addAbstractCommand(updatedCommand, command));
+            repeatCommand.getCommands().forEach(command -> addAbstractCommand(updatedCommand, command));
         }
     }
 

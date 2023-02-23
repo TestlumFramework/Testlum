@@ -102,14 +102,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Auth }
-     * 
-     */
-    public Auth createAuth() {
-        return new Auth();
-    }
-
-    /**
      * Create an instance of {@link Integrations }
      * 
      */
@@ -219,6 +211,14 @@ public class ObjectFactory {
      */
     public Api createApi() {
         return new Api();
+    }
+
+    /**
+     * Create an instance of {@link Auth }
+     * 
+     */
+    public Auth createAuth() {
+        return new Auth();
     }
 
     /**

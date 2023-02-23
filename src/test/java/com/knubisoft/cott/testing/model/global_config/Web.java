@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="baseUrl" type="{http://www.knubisoft.com/cott/testing/model/global-config}url"/&gt;
+ *         &lt;element name="baseUrl" type="{http://www.knubisoft.com/cott/testing/model/global-config}urlWeb"/&gt;
  *         &lt;element name="browserSettings" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserSettings"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;

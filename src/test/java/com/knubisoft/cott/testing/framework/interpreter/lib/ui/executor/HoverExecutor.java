@@ -27,7 +27,7 @@ public class HoverExecutor extends AbstractUiExecutor<Hovers> {
         Actions actions = new Actions(dependencies.getDriver());
         hovers.getHover().stream()
                 .peek(hover -> LogUtil.logHover(dependencies.getPosition().incrementAndGet(), hover))
-                .map(hover -> UiUtil.findWebElement(dependencies.getDriver(), hover.getLocatorId()))
+                .map(hover -> UiUtil.findWebElement(dependencies, hover.getLocatorId()))
                 .forEach(webElement -> performMovement(actions, webElement));
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         moveToEmptySpace(hovers.isMoveToEmptySpace(), actions);

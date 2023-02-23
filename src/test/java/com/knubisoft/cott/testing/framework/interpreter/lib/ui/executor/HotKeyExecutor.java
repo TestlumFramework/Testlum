@@ -122,7 +122,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
         Locator locator = GlobalLocators.getLocator(locatorId);
         result.put(HOTKEY_LOCATOR, locator.getLocatorId());
         log.info(HOTKEY_COMMAND_LOCATOR, locator.getLocatorId());
-        return WebElementFinder.find(locator, dependencies.getDriver());
+        return WebElementFinder.find(locator, dependencies.getDriver(), dependencies.getUiType().getAutoWait());
     }
 
     private Keys chooseKeyForOperatingSystem() {

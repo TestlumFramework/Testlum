@@ -39,9 +39,9 @@ public class ScrollNativeExecutor extends AbstractUiExecutor<ScrollNative> {
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
-    private static Point getStartPoint(final ScrollNative scrollNative, final AppiumDriver driver) {
+    private Point getStartPoint(final ScrollNative scrollNative, final AppiumDriver driver) {
         return ScrollType.INNER == scrollNative.getType()
-                ? UiUtil.findWebElement(driver, scrollNative.getLocatorId()).getLocation()
+                ? UiUtil.findWebElement(dependencies, scrollNative.getLocatorId()).getLocation()
                 : UiUtil.getCenterPoint(driver);
     }
 

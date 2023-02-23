@@ -1,13 +1,13 @@
 package com.knubisoft.cott.testing.framework;
 
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
-import com.knubisoft.cott.testing.framework.parser.CSVParser;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioFilter;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.framework.util.ScenarioStepReader;
+import com.knubisoft.cott.testing.framework.variations.GlobalVariations;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
@@ -148,7 +148,7 @@ public class TestSetCollector {
     }
 
     private List<Map<String, String>> getVariationList(final MappingResult entry) {
-        return new CSVParser().parseVariations(entry.scenario.getVariations());
+        return GlobalVariations.getVariations(entry.scenario.getVariations());
     }
 
     private boolean variationsExist(final MappingResult entry) {

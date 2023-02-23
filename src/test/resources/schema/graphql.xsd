@@ -13,6 +13,7 @@
             <x:extension base="tns:abstractCommand">
                 <x:sequence>
                     <x:element name="body" type="tns:graphqlBody"/>
+                    <x:element name="header" type="tns:header" minOccurs="0" maxOccurs="unbounded"/>
                     <x:element name="response" type="tns:response" minOccurs="0"/>
                 </x:sequence>
                 <x:attribute name="endpoint" type="tns:endpointPattern" use="required"/>

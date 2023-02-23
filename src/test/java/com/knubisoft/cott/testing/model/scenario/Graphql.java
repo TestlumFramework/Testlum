@@ -1,6 +1,8 @@
 
 package com.knubisoft.cott.testing.model.scenario;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -19,6 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="body" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlBody"/&gt;
+ *         &lt;element name="header" type="{http://www.knubisoft.com/cott/testing/model/scenario}header" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element name="response" type="{http://www.knubisoft.com/cott/testing/model/scenario}response" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="endpoint" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}endpointPattern" /&gt;
@@ -33,6 +36,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "graphql", propOrder = {
     "body",
+    "header",
     "response"
 })
 public class Graphql
@@ -41,6 +45,7 @@ public class Graphql
 
     @XmlElement(required = true)
     protected GraphqlBody body;
+    protected List<Header> header;
     protected Response response;
     @XmlAttribute(name = "endpoint", required = true)
     protected String endpoint;
@@ -69,6 +74,35 @@ public class Graphql
      */
     public void setBody(GraphqlBody value) {
         this.body = value;
+    }
+
+    /**
+     * Gets the value of the header property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the header property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getHeader().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Header }
+     * 
+     * 
+     */
+    public List<Header> getHeader() {
+        if (header == null) {
+            header = new ArrayList<Header>();
+        }
+        return this.header;
     }
 
     /**

@@ -44,7 +44,7 @@ public final class WebElementFinder {
                 .orElseThrow(() -> defaultFrameworkException(locator));
     }
 
-    private static WebElement getWebElement(final org.openqa.selenium.By by,
+    private WebElement getWebElement(final org.openqa.selenium.By by,
                                             final WebDriver driver,
                                             final int timeToWait) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeToWait));
@@ -56,9 +56,7 @@ public final class WebElementFinder {
         return new DefaultFrameworkException(format("Web element for locator='%s' not found", locator));
     }
 
-    private interface LocatorType extends Predicate<Locator> {
-    }
+    private interface LocatorType extends Predicate<Locator> { }
 
-    private interface ByType extends Function<Locator, org.openqa.selenium.By> {
-    }
+    private interface ByType extends Function<Locator, org.openqa.selenium.By> { }
 }

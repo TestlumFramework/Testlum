@@ -57,6 +57,5 @@ public final class WebElementFinder {
     }
 
     private interface LocatorType extends Predicate<Locator> { }
-
     private interface ByType extends Function<Locator, org.openqa.selenium.By> { }
 }

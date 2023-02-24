@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="query" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="query" type="{http://www.knubisoft.com/cott/testing/model/scenario}variableQuery"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="dbType" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}relationalDB" /&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}aliasPattern" /&gt;

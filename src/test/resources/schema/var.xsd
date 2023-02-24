@@ -60,11 +60,17 @@
 
     <x:complexType name="fromSQL">
         <x:sequence>
-            <x:element name="query" type="x:string"/>
+            <x:element name="query" type="tns:variableQuery"/>
         </x:sequence>
         <x:attribute name="dbType" type="tns:relationalDB" use="required"/>
         <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
     </x:complexType>
+
+    <x:simpleType name="variableQuery">
+        <x:restriction base="x:string">
+            <x:pattern value="SELECT([^\*,]|\n)+FROM(.|\n)+WHERE(.|\n)+"/>
+        </x:restriction>
+    </x:simpleType>
 
     <x:simpleType name="relationalDB">
         <x:restriction base="x:string">

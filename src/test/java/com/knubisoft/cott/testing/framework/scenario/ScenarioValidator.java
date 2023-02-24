@@ -45,6 +45,8 @@ import com.knubisoft.cott.testing.model.scenario.Clickhouse;
 import com.knubisoft.cott.testing.model.scenario.CommandWithOptionalLocator;
 import com.knubisoft.cott.testing.model.scenario.Dynamo;
 import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
+import com.knubisoft.cott.testing.model.scenario.FromFile;
+import com.knubisoft.cott.testing.model.scenario.FromSQL;
 import com.knubisoft.cott.testing.model.scenario.Http;
 import com.knubisoft.cott.testing.model.scenario.HttpInfo;
 import com.knubisoft.cott.testing.model.scenario.Include;
@@ -63,7 +65,6 @@ import com.knubisoft.cott.testing.model.scenario.Rabbit;
 import com.knubisoft.cott.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.cott.testing.model.scenario.Redis;
-import com.knubisoft.cott.testing.model.scenario.RelationalDbResult;
 import com.knubisoft.cott.testing.model.scenario.Response;
 import com.knubisoft.cott.testing.model.scenario.S3;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
@@ -88,7 +89,6 @@ import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -101,6 +101,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.springframework.util.StringUtils;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INTEGRATION_NOT_FOUND;
@@ -292,7 +294,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
         validatorMap.put(o -> o instanceof Var, (xmlFile, command) -> {
             Var var = (Var) command;
-            validateVarCommand(var);
+            validateVarCommand(xmlFile, var);
         });
 
         validatorMap.put(o -> o instanceof Web, (xmlFile, command) -> {
@@ -384,11 +386,15 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     //CHECKSTYLE:OFF
-    private void validateVarCommand(final Var var) {
-        RelationalDbResult dbResult = var.getRelationalDbResult();
-        if (Objects.nonNull(dbResult)) {
+    private void validateVarCommand(final File xmlFile, final Var var) {
+        FromFile fromFile = var.getFromFile();
+        if (Objects.nonNull(fromFile)) {
+            validateFileIfExist(xmlFile, fromFile.getFileName());
+        }
+        FromSQL fromSQL = var.getFromSQL();
+        if (Objects.nonNull(fromSQL)) {
             List<? extends Integration> integrationList;
-            switch (dbResult.getDbType()) {
+            switch (fromSQL.getDbType()) {
                 case POSTGRES:
                     checkIntegrationExistence(integrations.getPostgresIntegration(), PostgresIntegration.class);
                     integrationList = integrations.getPostgresIntegration().getPostgres();
@@ -406,9 +412,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                     integrationList = integrations.getClickhouseIntegration().getClickhouse();
                     break;
                 default:
-                    throw new DefaultFrameworkException(DB_NOT_SUPPORTED, dbResult.getDbType());
+                    throw new DefaultFrameworkException(DB_NOT_SUPPORTED, fromSQL.getDbType());
             }
-            validateAlias(integrationList, dbResult.getAlias());
+            validateAlias(integrationList, fromSQL.getAlias());
         }
     }
     //CHECKSTYLE:ON
@@ -608,5 +614,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private interface AbstractCommandPredicate extends Predicate<AbstractCommand> { }
+
     private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> { }
 }

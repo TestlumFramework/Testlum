@@ -57,7 +57,6 @@ import javax.xml.bind.annotation.XmlType;
     Twilio.class,
     Ui.class,
     AbstractUiCommand.class,
-    RelationalDbResult.class,
     Logout.class
 })
 public abstract class AbstractCommand {

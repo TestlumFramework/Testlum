@@ -294,7 +294,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
         validatorMap.put(o -> o instanceof Var, (xmlFile, command) -> {
             Var var = (Var) command;
-            validateVarCommand(var);
+            validateVarCommand(xmlFile, var);
         });
 
         validatorMap.put(o -> o instanceof Web, (xmlFile, command) -> {
@@ -386,10 +386,10 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     //CHECKSTYLE:OFF
-    private void validateVarCommand(final Var var) {
+    private void validateVarCommand(final File xmlFile, final Var var) {
         FromFile fromFile = var.getFromFile();
         if (Objects.nonNull(fromFile)) {
-            validateFileExistenceInDataFolder(fromFile.getFileName());
+            validateFileIfExist(xmlFile, fromFile.getFileName());
         }
         FromSQL fromSQL = var.getFromSQL();
         if (Objects.nonNull(fromSQL)) {

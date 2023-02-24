@@ -100,7 +100,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
                 .filter(key -> key.test(var))
                 .findFirst()
                 .map(varToMethodMap::get)
-                .orElseThrow(DefaultFrameworkException::new)
+                .orElseThrow(() -> new DefaultFrameworkException("Type of 'Var' tag is not supported"))
                 .apply(var, result);
     }
 

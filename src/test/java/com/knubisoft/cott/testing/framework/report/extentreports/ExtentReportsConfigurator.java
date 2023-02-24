@@ -49,7 +49,7 @@ public class ExtentReportsConfigurator {
             ExtentSparkReporter extentSparkReporter = new ExtentSparkReporter(formattedPathForReportSaving);
             extentReports.attachReporter(extentSparkReporter);
         } catch (Exception e) {
-            log.error("Unable to create report file by path: " + formattedPathForReportSaving);
+            log.error("Unable to create report file by path: {}", formattedPathForReportSaving);
         }
     }
 

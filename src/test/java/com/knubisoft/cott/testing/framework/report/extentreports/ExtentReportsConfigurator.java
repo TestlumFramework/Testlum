@@ -9,6 +9,7 @@ import com.knubisoft.cott.testing.model.global_config.HtmlReportGenerator;
 import com.knubisoft.cott.testing.model.global_config.KlovServerReportGenerator;
 import com.knubisoft.cott.testing.model.global_config.Mongodb;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -16,11 +17,12 @@ import java.util.Objects;
 
 import static java.lang.String.format;
 
+@Slf4j
 @UtilityClass
 public class ExtentReportsConfigurator {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("MM-dd-yyyyТHH:mm:ss");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("MM-dd-yyyyТHH.mm.ss");
     private static final String TEMPLATE_FOR_REPORT_SAVING_PATH = "%s/%s/%s_%s.html";
 
     public void configure(final ExtentReports extentReports) {
@@ -42,9 +44,13 @@ public class ExtentReportsConfigurator {
         String pathForReportSaving = TestResourceSettings.getInstance().getTestResourcesFolder().getAbsolutePath()
                 + TestResourceSettings.REPORT_FOLDER;
         String formattedPathForReportSaving = format(TEMPLATE_FOR_REPORT_SAVING_PATH, pathForReportSaving,
-                        dateTime.format(DATE_FORMATTER), projectName, dateTime.format(DATE_TIME_FORMATTER));
-        ExtentSparkReporter extentSparkReporter = new ExtentSparkReporter(formattedPathForReportSaving);
-        extentReports.attachReporter(extentSparkReporter);
+                dateTime.format(DATE_FORMATTER), projectName, dateTime.format(DATE_TIME_FORMATTER));
+        try {
+            ExtentSparkReporter extentSparkReporter = new ExtentSparkReporter(formattedPathForReportSaving);
+            extentReports.attachReporter(extentSparkReporter);
+        } catch (Exception e) {
+            log.error("Unable to create report file by path: {}", formattedPathForReportSaving);
+        }
     }
 
     private void attachKlovServerReporter(final ExtentReports extentReports,

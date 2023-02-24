@@ -613,9 +613,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .forEach(v -> v.accept(configFile, command));
     }
 
-    private interface AbstractCommandPredicate extends Predicate<AbstractCommand> {
-    }
+    private interface AbstractCommandPredicate extends Predicate<AbstractCommand> { }
 
-    private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> {
-    }
+    private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> { }
 }

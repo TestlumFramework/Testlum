@@ -70,7 +70,7 @@ public class ResultUtil {
     public static final String CONSTANT = "Constant";
     public static final String COOKIES = "Cookies";
     public static final String FILE = "File";
-    public static final String DOM = "Dom";
+    public static final String HTML_DOM = "HTML Dom";
     public static final String ASSERT_LOCATOR = "Locator for assert command";
     public static final String ASSERT_ATTRIBUTE = "Assert command attribute";
     public static final String CLICK_LOCATOR = "Locator for click command";

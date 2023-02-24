@@ -389,7 +389,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateVarCommand(final Var var) {
         FromFile fromFile = var.getFromFile();
         if (Objects.nonNull(fromFile)) {
-            FileSearcher.searchFileFromDataFolder(fromFile.getFileName());
+            validateFileExistenceInDataFolder(fromFile.getFileName());
         }
         FromSQL fromSQL = var.getFromSQL();
         if (Objects.nonNull(fromSQL)) {

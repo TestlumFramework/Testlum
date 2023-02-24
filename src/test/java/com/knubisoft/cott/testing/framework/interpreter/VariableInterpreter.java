@@ -50,7 +50,7 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VAR
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_VARIABLE_WITH_PATH_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CONSTANT;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.COOKIES;
-import static com.knubisoft.cott.testing.framework.util.ResultUtil.DOM;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.HTML_DOM;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.EXPRESSION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.FILE;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.JSON_PATH;
@@ -105,7 +105,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     private String getDomResult(final Var var, final CommandResult result) {
         String xpath = var.getFromDom().getXpath();
         String valueResult = dependencies.getWebDriver().findElement(By.xpath(xpath)).getText();
-        ResultUtil.addVariableMetaData(DOM, var.getName(), NO_EXPRESSION, valueResult, result);
+        ResultUtil.addVariableMetaData(HTML_DOM, var.getName(), NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 

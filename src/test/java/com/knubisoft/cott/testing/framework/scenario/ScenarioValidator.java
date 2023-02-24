@@ -89,6 +89,7 @@ import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -101,8 +102,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.springframework.util.StringUtils;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INTEGRATION_NOT_FOUND;
@@ -128,6 +127,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         validatorMap.put(o -> o instanceof Auth, (xmlFile, command) -> {
             Auth auth = (Auth) command;
             validateFileExistenceInDataFolder(auth.getCredentials());
+            validateAlias(integrations.getApis().getApi(), auth.getApiAlias());
         });
 
         validatorMap.put(o -> o instanceof Http, (xmlFile, command) -> {
@@ -613,7 +613,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .forEach(v -> v.accept(configFile, command));
     }
 
-    private interface AbstractCommandPredicate extends Predicate<AbstractCommand> { }
+    private interface AbstractCommandPredicate extends Predicate<AbstractCommand> {
+    }
 
-    private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> { }
+    private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> {
+    }
 }

@@ -17,7 +17,7 @@
         <x:complexContent>
             <x:extension base="tns:integration">
                 <x:sequence>
-                    <x:element name="auth" type="tns:auth"/>
+                    <x:element name="auth" type="tns:auth" minOccurs="0" maxOccurs="1"/>
                 </x:sequence>
                 <x:attribute name="url" type="tns:url" use="required"/>
             </x:extension>

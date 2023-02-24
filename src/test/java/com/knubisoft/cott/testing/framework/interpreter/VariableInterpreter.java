@@ -99,7 +99,9 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         return varToMethodMap.keySet().stream()
                 .filter(key -> key.test(var))
                 .findFirst()
-                .map(varToMethodMap::get).get().apply(var, result);
+                .map(varToMethodMap::get)
+                .orElseThrow(DefaultFrameworkException::new)
+                .apply(var, result);
     }
 
     private String getDomResult(final Var var, final CommandResult result) {

@@ -3,6 +3,7 @@ package com.knubisoft.cott.testing.model.scenario;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -15,6 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="fromCookie"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;attribute name="browserType" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}browserType" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -26,5 +28,31 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "fromCookie")
 public class FromCookie {
 
+    @XmlAttribute(name = "browserType", required = true)
+    protected BrowserType browserType;
+
+    /**
+     * Gets the value of the browserType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link BrowserType }
+     *     
+     */
+    public BrowserType getBrowserType() {
+        return browserType;
+    }
+
+    /**
+     * Sets the value of the browserType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BrowserType }
+     *     
+     */
+    public void setBrowserType(BrowserType value) {
+        this.browserType = value;
+    }
 
 }

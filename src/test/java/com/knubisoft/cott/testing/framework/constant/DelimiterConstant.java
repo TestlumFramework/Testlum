@@ -35,4 +35,5 @@ public class DelimiterConstant {
     public static final String NEW_LINE = "\n";
     public static final String SPACE_WITH_LF = " \n";
     public static final String X = "x";
+    public static final String DOLLAR_SIGN = "$";
 }

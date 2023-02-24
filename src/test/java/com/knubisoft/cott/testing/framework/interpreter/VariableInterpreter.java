@@ -11,11 +11,29 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.By;
+import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.model.scenario.RelationalDbResult;
-import com.knubisoft.cott.testing.model.scenario.ResultFrom;
+import com.knubisoft.cott.testing.model.scenario.FromSQL;
 import com.knubisoft.cott.testing.model.scenario.Var;
+
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,32 +41,42 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.util.LinkedCaseInsensitiveMap;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SLASH_SEPARATOR;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VAR_QUERY_RESULT_ERROR;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_VARIABLE_WITH_PATH_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CONSTANT;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.COOKIES;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.HTML_DOM;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.EXPRESSION;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.FILE;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.JSON_PATH;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NO_EXPRESSION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.RELATIONAL_DB_QUERY;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.XML_PATH;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @InterpreterForClass(Var.class)
 public class VariableInterpreter extends AbstractInterpreter<Var> {
     @Autowired(required = false)
     private NameToAdapterAlias nameToAdapterAlias;
+    private final Map<VarFromPredicate, VarFromMethod> varToMethodMap;
 
     public VariableInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
+        Map<VarFromPredicate, VarFromMethod> varMap = new HashMap<>();
+        varMap.put(var -> nonNull(var.getFromSQL()), this::getSQLResult);
+        varMap.put(var -> nonNull(var.getFromFile()), this::getFileResult);
+        varMap.put(var -> nonNull(var.getFromExpression()), this::getExpressionResult);
+        varMap.put(var -> nonNull(var.getFromConstant()), this::getConstantResult);
+        varMap.put(var -> nonNull(var.getFromPath()), this::getPathResult);
+        varMap.put(var -> nonNull(var.getFromCookie()), this::getWebCookiesResult);
+        varMap.put(var -> nonNull(var.getFromDom()), this::getDomResult);
+        varToMethodMap = Collections.unmodifiableMap(varMap);
     }
 
     @Override
@@ -68,71 +96,98 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     private String getValueForContext(final Var var, final CommandResult result) {
-        if (Objects.nonNull(var.getRelationalDbResult())) {
-            return getDbResult(var.getRelationalDbResult(), var.getName(), result);
-        }
-        return getResultFrom(var, result);
+        return varToMethodMap.keySet().stream()
+                .filter(key -> key.test(var))
+                .findFirst()
+                .map(varToMethodMap::get)
+                .orElseThrow(() -> new DefaultFrameworkException("Type of 'Var' tag is not supported"))
+                .apply(var, result);
     }
 
-    private String getResultFrom(final Var var, final CommandResult result) {
-        ResultFrom resultFrom = var.getResultFrom();
-        switch (resultFrom.getType()) {
-            case EXPRESSION:
-                return getExpressionResult(resultFrom.getValue(), var.getName(), result);
-            case JPATH:
-                return getJpathResult(resultFrom.getValue(), var.getName(), result);
-            case CONSTANT:
-                return getValueResult(resultFrom.getValue(), var.getName(), result);
-            case COOKIE:
-                return getWebCookiesResult(var.getName(), result);
-            default:
-                throw new DefaultFrameworkException("Type of 'Var' tag is not supported");
-        }
-    }
-
-    private String getValueResult(final String value, final String varName, final CommandResult result) {
-        String valueResult = inject(value);
-        ResultUtil.addVariableMetaData(CONSTANT, varName, NO_EXPRESSION, valueResult, result);
+    private String getDomResult(final Var var, final CommandResult result) {
+        String xpath = var.getFromDom().getXpath();
+        String valueResult = dependencies.getWebDriver().findElement(By.xpath(xpath)).getText();
+        ResultUtil.addVariableMetaData(HTML_DOM, var.getName(), NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 
-    private String getWebCookiesResult(final String varName, final CommandResult result) {
+    private String getFileResult(final Var var, final CommandResult result) {
+        String fileName = var.getFromFile().getFileName();
+        String valueResult = FileSearcher.searchFileToString(fileName, dependencies.getFile());
+        ResultUtil.addVariableMetaData(FILE, var.getName(), NO_EXPRESSION, valueResult, result);
+        return valueResult;
+    }
+
+    private String getConstantResult(final Var var, final CommandResult result) {
+        String value = var.getFromConstant().getValue();
+        String valueResult = inject(value);
+        ResultUtil.addVariableMetaData(CONSTANT, var.getName(), NO_EXPRESSION, valueResult, result);
+        return valueResult;
+    }
+
+    private String getWebCookiesResult(final Var var, final CommandResult result) {
         Set<Cookie> cookies = dependencies.getWebDriver().manage().getCookies();
         String valueResult = cookies.stream()
                 .map(cookie -> String.join(DelimiterConstant.EQUALS_MARK, cookie.getName(), cookie.getValue()))
                 .collect(Collectors.joining(DelimiterConstant.SEMICOLON));
-        ResultUtil.addVariableMetaData(COOKIES, varName, NO_EXPRESSION, valueResult, result);
+        ResultUtil.addVariableMetaData(COOKIES, var.getName(), NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 
-    private String getExpressionResult(final String expression, final String varName, final CommandResult result) {
+    private String getExpressionResult(final Var var, final CommandResult result) {
+        String expression = var.getFromExpression().getValue();
         String injectedExpression = inject(expression);
         ExpressionParser parser = new SpelExpressionParser();
         Expression exp = parser.parseExpression(injectedExpression);
         String valueResult = Objects.requireNonNull(exp.getValue()).toString();
-        ResultUtil.addVariableMetaData(EXPRESSION, varName, expression, valueResult, result);
+        ResultUtil.addVariableMetaData(EXPRESSION, var.getName(), expression, valueResult, result);
         return valueResult;
     }
 
-    private String getJpathResult(final String jpath, final String varName, final CommandResult result) {
+    @SneakyThrows
+    private String getPathResult(final Var var, final CommandResult result) {
+        String path = var.getFromPath().getValue();
+        if (path.startsWith(DOLLAR_SIGN)) {
+            return evaluateJPath(path, var.getName(), result);
+        }
+        if (path.startsWith(SLASH_SEPARATOR)) {
+            return evaluateXPath(path, var.getName(), result);
+        }
+        throw new DefaultFrameworkException("Path <%s> is not supported", path);
+    }
+
+
+
+    private String evaluateXPath(final String path, final String varName, final CommandResult result) throws Exception {
+        DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document document = documentBuilder
+                .parse(new InputSource(new StringReader(dependencies.getScenarioContext().getBody())));
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        String valueResult = xPath.evaluate(path, document);
+        ResultUtil.addVariableMetaData(XML_PATH, varName, path, valueResult, result);
+        return valueResult;
+    }
+
+    private String evaluateJPath(final String path, final String varName, final CommandResult result) {
         DocumentContext contextBody = JsonPath.parse(dependencies.getScenarioContext().getBody());
-        String valueResult = contextBody.read(jpath).toString();
-        ResultUtil.addVariableMetaData(JSON_PATH, varName, jpath, valueResult, result);
+        String valueResult = contextBody.read(path).toString();
+        ResultUtil.addVariableMetaData(JSON_PATH, varName, path, valueResult, result);
         return valueResult;
     }
 
-    private String getDbResult(final RelationalDbResult dbResult, final String varName, final CommandResult result) {
-        String metadataKey = dbResult.getDbType().name() + DelimiterConstant.UNDERSCORE + dbResult.getAlias();
+    private String getSQLResult(final Var var, final CommandResult result) {
+        FromSQL fromSQL = var.getFromSQL();
+        String metadataKey = fromSQL.getDbType().name() + DelimiterConstant.UNDERSCORE + fromSQL.getAlias();
         StorageOperation storageOperation = nameToAdapterAlias.getByNameOrThrow(metadataKey).getStorageOperation();
-        String valueResult = getActualRelationalDbResult(dbResult, storageOperation);
-        ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, varName, dbResult.getQuery(), valueResult, result);
+        String valueResult = getActualQueryResult(fromSQL, storageOperation);
+        ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, var.getName(), fromSQL.getQuery(), valueResult, result);
         return valueResult;
     }
 
-    private String getActualRelationalDbResult(final RelationalDbResult relationalDbResult,
-                                               final StorageOperation storageOperation) {
-        String alias = relationalDbResult.getAlias();
-        List<String> singleQuery = new ArrayList<>(Collections.singletonList(relationalDbResult.getQuery()));
+    private String getActualQueryResult(final FromSQL fromSQL,
+                                        final StorageOperation storageOperation) {
+        String alias = fromSQL.getAlias();
+        List<String> singleQuery = new ArrayList<>(Collections.singletonList(fromSQL.getQuery()));
         LogUtil.logAllQueries(singleQuery, alias);
         StorageOperation.StorageOperationResult queryResult =
                 storageOperation.apply(new ListSource(singleQuery), inject(alias));
@@ -161,5 +216,11 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         if (content.size() < 1) {
             throw new DefaultFrameworkException(VAR_QUERY_RESULT_ERROR);
         }
+    }
+
+    private interface VarFromPredicate extends Predicate<Var> {
+    }
+
+    private interface VarFromMethod extends BiFunction<Var, CommandResult, String> {
     }
 }

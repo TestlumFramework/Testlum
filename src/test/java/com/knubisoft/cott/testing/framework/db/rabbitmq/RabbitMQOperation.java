@@ -2,8 +2,8 @@ package com.knubisoft.cott.testing.framework.db.rabbitmq;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
-import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.db.source.Source;
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Rabbitmq;
 import com.rabbitmq.http.client.Client;
@@ -21,7 +21,7 @@ import static java.lang.String.format;
 public class RabbitMQOperation implements StorageOperation {
 
     private final Map<String, Client> client;
-    private final Integrations integrations;
+    private final Map<String, Integrations> integrations;
 
     public RabbitMQOperation(@Autowired(required = false) @Qualifier("rabbitMqClient")
                              final Map<String, Client> client) {
@@ -46,7 +46,7 @@ public class RabbitMQOperation implements StorageOperation {
     }
 
     private Rabbitmq findByName(final String name) {
-        for (Rabbitmq rabbitmq : integrations.getRabbitmqIntegration().getRabbitmq()) {
+        for (Rabbitmq rabbitmq : integrations.get("env1").getRabbitmqIntegration().getRabbitmq()) {
             if (rabbitmq.getAlias().equals(name)) {
                 return rabbitmq;
             }

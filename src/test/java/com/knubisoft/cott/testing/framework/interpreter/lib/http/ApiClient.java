@@ -104,7 +104,7 @@ public class ApiClient {
     }
 
     private String createFullURL(final String endpoint, final String alias) {
-        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().getApis().getApi();
+        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().get("env1").getApis().getApi();
         Api apiIntegration = (Api) ConfigUtil.findApiForAlias(apiList, alias);
         return apiIntegration.getUrl() + endpoint;
     }

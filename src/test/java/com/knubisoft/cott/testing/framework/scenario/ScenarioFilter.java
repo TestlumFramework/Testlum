@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.scenario;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.cott.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.cott.testing.model.global_config.TagValue;
@@ -20,53 +21,48 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VAL
 
 public class ScenarioFilter {
 
-    public Set<ScenarioCollector.MappingResult> filterScenarios(final Set<ScenarioCollector.MappingResult> original) {
+    public Set<MappingResult> filterScenarios(final Set<MappingResult> original) {
         boolean containsNonParsed = original.removeIf(this::isScenarioNonParsed);
         if (GlobalTestConfigurationProvider.provide().isStopIfInvalidScenario() && containsNonParsed) {
             throw new DefaultFrameworkException(STOP_IF_NON_PARSED_SCENARIO);
-        }
-        if (original.isEmpty()) {
+        } else if (original.isEmpty()) {
             throw new DefaultFrameworkException(VALID_SCENARIOS_NOT_FOUND);
         }
         return filterValidScenarios(original);
     }
 
-    private Set<ScenarioCollector.MappingResult> filterValidScenarios(
-            final Set<ScenarioCollector.MappingResult> validScenarios) {
-        Set<ScenarioCollector.MappingResult> activeScenarios = filterIsActive(validScenarios);
-        Set<ScenarioCollector.MappingResult> scenariosWithOnlyThisEnabled = filterScenariosIfOnlyThis(activeScenarios);
+    private Set<MappingResult> filterValidScenarios(final Set<MappingResult> validScenarios) {
+        Set<MappingResult> activeScenarios = filterIsActive(validScenarios);
+        Set<MappingResult> scenariosWithOnlyThisEnabled = filterScenariosIfOnlyThis(activeScenarios);
         return scenariosWithOnlyThisEnabled.isEmpty()
                 ? filterScenariosByTags(activeScenarios)
-                : scenariosWithOnlyThisEnabled;
+                : filterScenariosByTags(scenariosWithOnlyThisEnabled);
     }
 
-    private Set<ScenarioCollector.MappingResult> filterIsActive(final Set<ScenarioCollector.MappingResult> original) {
+    private Set<MappingResult> filterIsActive(final Set<MappingResult> original) {
         return filterBy(original, e -> e.scenario.isActive());
     }
 
-    private Set<ScenarioCollector.MappingResult> filterScenariosIfOnlyThis(
-            final Set<ScenarioCollector.MappingResult> original) {
+    private Set<MappingResult> filterScenariosIfOnlyThis(final Set<MappingResult> original) {
         return filterBy(original, e -> e.scenario.isOnlyThis());
     }
 
-    private Set<ScenarioCollector.MappingResult> filterScenariosByTags(
-            final Set<ScenarioCollector.MappingResult> activeScenarios) {
+    private Set<MappingResult> filterScenariosByTags(final Set<MappingResult> activeScenarios) {
         RunScenariosByTag runScenariosByTag = GlobalTestConfigurationProvider.provide().getRunScenariosByTag();
         return runScenariosByTag.isEnable()
                 ? filterByTags(activeScenarios, getEnabledTags(runScenariosByTag.getTag()))
                 : activeScenarios;
     }
 
-    private Set<ScenarioCollector.MappingResult> filterByTags(final Set<ScenarioCollector.MappingResult> original,
-                                                              final List<String> enabledTags) {
-        Set<ScenarioCollector.MappingResult> filteredByTags = filterBy(original, e -> isMatchesTags(e, enabledTags));
+    private Set<MappingResult> filterByTags(final Set<MappingResult> original, final List<String> enabledTags) {
+        Set<MappingResult> filteredByTags = filterBy(original, e -> isMatchesTags(e, enabledTags));
         if (filteredByTags.isEmpty()) {
             throw new DefaultFrameworkException(NO_SCENARIOS_FILTERED_BY_TAGS);
         }
         return filteredByTags;
     }
 
-    private boolean isMatchesTags(final ScenarioCollector.MappingResult entry, final List<String> enabledTags) {
+    private boolean isMatchesTags(final MappingResult entry, final List<String> enabledTags) {
         List<String> scenarioTags = entry.scenario.getTags().getTag();
         return scenarioTags.stream().anyMatch(enabledTags::contains);
     }
@@ -82,15 +78,14 @@ public class ScenarioFilter {
         return enabledTags;
     }
 
-    private LinkedHashSet<ScenarioCollector.MappingResult> filterBy(
-            final Set<ScenarioCollector.MappingResult> scenarios,
-            final Predicate<ScenarioCollector.MappingResult> by) {
+    private LinkedHashSet<MappingResult> filterBy(final Set<MappingResult> scenarios,
+                                                  final Predicate<MappingResult> by) {
         return scenarios.stream()
                 .filter(by)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    private boolean isScenarioNonParsed(final ScenarioCollector.MappingResult entry) {
+    private boolean isScenarioNonParsed(final MappingResult entry) {
         if (Objects.nonNull(entry.scenario)) {
             return false;
         }

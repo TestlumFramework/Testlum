@@ -15,7 +15,6 @@ import com.knubisoft.cott.testing.framework.util.By;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.model.scenario.BrowserType;
 import com.knubisoft.cott.testing.model.scenario.FromSQL;
 import com.knubisoft.cott.testing.model.scenario.Var;
 
@@ -34,6 +33,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
+
+import com.knubisoft.cott.testing.model.scenario.VariableBrowserType;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Cookie;
@@ -108,7 +109,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
 
     private String getDomResult(final Var var, final CommandResult result) {
         String xpath = var.getFromDom().getXpath();
-        WebDriver webDriver = var.getFromCookie().getBrowserType() == BrowserType.WEB_BROWSER
+        WebDriver webDriver = var.getFromDom().getBrowserType() == VariableBrowserType.WEB
                 ? dependencies.getWebDriver()
                 : dependencies.getMobilebrowserDriver();
         String valueResult = webDriver.findElement(By.xpath(xpath)).getText();
@@ -131,7 +132,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     private String getWebCookiesResult(final Var var, final CommandResult result) {
-        WebDriver webDriver = var.getFromCookie().getBrowserType() == BrowserType.WEB_BROWSER
+        WebDriver webDriver = var.getFromCookie().getBrowserType() == VariableBrowserType.WEB
                 ? dependencies.getWebDriver()
                 : dependencies.getMobilebrowserDriver();
         Set<Cookie> cookies = webDriver.manage().getCookies();

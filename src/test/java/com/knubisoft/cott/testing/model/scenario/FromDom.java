@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="fromDom"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;attribute name="browserType" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}variableBrowserType" /&gt;
  *       &lt;attribute name="xpath" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}xpathPattern" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -28,8 +29,34 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "fromDom")
 public class FromDom {
 
+    @XmlAttribute(name = "browserType", required = true)
+    protected VariableBrowserType browserType;
     @XmlAttribute(name = "xpath", required = true)
     protected String xpath;
+
+    /**
+     * Gets the value of the browserType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link VariableBrowserType }
+     *     
+     */
+    public VariableBrowserType getBrowserType() {
+        return browserType;
+    }
+
+    /**
+     * Sets the value of the browserType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link VariableBrowserType }
+     *     
+     */
+    public void setBrowserType(VariableBrowserType value) {
+        this.browserType = value;
+    }
 
     /**
      * Gets the value of the xpath property.

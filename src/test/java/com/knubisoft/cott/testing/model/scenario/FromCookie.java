@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="fromCookie"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="browserType" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}browserType" /&gt;
+ *       &lt;attribute name="browserType" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}variableBrowserType" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -29,17 +29,17 @@ import javax.xml.bind.annotation.XmlType;
 public class FromCookie {
 
     @XmlAttribute(name = "browserType", required = true)
-    protected BrowserType browserType;
+    protected VariableBrowserType browserType;
 
     /**
      * Gets the value of the browserType property.
      * 
      * @return
      *     possible object is
-     *     {@link BrowserType }
+     *     {@link VariableBrowserType }
      *     
      */
-    public BrowserType getBrowserType() {
+    public VariableBrowserType getBrowserType() {
         return browserType;
     }
 
@@ -48,10 +48,10 @@ public class FromCookie {
      * 
      * @param value
      *     allowed object is
-     *     {@link BrowserType }
+     *     {@link VariableBrowserType }
      *     
      */
-    public void setBrowserType(BrowserType value) {
+    public void setBrowserType(VariableBrowserType value) {
         this.browserType = value;
     }
 

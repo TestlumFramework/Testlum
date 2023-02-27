@@ -47,17 +47,18 @@
     </x:complexType>
 
     <x:complexType name="fromCookie">
-        <x:attribute name="browserType" type="tns:browserType" use="required"/>
+        <x:attribute name="browserType" type="tns:variableBrowserType" use="required"/>
     </x:complexType>
 
-    <x:simpleType name="browserType">
+    <x:simpleType name="variableBrowserType">
         <x:restriction base="x:string">
-            <x:enumeration value="webBrowser"/>
-            <x:enumeration value="mobileBrowser"/>
+            <x:enumeration value="web"/>
+            <x:enumeration value="mobile"/>
         </x:restriction>
     </x:simpleType>
 
     <x:complexType name="fromDom">
+        <x:attribute name="browserType" type="tns:variableBrowserType" use="required"/>
         <x:attribute name="xpath" type="tns:xpathPattern" use="required"/>
     </x:complexType>
 

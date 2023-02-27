@@ -7,31 +7,31 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for browserType.
+ * <p>Java class for variableBrowserType.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="browserType"&gt;
+ * &lt;simpleType name="variableBrowserType"&gt;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *     &lt;enumeration value="webBrowser"/&gt;
- *     &lt;enumeration value="mobileBrowser"/&gt;
+ *     &lt;enumeration value="web"/&gt;
+ *     &lt;enumeration value="mobile"/&gt;
  *   &lt;/restriction&gt;
  * &lt;/simpleType&gt;
  * </pre>
  * 
  */
-@XmlType(name = "browserType")
+@XmlType(name = "variableBrowserType")
 @XmlEnum
-public enum BrowserType {
+public enum VariableBrowserType {
 
-    @XmlEnumValue("webBrowser")
-    WEB_BROWSER("webBrowser"),
-    @XmlEnumValue("mobileBrowser")
-    MOBILE_BROWSER("mobileBrowser");
+    @XmlEnumValue("web")
+    WEB("web"),
+    @XmlEnumValue("mobile")
+    MOBILE("mobile");
     private final String value;
 
-    BrowserType(String v) {
+    VariableBrowserType(String v) {
         value = v;
     }
 
@@ -39,8 +39,8 @@ public enum BrowserType {
         return value;
     }
 
-    public static BrowserType fromValue(String v) {
-        for (BrowserType c: BrowserType.values()) {
+    public static VariableBrowserType fromValue(String v) {
+        for (VariableBrowserType c: VariableBrowserType.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

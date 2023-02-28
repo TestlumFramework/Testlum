@@ -35,6 +35,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -84,7 +85,15 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         String url = getFullUrl(graphql);
         HttpPost post = new HttpPost(url);
         post.setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
+        setHeaders(post, graphql);
         return post;
+    }
+
+    private void setHeaders(final HttpPost post, final Graphql graphql) {
+        Map<String, String> headers = new LinkedHashMap<>();
+        InterpreterDependencies.Authorization authorization = dependencies.getAuthorization();
+        HttpUtil.fillHeadersMap(graphql.getHeader(), headers, authorization);
+        headers.forEach(post::addHeader);
     }
 
     private String getFullUrl(final Graphql graphql) {

@@ -50,7 +50,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     @SneakyThrows
     @Override
     public void acceptImpl(final Graphql graphql, final CommandResult result) {
-        String query = getQuery(graphql.getBody());
+        String query = getQuery(graphql.getQuery());
         ResultUtil.addGraphQlMetaData(graphql.getAlias(), graphql.getEndpoint(), query, result);
         LogUtil.logGraphqlInfo(graphql.getAlias(), graphql.getEndpoint(), query);
         ApiResponse response = getResponse(graphql, query);

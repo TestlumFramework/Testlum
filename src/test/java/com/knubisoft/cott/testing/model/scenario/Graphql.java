@@ -20,10 +20,13 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="body" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlBody"/&gt;
  *         &lt;element name="header" type="{http://www.knubisoft.com/cott/testing/model/scenario}header" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="query" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlBody"/&gt;
+ *         &lt;element name="operationName" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlBody" minOccurs="0"/&gt;
+ *         &lt;element name="variables" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlBody" minOccurs="0"/&gt;
  *         &lt;element name="response" type="{http://www.knubisoft.com/cott/testing/model/scenario}response" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
+ *       &lt;attribute name="httpMethod" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlHttpMethod" /&gt;
  *       &lt;attribute name="endpoint" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}endpointPattern" /&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}aliasPattern" /&gt;
  *     &lt;/extension&gt;
@@ -35,46 +38,28 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "graphql", propOrder = {
-    "body",
     "header",
+    "query",
+    "operationName",
+    "variables",
     "response"
 })
 public class Graphql
     extends AbstractCommand
 {
 
-    @XmlElement(required = true)
-    protected GraphqlBody body;
     protected List<Header> header;
+    @XmlElement(required = true)
+    protected GraphqlBody query;
+    protected GraphqlBody operationName;
+    protected GraphqlBody variables;
     protected Response response;
+    @XmlAttribute(name = "httpMethod", required = true)
+    protected GraphqlHttpMethod httpMethod;
     @XmlAttribute(name = "endpoint", required = true)
     protected String endpoint;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
-
-    /**
-     * Gets the value of the body property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link GraphqlBody }
-     *     
-     */
-    public GraphqlBody getBody() {
-        return body;
-    }
-
-    /**
-     * Sets the value of the body property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link GraphqlBody }
-     *     
-     */
-    public void setBody(GraphqlBody value) {
-        this.body = value;
-    }
 
     /**
      * Gets the value of the header property.
@@ -106,6 +91,78 @@ public class Graphql
     }
 
     /**
+     * Gets the value of the query property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link GraphqlBody }
+     *     
+     */
+    public GraphqlBody getQuery() {
+        return query;
+    }
+
+    /**
+     * Sets the value of the query property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link GraphqlBody }
+     *     
+     */
+    public void setQuery(GraphqlBody value) {
+        this.query = value;
+    }
+
+    /**
+     * Gets the value of the operationName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link GraphqlBody }
+     *     
+     */
+    public GraphqlBody getOperationName() {
+        return operationName;
+    }
+
+    /**
+     * Sets the value of the operationName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link GraphqlBody }
+     *     
+     */
+    public void setOperationName(GraphqlBody value) {
+        this.operationName = value;
+    }
+
+    /**
+     * Gets the value of the variables property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link GraphqlBody }
+     *     
+     */
+    public GraphqlBody getVariables() {
+        return variables;
+    }
+
+    /**
+     * Sets the value of the variables property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link GraphqlBody }
+     *     
+     */
+    public void setVariables(GraphqlBody value) {
+        this.variables = value;
+    }
+
+    /**
      * Gets the value of the response property.
      * 
      * @return
@@ -127,6 +184,30 @@ public class Graphql
      */
     public void setResponse(Response value) {
         this.response = value;
+    }
+
+    /**
+     * Gets the value of the httpMethod property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link GraphqlHttpMethod }
+     *     
+     */
+    public GraphqlHttpMethod getHttpMethod() {
+        return httpMethod;
+    }
+
+    /**
+     * Sets the value of the httpMethod property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link GraphqlHttpMethod }
+     *     
+     */
+    public void setHttpMethod(GraphqlHttpMethod value) {
+        this.httpMethod = value;
     }
 
     /**

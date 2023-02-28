@@ -4,6 +4,7 @@ import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfiguratio
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.cott.testing.framework.util.AuthUtil;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.framework.util.ConfigUtil;
 import com.knubisoft.cott.testing.framework.util.DatasetValidator;
@@ -128,6 +129,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             Auth auth = (Auth) command;
             validateFileExistenceInDataFolder(auth.getCredentials());
             validateAlias(integrations.getApis().getApi(), auth.getApiAlias());
+            validateAuthCommand(auth);
         });
 
         validatorMap.put(o -> o instanceof Http, (xmlFile, command) -> {
@@ -591,6 +593,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         List<String> shellFiles = shell.getShellFile();
         if (!shellFiles.isEmpty()) {
             shellFiles.forEach(this::validateFileExistenceInDataFolder);
+        }
+    }
+
+    private void validateAuthCommand(final Auth auth) {
+        List<AbstractCommand> commands = auth.getCommands();
+        for (AbstractCommand command : commands) {
+            AuthUtil.getAliasFromAuthCommand(command, auth.getApiAlias());
         }
     }
 

@@ -4,7 +4,6 @@ package com.knubisoft.cott.testing.model.global_config;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -18,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/global-config}integration"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="auth" type="{http://www.knubisoft.com/cott/testing/model/global-config}auth"/&gt;
+ *         &lt;element name="auth" type="{http://www.knubisoft.com/cott/testing/model/global-config}auth" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="url" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}url" /&gt;
  *     &lt;/extension&gt;
@@ -36,7 +35,6 @@ public class Api
     extends Integration
 {
 
-    @XmlElement(required = true)
     protected Auth auth;
     @XmlAttribute(name = "url", required = true)
     protected String url;

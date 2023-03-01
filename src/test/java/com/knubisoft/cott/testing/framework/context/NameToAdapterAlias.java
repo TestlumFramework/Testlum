@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
@@ -18,20 +18,16 @@ public class NameToAdapterAlias {
     private final Map<String, Metadata> alias;
 
     public Metadata getByNameOrThrow(final String name) {
-        String upperName = name.toUpperCase(Locale.US);
-        Metadata metadata = this.alias.get(upperName);
+        String adapterName = name.toUpperCase(Locale.US);
+        Metadata metadata = this.alias.get(adapterName);
         if (metadata == null) {
-            throw new DefaultFrameworkException(ALIAS_BY_STORAGE_NAME_NOT_FOUND, upperName, alias.keySet());
+            throw new DefaultFrameworkException(ALIAS_BY_STORAGE_NAME_NOT_FOUND, adapterName, alias.keySet());
         }
         return metadata;
     }
 
     public Map<String, Metadata> getAlias() {
-        return new HashMap<>(alias);
-    }
-
-    public void removeAlias(final String name) {
-        this.alias.remove(name);
+        return Collections.unmodifiableMap(alias);
     }
 
     @Builder

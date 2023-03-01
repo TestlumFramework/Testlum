@@ -6,12 +6,10 @@ import com.knubisoft.cott.testing.framework.context.AliasAdapter;
 import com.knubisoft.cott.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.cott.testing.framework.db.sql.MySqlOperation;
 import com.knubisoft.cott.testing.model.global_config.Mysql;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
@@ -19,7 +17,6 @@ import static com.knubisoft.cott.testing.model.scenario.StorageName.MYSQL;
 
 @Conditional({OnMysqlEnabledCondition.class})
 @Component
-@RequiredArgsConstructor
 public class AliasMySqlAdapter implements AliasAdapter {
 
     @Autowired(required = false)
@@ -27,17 +24,9 @@ public class AliasMySqlAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        GlobalTestConfigurationProvider.getIntegrations()
-                .forEach(((s, integrations) -> addToAliasMap(s, integrations.getMysqlIntegration().getMysql(),
-                        aliasMap)));
-    }
-
-    private void addToAliasMap(final String envName,
-                               final List<Mysql> mysqlList,
-                               final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Mysql mysql : mysqlList) {
+        for (Mysql mysql : GlobalTestConfigurationProvider.getDefaultIntegration().getMysqlIntegration().getMysql()) {
             if (mysql.isEnabled()) {
-                aliasMap.put(envName + UNDERSCORE + MYSQL + UNDERSCORE + mysql.getAlias(), getMetadataMySQL(mysql));
+                aliasMap.put(MYSQL + UNDERSCORE + mysql.getAlias(), getMetadataMySQL(mysql));
             }
         }
     }

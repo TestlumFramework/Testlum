@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
@@ -25,17 +24,9 @@ public class AliasRedisAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-       GlobalTestConfigurationProvider.getIntegrations()
-               .forEach(((s, integrations) -> addToAliasMap(s, integrations.getRedisIntegration().getRedis(),
-                       aliasMap)));
-    }
-
-    private void addToAliasMap(final String envName,
-                               final List<Redis> redisList,
-                               final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Redis redis : redisList) {
+        for (Redis redis : GlobalTestConfigurationProvider.getDefaultIntegration().getRedisIntegration().getRedis()) {
             if (redis.isEnabled()) {
-                aliasMap.put(envName + UNDERSCORE + REDIS + UNDERSCORE + redis.getAlias(), getMetadataRedis(redis));
+                aliasMap.put(REDIS + UNDERSCORE + redis.getAlias(), getMetadataRedis(redis));
             }
         }
     }
@@ -46,5 +37,4 @@ public class AliasRedisAdapter implements AliasAdapter {
                 .storageOperation(redisOperation)
                 .build();
     }
-
 }

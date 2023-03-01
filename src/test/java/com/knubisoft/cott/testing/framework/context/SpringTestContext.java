@@ -1,7 +1,6 @@
 package com.knubisoft.cott.testing.framework.context;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.cott.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.cott.testing.framework.report.ReportGenerator;
 import com.knubisoft.cott.testing.framework.report.ReportGeneratorFactory;
 import org.springframework.context.annotation.Bean;
@@ -23,11 +22,6 @@ public class SpringTestContext {
             aliasAdapter.apply(aliasMap);
         }
         return new NameToAdapterAlias(aliasMap);
-    }
-
-    @Bean
-    public GlobalScenarioStatCollector createNewStatCollector() {
-        return new GlobalScenarioStatCollector();
     }
 
     @Bean

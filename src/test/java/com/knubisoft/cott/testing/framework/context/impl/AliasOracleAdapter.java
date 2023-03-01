@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
@@ -25,17 +24,10 @@ public class AliasOracleAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        GlobalTestConfigurationProvider.getIntegrations()
-                .forEach(((s, integrations) -> addToAliasMap(s, integrations.getOracleIntegration().getOracle(),
-                        aliasMap)));
-    }
-
-    private void addToAliasMap(final String envName,
-                               final List<Oracle> oracleList,
-                               final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Oracle oracle : oracleList) {
+        for (Oracle oracle
+                : GlobalTestConfigurationProvider.getDefaultIntegration().getOracleIntegration().getOracle()) {
             if (oracle.isEnabled()) {
-                aliasMap.put(envName + UNDERSCORE + ORACLE + UNDERSCORE + oracle.getAlias(), getMetadataOracle(oracle));
+                aliasMap.put(ORACLE + UNDERSCORE + oracle.getAlias(), getMetadataOracle(oracle));
             }
         }
     }

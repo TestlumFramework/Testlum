@@ -1,16 +1,15 @@
 package com.knubisoft.cott.testing.framework.context.impl;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.cott.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnMongoEnabledCondition;
 import com.knubisoft.cott.testing.framework.context.AliasAdapter;
+import com.knubisoft.cott.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.cott.testing.framework.db.mongodb.MongoOperation;
 import com.knubisoft.cott.testing.model.global_config.Mongo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
@@ -25,18 +24,9 @@ public class AliasMongoAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        GlobalTestConfigurationProvider.getIntegrations()
-                .forEach(((s, integrations) -> addToAliasMap(s, integrations.getMongoIntegration().getMongo(),
-                        aliasMap)));
-    }
-
-    private void addToAliasMap(final String envName,
-                               final List<Mongo> mongoList,
-                               final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Mongo mongo : mongoList) {
+        for (Mongo mongo : GlobalTestConfigurationProvider.getDefaultIntegration().getMongoIntegration().getMongo()) {
             if (mongo.isEnabled()) {
-                aliasMap.put(envName + UNDERSCORE + MONGODB + UNDERSCORE
-                        + mongo.getAlias(), getMetadataMongo(mongo));
+                aliasMap.put(MONGODB + UNDERSCORE + mongo.getAlias(), getMetadataMongo(mongo));
             }
         }
     }

@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.context.impl;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnS3EnabledCondition;
+import com.knubisoft.cott.testing.framework.constant.MigrationConstant;
 import com.knubisoft.cott.testing.framework.context.AliasAdapter;
 import com.knubisoft.cott.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.cott.testing.framework.db.s3.S3Operation;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
@@ -24,16 +24,9 @@ public class AliasS3Adapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        GlobalTestConfigurationProvider.getIntegrations()
-                .forEach(((s, integrations) -> addToAliasMap(s, integrations.getS3Integration().getS3(), aliasMap)));
-    }
-
-    private void addToAliasMap(final String envName,
-                               final List<S3> s3List,
-                               final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (S3 s3 : s3List) {
+        for (S3 s3 : GlobalTestConfigurationProvider.getDefaultIntegration().getS3Integration().getS3()) {
             if (s3.isEnabled()) {
-                aliasMap.put(envName + UNDERSCORE + s3.getAlias(), getMetadataS3(s3));
+                aliasMap.put(MigrationConstant.S3 + UNDERSCORE + s3.getAlias(), getMetadataS3(s3));
             }
         }
     }

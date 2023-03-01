@@ -11,12 +11,13 @@ import java.util.stream.Collectors;
 
 public interface StorageOperation {
 
-    default List<StorageOperationResult> apply(List<Source> sources,
-                                               String databaseName) {
-        return sources.stream().map(source -> apply(source, databaseName)).collect(Collectors.toList());
+    default List<StorageOperationResult> apply(List<Source> sources, String databaseAlias) {
+        return sources.stream()
+                .map(source -> apply(source, databaseAlias))
+                .collect(Collectors.toList());
     }
 
-    StorageOperationResult apply(Source source, String databaseName);
+    StorageOperationResult apply(Source source, String databaseAlias);
 
     void clearSystem();
 

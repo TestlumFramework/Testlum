@@ -12,17 +12,17 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.API
 @UtilityClass
 public class ConfigUtil {
 
-    public Integration findApiForAlias(final List<? extends Integration> apiIntegrations, final String alias) {
+    public <T extends Integration> T findApiForAlias(final List<T> apiIntegrations, final String alias) {
         return findIntegrationByAlias(apiIntegrations, alias, API_NOT_FOUND);
     }
 
-    public void checkIntegrationForAlias(final List<? extends Integration> integrationList, final String alias) {
-        findIntegrationByAlias(integrationList, alias, ALIAS_NOT_FOUND);
+    public <T extends Integration> T findIntegrationForAlias(final List<T> integrationList, final String alias) {
+        return findIntegrationByAlias(integrationList, alias, ALIAS_NOT_FOUND);
     }
 
-    private Integration findIntegrationByAlias(final List<? extends Integration> integrations,
-                                               final String alias,
-                                               final String message) {
+    private <T extends Integration> T findIntegrationByAlias(final List<T> integrations,
+                                                             final String alias,
+                                                             final String message) {
         return integrations.stream()
                 .filter(Integration::isEnabled)
                 .filter(api -> api.getAlias().equalsIgnoreCase(alias))

@@ -89,7 +89,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     private String getFullUrl(final Graphql graphql) {
         List<GraphqlApi> apiList = GlobalTestConfigurationProvider.getIntegrations().get("env1")
                 .getGraphqlIntegration().getApi();
-        GraphqlApi graphqlApi = (GraphqlApi) ConfigUtil.findApiForAlias(apiList, graphql.getAlias());
+        GraphqlApi graphqlApi = ConfigUtil.findApiForAlias(apiList, graphql.getAlias());
         return graphqlApi.getUrl() + graphql.getEndpoint();
     }
 

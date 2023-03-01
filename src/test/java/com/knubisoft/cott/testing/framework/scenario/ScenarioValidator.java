@@ -4,7 +4,6 @@ import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfiguratio
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.util.AuthUtil;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.framework.util.ConfigUtil;
 import com.knubisoft.cott.testing.framework.util.DatasetValidator;
@@ -598,9 +597,12 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateAuthCommand(final Auth auth) {
         List<AbstractCommand> commands = auth.getCommands();
-        Http httpCommand = (Http) commands.get(0);
-        if (!httpCommand.getAlias().equals(auth.getApiAlias())) {
-            throw new DefaultFrameworkException("Alias from http command doesn't match with alias from Auth");
+        for (AbstractCommand command : commands) {
+            if (command instanceof Http) {
+                if (!((Http) command).getAlias().equals(auth.getApiAlias())) {
+                    throw new DefaultFrameworkException("Alias from http command doesn't match with alias from Auth");
+                }
+            }
         }
     }
 

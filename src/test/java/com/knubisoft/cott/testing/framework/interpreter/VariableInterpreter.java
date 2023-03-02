@@ -139,12 +139,6 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         return valueResult;
     }
 
-    private WebDriver getDriverByType(final VariableBrowserType variableBrowserType) {
-        return variableBrowserType == VariableBrowserType.WEB
-                ? dependencies.getWebDriver()
-                : dependencies.getMobilebrowserDriver();
-    }
-
     private String getExpressionResult(final Var var, final CommandResult result) {
         String expression = var.getFromExpression().getValue();
         String injectedExpression = inject(expression);
@@ -229,9 +223,13 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         }
     }
 
-    private interface VarFromPredicate extends Predicate<Var> {
+    private WebDriver getDriverByType(final VariableBrowserType variableBrowserType) {
+        return variableBrowserType == VariableBrowserType.WEB
+                ? dependencies.getWebDriver()
+                : dependencies.getMobilebrowserDriver();
     }
 
-    private interface VarFromMethod extends BiFunction<Var, CommandResult, String> {
-    }
+    private interface VarFromPredicate extends Predicate<Var> { }
+
+    private interface VarFromMethod extends BiFunction<Var, CommandResult, String> { }
 }

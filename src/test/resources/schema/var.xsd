@@ -68,7 +68,7 @@
 
     <x:simpleType name="variableQuery">
         <x:restriction base="x:string">
-            <x:pattern value="SELECT([^\*,]|\n)+FROM(.|\n)+WHERE(.|\n)+"/>
+            <x:pattern value="(.|\n)*SELECT([^\*,]|\n)+FROM(.|\n)+WHERE(.|\n)+"/>
         </x:restriction>
     </x:simpleType>
 

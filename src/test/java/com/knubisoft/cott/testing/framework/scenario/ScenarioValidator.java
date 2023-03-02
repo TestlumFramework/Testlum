@@ -598,7 +598,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateAuthCommand(final Auth auth) {
         auth.getCommands().stream()
                 .filter(command -> command instanceof Http)
-                .filter(command -> ((Http) command).getAlias().equalsIgnoreCase(auth.getApiAlias()))
+                .map(command -> (Http) command)
+                .filter(http -> http.getAlias().equalsIgnoreCase(auth.getApiAlias()))
                 .findFirst()
                 .orElseThrow(() ->
                         new DefaultFrameworkException("Alias from http command doesn't match with alias from Auth"));

@@ -990,6 +990,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Variable }
+     * 
+     */
+    public Variable createVariable() {
+        return new Variable();
+    }
+
+    /**
      * Create an instance of {@link GraphqlBody }
      * 
      */

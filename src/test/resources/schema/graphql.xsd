@@ -14,8 +14,8 @@
                 <x:sequence>
                     <x:element name="header" type="tns:header" minOccurs="0" maxOccurs="unbounded"/>
                     <x:element name="query" type="tns:graphqlBody"/>
-                    <x:element name="operationName" type="tns:graphqlBody" minOccurs="0"/>
-                    <x:element name="variables" type="tns:graphqlBody" minOccurs="0"/>
+                    <x:element name="operationName" type="tns:nonEmptyString" minOccurs="0"/>
+                    <x:element name="variable" type="tns:variable" minOccurs="0" maxOccurs="unbounded"/>
                     <x:element name="response" type="tns:response" minOccurs="0"/>
                 </x:sequence>
                 <x:attribute name="httpMethod" type="tns:graphqlHttpMethod" use="required"/>
@@ -31,7 +31,10 @@
             <x:enumeration value="POST"/>
         </x:restriction>
     </x:simpleType>
-
+    <x:complexType name="variable">
+        <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
     <x:complexType name="graphqlBody">
         <x:choice>
             <x:element name="from" type="tns:file"/>

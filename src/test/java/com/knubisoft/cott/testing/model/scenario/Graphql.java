@@ -22,8 +22,8 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence&gt;
  *         &lt;element name="header" type="{http://www.knubisoft.com/cott/testing/model/scenario}header" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element name="query" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlBody"/&gt;
- *         &lt;element name="operationName" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlBody" minOccurs="0"/&gt;
- *         &lt;element name="variables" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlBody" minOccurs="0"/&gt;
+ *         &lt;element name="operationName" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" minOccurs="0"/&gt;
+ *         &lt;element name="variable" type="{http://www.knubisoft.com/cott/testing/model/scenario}variable" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element name="response" type="{http://www.knubisoft.com/cott/testing/model/scenario}response" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="httpMethod" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlHttpMethod" /&gt;
@@ -41,7 +41,7 @@ import javax.xml.bind.annotation.XmlType;
     "header",
     "query",
     "operationName",
-    "variables",
+    "variable",
     "response"
 })
 public class Graphql
@@ -51,8 +51,8 @@ public class Graphql
     protected List<Header> header;
     @XmlElement(required = true)
     protected GraphqlBody query;
-    protected GraphqlBody operationName;
-    protected GraphqlBody variables;
+    protected String operationName;
+    protected List<Variable> variable;
     protected Response response;
     @XmlAttribute(name = "httpMethod", required = true)
     protected GraphqlHttpMethod httpMethod;
@@ -119,10 +119,10 @@ public class Graphql
      * 
      * @return
      *     possible object is
-     *     {@link GraphqlBody }
+     *     {@link String }
      *     
      */
-    public GraphqlBody getOperationName() {
+    public String getOperationName() {
         return operationName;
     }
 
@@ -131,35 +131,40 @@ public class Graphql
      * 
      * @param value
      *     allowed object is
-     *     {@link GraphqlBody }
+     *     {@link String }
      *     
      */
-    public void setOperationName(GraphqlBody value) {
+    public void setOperationName(String value) {
         this.operationName = value;
     }
 
     /**
-     * Gets the value of the variables property.
+     * Gets the value of the variable property.
      * 
-     * @return
-     *     possible object is
-     *     {@link GraphqlBody }
-     *     
-     */
-    public GraphqlBody getVariables() {
-        return variables;
-    }
-
-    /**
-     * Sets the value of the variables property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the variable property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link GraphqlBody }
-     *     
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getVariable().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Variable }
+     * 
+     * 
      */
-    public void setVariables(GraphqlBody value) {
-        this.variables = value;
+    public List<Variable> getVariable() {
+        if (variable == null) {
+            variable = new ArrayList<Variable>();
+        }
+        return this.variable;
     }
 
     /**

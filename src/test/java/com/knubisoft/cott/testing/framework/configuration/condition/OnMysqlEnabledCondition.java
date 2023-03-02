@@ -1,7 +1,7 @@
 package com.knubisoft.cott.testing.framework.configuration.condition;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.cott.testing.model.global_config.Mysql;
+import com.knubisoft.cott.testing.framework.util.ConfigUtil;
 import com.knubisoft.cott.testing.model.global_config.MysqlIntegration;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -11,15 +11,13 @@ import java.util.Objects;
 
 public class OnMysqlEnabledCondition implements Condition {
 
-    @Override
-    public boolean matches(final ConditionContext conditionContext,
-                           final AnnotatedTypeMetadata annotatedTypeMetadata) {
+    private final MysqlIntegration mysqlIntegration =
+            GlobalTestConfigurationProvider.getDefaultIntegration().getMysqlIntegration();
 
-        final MysqlIntegration mysqlIntegration =
-                GlobalTestConfigurationProvider.getDefaultIntegration().getMysqlIntegration();
+    @Override
+    public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
         if (Objects.nonNull(mysqlIntegration)) {
-            return mysqlIntegration.getMysql()
-                    .stream().anyMatch(Mysql::isEnabled);
+            return ConfigUtil.isIntegrationEnabled(mysqlIntegration.getMysql());
         }
         return false;
     }

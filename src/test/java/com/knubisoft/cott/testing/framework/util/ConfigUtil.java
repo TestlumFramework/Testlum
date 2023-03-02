@@ -29,4 +29,8 @@ public class ConfigUtil {
                 .findFirst()
                 .orElseThrow(() -> new DefaultFrameworkException(message, alias));
     }
+
+    public <T extends Integration> boolean isIntegrationEnabled(final List<T> integrations) {
+        return integrations.stream().anyMatch(Integration::isEnabled);
+    }
 }

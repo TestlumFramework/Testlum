@@ -109,9 +109,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
 
     private String getDomResult(final Var var, final CommandResult result) {
         String xpath = var.getFromDom().getXpath();
-        WebDriver webDriver = var.getFromDom().getBrowserType() == VariableBrowserType.WEB
-                ? dependencies.getWebDriver()
-                : dependencies.getMobilebrowserDriver();
+        WebDriver webDriver = getDriverByType(var.getFromDom().getBrowserType());
         String valueResult = webDriver.findElement(By.xpath(xpath)).getText();
         ResultUtil.addVariableMetaData(HTML_DOM, var.getName(), NO_EXPRESSION, valueResult, result);
         return valueResult;
@@ -132,15 +130,19 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     private String getWebCookiesResult(final Var var, final CommandResult result) {
-        WebDriver webDriver = var.getFromCookie().getBrowserType() == VariableBrowserType.WEB
-                ? dependencies.getWebDriver()
-                : dependencies.getMobilebrowserDriver();
+        WebDriver webDriver = getDriverByType(var.getFromCookie().getBrowserType());
         Set<Cookie> cookies = webDriver.manage().getCookies();
         String valueResult = cookies.stream()
                 .map(cookie -> String.join(DelimiterConstant.EQUALS_MARK, cookie.getName(), cookie.getValue()))
                 .collect(Collectors.joining(DelimiterConstant.SEMICOLON));
         ResultUtil.addVariableMetaData(COOKIES, var.getName(), NO_EXPRESSION, valueResult, result);
         return valueResult;
+    }
+
+    private WebDriver getDriverByType(final VariableBrowserType variableBrowserType) {
+        return variableBrowserType == VariableBrowserType.WEB
+                ? dependencies.getWebDriver()
+                : dependencies.getMobilebrowserDriver();
     }
 
     private String getExpressionResult(final Var var, final CommandResult result) {

@@ -11,30 +11,35 @@
     <x:complexType name="graphql">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
-                <x:sequence>
-                    <x:element name="header" type="tns:header" minOccurs="0" maxOccurs="unbounded"/>
-                    <x:element name="query" type="tns:graphqlBody"/>
-                    <x:element name="operationName" type="tns:nonEmptyString" minOccurs="0"/>
-                    <x:element name="variable" type="tns:variable" minOccurs="0" maxOccurs="unbounded"/>
-                    <x:element name="response" type="tns:response" minOccurs="0"/>
-                </x:sequence>
-                <x:attribute name="httpMethod" type="tns:graphqlHttpMethod" use="required"/>
-                <x:attribute name="endpoint" type="tns:endpointPattern" use="required"/>
+                <x:choice>
+                    <x:element name="post" type="tns:graphqlPost"/>
+                    <x:element name="get" type="tns:graphqlGet"/>
+                </x:choice>
                 <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
-    <x:simpleType name="graphqlHttpMethod">
-        <x:restriction base="x:string">
-            <x:enumeration value="GET"/>
-            <x:enumeration value="POST"/>
-        </x:restriction>
-    </x:simpleType>
-    <x:complexType name="variable">
-        <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    <x:complexType name="graphqlPost">
+        <x:complexContent>
+            <x:extension base="tns:httpInfo">
+                <x:sequence>
+                    <x:element name="body" type="tns:graphqlBody" maxOccurs="1"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
     </x:complexType>
+    
+    <x:complexType name="graphqlGet">
+        <x:complexContent>
+            <x:extension base="tns:httpInfo">
+                <x:sequence>
+                    <x:element name="parameter" type="tns:param" minOccurs="1" maxOccurs="3"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+    
     <x:complexType name="graphqlBody">
         <x:choice>
             <x:element name="from" type="tns:file"/>

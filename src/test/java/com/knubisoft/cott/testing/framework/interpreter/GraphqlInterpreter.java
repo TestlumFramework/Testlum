@@ -17,12 +17,14 @@ import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.global_config.GraphqlApi;
 import com.knubisoft.cott.testing.model.scenario.Graphql;
 import com.knubisoft.cott.testing.model.scenario.GraphqlBody;
-import com.knubisoft.cott.testing.model.scenario.GraphqlHttpMethod;
+import com.knubisoft.cott.testing.model.scenario.GraphqlGet;
+import com.knubisoft.cott.testing.model.scenario.GraphqlPost;
 import com.knubisoft.cott.testing.model.scenario.Header;
+import com.knubisoft.cott.testing.model.scenario.HttpInfo;
+import com.knubisoft.cott.testing.model.scenario.Param;
 import com.knubisoft.cott.testing.model.scenario.Response;
-import com.knubisoft.cott.testing.model.scenario.Variable;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -37,12 +39,14 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.springframework.http.HttpMethod;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -56,78 +60,62 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     @SneakyThrows
     @Override
     public void acceptImpl(final Graphql graphql, final CommandResult result) {
-        RawGraphqlRequest rawGraphqlRequest = getRawGraphqlRequest(graphql);
-        ResultUtil.addGraphQlMetaData(graphql.getAlias(), graphql.getEndpoint(), rawGraphqlRequest.getQuery(), result);
-        LogUtil.logGraphqlInfo(graphql.getAlias(), graphql.getEndpoint(), rawGraphqlRequest.getQuery());
-        ApiResponse response = getResponse(graphql, rawGraphqlRequest);
-        compareResult(graphql.getResponse(), response, result);
-    }
-
-    private RawGraphqlRequest getRawGraphqlRequest(final Graphql graphql) {
-        String rawQuery = getRawQuery(graphql.getQuery());
-        String rawOperationName = StringUtils.isNotBlank(graphql.getOperationName())
-                ? graphql.getOperationName()
-                : "";
-        Map<String, String> rawVariables = graphql.getVariable()
-                .stream()
-                .collect(Collectors.toMap(Variable::getName, Variable::getValue));
-        return new RawGraphqlRequest(rawQuery, rawOperationName, rawVariables);
-    }
-
-
-    private String getRawQuery(final GraphqlBody body) {
-        String rawBody = StringUtils.isNotBlank(body.getRaw())
-                ? body.getRaw()
-                : FileSearcher.searchFileToString(body.getFrom().getFile(), dependencies.getFile());
-        return inject(rawBody).replaceAll(DelimiterConstant.REGEX_MANY_SPACES, " ");
+        GraphqlMetadata graphqlMetadata = Objects.nonNull(graphql.getPost())
+                ? new GraphqlMetadata(graphql.getPost(), HttpMethod.POST)
+                : new GraphqlMetadata(graphql.getGet(), HttpMethod.GET);
+        ResultUtil.addGraphQlMetaData(graphql.getAlias(), graphqlMetadata, result);
+        LogUtil.logGraphqlInfo(graphql.getAlias(), graphqlMetadata);
+        ApiResponse response = getResponse(graphql, graphqlMetadata);
+        compareResult(graphqlMetadata.getHttpInfo().getResponse(), response, result);
     }
 
     private ApiResponse getResponse(final Graphql graphql,
-                                    final RawGraphqlRequest rawGraphqlRequest) throws IOException {
+                                    final GraphqlMetadata graphqlMetadata) throws IOException {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
-            HttpUriRequest httpRequest = getHttpRequest(graphql, rawGraphqlRequest);
-            setHeaders(httpRequest, graphql);
+            HttpUriRequest httpRequest = graphqlMetadata.getHttpMethod() == HttpMethod.POST
+                    ? buildHttpPost(graphql, (GraphqlPost) graphqlMetadata.getHttpInfo())
+                    : buildHttpGet(graphql, (GraphqlGet) graphqlMetadata.getHttpInfo());
+            setHeaders(httpRequest, graphqlMetadata.getHttpInfo());
             HttpResponse response = client.execute(httpRequest);
             return convertToApiResponse(response);
         }
     }
 
-    private HttpUriRequest getHttpRequest(final Graphql graphql, final RawGraphqlRequest rawGraphqlRequest) {
-        return graphql.getHttpMethod().equals(GraphqlHttpMethod.POST)
-                ? buildHttpPost(graphql, toString(rawGraphqlRequest))
-                : buildHttpGet(graphql, rawGraphqlRequest);
-    }
-
-    @SneakyThrows
-    private HttpGet buildHttpGet(final Graphql graphql, final RawGraphqlRequest rawGraphqlRequest) {
-        URIBuilder uriBuilder = new URIBuilder(getFullUrl(graphql));
-        uriBuilder.addParameter("query", rawGraphqlRequest.getQuery());
-        if (StringUtils.isNotBlank(rawGraphqlRequest.getOperationName())) {
-            uriBuilder.addParameter("operationName", rawGraphqlRequest.getOperationName());
-        }
-        if (!rawGraphqlRequest.getVariables().isEmpty()) {
-            uriBuilder.addParameter("variables", toString(rawGraphqlRequest.getVariables()));
-        }
-        return new HttpGet(uriBuilder.build());
-    }
-
-    private HttpPost buildHttpPost(final Graphql graphql, final String rawGraphqlRequest) {
-        HttpPost post = new HttpPost(getFullUrl(graphql));
-        post.setEntity(new StringEntity(rawGraphqlRequest, ContentType.APPLICATION_JSON));
+    private HttpUriRequest buildHttpPost(final Graphql graphql, final GraphqlPost graphqlPost) {
+        HttpPost post = new HttpPost(getFullUrl(graphql, graphqlPost));
+        String rawBody = getRawBody(graphqlPost.getBody());
+        LogUtil.logBody(rawBody);
+        post.setEntity(new StringEntity(rawBody, ContentType.APPLICATION_JSON));
         return post;
     }
 
-    private void setHeaders(final HttpUriRequest httpRequest, final Graphql graphql) {
+
+    private String getRawBody(final GraphqlBody body) {
+        String rawBody = StringUtils.isNotBlank(body.getRaw())
+                ? body.getRaw()
+                : FileSearcher.searchFileToString(body.getFrom().getFile(), dependencies.getFile());
+        return prettifyString(inject(rawBody));
+    }
+
+    @SneakyThrows
+    private HttpGet buildHttpGet(final Graphql graphql, final GraphqlGet graphqlGet) {
+        URIBuilder uriBuilder = new URIBuilder(getFullUrl(graphql, graphqlGet));
+        List<Param> parameters = graphqlGet.getParameter();
+        parameters.forEach(param -> uriBuilder.addParameter(param.getName(), prettifyString(param.getData())));
+        return new HttpGet(uriBuilder.build());
+    }
+
+    private void setHeaders(final HttpUriRequest httpRequest, final HttpInfo httpInfo) {
         Map<String, String> headers = new LinkedHashMap<>();
         InterpreterDependencies.Authorization authorization = dependencies.getAuthorization();
-        HttpUtil.fillHeadersMap(graphql.getHeader(), headers, authorization);
+        HttpUtil.fillHeadersMap(httpInfo.getHeader(), headers, authorization);
         headers.forEach(httpRequest::addHeader);
     }
 
-    private String getFullUrl(final Graphql graphql) {
+    private String getFullUrl(final Graphql graphql, final HttpInfo httpInfo) {
         List<GraphqlApi> apiList = GlobalTestConfigurationProvider.getIntegrations().getGraphqlIntegration().getApi();
         GraphqlApi graphqlApi = (GraphqlApi) ConfigUtil.findApiForAlias(apiList, graphql.getAlias());
-        return graphqlApi.getUrl() + graphql.getEndpoint();
+        return graphqlApi.getUrl() + httpInfo.getEndpoint();
     }
 
     private ApiResponse convertToApiResponse(final HttpResponse response) throws IOException {
@@ -176,12 +164,14 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         return HttpUtil.injectAndGetHeaders(expectedHeaders, this);
     }
 
+    public String prettifyString(final String str) {
+        return str.replaceAll(DelimiterConstant.REGEX_MANY_SPACES, DelimiterConstant.SPACE);
+    }
 
-    @AllArgsConstructor
+    @RequiredArgsConstructor
     @Getter
-    private static class RawGraphqlRequest {
-        private String query;
-        private String operationName;
-        private Map<String, String> variables;
+    public static class GraphqlMetadata {
+        private final HttpInfo httpInfo;
+        private final HttpMethod httpMethod;
     }
 }

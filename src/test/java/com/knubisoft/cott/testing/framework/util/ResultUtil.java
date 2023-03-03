@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.util;
 
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.cott.testing.framework.interpreter.GraphqlInterpreter;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
 import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequest;
@@ -521,12 +522,16 @@ public class ResultUtil {
     }
 
     public static void addGraphQlMetaData(final String alias,
-                                          final String endpoint,
-                                          final String body,
+                                          final GraphqlInterpreter.GraphqlMetadata metadata,
                                           final CommandResult result) {
+        HttpInfo httpInfo = metadata.getHttpInfo();
         result.put(ALIAS, alias);
-        result.put(ENDPOINT, endpoint);
-        result.put(BODY_OF_REQUEST, body);
+        result.put(HTTP_METHOD, metadata.getHttpMethod());
+        result.put(ENDPOINT, httpInfo.getEndpoint());
+        List<Header> headers = httpInfo.getHeader();
+        if (!headers.isEmpty()) {
+            addHeaders(headers, result);
+        }
     }
 
     public static void addSwipeMetaData(final SwipeNative swipeNative, final CommandResult result) {

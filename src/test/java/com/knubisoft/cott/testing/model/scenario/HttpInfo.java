@@ -41,7 +41,9 @@ import javax.xml.bind.annotation.XmlType;
     HttpInfoWithBody.class,
     Delete.class,
     Head.class,
-    Options.class
+    Options.class,
+    GraphqlPost.class,
+    GraphqlGet.class
 })
 public abstract class HttpInfo {
 

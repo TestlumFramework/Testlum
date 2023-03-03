@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.util;
 
 import com.amazonaws.services.simpleemail.model.Message;
 import com.knubisoft.cott.testing.framework.constant.LogMessage;
+import com.knubisoft.cott.testing.framework.interpreter.GraphqlInterpreter;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
@@ -13,6 +14,7 @@ import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
 import com.knubisoft.cott.testing.model.scenario.DragAndDropNative;
+import com.knubisoft.cott.testing.model.scenario.HttpInfo;
 import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.Overview;
 import com.knubisoft.cott.testing.model.scenario.OverviewPart;
@@ -420,10 +422,11 @@ public class LogUtil {
         log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
     }
 
-    public void logGraphqlInfo(final String alias, final String endpoint, final String body) {
+    public void logGraphqlInfo(final String alias, final GraphqlInterpreter.GraphqlMetadata metadata) {
+        HttpInfo httpInfo = metadata.getHttpInfo();
         log.info(ALIAS_LOG, alias);
-        log.info(ENDPOINT_LOG, endpoint);
-        log.info(BODY_LOG, body.replaceAll(SPACE, EMPTY).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+        log.info(HTTP_METHOD_LOG, metadata.getHttpMethod());
+        log.info(ENDPOINT_LOG, httpInfo.getEndpoint());
     }
 
     public void logSwipeNativeInfo(final SwipeNative swipeNative) {
@@ -449,4 +452,5 @@ public class LogUtil {
         log.info(DRAGGING_FROM, dragAndDropNative.getFromLocatorId());
         log.info(DROPPING_TO, dragAndDropNative.getToLocatorId());
     }
+
 }

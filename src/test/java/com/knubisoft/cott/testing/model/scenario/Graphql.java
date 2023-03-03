@@ -1,12 +1,9 @@
 
 package com.knubisoft.cott.testing.model.scenario;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -19,15 +16,10 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="graphql"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="header" type="{http://www.knubisoft.com/cott/testing/model/scenario}header" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element name="query" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlBody"/&gt;
- *         &lt;element name="operationName" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" minOccurs="0"/&gt;
- *         &lt;element name="variable" type="{http://www.knubisoft.com/cott/testing/model/scenario}variable" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element name="response" type="{http://www.knubisoft.com/cott/testing/model/scenario}response" minOccurs="0"/&gt;
- *       &lt;/sequence&gt;
- *       &lt;attribute name="httpMethod" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlHttpMethod" /&gt;
- *       &lt;attribute name="endpoint" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}endpointPattern" /&gt;
+ *       &lt;choice&gt;
+ *         &lt;element name="post" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlPost"/&gt;
+ *         &lt;element name="get" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlGet"/&gt;
+ *       &lt;/choice&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}aliasPattern" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -38,205 +30,64 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "graphql", propOrder = {
-    "header",
-    "query",
-    "operationName",
-    "variable",
-    "response"
+    "post",
+    "get"
 })
 public class Graphql
     extends AbstractCommand
 {
 
-    protected List<Header> header;
-    @XmlElement(required = true)
-    protected GraphqlBody query;
-    protected String operationName;
-    protected List<Variable> variable;
-    protected Response response;
-    @XmlAttribute(name = "httpMethod", required = true)
-    protected GraphqlHttpMethod httpMethod;
-    @XmlAttribute(name = "endpoint", required = true)
-    protected String endpoint;
+    protected GraphqlPost post;
+    protected GraphqlGet get;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
 
     /**
-     * Gets the value of the header property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the header property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getHeader().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Header }
-     * 
-     * 
-     */
-    public List<Header> getHeader() {
-        if (header == null) {
-            header = new ArrayList<Header>();
-        }
-        return this.header;
-    }
-
-    /**
-     * Gets the value of the query property.
+     * Gets the value of the post property.
      * 
      * @return
      *     possible object is
-     *     {@link GraphqlBody }
+     *     {@link GraphqlPost }
      *     
      */
-    public GraphqlBody getQuery() {
-        return query;
+    public GraphqlPost getPost() {
+        return post;
     }
 
     /**
-     * Sets the value of the query property.
+     * Sets the value of the post property.
      * 
      * @param value
      *     allowed object is
-     *     {@link GraphqlBody }
+     *     {@link GraphqlPost }
      *     
      */
-    public void setQuery(GraphqlBody value) {
-        this.query = value;
+    public void setPost(GraphqlPost value) {
+        this.post = value;
     }
 
     /**
-     * Gets the value of the operationName property.
+     * Gets the value of the get property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link GraphqlGet }
      *     
      */
-    public String getOperationName() {
-        return operationName;
+    public GraphqlGet getGet() {
+        return get;
     }
 
     /**
-     * Sets the value of the operationName property.
+     * Sets the value of the get property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link GraphqlGet }
      *     
      */
-    public void setOperationName(String value) {
-        this.operationName = value;
-    }
-
-    /**
-     * Gets the value of the variable property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the variable property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getVariable().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Variable }
-     * 
-     * 
-     */
-    public List<Variable> getVariable() {
-        if (variable == null) {
-            variable = new ArrayList<Variable>();
-        }
-        return this.variable;
-    }
-
-    /**
-     * Gets the value of the response property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Response }
-     *     
-     */
-    public Response getResponse() {
-        return response;
-    }
-
-    /**
-     * Sets the value of the response property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Response }
-     *     
-     */
-    public void setResponse(Response value) {
-        this.response = value;
-    }
-
-    /**
-     * Gets the value of the httpMethod property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link GraphqlHttpMethod }
-     *     
-     */
-    public GraphqlHttpMethod getHttpMethod() {
-        return httpMethod;
-    }
-
-    /**
-     * Sets the value of the httpMethod property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link GraphqlHttpMethod }
-     *     
-     */
-    public void setHttpMethod(GraphqlHttpMethod value) {
-        this.httpMethod = value;
-    }
-
-    /**
-     * Gets the value of the endpoint property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getEndpoint() {
-        return endpoint;
-    }
-
-    /**
-     * Sets the value of the endpoint property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setEndpoint(String value) {
-        this.endpoint = value;
+    public void setGet(GraphqlGet value) {
+        this.get = value;
     }
 
     /**

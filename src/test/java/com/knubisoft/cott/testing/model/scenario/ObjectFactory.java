@@ -990,11 +990,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Variable }
+     * Create an instance of {@link GraphqlPost }
      * 
      */
-    public Variable createVariable() {
-        return new Variable();
+    public GraphqlPost createGraphqlPost() {
+        return new GraphqlPost();
+    }
+
+    /**
+     * Create an instance of {@link GraphqlGet }
+     * 
+     */
+    public GraphqlGet createGraphqlGet() {
+        return new GraphqlGet();
     }
 
     /**

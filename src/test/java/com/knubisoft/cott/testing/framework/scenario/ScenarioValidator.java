@@ -103,6 +103,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.AUTH_ALIASES_DOESNT_MATCH;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INTEGRATION_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
@@ -597,12 +598,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateAuthCommand(final Auth auth) {
         auth.getCommands().stream()
-                .filter(command -> command instanceof Http)
-                .map(command -> (Http) command)
-                .filter(http -> !http.getAlias().equals(auth.getApiAlias()))
-                .findAny()
-                .ifPresent(http -> {
-                    throw new DefaultFrameworkException("Alias from http command doesn't match with alias from Auth");
+                .filter(command -> command instanceof Http && !((Http) command).getAlias().equals(auth.getApiAlias()))
+                .findAny().ifPresent(http -> {
+                    throw new DefaultFrameworkException(AUTH_ALIASES_DOESNT_MATCH);
                 });
     }
 

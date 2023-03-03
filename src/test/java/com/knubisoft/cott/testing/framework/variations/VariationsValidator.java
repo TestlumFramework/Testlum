@@ -8,7 +8,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VARIATIONS_NEVER_USED;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VARIATIONS_NOT_USED;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VARIATION_FILE_IS_EMPTY;
 
 public class VariationsValidator {
@@ -28,7 +28,7 @@ public class VariationsValidator {
                 .map(var -> String.format(WRAPPING_FORMAT, var))
                 .noneMatch(commands::contains);
         if (noneMatch) {
-            throw new DefaultFrameworkException(VARIATIONS_NEVER_USED, filePath.getAbsolutePath());
+            throw new DefaultFrameworkException(VARIATIONS_NOT_USED, filePath.getAbsolutePath());
         }
     }
 }

@@ -187,7 +187,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     private String getActualQueryResult(final FromSQL fromSQL,
                                         final StorageOperation storageOperation) {
         String alias = fromSQL.getAlias();
-        List<String> singleQuery = new ArrayList<>(Collections.singletonList(fromSQL.getQuery()));
+        List<String> singleQuery = new ArrayList<>(Collections.singletonList(inject(fromSQL.getQuery())));
         LogUtil.logAllQueries(singleQuery, alias);
         StorageOperation.StorageOperationResult queryResult =
                 storageOperation.apply(new ListSource(singleQuery), inject(alias));

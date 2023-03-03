@@ -599,10 +599,11 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         auth.getCommands().stream()
                 .filter(command -> command instanceof Http)
                 .map(command -> (Http) command)
-                .filter(http -> http.getAlias().equals(auth.getApiAlias()))
-                .findFirst()
-                .orElseThrow(() ->
-                        new DefaultFrameworkException("Alias from http command doesn't match with alias from Auth"));
+                .filter(http -> !http.getAlias().equals(auth.getApiAlias()))
+                .findAny()
+                .ifPresent(http -> {
+                    throw new DefaultFrameworkException("Alias from http command doesn't match with alias from Auth");
+                });
     }
 
     private void validateIncludeAction(final Include include, final File xmlFile) {

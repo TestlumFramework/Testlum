@@ -28,7 +28,7 @@ public class VariationsValidator {
                 .map(var -> String.format(WRAPPING_FORMAT, var))
                 .noneMatch(commands::contains);
         if (noneMatch) {
-            throw new DefaultFrameworkException(VARIATIONS_NEVER_USED);
+            throw new DefaultFrameworkException(VARIATIONS_NEVER_USED, filePath.getAbsolutePath());
         }
     }
 }

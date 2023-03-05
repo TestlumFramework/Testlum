@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.configuration.datasource;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnClickhouseEnabledCondition;
+import com.knubisoft.cott.testing.model.AliasEnv;
 import com.knubisoft.cott.testing.model.global_config.Clickhouse;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import org.springframework.context.annotation.Bean;
@@ -14,29 +15,26 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
-
-@Configuration("clickhouseDataSourceConfiguration")
+@Configuration
 @Conditional({OnClickhouseEnabledCondition.class})
 public class ClickhouseDataSourceConfiguration {
 
     @Bean("clickhouseDataSource")
-    public Map<String, DataSource> dataSource() {
-        final Map<String, DataSource> dataSourceMap = new HashMap<>();
+    public Map<AliasEnv, DataSource> dataSource() {
+        final Map<AliasEnv, DataSource> dataSourceMap = new HashMap<>();
         GlobalTestConfigurationProvider.getIntegrations()
-                .forEach((s, integrations) -> collectDataSource(dataSourceMap, s, integrations));
+                .forEach((env, integrations) -> collectDataSource(integrations, env, dataSourceMap));
         return dataSourceMap;
     }
 
-    private void collectDataSource(final Map<String, DataSource> clickhouseIntegration,
-                                   final String envName, final Integrations integrations) {
-        for (Clickhouse clickhouse
-                : integrations.getClickhouseIntegration().getClickhouse()) {
+    private void collectDataSource(final Integrations integrations,
+                                   final String env,
+                                   final Map<AliasEnv, DataSource> dataSourceMap) {
+        for (Clickhouse clickhouse : integrations.getClickhouseIntegration().getClickhouse()) {
             if (clickhouse.isEnabled()) {
                 ClickHouseProperties properties = clickHouseProperties(clickhouse);
                 String url = clickhouse.getConnectionUrl();
-                clickhouseIntegration.put(envName + UNDERSCORE + clickhouse.getAlias(),
-                        new ClickHouseDataSource(url, properties));
+                dataSourceMap.put(new AliasEnv(clickhouse.getAlias(), env), new ClickHouseDataSource(url, properties));
             }
         }
     }
@@ -47,5 +45,4 @@ public class ClickhouseDataSourceConfiguration {
         properties.setPassword(clickhouse.getPassword());
         return properties;
     }
-
 }

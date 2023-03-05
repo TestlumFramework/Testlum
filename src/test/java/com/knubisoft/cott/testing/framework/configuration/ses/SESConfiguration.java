@@ -7,50 +7,47 @@ import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnSESEnabledCondition;
+import com.knubisoft.cott.testing.model.AliasEnv;
+import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Ses;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Configuration
 @Conditional({OnSESEnabledCondition.class})
 public class SESConfiguration {
 
     @Bean
-    public Map<String, AmazonSimpleEmailService> amazonSimpleEmailService() {
-        Map<String, AmazonSimpleEmailService> emailServiceMap = new HashMap<>();
+    public Map<AliasEnv, AmazonSimpleEmailService> amazonSimpleEmailService() {
+        Map<AliasEnv, AmazonSimpleEmailService> amazonSesMap = new HashMap<>();
         GlobalTestConfigurationProvider.getIntegrations()
-                .forEach(((s, integrations) -> addSes(s, integrations.getSesIntegration().getSes(), emailServiceMap)));
-        return emailServiceMap;
+                .forEach((env, integrations) -> addAmazonSes(integrations, env, amazonSesMap));
+        return amazonSesMap;
     }
 
-    private void addSes(final String envName,
-                        final List<Ses> sesList,
-                        final Map<String, AmazonSimpleEmailService> emailServiceMap) {
-        for (Ses ses : sesList) {
+    private void addAmazonSes(final Integrations integrations,
+                              final String env,
+                              final Map<AliasEnv, AmazonSimpleEmailService> emailServiceMap) {
+        for (Ses ses : integrations.getSesIntegration().getSes()) {
             if (ses.isEnabled()) {
-                createSesAndPutIntoMap(emailServiceMap, ses, envName);
+                AmazonSimpleEmailService amazonSes = createAmazonSes(ses);
+                emailServiceMap.put(new AliasEnv(ses.getAlias(), env), amazonSes);
             }
         }
     }
 
-    private void createSesAndPutIntoMap(final Map<String, AmazonSimpleEmailService> emailServiceMap,
-                                        final Ses ses,
-                                        final String envName) {
+    private AmazonSimpleEmailService createAmazonSes(final Ses ses) {
         AwsClientBuilder.EndpointConfiguration endpointConfiguration =
                 new AwsClientBuilder.EndpointConfiguration(ses.getEndpoint(), ses.getRegion());
         BasicAWSCredentials basicAWSCredentials =
                 new BasicAWSCredentials(ses.getAccessKeyId(), ses.getSecretAccessKey());
         AWSStaticCredentialsProvider awsStaticCredentialsProvider =
                 new AWSStaticCredentialsProvider(basicAWSCredentials);
-        emailServiceMap.put(envName + UNDERSCORE + ses.getAlias(), buildAmazonSes(endpointConfiguration,
-                awsStaticCredentialsProvider));
+        return buildAmazonSes(endpointConfiguration, awsStaticCredentialsProvider);
     }
 
     private AmazonSimpleEmailService buildAmazonSes(final AwsClientBuilder.EndpointConfiguration endpointConfiguration,
@@ -60,5 +57,4 @@ public class SESConfiguration {
                 .withCredentials(credentialsProvider)
                 .build();
     }
-
 }

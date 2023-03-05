@@ -2,6 +2,8 @@ package com.knubisoft.cott.testing.framework.configuration.websocket;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnWebsocketEnabledCondition;
+import com.knubisoft.cott.testing.model.AliasEnv;
+import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.WebsocketApi;
 import com.knubisoft.cott.testing.model.global_config.WebsocketProtocol;
 import org.springframework.context.annotation.Bean;
@@ -19,31 +21,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
-
 @Configuration
 @Conditional(OnWebsocketEnabledCondition.class)
 public class WebsocketConfiguration {
 
     @Bean
-    public Map<String, WebsocketConnectionManager> websocketConnectionSupplier() {
-        final Map<String, WebsocketConnectionManager> connectionSupplierMap = new HashMap<>();
+    public Map<AliasEnv, WebsocketConnectionManager> websocketConnectionSupplier() {
+        final Map<AliasEnv, WebsocketConnectionManager> connectionSupplierMap = new HashMap<>();
         GlobalTestConfigurationProvider.getIntegrations()
-                .forEach((s, integrations) -> addWebsocketConnection(s,
-                        integrations.getWebsockets().getApi(), connectionSupplierMap));
+                .forEach((env, integrations) -> addWebsocketConnection(integrations, env, connectionSupplierMap));
         return connectionSupplierMap;
     }
 
-    private void addWebsocketConnection(final String envName,
-                                        final List<WebsocketApi> websocketApis,
-                                        final Map<String, WebsocketConnectionManager> connectionSupplierMap) {
-        for (WebsocketApi websocket : websocketApis) {
+    private void addWebsocketConnection(final Integrations integrations,
+                                        final String env,
+                                        final Map<AliasEnv, WebsocketConnectionManager> connectionSupplierMap) {
+        for (WebsocketApi websocket : integrations.getWebsockets().getApi()) {
+            AliasEnv aliasEnv = new AliasEnv(websocket.getAlias(), env);
             if (WebsocketProtocol.STOMP == websocket.getProtocol()) {
-                connectionSupplierMap.put(envName + UNDERSCORE + websocket.getAlias(),
-                        getWsStompConnectionManager(websocket.getUrl()));
+                connectionSupplierMap.put(aliasEnv, getWsStompConnectionManager(websocket.getUrl()));
             } else if (WebsocketProtocol.STANDARD == websocket.getProtocol()) {
-                connectionSupplierMap.put(envName + UNDERSCORE + websocket.getAlias(),
-                        getWsStandardConnectionManager(websocket.getUrl()));
+                connectionSupplierMap.put(aliasEnv, getWsStandardConnectionManager(websocket.getUrl()));
             }
         }
     }

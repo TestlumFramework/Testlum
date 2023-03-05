@@ -7,46 +7,47 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnSQSEnabledCondition;
+import com.knubisoft.cott.testing.model.AliasEnv;
+import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Sqs;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
 
 @Configuration
 @Conditional({OnSQSEnabledCondition.class})
 public class SQSConfiguration {
 
     @Bean
-    public Map<String, AmazonSQS> amazonSQS() {
-        final Map<String, AmazonSQS> sqsIntegration = new HashMap<>();
+    public Map<AliasEnv, AmazonSQS> amazonSQS() {
+        final Map<AliasEnv, AmazonSQS> amazonSqsMap = new HashMap<>();
         GlobalTestConfigurationProvider.getIntegrations()
-                .forEach(((s, integrations) -> addSqs(s, integrations.getSqsIntegration().getSqs(), sqsIntegration)));
-        return sqsIntegration;
+                .forEach(((env, integrations) -> addAmazonSqs(integrations, env, amazonSqsMap)));
+        return amazonSqsMap;
     }
 
-    private void addSqs(final String envName, final List<Sqs> sqsList, final Map<String, AmazonSQS> sqsIntegration) {
-        for (Sqs sqs : sqsList) {
+    private void addAmazonSqs(final Integrations integrations,
+                              final String env,
+                              final Map<AliasEnv, AmazonSQS> amazonSqsMap) {
+        for (Sqs sqs : integrations.getSqsIntegration().getSqs()) {
             if (sqs.isEnabled()) {
-                createSqsAndPutIntoMap(sqsIntegration, sqs, envName);
+                AmazonSQS amazonSqs = createAmazonSqs(sqs);
+                amazonSqsMap.put(new AliasEnv(sqs.getAlias(), env), amazonSqs);
             }
         }
     }
 
-    private void createSqsAndPutIntoMap(final Map<String, AmazonSQS> properties, final Sqs sqs, final String envName) {
+    private AmazonSQS createAmazonSqs(final Sqs sqs) {
         AwsClientBuilder.EndpointConfiguration endpointConfiguration =
                 new AwsClientBuilder.EndpointConfiguration(sqs.getEndpoint(), sqs.getRegion());
         BasicAWSCredentials basicAWSCredentials =
                 new BasicAWSCredentials(sqs.getAccessKeyId(), sqs.getSecretAccessKey());
         AWSStaticCredentialsProvider awsStaticCredentialsProvider =
                 new AWSStaticCredentialsProvider(basicAWSCredentials);
-        properties.put(envName + UNDERSCORE + sqs.getAlias(),
-                buildAmazonSQS(endpointConfiguration, awsStaticCredentialsProvider));
+        return buildAmazonSQS(endpointConfiguration, awsStaticCredentialsProvider);
     }
 
     private AmazonSQS buildAmazonSQS(final AwsClientBuilder.EndpointConfiguration endpointConfiguration,
@@ -56,5 +57,4 @@ public class SQSConfiguration {
                 .withCredentials(awsStaticCredentialsProvider)
                 .build();
     }
-
 }

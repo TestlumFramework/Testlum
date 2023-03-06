@@ -41,6 +41,7 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
 
     private String getActualValue(final Assert aAssert) {
         WebElement webElement = UiUtil.findWebElement(dependencies, aAssert.getLocatorId());
+        UiUtil.waitForElementVisibility(dependencies, webElement);
         String value = UiUtil.getElementAttribute(webElement, aAssert.getAttribute());
         return value
                 .replaceAll(SPACE, EMPTY)

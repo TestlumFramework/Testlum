@@ -599,7 +599,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateAuthCommand(final Auth auth) {
         auth.getCommands().stream()
                 .filter(command -> command instanceof Http && !((Http) command).getAlias().equals(auth.getApiAlias()))
-                .findAny().ifPresent(http -> {
+                .findFirst().ifPresent(http -> {
                     throw new DefaultFrameworkException(AUTH_ALIASES_DOESNT_MATCH);
                 });
     }

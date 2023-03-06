@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.util;
 
+import com.knubisoft.cott.runner.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.model.global_config.AbstractCapabilities;
@@ -17,12 +18,13 @@ import java.util.Objects;
 import static java.lang.String.format;
 
 @UtilityClass
-public class MobileDriverUtil {
+public class UiDriverUtil {
 
     private static final String BROWSER_STACK_URL_TEMPLATE = "https://%s:%s@hub-cloud.browserstack.com/wd/hub";
 
     public String getBrowserStackUrl() {
-        BrowserStackLogin browserStack = GlobalTestConfigurationProvider.provideUis().get("env1")
+        BrowserStackLogin browserStack = GlobalTestConfigurationProvider.provideUis()
+                .get(EnvManager.getThreadEnv())
                 .getBrowserStackLogin();
         if (Objects.nonNull(browserStack)) {
             return format(BROWSER_STACK_URL_TEMPLATE, browserStack.getUsername(), browserStack.getAccessKey());

@@ -3,7 +3,7 @@ package com.knubisoft.cott.testing.framework.configuration.ui;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
-import com.knubisoft.cott.testing.framework.util.MobileDriverUtil;
+import com.knubisoft.cott.testing.framework.util.UiDriverUtil;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.BrowserInDocker;
 import com.knubisoft.cott.testing.model.global_config.BrowserOptionsArguments;
@@ -95,7 +95,7 @@ public class WebDriverFactory {
                                             final MutableCapabilities browserOptions) {
         browserOptions.setCapability("browserstack.local", Boolean.TRUE);
         browserOptions.setCapability(CapabilityType.BROWSER_VERSION, browserStack.getBrowserVersion());
-        return new RemoteWebDriver(new URL(MobileDriverUtil.getBrowserStackUrl()), browserOptions);
+        return new RemoteWebDriver(new URL(UiDriverUtil.getBrowserStackUrl()), browserOptions);
     }
 
     @SneakyThrows

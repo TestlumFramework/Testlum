@@ -9,6 +9,7 @@ import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
+import com.knubisoft.cott.testing.model.AliasEnv;
 import com.knubisoft.cott.testing.model.scenario.Rabbit;
 import com.knubisoft.cott.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.cott.testing.model.scenario.RmqHeader;
@@ -43,9 +44,9 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     private static final String CORRELATION_ID = "correlationId";
 
     @Autowired(required = false)
-    private Map<String, RabbitTemplate> rabbitTemplate;
+    private Map<AliasEnv, RabbitTemplate> rabbitTemplate;
     @Autowired(required = false)
-    private Map<String, AmqpAdmin> amqpAdmin;
+    private Map<AliasEnv, AmqpAdmin> amqpAdmin;
 
     public RabbitMQInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -85,83 +86,84 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                                       final Object action,
                                       final String alias) {
         log.info(ALIAS_LOG, alias);
+        AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnv());
         if (action instanceof SendRmqMessage) {
             SendRmqMessage sendAction = (SendRmqMessage) action;
             ResultUtil.addRabbitMQInfoForSendAction(sendAction, alias, subCommandResult);
-            sendMessage((SendRmqMessage) action, subCommandResult, alias);
+            sendMessage((SendRmqMessage) action, subCommandResult, aliasEnv);
         } else {
             ReceiveRmqMessage receiveAction = (ReceiveRmqMessage) action;
             ResultUtil.addRabbitMQInfoForReceiveAction(receiveAction, alias, subCommandResult);
-            receiveMessages((ReceiveRmqMessage) action, subCommandResult, alias);
+            receiveMessages((ReceiveRmqMessage) action, subCommandResult, aliasEnv);
         }
-    }
-
-    private void receiveMessages(final ReceiveRmqMessage receive,
-                                 final CommandResult result,
-                                 final String alias) {
-        String message = getMessage(receive);
-        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), message);
-
-        createQueueIfNotExists(receive.getQueue(), alias);
-        receiveMessages(receive, message, result, alias);
-    }
-
-    private void receiveMessages(final ReceiveRmqMessage receive,
-                                 final String message,
-                                 final CommandResult result,
-                                 final String alias) {
-        final List<RabbitMQMessage> actualRmqMessages = receiveRmqMessages(receive, alias);
-        CompareBuilder comparator = newCompare()
-                .withExpected(message)
-                .withActual(actualRmqMessages);
-
-        result.setActual(PrettifyStringJson.getJSONResult(toString(actualRmqMessages)));
-        result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
-
-        comparator.exec();
     }
 
     private void sendMessage(final SendRmqMessage send,
                              final CommandResult result,
-                             final String alias) {
+                             final AliasEnv aliasEnv) {
         String message = getMessage(send);
         LogUtil.logBrokerActionInfo(SEND_ACTION, send.getRoutingKey(), message);
-
         result.put(MESSAGE_TO_SEND, message);
-        createQueueIfNotExists(send.getRoutingKey(), alias);
 
-        sendMessage(send, message, alias);
+        createQueueIfNotExists(send.getRoutingKey(), aliasEnv);
+        sendMessage(send, message, aliasEnv);
     }
 
-    private void sendMessage(final SendRmqMessage send, final String message, final String alias) {
-        Message rmqMessage = buildRmqMessage(send, message, alias);
-        rabbitTemplate.get(alias).send(send.getExchange(), send.getRoutingKey(), rmqMessage);
+    private void sendMessage(final SendRmqMessage send, final String message, final AliasEnv aliasEnv) {
+        Message rmqMessage = buildRmqMessage(send, message, aliasEnv);
+        rabbitTemplate.get(aliasEnv).send(send.getExchange(), send.getRoutingKey(), rmqMessage);
     }
 
-    private List<RabbitMQMessage> receiveRmqMessages(final ReceiveRmqMessage receive,
-                                                     final String alias) {
+    private Message buildRmqMessage(final SendRmqMessage send, final String message, final AliasEnv aliasEnv) {
+        MessageProperties properties = new MessageProperties();
+        setHeaders(send, properties);
+        setCorrelationId(send, properties);
+        return rabbitTemplate.get(aliasEnv).getMessageConverter().toMessage(message, properties);
+    }
+
+    private void setHeaders(final SendRmqMessage send, final MessageProperties properties) {
+        if (send.getHeaders() != null) {
+            for (RmqHeader rmqHeader : send.getHeaders().getHeader()) {
+                properties.setHeader(rmqHeader.getName(), rmqHeader.getValue());
+            }
+        }
+    }
+
+    private void setCorrelationId(final SendRmqMessage send, final MessageProperties properties) {
+        if (!StringUtils.isEmpty(send.getCorrelationId())) {
+            properties.setHeader(CORRELATION_ID, send.getCorrelationId());
+        }
+    }
+
+    private void receiveMessages(final ReceiveRmqMessage receive,
+                                 final CommandResult result,
+                                 final AliasEnv aliasEnv) {
+        String message = getMessage(receive);
+        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), message);
+
+        createQueueIfNotExists(receive.getQueue(), aliasEnv);
+        List<RabbitMQMessage> actualRmqMessages = receiveRmqMessages(receive, aliasEnv);
+        compareMessages(actualRmqMessages, message, result);
+    }
+
+    private List<RabbitMQMessage> receiveRmqMessages(final ReceiveRmqMessage receive, final AliasEnv aliasEnv) {
         List<RabbitMQMessage> actualRmqMessages = new ArrayList<>();
-
         for (int i = 0; i < receive.getPrefetchCount(); i++) {
-            RabbitMQMessage actualRmqMessage = receiveRmqMessage(receive, alias);
+            RabbitMQMessage actualRmqMessage = receiveRmqMessage(receive, aliasEnv);
             if (actualRmqMessage != null) {
                 actualRmqMessages.add(actualRmqMessage);
             }
         }
-
         return actualRmqMessages;
     }
 
-    private RabbitMQMessage receiveRmqMessage(final ReceiveRmqMessage receive,
-                                              final String alias) {
-        Message actualMessage = rabbitTemplate.get(alias).receive(receive.getQueue(), receive.getTimeoutMillis());
+    private RabbitMQMessage receiveRmqMessage(final ReceiveRmqMessage receive, final AliasEnv aliasEnv) {
+        Message actualMessage = rabbitTemplate.get(aliasEnv).receive(receive.getQueue(), receive.getTimeoutMillis());
         if (actualMessage == null) {
             return null;
         }
-
         RabbitMQMessage actualRmqMessage = new RabbitMQMessage(actualMessage);
         setHeadersToActual(receive, actualMessage, actualRmqMessage);
-
         return actualRmqMessage;
     }
 
@@ -174,25 +176,15 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         }
     }
 
-    private Message buildRmqMessage(final SendRmqMessage send, final String message, final String alias) {
-        MessageProperties properties = new MessageProperties();
-        setHeaders(send, properties);
-        setCorrelationId(send, properties);
-        return rabbitTemplate.get(alias).getMessageConverter().toMessage(message, properties);
-    }
-
-    private void setCorrelationId(final SendRmqMessage send, final MessageProperties properties) {
-        if (!StringUtils.isEmpty(send.getCorrelationId())) {
-            properties.setHeader(CORRELATION_ID, send.getCorrelationId());
-        }
-    }
-
-    private void setHeaders(final SendRmqMessage send, final MessageProperties properties) {
-        if (send.getHeaders() != null) {
-            for (RmqHeader rmqHeader : send.getHeaders().getHeader()) {
-                properties.setHeader(rmqHeader.getName(), rmqHeader.getValue());
-            }
-        }
+    private void compareMessages(final List<RabbitMQMessage> actualRmqMessages,
+                                 final String message,
+                                 final CommandResult result) {
+        CompareBuilder comparator = newCompare()
+                .withExpected(message)
+                .withActual(actualRmqMessages);
+        result.setActual(PrettifyStringJson.getJSONResult(toString(actualRmqMessages)));
+        result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
+        comparator.exec();
     }
 
     private String getMessage(final SendRmqMessage send) {
@@ -207,9 +199,8 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                 : FileSearcher.searchFileToString(receive.getFile(), dependencies.getFile());
     }
 
-    private void createQueueIfNotExists(final String queue,
-                                        final String alias) {
-        amqpAdmin.get(alias).declareQueue(new Queue(queue));
+    private void createQueueIfNotExists(final String queue, final AliasEnv aliasEnv) {
+        amqpAdmin.get(aliasEnv).declareQueue(new Queue(queue));
     }
 
     @Data

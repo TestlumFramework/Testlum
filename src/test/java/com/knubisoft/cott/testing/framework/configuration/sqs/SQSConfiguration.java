@@ -25,7 +25,7 @@ public class SQSConfiguration {
     public Map<AliasEnv, AmazonSQS> amazonSQS() {
         final Map<AliasEnv, AmazonSQS> amazonSqsMap = new HashMap<>();
         GlobalTestConfigurationProvider.getIntegrations()
-                .forEach(((env, integrations) -> addAmazonSqs(integrations, env, amazonSqsMap)));
+                .forEach((env, integrations) -> addAmazonSqs(integrations, env, amazonSqsMap));
         return amazonSqsMap;
     }
 

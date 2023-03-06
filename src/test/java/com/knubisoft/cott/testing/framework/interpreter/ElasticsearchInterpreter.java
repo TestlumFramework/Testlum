@@ -10,6 +10,7 @@ import com.knubisoft.cott.testing.framework.util.HttpValidator;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
+import com.knubisoft.cott.testing.model.AliasEnv;
 import com.knubisoft.cott.testing.model.scenario.Body;
 import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequest;
 import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequestWithBody;
@@ -44,8 +45,7 @@ import java.util.stream.Collectors;
 public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch> {
 
     @Autowired(required = false)
-    private Map<String, RestClient> restClient;
-
+    private Map<AliasEnv, RestClient> restClient;
 
     public ElasticsearchInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -69,7 +69,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         LogUtil.logHttpInfo(alias, httpMethod.name(), elasticSearchRequest.getEndpoint());
         Request request = buildRequest(elasticSearchRequest, httpMethod);
         try {
-            return restClient.get(alias).performRequest(request);
+            return restClient.get(new AliasEnv(alias, dependencies.getEnv())).performRequest(request);
         } catch (ResponseException responseException) {
             log.error("Failed response", responseException);
             return responseException.getResponse();

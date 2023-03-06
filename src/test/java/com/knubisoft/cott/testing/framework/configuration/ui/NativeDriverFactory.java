@@ -2,7 +2,7 @@ package com.knubisoft.cott.testing.framework.configuration.ui;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.util.MobileDriverUtil;
+import com.knubisoft.cott.testing.framework.util.UiDriverUtil;
 import com.knubisoft.cott.testing.model.global_config.AppiumNativeCapabilities;
 import com.knubisoft.cott.testing.model.global_config.BrowserStackNativeCapabilities;
 import com.knubisoft.cott.testing.model.global_config.GooglePlayLogin;
@@ -29,14 +29,14 @@ public class NativeDriverFactory {
 
     public WebDriver createDriver(final NativeDevice nativeDevice) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        MobileDriverUtil.setDefaultCapabilities(nativeDevice, desiredCapabilities);
+        UiDriverUtil.setDefaultCapabilities(nativeDevice, desiredCapabilities);
         return getNativeWebDriver(nativeDevice, desiredCapabilities);
     }
 
     @SneakyThrows
     private AppiumDriver getNativeWebDriver(final NativeDevice nativeDevice,
                                             final DesiredCapabilities desiredCapabilities) {
-        String serverUrl = MobileDriverUtil.getServerUrl(
+        String serverUrl = UiDriverUtil.getServerUrl(
                 GlobalTestConfigurationProvider.getNativeSettings().getConnection());
         if (Platform.ANDROID == nativeDevice.getPlatformName()) {
             setAndroidCapabilities(nativeDevice, desiredCapabilities);
@@ -74,7 +74,7 @@ public class NativeDriverFactory {
     private void setAppiumCapabilities(final NativeDevice nativeDevice,
                                        final DesiredCapabilities desiredCapabilities) {
         AppiumNativeCapabilities capabilities = nativeDevice.getAppiumCapabilities();
-        MobileDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
+        UiDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
         desiredCapabilities.setCapability(MobileCapabilityType.UDID, capabilities.getUdid());
         if (StringUtils.isNotBlank(capabilities.getApp())) {
             desiredCapabilities.setCapability(MobileCapabilityType.APP, capabilities.getApp());
@@ -84,7 +84,7 @@ public class NativeDriverFactory {
     private void setBrowserStackCapabilities(final NativeDevice nativeDevice,
                                              final DesiredCapabilities desiredCapabilities) {
         BrowserStackNativeCapabilities capabilities = nativeDevice.getBrowserStackCapabilities();
-        MobileDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
+        UiDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
         desiredCapabilities.setCapability(MobileCapabilityType.APP, capabilities.getApp());
         desiredCapabilities.setCapability("browserstack.local", Boolean.TRUE);
     }

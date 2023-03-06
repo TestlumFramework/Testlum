@@ -7,6 +7,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
+import com.knubisoft.cott.testing.model.AliasEnv;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -19,7 +20,7 @@ import java.util.Objects;
 public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
 
     @Autowired(required = false)
-    private Map<String, JavaMailSenderImpl> javaMailSenderMap;
+    private Map<AliasEnv, JavaMailSenderImpl> javaMailSenderMap;
 
     public SmtpInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -27,7 +28,8 @@ public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
 
     @Override
     protected void acceptImpl(final Smtp smtp, final CommandResult result) {
-        JavaMailSenderImpl javaMailSender = javaMailSenderMap.get(smtp.getAlias());
+        AliasEnv aliasEnv = new AliasEnv(smtp.getAlias(), dependencies.getEnv());
+        JavaMailSenderImpl javaMailSender = javaMailSenderMap.get(aliasEnv);
         LogUtil.logSmtpInfo(smtp, javaMailSender);
         ResultUtil.addSmtpMetaData(smtp, javaMailSender, result);
         sendEmail(smtp, javaMailSender);
@@ -43,7 +45,7 @@ public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
         }
     }
 
-        private SimpleMailMessage getSimpleMailMessage(final Smtp smtp, final String username) {
+    private SimpleMailMessage getSimpleMailMessage(final Smtp smtp, final String username) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(username);
         message.setTo(smtp.getRecipientEmail());

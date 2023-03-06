@@ -116,7 +116,7 @@ import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.JS
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
-    private final Integrations integrations = GlobalTestConfigurationProvider.getIntegrations();
+    private final Integrations integrations = GlobalTestConfigurationProvider.getDefaultIntegration();
 
     public ScenarioValidator() {
 
@@ -372,7 +372,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateAlias(final List<? extends Integration> integrationList, final String alias) {
-        ConfigUtil.checkIntegrationForAlias(integrationList, alias);
+        ConfigUtil.findIntegrationForAlias(integrationList, alias);
     }
 
     //CHECKSTYLE:OFF

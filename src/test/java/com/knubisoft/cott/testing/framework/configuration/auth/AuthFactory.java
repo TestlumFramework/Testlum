@@ -12,9 +12,10 @@ import org.apache.commons.lang3.NotImplementedException;
 
 @UtilityClass
 public class AuthFactory {
+
     public AuthStrategy create(final InterpreterDependencies dependencies) {
         final Auth auth = GlobalTestConfigurationProvider.provide().getAuth();
-        // TODO i.doroshenko add OAUTH_2 to switch-case
+
         switch (auth.getAuthStrategy()) {
             case BASIC:
                 return new BasicAuth(dependencies);
@@ -31,7 +32,7 @@ public class AuthFactory {
         try {
             return (AuthStrategy) Class.forName(className).newInstance();
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-           throw new NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 }

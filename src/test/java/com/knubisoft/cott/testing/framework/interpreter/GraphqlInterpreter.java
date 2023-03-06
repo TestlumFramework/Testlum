@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @InterpreterForClass(Graphql.class)
 public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
+
     public GraphqlInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
     }
@@ -87,7 +88,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     }
 
     private String getFullUrl(final Graphql graphql) {
-        List<GraphqlApi> apiList = GlobalTestConfigurationProvider.getIntegrations().get("env1")
+        List<GraphqlApi> apiList = GlobalTestConfigurationProvider.getIntegrations().get(dependencies.getEnv())
                 .getGraphqlIntegration().getApi();
         GraphqlApi graphqlApi = ConfigUtil.findApiForAlias(apiList, graphql.getAlias());
         return graphqlApi.getUrl() + graphql.getEndpoint();

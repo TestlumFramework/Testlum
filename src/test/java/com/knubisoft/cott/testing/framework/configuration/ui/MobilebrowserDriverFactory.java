@@ -2,7 +2,7 @@ package com.knubisoft.cott.testing.framework.configuration.ui;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.util.MobileDriverUtil;
+import com.knubisoft.cott.testing.framework.util.UiDriverUtil;
 import com.knubisoft.cott.testing.model.global_config.AppiumCapabilities;
 import com.knubisoft.cott.testing.model.global_config.ConnectionType;
 import com.knubisoft.cott.testing.model.global_config.Mobilebrowser;
@@ -24,7 +24,7 @@ public class MobilebrowserDriverFactory {
 
     public WebDriver createDriver(final MobilebrowserDevice mobileDevice) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        MobileDriverUtil.setDefaultCapabilities(mobileDevice, desiredCapabilities);
+        UiDriverUtil.setDefaultCapabilities(mobileDevice, desiredCapabilities);
         setCommonCapabilities(mobileDevice, desiredCapabilities);
         setPlatformCapabilities(mobileDevice, desiredCapabilities);
         return getMobilebrowserWebDriver(desiredCapabilities);
@@ -34,7 +34,7 @@ public class MobilebrowserDriverFactory {
     private WebDriver getMobilebrowserWebDriver(final DesiredCapabilities desiredCapabilities) {
         Mobilebrowser mobilebrowserSettings = GlobalTestConfigurationProvider.getMobilebrowserSettings();
         ConnectionType connectionType = mobilebrowserSettings.getConnection();
-        String serverUrl = MobileDriverUtil.getServerUrl(connectionType);
+        String serverUrl = UiDriverUtil.getServerUrl(connectionType);
         WebDriver driver;
         if (Objects.nonNull(connectionType.getAppiumServer())) {
             driver = new AppiumDriver(new URL(serverUrl), desiredCapabilities);
@@ -49,10 +49,10 @@ public class MobilebrowserDriverFactory {
                                        final DesiredCapabilities desiredCapabilities) {
         if (Objects.nonNull(mobileDevice.getAppiumCapabilities())) {
             AppiumCapabilities capabilities = mobileDevice.getAppiumCapabilities();
-            MobileDriverUtil.setCommonCapabilities(desiredCapabilities, mobileDevice, capabilities);
+            UiDriverUtil.setCommonCapabilities(desiredCapabilities, mobileDevice, capabilities);
             desiredCapabilities.setCapability(MobileCapabilityType.UDID, capabilities.getUdid());
         } else if (Objects.nonNull(mobileDevice.getBrowserStackCapabilities())) {
-            MobileDriverUtil.setCommonCapabilities(
+            UiDriverUtil.setCommonCapabilities(
                     desiredCapabilities, mobileDevice, mobileDevice.getBrowserStackCapabilities());
             desiredCapabilities.setCapability("browserstack.local", Boolean.TRUE);
         }

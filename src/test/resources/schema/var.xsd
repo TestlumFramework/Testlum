@@ -9,20 +9,29 @@
 
     <x:complexType name="var">
         <x:complexContent>
-            <x:extension base="tns:abstractCommand">
-                <x:choice>
-                    <x:element name="fromFile" type="tns:fromFile"/>
-                    <x:element name="fromPath" type="tns:fromPath"/>
-                    <x:element name="fromExpression" type="tns:fromExpression"/>
-                    <x:element name="fromConstant" type="tns:fromConstant"/>
-                    <x:element name="fromCookie" type="tns:fromCookie"/>
-                    <x:element name="fromDom" type="tns:fromDom"/>
-                    <x:element name="fromSQL" type="tns:fromSQL"/>
-                </x:choice>
+            <x:extension base="tns:abstractUiCommand">
                 <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
+
+    <x:complexType name="generalVar">
+        <x:complexContent>
+            <x:extension base="tns:var">
+                <x:group ref="tns:generalVarType"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:group name="generalVarType">
+        <x:choice>
+            <x:element name="file" type="tns:fromFile"/>
+            <x:element name="path" type="tns:fromPath"/>
+            <x:element name="expression" type="tns:fromExpression"/>
+            <x:element name="constant" type="tns:fromConstant"/>
+            <x:element name="SQL" type="tns:fromSQL"/>
+        </x:choice>
+    </x:group>
 
     <x:complexType name="fromFile">
         <x:attribute name="fileName" type="tns:nonEmptyString" use="required"/>

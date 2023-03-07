@@ -47,6 +47,7 @@ import com.knubisoft.cott.testing.model.scenario.Dynamo;
 import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
 import com.knubisoft.cott.testing.model.scenario.FromFile;
 import com.knubisoft.cott.testing.model.scenario.FromSQL;
+import com.knubisoft.cott.testing.model.scenario.GeneralVar;
 import com.knubisoft.cott.testing.model.scenario.Http;
 import com.knubisoft.cott.testing.model.scenario.HttpInfo;
 import com.knubisoft.cott.testing.model.scenario.Include;
@@ -387,11 +388,11 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     //CHECKSTYLE:OFF
     private void validateVarCommand(final File xmlFile, final Var var) {
-        FromFile fromFile = var.getFromFile();
+        FromFile fromFile = ((GeneralVar) var).getFile();
         if (Objects.nonNull(fromFile)) {
             validateFileIfExist(xmlFile, fromFile.getFileName());
         }
-        FromSQL fromSQL = var.getFromSQL();
+        FromSQL fromSQL = ((GeneralVar) var).getSQL();
         if (Objects.nonNull(fromSQL)) {
             List<? extends Integration> integrationList;
             switch (fromSQL.getDbType()) {

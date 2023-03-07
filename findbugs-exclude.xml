@@ -9,7 +9,7 @@
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.interpreter.VariableInterpreter"/>
+        <Class name="com.knubisoft.cott.testing.framework.util.VarImplementation"/>
         <Method name="getExpressionResult"/>
         <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
     </Match>

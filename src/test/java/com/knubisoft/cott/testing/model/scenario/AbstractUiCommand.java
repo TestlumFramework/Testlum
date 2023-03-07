@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlType;
     DragAndDropNative.class,
     CommandWithLocator.class,
     Refresh.class,
+    Var.class,
     WebView.class,
     NavigateNative.class,
     CommandWithOptionalLocator.class

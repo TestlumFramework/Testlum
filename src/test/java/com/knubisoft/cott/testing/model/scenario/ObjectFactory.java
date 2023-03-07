@@ -254,11 +254,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Var }
+     * Create an instance of {@link GeneralVar }
      * 
      */
-    public Var createVar() {
-        return new Var();
+    public GeneralVar createGeneralVar() {
+        return new GeneralVar();
     }
 
     /**
@@ -598,6 +598,78 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Var }
+     * 
+     */
+    public Var createVar() {
+        return new Var();
+    }
+
+    /**
+     * Create an instance of {@link FromFile }
+     * 
+     */
+    public FromFile createFromFile() {
+        return new FromFile();
+    }
+
+    /**
+     * Create an instance of {@link FromPath }
+     * 
+     */
+    public FromPath createFromPath() {
+        return new FromPath();
+    }
+
+    /**
+     * Create an instance of {@link FromExpression }
+     * 
+     */
+    public FromExpression createFromExpression() {
+        return new FromExpression();
+    }
+
+    /**
+     * Create an instance of {@link FromConstant }
+     * 
+     */
+    public FromConstant createFromConstant() {
+        return new FromConstant();
+    }
+
+    /**
+     * Create an instance of {@link FromCookie }
+     * 
+     */
+    public FromCookie createFromCookie() {
+        return new FromCookie();
+    }
+
+    /**
+     * Create an instance of {@link FromDom }
+     * 
+     */
+    public FromDom createFromDom() {
+        return new FromDom();
+    }
+
+    /**
+     * Create an instance of {@link FromSQL }
+     * 
+     */
+    public FromSQL createFromSQL() {
+        return new FromSQL();
+    }
+
+    /**
+     * Create an instance of {@link WebVar }
+     * 
+     */
+    public WebVar createWebVar() {
+        return new WebVar();
+    }
+
+    /**
      * Create an instance of {@link WebView }
      * 
      */
@@ -827,62 +899,6 @@ public class ObjectFactory {
      */
     public SendgridDelete createSendgridDelete() {
         return new SendgridDelete();
-    }
-
-    /**
-     * Create an instance of {@link FromFile }
-     * 
-     */
-    public FromFile createFromFile() {
-        return new FromFile();
-    }
-
-    /**
-     * Create an instance of {@link FromPath }
-     * 
-     */
-    public FromPath createFromPath() {
-        return new FromPath();
-    }
-
-    /**
-     * Create an instance of {@link FromExpression }
-     * 
-     */
-    public FromExpression createFromExpression() {
-        return new FromExpression();
-    }
-
-    /**
-     * Create an instance of {@link FromConstant }
-     * 
-     */
-    public FromConstant createFromConstant() {
-        return new FromConstant();
-    }
-
-    /**
-     * Create an instance of {@link FromCookie }
-     * 
-     */
-    public FromCookie createFromCookie() {
-        return new FromCookie();
-    }
-
-    /**
-     * Create an instance of {@link FromDom }
-     * 
-     */
-    public FromDom createFromDom() {
-        return new FromDom();
-    }
-
-    /**
-     * Create an instance of {@link FromSQL }
-     * 
-     */
-    public FromSQL createFromSQL() {
-        return new FromSQL();
     }
 
     /**

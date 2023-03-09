@@ -27,7 +27,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="mobilebrowser" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowser" minOccurs="0"/&gt;
  *         &lt;element name="native" type="{http://www.knubisoft.com/cott/testing/model/global-config}native" minOccurs="0"/&gt;
  *         &lt;element name="browserStackLogin" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserStackLogin" minOccurs="0"/&gt;
- *         &lt;element name="auth" type="{http://www.knubisoft.com/cott/testing/model/global-config}auth"/&gt;
  *         &lt;element name="integrations" type="{http://www.knubisoft.com/cott/testing/model/global-config}integrations" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
@@ -48,7 +47,6 @@ import javax.xml.bind.annotation.XmlType;
     "mobilebrowser",
     "_native",
     "browserStackLogin",
-    "auth",
     "integrations"
 })
 @XmlRootElement(name = "globalTestConfiguration")
@@ -67,8 +65,6 @@ public class GlobalTestConfiguration {
     @XmlElement(name = "native")
     protected Native _native;
     protected BrowserStackLogin browserStackLogin;
-    @XmlElement(required = true)
-    protected Auth auth;
     protected Integrations integrations;
 
     /**
@@ -277,30 +273,6 @@ public class GlobalTestConfiguration {
      */
     public void setBrowserStackLogin(BrowserStackLogin value) {
         this.browserStackLogin = value;
-    }
-
-    /**
-     * Gets the value of the auth property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Auth }
-     *     
-     */
-    public Auth getAuth() {
-        return auth;
-    }
-
-    /**
-     * Sets the value of the auth property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Auth }
-     *     
-     */
-    public void setAuth(Auth value) {
-        this.auth = value;
     }
 
     /**

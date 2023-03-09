@@ -24,7 +24,7 @@ public class BrowserUtil {
         Web web = GlobalTestConfigurationProvider.getDefaultUiConfigs().getWeb();
         return Objects.nonNull(web)
                 ? web.getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari().stream()
-                .filter(AbstractBrowser::isEnable).collect(Collectors.toList())
+                .filter(AbstractBrowser::isEnabled).collect(Collectors.toList())
                 : Collections.emptyList();
     }
 
@@ -33,7 +33,7 @@ public class BrowserUtil {
                 ? Optional.empty()
                 : GlobalTestConfigurationProvider.getWebSettings(env)
                 .getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari().stream()
-                .filter(browser -> browser.isEnable() && browser.getAlias().equalsIgnoreCase(browserAlias))
+                .filter(browser -> browser.isEnabled() && browser.getAlias().equalsIgnoreCase(browserAlias))
                 .findFirst();
     }
 

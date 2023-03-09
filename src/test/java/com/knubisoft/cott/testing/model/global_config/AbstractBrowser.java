@@ -22,9 +22,10 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="browserType" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserType"/&gt;
  *         &lt;element name="capabilities" type="{http://www.knubisoft.com/cott/testing/model/global-config}capabilities" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="enable" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *       &lt;attribute name="maximizedBrowserWindow" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *       &lt;attribute name="browserWindowSize" type="{http://www.knubisoft.com/cott/testing/model/global-config}windowSize" /&gt;
+ *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}aliasPattern" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -49,12 +50,14 @@ public abstract class AbstractBrowser {
     @XmlElement(required = true)
     protected BrowserType browserType;
     protected Capabilities capabilities;
-    @XmlAttribute(name = "enable", required = true)
-    protected boolean enable;
+    @XmlAttribute(name = "enabled", required = true)
+    protected boolean enabled;
     @XmlAttribute(name = "maximizedBrowserWindow", required = true)
     protected boolean maximizedBrowserWindow;
     @XmlAttribute(name = "browserWindowSize")
     protected String browserWindowSize;
+    @XmlAttribute(name = "alias", required = true)
+    protected String alias;
 
     /**
      * Gets the value of the browserType property.
@@ -105,19 +108,19 @@ public abstract class AbstractBrowser {
     }
 
     /**
-     * Gets the value of the enable property.
+     * Gets the value of the enabled property.
      * 
      */
-    public boolean isEnable() {
-        return enable;
+    public boolean isEnabled() {
+        return enabled;
     }
 
     /**
-     * Sets the value of the enable property.
+     * Sets the value of the enabled property.
      * 
      */
-    public void setEnable(boolean value) {
-        this.enable = value;
+    public void setEnabled(boolean value) {
+        this.enabled = value;
     }
 
     /**
@@ -158,6 +161,30 @@ public abstract class AbstractBrowser {
      */
     public void setBrowserWindowSize(String value) {
         this.browserWindowSize = value;
+    }
+
+    /**
+     * Gets the value of the alias property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getAlias() {
+        return alias;
+    }
+
+    /**
+     * Sets the value of the alias property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setAlias(String value) {
+        this.alias = value;
     }
 
 }

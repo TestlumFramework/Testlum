@@ -29,7 +29,6 @@ public class MySqlOperation implements StorageOperation {
     public MySqlOperation(@Autowired(required = false) @Qualifier("mySqlDataSource")
                           final Map<AliasEnv, DataSource> mySqlDataSource) {
         mySqlExecutor = new HashMap<>();
-//        mySqlExecutor = new ConcurrentHashMap<>();
         mySqlDataSource.forEach((key, value) -> mySqlExecutor.put(key, new MySqlExecutor(value)));
     }
 

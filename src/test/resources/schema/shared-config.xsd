@@ -117,6 +117,7 @@
         </x:choice>
         <x:attribute name="platformName" type="tns:platform" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
     </x:complexType>
 
     <x:simpleType name="platform">

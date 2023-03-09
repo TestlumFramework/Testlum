@@ -62,7 +62,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
             final File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
             result.put("File name", fileName);
             LogUtil.logS3ActionInfo(UPLOAD_ACTION, bucket, key, fileName);
-            AliasEnv aliasEnv = new AliasEnv(bucket, dependencies.getEnv());
+            AliasEnv aliasEnv = new AliasEnv(bucket, dependencies.getEnvironment());
             this.amazonS3.get(aliasEnv).createBucket(bucket);
             this.amazonS3.get(aliasEnv).putObject(bucket, key, file);
         } else if (s3.getDownload() != null) {
@@ -93,7 +93,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
 
     private Optional<String> downloadFile(final String bucket, final String key) throws IOException {
         try {
-            S3Object s3Object = amazonS3.get(new AliasEnv(bucket, dependencies.getEnv())).getObject(bucket, key);
+            S3Object s3Object = amazonS3.get(new AliasEnv(bucket, dependencies.getEnvironment())).getObject(bucket, key);
             S3ObjectInputStream s3ObjectInputStream = s3Object.getObjectContent();
             String actual = IOUtils.toString(s3ObjectInputStream, StandardCharsets.UTF_8);
             return Optional.of(actual);

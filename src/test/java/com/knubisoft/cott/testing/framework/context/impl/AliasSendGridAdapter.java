@@ -25,7 +25,7 @@ public class AliasSendGridAdapter implements AliasAdapter {
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
         for (Sendgrid sendgrid
-                : GlobalTestConfigurationProvider.getDefaultIntegration().getSendgridIntegration().getSendgrid()) {
+                : GlobalTestConfigurationProvider.getDefaultIntegrations().getSendgridIntegration().getSendgrid()) {
             if (sendgrid.isEnabled()) {
                 aliasMap.put(SENDGRID + UNDERSCORE + sendgrid.getAlias(), getMetadataSendGrid(sendgrid));
             }

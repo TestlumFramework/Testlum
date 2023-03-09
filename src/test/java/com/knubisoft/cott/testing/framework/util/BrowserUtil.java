@@ -3,13 +3,16 @@ package com.knubisoft.cott.testing.framework.util;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
+import com.knubisoft.cott.testing.model.global_config.Web;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_INFO;
@@ -17,10 +20,21 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_I
 @UtilityClass
 public class BrowserUtil {
 
-    public List<AbstractBrowser> filterEnabledBrowsers() {
-        return GlobalTestConfigurationProvider.getBrowsers().stream()
-                .filter(AbstractBrowser::isEnable)
-                .collect(Collectors.toList());
+    public List<AbstractBrowser> filterDefaultEnabledBrowsers() {
+        Web web = GlobalTestConfigurationProvider.getDefaultUiConfigs().getWeb();
+        return Objects.nonNull(web)
+                ? web.getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari().stream()
+                .filter(AbstractBrowser::isEnable).collect(Collectors.toList())
+                : Collections.emptyList();
+    }
+
+    public Optional<AbstractBrowser> getBrowserBy(final String env, final String browserAlias) {
+        return StringUtils.isBlank(browserAlias)
+                ? Optional.empty()
+                : GlobalTestConfigurationProvider.getWebSettings(env)
+                .getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari().stream()
+                .filter(browser -> browser.isEnable() && browser.getAlias().equalsIgnoreCase(browserAlias))
+                .findFirst();
     }
 
     public void manageWindowSize(final AbstractBrowser browser, final WebDriver webDriver) {

@@ -24,7 +24,7 @@ public class AliasS3Adapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (S3 s3 : GlobalTestConfigurationProvider.getDefaultIntegration().getS3Integration().getS3()) {
+        for (S3 s3 : GlobalTestConfigurationProvider.getDefaultIntegrations().getS3Integration().getS3()) {
             if (s3.isEnabled()) {
                 aliasMap.put(MigrationConstant.S3 + UNDERSCORE + s3.getAlias(), getMetadataS3(s3));
             }

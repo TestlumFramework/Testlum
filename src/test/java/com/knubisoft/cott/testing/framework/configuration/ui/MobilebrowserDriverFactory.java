@@ -1,13 +1,14 @@
 package com.knubisoft.cott.testing.framework.configuration.ui;
 
+import com.knubisoft.cott.runner.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.util.UiDriverUtil;
+import com.knubisoft.cott.testing.framework.util.SeleniumDriverUtil;
 import com.knubisoft.cott.testing.model.global_config.AppiumCapabilities;
-import com.knubisoft.cott.testing.model.global_config.ConnectionType;
 import com.knubisoft.cott.testing.model.global_config.Mobilebrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.Platform;
+import com.knubisoft.cott.testing.model.global_config.Uis;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
 import lombok.SneakyThrows;
@@ -24,7 +25,7 @@ public class MobilebrowserDriverFactory {
 
     public WebDriver createDriver(final MobilebrowserDevice mobileDevice) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        UiDriverUtil.setDefaultCapabilities(mobileDevice, desiredCapabilities);
+        SeleniumDriverUtil.setDefaultCapabilities(mobileDevice, desiredCapabilities);
         setCommonCapabilities(mobileDevice, desiredCapabilities);
         setPlatformCapabilities(mobileDevice, desiredCapabilities);
         return getMobilebrowserWebDriver(desiredCapabilities);
@@ -32,16 +33,16 @@ public class MobilebrowserDriverFactory {
 
     @SneakyThrows
     private WebDriver getMobilebrowserWebDriver(final DesiredCapabilities desiredCapabilities) {
-        Mobilebrowser mobilebrowserSettings = GlobalTestConfigurationProvider.getMobilebrowserSettings();
-        ConnectionType connectionType = mobilebrowserSettings.getConnection();
-        String serverUrl = UiDriverUtil.getServerUrl(connectionType);
+        Uis uis = GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.getThreadEnv());
+        String serverUrl = SeleniumDriverUtil.getMobilebrowserConnectionUrl(uis);
         WebDriver driver;
-        if (Objects.nonNull(connectionType.getAppiumServer())) {
+        Mobilebrowser settings = uis.getMobilebrowser();
+        if (Objects.nonNull(settings.getConnection().getAppiumServer())) {
             driver = new AppiumDriver(new URL(serverUrl), desiredCapabilities);
         } else {
             driver = new RemoteWebDriver(new URL(serverUrl), desiredCapabilities);
         }
-        driver.get(mobilebrowserSettings.getBaseUrl());
+        driver.get(settings.getBaseUrl());
         return driver;
     }
 
@@ -49,10 +50,10 @@ public class MobilebrowserDriverFactory {
                                        final DesiredCapabilities desiredCapabilities) {
         if (Objects.nonNull(mobileDevice.getAppiumCapabilities())) {
             AppiumCapabilities capabilities = mobileDevice.getAppiumCapabilities();
-            UiDriverUtil.setCommonCapabilities(desiredCapabilities, mobileDevice, capabilities);
+            SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, mobileDevice, capabilities);
             desiredCapabilities.setCapability(MobileCapabilityType.UDID, capabilities.getUdid());
         } else if (Objects.nonNull(mobileDevice.getBrowserStackCapabilities())) {
-            UiDriverUtil.setCommonCapabilities(
+            SeleniumDriverUtil.setCommonCapabilities(
                     desiredCapabilities, mobileDevice, mobileDevice.getBrowserStackCapabilities());
             desiredCapabilities.setCapability("browserstack.local", Boolean.TRUE);
         }

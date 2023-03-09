@@ -18,4 +18,5 @@ public class ExecutorDependencies {
     private final WebDriver driver;
     private final boolean takeScreenshots;
     private final UiType uiType;
+    private final String environment;
 }

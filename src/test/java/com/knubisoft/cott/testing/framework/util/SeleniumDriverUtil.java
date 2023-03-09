@@ -1,14 +1,12 @@
 package com.knubisoft.cott.testing.framework.util;
 
-import com.knubisoft.cott.runner.EnvManager;
-import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.model.global_config.AbstractCapabilities;
 import com.knubisoft.cott.testing.model.global_config.AbstractDevice;
-import com.knubisoft.cott.testing.model.global_config.AppiumServer;
 import com.knubisoft.cott.testing.model.global_config.BrowserStackLogin;
 import com.knubisoft.cott.testing.model.global_config.Capabilities;
 import com.knubisoft.cott.testing.model.global_config.ConnectionType;
+import com.knubisoft.cott.testing.model.global_config.Uis;
 import io.appium.java_client.remote.MobileCapabilityType;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -18,25 +16,30 @@ import java.util.Objects;
 import static java.lang.String.format;
 
 @UtilityClass
-public class UiDriverUtil {
+public class SeleniumDriverUtil {
 
     private static final String BROWSER_STACK_URL_TEMPLATE = "https://%s:%s@hub-cloud.browserstack.com/wd/hub";
 
-    public String getBrowserStackUrl() {
-        BrowserStackLogin browserStack = GlobalTestConfigurationProvider.provideUis()
-                .get(EnvManager.getThreadEnv())
-                .getBrowserStackLogin();
+    public String getBrowserStackUrl(final Uis uis) {
+        BrowserStackLogin browserStack = uis.getBrowserStackLogin();
         if (Objects.nonNull(browserStack)) {
             return format(BROWSER_STACK_URL_TEMPLATE, browserStack.getUsername(), browserStack.getAccessKey());
         }
         throw new DefaultFrameworkException("Cannot find BrowserStackLogin configuration");
     }
 
-    public String getServerUrl(final ConnectionType connectionType) {
-        AppiumServer appiumServer = connectionType.getAppiumServer();
-        return Objects.nonNull(appiumServer)
-                ? appiumServer.getServerUrl()
-                : getBrowserStackUrl();
+    public String getMobilebrowserConnectionUrl(final Uis uis) {
+        return getServerUrl(uis.getMobilebrowser().getConnection(), uis);
+    }
+
+    public String getNativeConnectionUrl(final Uis uis) {
+        return getServerUrl(uis.getNative().getConnection(), uis);
+    }
+
+    private String getServerUrl(final ConnectionType connectionType, final Uis uis) {
+        return Objects.nonNull(connectionType.getAppiumServer())
+                ? connectionType.getAppiumServer().getServerUrl()
+                : getBrowserStackUrl(uis);
     }
 
     public void setDefaultCapabilities(final AbstractDevice abstractDevice,

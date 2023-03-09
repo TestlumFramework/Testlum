@@ -60,8 +60,9 @@ public class NavigateExecutor extends AbstractUiExecutor<Navigate> {
             return path;
         }
         if (UiType.MOBILE_BROWSER == dependencies.getUiType()) {
-            return GlobalTestConfigurationProvider.getMobilebrowserSettings().getBaseUrl() + path;
+            return GlobalTestConfigurationProvider.getMobilebrowserSettings(dependencies.getEnvironment())
+                    .getBaseUrl() + path;
         }
-        return GlobalTestConfigurationProvider.getWebSettings().getBaseUrl() + path;
+        return GlobalTestConfigurationProvider.getWebSettings(dependencies.getEnvironment()).getBaseUrl() + path;
     }
 }

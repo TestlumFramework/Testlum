@@ -1,12 +1,10 @@
 package com.knubisoft.cott.testing.framework.db.kafka;
 
 import com.knubisoft.cott.runner.EnvManager;
-import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnKafkaEnabledCondition;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.Source;
 import com.knubisoft.cott.testing.model.AliasEnv;
-import com.knubisoft.cott.testing.model.global_config.Kafka;
 import lombok.SneakyThrows;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.DeleteTopicsResult;
@@ -18,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -43,18 +42,16 @@ public class KafkaOperation implements StorageOperation {
 
     @Override
     public void clearSystem() {
-        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().get(EnvManager.getThreadEnv())
-                .getKafkaIntegration().getKafka()) {
-            if (kafka.isEnabled()) {
-                clearKafka(kafka);
+        kafkaConsumer.forEach((aliasEnv, kafkaConsumer) -> {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.getThreadEnv())) {
+                clearKafka(kafkaConsumer, aliasEnv);
             }
-        }
+        });
     }
 
     @SneakyThrows
-    private void clearKafka(final Kafka kafka) {
-        AliasEnv aliasEnv = AliasEnv.build(kafka.getAlias());
-        Map<String, List<PartitionInfo>> topics = kafkaConsumer.get(aliasEnv).listTopics();
+    private void clearKafka(final KafkaConsumer<String, String> kafkaConsumer, final AliasEnv aliasEnv) {
+        Map<String, List<PartitionInfo>> topics = kafkaConsumer.listTopics();
         Set<String> topicsName = topics.keySet();
         DeleteTopicsResult deleteTopicsResult = adminClient.get(aliasEnv).deleteTopics(topicsName);
         while (!deleteTopicsResult.all().isDone()) {

@@ -38,7 +38,7 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
     protected void acceptImpl(final Ses ses, final CommandResult result) {
         LogUtil.logSesInfo(ses);
         ResultUtil.addSesMetaData(ses, result);
-        AliasEnv aliasEnv = new AliasEnv(ses.getAlias(), dependencies.getEnv());
+        AliasEnv aliasEnv = new AliasEnv(ses.getAlias(), dependencies.getEnvironment());
         verify(ses, aliasEnv);
         sendEmail(ses, aliasEnv);
     }

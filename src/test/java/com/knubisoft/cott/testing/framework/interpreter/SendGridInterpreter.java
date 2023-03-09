@@ -81,7 +81,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         result.put(CONTENT_TO_SEND, PrettifyStringJson.getJSONResult(body));
         LogUtil.logHttpInfo(alias, method.name(), sendgridInfo.getEndpoint());
         LogUtil.logBody(request.getBody());
-        return sendGrid.get(new AliasEnv(alias, dependencies.getEnv())).api(request);
+        return sendGrid.get(new AliasEnv(alias, dependencies.getEnvironment())).api(request);
     }
 
     private void compare(final ApiResponse expected, final Response actual, final CommandResult result) {

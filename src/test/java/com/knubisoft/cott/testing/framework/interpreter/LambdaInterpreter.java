@@ -68,7 +68,7 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
 
     private InvokeResponse invokeLambdaFunction(final InvokeRequest request, final String alias) {
         try {
-            AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnv());
+            AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
             return awsLambdaClients.get(aliasEnv).invoke(request);
         } catch (LambdaException e) {
             LogUtil.logError(e);

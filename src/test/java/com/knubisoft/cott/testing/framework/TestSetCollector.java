@@ -29,9 +29,9 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class TestSetCollector {
 
-    private final List<AbstractBrowser> browsers = BrowserUtil.filterEnabledBrowsers();
-    private final List<MobilebrowserDevice> mobilebrowserDevices = MobileUtil.filterEnabledMobilebrowserDevices();
-    private final List<NativeDevice> nativeDevices = MobileUtil.filterEnabledNativeDevices();
+    private final List<AbstractBrowser> browsers = BrowserUtil.filterDefaultEnabledBrowsers();
+    private final List<MobilebrowserDevice> mobilebrowsers = MobileUtil.filterDefaultEnabledMobilebrowserDevices();
+    private final List<NativeDevice> nativeDevices = MobileUtil.filterDefaultEnabledNativeDevices();
 
     public Stream<Arguments> collect() {
         ScenarioCollector.Result result = new ScenarioCollector().collect();
@@ -49,12 +49,12 @@ public class TestSetCollector {
             if (s.isMobilebrowser()) {
                 if (s.isNatives()) {
                     return nativeDevices.stream().flatMap(nativeDevice ->
-                            mobilebrowserDevices.stream().flatMap(mobilebrowser ->
+                            mobilebrowsers.stream().flatMap(mobilebrowser ->
                                     browsers.stream().flatMap(browser ->
                                             getArgumentsWithUiSteps(entry, browser, mobilebrowser, nativeDevice))));
                 }
                 return browsers.stream().flatMap(browser ->
-                        mobilebrowserDevices.stream().flatMap(mobilebrowser ->
+                        mobilebrowsers.stream().flatMap(mobilebrowser ->
                                 getArgumentsWithUiSteps(entry, browser, mobilebrowser, null)));
             }
             if (s.isNatives()) {
@@ -68,10 +68,10 @@ public class TestSetCollector {
         if (s.isMobilebrowser()) {
             if (s.isNatives()) {
                 return nativeDevices.stream().flatMap(nativeDevice ->
-                        mobilebrowserDevices.stream().flatMap(mobilebrowser ->
+                        mobilebrowsers.stream().flatMap(mobilebrowser ->
                                 getArgumentsWithUiSteps(entry, null, mobilebrowser, nativeDevice)));
             }
-            return mobilebrowserDevices.stream().flatMap(mobilebrowser ->
+            return mobilebrowsers.stream().flatMap(mobilebrowser ->
                     getArgumentsWithUiSteps(entry, null, mobilebrowser, null));
         }
         if (s.isNatives()) {
@@ -111,7 +111,7 @@ public class TestSetCollector {
     }
 
     private ScenarioArguments buildScenarioArguments(final MappingResult entry,
-                                                     final AbstractBrowser browser,
+                                                     final AbstractBrowser webBrowser,
                                                      final MobilebrowserDevice mobilebrowserDevice,
                                                      final NativeDevice nativeDevice,
                                                      final Map<String, String> variation) {
@@ -120,9 +120,9 @@ public class TestSetCollector {
                 .file(entry.file)
                 .scenario(entry.scenario)
                 .exception(entry.exception)
-                .browser(browser)
-                .mobilebrowserDevice(mobilebrowserDevice)
-                .nativeDevice(nativeDevice)
+                .browser(webBrowser.getAlias())
+                .mobilebrowserDevice(mobilebrowserDevice.getAlias())
+                .nativeDevice(nativeDevice.getAlias())
                 .variation(variation)
                 .containsUiSteps(true)
                 .build();

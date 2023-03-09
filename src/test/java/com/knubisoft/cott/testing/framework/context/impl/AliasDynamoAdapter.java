@@ -25,7 +25,7 @@ public class AliasDynamoAdapter implements AliasAdapter {
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
         for (Dynamo dynamo
-                : GlobalTestConfigurationProvider.getDefaultIntegration().getDynamoIntegration().getDynamo()) {
+                : GlobalTestConfigurationProvider.getDefaultIntegrations().getDynamoIntegration().getDynamo()) {
             if (dynamo.isEnabled()) {
                 aliasMap.put(DYNAMO + UNDERSCORE + dynamo.getAlias(), getMetadataDynamo(dynamo));
             }

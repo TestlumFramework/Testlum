@@ -28,7 +28,7 @@ public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
 
     @Override
     protected void acceptImpl(final Smtp smtp, final CommandResult result) {
-        AliasEnv aliasEnv = new AliasEnv(smtp.getAlias(), dependencies.getEnv());
+        AliasEnv aliasEnv = new AliasEnv(smtp.getAlias(), dependencies.getEnvironment());
         JavaMailSenderImpl javaMailSender = javaMailSenderMap.get(aliasEnv);
         LogUtil.logSmtpInfo(smtp, javaMailSender);
         ResultUtil.addSmtpMetaData(smtp, javaMailSender, result);

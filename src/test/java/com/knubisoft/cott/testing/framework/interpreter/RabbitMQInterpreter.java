@@ -86,7 +86,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                                       final Object action,
                                       final String alias) {
         log.info(ALIAS_LOG, alias);
-        AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnv());
+        AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
         if (action instanceof SendRmqMessage) {
             SendRmqMessage sendAction = (SendRmqMessage) action;
             ResultUtil.addRabbitMQInfoForSendAction(sendAction, alias, subCommandResult);

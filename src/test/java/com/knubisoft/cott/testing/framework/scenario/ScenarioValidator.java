@@ -5,10 +5,10 @@ import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
-import com.knubisoft.cott.testing.framework.util.ConfigUtil;
 import com.knubisoft.cott.testing.framework.util.DatasetValidator;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.HttpUtil;
+import com.knubisoft.cott.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.framework.util.SendGridUtil;
 import com.knubisoft.cott.testing.framework.validator.XMLValidator;
@@ -35,6 +35,7 @@ import com.knubisoft.cott.testing.model.global_config.SesIntegration;
 import com.knubisoft.cott.testing.model.global_config.SmtpIntegration;
 import com.knubisoft.cott.testing.model.global_config.SqsIntegration;
 import com.knubisoft.cott.testing.model.global_config.TwilioIntegration;
+import com.knubisoft.cott.testing.model.global_config.Uis;
 import com.knubisoft.cott.testing.model.global_config.Websockets;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
@@ -87,6 +88,7 @@ import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -116,7 +118,7 @@ import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.JS
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
-    private final Integrations integrations = GlobalTestConfigurationProvider.getDefaultIntegration();
+    private final Integrations integrations = GlobalTestConfigurationProvider.getDefaultIntegrations();
 
     public ScenarioValidator() {
 
@@ -327,11 +329,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateNativeAndMobileAppiumConfig() {
-        boolean isSameUrl = GlobalTestConfigurationProvider.getMobilebrowserSettings()
-                .getConnection().getAppiumServer().getServerUrl()
-                .equals(GlobalTestConfigurationProvider.getNativeSettings().getConnection()
-                        .getAppiumServer().getServerUrl());
-        if (isSameUrl) {
+        if (isSameUrl()) {
             throw new DefaultFrameworkException(SAME_APPIUM_URL);
         }
         if (isSameNativeAndMobileDevices()) {
@@ -339,14 +337,29 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
+    private boolean isSameUrl() {
+        return GlobalTestConfigurationProvider.getUiConfigs().values().stream()
+                .filter(uis -> ObjectUtils.allNotNull(uis.getMobilebrowser(), uis.getNative()))
+                .filter(uis -> ObjectUtils.allNotNull(uis.getNative().getConnection().getAppiumServer(),
+                        uis.getMobilebrowser().getConnection().getAppiumServer()))
+                .anyMatch(uis -> Objects.equals(uis.getNative().getConnection().getAppiumServer().getServerUrl(),
+                        uis.getMobilebrowser().getConnection().getAppiumServer().getServerUrl()));
+    }
+
     private boolean isSameNativeAndMobileDevices() {
-        List<String> nativeUdids = MobileUtil.filterEnabledNativeDevices().stream()
+        return GlobalTestConfigurationProvider.getUiConfigs().values().stream()
+                .filter(uis -> ObjectUtils.allNotNull(uis.getMobilebrowser(), uis.getNative()))
+                .anyMatch(this::isSameNativeAndMobileDevices);
+    }
+
+    private boolean isSameNativeAndMobileDevices(final Uis uis) {
+        List<String> nativeUdids = uis.getNative().getDevices().getDevice().stream()
                 .map(NativeDevice::getAppiumCapabilities)
                 .filter(Objects::nonNull)
                 .map(AppiumCapabilities::getUdid)
                 .collect(Collectors.toList());
 
-        return MobileUtil.filterEnabledMobilebrowserDevices().stream()
+        return uis.getMobilebrowser().getDevices().getDevice().stream()
                 .map(MobilebrowserDevice::getAppiumCapabilities)
                 .filter(Objects::nonNull)
                 .map(AppiumCapabilities::getUdid)
@@ -372,7 +385,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateAlias(final List<? extends Integration> integrationList, final String alias) {
-        ConfigUtil.findIntegrationForAlias(integrationList, alias);
+        IntegrationsUtil.findForAlias(integrationList, alias);
     }
 
     //CHECKSTYLE:OFF
@@ -475,7 +488,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateHttpCommand(final File xmlFile, final Http http) {
-        ConfigUtil.findApiForAlias(integrations.getApis().getApi(), http.getAlias());
+        IntegrationsUtil.findApiForAlias(integrations.getApis().getApi(), http.getAlias());
 
         HttpInfo httpInfo = HttpUtil.getHttpMethodMetadata(http).getHttpInfo();
         Response response = httpInfo.getResponse();
@@ -526,16 +539,16 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateWebCommands(final Web command) {
-        if (BrowserUtil.filterEnabledBrowsers().isEmpty()
-                || !GlobalTestConfigurationProvider.getWebSettings().isEnabled()) {
+        if (BrowserUtil.filterDefaultEnabledBrowsers().isEmpty()
+                || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getWeb().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_BROWSERS);
         }
         validateSubCommands(command.getClickOrInputOrAssert());
     }
 
     private void validateMobilebrowserCommands(final Mobilebrowser command) {
-        if (MobileUtil.filterEnabledMobilebrowserDevices().isEmpty()
-                || !GlobalTestConfigurationProvider.getMobilebrowserSettings().isEnabled()) {
+        if (MobileUtil.filterDefaultEnabledMobilebrowserDevices().isEmpty()
+                || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getMobilebrowser().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_MOBILEBROWSER_DEVICE);
         }
         validateSubCommands(command.getClickOrInputOrAssert());
@@ -552,8 +565,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateNativeCommands(final Native command) {
-        if (MobileUtil.filterEnabledNativeDevices().isEmpty()
-                || !GlobalTestConfigurationProvider.getNativeSettings().isEnabled()) {
+        if (MobileUtil.filterDefaultEnabledNativeDevices().isEmpty()
+                || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getNative().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_NATIVE_DEVICE);
         }
         command.getClickOrInputOrAssert().forEach(o -> {

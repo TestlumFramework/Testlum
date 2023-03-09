@@ -5,7 +5,7 @@ import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfiguratio
 import com.knubisoft.cott.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.Source;
-import com.knubisoft.cott.testing.framework.util.ConfigUtil;
+import com.knubisoft.cott.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.cott.testing.model.AliasEnv;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Rabbitmq;
@@ -49,6 +49,6 @@ public class RabbitMQOperation implements StorageOperation {
 
     private Rabbitmq findByName(final AliasEnv aliasEnv) {
         List<Rabbitmq> rabbitmqs = integrations.get(aliasEnv.getEnvironment()).getRabbitmqIntegration().getRabbitmq();
-        return ConfigUtil.findIntegrationForAlias(rabbitmqs, aliasEnv.getAlias());
+        return IntegrationsUtil.findForAlias(rabbitmqs, aliasEnv.getAlias());
     }
 }

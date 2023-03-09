@@ -24,7 +24,7 @@ public class AliasMySqlAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Mysql mysql : GlobalTestConfigurationProvider.getDefaultIntegration().getMysqlIntegration().getMysql()) {
+        for (Mysql mysql : GlobalTestConfigurationProvider.getDefaultIntegrations().getMysqlIntegration().getMysql()) {
             if (mysql.isEnabled()) {
                 aliasMap.put(MYSQL + UNDERSCORE + mysql.getAlias(), getMetadataMySQL(mysql));
             }

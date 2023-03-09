@@ -24,7 +24,7 @@ public class AliasSESAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Ses ses : GlobalTestConfigurationProvider.getDefaultIntegration().getSesIntegration().getSes()) {
+        for (Ses ses : GlobalTestConfigurationProvider.getDefaultIntegrations().getSesIntegration().getSes()) {
             if (ses.isEnabled()) {
                 aliasMap.put(SES + UNDERSCORE + ses.getAlias(), getMetadataSES(ses));
             }

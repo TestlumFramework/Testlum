@@ -24,7 +24,7 @@ public class AliasKafkaAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Kafka kafka : GlobalTestConfigurationProvider.getDefaultIntegration().getKafkaIntegration().getKafka()) {
+        for (Kafka kafka : GlobalTestConfigurationProvider.getDefaultIntegrations().getKafkaIntegration().getKafka()) {
             if (kafka.isEnabled()) {
                 aliasMap.put(KAFKA + UNDERSCORE + kafka.getAlias(), getMetadataKafka(kafka));
             }

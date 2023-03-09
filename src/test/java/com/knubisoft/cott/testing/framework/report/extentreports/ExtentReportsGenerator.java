@@ -12,6 +12,7 @@ import com.knubisoft.cott.testing.framework.report.ReportGenerator;
 import com.knubisoft.cott.testing.framework.report.ScenarioResult;
 import com.knubisoft.cott.testing.framework.report.extentreports.model.ResultForComparison;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
+import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.AbstractCapabilities;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
@@ -80,20 +81,11 @@ public class ExtentReportsGenerator implements ReportGenerator {
                 .createTest(format(SCENARIO_NAME_TEMPLATE, scenarioResult.getId(), scenarioResult.getName()));
         extentTest.assignCategory(scenarioResult.getTags().getTag().toArray(new String[0]));
         addOverviewInfo(extentTest, scenarioResult.getOverview(), scenarioResult.getPath());
-        addBrowserInfo(extentTest, scenarioResult.getBrowser());
-        addNativeDeviceInfo(extentTest, scenarioResult.getNativeDevice());
-        addMobilebrowserDeviceInfo(extentTest, scenarioResult.getMobilebrowserDevice());
+        addBrowserInfo(extentTest, scenarioResult);
+        addMobilebrowserDeviceInfo(extentTest, scenarioResult);
+        addNativeDeviceInfo(extentTest, scenarioResult);
         setExecutionResult(extentTest, scenarioResult);
         addScenarioSteps(extentTest, scenarioResult.getCommands());
-    }
-
-    private void setExecutionResult(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
-        if (scenarioResult.isSuccess()) {
-            extentTest.pass(MarkupHelper.createLabel(SCENARIO_SUCCESS, ExtentColor.GREEN));
-        } else {
-            extentTest.fail(MarkupHelper.createLabel(SCENARIO_FAILED, ExtentColor.RED));
-        }
-        extentTest.info(format(SCENARIO_EXECUTION_TIME_TEMPLATE, scenarioResult.getExecutionTime()));
     }
 
     private void addOverviewInfo(final ExtentTest extentTest, final Overview overview, final String filePath) {
@@ -102,25 +94,6 @@ public class ExtentReportsGenerator implements ReportGenerator {
         extentTest.info(MarkupHelper.createLabel(overview.getDescription(), ExtentColor.ORANGE));
         extentTest.info(MarkupHelper.createTable(createTableWithOverviewInfo(overview, filePath, developerName)));
         addLinks(extentTest, overview.getLink());
-    }
-
-    private void addBrowserInfo(final ExtentTest extentTest, final AbstractBrowser browser) {
-        if (Objects.nonNull(browser)) {
-            extentTest.info(MarkupHelper.createTable(createTableWithBrowserInfo(browser)));
-        }
-    }
-
-    private void addNativeDeviceInfo(final ExtentTest extentTest, final NativeDevice nativeDevice) {
-        if (Objects.nonNull(nativeDevice)) {
-            extentTest.info(MarkupHelper.createTable(createTableWithNativeDeviceInfo(nativeDevice)));
-        }
-    }
-
-    private void addMobilebrowserDeviceInfo(final ExtentTest extentTest,
-                                            final MobilebrowserDevice mobilebrowserDevice) {
-        if (Objects.nonNull(mobilebrowserDevice)) {
-            extentTest.info(MarkupHelper.createTable(createTableWithMobilebrowserDeviceInfo(mobilebrowserDevice)));
-        }
     }
 
     private void addDeveloper(final ExtentTest extentTest, final String developerName) {
@@ -166,6 +139,20 @@ public class ExtentReportsGenerator implements ReportGenerator {
         return browserInfoTable;
     }
 
+    private String[][] createTableWithMobilebrowserDeviceInfo(final MobilebrowserDevice mobilebrowserDevice) {
+        AbstractCapabilities capabilities = Objects.nonNull(mobilebrowserDevice.getAppiumCapabilities())
+                ? mobilebrowserDevice.getAppiumCapabilities()
+                : mobilebrowserDevice.getBrowserStackCapabilities();
+        String[][] browserInfoTable = new String[THREE][TWO];
+        browserInfoTable[ZERO][ZERO] = format(BOLD_TEXT_TEMPLATE, MOBILEBROWSER_DEVICE);
+        browserInfoTable[ZERO][ONE] = capabilities.getDeviceName();
+        browserInfoTable[ONE][ZERO] = format(BOLD_TEXT_TEMPLATE, DEVICE_PLATFORM);
+        browserInfoTable[ONE][ONE] = mobilebrowserDevice.getPlatformName().value();
+        browserInfoTable[TWO][ZERO] = format(BOLD_TEXT_TEMPLATE, DEVICE_PLATFORM_VERSION);
+        browserInfoTable[TWO][ONE] = capabilities.getPlatformVersion();
+        return browserInfoTable;
+    }
+
     private String[][] createTableWithNativeDeviceInfo(final NativeDevice nativeDevice) {
         AbstractCapabilities capabilities = Objects.nonNull(nativeDevice.getAppiumCapabilities())
                 ? nativeDevice.getAppiumCapabilities()
@@ -180,18 +167,38 @@ public class ExtentReportsGenerator implements ReportGenerator {
         return browserInfoTable;
     }
 
-    private String[][] createTableWithMobilebrowserDeviceInfo(final MobilebrowserDevice mobilebrowserDevice) {
-        AbstractCapabilities capabilities = Objects.nonNull(mobilebrowserDevice.getAppiumCapabilities())
-                ? mobilebrowserDevice.getAppiumCapabilities()
-                : mobilebrowserDevice.getBrowserStackCapabilities();
-        String[][] browserInfoTable = new String[THREE][TWO];
-        browserInfoTable[ZERO][ZERO] = format(BOLD_TEXT_TEMPLATE, MOBILEBROWSER_DEVICE);
-        browserInfoTable[ZERO][ONE] = capabilities.getDeviceName();
-        browserInfoTable[ONE][ZERO] = format(BOLD_TEXT_TEMPLATE, DEVICE_PLATFORM);
-        browserInfoTable[ONE][ONE] = mobilebrowserDevice.getPlatformName().value();
-        browserInfoTable[TWO][ZERO] = format(BOLD_TEXT_TEMPLATE, DEVICE_PLATFORM_VERSION);
-        browserInfoTable[TWO][ONE] = capabilities.getPlatformVersion();
-        return browserInfoTable;
+    private void addBrowserInfo(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
+        if (StringUtils.isNotBlank(scenarioResult.getBrowser())) {
+            BrowserUtil.getBrowserBy(scenarioResult.getEnvironment(), scenarioResult.getBrowser())
+                    .ifPresent(browser -> extentTest.info(
+                            MarkupHelper.createTable(createTableWithBrowserInfo(browser))));
+        }
+    }
+
+    private void addMobilebrowserDeviceInfo(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
+        if (StringUtils.isNotBlank(scenarioResult.getMobilebrowserDevice())) {
+            MobileUtil.getMobilebrowserDeviceBy(scenarioResult.getEnvironment(),
+                            scenarioResult.getMobilebrowserDevice())
+                    .ifPresent(mobilebrowserDevice -> extentTest.info(
+                            MarkupHelper.createTable(createTableWithMobilebrowserDeviceInfo(mobilebrowserDevice))));
+        }
+    }
+
+    private void addNativeDeviceInfo(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
+        if (StringUtils.isNotBlank(scenarioResult.getNativeDevice())) {
+            MobileUtil.getNativeDeviceBy(scenarioResult.getEnvironment(), scenarioResult.getNativeDevice())
+                    .ifPresent(nativeDevice -> extentTest.info(
+                            MarkupHelper.createTable(createTableWithNativeDeviceInfo(nativeDevice))));
+        }
+    }
+
+    private void setExecutionResult(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
+        if (scenarioResult.isSuccess()) {
+            extentTest.pass(MarkupHelper.createLabel(SCENARIO_SUCCESS, ExtentColor.GREEN));
+        } else {
+            extentTest.fail(MarkupHelper.createLabel(SCENARIO_FAILED, ExtentColor.RED));
+        }
+        extentTest.info(format(SCENARIO_EXECUTION_TIME_TEMPLATE, scenarioResult.getExecutionTime()));
     }
 
     private void addScenarioSteps(final ExtentTest extentTest, final List<CommandResult> steps) {
@@ -220,17 +227,6 @@ public class ExtentReportsGenerator implements ReportGenerator {
         }
     }
 
-    private void addExpectedAndActual(final ExtentTest extentTest, final CommandResult stepExecutionInfo) {
-        String expected = stepExecutionInfo.getExpected();
-        String actual = stepExecutionInfo.getActual();
-        if (StringUtils.isNotEmpty(expected) && StringUtils.isNotEmpty(actual)) {
-            ResultForComparison resultForComparison =
-                    new ResultForComparison(format(PREFORMATTED_CODE_TEXT_TEMPLATE, expected),
-                            format(PREFORMATTED_CODE_TEXT_TEMPLATE, actual));
-            extentTest.info(MarkupHelper.toTable(resultForComparison));
-        }
-    }
-
     private void addMetaData(final ExtentTest extentTest, final LinkedHashMap<String, Object> metaData) {
         if (!metaData.isEmpty()) {
             String[][] metaDataTable = metaData.entrySet()
@@ -249,6 +245,17 @@ public class ExtentReportsGenerator implements ReportGenerator {
             return format(UNSORTED_LIST_TEMPLATE, valueAsTable);
         }
         return format(PREFORMATTED_TEXT_TEMPLATE, value);
+    }
+
+    private void addExpectedAndActual(final ExtentTest extentTest, final CommandResult stepExecutionInfo) {
+        String expected = stepExecutionInfo.getExpected();
+        String actual = stepExecutionInfo.getActual();
+        if (StringUtils.isNotEmpty(expected) && StringUtils.isNotEmpty(actual)) {
+            ResultForComparison resultForComparison =
+                    new ResultForComparison(format(PREFORMATTED_CODE_TEXT_TEMPLATE, expected),
+                            format(PREFORMATTED_CODE_TEXT_TEMPLATE, actual));
+            extentTest.info(MarkupHelper.toTable(resultForComparison));
+        }
     }
 
     private void setStepExecutionResult(final ExtentTest extentTest, final CommandResult stepExecutionInfo) {

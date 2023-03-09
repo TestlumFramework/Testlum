@@ -35,8 +35,9 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
                 .driver(uiType.getAppropriateDriver(dependencies))
                 .scenarioContext(dependencies.getScenarioContext())
                 .position(dependencies.getPosition())
-                .takeScreenshots(uiType.isScreenshotsEnabled())
+                .takeScreenshots(uiType.isScreenshotsEnabled(dependencies.getEnvironment()))
                 .uiType(uiType)
+                .environment(dependencies.getEnvironment())
                 .build();
     }
 

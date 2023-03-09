@@ -49,7 +49,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                                  final CommandResult result,
                                  final String alias) {
         log.info(ALIAS_LOG, alias);
-        AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnv());
+        AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
         if (sqs.getSend() != null) {
             ResultUtil.addMessageBrokerGeneralMetaData(alias, SEND_ACTION, QUEUE, queueName, result);
             sendMessage(queueName, sqs.getSend(), aliasEnv, result);

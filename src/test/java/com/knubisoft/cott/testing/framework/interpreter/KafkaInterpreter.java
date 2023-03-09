@@ -98,7 +98,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                                     final Object action,
                                     final String alias) {
         log.info(ALIAS_LOG, alias);
-        AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnv());
+        AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
         if (action instanceof SendKafkaMessage) {
             SendKafkaMessage sendAction = (SendKafkaMessage) action;
             ResultUtil.addKafkaInfoForSendAction(sendAction, alias, subCommandResult);

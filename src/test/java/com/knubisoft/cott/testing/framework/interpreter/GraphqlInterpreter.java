@@ -7,7 +7,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependenc
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.interpreter.lib.http.ApiResponse;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
-import com.knubisoft.cott.testing.framework.util.ConfigUtil;
+import com.knubisoft.cott.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.HttpValidator;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
@@ -88,9 +88,9 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     }
 
     private String getFullUrl(final Graphql graphql) {
-        List<GraphqlApi> apiList = GlobalTestConfigurationProvider.getIntegrations().get(dependencies.getEnv())
+        List<GraphqlApi> apiList = GlobalTestConfigurationProvider.getIntegrations().get(dependencies.getEnvironment())
                 .getGraphqlIntegration().getApi();
-        GraphqlApi graphqlApi = ConfigUtil.findApiForAlias(apiList, graphql.getAlias());
+        GraphqlApi graphqlApi = IntegrationsUtil.findApiForAlias(apiList, graphql.getAlias());
         return graphqlApi.getUrl() + graphql.getEndpoint();
     }
 

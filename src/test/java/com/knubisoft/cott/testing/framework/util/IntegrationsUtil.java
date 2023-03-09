@@ -10,19 +10,19 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ALI
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.API_NOT_FOUND;
 
 @UtilityClass
-public class ConfigUtil {
+public class IntegrationsUtil {
 
     public <T extends Integration> T findApiForAlias(final List<T> apiIntegrations, final String alias) {
-        return findIntegrationByAlias(apiIntegrations, alias, API_NOT_FOUND);
+        return filterIntegrationByAlias(apiIntegrations, alias, API_NOT_FOUND);
     }
 
-    public <T extends Integration> T findIntegrationForAlias(final List<T> integrationList, final String alias) {
-        return findIntegrationByAlias(integrationList, alias, ALIAS_NOT_FOUND);
+    public <T extends Integration> T findForAlias(final List<T> integrationList, final String alias) {
+        return filterIntegrationByAlias(integrationList, alias, ALIAS_NOT_FOUND);
     }
 
-    private <T extends Integration> T findIntegrationByAlias(final List<T> integrations,
-                                                             final String alias,
-                                                             final String message) {
+    private <T extends Integration> T filterIntegrationByAlias(final List<T> integrations,
+                                                               final String alias,
+                                                               final String message) {
         return integrations.stream()
                 .filter(Integration::isEnabled)
                 .filter(api -> api.getAlias().equalsIgnoreCase(alias))
@@ -30,7 +30,7 @@ public class ConfigUtil {
                 .orElseThrow(() -> new DefaultFrameworkException(message, alias));
     }
 
-    public <T extends Integration> boolean isIntegrationEnabled(final List<T> integrations) {
+    public <T extends Integration> boolean isEnabled(final List<T> integrations) {
         return integrations.stream().anyMatch(Integration::isEnabled);
     }
 }

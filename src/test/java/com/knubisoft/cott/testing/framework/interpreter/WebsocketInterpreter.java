@@ -67,7 +67,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
     private void processWebsockets(final Websocket websocket,
                                    final List<CommandResult> subCommandsResultList) {
-        AliasEnv aliasEnv = new AliasEnv(websocket.getAlias(), dependencies.getEnv());
+        AliasEnv aliasEnv = new AliasEnv(websocket.getAlias(), dependencies.getEnvironment());
         openConnection(aliasEnv);
         runActions(websocket, subCommandsResultList);
         disconnectIfEnabled(websocket.isDisconnect(), aliasEnv);
@@ -118,7 +118,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     private void executeAction(final Object action,
                                final String alias,
                                final CommandResult result) throws IOException {
-        AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnv());
+        AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
         if (action instanceof WebsocketSend) {
             sendMessage((WebsocketSend) action, aliasEnv, result);
         } else if (action instanceof WebsocketReceive) {

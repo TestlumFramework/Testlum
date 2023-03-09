@@ -1,13 +1,15 @@
 package com.knubisoft.cott.testing.framework.configuration.ui;
 
+import com.knubisoft.cott.runner.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.util.UiDriverUtil;
+import com.knubisoft.cott.testing.framework.util.SeleniumDriverUtil;
 import com.knubisoft.cott.testing.model.global_config.AppiumNativeCapabilities;
 import com.knubisoft.cott.testing.model.global_config.BrowserStackNativeCapabilities;
 import com.knubisoft.cott.testing.model.global_config.GooglePlayLogin;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.global_config.Platform;
+import com.knubisoft.cott.testing.model.global_config.Uis;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
@@ -29,15 +31,15 @@ public class NativeDriverFactory {
 
     public WebDriver createDriver(final NativeDevice nativeDevice) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        UiDriverUtil.setDefaultCapabilities(nativeDevice, desiredCapabilities);
+        SeleniumDriverUtil.setDefaultCapabilities(nativeDevice, desiredCapabilities);
         return getNativeWebDriver(nativeDevice, desiredCapabilities);
     }
 
     @SneakyThrows
     private AppiumDriver getNativeWebDriver(final NativeDevice nativeDevice,
                                             final DesiredCapabilities desiredCapabilities) {
-        String serverUrl = UiDriverUtil.getServerUrl(
-                GlobalTestConfigurationProvider.getNativeSettings().getConnection());
+        Uis uis = GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.getThreadEnv());
+        String serverUrl = SeleniumDriverUtil.getNativeConnectionUrl(uis);
         if (Platform.ANDROID == nativeDevice.getPlatformName()) {
             setAndroidCapabilities(nativeDevice, desiredCapabilities);
             return new AndroidDriver(new URL(serverUrl), desiredCapabilities);
@@ -74,7 +76,7 @@ public class NativeDriverFactory {
     private void setAppiumCapabilities(final NativeDevice nativeDevice,
                                        final DesiredCapabilities desiredCapabilities) {
         AppiumNativeCapabilities capabilities = nativeDevice.getAppiumCapabilities();
-        UiDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
+        SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
         desiredCapabilities.setCapability(MobileCapabilityType.UDID, capabilities.getUdid());
         if (StringUtils.isNotBlank(capabilities.getApp())) {
             desiredCapabilities.setCapability(MobileCapabilityType.APP, capabilities.getApp());
@@ -84,7 +86,7 @@ public class NativeDriverFactory {
     private void setBrowserStackCapabilities(final NativeDevice nativeDevice,
                                              final DesiredCapabilities desiredCapabilities) {
         BrowserStackNativeCapabilities capabilities = nativeDevice.getBrowserStackCapabilities();
-        UiDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
+        SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
         desiredCapabilities.setCapability(MobileCapabilityType.APP, capabilities.getApp());
         desiredCapabilities.setCapability("browserstack.local", Boolean.TRUE);
     }

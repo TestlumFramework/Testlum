@@ -4,13 +4,18 @@ import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfiguratio
 import com.knubisoft.cott.testing.model.global_config.AbstractDevice;
 import com.knubisoft.cott.testing.model.global_config.AppiumCapabilities;
 import com.knubisoft.cott.testing.model.global_config.BrowserStackCapabilities;
+import com.knubisoft.cott.testing.model.global_config.Mobilebrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
+import com.knubisoft.cott.testing.model.global_config.Native;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.MOBILEBROWSER_APPIUM_INFO;
@@ -21,23 +26,48 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.NATIVE_IN
 @UtilityClass
 public class MobileUtil {
 
-    public List<NativeDevice> filterEnabledNativeDevices() {
-        return GlobalTestConfigurationProvider.getNativeDevices().stream()
-                .filter(NativeDevice::isEnabled)
-                .collect(Collectors.toList());
+    public List<NativeDevice> filterDefaultEnabledNativeDevices() {
+        Native aNative = GlobalTestConfigurationProvider.getDefaultUiConfigs().getNative();
+        return Objects.nonNull(aNative)
+                ? filterEnabledDevices(aNative.getDevices().getDevice())
+                : Collections.emptyList();
     }
 
-    public List<MobilebrowserDevice> filterEnabledMobilebrowserDevices() {
-        return GlobalTestConfigurationProvider.getMobilebrowserDevices().stream()
-                .filter(MobilebrowserDevice::isEnabled)
-                .collect(Collectors.toList());
+    public List<MobilebrowserDevice> filterDefaultEnabledMobilebrowserDevices() {
+        Mobilebrowser mobilebrowser = GlobalTestConfigurationProvider.getDefaultUiConfigs().getMobilebrowser();
+        return Objects.nonNull(mobilebrowser)
+                ? filterEnabledDevices(mobilebrowser.getDevices().getDevice())
+                : Collections.emptyList();
+    }
+
+    private <T extends AbstractDevice> List<T> filterEnabledDevices(final List<T> deviceList) {
+        return deviceList.stream().filter(AbstractDevice::isEnabled).collect(Collectors.toList());
     }
 
     public boolean isNativeAndMobilebrowserConfigEnabled() {
-        return !filterEnabledMobilebrowserDevices().isEmpty() && !filterEnabledNativeDevices().isEmpty()
-                && ObjectUtils.allNotNull(
-                GlobalTestConfigurationProvider.getMobilebrowserSettings().getConnection().getAppiumServer(),
-                GlobalTestConfigurationProvider.getNativeSettings().getConnection().getAppiumServer());
+        return !filterDefaultEnabledMobilebrowserDevices().isEmpty() && !filterDefaultEnabledNativeDevices().isEmpty()
+                && ObjectUtils.allNotNull(GlobalTestConfigurationProvider.getDefaultUiConfigs().getMobilebrowser()
+                        .getConnection().getAppiumServer(),
+                GlobalTestConfigurationProvider.getDefaultUiConfigs().getNative().getConnection().getAppiumServer());
+    }
+
+    public Optional<MobilebrowserDevice> getMobilebrowserDeviceBy(final String env, final String deviceAlias) {
+        return StringUtils.isBlank(deviceAlias)
+                ? Optional.empty()
+                : GlobalTestConfigurationProvider.getMobilebrowserSettings(env)
+                .getDevices().getDevice().stream()
+                .filter(MobilebrowserDevice::isEnabled)
+                .filter(device -> device.getAlias().equalsIgnoreCase(deviceAlias))
+                .findFirst();
+    }
+
+    public Optional<NativeDevice> getNativeDeviceBy(final String env, final String deviceAlias) {
+        return StringUtils.isBlank(deviceAlias)
+                ? Optional.empty()
+                : GlobalTestConfigurationProvider.getNativeSettings(env)
+                .getDevices().getDevice().stream()
+                .filter(device -> device.isEnabled() && device.getAlias().equalsIgnoreCase(deviceAlias))
+                .findFirst();
     }
 
     public String getNativeDeviceInfo(final NativeDevice nativeDevice) {

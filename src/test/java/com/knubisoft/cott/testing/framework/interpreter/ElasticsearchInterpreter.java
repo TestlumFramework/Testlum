@@ -69,7 +69,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         LogUtil.logHttpInfo(alias, httpMethod.name(), elasticSearchRequest.getEndpoint());
         Request request = buildRequest(elasticSearchRequest, httpMethod);
         try {
-            return restClient.get(new AliasEnv(alias, dependencies.getEnv())).performRequest(request);
+            return restClient.get(new AliasEnv(alias, dependencies.getEnvironment())).performRequest(request);
         } catch (ResponseException responseException) {
             log.error("Failed response", responseException);
             return responseException.getResponse();

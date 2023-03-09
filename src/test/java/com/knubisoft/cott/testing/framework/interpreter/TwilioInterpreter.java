@@ -27,7 +27,7 @@ public class TwilioInterpreter extends AbstractInterpreter<Twilio> {
 
     @Override
     protected void acceptImpl(final Twilio twilio, final CommandResult result) {
-        AliasEnv aliasEnv = new AliasEnv(twilio.getAlias(), dependencies.getEnv());
+        AliasEnv aliasEnv = new AliasEnv(twilio.getAlias(), dependencies.getEnvironment());
         com.knubisoft.cott.testing.model.global_config.Twilio twilioSetting = twilioSettings.get(aliasEnv);
         com.twilio.Twilio.init(twilioSetting.getAccountSid(), twilioSetting.getAuthToken());
         String twilioNumber = twilioSetting.getTwilioNumber();

@@ -25,7 +25,7 @@ public class AliasRabbitAdapter implements AliasAdapter {
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
         for (Rabbitmq rabbitmq
-                : GlobalTestConfigurationProvider.getDefaultIntegration().getRabbitmqIntegration().getRabbitmq()) {
+                : GlobalTestConfigurationProvider.getDefaultIntegrations().getRabbitmqIntegration().getRabbitmq()) {
             if (rabbitmq.isEnabled()) {
                 aliasMap.put(RABBITMQ + UNDERSCORE + rabbitmq.getAlias(), getMetadataRabbit(rabbitmq));
             }

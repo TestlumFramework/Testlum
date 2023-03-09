@@ -24,7 +24,7 @@ public class AliasMongoAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Mongo mongo : GlobalTestConfigurationProvider.getDefaultIntegration().getMongoIntegration().getMongo()) {
+        for (Mongo mongo : GlobalTestConfigurationProvider.getDefaultIntegrations().getMongoIntegration().getMongo()) {
             if (mongo.isEnabled()) {
                 aliasMap.put(MONGODB + UNDERSCORE + mongo.getAlias(), getMetadataMongo(mongo));
             }

@@ -3,7 +3,7 @@ package com.knubisoft.cott.testing.framework.interpreter.lib.http;
 import com.knubisoft.cott.runner.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.util.ConfigUtil;
+import com.knubisoft.cott.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.cott.testing.framework.util.HttpUtil;
 import com.knubisoft.cott.testing.model.global_config.Api;
 import lombok.SneakyThrows;
@@ -107,7 +107,7 @@ public class ApiClient {
     private String createFullURL(final String endpoint, final String alias) {
         List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().get(EnvManager.getThreadEnv())
                 .getApis().getApi();
-        Api apiIntegration = ConfigUtil.findApiForAlias(apiList, alias);
+        Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, alias);
         return apiIntegration.getUrl() + endpoint;
     }
 

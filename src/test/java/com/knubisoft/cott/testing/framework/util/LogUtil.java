@@ -8,7 +8,7 @@ import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
-import com.knubisoft.cott.testing.model.scenario.Assert;
+import com.knubisoft.cott.testing.model.scenario.Attribute;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
@@ -266,9 +266,10 @@ public class LogUtil {
         log.info(COMMAND_LOG, position, action.getClass().getSimpleName());
     }
 
-    public void logAssertTag(final Assert aAssert) {
-        log.info(ATTRIBUTE_LOG, aAssert.getAttribute());
-        log.info(CONTENT_LOG, aAssert.getContent());
+    public void logAttributeInfo(final Attribute attribute) {
+        log.info(LOCATOR_LOG, attribute.getLocatorId());
+        log.info(ATTRIBUTE_LOG, attribute.getAttribute());
+        log.info(CONTENT_LOG, attribute.getContent());
     }
 
     public void logAlias(final String alias) {

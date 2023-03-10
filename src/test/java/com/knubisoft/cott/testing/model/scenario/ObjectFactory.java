@@ -422,6 +422,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Attribute }
+     * 
+     */
+    public Attribute createAttribute() {
+        return new Attribute();
+    }
+
+    /**
      * Create an instance of {@link Clear }
      * 
      */

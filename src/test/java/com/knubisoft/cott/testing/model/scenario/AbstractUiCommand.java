@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlType;
     Javascript.class,
     Hovers.class,
     Navigate.class,
+    Assert.class,
     CloseTab.class,
     HotKey.class,
     Tab.class,

@@ -6,18 +6,23 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependenc
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
+import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.Assert;
+import com.knubisoft.cott.testing.model.scenario.Attribute;
 import org.openqa.selenium.WebElement;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.NEW_LINE;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.ASSERT_ATTRIBUTE;
-import static com.knubisoft.cott.testing.framework.util.ResultUtil.ASSERT_LOCATOR;
 
 @ExecutorForClass(Assert.class)
 public class AssertExecutor extends AbstractUiExecutor<Assert> {
+
 
     public AssertExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -25,25 +30,37 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
 
     @Override
     public void execute(final Assert aAssert, final CommandResult result) {
-        LogUtil.logAssertTag(aAssert);
-        result.put(ASSERT_LOCATOR, aAssert.getLocatorId());
-        result.put(ASSERT_ATTRIBUTE, aAssert.getAttribute());
-        String actual = getActualValue(aAssert);
-        String expected = inject(aAssert.getContent()).replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
-        result.setActual(actual);
-        result.setExpected(expected);
+        List<CommandResult> subCommandResult = new LinkedList<>();
+        result.setSubCommandsResult(subCommandResult);
+        aAssert.getAttribute().forEach(attribute -> executeAttributeCommand(attribute, subCommandResult));
+
+    }
+
+    private void executeAttributeCommand(final Attribute attribute,
+                                         final List<CommandResult> subCommandsResult) {
+        CommandResult subCommandResult =
+                ResultUtil.createNewCommandResultInstance(dependencies.getPosition().intValue());
+        LogUtil.logAttributeInfo(attribute);
+        subCommandResult.put(ASSERT_ATTRIBUTE, attribute.getName());
+        String actual = getActualValue(attribute);
+        String expected = inject(attribute.getContent()).replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
+        subCommandResult.setActual(actual);
+        subCommandResult.setExpected(expected);
         new CompareBuilder(dependencies.getFile(), dependencies.getPosition())
                 .withActual(actual)
                 .withExpected(expected)
                 .exec();
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        UiUtil.takeScreenshotAndSaveIfRequired(subCommandResult, dependencies);
+        subCommandsResult.add(subCommandResult);
     }
 
-    private String getActualValue(final Assert aAssert) {
-        WebElement webElement = UiUtil.findWebElement(dependencies, inject(aAssert.getLocatorId()));
-        String value = UiUtil.getElementAttribute(webElement, aAssert.getAttribute());
+    private String getActualValue(final Attribute attribute) {
+        WebElement webElement = UiUtil.findWebElement(dependencies, inject(attribute.getLocatorId()));
+        String value = UiUtil.getElementAttribute(webElement, inject(attribute.getName()));
         return value
                 .replaceAll(SPACE, EMPTY)
                 .replaceAll(NEW_LINE, EMPTY);
     }
+
+
 }

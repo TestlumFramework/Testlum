@@ -32,7 +32,6 @@ import javax.xml.bind.annotation.XmlType;
     Hover.class,
     Input.class,
     DropDown.class,
-    Assert.class,
     Clear.class,
     SwitchToFrame.class,
     ScrollTo.class,

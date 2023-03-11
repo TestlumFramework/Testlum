@@ -183,6 +183,7 @@ public class ScenarioRunner {
 
     private InterpreterDependencies createDependencies() {
         return new InterpreterDependencies(
+                ctx,
                 createWebDriver(),
                 createNativeDriver(),
                 createMobilebrowserDriver(),

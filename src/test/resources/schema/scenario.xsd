@@ -89,7 +89,7 @@
                     <x:element name="graphql" type="tns:graphql"/>
                     <x:element name="websocket" type="tns:websocket"/>
 
-                    <x:element name="var" type="tns:generalVar"/>
+                    <x:element name="var" type="tns:var"/>
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="shell" type="tns:shell"/>
                     <x:element name="smtp" type="tns:smtp"/>
@@ -131,7 +131,7 @@
                     <x:element name="smtp" type="tns:smtp"/>
                     <x:element name="twilio" type="tns:twilio"/>
 
-                    <x:element name="var" type="tns:generalVar"/>
+                    <x:element name="var" type="tns:var"/>
                     <x:element name="wait" type="tns:wait"/>
                 </x:choice>
                 <x:attribute name="apiAlias" type="tns:nonEmptyString" use="required"/>
@@ -167,7 +167,7 @@
                     <x:element name="ses" type="tns:ses"/>
                     <x:element name="dynamo" type="tns:dynamo"/>
                     <x:element name="graphql" type="tns:graphql"/>
-                    <x:element name="var" type="tns:generalVar"/>
+                    <x:element name="var" type="tns:var"/>
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="shell" type="tns:shell"/>
                     <x:element name="smtp" type="tns:smtp"/>

@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib;
 
+import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorProvider;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.UiType;
@@ -31,6 +32,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
 
     public ExecutorDependencies createExecutorDependencies(final UiType uiType) {
         return ExecutorDependencies.builder()
+                .ctx(dependencies.getCxt())
                 .file(dependencies.getFile())
                 .driver(uiType.getAppropriateDriver(dependencies))
                 .scenarioContext(dependencies.getScenarioContext())
@@ -64,13 +66,16 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
         processIfSwitchToFrame(uiCommand, subCommandResult, dependencies);
         processIfWebView(uiCommand, subCommandResult, dependencies);
     }
-
+    //CHECKSTYLE:OFF
     private void executeUiCommand(final AbstractUiCommand uiCommand,
                                   final CommandResult subCommandResult,
                                   final ExecutorDependencies dependencies) {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
-            ExecutorProvider.getAppropriateExecutor(uiCommand, dependencies).execute(uiCommand, subCommandResult);
+            AbstractUiExecutor<AbstractUiCommand> executor
+                    = ExecutorProvider.getAppropriateExecutor(uiCommand, dependencies);
+            dependencies.getCtx().getAutowireCapableBeanFactory().autowireBean(executor);
+            executor.execute(uiCommand, subCommandResult);
         } catch (Exception e) {
             ResultUtil.setExceptionResult(subCommandResult, e);
             LogUtil.logException(e);
@@ -82,6 +87,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
             LogUtil.logExecutionTime(execTime, uiCommand);
         }
     }
+    //CHECKSTYLE:ON
 
     private void processIfSwitchToFrame(final AbstractUiCommand uiCommand,
                                         final CommandResult result,

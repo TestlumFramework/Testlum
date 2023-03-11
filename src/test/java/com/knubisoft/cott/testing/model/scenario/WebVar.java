@@ -3,6 +3,7 @@ package com.knubisoft.cott.testing.model.scenario;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -15,12 +16,13 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="webVar"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}var"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice&gt;
  *         &lt;group ref="{http://www.knubisoft.com/cott/testing/model/scenario}generalVarType"/&gt;
  *         &lt;element name="cookie" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromCookie"/&gt;
  *         &lt;element name="dom" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromDom"/&gt;
  *       &lt;/choice&gt;
+ *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -39,7 +41,7 @@ import javax.xml.bind.annotation.XmlType;
     "dom"
 })
 public class WebVar
-    extends Var
+    extends AbstractUiCommand
 {
 
     protected FromFile file;
@@ -50,6 +52,8 @@ public class WebVar
     protected FromSQL sql;
     protected FromCookie cookie;
     protected FromDom dom;
+    @XmlAttribute(name = "name", required = true)
+    protected String name;
 
     /**
      * Gets the value of the file property.
@@ -217,6 +221,30 @@ public class WebVar
      */
     public void setDom(FromDom value) {
         this.dom = value;
+    }
+
+    /**
+     * Gets the value of the name property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the value of the name property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setName(String value) {
+        this.name = value;
     }
 
 }

@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="graphql" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphql"/&gt;
  *         &lt;element name="smtp" type="{http://www.knubisoft.com/cott/testing/model/scenario}smtp"/&gt;
  *         &lt;element name="twilio" type="{http://www.knubisoft.com/cott/testing/model/scenario}twilio"/&gt;
- *         &lt;element name="var" type="{http://www.knubisoft.com/cott/testing/model/scenario}generalVar"/&gt;
+ *         &lt;element name="var" type="{http://www.knubisoft.com/cott/testing/model/scenario}var"/&gt;
  *         &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}wait"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="apiAlias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
@@ -87,7 +87,7 @@ public class Auth
         @XmlElement(name = "graphql", type = Graphql.class),
         @XmlElement(name = "smtp", type = Smtp.class),
         @XmlElement(name = "twilio", type = Twilio.class),
-        @XmlElement(name = "var", type = GeneralVar.class),
+        @XmlElement(name = "var", type = Var.class),
         @XmlElement(name = "wait", type = Wait.class)
     })
     protected List<AbstractCommand> commands;
@@ -138,7 +138,7 @@ public class Auth
      * {@link Graphql }
      * {@link Smtp }
      * {@link Twilio }
-     * {@link GeneralVar }
+     * {@link Var }
      * {@link Wait }
      * 
      * 

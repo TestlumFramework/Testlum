@@ -51,6 +51,7 @@ import javax.xml.bind.annotation.XmlType;
     Dynamo.class,
     Graphql.class,
     Websocket.class,
+    Var.class,
     Shell.class,
     Smtp.class,
     Twilio.class,

@@ -47,7 +47,6 @@ import com.knubisoft.cott.testing.model.scenario.Dynamo;
 import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
 import com.knubisoft.cott.testing.model.scenario.FromFile;
 import com.knubisoft.cott.testing.model.scenario.FromSQL;
-import com.knubisoft.cott.testing.model.scenario.GeneralVar;
 import com.knubisoft.cott.testing.model.scenario.Http;
 import com.knubisoft.cott.testing.model.scenario.HttpInfo;
 import com.knubisoft.cott.testing.model.scenario.Include;
@@ -298,7 +297,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
         validatorMap.put(o -> o instanceof Var, (xmlFile, command) -> {
             Var var = (Var) command;
-            validateVarCommand(xmlFile, var);
+            validateVarCommand(xmlFile, var.getFile(), var.getSQL());
         });
 
         validatorMap.put(o -> o instanceof Web, (xmlFile, command) -> {
@@ -390,16 +389,10 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     //CHECKSTYLE:OFF
-    private void validateVarCommand(final File xmlFile, final Var var) {
-        FromFile fromFile = (var instanceof GeneralVar)
-                ? ((GeneralVar) var).getFile()
-                : ((WebVar) var).getFile();
+    private void validateVarCommand(final File xmlFile, final FromFile fromFile, final FromSQL fromSQL) {
         if (Objects.nonNull(fromFile)) {
             validateFileIfExist(xmlFile, fromFile.getFileName());
         }
-        FromSQL fromSQL = (var instanceof GeneralVar)
-                ? ((GeneralVar) var).getSQL()
-                : ((WebVar) var).getSQL();
         if (Objects.nonNull(fromSQL)) {
             List<? extends Integration> integrationList;
             switch (fromSQL.getDbType()) {
@@ -570,7 +563,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             } else if (o instanceof Scroll && ScrollType.INNER == ((Scroll) o).getType()) {
                 validateLocator((Scroll) o, NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
             } else if (o instanceof WebVar) {
-                validateVarCommand(xmlFile, (WebVar) o);
+                WebVar webVar = (WebVar) o;
+                validateVarCommand(xmlFile, webVar.getFile(), webVar.getSQL());
             }
         });
     }

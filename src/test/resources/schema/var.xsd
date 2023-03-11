@@ -9,19 +9,13 @@
 
     <x:complexType name="var">
         <x:complexContent>
-            <x:extension base="tns:abstractUiCommand">
+            <x:extension base="tns:abstractCommand">
+                <x:group ref="tns:generalVarType"/>
                 <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="generalVar">
-        <x:complexContent>
-            <x:extension base="tns:var">
-                <x:group ref="tns:generalVarType"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
 
     <x:group name="generalVarType">
         <x:choice>

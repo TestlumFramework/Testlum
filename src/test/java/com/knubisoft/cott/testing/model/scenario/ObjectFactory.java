@@ -254,11 +254,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GeneralVar }
+     * Create an instance of {@link Var }
      * 
      */
-    public GeneralVar createGeneralVar() {
-        return new GeneralVar();
+    public Var createVar() {
+        return new Var();
     }
 
     /**
@@ -595,14 +595,6 @@ public class ObjectFactory {
      */
     public Refresh createRefresh() {
         return new Refresh();
-    }
-
-    /**
-     * Create an instance of {@link Var }
-     * 
-     */
-    public Var createVar() {
-        return new Var();
     }
 
     /**

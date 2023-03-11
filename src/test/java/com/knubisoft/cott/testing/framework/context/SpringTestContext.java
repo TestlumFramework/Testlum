@@ -4,7 +4,6 @@ import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfiguratio
 import com.knubisoft.cott.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.cott.testing.framework.report.ReportGenerator;
 import com.knubisoft.cott.testing.framework.report.ReportGeneratorFactory;
-import com.knubisoft.cott.testing.framework.util.VarService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -16,11 +15,6 @@ import java.util.Map;
 @Configuration
 @ComponentScan(basePackages = {"com.knubisoft"})
 public class SpringTestContext {
-
-    @Bean
-    public VarService getVarService() {
-        return new VarService();
-    }
 
     @Bean
     public NameToAdapterAlias getNameToAdapterAlias(final List<AliasAdapter> aliasAdapters) {

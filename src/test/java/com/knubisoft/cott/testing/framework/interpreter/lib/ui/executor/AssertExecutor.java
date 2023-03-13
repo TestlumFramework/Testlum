@@ -54,6 +54,10 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
         subCommandsResult.add(subCommandResult);
     }
 
+    private String getActualValue(final Assert aAssert) {
+        WebElement webElement = UiUtil.findWebElement(dependencies, aAssert.getLocatorId());
+        UiUtil.waitForElementVisibility(dependencies, webElement);
+        String value = UiUtil.getElementAttribute(webElement, aAssert.getAttribute());
     private String getActualValue(final Attribute attribute) {
         WebElement webElement = UiUtil.findWebElement(dependencies, inject(attribute.getLocatorId()));
         String value = UiUtil.getElementAttribute(webElement, inject(attribute.getName()));

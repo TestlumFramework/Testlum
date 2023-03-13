@@ -89,6 +89,7 @@ import com.knubisoft.cott.testing.model.scenario.Web;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -102,8 +103,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.springframework.util.StringUtils;
-
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.AUTH_ALIASES_DOESNT_MATCH;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INTEGRATION_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
@@ -128,6 +128,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         validatorMap.put(o -> o instanceof Auth, (xmlFile, command) -> {
             Auth auth = (Auth) command;
             validateFileExistenceInDataFolder(auth.getCredentials());
+            validateAlias(integrations.getApis().getApi(), auth.getApiAlias());
+            validateAuthCommand(auth);
         });
 
         validatorMap.put(o -> o instanceof Http, (xmlFile, command) -> {
@@ -591,6 +593,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         List<String> shellFiles = shell.getShellFile();
         if (!shellFiles.isEmpty()) {
             shellFiles.forEach(this::validateFileExistenceInDataFolder);
+        }
+    }
+
+    private void validateAuthCommand(final Auth auth) {
+        if (auth.getCommands().stream().anyMatch(command -> command instanceof Http
+                && !((Http) command).getAlias().equals(auth.getApiAlias()))) {
+            throw new DefaultFrameworkException(AUTH_ALIASES_DOESNT_MATCH);
         }
     }
 

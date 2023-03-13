@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,6 +48,15 @@ public class ScenarioContext {
 
         Matcher m = ROUTE_PATTERN.matcher(original);
         return getFormattedInject(original, m);
+    }
+
+    public boolean getCondition(final String original) {
+        if (StringUtils.isBlank(original)) {
+            return false;
+        }
+
+        Matcher m = ROUTE_PATTERN.matcher(original);
+        return Objects.nonNull(getFormattedInject(original, m));
     }
 
     private String getFormattedInject(final String original, final Matcher m) {

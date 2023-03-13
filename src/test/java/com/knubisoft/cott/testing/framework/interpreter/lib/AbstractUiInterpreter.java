@@ -70,7 +70,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
                                   final ExecutorDependencies dependencies) {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
-            ExecutorProvider.getAppropriateExecutor(uiCommand, dependencies).execute(uiCommand, subCommandResult);
+            ExecutorProvider.getAppropriateExecutor(uiCommand, dependencies).apply(uiCommand, subCommandResult);
         } catch (Exception e) {
             ResultUtil.setExceptionResult(subCommandResult, e);
             LogUtil.logException(e);

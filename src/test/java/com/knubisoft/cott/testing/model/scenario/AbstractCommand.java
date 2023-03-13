@@ -19,6 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="comment" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}stringMin10" /&gt;
  *       &lt;attribute name="threshold" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
+ *       &lt;attribute name="condition" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -65,6 +66,8 @@ public abstract class AbstractCommand {
     protected String comment;
     @XmlAttribute(name = "threshold")
     protected Integer threshold;
+    @XmlAttribute(name = "condition")
+    protected String condition;
 
     /**
      * Gets the value of the comment property.
@@ -112,6 +115,30 @@ public abstract class AbstractCommand {
      */
     public void setThreshold(Integer value) {
         this.threshold = value;
+    }
+
+    /**
+     * Gets the value of the condition property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getCondition() {
+        return condition;
+    }
+
+    /**
+     * Sets the value of the condition property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setCondition(String value) {
+        this.condition = value;
     }
 
 }

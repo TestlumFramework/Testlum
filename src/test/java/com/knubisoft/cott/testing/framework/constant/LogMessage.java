@@ -67,10 +67,6 @@ public final class LogMessage {
             + "----------------    EXCEPTION    -----------------"
             + NEW_LOG_LINE + " {}" + NEW_LOG_LINE
             + "--------------------------------------------------" + ANSI_RESET;
-    public static final String ASSERT_SUBCOMMAND_LOG = ANSI_CYAN
-            + "------- Assert sub command #{} - {} -------"
-            + ANSI_RESET;
-
     public static final String INITIAL_STRUCTURE_GENERATION_SUCCESS = ANSI_GREEN + "Initial structure by path "
             + ANSI_BLUE_UNDERLINED + "{}" + ANSI_RESET + ANSI_GREEN + " generated successfully";
     public static final String INITIAL_STRUCTURE_GENERATION_ERROR = ANSI_RED

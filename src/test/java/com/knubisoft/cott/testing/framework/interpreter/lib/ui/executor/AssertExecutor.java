@@ -17,6 +17,7 @@ import org.openqa.selenium.WebElement;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.NEW_LINE;
@@ -28,8 +29,8 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.ASSERT_LOCATO
 @ExecutorForClass(Assert.class)
 public class AssertExecutor extends AbstractUiExecutor<Assert> {
 
-    private int subCommandCounter;
-    private List<String> exceptionResult = new ArrayList<>();
+    private AtomicInteger subCommandCounter = new AtomicInteger(0);
+    private final List<String> exceptionResult = new ArrayList<>();
 
     public AssertExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -47,13 +48,36 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
                                          final List<CommandResult> subCommandsResult) {
         String actual = getActualValue(attribute);
         String expected = inject(attribute.getContent()).replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
-        LogUtil.logAttributeInfo(attribute, ++subCommandCounter);
-        CommandResult subCommandResult = createSubCommandResult(attribute, actual, expected);
-        executeComparison(subCommandsResult, actual, expected, subCommandResult);
+        LogUtil.logAttributeInfo(attribute, subCommandCounter.incrementAndGet());
+        CommandResult subCommandResult = createSubCommandResult(attribute, actual, expected, subCommandsResult);
+        executeComparison(actual, expected, subCommandResult);
     }
 
-    private void executeComparison(final List<CommandResult> subCommandsResult,
-                                   final String actual,
+    private String getActualValue(final Attribute attribute) {
+        WebElement webElement = UiUtil.findWebElement(dependencies, inject(attribute.getLocatorId()));
+        UiUtil.waitForElementVisibility(dependencies, webElement);
+        String value = UiUtil.getElementAttribute(webElement, inject(attribute.getName()));
+        return value.replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
+    }
+
+    private CommandResult createSubCommandResult(final Attribute attribute,
+                                                 final String actual,
+                                                 final String expected,
+                                                 final List<CommandResult> subCommandsResult) {
+        CommandResult subCommandResult = ResultUtil.createCommandResultForUiSubCommand(
+                subCommandCounter.get(),
+                attribute.getClass().getSimpleName(),
+                "Execution of sub assert command");
+        subCommandResult.put(ASSERT_LOCATOR, inject(attribute.getLocatorId()));
+        subCommandResult.put(ASSERT_ATTRIBUTE, inject(attribute.getName()));
+        subCommandResult.setActual(actual);
+        subCommandResult.setExpected(expected);
+        UiUtil.takeScreenshotAndSaveIfRequired(subCommandResult, dependencies);
+        subCommandsResult.add(subCommandResult);
+        return subCommandResult;
+    }
+
+    private void executeComparison(final String actual,
                                    final String expected,
                                    final CommandResult subCommandResult) {
         try {
@@ -64,35 +88,8 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
         } catch (Exception e) {
             LogUtil.logException(e);
             exceptionResult.add(e.getMessage());
-            subCommandResult.setException(e);
-            subCommandResult.setSuccess(false);
-        } finally {
-            subCommandsResult.add(subCommandResult);
+            ResultUtil.setExceptionResult(subCommandResult, e);
         }
-    }
-
-    private CommandResult createSubCommandResult(final Attribute attribute,
-                                                 final String actual,
-                                                 final String expected) {
-        CommandResult subCommandResult = ResultUtil.createCommandResultForUiSubCommand(
-                dependencies.getPosition().intValue(),
-                attribute.getClass().getSimpleName(),
-                "Execution of sub assert command");
-        subCommandResult.put(ASSERT_LOCATOR, attribute.getLocatorId());
-        subCommandResult.put(ASSERT_ATTRIBUTE, attribute.getName());
-        subCommandResult.setActual(actual);
-        subCommandResult.setExpected(expected);
-        UiUtil.takeScreenshotAndSaveIfRequired(subCommandResult, dependencies);
-        return subCommandResult;
-    }
-
-    private String getActualValue(final Attribute attribute) {
-        WebElement webElement = UiUtil.findWebElement(dependencies, inject(attribute.getLocatorId()));
-        UiUtil.waitForElementVisibility(dependencies, webElement);
-        String value = UiUtil.getElementAttribute(webElement, inject(attribute.getName()));
-        return value
-                .replaceAll(SPACE, EMPTY)
-                .replaceAll(NEW_LINE, EMPTY);
     }
 
     public void rethrowOnErrors() {
@@ -101,6 +98,5 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
                     String.join(DelimiterConstant.SPACE_WITH_LF, exceptionResult));
         }
     }
-
 
 }

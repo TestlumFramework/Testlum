@@ -45,7 +45,6 @@ import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EM
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.ASSERT_SUBCOMMAND_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ATTRIBUTE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BODY_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
@@ -268,7 +267,7 @@ public class LogUtil {
     }
 
     public void logAttributeInfo(final Attribute attribute, final int subCommandCounter) {
-        log.info(ASSERT_SUBCOMMAND_LOG, subCommandCounter, attribute.getClass().getSimpleName());
+        log.info(COMMAND_LOG, subCommandCounter, attribute.getClass().getSimpleName());
         log.info(LOCATOR_LOG, attribute.getLocatorId());
         log.info(ATTRIBUTE_LOG, attribute.getName());
         log.info(CONTENT_LOG, attribute.getContent());

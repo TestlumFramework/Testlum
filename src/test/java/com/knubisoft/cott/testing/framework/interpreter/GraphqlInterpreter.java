@@ -2,9 +2,11 @@ package com.knubisoft.cott.testing.framework.interpreter;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.cott.testing.framework.interpreter.lib.http.ApiClient;
 import com.knubisoft.cott.testing.framework.interpreter.lib.http.ApiResponse;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.ConfigUtil;
@@ -28,21 +30,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.HttpEntity;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +49,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @InterpreterForClass(Graphql.class)
 public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
+
+    @Autowired
+    private ApiClient apiClient;
 
     public GraphqlInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -69,26 +69,35 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         compareResult(graphqlMetadata.getHttpInfo().getResponse(), response, result);
     }
 
+    //CHECKSTYLE:OFF
     private ApiResponse getResponse(final Graphql graphql,
-                                    final GraphqlMetadata graphqlMetadata) throws IOException {
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            HttpUriRequest httpRequest = graphqlMetadata.getHttpMethod() == HttpMethod.POST
-                    ? buildHttpPost(graphql, (GraphqlPost) graphqlMetadata.getHttpInfo())
-                    : buildHttpGet(graphql, (GraphqlGet) graphqlMetadata.getHttpInfo());
-            setHeaders(httpRequest, graphqlMetadata.getHttpInfo());
-            HttpResponse response = client.execute(httpRequest);
-            return convertToApiResponse(response);
+                                    final GraphqlMetadata graphqlMetadata) {
+        HttpInfo httpInfo = graphqlMetadata.getHttpInfo();
+        LogUtil.logGraphqlInfo(graphql.getAlias(), graphqlMetadata);
+        Map<String, String> headers = getHeaders(httpInfo);
+        String typeValue = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        HttpEntity body = getBody(httpInfo, ContentType.create(typeValue));
+        LogUtil.logBodyContent(body);
+        String fullUrl = httpInfo instanceof GraphqlGet
+                ? urlWithParams(graphql, (GraphqlGet) httpInfo)
+                : getFullUrl(graphql, httpInfo);
+        try {
+            return apiClient.call(graphqlMetadata.getHttpMethod(), fullUrl, headers, body);
+        } catch (IOException e) {
+            LogUtil.logError(e);
+            throw new DefaultFrameworkException(e);
         }
     }
+    //CHECKSTYLE:ON
 
-    private HttpUriRequest buildHttpPost(final Graphql graphql, final GraphqlPost graphqlPost) {
-        HttpPost post = new HttpPost(getFullUrl(graphql, graphqlPost));
+    private HttpEntity getBody(final HttpInfo httpInfo, final ContentType contentType) {
+        if (!(httpInfo instanceof GraphqlPost)) {
+            return null;
+        }
+        GraphqlPost graphqlPost = (GraphqlPost) httpInfo;
         String rawBody = getRawBody(graphqlPost.getBody());
-        LogUtil.logBody(rawBody);
-        post.setEntity(new StringEntity(rawBody, ContentType.APPLICATION_JSON));
-        return post;
+        return new StringEntity(rawBody, contentType);
     }
-
 
     private String getRawBody(final GraphqlBody body) {
         String rawBody = StringUtils.isNotBlank(body.getRaw())
@@ -98,32 +107,24 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     }
 
     @SneakyThrows
-    private HttpGet buildHttpGet(final Graphql graphql, final GraphqlGet graphqlGet) {
+    private String urlWithParams(final Graphql graphql, final GraphqlGet graphqlGet) {
         URIBuilder uriBuilder = new URIBuilder(getFullUrl(graphql, graphqlGet));
         List<Param> parameters = graphqlGet.getParam();
         parameters.forEach(param -> uriBuilder.addParameter(param.getName(), prettifyString(param.getData())));
-        return new HttpGet(uriBuilder.build());
+        return uriBuilder.build().toString();
     }
 
-    private void setHeaders(final HttpUriRequest httpRequest, final HttpInfo httpInfo) {
+    private Map<String, String> getHeaders(final HttpInfo httpInfo) {
         Map<String, String> headers = new LinkedHashMap<>();
         InterpreterDependencies.Authorization authorization = dependencies.getAuthorization();
         HttpUtil.fillHeadersMap(httpInfo.getHeader(), headers, authorization);
-        headers.forEach(httpRequest::addHeader);
+        return headers;
     }
 
     private String getFullUrl(final Graphql graphql, final HttpInfo httpInfo) {
         List<GraphqlApi> apiList = GlobalTestConfigurationProvider.getIntegrations().getGraphqlIntegration().getApi();
         GraphqlApi graphqlApi = (GraphqlApi) ConfigUtil.findApiForAlias(apiList, graphql.getAlias());
         return graphqlApi.getUrl() + httpInfo.getEndpoint();
-    }
-
-    private ApiResponse convertToApiResponse(final HttpResponse response) throws IOException {
-        int code = response.getStatusLine().getStatusCode();
-        Object body = EntityUtils.toString(response.getEntity());
-        Map<String, String> headers = Arrays.stream(response.getAllHeaders())
-                .collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
-        return new ApiResponse(code, headers, body);
     }
 
     private void compareResult(final Response expected,

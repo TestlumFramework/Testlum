@@ -42,7 +42,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION
 @RequiredArgsConstructor
 public class ScenarioRunner {
 
-    private final AtomicInteger scenarioIdGenerator = new AtomicInteger();
+    private static final AtomicInteger SCENARIO_ID_GENERATOR = new AtomicInteger();
     private final AtomicInteger idGenerator = new AtomicInteger();
     private final ScenarioResult scenarioResult = new ScenarioResult();
 
@@ -55,7 +55,7 @@ public class ScenarioRunner {
     public ScenarioResult run() {
         prepare();
         prepareScenarioResult();
-        LogUtil.logScenarioDetails(scenarioArguments, scenarioIdGenerator);
+        LogUtil.logScenarioDetails(scenarioArguments, SCENARIO_ID_GENERATOR);
         runScenarioCommands();
         return scenarioResult;
     }
@@ -68,7 +68,7 @@ public class ScenarioRunner {
 
     private void prepareScenarioResult() {
         Scenario scenario = scenarioArguments.getScenario();
-        scenarioResult.setId(scenarioIdGenerator.incrementAndGet());
+        scenarioResult.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
         scenarioResult.setOverview(scenario.getOverview());
         scenarioResult.setName(scenario.getOverview().getName());
         scenarioResult.setTags(scenario.getTags());
@@ -134,6 +134,7 @@ public class ScenarioRunner {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractInterpreter<AbstractCommand> getInterpreterOrThrow(final AbstractCommand command) {
         AbstractInterpreter<? extends AbstractCommand> interpreter = cmdToInterpreterMap.get(command.getClass());
         if (interpreter == null) {

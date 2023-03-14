@@ -1,6 +1,6 @@
 package com.knubisoft.cott.testing.framework.db.rabbitmq;
 
-import com.knubisoft.cott.runner.EnvManager;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
@@ -40,7 +40,7 @@ public class RabbitMQOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         rabbitMqClient.forEach((aliasEnv, client) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.getThreadEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 String virtualHost = this.findByName(aliasEnv).getVirtualHost();
                 client.getQueues().forEach(queueInfo -> client.deleteQueue(virtualHost, queueInfo.getName()));
             }

@@ -1,6 +1,6 @@
 package com.knubisoft.cott.testing.framework.db.redis;
 
-import com.knubisoft.cott.runner.EnvManager;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnRedisEnabledCondition;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
@@ -41,7 +41,7 @@ public class RedisOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         stringRedisConnection.forEach((aliasEnv, redisConnection) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.getThreadEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 redisConnection.execute(CLEAR_DATABASE);
             }
         });

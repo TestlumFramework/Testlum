@@ -110,7 +110,6 @@ public class ExceptionMessage {
     public static final String SCROLL_TO_ELEMENT_NOT_SUPPORTED = "Scroll to the element by %s percents not supported";
     public static final String JS_FILE_UNREADABLE = "The .js file by path ./javascript/%s unreadable";
 
-    public static final String SECOND_TAB_NOT_FOUND = "Second tab not found";
     public static final String TAB_NOT_FOUND = "Available tab that can be closed not found";
     public static final String TAB_OUT_OF_BOUNDS = "Cannot close the tab №<%s> because there are only %s tabs";
     public static final String DRIVER_INITIALIZER_NOT_FOUND = "Driver initializer not found";
@@ -124,8 +123,6 @@ public class ExceptionMessage {
 
     public static final String NOT_ENABLED_MOBILEBROWSER_DEVICE = "Mobilebrowser configuration should be declared "
             + "and enabled. At least 1 mobilebrowser device must be enabled";
-    public static final String UI_DISABLED_ERROR = "Your scenarios contain UI testing steps, but your UI settings is "
-            + "disabled. Please enable UI settings in config file or exclude scenarios with UI steps.";
 
     public static final String AUTH_WAS_NOT_DEFINED = "Authentication strategy has not been defined in the "
             + "configuration file. Usage example: <auth strategy=\"basic\".../>";

@@ -8,7 +8,7 @@ import java.util.Map;
 @Service
 public class SystemDataStoreCleaner {
 
-    public void cleanAll(final NameToAdapterAlias nameToAdapterAlias) {
+    public void clearAll(final NameToAdapterAlias nameToAdapterAlias) {
         Map<String, NameToAdapterAlias.Metadata> metadataMap = nameToAdapterAlias.getAlias();
         for (final NameToAdapterAlias.Metadata metadata : metadataMap.values()) {
             metadata.getStorageOperation().clearSystem();

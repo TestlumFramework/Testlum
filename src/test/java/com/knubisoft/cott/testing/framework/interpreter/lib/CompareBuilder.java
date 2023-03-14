@@ -8,7 +8,6 @@ import com.knubisoft.cott.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.cott.testing.framework.util.StringPrettifier;
 import com.knubisoft.cott.testing.framework.util.TreeComparator;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
@@ -67,7 +66,6 @@ public class CompareBuilder {
         }
     }
 
-    @SneakyThrows
     public void exec() {
         if (expected != null) {
             String actual = supplierActual.get();

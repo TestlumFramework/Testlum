@@ -23,7 +23,6 @@ public class LocatorCollector {
     private static final PageValidator PAGE_VALIDATOR = new PageValidator();
 
     private final Map<String, File> pageFiles;
-
     private final Map<String, File> componentFiles;
 
     public LocatorCollector() {

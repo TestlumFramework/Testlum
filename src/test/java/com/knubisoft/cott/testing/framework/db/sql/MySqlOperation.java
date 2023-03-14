@@ -1,6 +1,6 @@
 package com.knubisoft.cott.testing.framework.db.sql;
 
-import com.knubisoft.cott.runner.EnvManager;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnMysqlEnabledCondition;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.Source;
@@ -43,7 +43,7 @@ public class MySqlOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         mySqlExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.getThreadEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

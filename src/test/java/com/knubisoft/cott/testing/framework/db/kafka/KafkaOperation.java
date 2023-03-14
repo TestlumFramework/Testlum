@@ -1,6 +1,6 @@
 package com.knubisoft.cott.testing.framework.db.kafka;
 
-import com.knubisoft.cott.runner.EnvManager;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnKafkaEnabledCondition;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.Source;
@@ -43,7 +43,7 @@ public class KafkaOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         kafkaConsumer.forEach((aliasEnv, kafkaConsumer) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.getThreadEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 clearKafka(kafkaConsumer, aliasEnv);
             }
         });

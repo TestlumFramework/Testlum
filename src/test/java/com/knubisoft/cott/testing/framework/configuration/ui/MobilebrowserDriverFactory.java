@@ -1,6 +1,6 @@
 package com.knubisoft.cott.testing.framework.configuration.ui;
 
-import com.knubisoft.cott.runner.EnvManager;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.SeleniumDriverUtil;
@@ -33,7 +33,7 @@ public class MobilebrowserDriverFactory {
 
     @SneakyThrows
     private WebDriver getMobilebrowserWebDriver(final DesiredCapabilities desiredCapabilities) {
-        Uis uis = GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.getThreadEnv());
+        Uis uis = GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.currentEnv());
         String serverUrl = SeleniumDriverUtil.getMobilebrowserConnectionUrl(uis);
         WebDriver driver;
         Mobilebrowser settings = uis.getMobilebrowser();

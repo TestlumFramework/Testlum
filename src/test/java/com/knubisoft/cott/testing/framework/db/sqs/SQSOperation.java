@@ -2,7 +2,7 @@ package com.knubisoft.cott.testing.framework.db.sqs;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.ListQueuesResult;
-import com.knubisoft.cott.runner.EnvManager;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnSQSEnabledCondition;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.Source;
@@ -33,7 +33,7 @@ public class SQSOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         amazonSQS.forEach((aliasEnv, amazonSQS) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.getThreadEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 ListQueuesResult listQueuesResult = amazonSQS.listQueues();
                 List<String> queueUrls = listQueuesResult.getQueueUrls();
                 queueUrls.forEach(amazonSQS::deleteQueue);

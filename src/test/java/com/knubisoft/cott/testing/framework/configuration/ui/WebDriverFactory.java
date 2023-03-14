@@ -1,6 +1,6 @@
 package com.knubisoft.cott.testing.framework.configuration.ui;
 
-import com.knubisoft.cott.runner.EnvManager;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
@@ -68,7 +68,7 @@ public class WebDriverFactory {
                 .map(webDriverFunction -> webDriverFunction.apply(browser))
                 .peek(driver -> BrowserUtil.manageWindowSize(browser, driver))
                 .findFirst().orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
-        String baseUrl = GlobalTestConfigurationProvider.getWebSettings(EnvManager.getThreadEnv()).getBaseUrl();
+        String baseUrl = GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv()).getBaseUrl();
         webDriver.get(baseUrl);
         return webDriver;
     }
@@ -98,7 +98,7 @@ public class WebDriverFactory {
         browserOptions.setCapability("browserstack.local", Boolean.TRUE);
         browserOptions.setCapability(CapabilityType.BROWSER_VERSION, browserStack.getBrowserVersion());
         String browserStackUrl = SeleniumDriverUtil.getBrowserStackUrl(
-                GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.getThreadEnv()));
+                GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.currentEnv()));
         return new RemoteWebDriver(new URL(browserStackUrl), browserOptions);
     }
 

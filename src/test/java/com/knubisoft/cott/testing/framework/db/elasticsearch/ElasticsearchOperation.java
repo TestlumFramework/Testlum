@@ -1,6 +1,6 @@
 package com.knubisoft.cott.testing.framework.db.elasticsearch;
 
-import com.knubisoft.cott.runner.EnvManager;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnElasticEnabledCondition;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.Source;
@@ -37,7 +37,7 @@ public class ElasticsearchOperation implements StorageOperation {
     public void clearSystem() {
         DeleteIndexRequest request = new DeleteIndexRequest("*");
         for (Map.Entry<AliasEnv, RestHighLevelClient> entry : restHighLevelClient.entrySet()) {
-            if (Objects.equals(entry.getKey().getEnvironment(), EnvManager.getThreadEnv())) {
+            if (Objects.equals(entry.getKey().getEnvironment(), EnvManager.currentEnv())) {
                 entry.getValue().indices().delete(request, RequestOptions.DEFAULT);
             }
         }

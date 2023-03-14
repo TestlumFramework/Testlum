@@ -3,7 +3,7 @@ package com.knubisoft.cott.testing.framework.db.s3;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.knubisoft.cott.runner.EnvManager;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnS3EnabledCondition;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.Source;
@@ -33,7 +33,7 @@ public class S3Operation implements StorageOperation {
     @Override
     public void clearSystem() {
         this.amazonS3.forEach((aliasEnv, amazonS3) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.getThreadEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 String bucketName = aliasEnv.getAlias();
                 ListObjectsV2Result objectsInBucket = amazonS3.listObjectsV2(bucketName);
                 this.deleteObjectsInBucket(amazonS3, objectsInBucket, bucketName);

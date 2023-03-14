@@ -43,7 +43,7 @@ public class UiUtil {
 
     private static final int MAX_PERCENTS_VALUE = 100;
 
-    private static final int TIME_TO_WAIT = GlobalTestConfigurationProvider.provideUis().get("env1")
+    private static final int TIME_TO_WAIT = GlobalTestConfigurationProvider.getUiConfigs().get("env1")
             .getWeb().getBrowserSettings().getElementAutowait().getSeconds();
 
     private static final String FILE_PATH_PREFIX = "file:";

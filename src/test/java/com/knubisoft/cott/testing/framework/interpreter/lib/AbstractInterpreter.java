@@ -9,7 +9,6 @@ import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.cott.testing.framework.util.StringPrettifier;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -65,7 +64,6 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         }
     }
 
-    @SneakyThrows
     public String toString(final Object o) {
         return JacksonMapperUtil.writeValueAsString(o);
     }
@@ -74,7 +72,6 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         return dependencies.getScenarioContext().inject(original);
     }
 
-    @SneakyThrows
     protected void setContextBody(final String o) {
         dependencies.getScenarioContext().setBody(o);
     }

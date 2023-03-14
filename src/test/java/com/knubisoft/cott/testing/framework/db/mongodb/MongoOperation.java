@@ -1,6 +1,6 @@
 package com.knubisoft.cott.testing.framework.db.mongodb;
 
-import com.knubisoft.cott.runner.EnvManager;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnMongoEnabledCondition;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.Source;
@@ -37,7 +37,7 @@ public class MongoOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         mongoDatabase.forEach((aliasEnv, mongoDatabase) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.getThreadEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 mongoDatabase.runCommand(Document.parse(DROP_DATABASE));
             }
         });

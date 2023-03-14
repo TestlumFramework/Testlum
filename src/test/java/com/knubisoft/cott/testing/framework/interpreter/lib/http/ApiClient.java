@@ -1,6 +1,6 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib.http;
 
-import com.knubisoft.cott.runner.EnvManager;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.IntegrationsUtil;
@@ -105,7 +105,7 @@ public class ApiClient {
     }
 
     private String createFullURL(final String endpoint, final String alias) {
-        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().get(EnvManager.getThreadEnv())
+        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().get(EnvManager.currentEnv())
                 .getApis().getApi();
         Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, alias);
         return apiIntegration.getUrl() + endpoint;

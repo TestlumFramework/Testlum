@@ -48,7 +48,7 @@ public final class WebElementFinder {
                                             final WebDriver driver,
                                             final int timeToWait) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeToWait));
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(by));
+        return wait.until(ExpectedConditions.presenceOfElementLocated(by));
     }
 
     private DefaultFrameworkException defaultFrameworkException(final Locator locator) {

@@ -15,15 +15,14 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.CREDENTIALS_F
 @Slf4j
 @InterpreterForClass(Auth.class)
 public class AuthInterpreter extends AbstractInterpreter<Auth> {
-    private final AuthStrategy authStrategy;
 
     public AuthInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
-        this.authStrategy = AuthFactory.create(dependencies);
     }
 
     @Override
     protected void acceptImpl(final Auth auth, final CommandResult result) {
+        AuthStrategy authStrategy = AuthFactory.create(dependencies, auth.getApiAlias());
         result.put(API_ALIAS, auth.getApiAlias());
         result.put(CREDENTIALS_FILE, auth.getCredentials());
         authStrategy.authenticate(auth, result);

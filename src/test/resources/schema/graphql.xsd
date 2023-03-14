@@ -34,7 +34,7 @@
         <x:complexContent>
             <x:extension base="tns:httpInfo">
                 <x:sequence>
-                    <x:element name="parameter" type="tns:param" minOccurs="1" maxOccurs="3"/>
+                    <x:element name="param" type="tns:param" minOccurs="1" maxOccurs="3"/>
                 </x:sequence>
             </x:extension>
         </x:complexContent>

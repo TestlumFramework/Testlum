@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}httpInfo"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="parameter" type="{http://www.knubisoft.com/cott/testing/model/scenario}param" maxOccurs="3"/&gt;
+ *         &lt;element name="param" type="{http://www.knubisoft.com/cott/testing/model/scenario}param" maxOccurs="3"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -30,28 +30,28 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "graphqlGet", propOrder = {
-    "parameter"
+    "param"
 })
 public class GraphqlGet
     extends HttpInfo
 {
 
     @XmlElement(required = true)
-    protected List<Param> parameter;
+    protected List<Param> param;
 
     /**
-     * Gets the value of the parameter property.
+     * Gets the value of the param property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the parameter property.
+     * This is why there is not a <CODE>set</CODE> method for the param property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getParameter().add(newItem);
+     *    getParam().add(newItem);
      * </pre>
      * 
      * 
@@ -61,11 +61,11 @@ public class GraphqlGet
      * 
      * 
      */
-    public List<Param> getParameter() {
-        if (parameter == null) {
-            parameter = new ArrayList<Param>();
+    public List<Param> getParam() {
+        if (param == null) {
+            param = new ArrayList<Param>();
         }
-        return this.parameter;
+        return this.param;
     }
 
 }

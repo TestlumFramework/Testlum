@@ -100,7 +100,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     @SneakyThrows
     private HttpGet buildHttpGet(final Graphql graphql, final GraphqlGet graphqlGet) {
         URIBuilder uriBuilder = new URIBuilder(getFullUrl(graphql, graphqlGet));
-        List<Param> parameters = graphqlGet.getParameter();
+        List<Param> parameters = graphqlGet.getParam();
         parameters.forEach(param -> uriBuilder.addParameter(param.getName(), prettifyString(param.getData())));
         return new HttpGet(uriBuilder.build());
     }

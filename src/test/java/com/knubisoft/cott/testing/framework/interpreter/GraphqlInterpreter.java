@@ -9,6 +9,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.http.ApiResponse;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
+import com.knubisoft.cott.testing.framework.util.HttpUtil;
 import com.knubisoft.cott.testing.framework.util.HttpValidator;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
@@ -103,6 +104,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         setContextBody(actualBody);
         validateBody(expected, actualBody, httpValidator, result);
         validateHeaders(expected, actual, httpValidator);
+        httpValidator.rethrowOnErrors();
     }
 
     private void validateBody(final Response expected,
@@ -115,7 +117,6 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         result.setActual(PrettifyStringJson.getJSONResult(actualBody));
         result.setExpected(PrettifyStringJson.getJSONResult(body));
         httpValidator.validateBody(body, actualBody);
-        httpValidator.rethrowOnErrors();
     }
 
     private void validateHeaders(final Response expected,
@@ -127,7 +128,9 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     }
 
     private Map<String, String> getExpectedHeaders(final Response expected) {
-        return expected.getHeader().stream().collect(Collectors.toMap(Header::getName, Header::getData));
+        Map<String, String> expectedHeaders
+                = expected.getHeader().stream().collect(Collectors.toMap(Header::getName, Header::getData));
+        return HttpUtil.injectAndGetHeaders(expectedHeaders, this);
     }
 
 

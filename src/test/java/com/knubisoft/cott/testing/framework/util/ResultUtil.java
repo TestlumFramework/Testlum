@@ -62,13 +62,15 @@ public class ResultUtil {
     public static final String EXPECTED_CODE = "Expected code";
     public static final String ACTUAL_CODE = "Actual code";
     public static final String JSON_PATH = "JSON path";
-    public static final String XPATH = "Xpath";
+    public static final String XML_PATH = "Xml path";
     public static final String POSTGRES_QUERY = "Postgres query";
     public static final String RELATIONAL_DB_QUERY = "Relational DB query";
     public static final String EXPRESSION = "Expression";
     public static final String NO_EXPRESSION = "No expression";
     public static final String CONSTANT = "Constant";
     public static final String COOKIES = "Cookies";
+    public static final String FILE = "File";
+    public static final String HTML_DOM = "HTML Dom";
     public static final String ASSERT_LOCATOR = "Locator for assert command";
     public static final String ASSERT_ATTRIBUTE = "Assert command attribute";
     public static final String CLICK_LOCATOR = "Locator for click command";

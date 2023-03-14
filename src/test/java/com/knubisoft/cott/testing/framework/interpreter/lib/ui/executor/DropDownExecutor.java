@@ -34,7 +34,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
     public void execute(final DropDown dropDown, final CommandResult result) {
         String locatorId = dropDown.getLocatorId();
         result.put(DROP_DOWN_LOCATOR, locatorId);
-        Select select = new Select(UiUtil.findWebElement(dependencies.getDriver(), locatorId));
+        Select select = new Select(UiUtil.findWebElement(dependencies, locatorId));
         OneValue oneValue = dropDown.getOneValue();
         if (oneValue != null) {
             processOneValueFromDropDown(oneValue, select, result);

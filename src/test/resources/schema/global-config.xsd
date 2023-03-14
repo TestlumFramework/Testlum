@@ -26,7 +26,6 @@
                 <x:element name="delayBetweenScenariosRuns" type="tns:delayBetweenScenariosRuns" minOccurs="0"/>
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
                 <x:element name="report" type="tns:report"/>
-                <x:element name="auth" type="tns:auth"/>
                 <x:element name="environments" type="tns:environments"/>
             </x:sequence>
         </x:complexType>
@@ -43,21 +42,6 @@
         </x:choice>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
-
-    <x:complexType name="auth">
-        <x:attribute name="autoLogout" type="x:boolean" default="true"/>
-        <x:attribute name="authStrategy" type="tns:authStrategies" default="default"/>
-        <x:attribute name="authCustomClassName" type="tns:nonEmptyString"/>
-    </x:complexType>
-
-    <x:simpleType name="authStrategies">
-        <x:restriction base="x:string">
-            <x:enumeration value="basic"/>
-            <x:enumeration value="jwt"/>
-            <x:enumeration value="custom"/>
-            <x:enumeration value="default"/>
-        </x:restriction>
-    </x:simpleType>
 
     <x:complexType name="subscription">
         <x:choice>

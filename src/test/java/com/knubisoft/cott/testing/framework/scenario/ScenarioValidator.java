@@ -12,6 +12,7 @@ import com.knubisoft.cott.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.framework.util.SendGridUtil;
 import com.knubisoft.cott.testing.framework.validator.XMLValidator;
+import com.knubisoft.cott.testing.framework.variations.GlobalVariations;
 import com.knubisoft.cott.testing.model.global_config.Apis;
 import com.knubisoft.cott.testing.model.global_config.AppiumCapabilities;
 import com.knubisoft.cott.testing.model.global_config.ClickhouseIntegration;
@@ -45,6 +46,8 @@ import com.knubisoft.cott.testing.model.scenario.Clickhouse;
 import com.knubisoft.cott.testing.model.scenario.CommandWithOptionalLocator;
 import com.knubisoft.cott.testing.model.scenario.Dynamo;
 import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
+import com.knubisoft.cott.testing.model.scenario.FromFile;
+import com.knubisoft.cott.testing.model.scenario.FromSQL;
 import com.knubisoft.cott.testing.model.scenario.Http;
 import com.knubisoft.cott.testing.model.scenario.HttpInfo;
 import com.knubisoft.cott.testing.model.scenario.Include;
@@ -63,7 +66,6 @@ import com.knubisoft.cott.testing.model.scenario.Rabbit;
 import com.knubisoft.cott.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.cott.testing.model.scenario.Redis;
-import com.knubisoft.cott.testing.model.scenario.RelationalDbResult;
 import com.knubisoft.cott.testing.model.scenario.Response;
 import com.knubisoft.cott.testing.model.scenario.S3;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
@@ -103,6 +105,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.AUTH_ALIASES_DOESNT_MATCH;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INTEGRATION_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
@@ -127,6 +130,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         validatorMap.put(o -> o instanceof Auth, (xmlFile, command) -> {
             Auth auth = (Auth) command;
             validateFileExistenceInDataFolder(auth.getCredentials());
+            validateAlias(integrations.getApis().getApi(), auth.getApiAlias());
+            validateAuthCommand(auth);
         });
 
         validatorMap.put(o -> o instanceof Http, (xmlFile, command) -> {
@@ -293,7 +298,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
         validatorMap.put(o -> o instanceof Var, (xmlFile, command) -> {
             Var var = (Var) command;
-            validateVarCommand(var);
+            validateVarCommand(xmlFile, var);
         });
 
         validatorMap.put(o -> o instanceof Web, (xmlFile, command) -> {
@@ -314,8 +319,15 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     @Override
     public void validate(final Scenario scenario, final File xmlFile) {
         if (scenario.isActive()) {
+            validateVariationsIfExist(scenario, xmlFile);
             validateIfContainsNativeAndMobileCommands(scenario.getCommands());
             scenario.getCommands().forEach(command -> validateCommand(command, xmlFile));
+        }
+    }
+
+    private void validateVariationsIfExist(final Scenario scenario, final File xmlFile) {
+        if (StringUtils.hasText(scenario.getVariations())) {
+            GlobalVariations.process(scenario, xmlFile);
         }
     }
 
@@ -389,11 +401,15 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     //CHECKSTYLE:OFF
-    private void validateVarCommand(final Var var) {
-        RelationalDbResult dbResult = var.getRelationalDbResult();
-        if (Objects.nonNull(dbResult)) {
+    private void validateVarCommand(final File xmlFile, final Var var) {
+        FromFile fromFile = var.getFromFile();
+        if (Objects.nonNull(fromFile)) {
+            validateFileIfExist(xmlFile, fromFile.getFileName());
+        }
+        FromSQL fromSQL = var.getFromSQL();
+        if (Objects.nonNull(fromSQL)) {
             List<? extends Integration> integrationList;
-            switch (dbResult.getDbType()) {
+            switch (fromSQL.getDbType()) {
                 case POSTGRES:
                     checkIntegrationExistence(integrations.getPostgresIntegration(), PostgresIntegration.class);
                     integrationList = integrations.getPostgresIntegration().getPostgres();
@@ -411,9 +427,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                     integrationList = integrations.getClickhouseIntegration().getClickhouse();
                     break;
                 default:
-                    throw new DefaultFrameworkException(DB_NOT_SUPPORTED, dbResult.getDbType());
+                    throw new DefaultFrameworkException(DB_NOT_SUPPORTED, fromSQL.getDbType());
             }
-            validateAlias(integrationList, dbResult.getAlias());
+            validateAlias(integrationList, fromSQL.getAlias());
         }
     }
     //CHECKSTYLE:ON
@@ -593,6 +609,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
+    private void validateAuthCommand(final Auth auth) {
+        if (auth.getCommands().stream().anyMatch(command -> command instanceof Http
+                && !((Http) command).getAlias().equals(auth.getApiAlias()))) {
+            throw new DefaultFrameworkException(AUTH_ALIASES_DOESNT_MATCH);
+        }
+    }
+
     private void validateIncludeAction(final Include include, final File xmlFile) {
         if (StringUtils.hasText(include.getScenario())) {
             File includedScenarioFolder = new File(TestResourceSettings.getInstance().getScenariosFolder(),
@@ -613,5 +636,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private interface AbstractCommandPredicate extends Predicate<AbstractCommand> { }
+
     private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> { }
 }

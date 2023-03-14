@@ -31,12 +31,12 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
 
     @Override
     public void execute(final DragAndDrop dragAndDrop, final CommandResult result) {
-        WebElement target = UiUtil.findWebElement(driver, dragAndDrop.getToLocatorId());
+        WebElement target = UiUtil.findWebElement(dependencies, dragAndDrop.getToLocatorId());
         if (StringUtils.isNotBlank(dragAndDrop.getFilePath())) {
             dropFile(target, new File(dragAndDrop.getFilePath()));
             result.put(FROM_LOCAL_FILE, dragAndDrop.getFilePath());
         } else {
-            dropElement(target, UiUtil.findWebElement(driver, dragAndDrop.getFromLocatorId()));
+            dropElement(target, UiUtil.findWebElement(dependencies, dragAndDrop.getFromLocatorId()));
             result.put(FROM_LOCATOR, dragAndDrop.getFromLocatorId());
         }
         result.put(TO_LOCATOR, dragAndDrop.getToLocatorId());

@@ -1,6 +1,5 @@
 package com.knubisoft.cott.testing.framework.util;
 
-import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -43,9 +42,6 @@ public class UiUtil {
 
     private static final int MAX_PERCENTS_VALUE = 100;
 
-    private static final int TIME_TO_WAIT = GlobalTestConfigurationProvider.getUiConfigs().get("env1")
-            .getWeb().getBrowserSettings().getElementAutowait().getSeconds();
-
     private static final String FILE_PATH_PREFIX = "file:";
 
     private static final String APPIUM_LOCALHOST_ALIAS = "10.0.2.2";
@@ -60,9 +56,9 @@ public class UiUtil {
         return value;
     }
 
-    public WebElement findWebElement(final WebDriver webDriver, final String locatorId) {
+    public WebElement findWebElement(final ExecutorDependencies dependencies, final String locatorId) {
         Locator locator = GlobalLocators.getLocator(locatorId);
-        return WebElementFinder.find(locator, webDriver);
+        return WebElementFinder.find(locator, dependencies.getDriver(), dependencies.getUiType().getAutoWait());
     }
 
     public void highlightElementIfRequired(final Boolean isHighlight,
@@ -73,29 +69,37 @@ public class UiUtil {
         }
     }
 
-    public void waitForElementVisibility(final WebDriver driver, final WebElement element) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIME_TO_WAIT));
+    public void waitForElementVisibility(final ExecutorDependencies dependencies, final WebElement element) {
+        WebDriverWait wait = new WebDriverWait(dependencies.getDriver(),
+                Duration.ofSeconds(dependencies.getUiType().getAutoWait()));
         wait.until(ExpectedConditions.visibilityOf(element));
     }
 
-    public void waitForElementToBeClickable(final WebDriver driver, final WebElement element) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIME_TO_WAIT));
-        highlightElementIfRequired(true, element, driver);
+    public void waitForElementToBeClickable(final ExecutorDependencies dependencies, final WebElement element) {
+        WebDriverWait wait = new WebDriverWait(dependencies.getDriver(),
+                Duration.ofSeconds(dependencies.getUiType().getAutoWait()));
+        highlightElementIfRequired(true, element, dependencies.getDriver());
         wait.until(ExpectedConditions.elementToBeClickable(element));
     }
 
-    public void waitForElementToBeClickableNoHighlight(final WebDriver driver, final WebElement element) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIME_TO_WAIT));
+    public void waitForElementToBeClickableNoHighlight(final ExecutorDependencies dependencies,
+                                                       final WebElement element) {
+        WebDriverWait wait = new WebDriverWait(dependencies.getDriver(),
+                Duration.ofSeconds(dependencies.getUiType().getAutoWait()));
         wait.until(ExpectedConditions.elementToBeClickable(element));
     }
 
-    public void waitForTextToBePresentInElement(final WebDriver driver, final WebElement element, final String text) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIME_TO_WAIT));
+    public void waitForTextToBePresentInElement(final ExecutorDependencies dependencies,
+                                                final WebElement element,
+                                                final String text) {
+        WebDriverWait wait = new WebDriverWait(dependencies.getDriver(),
+                Duration.ofSeconds(dependencies.getUiType().getAutoWait()));
         wait.until(ExpectedConditions.textToBePresentInElement(element, text));
     }
 
-    public void waitForElementToBeSelected(final WebDriver driver, final WebElement element) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(TIME_TO_WAIT));
+    public void waitForElementToBeSelected(final ExecutorDependencies dependencies, final WebElement element) {
+        WebDriverWait wait = new WebDriverWait(dependencies.getDriver(),
+                Duration.ofSeconds(dependencies.getUiType().getAutoWait()));
         wait.until(ExpectedConditions.elementToBeSelected(element));
     }
 

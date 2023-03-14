@@ -830,19 +830,59 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link RelationalDbResult }
+     * Create an instance of {@link FromFile }
      * 
      */
-    public RelationalDbResult createRelationalDbResult() {
-        return new RelationalDbResult();
+    public FromFile createFromFile() {
+        return new FromFile();
     }
 
     /**
-     * Create an instance of {@link ResultFrom }
+     * Create an instance of {@link FromPath }
      * 
      */
-    public ResultFrom createResultFrom() {
-        return new ResultFrom();
+    public FromPath createFromPath() {
+        return new FromPath();
+    }
+
+    /**
+     * Create an instance of {@link FromExpression }
+     * 
+     */
+    public FromExpression createFromExpression() {
+        return new FromExpression();
+    }
+
+    /**
+     * Create an instance of {@link FromConstant }
+     * 
+     */
+    public FromConstant createFromConstant() {
+        return new FromConstant();
+    }
+
+    /**
+     * Create an instance of {@link FromCookie }
+     * 
+     */
+    public FromCookie createFromCookie() {
+        return new FromCookie();
+    }
+
+    /**
+     * Create an instance of {@link FromDom }
+     * 
+     */
+    public FromDom createFromDom() {
+        return new FromDom();
+    }
+
+    /**
+     * Create an instance of {@link FromSQL }
+     * 
+     */
+    public FromSQL createFromSQL() {
+        return new FromSQL();
     }
 
     /**

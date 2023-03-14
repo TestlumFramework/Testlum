@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="environment" type="{http://www.knubisoft.com/cott/testing/model/global-config}environment" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="env" type="{http://www.knubisoft.com/cott/testing/model/global-config}environment" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -30,26 +30,26 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "environments", propOrder = {
-    "environment"
+    "env"
 })
 public class Environments {
 
     @XmlElement(required = true)
-    protected List<Environment> environment;
+    protected List<Environment> env;
 
     /**
-     * Gets the value of the environment property.
+     * Gets the value of the env property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the environment property.
+     * This is why there is not a <CODE>set</CODE> method for the env property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getEnvironment().add(newItem);
+     *    getEnv().add(newItem);
      * </pre>
      * 
      * 
@@ -59,11 +59,11 @@ public class Environments {
      * 
      * 
      */
-    public List<Environment> getEnvironment() {
-        if (environment == null) {
-            environment = new ArrayList<Environment>();
+    public List<Environment> getEnv() {
+        if (env == null) {
+            env = new ArrayList<Environment>();
         }
-        return this.environment;
+        return this.env;
     }
 
 }

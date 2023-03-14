@@ -29,10 +29,10 @@ public class ExtentReportsConfigurator {
         String projectName = extentReportsConfig.getProjectName();
         HtmlReportGenerator htmlReportGeneratorSettings = extentReportsConfig.getHtmlReportGenerator();
         KlovServerReportGenerator klovServerGeneratorSettings = extentReportsConfig.getKlovServerReportGenerator();
-        if (htmlReportGeneratorSettings.isEnable()) {
+        if (htmlReportGeneratorSettings.isEnabled()) {
             attachSparkReporter(extentReports, projectName);
         }
-        if (Objects.nonNull(klovServerGeneratorSettings) && klovServerGeneratorSettings.isEnable()) {
+        if (Objects.nonNull(klovServerGeneratorSettings) && klovServerGeneratorSettings.isEnabled()) {
             attachKlovServerReporter(extentReports, klovServerGeneratorSettings, projectName);
         }
     }
@@ -42,7 +42,7 @@ public class ExtentReportsConfigurator {
         String pathForReportSaving = TestResourceSettings.getInstance().getTestResourcesFolder().getAbsolutePath()
                 + TestResourceSettings.REPORT_FOLDER;
         String formattedPathForReportSaving = format(TEMPLATE_FOR_REPORT_SAVING_PATH, pathForReportSaving,
-                        dateTime.format(DATE_FORMATTER), projectName, dateTime.format(DATE_TIME_FORMATTER));
+                dateTime.format(DATE_FORMATTER), projectName, dateTime.format(DATE_TIME_FORMATTER));
         ExtentSparkReporter extentSparkReporter = new ExtentSparkReporter(formattedPathForReportSaving);
         extentReports.attachReporter(extentSparkReporter);
     }

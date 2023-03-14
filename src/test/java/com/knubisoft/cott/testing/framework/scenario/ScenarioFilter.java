@@ -49,7 +49,7 @@ public class ScenarioFilter {
 
     private Set<MappingResult> filterScenariosByTags(final Set<MappingResult> activeScenarios) {
         RunScenariosByTag runScenariosByTag = GlobalTestConfigurationProvider.provide().getRunScenariosByTag();
-        return runScenariosByTag.isEnable()
+        return runScenariosByTag.isEnabled()
                 ? filterByTags(activeScenarios, getEnabledTags(runScenariosByTag.getTag()))
                 : activeScenarios;
     }
@@ -69,7 +69,7 @@ public class ScenarioFilter {
 
     private List<String> getEnabledTags(final List<TagValue> tags) {
         List<String> enabledTags = tags.stream()
-                .filter(TagValue::isEnable)
+                .filter(TagValue::isEnabled)
                 .map(TagValue::getName)
                 .collect(Collectors.toList());
         if (enabledTags.isEmpty()) {

@@ -16,12 +16,8 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="environment"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="uisConfigFile" type="{http://www.knubisoft.com/cott/testing/model/global-config}configFile" minOccurs="0"/&gt;
- *         &lt;element name="integrationsConfigFile" type="{http://www.knubisoft.com/cott/testing/model/global-config}configFile" minOccurs="0"/&gt;
- *       &lt;/sequence&gt;
  *       &lt;attribute name="folder" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" /&gt;
- *       &lt;attribute name="enable" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -30,66 +26,13 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "environment", propOrder = {
-    "uisConfigFile",
-    "integrationsConfigFile"
-})
+@XmlType(name = "environment")
 public class Environment {
 
-    protected ConfigFile uisConfigFile;
-    protected ConfigFile integrationsConfigFile;
     @XmlAttribute(name = "folder", required = true)
     protected String folder;
-    @XmlAttribute(name = "enable", required = true)
-    protected boolean enable;
-
-    /**
-     * Gets the value of the uisConfigFile property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ConfigFile }
-     *     
-     */
-    public ConfigFile getUisConfigFile() {
-        return uisConfigFile;
-    }
-
-    /**
-     * Sets the value of the uisConfigFile property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ConfigFile }
-     *     
-     */
-    public void setUisConfigFile(ConfigFile value) {
-        this.uisConfigFile = value;
-    }
-
-    /**
-     * Gets the value of the integrationsConfigFile property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ConfigFile }
-     *     
-     */
-    public ConfigFile getIntegrationsConfigFile() {
-        return integrationsConfigFile;
-    }
-
-    /**
-     * Sets the value of the integrationsConfigFile property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ConfigFile }
-     *     
-     */
-    public void setIntegrationsConfigFile(ConfigFile value) {
-        this.integrationsConfigFile = value;
-    }
+    @XmlAttribute(name = "enabled", required = true)
+    protected boolean enabled;
 
     /**
      * Gets the value of the folder property.
@@ -116,19 +59,19 @@ public class Environment {
     }
 
     /**
-     * Gets the value of the enable property.
+     * Gets the value of the enabled property.
      * 
      */
-    public boolean isEnable() {
-        return enable;
+    public boolean isEnabled() {
+        return enabled;
     }
 
     /**
-     * Sets the value of the enable property.
+     * Sets the value of the enabled property.
      * 
      */
-    public void setEnable(boolean value) {
-        this.enable = value;
+    public void setEnabled(boolean value) {
+        this.enabled = value;
     }
 
 }

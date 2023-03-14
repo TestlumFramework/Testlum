@@ -50,7 +50,7 @@
 
     <x:complexType name="tagValue">
         <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="enable" type="x:boolean" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
     <x:complexType name="hikari">
@@ -104,7 +104,7 @@
     </x:complexType>
 
     <x:complexType name="takeScreenshot">
-        <x:attribute name="enable" type="x:boolean" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
     <x:complexType name="elementAutowait">

@@ -41,7 +41,7 @@
         <x:choice>
             <x:element name="tag" type="tns:tagValue" maxOccurs="unbounded"/>
         </x:choice>
-        <x:attribute name="enable" type="x:boolean" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
     <x:complexType name="auth">
@@ -75,21 +75,12 @@
 
     <x:complexType name="environments">
         <x:sequence>
-            <x:element name="environment" type="tns:environment" maxOccurs="unbounded"/>
+            <x:element name="env" type="tns:environment" maxOccurs="unbounded"/>
         </x:sequence>
     </x:complexType>
 
     <x:complexType name="environment">
-        <x:sequence>
-            <x:element name="uisConfigFile" type="tns:configFile" minOccurs="0"/>
-            <x:element name="integrationsConfigFile" type="tns:configFile" minOccurs="0"/>
-        </x:sequence>
         <x:attribute name="folder" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="enable" type="x:boolean" use="required"/>
-    </x:complexType>
-
-    <x:complexType name="configFile">
-        <x:attribute name="file" type="tns:xmlFileExtension" use="required"/>
-        <x:attribute name="enable" type="x:boolean" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 </x:schema>

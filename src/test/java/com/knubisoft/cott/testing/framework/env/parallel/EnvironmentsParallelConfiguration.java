@@ -1,14 +1,19 @@
-package com.knubisoft.cott.testing;
+package com.knubisoft.cott.testing.framework.env.parallel;
 
-import com.knubisoft.cott.testing.framework.util.BrowserUtil;
+import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import org.junit.platform.engine.ConfigurationParameters;
 import org.junit.platform.engine.support.hierarchical.ParallelExecutionConfiguration;
 import org.junit.platform.engine.support.hierarchical.ParallelExecutionConfigurationStrategy;
 
-public class CustomStrategy implements ParallelExecutionConfigurationStrategy {
+public class EnvironmentsParallelConfiguration implements ParallelExecutionConfigurationStrategy {
+
+    //todo parallelism
+    private final int parallelism = GlobalTestConfigurationProvider.getEnabledEnvironments().size();
+    private final int keepAliveSeconds = 30;
+
+    //CHECKSTYLE:OFF
     @Override
-    public ParallelExecutionConfiguration createConfiguration(ConfigurationParameters configurationParameters) {
-        int parallelism = BrowserUtil.filterEnabledBrowsers().size();
+    public ParallelExecutionConfiguration createConfiguration(final ConfigurationParameters configurationParameters) {
         return new ParallelExecutionConfiguration() {
             @Override
             public int getParallelism() {
@@ -32,8 +37,9 @@ public class CustomStrategy implements ParallelExecutionConfigurationStrategy {
 
             @Override
             public int getKeepAliveSeconds() {
-                return 30;
+                return keepAliveSeconds;
             }
         };
     }
+    //CHECKSTYLE:ON
 }

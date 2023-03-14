@@ -1,7 +1,7 @@
 package com.knubisoft.cott.testing.framework.configuration.ui;
 
-import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.framework.util.SeleniumDriverUtil;
@@ -125,7 +125,7 @@ public class WebDriverFactory {
         if (StringUtils.isNotEmpty(dockerNetwork)) {
             driverManager.dockerNetwork(dockerNetwork);
         }
-        if (screenRecordingSettings != null && screenRecordingSettings.isEnable()) {
+        if (screenRecordingSettings != null && screenRecordingSettings.isEnabled()) {
             driverManager.enableRecording().dockerRecordingOutput(screenRecordingSettings.getOutputFolder());
         }
         return browserInDockerSettings.isEnableVNC() ? driverManager.enableVnc().create() : driverManager.create();

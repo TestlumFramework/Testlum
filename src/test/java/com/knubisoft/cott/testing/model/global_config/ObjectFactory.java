@@ -757,12 +757,4 @@ public class ObjectFactory {
         return new Environment();
     }
 
-    /**
-     * Create an instance of {@link ConfigFile }
-     * 
-     */
-    public ConfigFile createConfigFile() {
-        return new ConfigFile();
-    }
-
 }

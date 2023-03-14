@@ -3,9 +3,7 @@ package com.knubisoft.cott.testing.framework.interpreter.lib.ui;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.ConditionUtil;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
 
     protected final ExecutorDependencies dependencies;

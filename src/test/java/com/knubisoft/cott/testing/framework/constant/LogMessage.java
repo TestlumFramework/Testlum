@@ -36,6 +36,7 @@ public final class LogMessage {
     public static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
     public static final String REPEAT_FINISHED_LOG = ANSI_CYAN + "------- Repeat is finished -------" + ANSI_RESET;
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
+    public static final String CONDITION_LOG = format(TABLE_FORMAT, "Condition", "{}");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
     public static final String ERROR_SQL_QUERY = ANSI_RED + "Error while executing SQL query -> "
             + "{}" + ANSI_ORANGE + NEW_LOG_LINE + "{}" + ANSI_RESET;
@@ -74,6 +75,7 @@ public final class LogMessage {
             + "Failed to generate initial structure by path " + ANSI_BLUE_UNDERLINED + "{}" + ANSI_RESET;
 
     public static final String FAILED_VARIABLE_WITH_PATH_LOG = "Failed [variable] {} [comment] {}";
+    public static final String FAILED_CONDITION_WITH_PATH_LOG = "Failed [condition] {} [comment] {}";
 
     public static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
     public static final String BY_URL_LOG = format(TABLE_FORMAT, "URL", "{}");

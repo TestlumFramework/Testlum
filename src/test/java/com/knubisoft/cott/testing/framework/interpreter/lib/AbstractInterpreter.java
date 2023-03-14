@@ -5,6 +5,7 @@ import com.knubisoft.cott.testing.framework.constant.MigrationConstant;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.exception.FileLinkingException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.ConditionUtil;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.cott.testing.framework.util.StringPrettifier;
@@ -39,11 +40,8 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         if (StringUtils.isNotBlank(o.getComment())) {
             log.info(COMMENT_LOG, o.getComment());
         }
-        if (o.getCondition() == null) {
-            checkExecutionTime(o, () -> acceptImpl(o, result));
-        } else {
-            checkCondition(inject(o.getCondition()), o, result);
-        }
+        ConditionUtil.checkIf(o.getIf(), dependencies.getScenarioContext());
+        checkExecutionTime(o, () -> acceptImpl(o, result));
     }
 
     private void checkExecutionTime(final T o, final Runnable r) {
@@ -76,16 +74,6 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
 
     public String inject(final String original) {
         return dependencies.getScenarioContext().inject(original);
-    }
-
-    public void checkCondition(final String original,
-                               final T o,
-                               final CommandResult result) {
-        if (dependencies.getScenarioContext().getCondition(original)) {
-            checkExecutionTime(o, () -> acceptImpl(o, result));
-        } else {
-            log.info("Condition is false");
-        }
     }
 
     @SneakyThrows

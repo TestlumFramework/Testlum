@@ -144,6 +144,7 @@ public class ExceptionMessage {
     public static final String FOUND_MORE_THEN_ONE_ELEMENT = "More than one element was found by locator <%s>";
     public static final String ELEMENT_NOT_FOUND = "Element with locator <%s> was not found during 'scrollTo'";
     public static final String FILE_NOT_FOUND = "File not found: %s";
+    public static final String AUTH_NOT_FOUND = "Auth for Api Integration with alias %s not found";
     public static final String SCROLL_TYPE_NOT_FOUND = "Scroll type <%s> not supported";
     public static final String SWIPE_TYPE_NOT_FOUND = "Swipe direction <%s> is not supported";
     public static final String NO_LOCATOR_FOUND_FOR_INNER_SCROLL = "You didn't specify a locator for the inner scroll";

@@ -27,6 +27,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_VA
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.COOKIES;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.HTML_DOM;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NO_EXPRESSION;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.URL;
 import static java.util.Objects.nonNull;
 
 
@@ -48,6 +49,7 @@ public class WebVarExecutor extends AbstractUiExecutor<WebVar> {
         webVarMap.put(var -> nonNull(var.getPath()), this::getPathResult);
         webVarMap.put(var -> nonNull(var.getCookie()), this::getWebCookiesResult);
         webVarMap.put(var -> nonNull(var.getDom()), this::getDomResult);
+        webVarMap.put(var -> nonNull(var.getUrl()), this::getUrlResult);
         webVarToMethodMap = Collections.unmodifiableMap(webVarMap);
     }
 
@@ -93,6 +95,12 @@ public class WebVarExecutor extends AbstractUiExecutor<WebVar> {
         return valueResult;
     }
 
+    private String getUrlResult(final WebVar webVar, final CommandResult result) {
+        String valueResult = dependencies.getDriver().getCurrentUrl();
+        ResultUtil.addVariableMetaData(URL, webVar.getName(), NO_EXPRESSION, valueResult, result);
+        return valueResult;
+    }
+
     private String getPathResult(final WebVar webVar, final CommandResult commandResult) {
         return varService.getPathResult(webVar.getPath(), webVar.getName(), commandResult);
     }
@@ -113,9 +121,7 @@ public class WebVarExecutor extends AbstractUiExecutor<WebVar> {
         return varService.getSQLResult(webVar.getSQL(), webVar.getName(), commandResult);
     }
 
-    private interface WebVarFromPredicate extends Predicate<WebVar> {
-    }
+    private interface WebVarFromPredicate extends Predicate<WebVar> { }
 
-    private interface WebVarFromMethod extends BiFunction<WebVar, CommandResult, String> {
-    }
+    private interface WebVarFromMethod extends BiFunction<WebVar, CommandResult, String> { }
 }

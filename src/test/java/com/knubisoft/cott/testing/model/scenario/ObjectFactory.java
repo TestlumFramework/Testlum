@@ -638,6 +638,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FromUrl }
+     * 
+     */
+    public FromUrl createFromUrl() {
+        return new FromUrl();
+    }
+
+    /**
      * Create an instance of {@link FromDom }
      * 
      */

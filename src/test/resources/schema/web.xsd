@@ -43,6 +43,7 @@
                     <x:group ref="tns:generalVarType"/>
                     <x:element name="cookie" type="tns:fromCookie"/>
                     <x:element name="dom" type="tns:fromDom"/>
+                    <x:element name="url" type="tns:fromUrl"/>
                 </x:choice>
                 <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
             </x:extension>

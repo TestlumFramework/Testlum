@@ -16,13 +16,13 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="attribute"&gt;
  *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="content" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}stringWithoutSpacesPattern" /&gt;
  *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}injectableScenarioLocator" /&gt;
- *     &lt;/restriction&gt;
+ *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -33,7 +33,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "attribute", propOrder = {
     "content"
 })
-public class Attribute {
+public class Attribute
+    extends AbstractCommand
+{
 
     @XmlElement(required = true)
     protected String content;

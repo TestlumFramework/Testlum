@@ -6,6 +6,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -18,9 +19,10 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="assert"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="attribute" type="{http://www.knubisoft.com/cott/testing/model/scenario}attribute" maxOccurs="unbounded"/&gt;
- *       &lt;/sequence&gt;
+ *       &lt;choice maxOccurs="unbounded"&gt;
+ *         &lt;element name="attribute" type="{http://www.knubisoft.com/cott/testing/model/scenario}attribute"/&gt;
+ *         &lt;element name="title" type="{http://www.knubisoft.com/cott/testing/model/scenario}title"/&gt;
+ *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -30,42 +32,46 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "assert", propOrder = {
-    "attribute"
+    "attributeOrTitle"
 })
 public class Assert
     extends AbstractUiCommand
 {
 
-    @XmlElement(required = true)
-    protected List<Attribute> attribute;
+    @XmlElements({
+        @XmlElement(name = "attribute", type = Attribute.class),
+        @XmlElement(name = "title", type = Title.class)
+    })
+    protected List<AbstractCommand> attributeOrTitle;
 
     /**
-     * Gets the value of the attribute property.
+     * Gets the value of the attributeOrTitle property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the attribute property.
+     * This is why there is not a <CODE>set</CODE> method for the attributeOrTitle property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getAttribute().add(newItem);
+     *    getAttributeOrTitle().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link Attribute }
+     * {@link Title }
      * 
      * 
      */
-    public List<Attribute> getAttribute() {
-        if (attribute == null) {
-            attribute = new ArrayList<Attribute>();
+    public List<AbstractCommand> getAttributeOrTitle() {
+        if (attributeOrTitle == null) {
+            attributeOrTitle = new ArrayList<AbstractCommand>();
         }
-        return this.attribute;
+        return this.attributeOrTitle;
     }
 
 }

@@ -10,14 +10,20 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
+import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Assert;
 import com.knubisoft.cott.testing.model.scenario.Attribute;
 import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.NEW_LINE;
@@ -32,15 +38,26 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
     private AtomicInteger subCommandCounter = new AtomicInteger(0);
     private final List<String> exceptionResult = new ArrayList<>();
 
+    private final Map<AssertCommandPredicate, AssertSubCommand> assertCommandMap;
+
     public AssertExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
+        Map<AssertCommandPredicate, AssertSubCommand> assertCommands = new HashMap<>();
+        assertCommands.put(aAssert -> aAssert instanceof Attribute,
+                (aAssert, subCommandsResult) -> executeAttributeCommand((Attribute) aAssert, subCommandsResult));
+        assertCommandMap = Collections.unmodifiableMap(assertCommands);
     }
 
     @Override
     public void execute(final Assert aAssert, final CommandResult result) {
         List<CommandResult> subCommandResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandResult);
-        aAssert.getAttribute().forEach(attribute -> executeAttributeCommand(attribute, subCommandResult));
+        aAssert.getAttributeOrTitle().forEach(command -> assertCommandMap.keySet().stream().
+                filter(cmd -> cmd.test(command))
+                .findFirst()
+                .map(assertCommandMap::get)
+                .orElseThrow(() -> new DefaultFrameworkException("Type of 'Assert' tag is not supported"))
+                .accept(command, subCommandResult));
         rethrowOnErrors();
     }
 
@@ -67,7 +84,7 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
         CommandResult subCommandResult = ResultUtil.createCommandResultForUiSubCommand(
                 subCommandCounter.get(),
                 attribute.getClass().getSimpleName(),
-                "Execution of sub assert command");
+                attribute.getComment());
         subCommandResult.put(ASSERT_LOCATOR, inject(attribute.getLocatorId()));
         subCommandResult.put(ASSERT_ATTRIBUTE, inject(attribute.getName()));
         subCommandResult.setActual(actual);
@@ -99,4 +116,7 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
         }
     }
 
+    private interface AssertCommandPredicate extends Predicate<AbstractCommand> { }
+
+    private interface AssertSubCommand extends BiConsumer<AbstractCommand, List<CommandResult>> { }
 }

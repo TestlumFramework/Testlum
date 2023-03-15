@@ -127,19 +127,34 @@
     <x:complexType name="assert">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="attribute" type="tns:attribute"/>
+                    <x:element name="title" type="tns:title"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="title">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
                 <x:sequence>
-                    <x:element name="attribute" type="tns:attribute" maxOccurs="unbounded"/>
+                    <x:element name="content" type="tns:nonEmptyString"/>
                 </x:sequence>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
     <x:complexType name="attribute">
-        <x:sequence>
-            <x:element name="content" type="tns:nonEmptyString"/>
-        </x:sequence>
-        <x:attribute name="name" type="tns:stringWithoutSpacesPattern" use="required"/>
-        <x:attribute name="locatorId" type="tns:injectableScenarioLocator" use="required"/>
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:sequence>
+                    <x:element name="content" type="tns:nonEmptyString"/>
+                </x:sequence>
+                <x:attribute name="name" type="tns:stringWithoutSpacesPattern" use="required"/>
+                <x:attribute name="locatorId" type="tns:injectableScenarioLocator" use="required"/>
+            </x:extension>
+        </x:complexContent>
     </x:complexType>
 
     <x:simpleType name="injectableScenarioLocator">

@@ -268,6 +268,7 @@ public class LogUtil {
 
     public void logAttributeInfo(final Attribute attribute, final int subCommandCounter) {
         log.info(COMMAND_LOG, subCommandCounter, attribute.getClass().getSimpleName());
+        log.info(COMMENT_LOG, attribute.getComment());
         log.info(LOCATOR_LOG, attribute.getLocatorId());
         log.info(ATTRIBUTE_LOG, attribute.getName());
         log.info(CONTENT_LOG, attribute.getContent());

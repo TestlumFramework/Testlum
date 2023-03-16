@@ -416,6 +416,17 @@ public class ResultUtil {
         commandResult.put(VALUE, value);
     }
 
+    public void addConditionMetaData(final String type,
+                                    final String key,
+                                    final String expression,
+                                    final Boolean value,
+                                    final CommandResult commandResult) {
+        commandResult.put(TYPE, type);
+        commandResult.put(KEY, key);
+        commandResult.put(EXPRESSION, expression);
+        commandResult.put(VALUE, value);
+    }
+
     public void addDropDownForOneValueMetaData(final String type,
                                                final String processBy,
                                                final String value,

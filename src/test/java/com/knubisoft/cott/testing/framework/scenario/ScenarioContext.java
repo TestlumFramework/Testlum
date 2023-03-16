@@ -17,10 +17,14 @@ public class ScenarioContext {
     private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
 
     private final Map<String, String> contextMap;
+    private final Map<String, Boolean> conditionMap;
     private final String bodyKeyUUID = UUID.randomUUID().toString();
 
     public void set(final String key, final String value) {
         contextMap.put(key, value);
+    }
+    public void setCondition(final String key, final Boolean value) {
+        conditionMap.put(key, value);
     }
 
     public String getBody() {
@@ -36,6 +40,15 @@ public class ScenarioContext {
         if (result == null) {
             throw new IllegalArgumentException(
                     String.format(UNABLE_FIND_VALUE_FOR_KEY, key, contextMap));
+        }
+        return result;
+    }
+
+    public Boolean getCondition(final String key) {
+        Boolean result = conditionMap.get(key);
+        if (result == null) {
+            throw new IllegalArgumentException(
+                    String.format(UNABLE_FIND_VALUE_FOR_KEY, key, conditionMap));
         }
         return result;
     }

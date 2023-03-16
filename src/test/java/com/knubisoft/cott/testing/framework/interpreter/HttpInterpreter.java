@@ -118,12 +118,6 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     }
     //CHECKSTYLE:ON
 
-    private String createFullURL(final String endpoint, final String alias) {
-        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().getApis().getApi();
-        Api apiIntegration = (Api) ConfigUtil.findApiForAlias(apiList, alias);
-        return apiIntegration.getUrl() + endpoint;
-    }
-
     private Map<String, String> getHeaders(final HttpInfo httpInfo) {
         Map<String, String> headers = new LinkedHashMap<>();
         InterpreterDependencies.Authorization authorization = dependencies.getAuthorization();
@@ -138,5 +132,11 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         HttpInfoWithBody commandWithBody = (HttpInfoWithBody) httpInfo;
         Body body = commandWithBody.getBody();
         return HttpUtil.extractBody(body, contentType, this, dependencies);
+    }
+
+    private String createFullURL(final String endpoint, final String alias) {
+        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().getApis().getApi();
+        Api apiIntegration = (Api) ConfigUtil.findApiForAlias(apiList, alias);
+        return apiIntegration.getUrl() + endpoint;
     }
 }

@@ -2,7 +2,6 @@ package com.knubisoft.cott.testing.framework.util;
 
 import com.amazonaws.services.simpleemail.model.Message;
 import com.knubisoft.cott.testing.framework.constant.LogMessage;
-import com.knubisoft.cott.testing.framework.interpreter.GraphqlInterpreter;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
@@ -33,6 +32,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
+import org.springframework.http.HttpMethod;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.client.HttpClientErrorException;
 import software.amazon.awssdk.http.HttpStatusCode;
@@ -422,10 +422,9 @@ public class LogUtil {
         log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
     }
 
-    public void logGraphqlInfo(final String alias, final GraphqlInterpreter.GraphqlMetadata metadata) {
-        HttpInfo httpInfo = metadata.getHttpInfo();
+    public void logGraphqlInfo(final String alias, final HttpInfo httpInfo, final HttpMethod httpMethod) {
         log.info(ALIAS_LOG, alias);
-        log.info(HTTP_METHOD_LOG, metadata.getHttpMethod());
+        log.info(HTTP_METHOD_LOG, httpMethod);
         log.info(ENDPOINT_LOG, httpInfo.getEndpoint());
     }
 

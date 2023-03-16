@@ -11,14 +11,15 @@ import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
+import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.cott.testing.model.scenario.Assert;
 import com.knubisoft.cott.testing.model.scenario.Attribute;
+import com.knubisoft.cott.testing.model.scenario.Title;
 import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,25 +36,28 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.ASSERT_LOCATO
 @ExecutorForClass(Assert.class)
 public class AssertExecutor extends AbstractUiExecutor<Assert> {
 
-    private AtomicInteger subCommandCounter = new AtomicInteger(0);
     private final List<String> exceptionResult = new ArrayList<>();
 
-    private final Map<AssertCommandPredicate, AssertSubCommand> assertCommandMap;
+    private final Map<AssertCommandPredicate, AssertMethod> assertCommandMap;
+
+    private AtomicInteger subCommandCounter = new AtomicInteger(0);
 
     public AssertExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        Map<AssertCommandPredicate, AssertSubCommand> assertCommands = new HashMap<>();
-        assertCommands.put(aAssert -> aAssert instanceof Attribute,
-                (aAssert, subCommandsResult) -> executeAttributeCommand((Attribute) aAssert, subCommandsResult));
+        Map<AssertCommandPredicate, AssertMethod> assertCommands = new HashMap<>();
+        assertCommands.put(a -> a instanceof Attribute,
+                (a, result) -> executeAttributeCommand((Attribute) a, result));
+        assertCommands.put(a -> a instanceof Title,
+                (a, result) -> executeTitleCommand((Title) a, result));
         assertCommandMap = Collections.unmodifiableMap(assertCommands);
     }
 
     @Override
     public void execute(final Assert aAssert, final CommandResult result) {
-        List<CommandResult> subCommandResult = new LinkedList<>();
+        List<CommandResult> subCommandResult = new ArrayList<>();
         result.setSubCommandsResult(subCommandResult);
-        aAssert.getAttributeOrTitle().forEach(command -> assertCommandMap.keySet().stream().
-                filter(cmd -> cmd.test(command))
+        aAssert.getAttributeOrTitle().forEach(command -> assertCommandMap.keySet().stream()
+                .filter(cmd -> cmd.test(command))
                 .findFirst()
                 .map(assertCommandMap::get)
                 .orElseThrow(() -> new DefaultFrameworkException("Type of 'Assert' tag is not supported"))
@@ -61,32 +65,47 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
         rethrowOnErrors();
     }
 
-    private void executeAttributeCommand(final Attribute attribute,
-                                         final List<CommandResult> subCommandsResult) {
-        String actual = getActualValue(attribute);
-        String expected = inject(attribute.getContent()).replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
-        LogUtil.logAttributeInfo(attribute, subCommandCounter.incrementAndGet());
-        CommandResult subCommandResult = createSubCommandResult(attribute, actual, expected, subCommandsResult);
+    private void executeTitleCommand(final Title title, final List<CommandResult> subCommandsResult) {
+        String actual = dependencies.getDriver().getTitle();
+        String expected = inject(title.getContent()).replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
+        LogUtil.logTitleCommand(title, subCommandCounter.incrementAndGet());
+        CommandResult subCommandResult = createSubCommandResult(title, actual, expected, subCommandsResult);
         executeComparison(actual, expected, subCommandResult);
     }
 
+    private void executeAttributeCommand(final Attribute attribute,
+                                         final List<CommandResult> subCommandsResult) {
+        injectFields(attribute);
+        String actual = getActualValue(attribute);
+        String expected = attribute.getContent().replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
+        LogUtil.logAttributeInfo(attribute, subCommandCounter.incrementAndGet());
+        CommandResult subCommandResult = createSubCommandResult(attribute, actual, expected, subCommandsResult);
+        subCommandResult.put(ASSERT_LOCATOR, attribute.getLocatorId());
+        subCommandResult.put(ASSERT_ATTRIBUTE, attribute.getName());
+        executeComparison(actual, expected, subCommandResult);
+    }
+
+    private void injectFields(final Attribute attribute) {
+        attribute.setLocatorId(inject(attribute.getLocatorId()));
+        attribute.setContent(inject(attribute.getContent()));
+        attribute.setName(inject(attribute.getName()));
+    }
+
     private String getActualValue(final Attribute attribute) {
-        WebElement webElement = UiUtil.findWebElement(dependencies, inject(attribute.getLocatorId()));
+        WebElement webElement = UiUtil.findWebElement(dependencies, attribute.getLocatorId());
         UiUtil.waitForElementVisibility(dependencies, webElement);
-        String value = UiUtil.getElementAttribute(webElement, inject(attribute.getName()));
+        String value = UiUtil.getElementAttribute(webElement, attribute.getName());
         return value.replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
     }
 
-    private CommandResult createSubCommandResult(final Attribute attribute,
+    private CommandResult createSubCommandResult(final AbstractCommand command,
                                                  final String actual,
                                                  final String expected,
                                                  final List<CommandResult> subCommandsResult) {
         CommandResult subCommandResult = ResultUtil.createCommandResultForUiSubCommand(
                 subCommandCounter.get(),
-                attribute.getClass().getSimpleName(),
-                attribute.getComment());
-        subCommandResult.put(ASSERT_LOCATOR, inject(attribute.getLocatorId()));
-        subCommandResult.put(ASSERT_ATTRIBUTE, inject(attribute.getName()));
+                command.getClass().getSimpleName(),
+                command.getComment());
         subCommandResult.setActual(actual);
         subCommandResult.setExpected(expected);
         UiUtil.takeScreenshotAndSaveIfRequired(subCommandResult, dependencies);
@@ -116,7 +135,7 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
         }
     }
 
-    private interface AssertCommandPredicate extends Predicate<AbstractCommand> { }
+    private interface AssertCommandPredicate extends Predicate<AbstractUiCommand> { }
 
-    private interface AssertSubCommand extends BiConsumer<AbstractCommand, List<CommandResult>> { }
+    private interface AssertMethod extends BiConsumer<AbstractUiCommand, List<CommandResult>> { }
 }

@@ -137,7 +137,7 @@
 
     <x:complexType name="title">
         <x:complexContent>
-            <x:extension base="tns:abstractCommand">
+            <x:extension base="tns:abstractUiCommand">
                 <x:sequence>
                     <x:element name="content" type="tns:nonEmptyString"/>
                 </x:sequence>
@@ -147,7 +147,7 @@
 
     <x:complexType name="attribute">
         <x:complexContent>
-            <x:extension base="tns:abstractCommand">
+            <x:extension base="tns:abstractUiCommand">
                 <x:sequence>
                     <x:element name="content" type="tns:nonEmptyString"/>
                 </x:sequence>

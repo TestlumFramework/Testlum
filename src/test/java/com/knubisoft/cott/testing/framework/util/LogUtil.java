@@ -22,6 +22,7 @@ import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.SwipeNative;
+import com.knubisoft.cott.testing.model.scenario.Title;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.Ui;
 import lombok.SneakyThrows;
@@ -451,5 +452,11 @@ public class LogUtil {
     public void logDragAndDropNativeInfo(final DragAndDropNative dragAndDropNative) {
         log.info(DRAGGING_FROM, dragAndDropNative.getFromLocatorId());
         log.info(DROPPING_TO, dragAndDropNative.getToLocatorId());
+    }
+
+    public void logTitleCommand(final Title title, final int subCommandCounter) {
+        log.info(COMMAND_LOG, subCommandCounter, title.getClass().getSimpleName());
+        log.info(COMMENT_LOG, title.getComment());
+        log.info(CONTENT_LOG, title.getContent());
     }
 }

@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="attribute"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="content" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlType;
     "content"
 })
 public class Attribute
-    extends AbstractCommand
+    extends AbstractUiCommand
 {
 
     @XmlElement(required = true)

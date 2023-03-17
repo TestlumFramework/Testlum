@@ -126,9 +126,8 @@ public class ScenarioCollector {
         Api apiIntegration = (Api) ConfigUtil.findApiForAlias(apiList, alias);
         if (Objects.nonNull(apiIntegration.getAuth())) {
             return apiIntegration.getAuth().isAutoLogout();
-        } else {
-            throw new DefaultFrameworkException(AUTH_NOT_FOUND, apiIntegration.getAlias());
         }
+        throw new DefaultFrameworkException(AUTH_NOT_FOUND, apiIntegration.getAlias());
     }
 
     private void addRepeatCommands(final List<AbstractCommand> updatedCommand,

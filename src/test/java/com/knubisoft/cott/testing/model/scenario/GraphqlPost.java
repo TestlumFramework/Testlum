@@ -3,20 +3,21 @@ package com.knubisoft.cott.testing.model.scenario;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for graphqlWithBody complex type.
+ * <p>Java class for graphqlPost complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="graphqlWithBody"&gt;
+ * &lt;complexType name="graphqlPost"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlInfo"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}httpInfo"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="body" type="{http://www.knubisoft.com/cott/testing/model/scenario}body" minOccurs="0"/&gt;
+ *         &lt;element name="body" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlBody"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -26,24 +27,25 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "graphqlWithBody", propOrder = {
+@XmlType(name = "graphqlPost", propOrder = {
     "body"
 })
-public abstract class GraphqlWithBody
-    extends GraphqlInfo
+public class GraphqlPost
+    extends HttpInfo
 {
 
-    protected Body body;
+    @XmlElement(required = true)
+    protected GraphqlBody body;
 
     /**
      * Gets the value of the body property.
      * 
      * @return
      *     possible object is
-     *     {@link Body }
+     *     {@link GraphqlBody }
      *     
      */
-    public Body getBody() {
+    public GraphqlBody getBody() {
         return body;
     }
 
@@ -52,10 +54,10 @@ public abstract class GraphqlWithBody
      * 
      * @param value
      *     allowed object is
-     *     {@link Body }
+     *     {@link GraphqlBody }
      *     
      */
-    public void setBody(Body value) {
+    public void setBody(GraphqlBody value) {
         this.body = value;
     }
 

@@ -1006,6 +1006,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GraphqlPost }
+     * 
+     */
+    public GraphqlPost createGraphqlPost() {
+        return new GraphqlPost();
+    }
+
+    /**
+     * Create an instance of {@link GraphqlGet }
+     * 
+     */
+    public GraphqlGet createGraphqlGet() {
+        return new GraphqlGet();
+    }
+
+    /**
      * Create an instance of {@link GraphqlBody }
      * 
      */

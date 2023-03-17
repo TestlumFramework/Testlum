@@ -4,7 +4,6 @@ package com.knubisoft.cott.testing.model.scenario;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -17,11 +16,10 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="graphql"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="body" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlBody"/&gt;
- *         &lt;element name="response" type="{http://www.knubisoft.com/cott/testing/model/scenario}response" minOccurs="0"/&gt;
- *       &lt;/sequence&gt;
- *       &lt;attribute name="endpoint" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}endpointPattern" /&gt;
+ *       &lt;choice&gt;
+ *         &lt;element name="post" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlPost"/&gt;
+ *         &lt;element name="get" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphqlGet"/&gt;
+ *       &lt;/choice&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}aliasPattern" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -32,91 +30,64 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "graphql", propOrder = {
-    "body",
-    "response"
+    "post",
+    "get"
 })
 public class Graphql
     extends AbstractCommand
 {
 
-    @XmlElement(required = true)
-    protected GraphqlBody body;
-    protected Response response;
-    @XmlAttribute(name = "endpoint", required = true)
-    protected String endpoint;
+    protected GraphqlPost post;
+    protected GraphqlGet get;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
 
     /**
-     * Gets the value of the body property.
+     * Gets the value of the post property.
      * 
      * @return
      *     possible object is
-     *     {@link GraphqlBody }
+     *     {@link GraphqlPost }
      *     
      */
-    public GraphqlBody getBody() {
-        return body;
+    public GraphqlPost getPost() {
+        return post;
     }
 
     /**
-     * Sets the value of the body property.
+     * Sets the value of the post property.
      * 
      * @param value
      *     allowed object is
-     *     {@link GraphqlBody }
+     *     {@link GraphqlPost }
      *     
      */
-    public void setBody(GraphqlBody value) {
-        this.body = value;
+    public void setPost(GraphqlPost value) {
+        this.post = value;
     }
 
     /**
-     * Gets the value of the response property.
+     * Gets the value of the get property.
      * 
      * @return
      *     possible object is
-     *     {@link Response }
+     *     {@link GraphqlGet }
      *     
      */
-    public Response getResponse() {
-        return response;
+    public GraphqlGet getGet() {
+        return get;
     }
 
     /**
-     * Sets the value of the response property.
+     * Sets the value of the get property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Response }
+     *     {@link GraphqlGet }
      *     
      */
-    public void setResponse(Response value) {
-        this.response = value;
-    }
-
-    /**
-     * Gets the value of the endpoint property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getEndpoint() {
-        return endpoint;
-    }
-
-    /**
-     * Sets the value of the endpoint property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setEndpoint(String value) {
-        this.endpoint = value;
+    public void setGet(GraphqlGet value) {
+        this.get = value;
     }
 
     /**

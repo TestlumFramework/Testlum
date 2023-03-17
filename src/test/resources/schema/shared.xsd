@@ -141,7 +141,6 @@
     <x:simpleType name="contentType">
         <x:restriction base="x:string">
             <x:enumeration value="text/plain"/>
-            <x:enumeration value="image/jpeg"/>
             <x:enumeration value="application/json"/>
         </x:restriction>
     </x:simpleType>

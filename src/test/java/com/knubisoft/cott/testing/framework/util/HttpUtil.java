@@ -9,7 +9,6 @@ import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequest;
 import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
 import com.knubisoft.cott.testing.model.scenario.Http;
 import com.knubisoft.cott.testing.model.scenario.HttpInfo;
-import com.knubisoft.cott.testing.model.scenario.Multipart;
 import com.knubisoft.cott.testing.model.scenario.Param;
 import com.knubisoft.cott.testing.model.scenario.Part;
 import lombok.Getter;
@@ -23,15 +22,11 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.ContentBody;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -134,6 +129,7 @@ public final class HttpUtil {
         return new StringEntity(body, contentType);
     }
 
+    //CHECKSTYLE:OFF
     private HttpEntity injectMultipartFile(final Body body,
                                            final InterpreterDependencies dependencies) {
         List<Part> parts = body.getMultipart().getPart();
@@ -146,7 +142,7 @@ public final class HttpUtil {
             }
             if (part.getFile() != null) {
                 File from = FileSearcher.searchFileFromDir(dependencies.getFile(), part.getFile().getValue());
-                if (part.getFile().getContentType() != null && part.getFile().getFilename()!= null) {
+                if (part.getFile().getContentType() != null && part.getFile().getFilename() != null) {
                     builder.addBinaryBody(part.getName(),
                             from,
                             ContentType.create(part.getFile().getContentType().value()),

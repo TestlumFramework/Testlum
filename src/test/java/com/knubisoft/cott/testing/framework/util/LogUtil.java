@@ -13,7 +13,6 @@ import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
 import com.knubisoft.cott.testing.model.scenario.DragAndDropNative;
-import com.knubisoft.cott.testing.model.scenario.HttpInfo;
 import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.Overview;
 import com.knubisoft.cott.testing.model.scenario.OverviewPart;
@@ -32,7 +31,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
-import org.springframework.http.HttpMethod;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.client.HttpClientErrorException;
 import software.amazon.awssdk.http.HttpStatusCode;
@@ -420,12 +418,6 @@ public class LogUtil {
 
     public void logHotKeyInfo(final AbstractUiCommand command) {
         log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
-    }
-
-    public void logGraphqlInfo(final String alias, final HttpInfo httpInfo, final HttpMethod httpMethod) {
-        log.info(ALIAS_LOG, alias);
-        log.info(HTTP_METHOD_LOG, httpMethod);
-        log.info(ENDPOINT_LOG, httpInfo.getEndpoint());
     }
 
     public void logSwipeNativeInfo(final SwipeNative swipeNative) {

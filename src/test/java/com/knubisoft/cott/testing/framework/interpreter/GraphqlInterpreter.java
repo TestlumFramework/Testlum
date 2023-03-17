@@ -74,7 +74,6 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         HttpInfo httpInfo = graphqlMetadata.httpInfo;
         HttpMethod httpMethod = graphqlMetadata.getHttpMethod();
         ResultUtil.addGraphQlMetaData(graphql.getAlias(), httpInfo, httpMethod, result);
-        LogUtil.logGraphqlInfo(graphql.getAlias(), httpInfo, httpMethod);
         String endpoint = inject(httpInfo.getEndpoint());
         ApiResponse response = getResponse(httpInfo, httpMethod, endpoint, graphql.getAlias());
         compareResult(graphqlMetadata.getHttpInfo().getResponse(), response, result);
@@ -92,6 +91,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
                                     final HttpMethod httpMethod,
                                     final String endpoint,
                                     final String alias) {
+        LogUtil.logHttpInfo(alias, httpMethod.name(), endpoint);
         Map<String, String> headers = getHeaders(httpInfo);
         String typeValue = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         HttpEntity body = getBody(httpInfo, ContentType.create(typeValue));

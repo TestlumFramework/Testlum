@@ -11,6 +11,7 @@ import com.knubisoft.cott.testing.model.scenario.Http;
 import com.knubisoft.cott.testing.model.scenario.HttpInfo;
 import com.knubisoft.cott.testing.model.scenario.Multipart;
 import com.knubisoft.cott.testing.model.scenario.Param;
+import com.knubisoft.cott.testing.model.scenario.Part;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
@@ -22,12 +23,15 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -132,13 +136,32 @@ public final class HttpUtil {
 
     private HttpEntity injectMultipartFile(final Body body,
                                            final InterpreterDependencies dependencies) {
-        Multipart multipart = body.getMultipart();
-        File from = FileSearcher.searchFileFromDir(dependencies.getFile(), multipart.getPath());
-
-        return MultipartEntityBuilder.create()
+        List<Part> parts = body.getMultipart().getPart();
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create()
                 .setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
-                .addPart(multipart.getName(), new FileBody(from))
-                .build();
+                .setBoundary(body.getMultipart().getBoundary());
+        for (Part part : parts) {
+            if (part.getText() != null) {
+                builder.addTextBody(part.getName(), part.getText().getValue());
+            }
+            if (part.getFile() != null) {
+                File from = FileSearcher.searchFileFromDir(dependencies.getFile(), part.getFile().getValue());
+                if (part.getFile().getContentType() != null && part.getFile().getFilename()!= null) {
+                    builder.addBinaryBody(part.getName(),
+                            from,
+                            ContentType.create(part.getFile().getContentType().value()),
+                            part.getFile().getFilename());
+                } else if (part.getFile().getContentType() != null) {
+                    builder.addBinaryBody(part.getName(),
+                            from,
+                            ContentType.create(part.getFile().getContentType().value()),
+                            from.getName());
+                } else {
+                    builder.addBinaryBody(part.getName(), from);
+                }
+            }
+        }
+        return builder.build();
     }
 
     private HttpEntity injectFromFile(final Body body,

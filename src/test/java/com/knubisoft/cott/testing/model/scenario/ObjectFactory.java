@@ -326,6 +326,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Part }
+     * 
+     */
+    public Part createPart() {
+        return new Part();
+    }
+
+    /**
+     * Create an instance of {@link PartText }
+     * 
+     */
+    public PartText createPartText() {
+        return new PartText();
+    }
+
+    /**
+     * Create an instance of {@link PartFile }
+     * 
+     */
+    public PartFile createPartFile() {
+        return new PartFile();
+    }
+
+    /**
      * Create an instance of {@link Header }
      * 
      */

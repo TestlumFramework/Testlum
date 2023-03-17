@@ -422,6 +422,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CommandWithContent }
+     * 
+     */
+    public CommandWithContent createCommandWithContent() {
+        return new CommandWithContent();
+    }
+
+    /**
      * Create an instance of {@link Title }
      * 
      */

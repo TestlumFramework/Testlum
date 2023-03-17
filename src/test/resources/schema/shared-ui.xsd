@@ -135,7 +135,7 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="title">
+    <x:complexType name="commandWithContent">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:sequence>
@@ -145,12 +145,15 @@
         </x:complexContent>
     </x:complexType>
 
+    <x:complexType name="title">
+        <x:complexContent>
+            <x:extension base="tns:commandWithContent"/>
+        </x:complexContent>
+    </x:complexType>
+
     <x:complexType name="attribute">
         <x:complexContent>
-            <x:extension base="tns:abstractUiCommand">
-                <x:sequence>
-                    <x:element name="content" type="tns:nonEmptyString"/>
-                </x:sequence>
+            <x:extension base="tns:commandWithContent">
                 <x:attribute name="name" type="tns:stringWithoutSpacesPattern" use="required"/>
                 <x:attribute name="locatorId" type="tns:injectableScenarioLocator" use="required"/>
             </x:extension>

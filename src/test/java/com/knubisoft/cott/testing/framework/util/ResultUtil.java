@@ -202,6 +202,13 @@ public class ResultUtil {
         result.setException(exception);
     }
 
+    public void setActualAndExpectedResult(final String actual,
+                                           final String expected,
+                                           final CommandResult result) {
+        result.setActual(actual);
+        result.setExpected(expected);
+    }
+
     public void addDatabaseMetaData(final String databaseAlias,
                                     final List<String> queries,
                                     final CommandResult result) {

@@ -14,13 +14,15 @@ public class EnvManager {
     private static final ThreadLocal<String> THREAD_ENV = new ThreadLocal<>();
 
     private final List<String> environments;
+    private final KeyLocker keyLocker;
+    private final Lock lock;
+    private final Condition lockCondition;
 
-    private final KeyLocker keyLocker = new KeyLocker();
-    private final Lock lock = new ReentrantLock();
-    private final Condition lockCondition = lock.newCondition();
-
-    public EnvManager(final List<String> environments) {
+    public EnvManager(final List<String> environments, final int threads) {
         this.environments = Collections.unmodifiableList(environments);
+        this.keyLocker = new KeyLocker(threads);
+        this.lock = new ReentrantLock();
+        this.lockCondition = lock.newCondition();
     }
 
     public static String currentEnv() {
@@ -61,8 +63,11 @@ public class EnvManager {
             THREAD_ENV.remove();
             LogUtil.logAlias("!!!!fin=" + env + "=!!!! " + Thread.currentThread().getName());
         } finally {
-            lockCondition.signal();
-            lock.unlock();
+            try {
+                lockCondition.signal();
+            } finally {
+                lock.unlock();
+            }
         }
     }
 }

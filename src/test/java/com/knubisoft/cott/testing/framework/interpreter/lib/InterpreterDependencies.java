@@ -2,10 +2,10 @@ package com.knubisoft.cott.testing.framework.interpreter.lib;
 
 import com.knubisoft.cott.testing.framework.scenario.ScenarioContext;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.openqa.selenium.WebDriver;
 
@@ -13,7 +13,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@RequiredArgsConstructor
+@Builder
 @Getter
 @Setter
 public class InterpreterDependencies {

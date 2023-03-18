@@ -25,7 +25,6 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -35,7 +34,6 @@ import software.amazon.awssdk.http.HttpStatusCode;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
@@ -109,6 +107,8 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_EXECUT
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.VALUE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.VARIATION_LOG;
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
 @Slf4j
@@ -138,7 +138,7 @@ public class LogUtil {
     }
 
     private void logOverviewPartInfo(final OverviewPart overviewPart, final String data) {
-        if (StringUtils.isNotBlank(data)) {
+        if (isNotBlank(data)) {
             log.info(LogMessage.OVERVIEW_INFO_LOG, overviewPart.value(), data);
         }
     }
@@ -148,7 +148,7 @@ public class LogUtil {
                            final String browserAlias,
                            final String mobilebrowserAlias,
                            final String nativeDeviceAlias) {
-        if (StringUtils.isNotBlank(variation)) {
+        if (isNotBlank(variation)) {
             log.info(VARIATION_LOG, variation);
         }
         BrowserUtil.getBrowserBy(environment, browserAlias).ifPresent(abstractBrowser ->
@@ -203,7 +203,7 @@ public class LogUtil {
     }
 
     public void logException(final Exception ex) {
-        if (StringUtils.isNotBlank(ex.getMessage())) {
+        if (isNotBlank(ex.getMessage())) {
             log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
         } else {
             log.error(EXCEPTION_LOG, ex.toString());
@@ -246,7 +246,7 @@ public class LogUtil {
     }
 
     public void logSqlException(final Exception ex, final String query) {
-        if (StringUtils.isNotBlank(ex.getMessage())) {
+        if (isNotBlank(ex.getMessage())) {
             log.error(ERROR_SQL_QUERY, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE),
                     SqlUtil.getBrokenQuery(ex, query).replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
         } else {
@@ -265,7 +265,7 @@ public class LogUtil {
 
     public void logSESMessage(final Message sesMessage) {
         StringBuilder message = new StringBuilder();
-        if (sesMessage.getBody() != null) {
+        if (nonNull(sesMessage.getBody())) {
             appendBodyContentIfNotBlank(sesMessage.getBody().getHtml().getData(), "HTML", message);
             appendBodyContentIfNotBlank(sesMessage.getBody().getText().getData(), "Text", message);
         } else {
@@ -275,7 +275,7 @@ public class LogUtil {
     }
 
     private void appendBodyContentIfNotBlank(final String data, final String title, final StringBuilder sb) {
-        if (StringUtils.isNotBlank(data)) {
+        if (isNotBlank(data)) {
             sb.append(format(LogMessage.SES_BODY_CONTENT_AND_TITLE_TEMPLATE,
                     title,
                     EMPTY,
@@ -310,10 +310,10 @@ public class LogUtil {
                                        final String destination,
                                        final String content) {
         log.info(LogMessage.WEBSOCKET_ACTION_INFO_LOG, comment, action.toUpperCase(Locale.ROOT));
-        if (StringUtils.isNotBlank(destination)) {
+        if (isNotBlank(destination)) {
             log.info(DESTINATION_LOG, destination);
         }
-        if (StringUtils.isNotBlank(content)) {
+        if (isNotBlank(content)) {
             log.info(CONTENT_LOG, PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
     }
@@ -339,13 +339,13 @@ public class LogUtil {
 
     @SneakyThrows
     public void logBodyContent(final HttpEntity body) {
-        if (body != null) {
+        if (nonNull(body)) {
             logBody(IOUtils.toString(body.getContent(), StandardCharsets.UTF_8.name()));
         }
     }
 
     public void logBody(final String body) {
-        if (StringUtils.isNotBlank(body)) {
+        if (isNotBlank(body)) {
             log.info(BODY_LOG,
                     PrettifyStringJson.getJSONResult(body)
                             .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
@@ -368,7 +368,7 @@ public class LogUtil {
 
     public void logUiAttributes(final boolean isClearCookies, final String storageKey) {
         log.info(CLEAR_COOKIES_AFTER, isClearCookies);
-        if (StringUtils.isNotEmpty(storageKey)) {
+        if (isNotBlank(storageKey)) {
             log.info(LOCAL_STORAGE_KEY, storageKey);
         }
     }
@@ -402,7 +402,7 @@ public class LogUtil {
         log.info(IMAGE_FOR_COMPARISON_LOG, image.getFile());
         log.info(HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
         CompareWith compareWith = image.getCompareWith();
-        if (Objects.nonNull(compareWith)) {
+        if (nonNull(compareWith)) {
             log.info(IMAGE_COMPARISON_TYPE_LOG, EXTRACT_THEN_COMPARE);
             log.info(LOCATOR_LOG, compareWith.getLocator());
             log.info(IMAGE_SOURCE_ATT_LOG, compareWith.getAttribute());
@@ -436,7 +436,7 @@ public class LogUtil {
         log.info(SWIPE_QUANTITY, swipeNative.getQuantity());
         log.info(SWIPE_DIRECTION, swipeNative.getDirection());
         log.info(SWIPE_VALUE, swipeNative.getPercent());
-        if (StringUtils.isNotBlank(swipeNative.getLocatorId())) {
+        if (isNotBlank(swipeNative.getLocatorId())) {
             log.info(LOCATOR_LOG, swipeNative.getLocatorId());
         }
     }
@@ -445,7 +445,7 @@ public class LogUtil {
         log.info(SCROLL_TYPE, scrollNative.getType());
         log.info(SCROLL_DIRECTION_LOG, scrollNative.getDirection());
         log.info(SCROLL_VALUE, scrollNative.getValue());
-        if (StringUtils.isNotBlank(scrollNative.getLocatorId())) {
+        if (isNotBlank(scrollNative.getLocatorId())) {
             log.info(SCROLL_LOCATOR, scrollNative.getLocatorId());
         }
     }

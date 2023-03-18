@@ -17,8 +17,6 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static java.lang.String.format;
-
 @Slf4j
 @UtilityClass
 public final class WebElementFinder {
@@ -35,25 +33,20 @@ public final class WebElementFinder {
         SEARCH_TYPES = Collections.unmodifiableMap(map);
     }
 
-    public WebElement find(final Locator locator, final WebDriver driver, final int timeToWait) {
+    public WebElement find(final Locator locator, final WebDriver driver, final int secondsToWait) {
         return SEARCH_TYPES.entrySet().stream()
                 .filter(l -> l.getKey().test(locator))
                 .findFirst()
                 .map(l -> l.getValue().apply(locator))
-                .map(by -> getWebElement(by, driver, timeToWait))
-                .orElseThrow(() -> defaultFrameworkException(locator));
+                .map(by -> getWebElement(by, driver, secondsToWait))
+                .orElseThrow(() -> new DefaultFrameworkException("Web element for locator <%s> not found", locator));
     }
 
     private WebElement getWebElement(final org.openqa.selenium.By by,
-                                            final WebDriver driver,
-                                            final int timeToWait) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeToWait));
+                                     final WebDriver driver,
+                                     final int secondsToWait) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(secondsToWait));
         return wait.until(ExpectedConditions.presenceOfElementLocated(by));
-    }
-
-    private DefaultFrameworkException defaultFrameworkException(final Locator locator) {
-        log.error("Web element for locator='{}' not found", locator);
-        return new DefaultFrameworkException(format("Web element for locator='%s' not found", locator));
     }
 
     private interface LocatorType extends Predicate<Locator> { }

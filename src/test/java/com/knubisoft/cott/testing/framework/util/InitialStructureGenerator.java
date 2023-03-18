@@ -28,8 +28,8 @@ public class InitialStructureGenerator {
     private static final String EXPECTED_EXAMPLE_FILENAME = "expected_1.json";
     private static final String JS_SCRIPT_EXAMPLE_FILENAME = "greating.js";
     private static final String SHELL_SCRIPT_EXAMPLE_FILENAME = "shell-1.sh";
-    private static final String TEST_SAMPLE_PATH = "initial-sample/";
-    private static final String EXAMPLE_TEST_FOLDER = SCENARIOS_FOLDER + "/default";
+    private static final String TEST_SAMPLE_PATH = "initial-sample";
+    private static final String EXAMPLE_TEST_FOLDER = SCENARIOS_FOLDER + File.separator + "default";
 
     private static final List<String> REQUIRED_FOLDER_NAMES = Collections.unmodifiableList(Arrays.asList(
             SCENARIOS_FOLDER, LOCATORS_PAGES_FOLDER, LOCATORS_COMPONENTS_FOLDER, REPORT_FOLDER, DATA_FOLDER));
@@ -71,7 +71,7 @@ public class InitialStructureGenerator {
 
     private void copyFileToFolder(final String fileName, final String path, final String folder) throws IOException {
         try (InputStream file = InitialStructureGenerator.class.getClassLoader()
-                .getResourceAsStream(TEST_SAMPLE_PATH + fileName)) {
+                .getResourceAsStream(TEST_SAMPLE_PATH + File.separator + fileName)) {
             if (file != null) {
                 File target = Paths.get(path, folder, fileName).toFile();
                 FileUtils.copyToFile(file, target);

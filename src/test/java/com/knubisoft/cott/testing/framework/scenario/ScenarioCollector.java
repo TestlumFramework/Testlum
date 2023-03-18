@@ -3,8 +3,8 @@ package com.knubisoft.cott.testing.framework.scenario;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.parser.XMLParsers;
-import com.knubisoft.cott.testing.framework.util.ConfigUtil;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
+import com.knubisoft.cott.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.cott.testing.model.global_config.Api;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Auth;
@@ -21,6 +21,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
+import static java.util.Objects.nonNull;
 
 @Slf4j
 public class ScenarioCollector {
@@ -118,8 +120,9 @@ public class ScenarioCollector {
     }
 
     private boolean isAutoLogout(final String alias) {
-        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().getApis().getApi();
-        Api apiIntegration = (Api) ConfigUtil.findApiForAlias(apiList, alias);
+        //todo move to interpreter
+        List<Api> apiList = GlobalTestConfigurationProvider.getDefaultIntegrations().getApis().getApi();
+        Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, alias);
         return apiIntegration.getAuth().isAutoLogout();
     }
 
@@ -133,7 +136,7 @@ public class ScenarioCollector {
 
     private void walk(final File root, final List<File> scenarios) {
         File[] listFiles = root.listFiles();
-        if (listFiles != null) {
+        if (nonNull(listFiles)) {
             for (File file : listFiles) {
                 processEachFile(scenarios, file);
             }
@@ -159,7 +162,7 @@ public class ScenarioCollector {
             }
 
             private boolean getReadonlyValue(final MappingResult result) {
-                return result.scenario != null && (result.scenario.getTags().isReadonly());
+                return nonNull(result.scenario) && (result.scenario.getTags().isReadonly());
             }
         });
 

@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNABLE_FIND_VALUE_FOR_KEY;
+import static java.util.Objects.isNull;
 
 @RequiredArgsConstructor
 public class ScenarioContext {
@@ -19,6 +20,10 @@ public class ScenarioContext {
     private final Map<String, String> contextMap;
     private final String bodyKeyUUID = UUID.randomUUID().toString();
 
+    public void setBody(final String value) {
+        set(bodyKeyUUID, value);
+    }
+
     public void set(final String key, final String value) {
         contextMap.put(key, value);
     }
@@ -27,15 +32,10 @@ public class ScenarioContext {
         return contextMap.get(bodyKeyUUID);
     }
 
-    public void setBody(final String value) {
-        set(bodyKeyUUID, value);
-    }
-
     public String get(final String key) {
         String result = contextMap.get(key);
-        if (result == null) {
-            throw new IllegalArgumentException(
-                    String.format(UNABLE_FIND_VALUE_FOR_KEY, key, contextMap));
+        if (isNull(result)) {
+            throw new IllegalArgumentException(String.format(UNABLE_FIND_VALUE_FOR_KEY, key, contextMap));
         }
         return result;
     }

@@ -9,12 +9,10 @@ import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.Native;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -22,20 +20,22 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.MOBILEBRO
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.MOBILEBROWSER_INFO;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.NATIVE_APPIUM_INFO;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.NATIVE_INFO;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 
 @UtilityClass
 public class MobileUtil {
 
     public List<NativeDevice> filterDefaultEnabledNativeDevices() {
         Native aNative = GlobalTestConfigurationProvider.getDefaultUiConfigs().getNative();
-        return Objects.nonNull(aNative)
+        return nonNull(aNative)
                 ? filterEnabledDevices(aNative.getDevices().getDevice())
                 : Collections.emptyList();
     }
 
     public List<MobilebrowserDevice> filterDefaultEnabledMobilebrowserDevices() {
         Mobilebrowser mobilebrowser = GlobalTestConfigurationProvider.getDefaultUiConfigs().getMobilebrowser();
-        return Objects.nonNull(mobilebrowser)
+        return nonNull(mobilebrowser)
                 ? filterEnabledDevices(mobilebrowser.getDevices().getDevice())
                 : Collections.emptyList();
     }
@@ -46,7 +46,7 @@ public class MobileUtil {
 
     public boolean isNativeAndMobilebrowserConfigEnabled() {
         return !filterDefaultEnabledMobilebrowserDevices().isEmpty() && !filterDefaultEnabledNativeDevices().isEmpty()
-                && ObjectUtils.allNotNull(GlobalTestConfigurationProvider.getDefaultUiConfigs().getMobilebrowser()
+                && allNotNull(GlobalTestConfigurationProvider.getDefaultUiConfigs().getMobilebrowser()
                         .getConnection().getAppiumServer(),
                 GlobalTestConfigurationProvider.getDefaultUiConfigs().getNative().getConnection().getAppiumServer());
     }
@@ -71,14 +71,14 @@ public class MobileUtil {
     }
 
     public String getNativeDeviceInfo(final NativeDevice nativeDevice) {
-        if (Objects.nonNull(nativeDevice.getAppiumCapabilities())) {
+        if (nonNull(nativeDevice.getAppiumCapabilities())) {
             return formatAppiumInfo(NATIVE_APPIUM_INFO, nativeDevice, nativeDevice.getAppiumCapabilities());
         }
         return formatBrowserStackInfo(NATIVE_INFO, nativeDevice, nativeDevice.getBrowserStackCapabilities());
     }
 
     public String getMobilebrowserDeviceInfo(final MobilebrowserDevice mobileDevice) {
-        if (Objects.nonNull(mobileDevice.getAppiumCapabilities())) {
+        if (nonNull(mobileDevice.getAppiumCapabilities())) {
             return formatAppiumInfo(MOBILEBROWSER_APPIUM_INFO, mobileDevice, mobileDevice.getAppiumCapabilities());
         }
         return formatBrowserStackInfo(MOBILEBROWSER_INFO, mobileDevice, mobileDevice.getBrowserStackCapabilities());

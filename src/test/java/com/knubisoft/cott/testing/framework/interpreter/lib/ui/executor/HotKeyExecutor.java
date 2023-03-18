@@ -7,7 +7,7 @@ import com.knubisoft.cott.testing.framework.locator.GlobalLocators;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.framework.util.WebElementFinder;
+import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.pages.Locator;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.cott.testing.model.scenario.BackSpace;
@@ -20,6 +20,13 @@ import com.knubisoft.cott.testing.model.scenario.HotKey;
 import com.knubisoft.cott.testing.model.scenario.Paste;
 import com.knubisoft.cott.testing.model.scenario.Space;
 import com.knubisoft.cott.testing.model.scenario.Tab;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -27,12 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
+
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HOTKEY_COMMAND_LOCATOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.HOTKEY_LOCATOR;
 
@@ -40,13 +42,13 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.HOTKEY_LOCATO
 @ExecutorForClass(HotKey.class)
 public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
 
-    private final Map<HotKeyCommandPredicate, HotKeyCommand> hotKeyCmdMethods;
+    private final Map<HotKeyCommandPredicate, HotKeyCommandMethod> hotKeyCmdMethods;
     private final Actions action;
     private final Keys ctrlKey;
 
     public HotKeyExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        Map<HotKeyCommandPredicate, HotKeyCommand> commands = new HashMap<>();
+        Map<HotKeyCommandPredicate, HotKeyCommandMethod> commands = new HashMap<>();
         commands.put(key -> key instanceof Copy, (key, result) -> copyCommand((Copy) key, result));
         commands.put(key -> key instanceof Paste, (key, result) -> pasteCommand((Paste) key, result));
         commands.put(key -> key instanceof Cut, (key, result) -> cutCommand((Cut) key, result));
@@ -72,7 +74,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     }
 
     private void executeHotKeyCommand(final AbstractUiCommand command,
-                                      final HotKeyExecutor.HotKeyCommand hotKeyCmdMethod,
+                                      final HotKeyCommandMethod hotKeyCmdMethod,
                                       final List<CommandResult> subCommandsResult) {
         CommandResult subCommandResult = ResultUtil.createCommandResultForUiSubCommand(
                 dependencies.getPosition().intValue(),
@@ -122,7 +124,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
         Locator locator = GlobalLocators.getLocator(locatorId);
         result.put(HOTKEY_LOCATOR, locator.getLocatorId());
         log.info(HOTKEY_COMMAND_LOCATOR, locator.getLocatorId());
-        return WebElementFinder.find(locator, dependencies.getDriver(), dependencies.getUiType().getAutoWait());
+        return UiUtil.findWebElement(dependencies, locatorId);
     }
 
     private Keys chooseKeyForOperatingSystem() {
@@ -130,6 +132,5 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     }
 
     private interface HotKeyCommandPredicate extends Predicate<AbstractUiCommand> { }
-
-    private interface HotKeyCommand extends BiConsumer<AbstractUiCommand, CommandResult> { }
+    private interface HotKeyCommandMethod extends BiConsumer<AbstractUiCommand, CommandResult> { }
 }

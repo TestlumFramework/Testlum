@@ -10,14 +10,16 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.InputStream;
 
+import static java.io.File.separator;
+
 @UtilityClass
 public class SchemaInitializer {
 
-    public static final Schema GLOBAL_CONFIG_SCHEMA = initSchema("schema/global-config.xsd");
-    public static final Schema PAGES_SCHEMA = initSchema("schema/pages.xsd");
-    public static final Schema SCENARIO_SCHEMA = initSchema("schema/scenario.xsd");
-    public static final Schema INTEGRATION_SCHEMA = initSchema("schema/integration-config.xsd");
-    public static final Schema UI_SCHEMA = initSchema("schema/ui-config.xsd");
+    public static final Schema GLOBAL_CONFIG_SCHEMA = initSchema("schema" + separator + "global-config.xsd");
+    public static final Schema INTEGRATION_SCHEMA = initSchema("schema" + separator + "integration-config.xsd");
+    public static final Schema UI_SCHEMA = initSchema("schema" + separator + "ui-config.xsd");
+    public static final Schema PAGES_SCHEMA = initSchema("schema" + separator + "pages.xsd");
+    public static final Schema SCENARIO_SCHEMA = initSchema("schema" + separator + "scenario.xsd");
 
     @SneakyThrows
     public Schema initSchema(final String path) {

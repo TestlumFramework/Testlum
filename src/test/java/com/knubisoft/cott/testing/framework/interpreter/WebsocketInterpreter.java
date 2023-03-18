@@ -8,11 +8,11 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependenc
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
+import com.knubisoft.cott.testing.framework.util.GlobalUtil;
 import com.knubisoft.cott.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.framework.util.ScenarioUtil;
 import com.knubisoft.cott.testing.model.AliasEnv;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
@@ -108,7 +108,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         } catch (Exception e) {
             ResultUtil.setExceptionResult(result, e);
             LogUtil.logException(e);
-            ScenarioUtil.checkIfStopScenarioOnFailure(e);
+            GlobalUtil.checkIfStopScenarioOnFailure(e);
         } finally {
             result.setExecutionTime(stopWatch.getTime());
             stopWatch.stop();

@@ -22,7 +22,6 @@ import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.openqa.selenium.WebDriver;
 import org.springframework.context.ApplicationContext;
@@ -36,6 +35,9 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.MOB
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NATIVE_DRIVER_NOT_INIT;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEB_DRIVER_NOT_INIT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_STOP_SIGNAL_LOG;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 
 @Slf4j
@@ -77,7 +79,7 @@ public class ScenarioRunner {
         scenarioResult.setMobilebrowserDevice(scenarioArguments.getMobilebrowserDevice());
         scenarioResult.setNativeDevice(scenarioArguments.getNativeDevice());
         scenarioResult.setSuccess(true);
-        scenarioResult.setEnvironment(scenarioResult.getEnvironment());
+        scenarioResult.setEnvironment(scenarioArguments.getEnvironment());
     }
 
     private void runScenarioCommands() {
@@ -137,7 +139,7 @@ public class ScenarioRunner {
     @SuppressWarnings("unchecked")
     private AbstractInterpreter<AbstractCommand> getInterpreterOrThrow(final AbstractCommand command) {
         AbstractInterpreter<? extends AbstractCommand> interpreter = cmdToInterpreterMap.get(command.getClass());
-        if (interpreter == null) {
+        if (isNull(interpreter)) {
             throw new DefaultFrameworkException(FUNCTION_FOR_COMMAND_NOT_FOUND, command.getClass());
         }
         return (AbstractInterpreter<AbstractCommand>) interpreter;
@@ -145,7 +147,7 @@ public class ScenarioRunner {
 
     private void handleException(final CommandResult result) {
         Exception ex = result.getException();
-        if (ex != null) {
+        if (nonNull(ex)) {
             LogUtil.logException(ex);
             fillReportException(ex);
             if (stopScenarioOnFailure) {
@@ -155,8 +157,8 @@ public class ScenarioRunner {
     }
 
     private void fillReportException(final Exception ex) {
-        if (StringUtils.isEmpty(scenarioResult.getCause())) {
-            String cause = StringUtils.isEmpty(ex.getMessage()) ? ex.getClass().getSimpleName() : ex.getMessage();
+        if (isEmpty(scenarioResult.getCause())) {
+            String cause = isEmpty(ex.getMessage()) ? ex.getClass().getSimpleName() : ex.getMessage();
             scenarioResult.setCause(cause);
             scenarioResult.setSuccess(false);
         }
@@ -183,15 +185,15 @@ public class ScenarioRunner {
     }
 
     private InterpreterDependencies createDependencies() {
-        return new InterpreterDependencies(
-                scenarioArguments.getFile(),
-                new ScenarioContext(scenarioArguments.getVariation()),
-                idGenerator,
-                scenarioArguments.getEnvironment(),
-                createWebDriver(),
-                createMobilebrowserDriver(),
-                createNativeDriver()
-        );
+        return InterpreterDependencies.builder()
+                .file(scenarioArguments.getFile())
+                .scenarioContext(new ScenarioContext(scenarioArguments.getVariation()))
+                .position(idGenerator)
+                .environment(scenarioArguments.getEnvironment())
+                .webDriver(createWebDriver())
+                .mobilebrowserDriver(createMobilebrowserDriver())
+                .nativeDriver(createNativeDriver())
+                .build();
     }
 
     private WebDriver createWebDriver() {

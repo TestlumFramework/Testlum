@@ -61,7 +61,6 @@ public class LocatorCollector {
             Component component = parseComponent(include);
             includes.addAll(component.getLocators().getLocator());
         }
-
     }
 
     private Component parseComponent(final Include include) {
@@ -81,9 +80,7 @@ public class LocatorCollector {
     }
 
     private String getKeyName(final Map.Entry<File, Page> each, final Locator locator) {
-        String prefix = each.getKey().getName().replace(TestResourceSettings.XML_SUFFIX, DelimiterConstant.EMPTY)
-                + DelimiterConstant.DOT;
-        return prefix + locator.getLocatorId();
+        String prefix = each.getKey().getName().replace(TestResourceSettings.XML_SUFFIX, DelimiterConstant.EMPTY);
+        return prefix + DelimiterConstant.DOT + locator.getLocatorId();
     }
-
 }

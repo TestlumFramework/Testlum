@@ -46,7 +46,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         r.run();
         long ms = sw.getTime(TimeUnit.MILLISECONDS);
         Integer threshold = o.getThreshold();
-        if (o.getThreshold() != null && ms > threshold) {
+        if (threshold != null && ms > threshold) {
             throw new DefaultFrameworkException(SLOW_COMMAND_PROCESSING, ms, threshold);
         }
     }

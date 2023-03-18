@@ -17,22 +17,6 @@ import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.scenario.FromSQL;
 import com.knubisoft.cott.testing.model.scenario.Var;
-
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Cookie;
@@ -44,15 +28,31 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SLASH_SEPARATOR;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VAR_QUERY_RESULT_ERROR;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_VARIABLE_WITH_PATH_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CONSTANT;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.COOKIES;
-import static com.knubisoft.cott.testing.framework.util.ResultUtil.HTML_DOM;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.EXPRESSION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.FILE;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.HTML_DOM;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.JSON_PATH;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NO_EXPRESSION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.RELATIONAL_DB_QUERY;
@@ -156,8 +156,6 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         throw new DefaultFrameworkException("Path <%s> is not supported", path);
     }
 
-
-
     private String evaluateXPath(final String path, final String varName, final CommandResult result) throws Exception {
         DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document document = documentBuilder
@@ -194,33 +192,32 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         return getResultValue(queryResult, getKeyOfQueryResultValue(queryResult));
     }
 
+    @SuppressWarnings("unchecked")
     private String getResultValue(final StorageOperation.StorageOperationResult storageOperationResult,
                                   final String key) {
-        ArrayList<StorageOperation.QueryResult> rawList =
-                (ArrayList<StorageOperation.QueryResult>) storageOperationResult.getRaw();
-        ArrayList<LinkedCaseInsensitiveMap<String>> content =
-                (ArrayList<LinkedCaseInsensitiveMap<String>>) rawList.get(0).getContent();
+        List<StorageOperation.QueryResult<?>> rawList =
+                (List<StorageOperation.QueryResult<?>>) storageOperationResult.getRaw();
+        List<LinkedCaseInsensitiveMap<String>> content =
+                (List<LinkedCaseInsensitiveMap<String>>) rawList.get(0).getContent();
         verifyIfContentNotEmpty(content);
         Map<String, String> mapWithContent = content.get(0);
         return String.valueOf(mapWithContent.get(key));
     }
 
+    @SuppressWarnings("unchecked")
     private String getKeyOfQueryResultValue(final StorageOperation.StorageOperationResult applyRelationalDb) {
-        ArrayList<StorageOperation.QueryResult> rawList =
-                (ArrayList<StorageOperation.QueryResult>) applyRelationalDb.getRaw();
+        List<StorageOperation.QueryResult<?>> rawList =
+                (List<StorageOperation.QueryResult<?>>) applyRelationalDb.getRaw();
         String[] queryParts = rawList.get(0).getQuery().split(DelimiterConstant.SPACE);
         return queryParts[1];
     }
 
-    private void verifyIfContentNotEmpty(final ArrayList<LinkedCaseInsensitiveMap<String>> content) {
+    private void verifyIfContentNotEmpty(final List<LinkedCaseInsensitiveMap<String>> content) {
         if (content.size() < 1) {
             throw new DefaultFrameworkException(VAR_QUERY_RESULT_ERROR);
         }
     }
 
-    private interface VarFromPredicate extends Predicate<Var> {
-    }
-
-    private interface VarFromMethod extends BiFunction<Var, CommandResult, String> {
-    }
+    private interface VarFromPredicate extends Predicate<Var> { }
+    private interface VarFromMethod extends BiFunction<Var, CommandResult, String> { }
 }

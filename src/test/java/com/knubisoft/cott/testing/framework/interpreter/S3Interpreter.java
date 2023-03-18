@@ -93,7 +93,8 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
 
     private Optional<String> downloadFile(final String bucket, final String key) throws IOException {
         try {
-            S3Object s3Object = amazonS3.get(new AliasEnv(bucket, dependencies.getEnvironment())).getObject(bucket, key);
+            AliasEnv aliasEnv = new AliasEnv(bucket, dependencies.getEnvironment());
+            S3Object s3Object = amazonS3.get(aliasEnv).getObject(bucket, key);
             S3ObjectInputStream s3ObjectInputStream = s3Object.getObjectContent();
             String actual = IOUtils.toString(s3ObjectInputStream, StandardCharsets.UTF_8);
             return Optional.of(actual);

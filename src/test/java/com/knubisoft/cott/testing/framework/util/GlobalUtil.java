@@ -5,7 +5,7 @@ import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class ScenarioUtil {
+public class GlobalUtil {
 
     private static final boolean STOP_SCENARIO_ON_FAILURE;
 

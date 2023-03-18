@@ -3,7 +3,6 @@ package com.knubisoft.cott.testing.framework.util;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FileUtils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,9 +15,10 @@ import java.io.IOException;
 
 @UtilityClass
 public class ImageCompressor {
-    private static final String IMAGE_JPEG = "image/jpeg";
+
+    private static final String IMAGE_JPEG = "image" + File.separator + "jpeg";
     private static final String EXTENSION_JPEG = "jpeg";
-    private static final String IMAGE_PNG = "image/png";
+    private static final String IMAGE_PNG = "image" + File.separator + "png";
     private static final Integer WIDTH_IMAGE_SIZE = 600;
     private static final Integer HEIGHT_IMAGE_SIZE = 400;
 
@@ -30,7 +30,6 @@ public class ImageCompressor {
                 ? multipartFile : resizeImage(multipartFile.getName(), image);
     }
 
-    @NotNull
     private MultipartFile tryToGetMultipart(final File originalImage) {
         final MultipartFile multipartFile;
         try {
@@ -51,7 +50,6 @@ public class ImageCompressor {
         return image;
     }
 
-    @NotNull
     private MultipartFile getMultipartFile(final File originalImage) throws IOException {
         final byte[] fileInByteArray;
         final MultipartFile multipartFile;

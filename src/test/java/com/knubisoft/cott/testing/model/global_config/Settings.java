@@ -18,7 +18,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="parallelExecution" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
  *         &lt;element name="takeScreenshots" type="{http://www.knubisoft.com/cott/testing/model/global-config}takeScreenshot"/&gt;
  *         &lt;element name="elementAutowait" type="{http://www.knubisoft.com/cott/testing/model/global-config}elementAutowait"/&gt;
  *       &lt;/sequence&gt;
@@ -31,7 +30,6 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "settings", propOrder = {
-    "parallelExecution",
     "takeScreenshots",
     "elementAutowait"
 })
@@ -42,36 +40,10 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class Settings {
 
-    @XmlElement(defaultValue = "false")
-    protected Boolean parallelExecution;
     @XmlElement(required = true)
     protected TakeScreenshot takeScreenshots;
     @XmlElement(required = true)
     protected ElementAutowait elementAutowait;
-
-    /**
-     * Gets the value of the parallelExecution property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public Boolean isParallelExecution() {
-        return parallelExecution;
-    }
-
-    /**
-     * Sets the value of the parallelExecution property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setParallelExecution(Boolean value) {
-        this.parallelExecution = value;
-    }
 
     /**
      * Gets the value of the takeScreenshots property.

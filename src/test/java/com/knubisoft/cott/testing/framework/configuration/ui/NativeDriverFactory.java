@@ -9,7 +9,7 @@ import com.knubisoft.cott.testing.model.global_config.BrowserStackNativeCapabili
 import com.knubisoft.cott.testing.model.global_config.GooglePlayLogin;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.global_config.Platform;
-import com.knubisoft.cott.testing.model.global_config.Uis;
+import com.knubisoft.cott.testing.model.global_config.UiConfig;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
@@ -38,8 +38,8 @@ public class NativeDriverFactory {
     @SneakyThrows
     private AppiumDriver getNativeWebDriver(final NativeDevice nativeDevice,
                                             final DesiredCapabilities desiredCapabilities) {
-        Uis uis = GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.currentEnv());
-        String serverUrl = SeleniumDriverUtil.getNativeConnectionUrl(uis);
+        UiConfig uiConfig = GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.currentEnv());
+        String serverUrl = SeleniumDriverUtil.getNativeConnectionUrl(uiConfig);
         if (Platform.ANDROID == nativeDevice.getPlatformName()) {
             setAndroidCapabilities(nativeDevice, desiredCapabilities);
             return new AndroidDriver(new URL(serverUrl), desiredCapabilities);

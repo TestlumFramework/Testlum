@@ -1,14 +1,14 @@
 package com.knubisoft.cott.testing.framework.configuration.ui;
 
-import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.SeleniumDriverUtil;
 import com.knubisoft.cott.testing.model.global_config.AppiumCapabilities;
 import com.knubisoft.cott.testing.model.global_config.Mobilebrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.Platform;
-import com.knubisoft.cott.testing.model.global_config.Uis;
+import com.knubisoft.cott.testing.model.global_config.UiConfig;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
 import lombok.SneakyThrows;
@@ -33,10 +33,10 @@ public class MobilebrowserDriverFactory {
 
     @SneakyThrows
     private WebDriver getMobilebrowserWebDriver(final DesiredCapabilities desiredCapabilities) {
-        Uis uis = GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.currentEnv());
-        String serverUrl = SeleniumDriverUtil.getMobilebrowserConnectionUrl(uis);
+        UiConfig uiConfig = GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.currentEnv());
+        String serverUrl = SeleniumDriverUtil.getMobilebrowserConnectionUrl(uiConfig);
         WebDriver driver;
-        Mobilebrowser settings = uis.getMobilebrowser();
+        Mobilebrowser settings = uiConfig.getMobilebrowser();
         if (Objects.nonNull(settings.getConnection().getAppiumServer())) {
             driver = new AppiumDriver(new URL(serverUrl), desiredCapabilities);
         } else {

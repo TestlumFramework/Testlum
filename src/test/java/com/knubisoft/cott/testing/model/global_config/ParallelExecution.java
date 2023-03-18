@@ -1,24 +1,22 @@
 
 package com.knubisoft.cott.testing.model.global_config;
 
-import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for delayBetweenScenariosRuns complex type.
+ * <p>Java class for parallelExecution complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="delayBetweenScenariosRuns"&gt;
+ * &lt;complexType name="parallelExecution"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="seconds" use="required" type="{http://www.w3.org/2001/XMLSchema}positiveInteger" /&gt;
+ *       &lt;attribute name="threads" type="{http://www.knubisoft.com/cott/testing/model/global-config}positiveIntegerMin1" default="1" /&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -28,37 +26,40 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "delayBetweenScenariosRuns")
-public class DelayBetweenScenariosRuns {
+@XmlType(name = "parallelExecution")
+public class ParallelExecution {
 
-    @XmlAttribute(name = "seconds", required = true)
-    @XmlSchemaType(name = "positiveInteger")
-    protected BigInteger seconds;
+    @XmlAttribute(name = "threads")
+    protected Integer threads;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
 
     /**
-     * Gets the value of the seconds property.
+     * Gets the value of the threads property.
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link Integer }
      *     
      */
-    public BigInteger getSeconds() {
-        return seconds;
+    public int getThreads() {
+        if (threads == null) {
+            return  1;
+        } else {
+            return threads;
+        }
     }
 
     /**
-     * Sets the value of the seconds property.
+     * Sets the value of the threads property.
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link Integer }
      *     
      */
-    public void setSeconds(BigInteger value) {
-        this.seconds = value;
+    public void setThreads(Integer value) {
+        this.threads = value;
     }
 
     /**

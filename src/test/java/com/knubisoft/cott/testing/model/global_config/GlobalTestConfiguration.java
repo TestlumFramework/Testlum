@@ -21,10 +21,10 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="subscription" type="{http://www.knubisoft.com/cott/testing/model/global-config}subscription"/&gt;
  *         &lt;element name="stopScenarioOnFailure" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *         &lt;element name="stopIfInvalidScenario" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
- *         &lt;element name="delayBetweenScenariosRuns" type="{http://www.knubisoft.com/cott/testing/model/global-config}delayBetweenScenariosRuns" minOccurs="0"/&gt;
+ *         &lt;element name="delayBetweenScenarioRuns" type="{http://www.knubisoft.com/cott/testing/model/global-config}delayBetweenScenarioRuns"/&gt;
+ *         &lt;element name="parallelExecution" type="{http://www.knubisoft.com/cott/testing/model/global-config}parallelExecution"/&gt;
  *         &lt;element name="runScenariosByTag" type="{http://www.knubisoft.com/cott/testing/model/global-config}runScenariosByTag"/&gt;
  *         &lt;element name="report" type="{http://www.knubisoft.com/cott/testing/model/global-config}report"/&gt;
- *         &lt;element name="auth" type="{http://www.knubisoft.com/cott/testing/model/global-config}auth"/&gt;
  *         &lt;element name="environments" type="{http://www.knubisoft.com/cott/testing/model/global-config}environments"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
@@ -39,10 +39,10 @@ import javax.xml.bind.annotation.XmlType;
     "subscription",
     "stopScenarioOnFailure",
     "stopIfInvalidScenario",
-    "delayBetweenScenariosRuns",
+    "delayBetweenScenarioRuns",
+    "parallelExecution",
     "runScenariosByTag",
     "report",
-    "auth",
     "environments"
 })
 @XmlRootElement(name = "globalTestConfiguration")
@@ -52,13 +52,14 @@ public class GlobalTestConfiguration {
     protected Subscription subscription;
     protected boolean stopScenarioOnFailure;
     protected boolean stopIfInvalidScenario;
-    protected DelayBetweenScenariosRuns delayBetweenScenariosRuns;
+    @XmlElement(required = true)
+    protected DelayBetweenScenarioRuns delayBetweenScenarioRuns;
+    @XmlElement(required = true)
+    protected ParallelExecution parallelExecution;
     @XmlElement(required = true)
     protected RunScenariosByTag runScenariosByTag;
     @XmlElement(required = true)
     protected Report report;
-    @XmlElement(required = true)
-    protected Auth auth;
     @XmlElement(required = true)
     protected Environments environments;
 
@@ -119,27 +120,51 @@ public class GlobalTestConfiguration {
     }
 
     /**
-     * Gets the value of the delayBetweenScenariosRuns property.
+     * Gets the value of the delayBetweenScenarioRuns property.
      * 
      * @return
      *     possible object is
-     *     {@link DelayBetweenScenariosRuns }
+     *     {@link DelayBetweenScenarioRuns }
      *     
      */
-    public DelayBetweenScenariosRuns getDelayBetweenScenariosRuns() {
-        return delayBetweenScenariosRuns;
+    public DelayBetweenScenarioRuns getDelayBetweenScenarioRuns() {
+        return delayBetweenScenarioRuns;
     }
 
     /**
-     * Sets the value of the delayBetweenScenariosRuns property.
+     * Sets the value of the delayBetweenScenarioRuns property.
      * 
      * @param value
      *     allowed object is
-     *     {@link DelayBetweenScenariosRuns }
+     *     {@link DelayBetweenScenarioRuns }
      *     
      */
-    public void setDelayBetweenScenariosRuns(DelayBetweenScenariosRuns value) {
-        this.delayBetweenScenariosRuns = value;
+    public void setDelayBetweenScenarioRuns(DelayBetweenScenarioRuns value) {
+        this.delayBetweenScenarioRuns = value;
+    }
+
+    /**
+     * Gets the value of the parallelExecution property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ParallelExecution }
+     *     
+     */
+    public ParallelExecution getParallelExecution() {
+        return parallelExecution;
+    }
+
+    /**
+     * Sets the value of the parallelExecution property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ParallelExecution }
+     *     
+     */
+    public void setParallelExecution(ParallelExecution value) {
+        this.parallelExecution = value;
     }
 
     /**
@@ -188,30 +213,6 @@ public class GlobalTestConfiguration {
      */
     public void setReport(Report value) {
         this.report = value;
-    }
-
-    /**
-     * Gets the value of the auth property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Auth }
-     *     
-     */
-    public Auth getAuth() {
-        return auth;
-    }
-
-    /**
-     * Sets the value of the auth property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Auth }
-     *     
-     */
-    public void setAuth(Auth value) {
-        this.auth = value;
     }
 
     /**

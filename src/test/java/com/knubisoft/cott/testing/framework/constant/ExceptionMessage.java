@@ -62,22 +62,19 @@ public class ExceptionMessage {
     public static final String SCENARIOS_FOLDER_NOT_EXIST = "[scenarios] folder does not exist";
     public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
     public static final String DATA_FOLDER_NOT_EXIST = "[data] folder does not exist";
-    public static final String CONFIG_FOLDER_NOT_EXIST = "[config] folder does not exist";
-    public static final String ENV_FOLDER_NOT_EXIST = "Environment folder does not exist";
+    public static final String ENV_CONFIG_FOLDER_NOT_EXIST = "[config] folder does not exist";
     public static final String DUPLICATE_FILENAME = ANSI_RED + "The [%s] folder and its subfolders contain "
-            + "files with duplicate filenames - %s. Every file should have a unique name" + ANSI_RESET;
-    public static final String FILE_NOT_EXIST = ANSI_RED + "File %s does not exist in the [data] folder and its "
-            + "subfolders by path %s" + ANSI_RESET;
+            + "files with duplicate filenames - [%s]. Each file should have a unique name" + ANSI_RESET;
+    public static final String DUPLICATE_FOLDER_NAME = ANSI_RED + "The [%s] folder and its subfolders contain "
+            + "folders with duplicate names - [%s]. Each folder should have a unique name" + ANSI_RESET;
+    public static final String NO_ENABLED_ENVIRONMENTS_FOUND = "No enabled environments found in configuration file";
     public static final String NO_SCENARIOS_FILTERED_BY_TAGS = ANSI_RED
             + "There are no active scenarios by enabled tags" + ANSI_RESET;
-    public static final String NO_ENABLE_TAGS_CONFIG = ANSI_RED + "There are no enable tags in runScenariosByTag"
+    public static final String NO_ENABLED_TAGS_CONFIG = ANSI_RED + "No enabled tags in runScenariosByTag configuration"
             + ANSI_RESET;
-    public static final String DISABLED_IN_CONFIG = ANSI_RED
-            + "{} are disabled in config file. Scenarios with {} steps will be invalid"
-            + ANSI_RESET;
-    public static final String INTEGRATIONS_FILE_NOT_SPECIFIED = "Integrations configurations file should be specified";
-    public static final String UI_FILE_NOT_SPECIFIED = "UI configurations file should be specified";
-
+//    public static final String DISABLED_IN_CONFIG = ANSI_RED
+//            + "{} are disabled in config file. Scenarios with {} steps will be invalid"
+//            + ANSI_RESET;
     public static final String CONFIG_FILE_NAME_INPUT_REQUIREMENTS =
             "Use one of the options: -c={configuration-file-name} or --config={configuration-file-name}\n"
                     + "Please don't use spaces in the configuration file name. Allowed special character [._-:*#]\n"
@@ -110,22 +107,22 @@ public class ExceptionMessage {
     public static final String SCROLL_TO_ELEMENT_NOT_SUPPORTED = "Scroll to the element by %s percents not supported";
     public static final String JS_FILE_UNREADABLE = "The .js file by path ./javascript/%s unreadable";
 
-    public static final String TAB_NOT_FOUND = "Available tab that can be closed not found";
-    public static final String TAB_OUT_OF_BOUNDS = "Cannot close the tab №<%s> because there are only %s tabs";
     public static final String DRIVER_INITIALIZER_NOT_FOUND = "Driver initializer not found";
 
+    public static final String STOP_IF_NON_PARSED_SCENARIO = ANSI_RED
+            + "The execution was stopped because of isStopIfInvalidScenario" + ANSI_RESET;
     public static final String VALID_SCENARIOS_NOT_FOUND = ANSI_RED + "Valid scenarios are not found" + ANSI_RESET;
+
     public static final String NOT_ENABLED_BROWSERS = "Web configuration should be declared "
             + "and enabled. At least 1 browser must be enabled";
-
+    public static final String NOT_ENABLED_MOBILEBROWSER_DEVICE = "Mobilebrowser configuration should be declared "
+            + "and enabled. At least 1 mobilebrowser device must be enabled";
     public static final String NOT_ENABLED_NATIVE_DEVICE = "Native configuration should be declared "
             + "and enabled. At least 1 native device must be enabled";
 
-    public static final String NOT_ENABLED_MOBILEBROWSER_DEVICE = "Mobilebrowser configuration should be declared "
-            + "and enabled. At least 1 mobilebrowser device must be enabled";
-
-    public static final String AUTH_WAS_NOT_DEFINED = "Authentication strategy has not been defined in the "
-            + "configuration file. Usage example: <auth strategy=\"basic\".../>";
+    public static final String AUTH_ALIASES_DOESNT_MATCH = "Http command alias doesn't match with auth alias";
+    public static final String AUTH_WAS_NOT_DEFINED = "Authentication strategy is not defined in the api configuration."
+            + " Usage example: <auth strategy=\"basic\".../>";
 
     public static final String UNSUPPORTED_MIGRATION_FORMAT = "Unsupported data file format was found "
             + "in <migration> tag. For %s allowed extensions are: %s, %s";
@@ -147,6 +144,9 @@ public class ExceptionMessage {
     public static final String FILE_NOT_FOUND = "File not found: %s";
     public static final String SCROLL_TYPE_NOT_FOUND = "Scroll type <%s> not supported";
     public static final String SWIPE_TYPE_NOT_FOUND = "Swipe direction <%s> is not supported";
+    public static final String TAB_NOT_FOUND = "Available tab that can be closed not found";
+    public static final String TAB_OUT_OF_BOUNDS = "Cannot close the tab №<%s> because there are only %s tabs";
+    public static final String CANNOT_SWITCH_TO_WEBVIEW = "Cannot switch to the web view. Web context was not found";
     public static final String NO_LOCATOR_FOUND_FOR_INNER_SCROLL = "You didn't specify a locator for the inner scroll";
     public static final String NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE = "You didn't specify a locator"
             + " for the element swipe";
@@ -163,12 +163,7 @@ public class ExceptionMessage {
     public static final String MOBILEBROWSER_DRIVER_NOT_INIT = "The webDriver for <mobilebrowser> has not been "
             + "initialized, check your configuration in config file";
 
-    public static final String CANNOT_SWITCH_TO_WEBVIEW = "Can not switch to the web view. Web context was not found";
-
     public static final String VARIATIONS_NOT_FOUND = "Variations for %s not found";
     public static final String VARIATION_FILE_IS_EMPTY = "Variation %s file in the %s is empty";
-    public static final String VARIATIONS_NOT_USED = "Variations are present but not used in the %s";
-    public static final String AUTH_ALIASES_DOESNT_MATCH = "Alias from http command doesn't match with alias from Auth";
-    public static final String STOP_IF_NON_PARSED_SCENARIO = ANSI_RED
-            + "The execution was stopped because of isStopIfInvalidScenario" + ANSI_RESET;
+    public static final String VARIATIONS_NOT_USED = "Variations are present in the %s but not used";
 }

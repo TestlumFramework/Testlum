@@ -6,7 +6,7 @@ import com.knubisoft.cott.testing.model.global_config.AbstractDevice;
 import com.knubisoft.cott.testing.model.global_config.BrowserStackLogin;
 import com.knubisoft.cott.testing.model.global_config.Capabilities;
 import com.knubisoft.cott.testing.model.global_config.ConnectionType;
-import com.knubisoft.cott.testing.model.global_config.Uis;
+import com.knubisoft.cott.testing.model.global_config.UiConfig;
 import io.appium.java_client.remote.MobileCapabilityType;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -20,26 +20,26 @@ public class SeleniumDriverUtil {
 
     private static final String BROWSER_STACK_URL_TEMPLATE = "https://%s:%s@hub-cloud.browserstack.com/wd/hub";
 
-    public String getBrowserStackUrl(final Uis uis) {
-        BrowserStackLogin browserStack = uis.getBrowserStackLogin();
+    public String getBrowserStackUrl(final UiConfig uiConfig) {
+        BrowserStackLogin browserStack = uiConfig.getBrowserStackLogin();
         if (Objects.nonNull(browserStack)) {
             return format(BROWSER_STACK_URL_TEMPLATE, browserStack.getUsername(), browserStack.getAccessKey());
         }
         throw new DefaultFrameworkException("Cannot find BrowserStackLogin configuration");
     }
 
-    public String getMobilebrowserConnectionUrl(final Uis uis) {
-        return getServerUrl(uis.getMobilebrowser().getConnection(), uis);
+    public String getMobilebrowserConnectionUrl(final UiConfig uiConfig) {
+        return getServerUrl(uiConfig.getMobilebrowser().getConnection(), uiConfig);
     }
 
-    public String getNativeConnectionUrl(final Uis uis) {
-        return getServerUrl(uis.getNative().getConnection(), uis);
+    public String getNativeConnectionUrl(final UiConfig uiConfig) {
+        return getServerUrl(uiConfig.getNative().getConnection(), uiConfig);
     }
 
-    private String getServerUrl(final ConnectionType connectionType, final Uis uis) {
+    private String getServerUrl(final ConnectionType connectionType, final UiConfig uiConfig) {
         return Objects.nonNull(connectionType.getAppiumServer())
                 ? connectionType.getAppiumServer().getServerUrl()
-                : getBrowserStackUrl(uis);
+                : getBrowserStackUrl(uiConfig);
     }
 
     public void setDefaultCapabilities(final AbstractDevice abstractDevice,

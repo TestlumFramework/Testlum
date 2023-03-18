@@ -1,15 +1,18 @@
 package com.knubisoft.cott.testing.framework.env;
 
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
 import static java.util.Objects.isNull;
 
+@RequiredArgsConstructor
 public class KeyLocker {
 
     private final ConcurrentHashMap<Object, LockWrapper> keyToLocks = new ConcurrentHashMap<>();
+    private final int lockLimit;
 
     public boolean tryLock(final Object key) {
         LockWrapper lockWrapper = keyToLocks.compute(key, (k, lock) ->
@@ -25,8 +28,7 @@ public class KeyLocker {
         lockWrapper.lock.release();
     }
 
-    private static class LockWrapper {
-        //todo change permits by parallelism config
-        private final Semaphore lock = new Semaphore(1);
+    private class LockWrapper {
+        private final Semaphore lock = new Semaphore(Math.max(lockLimit, 1));
     }
 }

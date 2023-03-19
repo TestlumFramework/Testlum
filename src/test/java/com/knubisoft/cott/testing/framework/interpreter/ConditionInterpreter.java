@@ -15,7 +15,6 @@ import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_CONDITION_WITH_PATH_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CONDITION;
-import static com.knubisoft.cott.testing.framework.util.ResultUtil.EXPRESSION;
 
 @Slf4j
 @InterpreterForClass(Condition.class)

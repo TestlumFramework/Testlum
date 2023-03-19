@@ -34,6 +34,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
+import org.springframework.http.HttpMethod;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.io.File;
@@ -124,7 +125,6 @@ public class ResultUtil {
     private static final String DISABLE = "Disable";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
-    private static final String BODY_OF_REQUEST = "Body of request";
     private static final String LAMBDA_FUNCTION_NAME = "Function name";
     private static final String LAMBDA_PAYLOAD = "Payload";
     private static final String HEADERS_STATUS = "Headers status";
@@ -511,7 +511,7 @@ public class ResultUtil {
     }
 
     @SneakyThrows
-    public static void writeFullTestCycleExecutionResult(final TestExecutionSummary testExecutionSummary) {
+    public void writeFullTestCycleExecutionResult(final TestExecutionSummary testExecutionSummary) {
         File executionResultFile = new File(TestResourceSettings.getInstance().getTestResourcesFolder(),
                 EXECUTION_RESULT_FILENAME);
         String result = CollectionUtils.isNotEmpty(testExecutionSummary.getFailures())
@@ -519,7 +519,7 @@ public class ResultUtil {
         FileUtils.write(executionResultFile, result, StandardCharsets.UTF_8);
     }
 
-    public static void addImageComparisonMetaData(final Image image, final CommandResult result) {
+    public void addImageComparisonMetaData(final Image image, final CommandResult result) {
         result.put(IMAGE_FOR_COMPARISON, image.getFile());
         result.put(HIGHLIGHT_DIFFERENCE, image.isHighlightDifference());
         CompareWith compareWith = image.getCompareWith();
@@ -532,16 +532,20 @@ public class ResultUtil {
         }
     }
 
-    public static void addGraphQlMetaData(final String alias,
-                                          final String endpoint,
-                                          final String body,
-                                          final CommandResult result) {
+    public void addGraphQlMetaData(final String alias,
+                                   final HttpInfo httpInfo,
+                                   final HttpMethod httpMethod,
+                                   final CommandResult result) {
         result.put(ALIAS, alias);
-        result.put(ENDPOINT, endpoint);
-        result.put(BODY_OF_REQUEST, body);
+        result.put(HTTP_METHOD, httpMethod);
+        result.put(ENDPOINT, httpInfo.getEndpoint());
+        List<Header> headers = httpInfo.getHeader();
+        if (!headers.isEmpty()) {
+            addHeaders(headers, result);
+        }
     }
 
-    public static void addSwipeMetaData(final SwipeNative swipeNative, final CommandResult result) {
+    public void addSwipeMetaData(final SwipeNative swipeNative, final CommandResult result) {
         result.put(SWIPE_TYPE, swipeNative.getType().value());
         result.put(SWIPE_QUANTITY, swipeNative.getQuantity());
         result.put(PERFORM_SWIPE, swipeNative.getDirection());

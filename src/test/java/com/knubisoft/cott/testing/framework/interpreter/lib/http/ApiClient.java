@@ -1,10 +1,7 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib.http;
 
-import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.framework.util.ConfigUtil;
 import com.knubisoft.cott.testing.framework.util.HttpUtil;
-import com.knubisoft.cott.testing.model.global_config.Api;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +29,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNKNOWN_METHOD;
@@ -43,22 +39,20 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_STAT
 public class ApiClient {
 
     public ApiResponse call(final HttpMethod httpMethod,
-                            final String endpoint,
+                            final String fullUrl,
                             final Map<String, String> headers,
-                            final HttpEntity body,
-                            final String alias) throws IOException {
+                            final HttpEntity body) throws IOException {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            return executeHttpRequest(httpMethod, endpoint, headers, body, httpClient, alias);
+            return executeHttpRequest(httpMethod, fullUrl, headers, body, httpClient);
         }
     }
 
     private ApiResponse executeHttpRequest(final HttpMethod httpMethod,
-                                           final String endpoint,
+                                           final String fullUrl,
                                            final Map<String, String> headers,
                                            final HttpEntity body,
-                                           final CloseableHttpClient httpClient,
-                                           final String alias) throws IOException {
-        HttpUriRequest request = buildRequest(httpMethod, endpoint, headers, body, alias);
+                                           final CloseableHttpClient httpClient) throws IOException {
+        HttpUriRequest request = buildRequest(httpMethod, fullUrl, headers, body);
         try (CloseableHttpResponse response = httpClient.execute(request)) {
             return convertToApiResponse(response);
         }
@@ -77,11 +71,10 @@ public class ApiClient {
     }
 
     private HttpUriRequest buildRequest(final HttpMethod httpMethod,
-                                        final String endpoint,
+                                        final String fullUrl,
                                         final Map<String, String> headers,
-                                        final HttpEntity body,
-                                        final String alias) {
-        HttpUriRequest request = getHttpRequest(httpMethod, createFullURL(endpoint, alias), body);
+                                        final HttpEntity body) {
+        HttpUriRequest request = getHttpRequest(httpMethod, fullUrl, body);
         addRequestHeaders(request, headers);
         return request;
     }
@@ -101,12 +94,6 @@ public class ApiClient {
             default:
                 throw new DefaultFrameworkException(UNKNOWN_METHOD, httpMethod);
         }
-    }
-
-    private String createFullURL(final String endpoint, final String alias) {
-        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().getApis().getApi();
-        Api apiIntegration = (Api) ConfigUtil.findApiForAlias(apiList, alias);
-        return apiIntegration.getUrl() + endpoint;
     }
 
     private void addRequestHeaders(final HttpUriRequest request, final Map<String, String> headers) {

@@ -425,12 +425,6 @@ public class LogUtil {
         log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
     }
 
-    public void logGraphqlInfo(final String alias, final String endpoint, final String body) {
-        log.info(ALIAS_LOG, alias);
-        log.info(ENDPOINT_LOG, endpoint);
-        log.info(BODY_LOG, body.replaceAll(SPACE, EMPTY).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
-    }
-
     public void logSwipeNativeInfo(final SwipeNative swipeNative) {
         log.info(SWIPE_TYPE, swipeNative.getType());
         log.info(SWIPE_QUANTITY, swipeNative.getQuantity());
@@ -454,4 +448,5 @@ public class LogUtil {
         log.info(DRAGGING_FROM, dragAndDropNative.getFromLocatorId());
         log.info(DROPPING_TO, dragAndDropNative.getToLocatorId());
     }
+
 }

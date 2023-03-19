@@ -13,8 +13,9 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
     }
 
     public final void apply(final T o, final CommandResult result) {
-        ConditionUtil.validateCondition(o.getCondition(), dependencies.getScenarioContext());
-        execute(o, result);
+        if (ConditionUtil.validateCondition(o.getCondition(), dependencies.getScenarioContext())) {
+            execute(o, result);
+        }
     }
 
     public abstract void execute(T o, CommandResult result);

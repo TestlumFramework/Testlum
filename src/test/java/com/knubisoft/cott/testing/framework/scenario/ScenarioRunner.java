@@ -188,7 +188,7 @@ public class ScenarioRunner {
                 createNativeDriver(),
                 createMobilebrowserDriver(),
                 scenarioArguments.getFile(),
-                new ScenarioContext(scenarioArguments.getVariation(), new HashMap<>()),
+                new ScenarioContext(scenarioArguments.getVariation()),
                 idGenerator
         );
     }

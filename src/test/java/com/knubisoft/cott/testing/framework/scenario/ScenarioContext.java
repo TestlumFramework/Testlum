@@ -3,7 +3,9 @@ package com.knubisoft.cott.testing.framework.scenario;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,12 +19,13 @@ public class ScenarioContext {
     private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
 
     private final Map<String, String> contextMap;
-    private final Map<String, Boolean> conditionMap;
+    private final Map<String, Boolean> conditionMap = new HashMap<>();
     private final String bodyKeyUUID = UUID.randomUUID().toString();
 
     public void set(final String key, final String value) {
         contextMap.put(key, value);
     }
+
     public void setCondition(final String key, final Boolean value) {
         conditionMap.put(key, value);
     }
@@ -46,7 +49,7 @@ public class ScenarioContext {
 
     public Boolean getCondition(final String key) {
         Boolean result = conditionMap.get(key);
-        if (result == null) {
+        if (Objects.isNull(result)) {
             throw new IllegalArgumentException(
                     String.format(UNABLE_FIND_VALUE_FOR_KEY, key, conditionMap));
         }

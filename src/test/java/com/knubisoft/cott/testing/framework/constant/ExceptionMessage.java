@@ -169,5 +169,4 @@ public class ExceptionMessage {
     public static final String VARIATIONS_NOT_USED = "Variations are present but not used in the %s";
     public static final String AUTH_ALIASES_DOESNT_MATCH = "Alias from http command doesn't match with alias from Auth";
     public static final String CONDITION_FALSE = "Condition is false";
-    public static final String CONDITION_RESULT_WRONG_TYPE = "Condition result is not of type boolean";
 }

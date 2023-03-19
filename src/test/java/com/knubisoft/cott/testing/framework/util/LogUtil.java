@@ -286,6 +286,11 @@ public class LogUtil {
         log.info(VALUE_LOG, value);
     }
 
+    public void logConditionInfo(final String name, final Boolean value) {
+        log.info(NAME_LOG, name);
+        log.info(VALUE_LOG, value.toString());
+    }
+
     public void logHttpInfo(final String alias, final String method, final String endpoint) {
         log.info(ALIAS_LOG, alias);
         log.info(HTTP_METHOD_LOG, method);

@@ -11,7 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
+import java.util.Objects;
+
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_CONDITION_WITH_PATH_LOG;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.CONDITION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.EXPRESSION;
 
 @Slf4j
@@ -23,27 +26,26 @@ public class ConditionInterpreter extends AbstractInterpreter<Condition> {
     }
 
     @Override
-    protected void acceptImpl(final Condition o, final CommandResult result) {
+    protected void acceptImpl(final Condition condition, final CommandResult result) {
         try {
-            setConditionResult(o, result);
+            setConditionResult(condition, result);
         } catch (Exception e) {
-            log.info(FAILED_CONDITION_WITH_PATH_LOG, o.getName(), o.getComment());
+            log.info(FAILED_CONDITION_WITH_PATH_LOG, condition.getName(), condition.getComment());
             throw e;
         }
     }
 
-    private void setConditionResult(final Condition o, final CommandResult result) {
-        Boolean value = getConditionFromSpel(o, result);
-        dependencies.getScenarioContext().setCondition(o.getName(), value);
-        LogUtil.logVarInfo(o.getName(), String.valueOf(value));
+    private void setConditionResult(final Condition condition, final CommandResult result) {
+        Boolean conditionResult = getConditionFromSpel(condition, result);
+        dependencies.getScenarioContext().setCondition(condition.getName(), conditionResult);
+        LogUtil.logConditionInfo(condition.getName(), conditionResult);
     }
 
     private Boolean getConditionFromSpel(final Condition condition, final CommandResult result) {
-        String expression = condition.getSpel();
-        String injectedExpression = inject(expression);
+        String injectedExpression = inject(condition.getSpel());
         Expression exp = new SpelExpressionParser().parseExpression(injectedExpression);
-        Boolean valueResult = exp.getValue(Boolean.class);
-        ResultUtil.addConditionMetaData(EXPRESSION, condition.getName(), expression, valueResult, result);
-        return valueResult;
+        Boolean conditionResult = Objects.requireNonNull(exp.getValue(Boolean.class));
+        ResultUtil.addConditionMetaData(CONDITION, condition.getName(), injectedExpression, conditionResult, result);
+        return conditionResult;
     }
 }

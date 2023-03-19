@@ -6,6 +6,7 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.CONDITION_FALSE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONDITION_LOG;
@@ -14,19 +15,19 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONDITION
 @UtilityClass
 public class ConditionUtil {
 
-    public void validateCondition(final String conditionResult,
-                                  final ScenarioContext context) {
-        if (conditionResult != null) {
-            checkConditionResult(context.getCondition(conditionResult));
+    public boolean validateCondition(final String conditionResult,
+                                     final ScenarioContext context) {
+        if (!Objects.isNull(conditionResult)) {
+            return checkConditionResult(context.getCondition(conditionResult));
         }
+        return true;
     }
 
-    public void checkConditionResult(final Boolean conditionResult) {
-        if (conditionResult) {
-            log.info(CONDITION_LOG, String.valueOf(true).toUpperCase(Locale.ENGLISH));
-        } else {
+    public boolean checkConditionResult(final Boolean conditionResult) {
+        if (!conditionResult) {
             log.info(CONDITION_LOG, String.valueOf(false).toUpperCase(Locale.ENGLISH));
-            throw new DefaultFrameworkException(CONDITION_FALSE);
+            return false;
         }
+        return true;
     }
 }

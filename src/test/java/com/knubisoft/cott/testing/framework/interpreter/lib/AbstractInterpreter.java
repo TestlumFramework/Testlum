@@ -40,8 +40,9 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         if (StringUtils.isNotBlank(o.getComment())) {
             log.info(COMMENT_LOG, o.getComment());
         }
-        ConditionUtil.validateCondition(o.getCondition(), dependencies.getScenarioContext());
-        checkExecutionTime(o, () -> acceptImpl(o, result));
+        if (ConditionUtil.validateCondition(o.getCondition(), dependencies.getScenarioContext())) {
+            checkExecutionTime(o, () -> acceptImpl(o, result));
+        }
     }
 
     private void checkExecutionTime(final T o, final Runnable r) {

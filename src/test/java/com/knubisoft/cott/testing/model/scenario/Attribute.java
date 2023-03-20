@@ -4,6 +4,7 @@ package com.knubisoft.cott.testing.model.scenario;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -15,7 +16,10 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="attribute"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}commandWithContent"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="content" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
+ *       &lt;/sequence&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}stringWithoutSpacesPattern" /&gt;
  *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}injectableScenarioLocator" /&gt;
  *     &lt;/extension&gt;
@@ -26,15 +30,43 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "attribute")
+@XmlType(name = "attribute", propOrder = {
+    "content"
+})
 public class Attribute
-    extends CommandWithContent
+    extends AbstractUiCommand
 {
 
+    @XmlElement(required = true)
+    protected String content;
     @XmlAttribute(name = "name", required = true)
     protected String name;
     @XmlAttribute(name = "locatorId", required = true)
     protected String locatorId;
+
+    /**
+     * Gets the value of the content property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getContent() {
+        return content;
+    }
+
+    /**
+     * Sets the value of the content property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setContent(String value) {
+        this.content = value;
+    }
 
     /**
      * Gets the value of the name property.

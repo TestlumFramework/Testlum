@@ -42,7 +42,7 @@ public class Assert
         @XmlElement(name = "attribute", type = Attribute.class),
         @XmlElement(name = "title", type = Title.class)
     })
-    protected List<CommandWithContent> attributeOrTitle;
+    protected List<AbstractUiCommand> attributeOrTitle;
 
     /**
      * Gets the value of the attributeOrTitle property.
@@ -67,9 +67,9 @@ public class Assert
      * 
      * 
      */
-    public List<CommandWithContent> getAttributeOrTitle() {
+    public List<AbstractUiCommand> getAttributeOrTitle() {
         if (attributeOrTitle == null) {
-            attributeOrTitle = new ArrayList<CommandWithContent>();
+            attributeOrTitle = new ArrayList<AbstractUiCommand>();
         }
         return this.attributeOrTitle;
     }

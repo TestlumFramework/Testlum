@@ -267,7 +267,7 @@ public class LogUtil {
         log.info(COMMAND_LOG, position, action.getClass().getSimpleName());
     }
 
-    public void logAttributeInfo(final Attribute attribute, final int subCommandCounter) {
+    public void logAssertAttributeInfo(final Attribute attribute, final int subCommandCounter) {
         log.info(COMMAND_LOG, subCommandCounter, attribute.getClass().getSimpleName());
         log.info(COMMENT_LOG, attribute.getComment());
         log.info(LOCATOR_LOG, attribute.getLocatorId());
@@ -448,7 +448,7 @@ public class LogUtil {
         log.info(DROPPING_TO, dragAndDropNative.getToLocatorId());
     }
 
-    public void logTitleCommand(final Title title, final int subCommandCounter) {
+    public void logAssertTitleCommand(final Title title, final int subCommandCounter) {
         log.info(COMMAND_LOG, subCommandCounter, title.getClass().getSimpleName());
         log.info(COMMENT_LOG, title.getComment());
         log.info(CONTENT_LOG, title.getContent());

@@ -47,17 +47,18 @@ public class ScenarioRunner {
     private static final AtomicInteger SCENARIO_ID_GENERATOR = new AtomicInteger();
     private final AtomicInteger idGenerator = new AtomicInteger();
     private final ScenarioResult scenarioResult = new ScenarioResult();
-
     private final ScenarioArguments scenarioArguments;
     private final ApplicationContext ctx;
+
     private InterpreterDependencies dependencies;
     private boolean stopScenarioOnFailure;
     private CommandToInterpreterMap cmdToInterpreterMap;
 
     public ScenarioResult run() {
+        int scenarioId = SCENARIO_ID_GENERATOR.incrementAndGet();
         prepare();
-        prepareScenarioResult();
-        LogUtil.logScenarioDetails(scenarioArguments, SCENARIO_ID_GENERATOR);
+        prepareScenarioResult(scenarioId);
+        LogUtil.logScenarioDetails(scenarioArguments, scenarioId);
         runScenarioCommands();
         return scenarioResult;
     }
@@ -68,9 +69,9 @@ public class ScenarioRunner {
         this.cmdToInterpreterMap = createClassToInterpreterMap(dependencies);
     }
 
-    private void prepareScenarioResult() {
+    private void prepareScenarioResult(final int scenarioId) {
         Scenario scenario = scenarioArguments.getScenario();
-        scenarioResult.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
+        scenarioResult.setId(scenarioId);
         scenarioResult.setOverview(scenario.getOverview());
         scenarioResult.setName(scenario.getOverview().getName());
         scenarioResult.setTags(scenario.getTags());

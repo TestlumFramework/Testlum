@@ -13,7 +13,6 @@ import com.knubisoft.cott.testing.framework.report.ReportGenerator;
 import com.knubisoft.cott.testing.framework.report.ScenarioResult;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioRunner;
 import com.knubisoft.cott.testing.framework.util.FileRemover;
-import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.global_config.DelayBetweenScenarioRuns;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
@@ -22,13 +21,11 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -75,11 +72,6 @@ public class RootTest {
         FileRemover.clearActualFiles(TestResourceSettings.getInstance().getScenariosFolder());
     }
 
-    @BeforeEach
-    public void beforeEach() {
-        LogUtil.logAlias("!!!!!!!!!!!!! Before !!" + Thread.currentThread().getName());
-    }
-
     public Stream<Arguments> prepareTestData() {
         return testSetCollector.collect();
     }
@@ -88,8 +80,6 @@ public class RootTest {
     @ParameterizedTest(name = "[{index}] path -- {0}")
     @MethodSource("prepareTestData")
     void execution(final Named<ScenarioArguments> arguments) {
-        //todo
-        LogUtil.logAlias("!!!!!!!!!!!!! " + Thread.currentThread().getName());
         envLockService.runLocked(() -> execute(arguments.getPayload()));
     }
 
@@ -105,8 +95,7 @@ public class RootTest {
     private void setTestScenarioResult(final StopWatch stopWatch, final ScenarioResult result) {
         result.setExecutionTime(stopWatch.getTime());
         stopWatch.stop();
-        globalScenarioStatCollector.addAndReturn(result);
-        LogUtil.logAlias("!!!!!!! END " + result.getPath() + Thread.currentThread().getName());
+        globalScenarioStatCollector.addResult(result);
         if (result.getCause() != null) {
             String[] lines = result.getCause().split(System.lineSeparator());
             String message = result.getPath() + " - " + lines[0];

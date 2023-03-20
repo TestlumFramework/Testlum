@@ -18,10 +18,10 @@ import com.knubisoft.cott.testing.model.global_config.AbstractCapabilities;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.scenario.Overview;
-import lombok.SneakyThrows;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
@@ -71,7 +71,8 @@ public class ExtentReportsGenerator implements ReportGenerator {
         ExtentReports extentReports = new ExtentReports();
         ExtentReportsConfigurator.configure(extentReports);
         globalScenarioStatCollector
-                .getResults()
+                .getResults().stream()
+                .sorted(Comparator.comparing(ScenarioResult::getId))
                 .forEach(scenarioExecutionResult -> addScenarioExecutionResult(extentReports, scenarioExecutionResult));
         extentReports.flush();
     }
@@ -219,7 +220,6 @@ public class ExtentReportsGenerator implements ReportGenerator {
         }
     }
 
-    @SneakyThrows
     private void addScreenshotIfExists(final ExtentTest extentTest, final String screenshot) {
         if (StringUtils.isNotEmpty(screenshot)) {
             extentTest.info(MediaEntityBuilder.createScreenCaptureFromBase64String(screenshot,

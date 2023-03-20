@@ -34,7 +34,6 @@ import software.amazon.awssdk.http.HttpStatusCode;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
@@ -115,9 +114,9 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class LogUtil {
 
     /* execution log */
-    public void logScenarioDetails(final ScenarioArguments scenarioArguments, final AtomicInteger atomicInteger) {
+    public void logScenarioDetails(final ScenarioArguments scenarioArguments, final int scenarioId) {
         log.info(EMPTY);
-        log.info(SCENARIO_NUMBER_AND_PATH_LOG, atomicInteger, scenarioArguments.getFile().getAbsolutePath());
+        log.info(SCENARIO_NUMBER_AND_PATH_LOG, scenarioId, scenarioArguments.getFile().getAbsolutePath());
         Overview overview = scenarioArguments.getScenario().getOverview();
         logOverview(overview);
         if (scenarioArguments.isContainsUiSteps()) {

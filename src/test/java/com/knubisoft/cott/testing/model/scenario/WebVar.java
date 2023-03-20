@@ -4,7 +4,6 @@ package com.knubisoft.cott.testing.model.scenario;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -48,7 +47,6 @@ public class WebVar
     protected FromFile file;
     protected FromPath path;
     protected FromExpression expression;
-    @XmlElement(name = "SQL")
     protected FromSQL sql;
     protected FromCookie cookie;
     protected FromDom dom;
@@ -136,7 +134,7 @@ public class WebVar
      *     {@link FromSQL }
      *     
      */
-    public FromSQL getSQL() {
+    public FromSQL getSql() {
         return sql;
     }
 
@@ -148,7 +146,7 @@ public class WebVar
      *     {@link FromSQL }
      *     
      */
-    public void setSQL(FromSQL value) {
+    public void setSql(FromSQL value) {
         this.sql = value;
     }
 

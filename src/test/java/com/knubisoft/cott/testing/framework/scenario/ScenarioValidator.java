@@ -297,7 +297,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
         validatorMap.put(o -> o instanceof Var, (xmlFile, command) -> {
             Var var = (Var) command;
-            validateVarCommand(xmlFile, var.getFile(), var.getSQL());
+            validateVarCommand(xmlFile, var.getFile(), var.getSql());
         });
 
         validatorMap.put(o -> o instanceof Web, (xmlFile, command) -> {
@@ -564,7 +564,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 validateLocator((Scroll) o, NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
             } else if (o instanceof WebVar) {
                 WebVar webVar = (WebVar) o;
-                validateVarCommand(xmlFile, webVar.getFile(), webVar.getSQL());
+                validateVarCommand(xmlFile, webVar.getFile(), webVar.getSql());
             }
         });
     }

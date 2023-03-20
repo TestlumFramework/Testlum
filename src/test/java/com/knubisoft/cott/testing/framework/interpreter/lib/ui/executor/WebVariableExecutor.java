@@ -42,7 +42,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     public WebVariableExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         Map<WebVarFromPredicate, WebVarFromMethod> webVarMap = new HashMap<>();
-        webVarMap.put(var -> nonNull(var.getSQL()), this::getSQLResult);
+        webVarMap.put(var -> nonNull(var.getSql()), this::getSQLResult);
         webVarMap.put(var -> nonNull(var.getFile()), this::getFileResult);
         webVarMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
         webVarMap.put(var -> nonNull(var.getPath()), this::getPathResult);
@@ -115,7 +115,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     private String getSQLResult(final WebVar webVar, final CommandResult commandResult) {
-        return variableService.getSQLResult(webVar.getSQL(),
+        return variableService.getSQLResult(webVar.getSql(),
                 webVar.getName(), commandResult, dependencies.getScenarioContext());
     }
 

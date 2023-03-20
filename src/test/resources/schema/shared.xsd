@@ -201,7 +201,7 @@
             <x:element name="file" type="tns:fromFile"/>
             <x:element name="path" type="tns:fromPath"/>
             <x:element name="expression" type="tns:fromExpression"/>
-            <x:element name="SQL" type="tns:fromSQL"/>
+            <x:element name="sql" type="tns:fromSQL"/>
         </x:choice>
     </x:group>
 

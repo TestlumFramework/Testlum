@@ -30,7 +30,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     public VariableInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
         Map<VarFromPredicate, VarFromMethod> generalVarMap = new HashMap<>();
-        generalVarMap.put(var -> nonNull(var.getSQL()), this::getSQLResult);
+        generalVarMap.put(var -> nonNull(var.getSql()), this::getSQLResult);
         generalVarMap.put(var -> nonNull(var.getFile()), this::getFileResult);
         generalVarMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
         generalVarMap.put(var -> nonNull(var.getPath()), this::getPathResult);
@@ -78,7 +78,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     private String getSQLResult(final Var var, final CommandResult commandResult) {
-        return variableService.getSQLResult(var.getSQL(), var.getName(),
+        return variableService.getSQLResult(var.getSql(), var.getName(),
                 commandResult, dependencies.getScenarioContext());
     }
 

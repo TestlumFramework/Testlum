@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence&gt;
  *         &lt;element name="part" type="{http://www.knubisoft.com/cott/testing/model/scenario}part" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="boundary" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="boundary" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -38,7 +38,7 @@ public class Multipart {
 
     @XmlElement(required = true)
     protected List<Part> part;
-    @XmlAttribute(name = "boundary", required = true)
+    @XmlAttribute(name = "boundary")
     protected String boundary;
 
     /**

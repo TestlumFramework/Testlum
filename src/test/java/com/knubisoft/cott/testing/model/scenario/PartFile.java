@@ -4,7 +4,6 @@ package com.knubisoft.cott.testing.model.scenario;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
@@ -18,8 +17,8 @@ import javax.xml.bind.annotation.XmlValue;
  * &lt;complexType name="partFile"&gt;
  *   &lt;simpleContent&gt;
  *     &lt;extension base="&lt;http://www.knubisoft.com/cott/testing/model/scenario&gt;nonEmptyString"&gt;
- *       &lt;attribute name="filename" type="{http://www.w3.org/2001/XMLSchema}anySimpleType" /&gt;
- *       &lt;attribute name="contentType" type="{http://www.knubisoft.com/cott/testing/model/scenario}contentType" /&gt;
+ *       &lt;attribute name="filename" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="contentType" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/simpleContent&gt;
  * &lt;/complexType&gt;
@@ -36,10 +35,9 @@ public class PartFile {
     @XmlValue
     protected String value;
     @XmlAttribute(name = "filename")
-    @XmlSchemaType(name = "anySimpleType")
     protected String filename;
     @XmlAttribute(name = "contentType")
-    protected ContentType contentType;
+    protected String contentType;
 
     /**
      * Gets the value of the value property.
@@ -94,10 +92,10 @@ public class PartFile {
      * 
      * @return
      *     possible object is
-     *     {@link ContentType }
+     *     {@link String }
      *     
      */
-    public ContentType getContentType() {
+    public String getContentType() {
         return contentType;
     }
 
@@ -106,10 +104,10 @@ public class PartFile {
      * 
      * @param value
      *     allowed object is
-     *     {@link ContentType }
+     *     {@link String }
      *     
      */
-    public void setContentType(ContentType value) {
+    public void setContentType(String value) {
         this.contentType = value;
     }
 

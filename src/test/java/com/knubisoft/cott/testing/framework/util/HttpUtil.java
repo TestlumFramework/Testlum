@@ -22,7 +22,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
@@ -137,29 +136,22 @@ public final class HttpUtil {
                 .setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
                 .setBoundary(body.getMultipart().getBoundary());
         for (Part part : parts) {
-            if (part.getText() != null) {
+            if (Objects.nonNull(part.getText())) {
                 builder.addTextBody(part.getName(), part.getText().getValue());
-            }
-            if (part.getFile() != null) {
-                handleFileFromPart(dependencies, builder, part);
+            } else if (Objects.nonNull(part.getFile())) {
+                injectFromFile(dependencies, builder, part);
             }
         }
         return builder.build();
     }
 
-    private void handleFileFromPart(final InterpreterDependencies dependencies,
-                                    final MultipartEntityBuilder builder,
-                                    final Part part) {
+    private void injectFromFile(final InterpreterDependencies dependencies,
+                                final MultipartEntityBuilder builder,
+                                final Part part) {
         File from = FileSearcher.searchFileFromDir(dependencies.getFile(), part.getFile().getValue());
-        if (part.getFile().getContentType() != null && part.getFile().getFilename() != null) {
-            builder.addBinaryBody(part.getName(), from, ContentType.create(part.getFile().getContentType().value()),
-                    part.getFile().getFilename());
-        } else if (part.getFile().getContentType() != null) {
-            builder.addBinaryBody(part.getName(),
-                    from, ContentType.create(part.getFile().getContentType().value()), from.getName());
-        } else {
-            builder.addPart(part.getName(), new FileBody(from));
-        }
+        builder.addBinaryBody(part.getName(), from, Objects.nonNull(part.getFile().getContentType())
+                        ? ContentType.create(part.getFile().getContentType()) : ContentType.DEFAULT_BINARY,
+                part.getFile().getFilename());
     }
 
     private HttpEntity injectFromFile(final Body body,

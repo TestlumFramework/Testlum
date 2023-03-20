@@ -111,7 +111,7 @@
         <x:sequence>
             <x:element name="part" type="tns:part" maxOccurs="unbounded"/>
         </x:sequence>
-        <x:attribute name="boundary" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="boundary" type="tns:nonEmptyString"/>
     </x:complexType>
 
     <x:complexType name="part">
@@ -124,26 +124,19 @@
 
     <x:complexType name="partText">
         <x:simpleContent>
-            <x:extension base="x:string"/>
+            <x:extension base="tns:nonEmptyString"/>
         </x:simpleContent>
     </x:complexType>
 
     <x:complexType name="partFile">
         <x:simpleContent>
             <x:extension base="tns:nonEmptyString">
-                <x:attribute name="filename"/>
+                <x:attribute name="filename" type="tns:nonEmptyString"/>
 <!--                <x:attribute name="path"/>-->
-                <x:attribute name="contentType" type="tns:contentType"/>
+                <x:attribute name="contentType" type="tns:nonEmptyString"/>
             </x:extension>
         </x:simpleContent>
     </x:complexType>
-
-    <x:simpleType name="contentType">
-        <x:restriction base="x:string">
-            <x:enumeration value="text/plain"/>
-            <x:enumeration value="application/json"/>
-        </x:restriction>
-    </x:simpleType>
 
     <x:complexType name="header">
         <x:simpleContent>

@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SLASH_SEPARATOR;
@@ -69,7 +68,7 @@ public class VariableService {
         String injectedExpression = inject(expression, scenarioContext);
         ExpressionParser parser = new SpelExpressionParser();
         Expression exp = parser.parseExpression(injectedExpression);
-        String valueResult = Objects.requireNonNull(exp.getValue()).toString();
+        String valueResult = exp.getValue(String.class);
         ResultUtil.addVariableMetaData(EXPRESSION, varName, expression, valueResult, result);
         return valueResult;
     }

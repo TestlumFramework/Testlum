@@ -9,12 +9,6 @@
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.util.VariableService"/>
-        <Method name="getExpressionResult"/>
-        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
-    </Match>
-
-    <Match>
         <Class name="com.knubisoft.cott.testing.framework.locator.LocatorCollector"/>
         <Method name="collectFileToPageMap"/>
         <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>

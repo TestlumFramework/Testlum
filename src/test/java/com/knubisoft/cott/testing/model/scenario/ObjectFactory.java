@@ -342,6 +342,62 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FromFile }
+     * 
+     */
+    public FromFile createFromFile() {
+        return new FromFile();
+    }
+
+    /**
+     * Create an instance of {@link FromPath }
+     * 
+     */
+    public FromPath createFromPath() {
+        return new FromPath();
+    }
+
+    /**
+     * Create an instance of {@link FromExpression }
+     * 
+     */
+    public FromExpression createFromExpression() {
+        return new FromExpression();
+    }
+
+    /**
+     * Create an instance of {@link FromCookie }
+     * 
+     */
+    public FromCookie createFromCookie() {
+        return new FromCookie();
+    }
+
+    /**
+     * Create an instance of {@link FromUrl }
+     * 
+     */
+    public FromUrl createFromUrl() {
+        return new FromUrl();
+    }
+
+    /**
+     * Create an instance of {@link FromDom }
+     * 
+     */
+    public FromDom createFromDom() {
+        return new FromDom();
+    }
+
+    /**
+     * Create an instance of {@link FromSQL }
+     * 
+     */
+    public FromSQL createFromSQL() {
+        return new FromSQL();
+    }
+
+    /**
      * Create an instance of {@link Click }
      * 
      */
@@ -595,70 +651,6 @@ public class ObjectFactory {
      */
     public Refresh createRefresh() {
         return new Refresh();
-    }
-
-    /**
-     * Create an instance of {@link FromFile }
-     * 
-     */
-    public FromFile createFromFile() {
-        return new FromFile();
-    }
-
-    /**
-     * Create an instance of {@link FromPath }
-     * 
-     */
-    public FromPath createFromPath() {
-        return new FromPath();
-    }
-
-    /**
-     * Create an instance of {@link FromExpression }
-     * 
-     */
-    public FromExpression createFromExpression() {
-        return new FromExpression();
-    }
-
-    /**
-     * Create an instance of {@link FromConstant }
-     * 
-     */
-    public FromConstant createFromConstant() {
-        return new FromConstant();
-    }
-
-    /**
-     * Create an instance of {@link FromCookie }
-     * 
-     */
-    public FromCookie createFromCookie() {
-        return new FromCookie();
-    }
-
-    /**
-     * Create an instance of {@link FromUrl }
-     * 
-     */
-    public FromUrl createFromUrl() {
-        return new FromUrl();
-    }
-
-    /**
-     * Create an instance of {@link FromDom }
-     * 
-     */
-    public FromDom createFromDom() {
-        return new FromDom();
-    }
-
-    /**
-     * Create an instance of {@link FromSQL }
-     * 
-     */
-    public FromSQL createFromSQL() {
-        return new FromSQL();
     }
 
     /**

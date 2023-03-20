@@ -6,7 +6,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependenc
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
-import com.knubisoft.cott.testing.framework.util.VarService;
+import com.knubisoft.cott.testing.framework.util.VariableService;
 import com.knubisoft.cott.testing.model.scenario.Var;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ import static java.util.Objects.nonNull;
 public class VariableInterpreter extends AbstractInterpreter<Var> {
     private final Map<VarFromPredicate, VarFromMethod> varToMethodMap;
     @Autowired
-    private VarService varService;
+    private VariableService variableService;
 
     public VariableInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -33,7 +33,6 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         generalVarMap.put(var -> nonNull(var.getSQL()), this::getSQLResult);
         generalVarMap.put(var -> nonNull(var.getFile()), this::getFileResult);
         generalVarMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
-        generalVarMap.put(var -> nonNull(var.getConstant()), this::getConstantResult);
         generalVarMap.put(var -> nonNull(var.getPath()), this::getPathResult);
         varToMethodMap = Collections.unmodifiableMap(generalVarMap);
     }
@@ -49,7 +48,6 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     private void setContextVariable(final Var var, final CommandResult result) {
-        varService.setScenarioContext(dependencies.getScenarioContext());
         String value = getValueForContext(var, result);
         dependencies.getScenarioContext().set(var.getName(), value);
         LogUtil.logVarInfo(var.getName(), value);
@@ -65,29 +63,27 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     private String getPathResult(final Var var, final CommandResult commandResult) {
-        return varService.getPathResult(var.getPath(), var.getName(), commandResult);
-    }
-
-    private String getConstantResult(final Var var, final CommandResult commandResult) {
-        return varService.getConstantResult(var.getConstant(), var.getName(), commandResult);
+        return variableService.getPathResult(var.getPath(),
+                var.getName(), commandResult, dependencies.getScenarioContext());
     }
 
     private String getExpressionResult(final Var var, final CommandResult commandResult) {
-        return varService.getExpressionResult(var.getExpression(), var.getName(), commandResult);
+        return variableService.getExpressionResult(var.getExpression(),
+                var.getName(), commandResult, dependencies.getScenarioContext());
     }
 
     private String getFileResult(final Var var, final CommandResult commandResult) {
-        return varService.getFileResult(var.getFile(), dependencies.getFile(), var.getName(), commandResult);
+        return variableService.getFileResult(var.getFile(),
+                dependencies.getFile(), var.getName(), commandResult);
     }
 
     private String getSQLResult(final Var var, final CommandResult commandResult) {
-        return varService.getSQLResult(var.getSQL(), var.getName(), commandResult);
+        return variableService.getSQLResult(var.getSQL(), var.getName(),
+                commandResult, dependencies.getScenarioContext());
     }
 
-    private interface VarFromPredicate extends Predicate<Var> {
-    }
+    private interface VarFromPredicate extends Predicate<Var> { }
 
-    private interface VarFromMethod extends BiFunction<Var, CommandResult, String> {
-    }
+    private interface VarFromMethod extends BiFunction<Var, CommandResult, String> { }
 
 }

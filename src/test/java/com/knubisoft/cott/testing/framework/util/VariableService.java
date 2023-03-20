@@ -9,7 +9,6 @@ import com.knubisoft.cott.testing.framework.db.source.ListSource;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.scenario.ScenarioContext;
-import com.knubisoft.cott.testing.model.scenario.FromConstant;
 import com.knubisoft.cott.testing.model.scenario.FromExpression;
 import com.knubisoft.cott.testing.model.scenario.FromFile;
 import com.knubisoft.cott.testing.model.scenario.FromPath;
@@ -17,7 +16,6 @@ import com.knubisoft.cott.testing.model.scenario.FromSQL;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -41,7 +39,6 @@ import java.util.Objects;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SLASH_SEPARATOR;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VAR_QUERY_RESULT_ERROR;
-import static com.knubisoft.cott.testing.framework.util.ResultUtil.CONSTANT;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.EXPRESSION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.FILE;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.JSON_PATH;
@@ -51,16 +48,9 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.XML_PATH;
 
 @Slf4j
 @Component
-@Scope("prototype")
-public class VarService {
+public class VariableService {
     @Autowired
     private NameToAdapterAlias nameToAdapterAlias;
-
-    private ScenarioContext scenarioContext;
-
-    public void setScenarioContext(final ScenarioContext scenarioContext) {
-        this.scenarioContext = scenarioContext;
-    }
 
     public String getFileResult(final FromFile fromFile,
                                 final File file,
@@ -71,21 +61,12 @@ public class VarService {
         return valueResult;
     }
 
-    public String getConstantResult(final FromConstant fromConstant,
-                                    final String varName,
-                                    final CommandResult result) {
-        String value = fromConstant.getValue();
-        String valueResult = inject(value);
-        ResultUtil.addVariableMetaData(CONSTANT, varName, NO_EXPRESSION, valueResult, result);
-        return valueResult;
-    }
-
-
     public String getExpressionResult(final FromExpression fromExpression,
                                       final String varName,
-                                      final CommandResult result) {
+                                      final CommandResult result,
+                                      final ScenarioContext scenarioContext) {
         String expression = fromExpression.getValue();
-        String injectedExpression = inject(expression);
+        String injectedExpression = inject(expression, scenarioContext);
         ExpressionParser parser = new SpelExpressionParser();
         Expression exp = parser.parseExpression(injectedExpression);
         String valueResult = Objects.requireNonNull(exp.getValue()).toString();
@@ -96,13 +77,14 @@ public class VarService {
     @SneakyThrows
     public String getPathResult(final FromPath fromPath,
                                 final String varName,
-                                final CommandResult result) {
+                                final CommandResult result,
+                                final ScenarioContext scenarioContext) {
         String path = fromPath.getValue();
         if (path.startsWith(DOLLAR_SIGN)) {
-            return evaluateJPath(path, varName, result);
+            return evaluateJPath(path, varName, result, scenarioContext);
         }
         if (path.startsWith(SLASH_SEPARATOR)) {
-            return evaluateXPath(path, varName, result);
+            return evaluateXPath(path, varName, result, scenarioContext);
         }
         throw new DefaultFrameworkException("Path <%s> is not supported", path);
     }
@@ -110,7 +92,8 @@ public class VarService {
 
     private String evaluateXPath(final String path,
                                  final String varName,
-                                 final CommandResult result) throws Exception {
+                                 final CommandResult result,
+                                 final ScenarioContext scenarioContext) throws Exception {
         DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document document = documentBuilder
                 .parse(new InputSource(new StringReader(scenarioContext.getBody())));
@@ -122,28 +105,34 @@ public class VarService {
 
     private String evaluateJPath(final String path,
                                  final String varName,
-                                 final CommandResult result) {
+                                 final CommandResult result,
+                                 final ScenarioContext scenarioContext) {
         DocumentContext contextBody = JsonPath.parse(scenarioContext.getBody());
         String valueResult = contextBody.read(path).toString();
         ResultUtil.addVariableMetaData(JSON_PATH, varName, path, valueResult, result);
         return valueResult;
     }
 
-    public String getSQLResult(final FromSQL fromSQL, final String varName, final CommandResult result) {
+    public String getSQLResult(final FromSQL fromSQL,
+                               final String varName,
+                               final CommandResult result,
+                               final ScenarioContext scenarioContext) {
         String metadataKey = fromSQL.getDbType().name() + DelimiterConstant.UNDERSCORE + fromSQL.getAlias();
         StorageOperation storageOperation = nameToAdapterAlias.getByNameOrThrow(metadataKey).getStorageOperation();
-        String valueResult = getActualQueryResult(fromSQL, storageOperation);
+        String valueResult = getActualQueryResult(fromSQL, storageOperation, scenarioContext);
         ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, varName, fromSQL.getQuery(), valueResult, result);
         return valueResult;
     }
 
     private String getActualQueryResult(final FromSQL fromSQL,
-                                        final StorageOperation storageOperation) {
+                                        final StorageOperation storageOperation,
+                                        final ScenarioContext scenarioContext) {
         String alias = fromSQL.getAlias();
-        List<String> singleQuery = new ArrayList<>(Collections.singletonList(inject(fromSQL.getQuery())));
+        List<String> singleQuery = new ArrayList<>(Collections
+                .singletonList(inject(fromSQL.getQuery(), scenarioContext)));
         LogUtil.logAllQueries(singleQuery, alias);
         StorageOperation.StorageOperationResult queryResult =
-                storageOperation.apply(new ListSource(singleQuery), inject(alias));
+                storageOperation.apply(new ListSource(singleQuery), inject(alias, scenarioContext));
         return getResultValue(queryResult, getKeyOfQueryResultValue(queryResult));
     }
 
@@ -171,7 +160,7 @@ public class VarService {
         }
     }
 
-    private String inject(final String original) {
+    private String inject(final String original, final ScenarioContext scenarioContext) {
         return scenarioContext.inject(original);
     }
 

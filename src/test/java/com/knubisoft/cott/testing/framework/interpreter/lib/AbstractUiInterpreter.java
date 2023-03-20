@@ -32,7 +32,6 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
 
     public ExecutorDependencies createExecutorDependencies(final UiType uiType) {
         return ExecutorDependencies.builder()
-                .ctx(dependencies.getCxt())
                 .file(dependencies.getFile())
                 .driver(uiType.getAppropriateDriver(dependencies))
                 .scenarioContext(dependencies.getScenarioContext())
@@ -66,16 +65,13 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
         processIfSwitchToFrame(uiCommand, subCommandResult, dependencies);
         processIfWebView(uiCommand, subCommandResult, dependencies);
     }
-    //CHECKSTYLE:OFF
+
     private void executeUiCommand(final AbstractUiCommand uiCommand,
                                   final CommandResult subCommandResult,
                                   final ExecutorDependencies dependencies) {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
-            AbstractUiExecutor<AbstractUiCommand> executor
-                    = ExecutorProvider.getAppropriateExecutor(uiCommand, dependencies);
-            dependencies.getCtx().getAutowireCapableBeanFactory().autowireBean(executor);
-            executor.execute(uiCommand, subCommandResult);
+            getAppropriateExecutor(uiCommand, dependencies).execute(uiCommand, subCommandResult);
         } catch (Exception e) {
             ResultUtil.setExceptionResult(subCommandResult, e);
             LogUtil.logException(e);
@@ -87,7 +83,14 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
             LogUtil.logExecutionTime(execTime, uiCommand);
         }
     }
-    //CHECKSTYLE:ON
+
+    private AbstractUiExecutor<AbstractUiCommand> getAppropriateExecutor(final AbstractUiCommand uiCommand,
+                                                                         final ExecutorDependencies dependencies) {
+        AbstractUiExecutor<AbstractUiCommand> executor
+                = ExecutorProvider.getAppropriateExecutor(uiCommand, dependencies);
+        this.dependencies.getCxt().getAutowireCapableBeanFactory().autowireBean(executor);
+        return executor;
+    }
 
     private void processIfSwitchToFrame(final AbstractUiCommand uiCommand,
                                         final CommandResult result,

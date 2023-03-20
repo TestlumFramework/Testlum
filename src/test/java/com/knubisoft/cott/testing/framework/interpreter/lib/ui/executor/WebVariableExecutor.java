@@ -9,7 +9,7 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.By;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.framework.util.VarService;
+import com.knubisoft.cott.testing.framework.util.VariableService;
 import com.knubisoft.cott.testing.model.scenario.WebVar;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Cookie;
@@ -33,19 +33,18 @@ import static java.util.Objects.nonNull;
 
 @Slf4j
 @ExecutorForClass(WebVar.class)
-public class WebVarExecutor extends AbstractUiExecutor<WebVar> {
+public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
 
     private final Map<WebVarFromPredicate, WebVarFromMethod> webVarToMethodMap;
     @Autowired
-    private VarService varService;
+    private VariableService variableService;
 
-    public WebVarExecutor(final ExecutorDependencies dependencies) {
+    public WebVariableExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         Map<WebVarFromPredicate, WebVarFromMethod> webVarMap = new HashMap<>();
         webVarMap.put(var -> nonNull(var.getSQL()), this::getSQLResult);
         webVarMap.put(var -> nonNull(var.getFile()), this::getFileResult);
         webVarMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
-        webVarMap.put(var -> nonNull(var.getConstant()), this::getConstantResult);
         webVarMap.put(var -> nonNull(var.getPath()), this::getPathResult);
         webVarMap.put(var -> nonNull(var.getCookie()), this::getWebCookiesResult);
         webVarMap.put(var -> nonNull(var.getDom()), this::getDomResult);
@@ -64,7 +63,6 @@ public class WebVarExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     private void setContextVariable(final WebVar webVar, final CommandResult result) {
-        varService.setScenarioContext(dependencies.getScenarioContext());
         String value = getValueForContext(webVar, result);
         dependencies.getScenarioContext().set(webVar.getName(), value);
         LogUtil.logVarInfo(webVar.getName(), value);
@@ -102,23 +100,23 @@ public class WebVarExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     private String getPathResult(final WebVar webVar, final CommandResult commandResult) {
-        return varService.getPathResult(webVar.getPath(), webVar.getName(), commandResult);
-    }
-
-    private String getConstantResult(final WebVar webVar, final CommandResult commandResult) {
-        return varService.getConstantResult(webVar.getConstant(), webVar.getName(), commandResult);
+        return variableService.getPathResult(webVar.getPath(), webVar.getName(),
+                commandResult, dependencies.getScenarioContext());
     }
 
     private String getExpressionResult(final WebVar webVar, final CommandResult commandResult) {
-        return varService.getExpressionResult(webVar.getExpression(), webVar.getName(), commandResult);
+        return variableService.getExpressionResult(webVar.getExpression(),
+                webVar.getName(), commandResult, dependencies.getScenarioContext());
     }
 
     private String getFileResult(final WebVar webVar, final CommandResult commandResult) {
-        return varService.getFileResult(webVar.getFile(), dependencies.getFile(), webVar.getName(), commandResult);
+        return variableService.getFileResult(webVar.getFile(),
+                dependencies.getFile(), webVar.getName(), commandResult);
     }
 
     private String getSQLResult(final WebVar webVar, final CommandResult commandResult) {
-        return varService.getSQLResult(webVar.getSQL(), webVar.getName(), commandResult);
+        return variableService.getSQLResult(webVar.getSQL(),
+                webVar.getName(), commandResult, dependencies.getScenarioContext());
     }
 
     private interface WebVarFromPredicate extends Predicate<WebVar> { }

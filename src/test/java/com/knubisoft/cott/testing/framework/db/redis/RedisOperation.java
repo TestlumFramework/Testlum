@@ -5,7 +5,7 @@ import com.knubisoft.cott.testing.framework.configuration.condition.OnRedisEnabl
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.Source;
-import com.knubisoft.cott.testing.model.AliasEnv;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;

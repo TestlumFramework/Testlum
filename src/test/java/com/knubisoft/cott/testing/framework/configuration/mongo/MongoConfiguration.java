@@ -2,7 +2,7 @@ package com.knubisoft.cott.testing.framework.configuration.mongo;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnMongoEnabledCondition;
-import com.knubisoft.cott.testing.model.AliasEnv;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Mongo;
 import com.mongodb.MongoClient;

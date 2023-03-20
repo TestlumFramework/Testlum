@@ -1,8 +1,8 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib;
 
 import com.google.common.base.Suppliers;
-import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import lombok.experimental.UtilityClass;
 import org.reflections.Reflections;
 
@@ -40,10 +40,10 @@ public class InterpreterScanner {
 
     @SuppressWarnings("unchecked")
     private Set<Class<AbstractInterpreter<? extends AbstractCommand>>> scan() {
-        return new Reflections(PACKAGE_TO_SCAN).getSubTypesOf(AbstractInterpreter.class).stream().
-                map(e -> (Class<AbstractInterpreter<? extends AbstractCommand>>) e).
-                filter(e -> !Modifier.isAbstract(e.getModifiers())).
-                collect(Collectors.toSet());
+        return new Reflections(PACKAGE_TO_SCAN).getSubTypesOf(AbstractInterpreter.class).stream()
+                .map(e -> (Class<AbstractInterpreter<? extends AbstractCommand>>) e)
+                .filter(e -> !Modifier.isAbstract(e.getModifiers()))
+                .collect(Collectors.toSet());
     }
 
     public CommandToInterpreterClassMap getInterpreters() {

@@ -69,7 +69,6 @@ public class GlobalTestConfigurationProvider {
         return getUiConfigs().get(env).getNative();
     }
 
-    //TODO !!!
     private static GlobalTestConfiguration init() {
         return XMLParsers.forGlobalTestConfiguration()
                 .process(TestResourceSettings.getInstance().getConfigFile(), new GlobalTestConfigValidator());

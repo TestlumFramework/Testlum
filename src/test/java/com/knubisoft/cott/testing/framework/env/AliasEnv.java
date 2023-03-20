@@ -1,6 +1,5 @@
-package com.knubisoft.cott.testing.model;
+package com.knubisoft.cott.testing.framework.env;
 
-import com.knubisoft.cott.testing.framework.env.EnvManager;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

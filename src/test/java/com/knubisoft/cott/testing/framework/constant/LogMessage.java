@@ -60,7 +60,7 @@ public final class LogMessage {
 
     public static final String EXECUTION_STOP_SIGNAL_LOG = ANSI_YELLOW
             + LINE + NEW_LOG_LINE
-            + "Execution has been stopped because of enabled <StopScenarioOnFailure>"
+            + "The execution has been stopped because of the enabled <StopScenarioOnFailure>"
             + NEW_LOG_LINE + LINE + ANSI_RESET;
 
     public static final String EXCEPTION_LOG = ANSI_RED

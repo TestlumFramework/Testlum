@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.constant;
 
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ANSI_RED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ANSI_RESET;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.ANSI_YELLOW;
 
 public class ExceptionMessage {
     public static final String HTTP_CODE_EXPECTED_BUT_WAS = " Http code should be [%s] but was [%s]";
@@ -109,8 +110,8 @@ public class ExceptionMessage {
 
     public static final String DRIVER_INITIALIZER_NOT_FOUND = "Driver initializer not found";
 
-    public static final String STOP_IF_NON_PARSED_SCENARIO = ANSI_RED
-            + "The execution was stopped because of isStopIfInvalidScenario" + ANSI_RESET;
+    public static final String STOP_IF_NON_PARSED_SCENARIO = ANSI_YELLOW
+            + "The execution has been stopped because of the enabled <StopIfInvalidScenario>" + ANSI_RESET;
     public static final String VALID_SCENARIOS_NOT_FOUND = ANSI_RED + "Valid scenarios are not found" + ANSI_RESET;
 
     public static final String NOT_ENABLED_BROWSERS = "Web configuration should be declared "

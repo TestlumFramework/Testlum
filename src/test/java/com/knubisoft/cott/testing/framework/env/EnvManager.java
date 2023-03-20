@@ -1,7 +1,5 @@
 package com.knubisoft.cott.testing.framework.env;
 
-import com.knubisoft.cott.testing.framework.util.LogUtil;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -44,14 +42,12 @@ public class EnvManager {
         }
     }
 
-    //todo
     private Optional<String> tryToLockEnv() {
         return environments.stream()
                 .filter(keyLocker::tryLock)
                 .findFirst()
                 .map(env -> {
                     THREAD_ENV.set(env);
-                    LogUtil.logAlias("!!!!!!!!=" + env + "=!!!! " + Thread.currentThread().getName());
                     return env;
                 });
     }
@@ -61,7 +57,6 @@ public class EnvManager {
         try {
             keyLocker.releaseLock(env);
             THREAD_ENV.remove();
-            LogUtil.logAlias("!!!!fin=" + env + "=!!!! " + Thread.currentThread().getName());
         } finally {
             try {
                 lockCondition.signal();

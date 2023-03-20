@@ -2,7 +2,7 @@ package com.knubisoft.cott.testing.framework.configuration.dynamo;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnDynamoEnabledCondition;
-import com.knubisoft.cott.testing.model.AliasEnv;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.model.global_config.Dynamo;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import org.springframework.context.annotation.Bean;

@@ -25,7 +25,7 @@ public class ExecutorScanner {
 
     private CommandToExecutorClassMap collectAvailableExecutors() {
         CommandToExecutorClassMap map = new CommandToExecutorClassMap();
-        for (Class<? extends AbstractUiExecutor<AbstractUiCommand>> executor : scan()) {
+        for (Class<AbstractUiExecutor<? extends AbstractUiCommand>> executor : scan()) {
             addExecutorToMapIfExists(map, executor);
         }
         return map;
@@ -33,7 +33,7 @@ public class ExecutorScanner {
 
     @SneakyThrows
     private void addExecutorToMapIfExists(final CommandToExecutorClassMap map,
-                                          final Class<? extends AbstractUiExecutor<AbstractUiCommand>> executor) {
+                                          final Class<AbstractUiExecutor<? extends AbstractUiCommand>> executor) {
         ExecutorForClass executorForClass = executor.getAnnotation(ExecutorForClass.class);
         if (executorForClass == null) {
             throw new DefaultFrameworkException(NOT_DECLARED_WITH_EXECUTOR_FOR_CLASS, executor);
@@ -42,11 +42,11 @@ public class ExecutorScanner {
     }
 
     @SuppressWarnings("unchecked")
-    private Set<Class<? extends AbstractUiExecutor<AbstractUiCommand>>> scan() {
-        return new Reflections(PACKAGE_TO_SCAN).getSubTypesOf(AbstractUiExecutor.class).stream().
-                map(e -> (Class<AbstractUiExecutor<AbstractUiCommand>>) e).
-                filter(e -> !Modifier.isAbstract(e.getModifiers())).
-                collect(Collectors.toSet());
+    private Set<Class<AbstractUiExecutor<? extends AbstractUiCommand>>> scan() {
+        return new Reflections(PACKAGE_TO_SCAN).getSubTypesOf(AbstractUiExecutor.class).stream()
+                .map(e -> (Class<AbstractUiExecutor<? extends AbstractUiCommand>>) e)
+                .filter(e -> !Modifier.isAbstract(e.getModifiers()))
+                .collect(Collectors.toSet());
     }
 
     public CommandToExecutorClassMap getExecutors() {

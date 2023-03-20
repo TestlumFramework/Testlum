@@ -26,7 +26,7 @@ public class ImageCompressor {
         final BufferedImage image;
         final MultipartFile multipartFile = tryToGetMultipart(originalImage);
         image = getBufferedImage(multipartFile);
-        return image.getWidth() == WIDTH_IMAGE_SIZE && image.getHeight() == HEIGHT_IMAGE_SIZE
+        return (image.getWidth() <= WIDTH_IMAGE_SIZE && image.getHeight() <= HEIGHT_IMAGE_SIZE)
                 ? multipartFile : resizeImage(multipartFile.getName(), image);
     }
 

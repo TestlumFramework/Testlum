@@ -3,7 +3,7 @@ package com.knubisoft.cott.testing.framework.configuration.elasticsearch;
 import com.amazonaws.auth.AWS4Signer;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnElasticEnabledCondition;
-import com.knubisoft.cott.testing.model.AliasEnv;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.model.global_config.Elasticsearch;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;

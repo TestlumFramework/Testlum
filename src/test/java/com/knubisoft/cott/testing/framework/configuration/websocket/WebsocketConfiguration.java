@@ -2,7 +2,7 @@ package com.knubisoft.cott.testing.framework.configuration.websocket;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnWebsocketEnabledCondition;
-import com.knubisoft.cott.testing.model.AliasEnv;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.WebsocketApi;
 import com.knubisoft.cott.testing.model.global_config.WebsocketProtocol;

@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib;
 
+import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorProvider;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.UiType;
@@ -81,6 +82,14 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
             subCommandResult.setExecutionTime(execTime);
             LogUtil.logExecutionTime(execTime, uiCommand);
         }
+    }
+
+    private AbstractUiExecutor<AbstractUiCommand> getAppropriateExecutor(final AbstractUiCommand uiCommand,
+                                                                         final ExecutorDependencies dependencies) {
+        AbstractUiExecutor<AbstractUiCommand> executor
+                = ExecutorProvider.getAppropriateExecutor(uiCommand, dependencies);
+        this.dependencies.getCxt().getAutowireCapableBeanFactory().autowireBean(executor);
+        return executor;
     }
 
     private void processIfSwitchToFrame(final AbstractUiCommand uiCommand,

@@ -3,6 +3,7 @@ package com.knubisoft.cott.testing.model.global_config;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -30,6 +31,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "connectionType", propOrder = {
     "appiumServer",
     "browserStack"
+})
+@XmlSeeAlso({
+    DesktopConnectionType.class
 })
 public class ConnectionType {
 

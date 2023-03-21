@@ -1,0 +1,63 @@
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/cott/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/cott/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:complexType name="desktop">
+        <x:complexContent>
+            <x:extension base="tns:settings">
+                <x:sequence>
+                    <x:element name="connection" type="tns:desktopConnectionType"/>
+                    <x:element name="types" type="tns:desktopTypes"/>
+                </x:sequence>
+                <x:attribute name="enabled" type="x:boolean" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="desktopConnectionType">
+        <x:complexContent>
+            <x:restriction base="tns:connectionType">
+                <x:choice>
+                    <x:element name="appiumServer" type="tns:appiumServer"/>
+                    <x:element name="browserStack" minOccurs="0" maxOccurs="0"/>
+                </x:choice>
+            </x:restriction>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="desktopTypes">
+        <x:sequence>
+            <x:element name="type" type="tns:desktopType" maxOccurs="unbounded"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="desktopType">
+        <x:choice>
+            <x:element name="appiumCapabilities" type="tns:appiumDesktopCapabilities"/>
+        </x:choice>
+        <x:attribute name="platformName" type="tns:desktopPlatform" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="appiumDesktopCapabilities">
+        <x:complexContent>
+            <x:extension base="tns:abstractCapabilities">
+                <x:choice>
+                    <x:element name="app" type="tns:nonEmptyString"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="desktopPlatform">
+        <x:restriction base="x:string">
+            <x:enumeration value="windows"/>
+            <x:enumeration value="macos"/>
+        </x:restriction>
+    </x:simpleType>
+</x:schema>

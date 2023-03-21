@@ -5,6 +5,7 @@ import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.parser.XMLParsers;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.validator.GlobalTestConfigValidator;
+import com.knubisoft.cott.testing.model.global_config.Desktop;
 import com.knubisoft.cott.testing.model.global_config.Environment;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
@@ -67,6 +68,10 @@ public class GlobalTestConfigurationProvider {
 
     public static Native getNativeSettings(final String env) {
         return getUiConfigs().get(env).getNative();
+    }
+
+    public static Desktop getDesktopSettings(final String env) {
+        return getUiConfigs().get(env).getDesktop();
     }
 
     private static GlobalTestConfiguration init() {

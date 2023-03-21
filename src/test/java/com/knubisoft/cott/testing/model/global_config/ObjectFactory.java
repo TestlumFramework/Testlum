@@ -62,6 +62,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Desktop }
+     * 
+     */
+    public Desktop createDesktop() {
+        return new Desktop();
+    }
+
+    /**
      * Create an instance of {@link BrowserStackLogin }
      * 
      */
@@ -587,6 +595,38 @@ public class ObjectFactory {
      */
     public GooglePlayLogin createGooglePlayLogin() {
         return new GooglePlayLogin();
+    }
+
+    /**
+     * Create an instance of {@link DesktopConnectionType }
+     * 
+     */
+    public DesktopConnectionType createDesktopConnectionType() {
+        return new DesktopConnectionType();
+    }
+
+    /**
+     * Create an instance of {@link DesktopTypes }
+     * 
+     */
+    public DesktopTypes createDesktopTypes() {
+        return new DesktopTypes();
+    }
+
+    /**
+     * Create an instance of {@link DesktopType }
+     * 
+     */
+    public DesktopType createDesktopType() {
+        return new DesktopType();
+    }
+
+    /**
+     * Create an instance of {@link AppiumDesktopCapabilities }
+     * 
+     */
+    public AppiumDesktopCapabilities createAppiumDesktopCapabilities() {
+        return new AppiumDesktopCapabilities();
     }
 
     /**

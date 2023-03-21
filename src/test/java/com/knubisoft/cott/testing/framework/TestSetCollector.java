@@ -136,6 +136,7 @@ public class TestSetCollector {
                 .browser(browserAlias)
                 .mobilebrowserDevice(mobilebrowserAlias)
                 .nativeDevice(nativeAlias)
+                .desktop("WIN_10")
                 .variation(variation)
                 .containsUiSteps(true)
                 .build();

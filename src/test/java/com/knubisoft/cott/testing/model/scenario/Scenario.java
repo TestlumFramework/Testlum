@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;element name="mobilebrowser" type="{http://www.knubisoft.com/cott/testing/model/scenario}mobilebrowser"/&gt;
  *           &lt;element name="web" type="{http://www.knubisoft.com/cott/testing/model/scenario}web"/&gt;
  *           &lt;element name="native" type="{http://www.knubisoft.com/cott/testing/model/scenario}native"/&gt;
+ *           &lt;element name="desktop" type="{http://www.knubisoft.com/cott/testing/model/scenario}desktop"/&gt;
  *           &lt;element name="http" type="{http://www.knubisoft.com/cott/testing/model/scenario}http"/&gt;
  *           &lt;element name="migrate" type="{http://www.knubisoft.com/cott/testing/model/scenario}migrate"/&gt;
  *           &lt;element name="postgres" type="{http://www.knubisoft.com/cott/testing/model/scenario}postgres"/&gt;
@@ -87,6 +88,7 @@ public class Scenario {
         @XmlElement(name = "mobilebrowser", type = Mobilebrowser.class),
         @XmlElement(name = "web", type = Web.class),
         @XmlElement(name = "native", type = Native.class),
+        @XmlElement(name = "desktop", type = Desktop.class),
         @XmlElement(name = "http", type = Http.class),
         @XmlElement(name = "migrate", type = Migrate.class),
         @XmlElement(name = "postgres", type = Postgres.class),
@@ -192,6 +194,7 @@ public class Scenario {
      * {@link Mobilebrowser }
      * {@link Web }
      * {@link Native }
+     * {@link Desktop }
      * {@link Http }
      * {@link Migrate }
      * {@link Postgres }

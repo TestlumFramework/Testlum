@@ -18,7 +18,10 @@ public enum UiType {
             InterpreterDependencies::getMobilebrowserDriver),
 
     NATIVE(GlobalTestConfigurationProvider::getNativeSettings,
-            InterpreterDependencies::getNativeDriver);
+            InterpreterDependencies::getNativeDriver),
+
+    DESKTOP(GlobalTestConfigurationProvider::getDesktopSettings,
+            InterpreterDependencies::getDesktopDriver);
 
     private final Function<String, Settings> settingsFunction;
     private final Function<InterpreterDependencies, WebDriver> driverFunction;

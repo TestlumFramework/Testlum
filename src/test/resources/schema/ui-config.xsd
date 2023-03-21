@@ -16,6 +16,7 @@
     <x:include schemaLocation="web-config.xsd"/>
     <x:include schemaLocation="mobilebrowser-config.xsd"/>
     <x:include schemaLocation="native-config.xsd"/>
+    <x:include schemaLocation="desktop-config.xsd"/>
     <x:include schemaLocation="browserstack-config.xsd"/>
 
     <x:element name="uiConfig">
@@ -24,6 +25,7 @@
                 <x:element name="web" type="tns:web" minOccurs="0"/>
                 <x:element name="mobilebrowser" type="tns:mobilebrowser" minOccurs="0"/>
                 <x:element name="native" type="tns:native" minOccurs="0"/>
+                <x:element name="desktop" type="tns:desktop" minOccurs="0"/>
                 <x:element name="browserStackLogin" type="tns:browserStackLogin" minOccurs="0"/>
             </x:sequence>
         </x:complexType>

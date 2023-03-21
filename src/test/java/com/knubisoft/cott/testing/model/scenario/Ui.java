@@ -28,7 +28,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlSeeAlso({
     Mobilebrowser.class,
     Web.class,
-    Native.class
+    Native.class,
+    Desktop.class
 })
 public abstract class Ui
     extends AbstractCommand

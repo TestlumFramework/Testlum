@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlSeeAlso({
     Mobilebrowser.class,
     Native.class,
+    Desktop.class,
     BrowserSettings.class
 })
 public class Settings {

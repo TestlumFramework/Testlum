@@ -102,6 +102,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Desktop }
+     * 
+     */
+    public Desktop createDesktop() {
+        return new Desktop();
+    }
+
+    /**
      * Create an instance of {@link Http }
      * 
      */

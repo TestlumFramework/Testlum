@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="web" type="{http://www.knubisoft.com/cott/testing/model/global-config}web" minOccurs="0"/&gt;
  *         &lt;element name="mobilebrowser" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowser" minOccurs="0"/&gt;
  *         &lt;element name="native" type="{http://www.knubisoft.com/cott/testing/model/global-config}native" minOccurs="0"/&gt;
+ *         &lt;element name="desktop" type="{http://www.knubisoft.com/cott/testing/model/global-config}desktop" minOccurs="0"/&gt;
  *         &lt;element name="browserStackLogin" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserStackLogin" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
@@ -35,6 +36,7 @@ import javax.xml.bind.annotation.XmlType;
     "web",
     "mobilebrowser",
     "_native",
+    "desktop",
     "browserStackLogin"
 })
 @XmlRootElement(name = "uiConfig")
@@ -44,6 +46,7 @@ public class UiConfig {
     protected Mobilebrowser mobilebrowser;
     @XmlElement(name = "native")
     protected Native _native;
+    protected Desktop desktop;
     protected BrowserStackLogin browserStackLogin;
 
     /**
@@ -116,6 +119,30 @@ public class UiConfig {
      */
     public void setNative(Native value) {
         this._native = value;
+    }
+
+    /**
+     * Gets the value of the desktop property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Desktop }
+     *     
+     */
+    public Desktop getDesktop() {
+        return desktop;
+    }
+
+    /**
+     * Sets the value of the desktop property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Desktop }
+     *     
+     */
+    public void setDesktop(Desktop value) {
+        this.desktop = value;
     }
 
     /**

@@ -26,6 +26,7 @@ public class InterpreterDependencies {
     private final WebDriver webDriver;
     private final WebDriver mobilebrowserDriver;
     private final WebDriver nativeDriver;
+    private final WebDriver desktopDriver;
 
     private Authorization authorization;
 

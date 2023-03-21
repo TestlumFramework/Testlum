@@ -1,6 +1,7 @@
 package com.knubisoft.cott.testing.framework.scenario;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.cott.testing.framework.configuration.ui.DesktopDriverFactory;
 import com.knubisoft.cott.testing.framework.configuration.ui.MobilebrowserDriverFactory;
 import com.knubisoft.cott.testing.framework.configuration.ui.NativeDriverFactory;
 import com.knubisoft.cott.testing.framework.configuration.ui.WebDriverFactory;
@@ -18,15 +19,18 @@ import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
+import com.knubisoft.cott.testing.model.global_config.DesktopType;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.openqa.selenium.WebDriver;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FUNCTION_FOR_COMMAND_NOT_FOUND;
@@ -90,9 +94,10 @@ public class ScenarioRunner {
             log.error(EXECUTION_STOP_SIGNAL_LOG);
         } finally {
             if (scenarioArguments.isContainsUiSteps()) {
-                dependencies.getNativeDriver().quit();
                 dependencies.getWebDriver().quit();
                 dependencies.getMobilebrowserDriver().quit();
+                dependencies.getNativeDriver().quit();
+                dependencies.getDesktopDriver().quit();
             }
         }
     }
@@ -194,6 +199,7 @@ public class ScenarioRunner {
                 .webDriver(createWebDriver())
                 .mobilebrowserDriver(createMobilebrowserDriver())
                 .nativeDriver(createNativeDriver())
+                .desktopDriver(createDesktopDriver())
                 .build();
     }
 
@@ -214,6 +220,17 @@ public class ScenarioRunner {
         return MobileUtil.getNativeDeviceBy(scenarioArguments.getEnvironment(), scenarioArguments.getNativeDevice())
                 .map(NativeDriverFactory::createDriver)
                 .orElse(new MockDriver(NATIVE_DRIVER_NOT_INIT));
+    }
+
+    private WebDriver createDesktopDriver() {
+        Optional<DesktopType> optionalDesktop = StringUtils.isBlank(scenarioArguments.getDesktop())
+                ? Optional.empty()
+                : GlobalTestConfigurationProvider.getDesktopSettings(scenarioArguments.getEnvironment())
+                .getTypes().getType().stream()
+                .filter(type -> type.isEnabled() && type.getAlias().equalsIgnoreCase(scenarioArguments.getDesktop()))
+                .findFirst();
+        return optionalDesktop.map(DesktopDriverFactory::createDriver)
+                .orElse(new MockDriver("DESKTOP_DRIVER_NOT_INIT"));
     }
 
     public interface CommandCallback {

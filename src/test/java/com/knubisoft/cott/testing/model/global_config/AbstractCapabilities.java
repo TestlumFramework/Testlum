@@ -35,7 +35,8 @@ import javax.xml.bind.annotation.XmlType;
 })
 @XmlSeeAlso({
     AppiumCapabilities.class,
-    BrowserStackCapabilities.class
+    BrowserStackCapabilities.class,
+    AppiumDesktopCapabilities.class
 })
 public abstract class AbstractCapabilities {
 

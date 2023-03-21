@@ -216,4 +216,69 @@
             <x:pattern value="[2-9]|[1-9][0-9]"/>
         </x:restriction>
     </x:simpleType>
+
+    <x:group name="generalVarType">
+        <x:choice>
+            <x:element name="file" type="tns:fromFile"/>
+            <x:element name="path" type="tns:fromPath"/>
+            <x:element name="expression" type="tns:fromExpression"/>
+            <x:element name="sql" type="tns:fromSQL"/>
+        </x:choice>
+    </x:group>
+
+    <x:complexType name="fromFile">
+        <x:attribute name="fileName" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="fromPath">
+        <x:attribute name="value" type="tns:xjpathPattern" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="xjpathPattern">
+        <x:restriction base="x:string">
+            <x:pattern value="/.+|\$.+"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="fromExpression">
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="fromCookie"/>
+
+    <x:complexType name="fromUrl"/>
+
+    <x:complexType name="fromDom">
+        <x:attribute name="xpath" type="tns:xpathPattern" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="xpathPattern">
+        <x:restriction base="x:string">
+            <x:pattern value="/.+"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="fromSQL">
+        <x:sequence>
+            <x:element name="query" type="tns:variableQuery"/>
+        </x:sequence>
+        <x:attribute name="dbType" type="tns:relationalDB" use="required"/>
+        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="variableQuery">
+        <x:restriction base="x:string">
+            <x:pattern value="(\s|\n)*SELECT([^\*,]|\n)+FROM(.|\n)+WHERE(.|\n)+"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="relationalDB">
+        <x:restriction base="x:string">
+            <x:enumeration value="POSTGRES"/>
+            <x:enumeration value="MYSQL"/>
+            <x:enumeration value="ORACLE"/>
+            <x:enumeration value="CLICKHOUSE"/>
+        </x:restriction>
+    </x:simpleType>
+
 </x:schema>

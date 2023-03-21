@@ -93,7 +93,8 @@ public class ExceptionMessage {
     public static final String INVALID_PATH_TO_RESOURCES_ARGUMENT =
             "\n\nArgument of path to resources folder incorrect, please follow the requirements below\n"
                     + RESOURCES_PATH_INPUT_REQUIREMENTS
-                    + "\nExample: -p=/user/folder/resources or --path=/user/folder/resources\n"
+                    + "\nExample for macOs and Linux: -p=/user/folder/resources or --path=/user/folder/resources"
+                    + "\nExample for Windows: -p=\\user\\folder\\resources or --path=\\user\\folder\\resources\n"
                     + "\nYou entered ---> %s\n";
     public static final String INVALID_PATH_TO_INITIAL_STRUCTURE_GENERATION_ARGUMENT =
             "\n\nArgument of path to folder for initial structure incorrect, please follow the requirements below\n"

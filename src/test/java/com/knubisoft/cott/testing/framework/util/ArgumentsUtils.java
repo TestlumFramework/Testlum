@@ -3,6 +3,7 @@ package com.knubisoft.cott.testing.framework.util;
 import com.knubisoft.cott.testing.framework.exception.InvalidArgumentException;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 
 import java.util.regex.Pattern;
 
@@ -44,7 +45,8 @@ public class ArgumentsUtils {
     }
 
     public void validatePathFromArgs(final String path) {
-        if (!(LINUX_PATH_PATTERN.matcher(path).matches() || WIN_PATH_PATTERN.matcher(path).matches())) {
+        if (SystemUtils.IS_OS_MAC_OSX && !LINUX_PATH_PATTERN.matcher(path).matches()
+                || SystemUtils.IS_OS_WINDOWS && !WIN_PATH_PATTERN.matcher(path).matches()) {
             throw new InvalidArgumentException(format(INVALID_PATH_TO_RESOURCES_ARGUMENT, path));
         }
     }

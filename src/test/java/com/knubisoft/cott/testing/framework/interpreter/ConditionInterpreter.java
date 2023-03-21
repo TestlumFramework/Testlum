@@ -11,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
-import java.util.Objects;
-
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_CONDITION_WITH_PATH_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CONDITION;
 
@@ -43,7 +41,7 @@ public class ConditionInterpreter extends AbstractInterpreter<Condition> {
     private Boolean getConditionFromSpel(final Condition condition, final CommandResult result) {
         String injectedExpression = inject(condition.getSpel());
         Expression exp = new SpelExpressionParser().parseExpression(injectedExpression);
-        Boolean conditionResult = Objects.requireNonNull(exp.getValue(Boolean.class));
+        Boolean conditionResult = exp.getValue(Boolean.class);
         ResultUtil.addConditionMetaData(CONDITION, condition.getName(), injectedExpression, conditionResult, result);
         return conditionResult;
     }

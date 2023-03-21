@@ -13,7 +13,7 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
     }
 
     public final void apply(final T o, final CommandResult result) {
-        if (ConditionUtil.validateCondition(o.getCondition(), dependencies.getScenarioContext())) {
+        if (ConditionUtil.isTrue(o.getCondition(), dependencies.getScenarioContext())) {
             execute(o, result);
         }
     }

@@ -12,10 +12,10 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONDITION
 @UtilityClass
 public class ConditionUtil {
 
-    public boolean validateCondition(final String conditionResult,
-                                     final ScenarioContext context) {
-        if (!Objects.isNull(conditionResult) && !context.getCondition(conditionResult)) {
-            log.info(CONDITION_LOG, conditionResult, Boolean.FALSE);
+    public boolean isTrue(final String conditionName,
+                          final ScenarioContext context) {
+        if (Objects.nonNull(conditionName) && !context.getCondition(conditionName)) {
+            log.info(CONDITION_LOG, conditionName);
             return false;
         }
         return true;

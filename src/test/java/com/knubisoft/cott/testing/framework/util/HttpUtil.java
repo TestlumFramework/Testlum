@@ -151,7 +151,7 @@ public final class HttpUtil {
         File from = FileSearcher.searchFileFromDir(dependencies.getFile(), part.getFile().getValue());
         builder.addBinaryBody(part.getName(), from, Objects.nonNull(part.getFile().getContentType())
                         ? ContentType.create(part.getFile().getContentType()) : ContentType.DEFAULT_BINARY,
-                part.getFile().getFilename());
+                part.getFile().getFileName());
     }
 
     private HttpEntity injectFromFile(final Body body,

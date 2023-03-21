@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlValue;
  * &lt;complexType name="partFile"&gt;
  *   &lt;simpleContent&gt;
  *     &lt;extension base="&lt;http://www.knubisoft.com/cott/testing/model/scenario&gt;nonEmptyString"&gt;
- *       &lt;attribute name="filename" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="fileName" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="contentType" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/simpleContent&gt;
@@ -34,8 +34,8 @@ public class PartFile {
 
     @XmlValue
     protected String value;
-    @XmlAttribute(name = "filename")
-    protected String filename;
+    @XmlAttribute(name = "fileName")
+    protected String fileName;
     @XmlAttribute(name = "contentType")
     protected String contentType;
 
@@ -64,27 +64,27 @@ public class PartFile {
     }
 
     /**
-     * Gets the value of the filename property.
+     * Gets the value of the fileName property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getFilename() {
-        return filename;
+    public String getFileName() {
+        return fileName;
     }
 
     /**
-     * Sets the value of the filename property.
+     * Sets the value of the fileName property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setFilename(String value) {
-        this.filename = value;
+    public void setFileName(String value) {
+        this.fileName = value;
     }
 
     /**

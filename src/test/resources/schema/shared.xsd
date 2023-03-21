@@ -131,8 +131,7 @@
     <x:complexType name="partFile">
         <x:simpleContent>
             <x:extension base="tns:nonEmptyString">
-                <x:attribute name="filename" type="tns:nonEmptyString"/>
-<!--                <x:attribute name="path"/>-->
+                <x:attribute name="fileName" type="tns:nonEmptyString"/>
                 <x:attribute name="contentType" type="tns:nonEmptyString"/>
             </x:extension>
         </x:simpleContent>

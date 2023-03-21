@@ -68,6 +68,7 @@ public class ResultUtil {
     public static final String RELATIONAL_DB_QUERY = "Relational DB query";
     public static final String EXPRESSION = "Expression";
     public static final String NO_EXPRESSION = "No expression";
+    public static final String CONDITION = "Condition";
     public static final String CONSTANT = "Constant";
     public static final String COOKIES = "Cookies";
     public static final String URL = "Url";
@@ -411,6 +412,17 @@ public class ResultUtil {
                                     final String expression,
                                     final String value,
                                     final CommandResult commandResult) {
+        commandResult.put(TYPE, type);
+        commandResult.put(KEY, key);
+        commandResult.put(EXPRESSION, expression);
+        commandResult.put(VALUE, value);
+    }
+
+    public void addConditionMetaData(final String type,
+                                     final String key,
+                                     final String expression,
+                                     final Boolean value,
+                                     final CommandResult commandResult) {
         commandResult.put(TYPE, type);
         commandResult.put(KEY, key);
         commandResult.put(EXPRESSION, expression);

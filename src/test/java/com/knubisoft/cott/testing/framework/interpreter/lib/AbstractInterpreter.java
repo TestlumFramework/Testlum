@@ -5,6 +5,7 @@ import com.knubisoft.cott.testing.framework.constant.MigrationConstant;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.exception.FileLinkingException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.ConditionUtil;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.cott.testing.framework.util.StringPrettifier;
@@ -39,7 +40,9 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         if (StringUtils.isNotBlank(o.getComment())) {
             log.info(COMMENT_LOG, o.getComment());
         }
-        checkExecutionTime(o, () -> acceptImpl(o, result));
+        if (ConditionUtil.isTrue(o.getCondition(), dependencies.getScenarioContext())) {
+            checkExecutionTime(o, () -> acceptImpl(o, result));
+        }
     }
 
     private void checkExecutionTime(final T o, final Runnable r) {

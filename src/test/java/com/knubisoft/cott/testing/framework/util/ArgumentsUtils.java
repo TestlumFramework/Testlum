@@ -21,6 +21,8 @@ public class ArgumentsUtils {
     public static final Pattern CONFIG_FILE_PATTERN = Pattern.compile("^(-c=|--config=)[a-zA-Z0-9.\\-_:*#]+(.xml)$");
     public static final Pattern LINUX_PATH_PATTERN =
             Pattern.compile("^(-p=|--path=)(./|/|(./[a-zA-Z0-9_-]+)|(/[a-zA-Z0-9_-]+))+$");
+    public static final Pattern WIN_PATH_PATTERN =
+            Pattern.compile("^(-p=|--path=)(.\\\\|\\\\|(.\\\\[a-zA-Z0-9_-]+)|(\\\\[a-zA-Z0-9_-]+))+$");
     public static final Pattern STRUCTURE_PATH_PATTERN =
             Pattern.compile("^(-g=|--generate=)(./|/|(./[a-zA-Z0-9_-]+)|(/[a-zA-Z0-9_-]+))+$");
 
@@ -42,7 +44,7 @@ public class ArgumentsUtils {
     }
 
     public void validatePathFromArgs(final String path) {
-        if (!LINUX_PATH_PATTERN.matcher(path).matches()) {
+        if (!(LINUX_PATH_PATTERN.matcher(path).matches() || WIN_PATH_PATTERN.matcher(path).matches())) {
             throw new InvalidArgumentException(format(INVALID_PATH_TO_RESOURCES_ARGUMENT, path));
         }
     }

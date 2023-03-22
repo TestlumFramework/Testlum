@@ -3,6 +3,7 @@ package com.knubisoft.cott.testing.framework.util;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.model.scenario.Attribute;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
 import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequest;
 import com.knubisoft.cott.testing.model.scenario.Header;
@@ -68,8 +69,10 @@ public class ResultUtil {
     public static final String RELATIONAL_DB_QUERY = "Relational DB query";
     public static final String EXPRESSION = "Expression";
     public static final String NO_EXPRESSION = "No expression";
+    public static final String CONDITION = "Condition";
     public static final String CONSTANT = "Constant";
     public static final String COOKIES = "Cookies";
+    public static final String URL = "Url";
     public static final String FILE = "File";
     public static final String HTML_DOM = "HTML Dom";
     public static final String ASSERT_LOCATOR = "Locator for assert command";
@@ -416,6 +419,17 @@ public class ResultUtil {
         commandResult.put(VALUE, value);
     }
 
+    public void addConditionMetaData(final String type,
+                                     final String key,
+                                     final String expression,
+                                     final Boolean value,
+                                     final CommandResult commandResult) {
+        commandResult.put(TYPE, type);
+        commandResult.put(KEY, key);
+        commandResult.put(EXPRESSION, expression);
+        commandResult.put(VALUE, value);
+    }
+
     public void addDropDownForOneValueMetaData(final String type,
                                                final String processBy,
                                                final String value,
@@ -518,6 +532,11 @@ public class ResultUtil {
         } else {
             result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
         }
+    }
+
+    public void addAssertAttributeMetaData(final Attribute attribute, final CommandResult result) {
+        result.put(ASSERT_LOCATOR, attribute.getLocatorId());
+        result.put(ASSERT_ATTRIBUTE, attribute.getName());
     }
 
     public void addGraphQlMetaData(final String alias,

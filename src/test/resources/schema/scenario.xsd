@@ -36,6 +36,7 @@
     <x:include schemaLocation="websocket.xsd"/>
     <x:include schemaLocation="graphql.xsd"/>
     <x:include schemaLocation="lambda.xsd"/>
+    <x:include schemaLocation="condition.xsd"/>
 
     <x:annotation>
         <x:appinfo>
@@ -90,6 +91,7 @@
                     <x:element name="websocket" type="tns:websocket"/>
 
                     <x:element name="var" type="tns:var"/>
+                    <x:element name="condition" type="tns:condition"/>
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="shell" type="tns:shell"/>
                     <x:element name="smtp" type="tns:smtp"/>

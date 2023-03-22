@@ -8,15 +8,20 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for var complex type.
+ * <p>Java class for webVar complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="var"&gt;
+ * &lt;complexType name="webVar"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractCommand"&gt;
- *       &lt;group ref="{http://www.knubisoft.com/cott/testing/model/scenario}generalVarType"/&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
+ *       &lt;choice&gt;
+ *         &lt;group ref="{http://www.knubisoft.com/cott/testing/model/scenario}generalVarType"/&gt;
+ *         &lt;element name="cookie" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromCookie"/&gt;
+ *         &lt;element name="dom" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromDom"/&gt;
+ *         &lt;element name="url" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromUrl"/&gt;
+ *       &lt;/choice&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -26,20 +31,26 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "var", propOrder = {
+@XmlType(name = "webVar", propOrder = {
     "file",
     "path",
     "expression",
-    "sql"
+    "sql",
+    "cookie",
+    "dom",
+    "url"
 })
-public class Var
-    extends AbstractCommand
+public class WebVar
+    extends AbstractUiCommand
 {
 
     protected FromFile file;
     protected FromPath path;
     protected FromExpression expression;
     protected FromSQL sql;
+    protected FromCookie cookie;
+    protected FromDom dom;
+    protected FromUrl url;
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
@@ -137,6 +148,78 @@ public class Var
      */
     public void setSql(FromSQL value) {
         this.sql = value;
+    }
+
+    /**
+     * Gets the value of the cookie property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FromCookie }
+     *     
+     */
+    public FromCookie getCookie() {
+        return cookie;
+    }
+
+    /**
+     * Sets the value of the cookie property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FromCookie }
+     *     
+     */
+    public void setCookie(FromCookie value) {
+        this.cookie = value;
+    }
+
+    /**
+     * Gets the value of the dom property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FromDom }
+     *     
+     */
+    public FromDom getDom() {
+        return dom;
+    }
+
+    /**
+     * Sets the value of the dom property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FromDom }
+     *     
+     */
+    public void setDom(FromDom value) {
+        this.dom = value;
+    }
+
+    /**
+     * Gets the value of the url property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FromUrl }
+     *     
+     */
+    public FromUrl getUrl() {
+        return url;
+    }
+
+    /**
+     * Sets the value of the url property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FromUrl }
+     *     
+     */
+    public void setUrl(FromUrl value) {
+        this.url = value;
     }
 
     /**

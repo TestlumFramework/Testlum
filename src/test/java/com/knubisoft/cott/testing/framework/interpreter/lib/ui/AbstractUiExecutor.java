@@ -1,6 +1,7 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib.ui;
 
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.ConditionUtil;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 
 public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
@@ -11,6 +12,11 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
         this.dependencies = dependencies;
     }
 
+    public final void apply(final T o, final CommandResult result) {
+        if (ConditionUtil.isTrue(o.getCondition(), dependencies.getScenarioContext())) {
+            execute(o, result);
+        }
+    }
 
     public abstract void execute(T o, CommandResult result);
 

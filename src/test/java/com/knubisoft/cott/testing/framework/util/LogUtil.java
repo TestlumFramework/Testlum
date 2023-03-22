@@ -8,7 +8,7 @@ import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
-import com.knubisoft.cott.testing.model.scenario.Assert;
+import com.knubisoft.cott.testing.model.scenario.Attribute;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
@@ -22,6 +22,7 @@ import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
 import com.knubisoft.cott.testing.model.scenario.SwipeNative;
+import com.knubisoft.cott.testing.model.scenario.Title;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.Ui;
 import lombok.SneakyThrows;
@@ -266,9 +267,12 @@ public class LogUtil {
         log.info(COMMAND_LOG, position, action.getClass().getSimpleName());
     }
 
-    public void logAssertTag(final Assert aAssert) {
-        log.info(ATTRIBUTE_LOG, aAssert.getAttribute());
-        log.info(CONTENT_LOG, aAssert.getContent());
+    public void logAssertAttributeInfo(final Attribute attribute, final int subCommandCounter) {
+        log.info(COMMAND_LOG, subCommandCounter, attribute.getClass().getSimpleName());
+        log.info(COMMENT_LOG, attribute.getComment());
+        log.info(LOCATOR_LOG, attribute.getLocatorId());
+        log.info(ATTRIBUTE_LOG, attribute.getName());
+        log.info(CONTENT_LOG, attribute.getContent());
     }
 
     public void logAlias(final String alias) {
@@ -447,6 +451,12 @@ public class LogUtil {
     public void logDragAndDropNativeInfo(final DragAndDropNative dragAndDropNative) {
         log.info(DRAGGING_FROM, dragAndDropNative.getFromLocatorId());
         log.info(DROPPING_TO, dragAndDropNative.getToLocatorId());
+    }
+
+    public void logAssertTitleCommand(final Title title, final int subCommandCounter) {
+        log.info(COMMAND_LOG, subCommandCounter, title.getClass().getSimpleName());
+        log.info(COMMENT_LOG, title.getComment());
+        log.info(CONTENT_LOG, title.getContent());
     }
 
 }

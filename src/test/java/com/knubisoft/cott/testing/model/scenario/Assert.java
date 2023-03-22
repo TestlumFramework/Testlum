@@ -1,9 +1,12 @@
 
 package com.knubisoft.cott.testing.model.scenario;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -15,11 +18,11 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="assert"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}commandWithLocator"&gt;
- *       &lt;choice&gt;
- *         &lt;element name="content" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString"/&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/cott/testing/model/scenario}abstractUiCommand"&gt;
+ *       &lt;choice maxOccurs="unbounded"&gt;
+ *         &lt;element name="attribute" type="{http://www.knubisoft.com/cott/testing/model/scenario}attribute"/&gt;
+ *         &lt;element name="title" type="{http://www.knubisoft.com/cott/testing/model/scenario}title"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="attribute" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}stringWithoutSpacesPattern" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -29,62 +32,46 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "assert", propOrder = {
-    "content"
+    "attributeOrTitle"
 })
 public class Assert
-    extends CommandWithLocator
+    extends AbstractUiCommand
 {
 
-    protected String content;
-    @XmlAttribute(name = "attribute", required = true)
-    protected String attribute;
+    @XmlElements({
+        @XmlElement(name = "attribute", type = Attribute.class),
+        @XmlElement(name = "title", type = Title.class)
+    })
+    protected List<AbstractUiCommand> attributeOrTitle;
 
     /**
-     * Gets the value of the content property.
+     * Gets the value of the attributeOrTitle property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getContent() {
-        return content;
-    }
-
-    /**
-     * Sets the value of the content property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the attributeOrTitle property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setContent(String value) {
-        this.content = value;
-    }
-
-    /**
-     * Gets the value of the attribute property.
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getAttributeOrTitle().add(newItem);
+     * </pre>
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getAttribute() {
-        return attribute;
-    }
-
-    /**
-     * Sets the value of the attribute property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Attribute }
+     * {@link Title }
+     * 
+     * 
      */
-    public void setAttribute(String value) {
-        this.attribute = value;
+    public List<AbstractUiCommand> getAttributeOrTitle() {
+        if (attributeOrTitle == null) {
+            attributeOrTitle = new ArrayList<AbstractUiCommand>();
+        }
+        return this.attributeOrTitle;
     }
 
 }

@@ -45,8 +45,8 @@ public class ArgumentsUtils {
     }
 
     public void validatePathFromArgs(final String path) {
-        if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX && !LINUX_PATH_PATTERN.matcher(path).matches()
-                || SystemUtils.IS_OS_WINDOWS && !WIN_PATH_PATTERN.matcher(path).matches()) {
+        if ((SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX && !LINUX_PATH_PATTERN.matcher(path).matches())
+                || (SystemUtils.IS_OS_WINDOWS && !WIN_PATH_PATTERN.matcher(path).matches())) {
             throw new InvalidArgumentException(format(INVALID_PATH_TO_RESOURCES_ARGUMENT, path));
         }
     }

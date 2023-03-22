@@ -11,9 +11,11 @@ import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.VariableService;
 import com.knubisoft.cott.testing.model.scenario.WebVar;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
+
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -77,9 +79,10 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
                 .apply(webVar, result);
     }
 
+    @SneakyThrows
     private String getDomResult(final WebVar webVar, final CommandResult result) {
         String xpath = webVar.getDom().getXpath();
-        String valueResult = dependencies.getDriver().findElement(By.xpath(xpath)).getText();
+        String valueResult = dependencies.getDriver().findElement(By.xpath(xpath)).getAttribute("outerHTML");
         ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), NO_EXPRESSION, valueResult, result);
         return valueResult;
     }

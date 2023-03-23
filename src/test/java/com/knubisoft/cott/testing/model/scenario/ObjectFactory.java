@@ -398,6 +398,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FromElement }
+     * 
+     */
+    public FromElement createFromElement() {
+        return new FromElement();
+    }
+
+    /**
+     * Create an instance of {@link Present }
+     * 
+     */
+    public Present createPresent() {
+        return new Present();
+    }
+
+    /**
      * Create an instance of {@link FromSQL }
      * 
      */

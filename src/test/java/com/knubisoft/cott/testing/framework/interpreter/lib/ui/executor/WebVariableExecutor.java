@@ -9,7 +9,9 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.By;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
+import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.framework.util.VariableService;
+import com.knubisoft.cott.testing.model.scenario.Present;
 import com.knubisoft.cott.testing.model.scenario.WebVar;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Cookie;
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_VARIABLE_WITH_PATH_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.COOKIES;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.ELEMENT_PRESENT;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.HTML_DOM;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NO_EXPRESSION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.URL;
@@ -49,7 +52,20 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         webVarMap.put(var -> nonNull(var.getCookie()), this::getWebCookiesResult);
         webVarMap.put(var -> nonNull(var.getDom()), this::getDomResult);
         webVarMap.put(var -> nonNull(var.getUrl()), this::getUrlResult);
+        webVarMap.put(var -> nonNull(var.getElement()), this::getElementResult);
         webVarToMethodMap = Collections.unmodifiableMap(webVarMap);
+    }
+
+    private String getElementResult(final WebVar webVar, final CommandResult result) {
+        Present present = webVar.getElement().getPresent();
+        try {
+            UiUtil.findWebElement(dependencies, inject(present.getLocatorId()));
+            ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), NO_EXPRESSION, "true", result);
+            return "true";
+        } catch (DefaultFrameworkException e) {
+            ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), NO_EXPRESSION, "false", result);
+            return "false";
+        }
     }
 
     @Override

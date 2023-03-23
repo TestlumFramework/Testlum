@@ -3,6 +3,7 @@ package com.knubisoft.cott.testing.framework.db.sql.executor;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -65,7 +66,7 @@ public abstract class AbstractSqlExecutor {
         try {
             Object result = executeAppropriateQuery(queryResult.getQuery());
             queryResult.setContent(result);
-        } catch (Exception e) {
+        } catch (BadSqlGrammarException e) {
             LogUtil.logSqlException(e, queryResult.getQuery());
             throw e;
         }

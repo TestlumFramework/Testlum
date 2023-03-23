@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
@@ -80,7 +81,12 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
 
     private String getDomResult(final WebVar webVar, final CommandResult result) {
         String xpath = webVar.getDom().getXpath();
-        String valueResult = dependencies.getDriver().findElement(By.xpath(xpath)).getAttribute("outerHTML");
+        if (Objects.nonNull(xpath)) {
+            String valueResult = dependencies.getDriver().findElement(By.xpath(xpath)).getAttribute("outerHTML");
+            ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), xpath, valueResult, result);
+            return valueResult;
+        }
+        String valueResult = dependencies.getDriver().getPageSource();
         ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), NO_EXPRESSION, valueResult, result);
         return valueResult;
     }

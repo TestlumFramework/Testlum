@@ -40,8 +40,10 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -234,26 +236,28 @@ public class ResultUtil {
     public void addHttpMetaData(final String alias,
                                 final HttpInfo httpInfo,
                                 final String httpMethodName,
-                                final CommandResult commandResult) {
+                                final CommandResult commandResult,
+                                final Map<String, String> headers,
+                                final String endpoint) {
         commandResult.put(API_ALIAS, alias);
-        commandResult.put(ENDPOINT, httpInfo.getEndpoint());
+        commandResult.put(ENDPOINT, endpoint);
         commandResult.put(HTTP_METHOD, httpMethodName);
-        List<Header> headers = httpInfo.getHeader();
-        if (!headers.isEmpty()) {
-            addHeaders(headers, commandResult);
+        if (!httpInfo.getHeader().isEmpty()) {
+            addHeadersMetadata(headers, commandResult);
         }
     }
 
     public static void addElasticsearchMetaData(final String alias,
                                                 final ElasticSearchRequest elasticSearchRequest,
                                                 final String httpMethodName,
-                                                final CommandResult commandResult) {
+                                                final CommandResult commandResult,
+                                                final Map<String, String> headers,
+                                                final String endpoint) {
         commandResult.put(ALIAS, alias);
-        commandResult.put(ENDPOINT, elasticSearchRequest.getEndpoint());
+        commandResult.put(ENDPOINT, endpoint);
         commandResult.put(HTTP_METHOD, httpMethodName);
-        List<Header> headers = elasticSearchRequest.getHeader();
-        if (!headers.isEmpty()) {
-            addHeaders(headers, commandResult);
+        if (!elasticSearchRequest.getHeader().isEmpty()) {
+            addHeadersMetadata(headers, commandResult);
         }
     }
 
@@ -261,13 +265,14 @@ public class ResultUtil {
     public void addSendGridMetaData(final String alias,
                                     final SendgridInfo sendgridInfo,
                                     final String httpMethodName,
-                                    final CommandResult commandResult) {
+                                    final CommandResult commandResult,
+                                    final Map<String, String> headers,
+                                    final String endpoint) {
         commandResult.put(ALIAS, alias);
-        commandResult.put(ENDPOINT, sendgridInfo.getEndpoint());
+        commandResult.put(ENDPOINT, endpoint);
         commandResult.put(HTTP_METHOD, httpMethodName);
-        List<Header> headers = sendgridInfo.getHeader();
-        if (!headers.isEmpty()) {
-            addHeaders(headers, commandResult);
+        if (!sendgridInfo.getHeader().isEmpty()) {
+            addHeadersMetadata(headers, commandResult);
         }
     }
 
@@ -506,8 +511,15 @@ public class ResultUtil {
         }
     }
 
-    private void addHeaders(final List<Header> headers, final CommandResult commandResult) {
-        commandResult.put(ADDITIONAL_HEADERS, headers.stream()
+    public void addHeadersMetadata(final Map<String, String> headersMap, final CommandResult commandResult) {
+        List<Header> injectedHeaders = new ArrayList<>(headersMap.size());
+        for (Map.Entry<String, String> each : headersMap.entrySet()) {
+            Header header = new Header();
+            header.setName(each.getKey());
+            header.setData(each.getValue());
+            injectedHeaders.add(header);
+        }
+        commandResult.put(ADDITIONAL_HEADERS, injectedHeaders.stream()
                 .map(header ->
                         format(HEADER_TEMPLATE, header.getName(), header.getData())).collect(Collectors.toList()));
     }
@@ -542,13 +554,14 @@ public class ResultUtil {
     public void addGraphQlMetaData(final String alias,
                                    final HttpInfo httpInfo,
                                    final HttpMethod httpMethod,
-                                   final CommandResult result) {
+                                   final CommandResult result,
+                                   final Map<String, String> headers,
+                                   final String endpoint) {
         result.put(ALIAS, alias);
         result.put(HTTP_METHOD, httpMethod);
-        result.put(ENDPOINT, httpInfo.getEndpoint());
-        List<Header> headers = httpInfo.getHeader();
-        if (!headers.isEmpty()) {
-            addHeaders(headers, result);
+        result.put(ENDPOINT, endpoint);
+        if (!httpInfo.getHeader().isEmpty()) {
+            addHeadersMetadata(headers, result);
         }
     }
 

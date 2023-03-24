@@ -463,8 +463,10 @@ public class LogUtil {
 
     public void logDragAndDropInfo(final DragAndDrop dragAndDrop) {
         log.info(DRAG_FILE_PATH, dragAndDrop.getFilePath());
-        log.info(DRAGGING_FROM, dragAndDrop.getFromLocatorId());
         log.info(DROPPING_TO, dragAndDrop.getToLocatorId());
+        if (Objects.nonNull(dragAndDrop.getFromLocatorId())) {
+            log.info(DRAGGING_FROM, dragAndDrop.getFromLocatorId());
+        }
     }
 
 }

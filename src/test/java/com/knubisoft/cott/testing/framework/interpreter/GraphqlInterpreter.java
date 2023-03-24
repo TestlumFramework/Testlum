@@ -75,7 +75,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         HttpMethod httpMethod = graphqlMetadata.getHttpMethod();
         String endpoint = inject(httpInfo.getEndpoint());
         ApiResponse response = getResponse(httpInfo, httpMethod, endpoint, graphql.getAlias());
-        ResultUtil.addGraphQlMetaData(graphql.getAlias(), httpMethod, result, response.getHeaders(), endpoint);
+        ResultUtil.addGraphQlMetaData(graphql.getAlias(), httpMethod, response.getHeaders(), endpoint, result);
         compareResult(graphqlMetadata.getHttpInfo().getResponse(), response, result);
     }
 

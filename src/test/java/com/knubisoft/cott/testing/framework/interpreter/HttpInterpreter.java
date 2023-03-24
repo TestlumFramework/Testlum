@@ -104,7 +104,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                                     final CommandResult result) {
         LogUtil.logHttpInfo(alias, httpMethod.name(), endpoint);
         Map<String, String> headers = getHeaders(httpInfo);
-        ResultUtil.addHttpMetaData(alias, httpMethod.name(), result, headers, endpoint);
+        ResultUtil.addHttpMetaData(alias, httpMethod.name(), headers, endpoint, result);
         String typeValue = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         ContentType contentType = ContentType.create(typeValue);
         HttpEntity body = getBody(httpInfo, contentType);

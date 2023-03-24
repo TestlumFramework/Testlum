@@ -70,7 +70,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         LogUtil.logHttpInfo(alias, httpMethod.name(), injectedEndpoint);
         Request request = buildRequest(elasticSearchRequest, httpMethod);
         Map<String, String> headers = getHeaders(elasticSearchRequest);
-        ResultUtil.addElasticsearchMetaData(alias, httpMethod.name(), result, headers, injectedEndpoint);
+        ResultUtil.addElasticsearchMetaData(alias, httpMethod.name(), headers, injectedEndpoint, result);
         try {
             return restClient.get(alias).performRequest(request);
         } catch (ResponseException responseException) {

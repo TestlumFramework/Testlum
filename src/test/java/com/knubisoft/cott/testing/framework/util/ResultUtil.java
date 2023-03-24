@@ -232,9 +232,9 @@ public class ResultUtil {
 
     public void addHttpMetaData(final String alias,
                                 final String httpMethodName,
-                                final CommandResult commandResult,
                                 final Map<String, String> headers,
-                                final String endpoint) {
+                                final String endpoint,
+                                final CommandResult commandResult) {
         commandResult.put(API_ALIAS, alias);
         commandResult.put(ENDPOINT, endpoint);
         commandResult.put(HTTP_METHOD, httpMethodName);
@@ -245,9 +245,9 @@ public class ResultUtil {
 
     public static void addElasticsearchMetaData(final String alias,
                                                 final String httpMethodName,
-                                                final CommandResult commandResult,
                                                 final Map<String, String> headers,
-                                                final String endpoint) {
+                                                final String endpoint,
+                                                final CommandResult commandResult) {
         commandResult.put(ALIAS, alias);
         commandResult.put(ENDPOINT, endpoint);
         commandResult.put(HTTP_METHOD, httpMethodName);
@@ -259,9 +259,9 @@ public class ResultUtil {
 
     public void addSendGridMetaData(final String alias,
                                     final String httpMethodName,
-                                    final CommandResult commandResult,
                                     final Map<String, String> headers,
-                                    final String endpoint) {
+                                    final String endpoint,
+                                    final CommandResult commandResult) {
         commandResult.put(ALIAS, alias);
         commandResult.put(ENDPOINT, endpoint);
         commandResult.put(HTTP_METHOD, httpMethodName);
@@ -547,9 +547,9 @@ public class ResultUtil {
 
     public void addGraphQlMetaData(final String alias,
                                    final HttpMethod httpMethod,
-                                   final CommandResult result,
                                    final Map<String, String> headers,
-                                   final String endpoint) {
+                                   final String endpoint,
+                                   final CommandResult result) {
         result.put(ALIAS, alias);
         result.put(HTTP_METHOD, httpMethod);
         result.put(ENDPOINT, endpoint);

@@ -8,12 +8,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for present complex type.
+ * <p>Java class for elementPresent complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="present"&gt;
+ * &lt;complexType name="elementPresent"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}injectableScenarioLocator" /&gt;
@@ -25,8 +25,8 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "present")
-public class Present {
+@XmlType(name = "elementPresent")
+public class ElementPresent {
 
     @XmlAttribute(name = "locatorId", required = true)
     protected String locatorId;

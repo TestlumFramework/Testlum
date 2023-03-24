@@ -240,11 +240,11 @@
 
     <x:complexType name="fromElement">
         <x:choice>
-            <x:element name="present" type="tns:present"/>
+            <x:element name="present" type="tns:elementPresent"/>
         </x:choice>
     </x:complexType>
 
-    <x:complexType name="present">
+    <x:complexType name="elementPresent">
         <x:attribute name="locatorId" type="tns:injectableScenarioLocator" use="required"/>
     </x:complexType>
 

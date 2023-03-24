@@ -406,11 +406,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Present }
+     * Create an instance of {@link ElementPresent }
      * 
      */
-    public Present createPresent() {
-        return new Present();
+    public ElementPresent createElementPresent() {
+        return new ElementPresent();
     }
 
     /**

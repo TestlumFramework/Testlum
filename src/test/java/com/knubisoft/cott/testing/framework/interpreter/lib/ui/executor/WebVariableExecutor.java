@@ -11,7 +11,7 @@ import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.framework.util.VariableService;
-import com.knubisoft.cott.testing.model.scenario.Present;
+import com.knubisoft.cott.testing.model.scenario.ElementPresent;
 import com.knubisoft.cott.testing.model.scenario.WebVar;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Cookie;
@@ -56,18 +56,6 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         webVarToMethodMap = Collections.unmodifiableMap(webVarMap);
     }
 
-    private String getElementResult(final WebVar webVar, final CommandResult result) {
-        Present present = webVar.getElement().getPresent();
-        try {
-            UiUtil.findWebElement(dependencies, inject(present.getLocatorId()));
-            ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), NO_EXPRESSION, "true", result);
-            return "true";
-        } catch (DefaultFrameworkException e) {
-            ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), NO_EXPRESSION, "false", result);
-            return "false";
-        }
-    }
-
     @Override
     public void execute(final WebVar webVar, final CommandResult result) {
         try {
@@ -91,6 +79,18 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
                 .map(webVarToMethodMap::get)
                 .orElseThrow(() -> new DefaultFrameworkException("Type of 'Var' tag is not supported"))
                 .apply(webVar, result);
+    }
+
+    private String getElementResult(final WebVar webVar, final CommandResult result) {
+        ElementPresent present = webVar.getElement().getPresent();
+        try {
+            UiUtil.findWebElement(dependencies, inject(present.getLocatorId()));
+            ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), NO_EXPRESSION, "true", result);
+            return "true";
+        } catch (AssertionError e) {
+            ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), NO_EXPRESSION, "false", result);
+            return "false";
+        }
     }
 
     private String getDomResult(final WebVar webVar, final CommandResult result) {

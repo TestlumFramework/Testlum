@@ -3,6 +3,7 @@ package com.knubisoft.cott.testing.framework.util;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.model.scenario.Attribute;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
 import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequest;
 import com.knubisoft.cott.testing.model.scenario.Header;
@@ -531,6 +532,11 @@ public class ResultUtil {
         } else {
             result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
         }
+    }
+
+    public void addAssertAttributeMetaData(final Attribute attribute, final CommandResult result) {
+        result.put(ASSERT_LOCATOR, attribute.getLocatorId());
+        result.put(ASSERT_ATTRIBUTE, attribute.getName());
     }
 
     public void addGraphQlMetaData(final String alias,

@@ -15,6 +15,7 @@ import com.knubisoft.cott.testing.model.scenario.ElementPresent;
 import com.knubisoft.cott.testing.model.scenario.WebVar;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Cookie;
+import org.openqa.selenium.TimeoutException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
@@ -87,7 +88,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
             UiUtil.findWebElement(dependencies, inject(present.getLocatorId()));
             ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), NO_EXPRESSION, "true", result);
             return "true";
-        } catch (AssertionError e) {
+        } catch (TimeoutException e) {
             ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), NO_EXPRESSION, "false", result);
             return "false";
         }

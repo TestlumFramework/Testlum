@@ -54,7 +54,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         Map<String, String> headers = getHeaders(sendgridInfo);
         ResultUtil.addSendGridMetaData(alias, method.name(), headers, endpoint, result);
         ApiResponse expected = getExpected(sendgridInfo);
-        Response actual = getActual(sendgridInfo, method, alias, result, endpoint);
+        Response actual = getActual(sendgridInfo, method, alias, endpoint, result);
         result.setExpected(PrettifyStringJson.getJSONResult(toString(expected.getBody())));
         result.setActual(PrettifyStringJson.getJSONResult(toString(actual.getBody())));
         compare(expected, actual, result);
@@ -73,8 +73,8 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     private Response getActual(final SendgridInfo sendgridInfo,
                                final Method method,
                                final String alias,
-                               final CommandResult result,
-                               final String endpoint) {
+                               final String endpoint,
+                               final CommandResult result) {
         String body = getBody(sendgridInfo);
         Request request = new Request();
         request.setMethod(method);

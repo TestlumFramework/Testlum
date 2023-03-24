@@ -12,6 +12,7 @@ import com.knubisoft.cott.testing.model.scenario.Attribute;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
+import com.knubisoft.cott.testing.model.scenario.DragAndDrop;
 import com.knubisoft.cott.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.Overview;
@@ -57,6 +58,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_L
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DRAGGING_FROM;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.DRAG_FILE_PATH;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DROPPING_TO;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_FRAME;
@@ -457,6 +459,12 @@ public class LogUtil {
         log.info(COMMAND_LOG, subCommandCounter, title.getClass().getSimpleName());
         log.info(COMMENT_LOG, title.getComment());
         log.info(CONTENT_LOG, title.getContent());
+    }
+
+    public void logDragAndDropInfo(final DragAndDrop dragAndDrop) {
+        log.info(DRAG_FILE_PATH, dragAndDrop.getFilePath());
+        log.info(DRAGGING_FROM, dragAndDrop.getFromLocatorId());
+        log.info(DROPPING_TO, dragAndDrop.getToLocatorId());
     }
 
 }

@@ -133,6 +133,7 @@ public final class LogMessage {
     public static final String SWIPE_TYPE = format(TABLE_FORMAT, "Swipe type", "{}");
     public static final String DRAGGING_FROM = format(TABLE_FORMAT, "Dragging from locator", "{}");
     public static final String DROPPING_TO = format(TABLE_FORMAT, "Dropping to locator", "{}");
+    public static final String DRAG_FILE_PATH = format(TABLE_FORMAT, "Drag file path", "{}");
     public static final String HOTKEY_COMMAND = format(TABLE_FORMAT, "Hotkey command", "{}");
     public static final String HOTKEY_COMMAND_LOCATOR = format(TABLE_FORMAT, "Hotkey command locator", "{}");
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "Method", "{}");

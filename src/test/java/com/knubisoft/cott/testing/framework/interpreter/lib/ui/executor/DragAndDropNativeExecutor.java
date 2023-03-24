@@ -25,6 +25,7 @@ public class DragAndDropNativeExecutor extends AbstractUiExecutor<DragAndDropNat
 
     @Override
     public void execute(final DragAndDropNative dragAndDropNative, final CommandResult result) {
+        injectFields(dragAndDropNative);
         result.put(FROM_LOCATOR, dragAndDropNative.getFromLocatorId());
         result.put(TO_LOCATOR, dragAndDropNative.getToLocatorId());
         LogUtil.logDragAndDropNativeInfo(dragAndDropNative);
@@ -38,6 +39,11 @@ public class DragAndDropNativeExecutor extends AbstractUiExecutor<DragAndDropNat
         Point target = UiUtil.findWebElement(dependencies, dragAndDropNative.getToLocatorId()).getLocation();
         Sequence dragAndDrop = UiUtil.buildSequence(source, target, ACTION_DURATION);
         driver.perform(Collections.singletonList(dragAndDrop));
+    }
+
+    private void injectFields(final DragAndDropNative dragAndDropNative) {
+        dragAndDropNative.setFromLocatorId(inject(dragAndDropNative.getFromLocatorId()));
+        dragAndDropNative.setToLocatorId(inject(dragAndDropNative.getToLocatorId()));
     }
 
 }

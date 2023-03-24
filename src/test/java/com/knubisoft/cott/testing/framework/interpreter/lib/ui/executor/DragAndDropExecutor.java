@@ -5,6 +5,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecuto
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.DragAndDrop;
 import java.io.File;
@@ -31,6 +32,8 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
 
     @Override
     public void execute(final DragAndDrop dragAndDrop, final CommandResult result) {
+        injectFields(dragAndDrop);
+        LogUtil.logDragAndDropInfo(dragAndDrop);
         WebElement target = UiUtil.findWebElement(dependencies, dragAndDrop.getToLocatorId());
         if (StringUtils.isNotBlank(dragAndDrop.getFilePath())) {
             dropFile(target, new File(dragAndDrop.getFilePath()));
@@ -41,6 +44,12 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         }
         result.put(TO_LOCATOR, dragAndDrop.getToLocatorId());
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+    }
+
+    private void injectFields(final DragAndDrop dragAndDrop) {
+        dragAndDrop.setFilePath(inject(dragAndDrop.getFilePath()));
+        dragAndDrop.setFromLocatorId(inject(dragAndDrop.getFromLocatorId()));
+        dragAndDrop.setToLocatorId(inject(dragAndDrop.getToLocatorId()));
     }
 
     private void dropElement(final WebElement target, final WebElement source) {

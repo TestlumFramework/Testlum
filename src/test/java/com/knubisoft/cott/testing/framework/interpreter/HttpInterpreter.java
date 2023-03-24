@@ -97,7 +97,6 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         return HttpUtil.injectAndGetHeaders(expectedHeaders, this);
     }
 
-    //CHECKSTYLE:OFF
     protected ApiResponse getActual(final HttpInfo httpInfo,
                                     final String endpoint,
                                     final HttpMethod httpMethod,
@@ -105,7 +104,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                                     final CommandResult result) {
         LogUtil.logHttpInfo(alias, httpMethod.name(), endpoint);
         Map<String, String> headers = getHeaders(httpInfo);
-        ResultUtil.addHttpMetaData(alias, httpInfo, httpMethod.name(), result, headers, endpoint);
+        ResultUtil.addHttpMetaData(alias, httpMethod.name(), result, headers, endpoint);
         String typeValue = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         ContentType contentType = ContentType.create(typeValue);
         HttpEntity body = getBody(httpInfo, contentType);
@@ -117,7 +116,6 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
             throw new DefaultFrameworkException(e);
         }
     }
-    //CHECKSTYLE:ON
 
     private Map<String, String> getHeaders(final HttpInfo httpInfo) {
         Map<String, String> headers = new LinkedHashMap<>();

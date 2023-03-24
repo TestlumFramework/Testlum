@@ -5,10 +5,8 @@ import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.scenario.Attribute;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
-import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequest;
 import com.knubisoft.cott.testing.model.scenario.Header;
 import com.knubisoft.cott.testing.model.scenario.Hovers;
-import com.knubisoft.cott.testing.model.scenario.HttpInfo;
 import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.KafkaHeaders;
 import com.knubisoft.cott.testing.model.scenario.ReceiveKafkaMessage;
@@ -19,7 +17,6 @@ import com.knubisoft.cott.testing.model.scenario.ScrollNative;
 import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.SendRmqMessage;
-import com.knubisoft.cott.testing.model.scenario.SendgridInfo;
 import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.SesBody;
 import com.knubisoft.cott.testing.model.scenario.SesMessage;
@@ -234,7 +231,6 @@ public class ResultUtil {
     }
 
     public void addHttpMetaData(final String alias,
-                                final HttpInfo httpInfo,
                                 final String httpMethodName,
                                 final CommandResult commandResult,
                                 final Map<String, String> headers,
@@ -242,13 +238,12 @@ public class ResultUtil {
         commandResult.put(API_ALIAS, alias);
         commandResult.put(ENDPOINT, endpoint);
         commandResult.put(HTTP_METHOD, httpMethodName);
-        if (!httpInfo.getHeader().isEmpty()) {
+        if (!headers.isEmpty()) {
             addHeadersMetadata(headers, commandResult);
         }
     }
 
     public static void addElasticsearchMetaData(final String alias,
-                                                final ElasticSearchRequest elasticSearchRequest,
                                                 final String httpMethodName,
                                                 final CommandResult commandResult,
                                                 final Map<String, String> headers,
@@ -256,14 +251,13 @@ public class ResultUtil {
         commandResult.put(ALIAS, alias);
         commandResult.put(ENDPOINT, endpoint);
         commandResult.put(HTTP_METHOD, httpMethodName);
-        if (!elasticSearchRequest.getHeader().isEmpty()) {
+        if (!headers.isEmpty()) {
             addHeadersMetadata(headers, commandResult);
         }
     }
 
 
     public void addSendGridMetaData(final String alias,
-                                    final SendgridInfo sendgridInfo,
                                     final String httpMethodName,
                                     final CommandResult commandResult,
                                     final Map<String, String> headers,
@@ -271,7 +265,7 @@ public class ResultUtil {
         commandResult.put(ALIAS, alias);
         commandResult.put(ENDPOINT, endpoint);
         commandResult.put(HTTP_METHOD, httpMethodName);
-        if (!sendgridInfo.getHeader().isEmpty()) {
+        if (!headers.isEmpty()) {
             addHeadersMetadata(headers, commandResult);
         }
     }
@@ -552,7 +546,6 @@ public class ResultUtil {
     }
 
     public void addGraphQlMetaData(final String alias,
-                                   final HttpInfo httpInfo,
                                    final HttpMethod httpMethod,
                                    final CommandResult result,
                                    final Map<String, String> headers,
@@ -560,7 +553,7 @@ public class ResultUtil {
         result.put(ALIAS, alias);
         result.put(HTTP_METHOD, httpMethod);
         result.put(ENDPOINT, endpoint);
-        if (!httpInfo.getHeader().isEmpty()) {
+        if (!headers.isEmpty()) {
             addHeadersMetadata(headers, result);
         }
     }

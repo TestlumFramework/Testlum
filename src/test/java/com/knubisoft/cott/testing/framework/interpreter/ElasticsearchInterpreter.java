@@ -56,8 +56,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         HttpUtil.ESHttpMethodMetadata esHttpMethodMetadata = HttpUtil.getESHttpMethodMetadata(elasticsearch);
         ElasticSearchRequest elasticSearchRequest = esHttpMethodMetadata.getElasticSearchRequest();
         HttpMethod httpMethod = esHttpMethodMetadata.getHttpMethod();
-        String endpoint = inject(elasticSearchRequest.getEndpoint());
-        Response actual = getActual(elasticSearchRequest, httpMethod, elasticsearch.getAlias(), endpoint, result);
+        Response actual = getActual(elasticSearchRequest, httpMethod, elasticsearch.getAlias(), result);
         ElasticSearchResponse expected = elasticSearchRequest.getResponse();
         compare(expected, actual, result);
     }
@@ -66,12 +65,12 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     private Response getActual(final ElasticSearchRequest elasticSearchRequest,
                                final HttpMethod httpMethod,
                                final String alias,
-                               final String endpoint,
                                final CommandResult result) {
-        LogUtil.logHttpInfo(alias, httpMethod.name(), endpoint);
+        String injectedEndpoint = inject(elasticSearchRequest.getEndpoint());
+        LogUtil.logHttpInfo(alias, httpMethod.name(), injectedEndpoint);
         Request request = buildRequest(elasticSearchRequest, httpMethod);
         Map<String, String> headers = getHeaders(elasticSearchRequest);
-        ResultUtil.addElasticsearchMetaData(alias, elasticSearchRequest, httpMethod.name(), result, headers, endpoint);
+        ResultUtil.addElasticsearchMetaData(alias, httpMethod.name(), result, headers, injectedEndpoint);
         try {
             return restClient.get(alias).performRequest(request);
         } catch (ResponseException responseException) {

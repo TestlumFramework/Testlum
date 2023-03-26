@@ -55,7 +55,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
                                          final CommandResult result) throws IOException {
         CompareWith compareWith = image.getCompareWith();
         if (Objects.nonNull(compareWith)) {
-            WebElement webElement = UiUtil.findWebElement(dependencies, compareWith.getLocator());
+            WebElement webElement = UiUtil.findWebElement(dependencies, compareWith.getLocatorId());
             if (UiType.NATIVE == dependencies.getUiType()) {
                 return ImageIO.read(UiUtil.takeScreenshot(webElement));
             }

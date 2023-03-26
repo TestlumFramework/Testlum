@@ -54,8 +54,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         HttpUtil.HttpMethodMetadata metadata = HttpUtil.getHttpMethodMetadata(http);
         HttpInfo httpInfo = metadata.getHttpInfo();
         HttpMethod httpMethod = metadata.getHttpMethod();
-        String endpoint = inject(httpInfo.getEndpoint());
-        ApiResponse actual = getActual(httpInfo, endpoint, httpMethod, http.getAlias(), result);
+        ApiResponse actual = getActual(httpInfo, httpMethod, http.getAlias(), result);
         compareResult(httpInfo.getResponse(), actual, result);
     }
 
@@ -98,19 +97,27 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     }
 
     protected ApiResponse getActual(final HttpInfo httpInfo,
-                                    final String endpoint,
                                     final HttpMethod httpMethod,
                                     final String alias,
                                     final CommandResult result) {
-        LogUtil.logHttpInfo(alias, httpMethod.name(), endpoint);
+        String endpoint = inject(httpInfo.getEndpoint());
         Map<String, String> headers = getHeaders(httpInfo);
+        LogUtil.logHttpInfo(alias, httpMethod.name(), endpoint);
         ResultUtil.addHttpMetaData(alias, httpMethod.name(), headers, endpoint, result);
         String typeValue = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         ContentType contentType = ContentType.create(typeValue);
         HttpEntity body = getBody(httpInfo, contentType);
         LogUtil.logBodyContent(body);
+        String url = createFullUrl(endpoint, alias);
+        return getApiResponse(httpMethod, url, headers, body);
+    }
+
+    private ApiResponse getApiResponse(final HttpMethod httpMethod,
+                                       final String url,
+                                       final Map<String, String> headers,
+                                       final HttpEntity body) {
         try {
-            return apiClient.call(httpMethod, createFullURL(endpoint, alias), headers, body);
+            return apiClient.call(httpMethod, url, headers, body);
         } catch (IOException e) {
             LogUtil.logError(e);
             throw new DefaultFrameworkException(e);
@@ -133,7 +140,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         return HttpUtil.extractBody(body, contentType, this, dependencies);
     }
 
-    private String createFullURL(final String endpoint, final String alias) {
+    private String createFullUrl(final String endpoint, final String alias) {
         List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().getApis().getApi();
         Api apiIntegration = (Api) ConfigUtil.findApiForAlias(apiList, alias);
         return apiIntegration.getUrl() + endpoint;

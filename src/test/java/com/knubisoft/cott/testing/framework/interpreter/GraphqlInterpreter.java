@@ -54,6 +54,7 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INC
 @Slf4j
 @InterpreterForClass(Graphql.class)
 public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
+
     private final Map<Function<Graphql, HttpInfo>, HttpMethod> graphqlMethodMap;
 
     @Autowired
@@ -67,15 +68,12 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         graphqlMethodMap = Collections.unmodifiableMap(methodMap);
     }
 
-    @SneakyThrows
     @Override
     public void acceptImpl(final Graphql graphql, final CommandResult result) {
         GraphqlMetadata graphqlMetadata = getGraphqlMetaData(graphql);
         HttpInfo httpInfo = graphqlMetadata.httpInfo;
         HttpMethod httpMethod = graphqlMetadata.getHttpMethod();
-        ResultUtil.addGraphQlMetaData(graphql.getAlias(), httpInfo, httpMethod, result);
-        String endpoint = inject(httpInfo.getEndpoint());
-        ApiResponse response = getResponse(httpInfo, httpMethod, endpoint, graphql.getAlias());
+        ApiResponse response = getActualResponse(httpInfo, httpMethod, graphql.getAlias(), result);
         compareResult(graphqlMetadata.getHttpInfo().getResponse(), response, result);
     }
 
@@ -87,18 +85,27 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
                 .orElseThrow(() -> new DefaultFrameworkException(INCORRECT_HTTP_PROCESSING));
     }
 
-    private ApiResponse getResponse(final HttpInfo httpInfo,
-                                    final HttpMethod httpMethod,
-                                    final String endpoint,
-                                    final String alias) {
-        LogUtil.logHttpInfo(alias, httpMethod.name(), endpoint);
+    private ApiResponse getActualResponse(final HttpInfo httpInfo,
+                                          final HttpMethod httpMethod,
+                                          final String alias,
+                                          final CommandResult result) {
+        String endpoint = inject(httpInfo.getEndpoint());
         Map<String, String> headers = getHeaders(httpInfo);
+        LogUtil.logHttpInfo(alias, httpMethod.name(), endpoint);
+        ResultUtil.addGraphQlMetaData(alias, httpMethod, headers, endpoint, result);
         String typeValue = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         HttpEntity body = getBody(httpInfo, ContentType.create(typeValue));
         LogUtil.logBodyContent(body);
-        String fullUrl = getFullUrl(httpInfo, endpoint, alias);
+        String url = getFullUrl(httpInfo, endpoint, alias);
+        return getApiResponse(httpMethod, url, headers, body);
+    }
+
+    private ApiResponse getApiResponse(final HttpMethod httpMethod,
+                                       final String url,
+                                       final Map<String, String> headers,
+                                       final HttpEntity body) {
         try {
-            return apiClient.call(httpMethod, fullUrl, headers, body);
+            return apiClient.call(httpMethod, url, headers, body);
         } catch (IOException e) {
             LogUtil.logError(e);
             throw new DefaultFrameworkException(e);
@@ -111,6 +118,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         HttpUtil.fillHeadersMap(httpInfo.getHeader(), headers, authorization);
         return headers;
     }
+
     private HttpEntity getBody(final HttpInfo httpInfo, final ContentType contentType) {
         if (!(httpInfo instanceof GraphqlPost)) {
             return null;
@@ -138,8 +146,8 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     }
 
     @SneakyThrows
-    private String urlWithParams(final GraphqlGet graphqlGet, final String fullUrl) {
-        URIBuilder uriBuilder = new URIBuilder(fullUrl);
+    private String urlWithParams(final GraphqlGet graphqlGet, final String url) {
+        URIBuilder uriBuilder = new URIBuilder(url);
         List<Param> parameters = graphqlGet.getParam();
         parameters.forEach(param -> uriBuilder.addParameter(param.getName(), prettifyString(param.getData())));
         return uriBuilder.build().toString();

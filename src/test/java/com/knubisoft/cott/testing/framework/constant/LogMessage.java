@@ -74,8 +74,8 @@ public final class LogMessage {
     public static final String INITIAL_STRUCTURE_GENERATION_ERROR = ANSI_RED
             + "Failed to generate initial structure by path " + ANSI_BLUE_UNDERLINED + "{}" + ANSI_RESET;
 
-    public static final String FAILED_VARIABLE_WITH_PATH_LOG = "Failed [variable] {} [comment] {}";
-    public static final String FAILED_CONDITION_WITH_PATH_LOG = "Failed [condition] {} [comment] {}";
+    public static final String FAILED_VARIABLE_WITH_PATH_LOG = "Failed variable <{}> comment <{}>";
+    public static final String FAILED_CONDITION_WITH_PATH_LOG = "Failed condition <{}> comment <{}>";
 
     public static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
     public static final String BY_URL_LOG = format(TABLE_FORMAT, "URL", "{}");
@@ -122,7 +122,6 @@ public final class LogMessage {
     public static final String NATIVE_LOG = "Native device: {}";
     public static final String MOBILEBROWSER_LOG = "Mobilebrowser device: {}";
     public static final String NATIVE_NAVIGATION_LOG = format(TABLE_FORMAT, "Navigate to", "{}");
-    public static final String HTTP_STATUS_CODE = format(TABLE_FORMAT, "Status code", "{} {}");
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
     public static final String SCROLL_LOCATOR = format(TABLE_FORMAT, "Scroll locator", "{}");
     public static final String SCROLL_TYPE = format(TABLE_FORMAT, "Scroll type", "{}");
@@ -133,9 +132,13 @@ public final class LogMessage {
     public static final String SWIPE_TYPE = format(TABLE_FORMAT, "Swipe type", "{}");
     public static final String DRAGGING_FROM = format(TABLE_FORMAT, "Dragging from locator", "{}");
     public static final String DROPPING_TO = format(TABLE_FORMAT, "Dropping to locator", "{}");
+    public static final String DRAGGING_FILE_PATH = format(TABLE_FORMAT, "Dragging file path", "{}");
     public static final String HOTKEY_COMMAND = format(TABLE_FORMAT, "Hotkey command", "{}");
     public static final String HOTKEY_COMMAND_LOCATOR = format(TABLE_FORMAT, "Hotkey command locator", "{}");
-    public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "Method", "{}");
+    public static final String HTTP_STATUS_CODE = format(TABLE_FORMAT, "Status code", "{} {}");
+    public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "HTTP method", "{}");
+    public static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
+    public static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
     public static final String SMTP_HOST_LOG = format(TABLE_FORMAT, "SMTP Host", "{}");
     public static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");
     public static final String SUBJECT_LOG = format(TABLE_FORMAT, "Subject", "{}");
@@ -154,12 +157,11 @@ public final class LogMessage {
     public static final String URL_TO_IMAGE_LOG = format(TABLE_FORMAT, "URL to actual image", "{}");
     public static final String OVERVIEW_INFO_LOG = "{}: {}";
 
-    public static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
     public static final String LAMBDA_FUNCTION_LOG = format(TABLE_FORMAT, "Function name", "{}");
     public static final String LAMBDA_PAYLOAD_LOG = format(TABLE_FORMAT, "Payload", "{}");
     public static final String UI_EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Step execution time", "{} ms");
-    public static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
     public static final String COMMAND_TYPE_LOG = format(TABLE_FORMAT, "Command type", "{}");
+    public static final String JS_FILE_LOG = format(TABLE_FORMAT, "JS file", "{}");
     public static final String SHELL_FILE_LOG = format(TABLE_FORMAT, "Shell file", "{}");
     public static final String SHELL_COMMAND_LOG = format(TABLE_FORMAT, "Shell command", "{}");
     public static final String SCROLL_DIRECTION_LOG = format(TABLE_FORMAT, "Direction", "{}");
@@ -172,7 +174,6 @@ public final class LogMessage {
     public static final String LOCAL_STORAGE_KEY = format(TABLE_FORMAT, "Local storage key", "{}");
     public static final String CLEAR_COOKIES_AFTER = format(TABLE_FORMAT, "Clear cookies after", "{}");
 
-    public static final String JS_FILE_LOG = format(TABLE_FORMAT, "JS file", "{}");
 
     public static final String BROWSER_INFO = "%s | type = %s | version = %s";
     public static final String MOBILEBROWSER_INFO = "Device name = %s | platform = %s | version = %s";

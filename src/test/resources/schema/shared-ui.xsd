@@ -327,7 +327,7 @@
     </x:complexType>
 
     <x:complexType name="compareWith">
-        <x:attribute name="locator" type="tns:scenarioLocator" use="required"/>
+        <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
         <x:attribute name="attribute" type="tns:nonEmptyString" default="src"/>
     </x:complexType>
 
@@ -335,10 +335,10 @@
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:choice>
-                    <x:element name="fromLocatorId" type="tns:nonEmptyString"/>
+                    <x:element name="fromLocatorId" type="tns:scenarioLocator"/>
                     <x:element name="filePath" type="tns:nonEmptyString"/>
                 </x:choice>
-                <x:attribute name="toLocatorId" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="toLocatorId" type="tns:scenarioLocator" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -346,8 +346,8 @@
     <x:complexType name="dragAndDropNative">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
-                <x:attribute name="fromLocatorId" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="toLocatorId" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="fromLocatorId" type="tns:scenarioLocator" use="required"/>
+                <x:attribute name="toLocatorId" type="tns:scenarioLocator" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

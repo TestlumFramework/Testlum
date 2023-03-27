@@ -5,10 +5,9 @@ import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.model.scenario.Attribute;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
-import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequest;
-import com.knubisoft.cott.testing.model.scenario.Header;
+import com.knubisoft.cott.testing.model.scenario.DragAndDrop;
+import com.knubisoft.cott.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.cott.testing.model.scenario.Hovers;
-import com.knubisoft.cott.testing.model.scenario.HttpInfo;
 import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.KafkaHeaders;
 import com.knubisoft.cott.testing.model.scenario.ReceiveKafkaMessage;
@@ -19,7 +18,6 @@ import com.knubisoft.cott.testing.model.scenario.ScrollNative;
 import com.knubisoft.cott.testing.model.scenario.ScrollType;
 import com.knubisoft.cott.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.cott.testing.model.scenario.SendRmqMessage;
-import com.knubisoft.cott.testing.model.scenario.SendgridInfo;
 import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.SesBody;
 import com.knubisoft.cott.testing.model.scenario.SesMessage;
@@ -42,6 +40,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -232,43 +231,62 @@ public class ResultUtil {
     }
 
     public void addHttpMetaData(final String alias,
-                                final HttpInfo httpInfo,
                                 final String httpMethodName,
-                                final CommandResult commandResult) {
-        commandResult.put(API_ALIAS, alias);
-        commandResult.put(ENDPOINT, httpInfo.getEndpoint());
-        commandResult.put(HTTP_METHOD, httpMethodName);
-        List<Header> headers = httpInfo.getHeader();
+                                final Map<String, String> headers,
+                                final String endpoint,
+                                final CommandResult result) {
+        result.put(API_ALIAS, alias);
+        result.put(ENDPOINT, endpoint);
+        result.put(HTTP_METHOD, httpMethodName);
         if (!headers.isEmpty()) {
-            addHeaders(headers, commandResult);
+            addHeadersMetaData(headers, result);
+        }
+    }
+
+    public void addGraphQlMetaData(final String alias,
+                                   final HttpMethod httpMethod,
+                                   final Map<String, String> headers,
+                                   final String endpoint,
+                                   final CommandResult result) {
+        result.put(ALIAS, alias);
+        result.put(HTTP_METHOD, httpMethod);
+        result.put(ENDPOINT, endpoint);
+        if (!headers.isEmpty()) {
+            addHeadersMetaData(headers, result);
         }
     }
 
     public static void addElasticsearchMetaData(final String alias,
-                                                final ElasticSearchRequest elasticSearchRequest,
                                                 final String httpMethodName,
-                                                final CommandResult commandResult) {
-        commandResult.put(ALIAS, alias);
-        commandResult.put(ENDPOINT, elasticSearchRequest.getEndpoint());
-        commandResult.put(HTTP_METHOD, httpMethodName);
-        List<Header> headers = elasticSearchRequest.getHeader();
+                                                final Map<String, String> headers,
+                                                final String endpoint,
+                                                final CommandResult result) {
+        result.put(ALIAS, alias);
+        result.put(ENDPOINT, endpoint);
+        result.put(HTTP_METHOD, httpMethodName);
         if (!headers.isEmpty()) {
-            addHeaders(headers, commandResult);
+            addHeadersMetaData(headers, result);
         }
     }
 
 
     public void addSendGridMetaData(final String alias,
-                                    final SendgridInfo sendgridInfo,
                                     final String httpMethodName,
-                                    final CommandResult commandResult) {
-        commandResult.put(ALIAS, alias);
-        commandResult.put(ENDPOINT, sendgridInfo.getEndpoint());
-        commandResult.put(HTTP_METHOD, httpMethodName);
-        List<Header> headers = sendgridInfo.getHeader();
+                                    final Map<String, String> headers,
+                                    final String endpoint,
+                                    final CommandResult result) {
+        result.put(ALIAS, alias);
+        result.put(ENDPOINT, endpoint);
+        result.put(HTTP_METHOD, httpMethodName);
         if (!headers.isEmpty()) {
-            addHeaders(headers, commandResult);
+            addHeadersMetaData(headers, result);
         }
+    }
+
+    private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
+        result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
+                .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
+                .collect(Collectors.toList()));
     }
 
     public void addSesMetaData(final Ses ses, final CommandResult result) {
@@ -399,12 +417,12 @@ public class ResultUtil {
 
     public void addShellMetaData(final List<String> shellFiles,
                                  final List<String> shellCommands,
-                                 final CommandResult commandResult) {
+                                 final CommandResult result) {
         if (!shellCommands.isEmpty()) {
-            commandResult.put(SHELL_COMMANDS, shellCommands);
+            result.put(SHELL_COMMANDS, shellCommands);
         }
         if (!shellFiles.isEmpty()) {
-            commandResult.put(SHELL_FILES, shellFiles);
+            result.put(SHELL_FILES, shellFiles);
         }
     }
 
@@ -412,52 +430,68 @@ public class ResultUtil {
                                     final String key,
                                     final String expression,
                                     final String value,
-                                    final CommandResult commandResult) {
-        commandResult.put(TYPE, type);
-        commandResult.put(KEY, key);
-        commandResult.put(EXPRESSION, expression);
-        commandResult.put(VALUE, value);
+                                    final CommandResult result) {
+        result.put(TYPE, type);
+        result.put(KEY, key);
+        result.put(EXPRESSION, expression);
+        result.put(VALUE, value);
     }
 
     public void addConditionMetaData(final String type,
                                      final String key,
                                      final String expression,
                                      final Boolean value,
-                                     final CommandResult commandResult) {
-        commandResult.put(TYPE, type);
-        commandResult.put(KEY, key);
-        commandResult.put(EXPRESSION, expression);
-        commandResult.put(VALUE, value);
+                                     final CommandResult result) {
+        result.put(TYPE, type);
+        result.put(KEY, key);
+        result.put(EXPRESSION, expression);
+        result.put(VALUE, value);
     }
 
     public void addDropDownForOneValueMetaData(final String type,
                                                final String processBy,
                                                final String value,
-                                               final CommandResult commandResult) {
-        commandResult.put(DROP_DOWN_FOR, format(ONE_VALUE_TEMPLATE, type));
-        commandResult.put(DROP_DOWN_BY, processBy);
-        commandResult.put(VALUE, value);
+                                               final CommandResult result) {
+        result.put(DROP_DOWN_FOR, format(ONE_VALUE_TEMPLATE, type));
+        result.put(DROP_DOWN_BY, processBy);
+        result.put(VALUE, value);
     }
 
     public void addScrollMetaData(final Scroll scroll,
-                                  final CommandResult commandResult) {
-        commandResult.put(SCROLL_DIRECTION, scroll.getDirection());
-        commandResult.put(SCROLL_MEASURE, scroll.getMeasure());
-        commandResult.put(VALUE, scroll.getValue());
-        commandResult.put(SCROLL_TYPE, scroll.getType());
+                                  final CommandResult result) {
+        result.put(SCROLL_DIRECTION, scroll.getDirection());
+        result.put(SCROLL_MEASURE, scroll.getMeasure());
+        result.put(VALUE, scroll.getValue());
+        result.put(SCROLL_TYPE, scroll.getType());
         if (ScrollType.INNER == scroll.getType()) {
-            commandResult.put(LOCATOR_FOR_SCROLL, scroll.getLocatorId());
+            result.put(LOCATOR_FOR_SCROLL, scroll.getLocatorId());
         }
     }
 
     public void addScrollNativeMetaDada(final ScrollNative scrollNative,
-                                        final CommandResult commandResult) {
-        commandResult.put(SCROLL_TYPE, scrollNative.getType());
+                                        final CommandResult result) {
+        result.put(SCROLL_TYPE, scrollNative.getType());
         if (ScrollType.INNER == scrollNative.getType()) {
-            commandResult.put(LOCATOR_FOR_SCROLL, scrollNative.getLocatorId());
+            result.put(LOCATOR_FOR_SCROLL, scrollNative.getLocatorId());
         }
-        commandResult.put(SCROLL_DIRECTION, scrollNative.getDirection());
-        commandResult.put(VALUE, scrollNative.getValue());
+        result.put(SCROLL_DIRECTION, scrollNative.getDirection());
+        result.put(VALUE, scrollNative.getValue());
+    }
+
+    public void addDragAndDropMetaDada(final DragAndDrop dragAndDrop,
+                                       final CommandResult result) {
+        if (StringUtils.isNotBlank(dragAndDrop.getFilePath())) {
+            result.put(FROM_LOCAL_FILE, dragAndDrop.getFilePath());
+        } else if (StringUtils.isNotBlank(dragAndDrop.getFromLocatorId())) {
+            result.put(FROM_LOCATOR, dragAndDrop.getFromLocatorId());
+        }
+        result.put(TO_LOCATOR, dragAndDrop.getToLocatorId());
+    }
+
+    public void addDragAndDropNativeMetaDada(final DragAndDropNative dragAndDropNative,
+                                             final CommandResult result) {
+        result.put(FROM_LOCATOR, dragAndDropNative.getFromLocatorId());
+        result.put(TO_LOCATOR, dragAndDropNative.getToLocatorId());
     }
 
     public void addHoversMetaData(final Hovers hovers, final CommandResult result) {
@@ -506,12 +540,6 @@ public class ResultUtil {
         }
     }
 
-    private void addHeaders(final List<Header> headers, final CommandResult commandResult) {
-        commandResult.put(ADDITIONAL_HEADERS, headers.stream()
-                .map(header ->
-                        format(HEADER_TEMPLATE, header.getName(), header.getData())).collect(Collectors.toList()));
-    }
-
     @SneakyThrows
     public void writeFullTestCycleExecutionResult(final TestExecutionSummary testExecutionSummary) {
         File executionResultFile = new File(TestResourceSettings.getInstance().getTestResourcesFolder(),
@@ -527,7 +555,7 @@ public class ResultUtil {
         CompareWith compareWith = image.getCompareWith();
         if (Objects.nonNull(compareWith)) {
             result.put(IMAGE_COMPARISON_TYPE, EXTRACT_THEN_COMPARE);
-            result.put(IMAGE_LOCATOR, compareWith.getLocator());
+            result.put(IMAGE_LOCATOR, compareWith.getLocatorId());
             result.put(IMAGE_SOURCE_ATT, compareWith.getAttribute());
         } else {
             result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
@@ -537,19 +565,6 @@ public class ResultUtil {
     public void addAssertAttributeMetaData(final Attribute attribute, final CommandResult result) {
         result.put(ASSERT_LOCATOR, attribute.getLocatorId());
         result.put(ASSERT_ATTRIBUTE, attribute.getName());
-    }
-
-    public void addGraphQlMetaData(final String alias,
-                                   final HttpInfo httpInfo,
-                                   final HttpMethod httpMethod,
-                                   final CommandResult result) {
-        result.put(ALIAS, alias);
-        result.put(HTTP_METHOD, httpMethod);
-        result.put(ENDPOINT, httpInfo.getEndpoint());
-        List<Header> headers = httpInfo.getHeader();
-        if (!headers.isEmpty()) {
-            addHeaders(headers, result);
-        }
     }
 
     public void addSwipeMetaData(final SwipeNative swipeNative, final CommandResult result) {

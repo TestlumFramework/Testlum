@@ -12,6 +12,7 @@ import com.knubisoft.cott.testing.model.scenario.Attribute;
 import com.knubisoft.cott.testing.model.scenario.Auth;
 import com.knubisoft.cott.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.cott.testing.model.scenario.CompareWith;
+import com.knubisoft.cott.testing.model.scenario.DragAndDrop;
 import com.knubisoft.cott.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.cott.testing.model.scenario.Image;
 import com.knubisoft.cott.testing.model.scenario.Overview;
@@ -56,6 +57,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_F
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONTENT_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DESTINATION_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.DRAGGING_FILE_PATH;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DRAGGING_FROM;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.DROPPING_TO;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ENDPOINT_LOG;
@@ -301,18 +303,18 @@ public class LogUtil {
         log.info(ENDPOINT_LOG, endpoint);
     }
 
+    @SneakyThrows
+    public void logBodyContent(final HttpEntity body) {
+        if (body != null) {
+            logBody(IOUtils.toString(body.getContent(), StandardCharsets.UTF_8.name()));
+        }
+    }
+
     public void logBody(final String body) {
         if (StringUtils.isNotBlank(body)) {
             log.info(BODY_LOG,
                     PrettifyStringJson.getJSONResult(body)
                             .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
-        }
-    }
-
-    @SneakyThrows
-    public void logBodyContent(final HttpEntity body) {
-        if (body != null) {
-            logBody(IOUtils.toString(body.getContent(), StandardCharsets.UTF_8.name()));
         }
     }
 
@@ -332,6 +334,15 @@ public class LogUtil {
         if (ScrollType.INNER == scroll.getType()) {
             log.info(SCROLL_LOCATOR, scroll.getLocatorId());
         }
+    }
+
+    public void logDragAndDropInfo(final DragAndDrop dragAndDrop) {
+        if (StringUtils.isNotBlank(dragAndDrop.getFilePath())) {
+            log.info(DRAGGING_FILE_PATH, dragAndDrop.getFilePath());
+        } else if (StringUtils.isNotBlank(dragAndDrop.getFromLocatorId())) {
+            log.info(DRAGGING_FROM, dragAndDrop.getFromLocatorId());
+        }
+        log.info(DROPPING_TO, dragAndDrop.getToLocatorId());
     }
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {
@@ -410,7 +421,7 @@ public class LogUtil {
         CompareWith compareWith = image.getCompareWith();
         if (Objects.nonNull(compareWith)) {
             log.info(IMAGE_COMPARISON_TYPE_LOG, EXTRACT_THEN_COMPARE);
-            log.info(LOCATOR_LOG, compareWith.getLocator());
+            log.info(LOCATOR_LOG, compareWith.getLocatorId());
             log.info(IMAGE_SOURCE_ATT_LOG, compareWith.getAttribute());
         } else {
             log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_COMPARE);
@@ -458,5 +469,4 @@ public class LogUtil {
         log.info(COMMENT_LOG, title.getComment());
         log.info(CONTENT_LOG, title.getContent());
     }
-
 }

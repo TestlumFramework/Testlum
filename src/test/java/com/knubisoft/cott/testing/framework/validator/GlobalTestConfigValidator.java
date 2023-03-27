@@ -15,6 +15,8 @@ import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.List;
 import java.util.Objects;
 
@@ -95,12 +97,20 @@ public class GlobalTestConfigValidator implements XMLValidator<GlobalTestConfigu
     public static String getNameOfActive(final Object object) {
         Field[] fields = object.getClass().getDeclaredFields();
         for (Field field : fields) {
+            setAccessible(field);
             String name = getNameOf(object, field);
             if (name != null) {
                 return name;
             }
         }
         return null;
+    }
+
+    private static void setAccessible(final Field field) {
+        AccessController.doPrivileged((PrivilegedAction) () -> {
+            field.setAccessible(true);
+            return null;
+        });
     }
 
     private static String getNameOf(final Object object, final Field field) {

@@ -44,9 +44,9 @@ public class GlobalTestConfigValidator implements XMLValidator<GlobalTestConfigu
     }
 
     private void checkCapabilitiesToConnection(final GlobalTestConfiguration globalTestConfig) {
-        Native _native = globalTestConfig.getNative();
-        ConnectionType nativeConnection = _native.getConnection();
-        List<NativeDevice> nativeDevices = _native.getDevices().getDevice();
+        Native nativeDevice = globalTestConfig.getNative();
+        ConnectionType nativeConnection = nativeDevice.getConnection();
+        List<NativeDevice> nativeDevices = nativeDevice.getDevices().getDevice();
         checkCapabilitiesToConnectionFor(nativeConnection, nativeDevices);
 
         Mobilebrowser mobilebrowser = globalTestConfig.getMobilebrowser();
@@ -56,30 +56,45 @@ public class GlobalTestConfigValidator implements XMLValidator<GlobalTestConfigu
     }
 
     private static <T extends AbstractDevice> void checkCapabilitiesToConnectionFor(
-            ConnectionType nativeConnection,
-            List<T> devices) {
+            final ConnectionType nativeConnection,
+            final List<T> devices) {
+        String nameOfConnection = getNameOfConnection(nativeConnection);
+        for (AbstractDevice device : devices) {
+            String nameOfCapability = getNameOfCapability(device);
+            String connectionNamePrefix = getPrefixOf(nameOfConnection);
+            String capabilitiesNamePrefix = getPrefixOf(nameOfCapability);
+            checkForCompatibilityOf(connectionNamePrefix, capabilitiesNamePrefix);
+        }
+    }
+
+    private static String getNameOfConnection(final ConnectionType nativeConnection) {
         String nameOfConnection = getNameOfActive(nativeConnection);
         if (Objects.isNull(nameOfConnection)) {
             throw new AbsentConnectionException("Device connection is absent");
         }
-        for (AbstractDevice device : devices) {
-            String nameOfCapability = getNameOfActive(device);
-            if (Objects.isNull(nameOfCapability)) {
-                throw new AbsentCapabilityException("Device capability is absent");
-            }
-            String connectionNamePrefix = getPrefixOf(nameOfConnection);
-            String capabilitiesNamePrefix = getPrefixOf(nameOfCapability);
-            if (!Objects.equals(connectionNamePrefix, capabilitiesNamePrefix)) {
-                throw new InvalidCapabilitiesToConnectionException(
-                        "Device connection not matched with capabilities");
-            }
+        return nameOfConnection;
+    }
+
+    private static String getNameOfCapability(final AbstractDevice device) {
+        String nameOfCapability = getNameOfActive(device);
+        if (Objects.isNull(nameOfCapability)) {
+            throw new AbsentCapabilityException("Device capability is absent");
+        }
+        return nameOfCapability;
+    }
+
+    private static void checkForCompatibilityOf(
+            final String connectionNamePrefix, final String capabilitiesNamePrefix) {
+        if (!Objects.equals(connectionNamePrefix, capabilitiesNamePrefix)) {
+            throw new InvalidCapabilitiesToConnectionException(
+                    "Device connection not matched with capabilities");
         }
     }
 
-    public static String getNameOfActive(Object object) {
+
+    public static String getNameOfActive(final Object object) {
         Field[] fields = object.getClass().getDeclaredFields();
         for (Field field : fields) {
-            field.setAccessible(true);
             String name = getNameOf(object, field);
             if (name != null) {
                 return name;
@@ -88,7 +103,7 @@ public class GlobalTestConfigValidator implements XMLValidator<GlobalTestConfigu
         return null;
     }
 
-    private static String getNameOf(Object object, Field field) {
+    private static String getNameOf(final Object object, final Field field) {
         try {
             Object value = field.get(object);
             if (value != null) {
@@ -100,7 +115,7 @@ public class GlobalTestConfigValidator implements XMLValidator<GlobalTestConfigu
         return null;
     }
 
-    public static String getPrefixOf(String str) {
+    public static String getPrefixOf(final String str) {
         StringBuilder prefix = new StringBuilder();
         for (int i = 0; i < str.length(); i++) {
             char c = str.charAt(i);

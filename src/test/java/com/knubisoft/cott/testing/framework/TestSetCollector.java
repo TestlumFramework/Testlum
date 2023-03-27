@@ -83,9 +83,18 @@ public class TestSetCollector {
     //CHECKSTYLE:ON
 
     private Stream<Arguments> getArgumentsWithoutUiSteps(final MappingResult entry) {
-        ScenarioArguments scenarioArguments = buildScenarioArguments(entry);
-        return Stream.of(convertToNamedArguments(scenarioArguments));
+        if (variationsExist(entry)) {
+            return getVariationList(entry).stream().map(variation -> getArgumentsWithoutUiSteps(entry, variation));
+        } else {
+            return Stream.of(getArgumentsWithoutUiSteps(entry, new HashMap<>()));
+        }
     }
+
+    private Arguments getArgumentsWithoutUiSteps(final MappingResult entry, final Map<String, String> variations) {
+        ScenarioArguments scenarioArguments = buildScenarioArguments(entry, variations);
+        return convertToNamedArguments(scenarioArguments);
+    }
+
 
     private Stream<Arguments> getArgumentsWithUiSteps(final MappingResult entry,
                                                       final AbstractBrowser webBrowser,
@@ -128,13 +137,14 @@ public class TestSetCollector {
                 .build();
     }
 
-    private ScenarioArguments buildScenarioArguments(final MappingResult entry) {
+    private ScenarioArguments buildScenarioArguments(final MappingResult entry,
+                                                     final Map<String, String> variations) {
         return ScenarioArguments.builder()
                 .path(getShortPath(entry.file))
                 .file(entry.file)
                 .scenario(entry.scenario)
                 .exception(entry.exception)
-                .variation(new HashMap<>())
+                .variation(variations)
                 .build();
     }
 

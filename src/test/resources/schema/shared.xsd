@@ -203,8 +203,29 @@
             <x:element name="path" type="tns:fromPath"/>
             <x:element name="expression" type="tns:fromExpression"/>
             <x:element name="sql" type="tns:fromSQL"/>
+            <x:element name="generate" type="tns:randomGenerate"/>
         </x:choice>
     </x:group>
+
+    <x:complexType name="randomGenerate">
+        <x:choice>
+            <x:element name="numeric" type="tns:randomNumeric"/>
+            <x:element name="alphabetic" type="tns:randomAlphabetic"/>
+            <x:element name="alphanumeric" type="tns:randomAlphanumeric"/>
+            <x:element name="regexp" type="tns:regexp"/>
+        </x:choice>
+        <x:attribute name="length" type="x:int" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="randomNumeric"/>
+
+    <x:complexType name="randomAlphabetic"/>
+
+    <x:complexType name="randomAlphanumeric"/>
+
+    <x:complexType name="regexp">
+        <x:attribute name="pattern" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
 
     <x:complexType name="fromFile">
         <x:attribute name="fileName" type="tns:nonEmptyString" use="required"/>

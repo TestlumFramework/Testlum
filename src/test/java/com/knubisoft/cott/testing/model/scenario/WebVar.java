@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlType;
     "path",
     "expression",
     "sql",
+    "generate",
     "cookie",
     "dom",
     "url"
@@ -48,6 +49,7 @@ public class WebVar
     protected FromPath path;
     protected FromExpression expression;
     protected FromSQL sql;
+    protected RandomGenerate generate;
     protected FromCookie cookie;
     protected FromDom dom;
     protected FromUrl url;
@@ -148,6 +150,30 @@ public class WebVar
      */
     public void setSql(FromSQL value) {
         this.sql = value;
+    }
+
+    /**
+     * Gets the value of the generate property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link RandomGenerate }
+     *     
+     */
+    public RandomGenerate getGenerate() {
+        return generate;
+    }
+
+    /**
+     * Sets the value of the generate property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link RandomGenerate }
+     *     
+     */
+    public void setGenerate(RandomGenerate value) {
+        this.generate = value;
     }
 
     /**

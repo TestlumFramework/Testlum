@@ -350,6 +350,46 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link RandomGenerate }
+     * 
+     */
+    public RandomGenerate createRandomGenerate() {
+        return new RandomGenerate();
+    }
+
+    /**
+     * Create an instance of {@link RandomNumeric }
+     * 
+     */
+    public RandomNumeric createRandomNumeric() {
+        return new RandomNumeric();
+    }
+
+    /**
+     * Create an instance of {@link RandomAlphabetic }
+     * 
+     */
+    public RandomAlphabetic createRandomAlphabetic() {
+        return new RandomAlphabetic();
+    }
+
+    /**
+     * Create an instance of {@link RandomAlphanumeric }
+     * 
+     */
+    public RandomAlphanumeric createRandomAlphanumeric() {
+        return new RandomAlphanumeric();
+    }
+
+    /**
+     * Create an instance of {@link Regexp }
+     * 
+     */
+    public Regexp createRegexp() {
+        return new Regexp();
+    }
+
+    /**
      * Create an instance of {@link FromFile }
      * 
      */

@@ -75,6 +75,7 @@ public class ResultUtil {
     public static final String URL = "Url";
     public static final String FILE = "File";
     public static final String HTML_DOM = "HTML Dom";
+    public static final String GENERATED_STRING = "Random generated String";
     public static final String ASSERT_LOCATOR = "Locator for assert command";
     public static final String ASSERT_ATTRIBUTE = "Assert command attribute";
     public static final String CLICK_LOCATOR = "Locator for click command";

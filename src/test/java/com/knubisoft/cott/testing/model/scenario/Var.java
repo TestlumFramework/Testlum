@@ -30,7 +30,8 @@ import javax.xml.bind.annotation.XmlType;
     "file",
     "path",
     "expression",
-    "sql"
+    "sql",
+    "generate"
 })
 public class Var
     extends AbstractCommand
@@ -40,6 +41,7 @@ public class Var
     protected FromPath path;
     protected FromExpression expression;
     protected FromSQL sql;
+    protected RandomGenerate generate;
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
@@ -137,6 +139,30 @@ public class Var
      */
     public void setSql(FromSQL value) {
         this.sql = value;
+    }
+
+    /**
+     * Gets the value of the generate property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link RandomGenerate }
+     *     
+     */
+    public RandomGenerate getGenerate() {
+        return generate;
+    }
+
+    /**
+     * Sets the value of the generate property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link RandomGenerate }
+     *     
+     */
+    public void setGenerate(RandomGenerate value) {
+        this.generate = value;
     }
 
     /**

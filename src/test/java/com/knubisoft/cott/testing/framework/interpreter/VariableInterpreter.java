@@ -34,6 +34,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         generalVarMap.put(var -> nonNull(var.getFile()), this::getFileResult);
         generalVarMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
         generalVarMap.put(var -> nonNull(var.getPath()), this::getPathResult);
+        generalVarMap.put(var -> nonNull(var.getGenerate()), this::getGenerateResult);
         varToMethodMap = Collections.unmodifiableMap(generalVarMap);
     }
 
@@ -80,6 +81,10 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     private String getSQLResult(final Var var, final CommandResult commandResult) {
         return variableService.getSQLResult(var.getSql(), var.getName(),
                 commandResult, dependencies.getScenarioContext());
+    }
+
+    private String getGenerateResult(final Var var, final CommandResult commandResult) {
+        return variableService.getGenerateResult(var.getGenerate(), var.getName(), commandResult);
     }
 
     private interface VarFromPredicate extends Predicate<Var> { }

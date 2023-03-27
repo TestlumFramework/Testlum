@@ -51,6 +51,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         webVarMap.put(var -> nonNull(var.getCookie()), this::getWebCookiesResult);
         webVarMap.put(var -> nonNull(var.getDom()), this::getDomResult);
         webVarMap.put(var -> nonNull(var.getUrl()), this::getUrlResult);
+        webVarMap.put(var -> nonNull(var.getGenerate()), this::getGenerateResult);
         webVarToMethodMap = Collections.unmodifiableMap(webVarMap);
     }
 
@@ -104,6 +105,10 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         String valueResult = dependencies.getDriver().getCurrentUrl();
         ResultUtil.addVariableMetaData(URL, webVar.getName(), NO_EXPRESSION, valueResult, result);
         return valueResult;
+    }
+
+    private String getGenerateResult(final WebVar webVar, final CommandResult commandResult) {
+        return variableService.getGenerateResult(webVar.getGenerate(), webVar.getName(), commandResult);
     }
 
     private String getPathResult(final WebVar webVar, final CommandResult commandResult) {

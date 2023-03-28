@@ -903,6 +903,14 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.github.curious-odd-man/rgxgen -->
+        <dependency>
+            <groupId>com.github.curious-odd-man</groupId>
+            <artifactId>rgxgen</artifactId>
+            <version>1.4</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>

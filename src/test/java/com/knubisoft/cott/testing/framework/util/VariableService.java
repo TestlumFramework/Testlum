@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.util;
 
+import com.github.curiousoddman.rgxgen.RgxGen;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
@@ -94,8 +95,16 @@ public class VariableService {
     }
 
     private String getRandomStringByRegexp(final RandomGenerate rand) {
-        //TODO generation logic
-        return "";
+        RgxGen rgxGen = new RgxGen(rand.getRegexp().getPattern());
+        StringBuilder randomString = new StringBuilder(0);
+        while (randomString.length() < rand.getLength() - 1) {
+            int index = 0;
+            randomString.insert(index, rgxGen.generate());
+        }
+        if (randomString.length() > rand.getLength()) {
+            return randomString.substring(0, rand.getLength());
+        }
+        return randomString.toString().trim();
     }
 
     public String getFileResult(final FromFile fromFile,

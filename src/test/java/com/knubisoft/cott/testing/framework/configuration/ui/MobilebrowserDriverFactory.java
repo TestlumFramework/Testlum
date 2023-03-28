@@ -38,8 +38,10 @@ public class MobilebrowserDriverFactory {
         WebDriver driver;
         if (Objects.nonNull(connectionType.getAppiumServer())) {
             driver = new AppiumDriver(new URL(serverUrl), desiredCapabilities);
-        } else {
+        } else if (Objects.nonNull(connectionType.getBrowserStack())) {
             driver = new RemoteWebDriver(new URL(serverUrl), desiredCapabilities);
+        } else {
+            throw new DefaultFrameworkException("Unknown connection type: %s");
         }
         driver.get(mobilebrowserSettings.getBaseUrl());
         return driver;
@@ -67,7 +69,7 @@ public class MobilebrowserDriverFactory {
             desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, "XCUITest");
             desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Safari");
         } else {
-            throw new DefaultFrameworkException("Unknown mobile platform name: ", mobileDevice.getPlatformName());
+            throw new DefaultFrameworkException("Unknown mobile platform name: %s", mobileDevice.getPlatformName());
         }
     }
 }

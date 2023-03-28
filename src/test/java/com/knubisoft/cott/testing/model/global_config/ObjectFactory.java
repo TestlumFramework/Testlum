@@ -166,6 +166,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link BrowserStackServer }
+     * 
+     */
+    public BrowserStackServer createBrowserStackServer() {
+        return new BrowserStackServer();
+    }
+
+    /**
      * Create an instance of {@link AppiumCapabilities }
      * 
      */

@@ -31,9 +31,12 @@ public class MobileDriverUtil {
 
     public String getServerUrl(final ConnectionType connectionType) {
         AppiumServer appiumServer = connectionType.getAppiumServer();
-        return Objects.nonNull(appiumServer)
-                ? appiumServer.getServerUrl()
-                : getBrowserStackUrl();
+        if (Objects.nonNull(appiumServer)) {
+            return appiumServer.getServerUrl();
+        } else if (Objects.nonNull(connectionType.getBrowserStack())) {
+            return getBrowserStackUrl();
+        }
+        throw new DefaultFrameworkException("Unknown connection type: %s");
     }
 
     public void setDefaultCapabilities(final AbstractDevice abstractDevice,

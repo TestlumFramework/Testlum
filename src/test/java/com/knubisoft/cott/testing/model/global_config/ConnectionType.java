@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;choice&gt;
  *         &lt;element name="appiumServer" type="{http://www.knubisoft.com/cott/testing/model/global-config}appiumServer"/&gt;
- *         &lt;element name="browserStack" type="{http://www.w3.org/2001/XMLSchema}anyType"/&gt;
+ *         &lt;element name="browserStack" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserStackServer"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlType;
 public class ConnectionType {
 
     protected AppiumServer appiumServer;
-    protected Object browserStack;
+    protected BrowserStackServer browserStack;
 
     /**
      * Gets the value of the appiumServer property.
@@ -65,10 +65,10 @@ public class ConnectionType {
      * 
      * @return
      *     possible object is
-     *     {@link Object }
+     *     {@link BrowserStackServer }
      *     
      */
-    public Object getBrowserStack() {
+    public BrowserStackServer getBrowserStack() {
         return browserStack;
     }
 
@@ -77,10 +77,10 @@ public class ConnectionType {
      * 
      * @param value
      *     allowed object is
-     *     {@link Object }
+     *     {@link BrowserStackServer }
      *     
      */
-    public void setBrowserStack(Object value) {
+    public void setBrowserStack(BrowserStackServer value) {
         this.browserStack = value;
     }
 

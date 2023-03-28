@@ -45,7 +45,7 @@ public class NativeDriverFactory {
             setIosCapabilities(nativeDevice, desiredCapabilities);
             return new IOSDriver(new URL(serverUrl), desiredCapabilities);
         }
-        throw new DefaultFrameworkException("Unknown mobile platform name: ", nativeDevice.getPlatformName());
+        throw new DefaultFrameworkException("Unknown mobile platform name: %s", nativeDevice.getPlatformName());
     }
 
     private void setAndroidCapabilities(final NativeDevice nativeDevice,

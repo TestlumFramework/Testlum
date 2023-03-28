@@ -50,9 +50,11 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         SendGridUtil.SendGridMethodMetadata metadata = SendGridUtil.getSendgridMethodMetadata(sendgrid);
         SendgridInfo sendgridInfo = metadata.getHttpInfo();
         Method method = metadata.getHttpMethod();
-        ResultUtil.addSendGridMetaData(alias, sendgridInfo, method.name(), result);
+        String endpoint = inject(sendgridInfo.getEndpoint());
+        Map<String, String> headers = getHeaders(sendgridInfo);
+        ResultUtil.addSendGridMetaData(alias, method.name(), headers, endpoint, result);
         ApiResponse expected = getExpected(sendgridInfo);
-        Response actual = getActual(sendgridInfo, method, alias, result);
+        Response actual = getActual(sendgridInfo, method, alias, endpoint, result);
         result.setExpected(PrettifyStringJson.getJSONResult(toString(expected.getBody())));
         result.setActual(PrettifyStringJson.getJSONResult(toString(actual.getBody())));
         compare(expected, actual, result);
@@ -71,14 +73,15 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     private Response getActual(final SendgridInfo sendgridInfo,
                                final Method method,
                                final String alias,
+                               final String endpoint,
                                final CommandResult result) {
         String body = getBody(sendgridInfo);
         Request request = new Request();
         request.setMethod(method);
-        request.setEndpoint(sendgridInfo.getEndpoint());
+        request.setEndpoint(endpoint);
         request.setBody(body);
         result.put(CONTENT_TO_SEND, PrettifyStringJson.getJSONResult(body));
-        LogUtil.logHttpInfo(alias, method.name(), sendgridInfo.getEndpoint());
+        LogUtil.logHttpInfo(alias, method.name(), endpoint);
         LogUtil.logBody(request.getBody());
         return sendGrid.get(alias).api(request);
     }

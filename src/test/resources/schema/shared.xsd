@@ -229,7 +229,7 @@
     <x:complexType name="fromUrl"/>
 
     <x:complexType name="fromDom">
-        <x:attribute name="xpath" type="tns:xpathPattern" use="required"/>
+        <x:attribute name="xpath" type="tns:xpathPattern"/>
     </x:complexType>
 
     <x:simpleType name="xpathPattern">

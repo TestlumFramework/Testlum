@@ -12,13 +12,16 @@ import com.knubisoft.cott.testing.model.global_config.Mobilebrowser;
 import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.Native;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
+import lombok.SneakyThrows;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class GlobalTestConfigValidator implements XMLValidator<GlobalTestConfiguration> {
 
@@ -60,80 +63,62 @@ public class GlobalTestConfigValidator implements XMLValidator<GlobalTestConfigu
     private static <T extends AbstractDevice> void checkCapabilitiesToConnectionFor(
             final ConnectionType nativeConnection,
             final List<T> devices) {
-        String nameOfConnection = getNameOfConnection(nativeConnection);
+        String classNameOfConnection = getClassNameOfConnection(nativeConnection);
         for (AbstractDevice device : devices) {
-            String nameOfCapability = getNameOfCapability(device);
-            String connectionNamePrefix = getPrefixOf(nameOfConnection);
-            String capabilitiesNamePrefix = getPrefixOf(nameOfCapability);
-            checkForCompatibilityOf(connectionNamePrefix, capabilitiesNamePrefix);
+            String classNameOfCapabilities = getClassNameOfCapability(device);
+            checkForCompatibilityOf(classNameOfConnection, classNameOfCapabilities);
         }
     }
 
-    private static String getNameOfConnection(final ConnectionType nativeConnection) {
-        String nameOfConnection = getNameOfActive(nativeConnection);
-        if (Objects.isNull(nameOfConnection)) {
+    private static String getClassNameOfConnection(final ConnectionType connection) {
+        String classNameOfConnection = getClassNameOfActive(connection);
+        if (Objects.isNull(classNameOfConnection)) {
             throw new AbsentConnectionException("Device connection is absent");
         }
-        return nameOfConnection;
+        return classNameOfConnection;
     }
 
-    private static String getNameOfCapability(final AbstractDevice device) {
-        String nameOfCapability = getNameOfActive(device);
-        if (Objects.isNull(nameOfCapability)) {
+    private static String getClassNameOfCapability(final AbstractDevice deviceCapabilities) {
+        String classNameOfCapabilities = getClassNameOfActive(deviceCapabilities);
+        if (Objects.isNull(classNameOfCapabilities)) {
             throw new AbsentCapabilityException("Device capability is absent");
         }
-        return nameOfCapability;
+        return classNameOfCapabilities;
     }
 
     private static void checkForCompatibilityOf(
-            final String connectionNamePrefix, final String capabilitiesNamePrefix) {
-        if (!Objects.equals(connectionNamePrefix, capabilitiesNamePrefix)) {
+            final String classNameOfConnection, final String classNameOfCapabilities) {
+        List<String> connectionKeyWords = convertCamelCaseToWords(classNameOfConnection);
+        List<String> capabilitiesKeyWords = convertCamelCaseToWords(classNameOfCapabilities);
+        capabilitiesKeyWords.retainAll(connectionKeyWords);
+        if (capabilitiesKeyWords.size() == 0) {
             throw new InvalidCapabilitiesToConnectionException(
                     "Device connection not matched with capabilities");
         }
     }
 
-
-    public static String getNameOfActive(final Object object) {
+    @SneakyThrows
+    public static String getClassNameOfActive(final Object object) {
         Field[] fields = object.getClass().getDeclaredFields();
         for (Field field : fields) {
             setAccessible(field);
-            String name = getNameOf(object, field);
-            if (name != null) {
-                return name;
+            if (field.get(object) != null) {
+                return field.get(object).getClass().getSimpleName();
             }
         }
         return null;
     }
 
     private static void setAccessible(final Field field) {
-        AccessController.doPrivileged((PrivilegedAction) () -> {
+        AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
             field.setAccessible(true);
             return null;
         });
     }
 
-    private static String getNameOf(final Object object, final Field field) {
-        try {
-            Object value = field.get(object);
-            if (value != null) {
-                return field.getName();
-            }
-        } catch (IllegalAccessException e) {
-            // ignore fields that we cannot access
-        }
-        return null;
-    }
-
-    public static String getPrefixOf(final String str) {
-        StringBuilder prefix = new StringBuilder();
-        for (int i = 0; i < str.length(); i++) {
-            char c = str.charAt(i);
-            if (Character.isUpperCase(c)) {
-                break;
-            }
-            prefix.append(c);
-        }
-        return prefix.toString();
+    public static List<String> convertCamelCaseToWords(final String camelCase) {
+        return Arrays.stream(camelCase.split("(?=[A-Z])"))
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
     }
 }

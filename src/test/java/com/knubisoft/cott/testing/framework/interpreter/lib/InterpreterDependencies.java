@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.openqa.selenium.WebDriver;
+import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Setter
 public class InterpreterDependencies {
 
+    private final ApplicationContext cxt;
     private final File file;
     private final ScenarioContext scenarioContext;
     private final AtomicInteger position;

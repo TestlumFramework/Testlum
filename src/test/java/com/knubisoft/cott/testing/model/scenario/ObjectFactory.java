@@ -262,6 +262,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Condition }
+     * 
+     */
+    public Condition createCondition() {
+        return new Condition();
+    }
+
+    /**
      * Create an instance of {@link Wait }
      * 
      */
@@ -342,6 +350,62 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FromFile }
+     * 
+     */
+    public FromFile createFromFile() {
+        return new FromFile();
+    }
+
+    /**
+     * Create an instance of {@link FromPath }
+     * 
+     */
+    public FromPath createFromPath() {
+        return new FromPath();
+    }
+
+    /**
+     * Create an instance of {@link FromExpression }
+     * 
+     */
+    public FromExpression createFromExpression() {
+        return new FromExpression();
+    }
+
+    /**
+     * Create an instance of {@link FromCookie }
+     * 
+     */
+    public FromCookie createFromCookie() {
+        return new FromCookie();
+    }
+
+    /**
+     * Create an instance of {@link FromUrl }
+     * 
+     */
+    public FromUrl createFromUrl() {
+        return new FromUrl();
+    }
+
+    /**
+     * Create an instance of {@link FromDom }
+     * 
+     */
+    public FromDom createFromDom() {
+        return new FromDom();
+    }
+
+    /**
+     * Create an instance of {@link FromSQL }
+     * 
+     */
+    public FromSQL createFromSQL() {
+        return new FromSQL();
+    }
+
+    /**
      * Create an instance of {@link Click }
      * 
      */
@@ -419,6 +483,22 @@ public class ObjectFactory {
      */
     public Assert createAssert() {
         return new Assert();
+    }
+
+    /**
+     * Create an instance of {@link Title }
+     * 
+     */
+    public Title createTitle() {
+        return new Title();
+    }
+
+    /**
+     * Create an instance of {@link Attribute }
+     * 
+     */
+    public Attribute createAttribute() {
+        return new Attribute();
     }
 
     /**
@@ -595,6 +675,14 @@ public class ObjectFactory {
      */
     public Refresh createRefresh() {
         return new Refresh();
+    }
+
+    /**
+     * Create an instance of {@link WebVar }
+     * 
+     */
+    public WebVar createWebVar() {
+        return new WebVar();
     }
 
     /**
@@ -830,62 +918,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FromFile }
-     * 
-     */
-    public FromFile createFromFile() {
-        return new FromFile();
-    }
-
-    /**
-     * Create an instance of {@link FromPath }
-     * 
-     */
-    public FromPath createFromPath() {
-        return new FromPath();
-    }
-
-    /**
-     * Create an instance of {@link FromExpression }
-     * 
-     */
-    public FromExpression createFromExpression() {
-        return new FromExpression();
-    }
-
-    /**
-     * Create an instance of {@link FromConstant }
-     * 
-     */
-    public FromConstant createFromConstant() {
-        return new FromConstant();
-    }
-
-    /**
-     * Create an instance of {@link FromCookie }
-     * 
-     */
-    public FromCookie createFromCookie() {
-        return new FromCookie();
-    }
-
-    /**
-     * Create an instance of {@link FromDom }
-     * 
-     */
-    public FromDom createFromDom() {
-        return new FromDom();
-    }
-
-    /**
-     * Create an instance of {@link FromSQL }
-     * 
-     */
-    public FromSQL createFromSQL() {
-        return new FromSQL();
-    }
-
-    /**
      * Create an instance of {@link Get }
      * 
      */
@@ -987,6 +1019,22 @@ public class ObjectFactory {
      */
     public WebsocketReceive createWebsocketReceive() {
         return new WebsocketReceive();
+    }
+
+    /**
+     * Create an instance of {@link GraphqlPost }
+     * 
+     */
+    public GraphqlPost createGraphqlPost() {
+        return new GraphqlPost();
+    }
+
+    /**
+     * Create an instance of {@link GraphqlGet }
+     * 
+     */
+    public GraphqlGet createGraphqlGet() {
+        return new GraphqlGet();
     }
 
     /**

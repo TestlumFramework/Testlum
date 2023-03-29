@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="fromDom"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="xpath" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}xpath" /&gt;
+ *       &lt;attribute name="xpath" type="{http://www.knubisoft.com/cott/testing/model/scenario}xpathPattern" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "fromDom")
 public class FromDom {
 
-    @XmlAttribute(name = "xpath", required = true)
+    @XmlAttribute(name = "xpath")
     protected String xpath;
 
     /**

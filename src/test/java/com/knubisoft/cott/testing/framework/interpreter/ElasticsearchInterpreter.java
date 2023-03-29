@@ -56,24 +56,9 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         HttpUtil.ESHttpMethodMetadata esHttpMethodMetadata = HttpUtil.getESHttpMethodMetadata(elasticsearch);
         ElasticSearchRequest elasticSearchRequest = esHttpMethodMetadata.getElasticSearchRequest();
         HttpMethod httpMethod = esHttpMethodMetadata.getHttpMethod();
-        ResultUtil.addElasticsearchMetaData(elasticsearch.getAlias(), elasticSearchRequest, httpMethod.name(), result);
-        Response actual = getActual(elasticSearchRequest, httpMethod, elasticsearch.getAlias());
+        Response actual = getActual(elasticSearchRequest, httpMethod, elasticsearch.getAlias(), result);
         ElasticSearchResponse expected = elasticSearchRequest.getResponse();
         compare(expected, actual, result);
-    }
-
-    @SneakyThrows
-    private Response getActual(final ElasticSearchRequest elasticSearchRequest,
-                               final HttpMethod httpMethod,
-                               final String alias) {
-        LogUtil.logHttpInfo(alias, httpMethod.name(), elasticSearchRequest.getEndpoint());
-        Request request = buildRequest(elasticSearchRequest, httpMethod);
-        try {
-            return restClient.get(new AliasEnv(alias, dependencies.getEnvironment())).performRequest(request);
-        } catch (ResponseException responseException) {
-            log.error("Failed response", responseException);
-            return responseException.getResponse();
-        }
     }
 
     private void compare(final ElasticSearchResponse expected, final Response actual, final CommandResult result) {
@@ -114,26 +99,43 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         }
     }
 
-    private Request buildRequest(final ElasticSearchRequest elasticSearchRequest,
-                                 final HttpMethod httpMethod) {
+    @SneakyThrows
+    private Response getActual(final ElasticSearchRequest elasticSearchRequest,
+                               final HttpMethod httpMethod,
+                               final String alias,
+                               final CommandResult result) {
+        String endpoint = inject(elasticSearchRequest.getEndpoint());
         Map<String, String> headers = getHeaders(elasticSearchRequest);
-        String typeValue = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        ContentType contentType = ContentType.create(typeValue);
+        LogUtil.logHttpInfo(alias, httpMethod.name(), endpoint);
+        ResultUtil.addElasticsearchMetaData(alias, httpMethod.name(), headers, endpoint, result);
+        Request request = buildRequest(elasticSearchRequest, httpMethod, endpoint, headers);
+        try {
+            return restClient.get(new AliasEnv(alias, dependencies.getEnvironment())).performRequest(request);
+        } catch (ResponseException responseException) {
+            LogUtil.logError(responseException);
+            return responseException.getResponse();
+        }
+    }
 
-        Request request = new Request(httpMethod.name(), elasticSearchRequest.getEndpoint());
+    private Request buildRequest(final ElasticSearchRequest elasticSearchRequest,
+                                 final HttpMethod httpMethod,
+                                 final String endpoint,
+                                 final Map<String, String> headers) {
+        Request request = new Request(httpMethod.name(), endpoint);
+        setRequestOptions(headers, request);
 
         Map<String, String> params = getParams(elasticSearchRequest);
         request.addParameters(params);
-        setRequestOptions(headers, request);
 
+        String typeValue = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        ContentType contentType = ContentType.create(typeValue);
         HttpEntity body = getBody(elasticSearchRequest, contentType);
         LogUtil.logBodyContent(body);
         request.setEntity(body);
         return request;
     }
 
-    private void setRequestOptions(final Map<String, String> headers,
-                                   final Request request) {
+    private void setRequestOptions(final Map<String, String> headers, final Request request) {
         RequestOptions.Builder requestOptionsBuilder = RequestOptions.DEFAULT.toBuilder();
         for (Map.Entry<String, String> entryHeaderMap : headers.entrySet()) {
             requestOptionsBuilder.addHeader(entryHeaderMap.getKey(), entryHeaderMap.getValue());

@@ -7,13 +7,12 @@
 
     <x:include schemaLocation="shared.xsd"/>
 
-    <x:complexType name="var">
+    <x:complexType name="condition">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
-                <x:group ref="tns:generalVarType"/>
                 <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="spel" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
-
 </x:schema>

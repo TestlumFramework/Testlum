@@ -87,6 +87,7 @@ import com.knubisoft.cott.testing.model.scenario.SwipeType;
 import com.knubisoft.cott.testing.model.scenario.Twilio;
 import com.knubisoft.cott.testing.model.scenario.Var;
 import com.knubisoft.cott.testing.model.scenario.Web;
+import com.knubisoft.cott.testing.model.scenario.WebVar;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
@@ -301,15 +302,15 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
         validatorMap.put(o -> o instanceof Var, (xmlFile, command) -> {
             Var var = (Var) command;
-            validateVarCommand(xmlFile, var);
+            validateVarCommand(xmlFile, var.getFile(), var.getSql());
         });
 
         validatorMap.put(o -> o instanceof Web, (xmlFile, command) -> {
-            validateWebCommands((Web) command);
+            validateWebCommands((Web) command, xmlFile);
         });
 
         validatorMap.put(o -> o instanceof Mobilebrowser, (xmlFile, command) -> {
-            validateMobilebrowserCommands((Mobilebrowser) command);
+            validateMobilebrowserCommands((Mobilebrowser) command, xmlFile);
         });
 
         validatorMap.put(o -> o instanceof Native, (xmlFile, command) -> {
@@ -405,12 +406,10 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     //CHECKSTYLE:OFF
-    private void validateVarCommand(final File xmlFile, final Var var) {
-        FromFile fromFile = var.getFromFile();
+    private void validateVarCommand(final File xmlFile, final FromFile fromFile, final FromSQL fromSQL) {
         if (nonNull(fromFile)) {
             validateFileIfExist(xmlFile, fromFile.getFileName());
         }
-        FromSQL fromSQL = var.getFromSQL();
         if (nonNull(fromSQL)) {
             List<? extends Integration> integrationList;
             switch (fromSQL.getDbType()) {
@@ -558,28 +557,31 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
-    private void validateWebCommands(final Web command) {
+    private void validateWebCommands(final Web command, final File xmlFile) {
         if (BrowserUtil.filterDefaultEnabledBrowsers().isEmpty()
                 || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getWeb().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_BROWSERS);
         }
-        validateSubCommands(command.getClickOrInputOrAssert());
+        validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);
     }
 
-    private void validateMobilebrowserCommands(final Mobilebrowser command) {
+    private void validateMobilebrowserCommands(final Mobilebrowser command, final File xmlFile) {
         if (MobileUtil.filterDefaultEnabledMobilebrowserDevices().isEmpty()
                 || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getMobilebrowser().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_MOBILEBROWSER_DEVICE);
         }
-        validateSubCommands(command.getClickOrInputOrAssert());
+        validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);
     }
 
-    private void validateSubCommands(final List<AbstractUiCommand> subCommands) {
+    private void validateSubCommands(final List<AbstractUiCommand> subCommands, final File xmlFile) {
         subCommands.forEach(o -> {
             if (o instanceof Javascript) {
                 validateFileExistenceInDataFolder(((Javascript) o).getFile());
             } else if (o instanceof Scroll && ScrollType.INNER == ((Scroll) o).getType()) {
                 validateLocator((Scroll) o, NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
+            } else if (o instanceof WebVar) {
+                WebVar webVar = (WebVar) o;
+                validateVarCommand(xmlFile, webVar.getFile(), webVar.getSql());
             }
         });
     }

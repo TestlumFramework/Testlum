@@ -5,19 +5,20 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecuto
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.LogUtil;
+import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.DragAndDrop;
-import java.io.File;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+
+import java.io.File;
+
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FILE_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.JavascriptConstant.QUERY_FOR_DRAG_AND_DROP;
-import static com.knubisoft.cott.testing.framework.util.ResultUtil.FROM_LOCAL_FILE;
-import static com.knubisoft.cott.testing.framework.util.ResultUtil.FROM_LOCATOR;
-import static com.knubisoft.cott.testing.framework.util.ResultUtil.TO_LOCATOR;
 
 @ExecutorForClass(DragAndDrop.class)
 public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
@@ -31,15 +32,14 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
 
     @Override
     public void execute(final DragAndDrop dragAndDrop, final CommandResult result) {
+        LogUtil.logDragAndDropInfo(dragAndDrop);
+        ResultUtil.addDragAndDropMetaDada(dragAndDrop, result);
         WebElement target = UiUtil.findWebElement(dependencies, dragAndDrop.getToLocatorId());
         if (StringUtils.isNotBlank(dragAndDrop.getFilePath())) {
             dropFile(target, new File(dragAndDrop.getFilePath()));
-            result.put(FROM_LOCAL_FILE, dragAndDrop.getFilePath());
         } else {
             dropElement(target, UiUtil.findWebElement(dependencies, dragAndDrop.getFromLocatorId()));
-            result.put(FROM_LOCATOR, dragAndDrop.getFromLocatorId());
         }
-        result.put(TO_LOCATOR, dragAndDrop.getToLocatorId());
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
@@ -54,10 +54,8 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         if (!source.exists()) {
             throw new DefaultFrameworkException(FILE_NOT_FOUND, source);
         }
-
-        JavascriptExecutor jse = (JavascriptExecutor) driver;
-        WebElement input = (WebElement) jse.executeScript(QUERY_FOR_DRAG_AND_DROP, target);
+        JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
+        WebElement input = (WebElement) javascriptExecutor.executeScript(QUERY_FOR_DRAG_AND_DROP, target);
         input.sendKeys(source.getAbsolutePath());
-
     }
 }

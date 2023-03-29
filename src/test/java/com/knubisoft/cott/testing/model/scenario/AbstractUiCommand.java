@@ -30,6 +30,9 @@ import javax.xml.bind.annotation.XmlType;
     Javascript.class,
     Hovers.class,
     Navigate.class,
+    Assert.class,
+    Title.class,
+    Attribute.class,
     CloseTab.class,
     HotKey.class,
     Tab.class,
@@ -42,6 +45,7 @@ import javax.xml.bind.annotation.XmlType;
     DragAndDropNative.class,
     CommandWithLocator.class,
     Refresh.class,
+    WebVar.class,
     WebView.class,
     NavigateNative.class,
     CommandWithOptionalLocator.class

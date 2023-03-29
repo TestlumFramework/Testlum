@@ -3,6 +3,7 @@ package com.knubisoft.cott.testing.framework.util;
 import com.knubisoft.cott.testing.framework.exception.InvalidArgumentException;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 
 import java.util.regex.Pattern;
 
@@ -21,6 +22,8 @@ public class ArgumentsUtils {
     public static final Pattern CONFIG_FILE_PATTERN = Pattern.compile("^(-c=|--config=)[a-zA-Z0-9.\\-_:*#]+(.xml)$");
     public static final Pattern LINUX_PATH_PATTERN =
             Pattern.compile("^(-p=|--path=)(./|/|(./[a-zA-Z0-9_-]+)|(/[a-zA-Z0-9_-]+))+$");
+    public static final Pattern WIN_PATH_PATTERN =
+            Pattern.compile("^(-p=|--path=)(.\\\\|\\\\|(.\\\\[a-zA-Z0-9_-]+)|(\\\\[a-zA-Z0-9_-]+))+$");
     public static final Pattern STRUCTURE_PATH_PATTERN =
             Pattern.compile("^(-g=|--generate=)(./|/|(./[a-zA-Z0-9_-]+)|(/[a-zA-Z0-9_-]+))+$");
 
@@ -42,7 +45,8 @@ public class ArgumentsUtils {
     }
 
     public void validatePathFromArgs(final String path) {
-        if (!LINUX_PATH_PATTERN.matcher(path).matches()) {
+        if (((SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_LINUX) && !LINUX_PATH_PATTERN.matcher(path).matches())
+                || (SystemUtils.IS_OS_WINDOWS && !WIN_PATH_PATTERN.matcher(path).matches())) {
             throw new InvalidArgumentException(format(INVALID_PATH_TO_RESOURCES_ARGUMENT, path));
         }
     }

@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.scenario;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.parser.XMLParsers;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.IntegrationsUtil;
@@ -19,10 +20,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
 import static java.util.Objects.nonNull;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.AUTH_NOT_FOUND;
 
 @Slf4j
 public class ScenarioCollector {
@@ -123,7 +126,10 @@ public class ScenarioCollector {
         //todo move to interpreter
         List<Api> apiList = GlobalTestConfigurationProvider.getDefaultIntegrations().getApis().getApi();
         Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, alias);
-        return apiIntegration.getAuth().isAutoLogout();
+        if (Objects.nonNull(apiIntegration.getAuth())) {
+            return apiIntegration.getAuth().isAutoLogout();
+        }
+        throw new DefaultFrameworkException(AUTH_NOT_FOUND, apiIntegration.getAlias());
     }
 
     private void addRepeatCommands(final List<AbstractCommand> updatedCommand,

@@ -22,10 +22,7 @@ public class GlobalTestConfigValidator implements XMLValidator<GlobalTestConfigu
     @Override
     public void validate(final GlobalTestConfiguration globalTestConfig, final File xmlFile) {
         checkIsActiveSubscription(globalTestConfig);
-        if (Objects.nonNull(globalTestConfig.getIntegrations())) {
-            getIntegrations(globalTestConfig.getIntegrations());
-            checkIntegrationsAliases();
-        }
+        checkIntegrations(globalTestConfig);
     }
 
     private void checkIsActiveSubscription(final GlobalTestConfiguration globalTestConfig) {
@@ -40,6 +37,13 @@ public class GlobalTestConfigValidator implements XMLValidator<GlobalTestConfigu
         } catch (Exception e) {
             LogUtil.logException(e);
             throw e;
+        }
+    }
+
+    private void checkIntegrations(GlobalTestConfiguration globalTestConfig) {
+        if (Objects.nonNull(globalTestConfig.getIntegrations())) {
+            getIntegrations(globalTestConfig.getIntegrations());
+            checkIntegrationsAliases();
         }
     }
 

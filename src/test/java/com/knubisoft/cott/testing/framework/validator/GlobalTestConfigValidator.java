@@ -40,7 +40,7 @@ public class GlobalTestConfigValidator implements XMLValidator<GlobalTestConfigu
         }
     }
 
-    private void checkIntegrations(GlobalTestConfiguration globalTestConfig) {
+    private void checkIntegrations(final GlobalTestConfiguration globalTestConfig) {
         if (Objects.nonNull(globalTestConfig.getIntegrations())) {
             getIntegrations(globalTestConfig.getIntegrations());
             checkIntegrationsAliases();

@@ -18,6 +18,7 @@ import com.knubisoft.cott.testing.model.global_config.AppiumCapabilities;
 import com.knubisoft.cott.testing.model.global_config.ClickhouseIntegration;
 import com.knubisoft.cott.testing.model.global_config.DynamoIntegration;
 import com.knubisoft.cott.testing.model.global_config.ElasticsearchIntegration;
+import com.knubisoft.cott.testing.model.global_config.GraphqlIntegration;
 import com.knubisoft.cott.testing.model.global_config.Integration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.KafkaIntegration;
@@ -47,6 +48,7 @@ import com.knubisoft.cott.testing.model.scenario.Dynamo;
 import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
 import com.knubisoft.cott.testing.model.scenario.FromFile;
 import com.knubisoft.cott.testing.model.scenario.FromSQL;
+import com.knubisoft.cott.testing.model.scenario.Graphql;
 import com.knubisoft.cott.testing.model.scenario.Http;
 import com.knubisoft.cott.testing.model.scenario.HttpInfo;
 import com.knubisoft.cott.testing.model.scenario.Include;
@@ -213,6 +215,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateFileIfExist(xmlFile, dynamo.getFile());
         });
 
+        validatorMap.put(o -> o instanceof Graphql, (xmlFile, command) -> {
+            GraphqlIntegration graphqlIntegration = integrations.getGraphqlIntegration();
+            checkIntegrationExistence(graphqlIntegration, GraphqlIntegration.class);
+            Graphql graphql = (Graphql) command;
+            validateAlias(graphqlIntegration.getApi(), graphql.getAlias());
+            validateGraphqlCommand(xmlFile, graphql);
+        });
+
         validatorMap.put(o -> o instanceof Clickhouse, (xmlFile, command) -> {
             ClickhouseIntegration clickhouseIntegration = integrations.getClickhouseIntegration();
             checkIntegrationExistence(clickhouseIntegration, ClickhouseIntegration.class);
@@ -313,6 +323,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         });
 
         this.abstractCommandValidatorsMap = Collections.unmodifiableMap(validatorMap);
+    }
+
+    private void validateGraphqlCommand(final File xmlFile, final Graphql graphql) {
+        Stream.of(graphql.getPost(), graphql.getGet())
+                .filter(Objects::nonNull)
+                .filter(v -> StringUtils.hasText(v.getResponse().getFile()))
+                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v.getResponse().getFile()));
     }
 
     @Override

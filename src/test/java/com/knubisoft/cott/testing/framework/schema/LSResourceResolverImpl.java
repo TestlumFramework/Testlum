@@ -4,6 +4,7 @@ import org.apache.xerces.dom.DOMInputImpl;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,6 +36,6 @@ public class LSResourceResolverImpl implements LSResourceResolver {
     }
 
     private String getPathToSchema(final String schemaName) {
-        return format("%s/%s", schemaBasePath, schemaName);
+        return format("%s%s%s", schemaBasePath, File.separator, schemaName);
     }
 }

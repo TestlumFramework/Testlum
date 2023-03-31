@@ -1,18 +1,19 @@
 package com.knubisoft.cott.testing.framework.report;
 
 import lombok.Getter;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
+@Service
 public class GlobalScenarioStatCollector {
 
     private final List<ScenarioResult> results = new ArrayList<>();
 
-    public ScenarioResult addAndReturn(final ScenarioResult result) {
+    public void addResult(final ScenarioResult result) {
         results.add(result);
-        return result;
     }
 
     public ReCalculatedInfo recalculate() {

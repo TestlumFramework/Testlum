@@ -1,7 +1,7 @@
 package com.knubisoft.cott.testing.framework.configuration.condition;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.cott.testing.model.global_config.Lambda;
+import com.knubisoft.cott.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.cott.testing.model.global_config.LambdaIntegration;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -11,12 +11,13 @@ import java.util.Objects;
 
 public class OnLambdaEnabledCondition implements Condition {
 
+    private final LambdaIntegration lambdaIntegration =
+            GlobalTestConfigurationProvider.getDefaultIntegrations().getLambdaIntegration();
+
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        final LambdaIntegration lambdaIntegration = GlobalTestConfigurationProvider.getIntegrations()
-                .getLambdaIntegration();
         if (Objects.nonNull(lambdaIntegration)) {
-            return lambdaIntegration.getLambda().stream().anyMatch(Lambda::isEnabled);
+            return IntegrationsUtil.isEnabled(lambdaIntegration.getLambda());
         }
         return false;
     }

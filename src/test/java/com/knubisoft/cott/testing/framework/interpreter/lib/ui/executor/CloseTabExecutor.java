@@ -7,9 +7,11 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.CloseTab;
+import org.openqa.selenium.WebDriver;
+
 import java.util.LinkedList;
 import java.util.Objects;
-import org.openqa.selenium.WebDriver;
+
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.TAB_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.TAB_OUT_OF_BOUNDS;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CLOSE_COMMAND;

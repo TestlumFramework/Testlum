@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="mongoDB" type="{http://www.knubisoft.com/cott/testing/model/global-config}mongodb"/&gt;
  *         &lt;element name="klovServer" type="{http://www.knubisoft.com/cott/testing/model/global-config}klovServer"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="enable" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -40,8 +40,8 @@ public class KlovServerReportGenerator {
     protected Mongodb mongoDB;
     @XmlElement(required = true)
     protected KlovServer klovServer;
-    @XmlAttribute(name = "enable", required = true)
-    protected boolean enable;
+    @XmlAttribute(name = "enabled", required = true)
+    protected boolean enabled;
 
     /**
      * Gets the value of the mongoDB property.
@@ -92,19 +92,19 @@ public class KlovServerReportGenerator {
     }
 
     /**
-     * Gets the value of the enable property.
+     * Gets the value of the enabled property.
      * 
      */
-    public boolean isEnable() {
-        return enable;
+    public boolean isEnabled() {
+        return enabled;
     }
 
     /**
-     * Sets the value of the enable property.
+     * Sets the value of the enabled property.
      * 
      */
-    public void setEnable(boolean value) {
-        this.enable = value;
+    public void setEnabled(boolean value) {
+        this.enabled = value;
     }
 
 }

@@ -1,18 +1,19 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
 import com.knubisoft.cott.testing.framework.configuration.websocket.WebsocketConnectionManager;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.ConfigUtil;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.framework.util.ScenarioUtil;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
@@ -50,45 +51,46 @@ import static java.lang.String.format;
 public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
     @Autowired(required = false)
-    private Map<String, WebsocketConnectionManager> wsConnectionSupplier;
+    private Map<AliasEnv, WebsocketConnectionManager> wsConnectionSupplier;
 
     public WebsocketInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
     }
 
     @Override
-    protected void acceptImpl(final Websocket websocket, final CommandResult commandResult) {
+    protected void acceptImpl(final Websocket websocket, final CommandResult result) {
         List<CommandResult> subCommandsResultList = new LinkedList<>();
-        commandResult.setSubCommandsResult(subCommandsResultList);
+        result.setSubCommandsResult(subCommandsResultList);
         processWebsockets(websocket, subCommandsResultList);
-        ResultUtil.setExecutionResultIfSubCommandsFailed(commandResult);
+        ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
     private void processWebsockets(final Websocket websocket,
                                    final List<CommandResult> subCommandsResultList) {
-        openConnection(websocket);
+        AliasEnv aliasEnv = new AliasEnv(websocket.getAlias(), dependencies.getEnvironment());
+        openConnection(aliasEnv);
         runActions(websocket, subCommandsResultList);
-        disconnectIfEnabled(websocket);
+        disconnectIfEnabled(websocket.isDisconnect(), aliasEnv);
     }
 
-    private void openConnection(final Websocket websocket) {
-        String alias = websocket.getAlias();
-        LogUtil.logAlias(alias);
+    private void openConnection(final AliasEnv aliasEnv) {
+        LogUtil.logAlias(aliasEnv.getAlias());
         try {
-            WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(alias);
+            WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(aliasEnv);
             if (!wsConnectionManager.isConnected()) {
                 wsConnectionManager.openConnection();
             }
         } catch (Exception e) {
             LogUtil.logException(e);
-            throw new DefaultFrameworkException(format(WEBSOCKET_CONNECTION_FAILURE, alias), e);
+            throw new DefaultFrameworkException(format(WEBSOCKET_CONNECTION_FAILURE, aliasEnv.getAlias()), e);
         }
     }
 
     private void runActions(final Websocket websocket,
                             final List<CommandResult> subCommandsResultList) {
         List<Object> websocketActions = Objects.isNull(websocket.getStomp())
-                ? websocket.getSendOrReceive() : websocket.getStomp().getSubscribeOrSendOrReceive();
+                ? websocket.getSendOrReceive()
+                : websocket.getStomp().getSubscribeOrSendOrReceive();
         websocketActions.forEach(action -> {
             LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action);
             CommandResult result = ResultUtil.createNewCommandResultInstance(dependencies.getPosition().intValue());
@@ -106,7 +108,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         } catch (Exception e) {
             ResultUtil.setExceptionResult(result, e);
             LogUtil.logException(e);
-            ScenarioUtil.checkIfStopScenarioOnFailure(e);
+            ConfigUtil.checkIfStopScenarioOnFailure(e);
         } finally {
             result.setExecutionTime(stopWatch.getTime());
             stopWatch.stop();
@@ -116,42 +118,43 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     private void executeAction(final Object action,
                                final String alias,
                                final CommandResult result) throws IOException {
+        AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
         if (action instanceof WebsocketSend) {
-            sendMessage((WebsocketSend) action, alias, result);
+            sendMessage((WebsocketSend) action, aliasEnv, result);
         } else if (action instanceof WebsocketReceive) {
-            receiveMessages((WebsocketReceive) action, alias, result);
+            receiveMessages((WebsocketReceive) action, aliasEnv, result);
         } else {
-            subscribeToTopic((WebsocketSubscribe) action, alias, result);
+            subscribeToTopic((WebsocketSubscribe) action, aliasEnv, result);
         }
     }
 
     private void sendMessage(final WebsocketSend wsSend,
-                             final String alias,
+                             final AliasEnv aliasEnv,
                              final CommandResult result) throws IOException {
         final String message = getMessageToSend(wsSend);
-        ResultUtil.addWebsocketInfoForSendAction(wsSend, alias, message, result);
+        ResultUtil.addWebsocketInfoForSendAction(wsSend, aliasEnv.getAlias(), message, result);
         LogUtil.logWebsocketActionInfo(SEND_ACTION, wsSend.getComment(), wsSend.getEndpoint(), message);
 
-        WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(alias);
+        WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(aliasEnv);
         wsConnectionManager.sendMessage(wsSend, message);
     }
 
     private void receiveMessages(final WebsocketReceive wsReceive,
-                                 final String alias,
+                                 final AliasEnv aliasEnv,
                                  final CommandResult result) {
         final String expectedContent = getExpectedContent(wsReceive);
-        ResultUtil.addWebsocketInfoForReceiveAction(wsReceive, alias, result);
+        ResultUtil.addWebsocketInfoForReceiveAction(wsReceive, aliasEnv.getAlias(), result);
         LogUtil.logWebsocketActionInfo(RECEIVE_ACTION, wsReceive.getComment(), wsReceive.getTopic(), expectedContent);
 
-        final List<Object> actualContent = getMessagesToCompare(wsReceive, alias);
+        final List<Object> actualContent = getMessagesToCompare(wsReceive, aliasEnv);
         result.setActual(PrettifyStringJson.getJSONResult(toString(actualContent)));
         result.setExpected(PrettifyStringJson.getJSONResult(expectedContent));
 
         executeComparison(actualContent, expectedContent);
     }
 
-    private List<Object> getMessagesToCompare(final WebsocketReceive wsReceive, final String alias) {
-        WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(alias);
+    private List<Object> getMessagesToCompare(final WebsocketReceive wsReceive, final AliasEnv aliasEnv) {
+        WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(aliasEnv);
         LinkedList<String> receivedMessages = wsConnectionManager.receiveMessages(wsReceive.getTopic());
         checkMessagesReceived(wsReceive, receivedMessages);
 
@@ -192,11 +195,11 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     }
 
     private void subscribeToTopic(final WebsocketSubscribe wsSubscribe,
-                                  final String alias,
+                                  final AliasEnv aliasEnv,
                                   final CommandResult result) {
-        ResultUtil.addWebsocketInfoForSubscribeAction(wsSubscribe, alias, result);
+        ResultUtil.addWebsocketInfoForSubscribeAction(wsSubscribe, aliasEnv.getAlias(), result);
         LogUtil.logWebsocketActionInfo(SUBSCRIBE, wsSubscribe.getComment(), wsSubscribe.getTopic(), EMPTY);
-        wsConnectionSupplier.get(alias).subscribeTo(wsSubscribe.getTopic());
+        wsConnectionSupplier.get(aliasEnv).subscribeTo(wsSubscribe.getTopic());
     }
 
     private String getMessageToSend(final WebsocketSend wsSend) {
@@ -214,9 +217,8 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     }
 
     @SneakyThrows
-    private void disconnectIfEnabled(final Websocket websocket) {
-        boolean isDisconnectEnabled = websocket.isDisconnect();
-        WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(websocket.getAlias());
+    private void disconnectIfEnabled(final boolean isDisconnectEnabled, final AliasEnv aliasEnv) {
+        WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(aliasEnv);
         if (isDisconnectEnabled && wsConnectionManager.isConnected()) {
             wsConnectionManager.closeConnection();
         } else if (isDisconnectEnabled && !wsConnectionManager.isConnected()) {

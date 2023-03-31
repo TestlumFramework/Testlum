@@ -4,20 +4,17 @@ import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.parser.XMLParsers;
+import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.model.pages.Component;
 import com.knubisoft.cott.testing.model.pages.Include;
 import com.knubisoft.cott.testing.model.pages.Locator;
 import com.knubisoft.cott.testing.model.pages.Page;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DUPLICATE_FILENAME_LOCATORS;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNABLE_PARSE_FILE_WITH_LOCATORS;
 import static java.lang.String.format;
 
@@ -26,13 +23,12 @@ public class LocatorCollector {
     private static final PageValidator PAGE_VALIDATOR = new PageValidator();
 
     private final Map<String, File> pageFiles;
-
     private final Map<String, File> componentFiles;
 
     public LocatorCollector() {
         TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
-        this.pageFiles = collectFilesFromFolder(resourceSettings.getPagesFolder());
-        this.componentFiles = collectFilesFromFolder(resourceSettings.getComponentsFolder());
+        this.pageFiles = FileSearcher.collectFilesFromFolder(resourceSettings.getPagesFolder());
+        this.componentFiles = FileSearcher.collectFilesFromFolder(resourceSettings.getComponentsFolder());
     }
 
     public Map<String, Locator> collect() {
@@ -65,7 +61,6 @@ public class LocatorCollector {
             Component component = parseComponent(include);
             includes.addAll(component.getLocators().getLocator());
         }
-
     }
 
     private Component parseComponent(final Include include) {
@@ -85,21 +80,7 @@ public class LocatorCollector {
     }
 
     private String getKeyName(final Map.Entry<File, Page> each, final Locator locator) {
-        String prefix = each.getKey().getName().replace(TestResourceSettings.XML_SUFFIX, DelimiterConstant.EMPTY)
-                + DelimiterConstant.DOT;
-        return prefix + locator.getLocatorId();
-    }
-
-    private Map<String, File> collectFilesFromFolder(final File filesource) {
-        Map<String, File> files = new HashMap<>();
-        FileUtils.listFiles(filesource, null, true)
-                .forEach(file -> {
-                    files.computeIfPresent(file.getName(), (key, value) -> {
-                        throw new DefaultFrameworkException(
-                                DUPLICATE_FILENAME_LOCATORS, filesource.getName(), file.getName());
-                    });
-                    files.put(file.getName(), file);
-                });
-        return Collections.unmodifiableMap(files);
+        String prefix = each.getKey().getName().replace(TestResourceSettings.XML_SUFFIX, DelimiterConstant.EMPTY);
+        return prefix + DelimiterConstant.DOT + locator.getLocatorId();
     }
 }

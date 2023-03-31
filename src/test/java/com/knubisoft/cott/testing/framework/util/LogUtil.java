@@ -338,12 +338,6 @@ public class LogUtil {
         log.info(ENDPOINT_LOG, endpoint);
     }
 
-    public void logGraphqlInfo(final String alias, final String endpoint, final String body) {
-        log.info(ALIAS_LOG, alias);
-        log.info(ENDPOINT_LOG, endpoint);
-        log.info(BODY_LOG, body.replaceAll(SPACE, EMPTY).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
-    }
-
     @SneakyThrows
     public void logBodyContent(final HttpEntity body) {
         if (nonNull(body)) {
@@ -448,9 +442,9 @@ public class LogUtil {
     }
 
     public void logDragAndDropInfo(final DragAndDrop dragAndDrop) {
-        if (StringUtils.isNotBlank(dragAndDrop.getFilePath())) {
+        if (isNotBlank(dragAndDrop.getFilePath())) {
             log.info(DRAGGING_FILE_PATH, dragAndDrop.getFilePath());
-        } else if (StringUtils.isNotBlank(dragAndDrop.getFromLocatorId())) {
+        } else if (isNotBlank(dragAndDrop.getFromLocatorId())) {
             log.info(DRAGGING_FROM, dragAndDrop.getFromLocatorId());
         }
         log.info(DROPPING_TO, dragAndDrop.getToLocatorId());

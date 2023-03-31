@@ -64,7 +64,7 @@ public class UiUtil {
     public void highlightElementIfRequired(final Boolean isHighlight,
                                            final WebElement element,
                                            final WebDriver driver) {
-        if ((isHighlight == null || isHighlight) && !(driver instanceof AppiumDriver)) {
+        if ((Objects.isNull(isHighlight) || isHighlight) && !(driver instanceof AppiumDriver)) {
             JavascriptUtil.executeJsScript(element, HIGHLIGHT_SCRIPT, driver);
         }
     }
@@ -170,7 +170,7 @@ public class UiUtil {
     public float calculatePercentageValue(final float value) {
         float percent = value / MAX_PERCENTS_VALUE;
         if (percent > 1) {
-            throw new DefaultFrameworkException(format(SCROLL_TO_ELEMENT_NOT_SUPPORTED, value));
+            throw new DefaultFrameworkException(SCROLL_TO_ELEMENT_NOT_SUPPORTED, value);
         }
         return percent;
     }

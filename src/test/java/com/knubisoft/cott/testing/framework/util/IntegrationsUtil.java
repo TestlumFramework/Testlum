@@ -25,7 +25,7 @@ public class IntegrationsUtil {
                                                                final String message) {
         return integrations.stream()
                 .filter(Integration::isEnabled)
-                .filter(api -> api.getAlias().equalsIgnoreCase(alias))
+                .filter(integration -> integration.getAlias().equalsIgnoreCase(alias))
                 .findFirst()
                 .orElseThrow(() -> new DefaultFrameworkException(message, alias));
     }

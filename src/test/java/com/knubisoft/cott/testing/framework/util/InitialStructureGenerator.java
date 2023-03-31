@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.DATA_FOLDER;
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.LOCATORS_COMPONENTS_FOLDER;
@@ -72,7 +73,7 @@ public class InitialStructureGenerator {
     private void copyFileToFolder(final String fileName, final String path, final String folder) throws IOException {
         try (InputStream file = InitialStructureGenerator.class.getClassLoader()
                 .getResourceAsStream(TEST_SAMPLE_PATH + File.separator + fileName)) {
-            if (file != null) {
+            if (Objects.nonNull(file)) {
                 File target = Paths.get(path, folder, fileName).toFile();
                 FileUtils.copyToFile(file, target);
             }

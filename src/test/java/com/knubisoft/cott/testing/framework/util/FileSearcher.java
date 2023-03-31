@@ -22,6 +22,7 @@ import java.util.Optional;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DUPLICATE_FILENAME;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DUPLICATE_FOLDER_NAME;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @UtilityClass
@@ -44,7 +45,7 @@ public final class FileSearcher {
             return Optional.empty();
         }
         File[] files = fromDir.listFiles(filter);
-        if (files != null && files.length == 1) {
+        if (nonNull(files) && files.length == 1) {
             return Optional.of(files[0]);
         }
         return find(fromDir.getParentFile(), filter);
@@ -66,11 +67,9 @@ public final class FileSearcher {
         return file;
     }
 
-    public File searchFileFromEnvFolder(final String folder, final String fileName) {
+    public Optional<File> searchFileFromEnvFolder(final String folder, final String fileName) {
         Map<String, File> files = ENV_FOLDERS_FILES.get(folder);
-        return Optional.ofNullable(files)
-                .map(fileMap -> fileMap.get(fileName))
-                .orElseThrow(() -> new FileLinkingException(ENV_FOLDER, ENV_FOLDER, fileName));
+        return Optional.ofNullable(files).map(fileMap -> fileMap.get(fileName));
     }
 
     public Map<String, File> collectFilesFromFolder(final File folder) {

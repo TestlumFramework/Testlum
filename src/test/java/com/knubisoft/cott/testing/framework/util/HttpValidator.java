@@ -1,7 +1,6 @@
 package com.knubisoft.cott.testing.framework.util;
 
 
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.cott.testing.framework.exception.ComparisonException;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
@@ -12,11 +11,10 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.RETHROWN_ERRORS_LOG;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
+import static java.util.Objects.nonNull;
 
 @RequiredArgsConstructor
 public final class HttpValidator {
@@ -34,7 +32,7 @@ public final class HttpValidator {
     }
 
     public void validateHeaders(final Map<String, String> expectedHeaders, final Map<String, String> actualHeaderMap) {
-        if (Objects.nonNull(expectedHeaders)) {
+        if (nonNull(expectedHeaders)) {
             try {
                 expectedHeaders.entrySet().forEach(each -> validateHeader(each, actualHeaderMap));
             } catch (RuntimeException e) {
@@ -60,7 +58,7 @@ public final class HttpValidator {
     }
 
     public void validateBody(final String expectedBody, final String actualBody) {
-        if (Objects.nonNull(expectedBody)) {
+        if (nonNull(expectedBody)) {
             try {
                 final String newActual = StringPrettifier.prettify(actualBody);
                 final String newExpected = StringPrettifier.prettify(expectedBody);
@@ -74,8 +72,7 @@ public final class HttpValidator {
 
     public void rethrowOnErrors() {
         if (!result.isEmpty()) {
-            throw new DefaultFrameworkException(RETHROWN_ERRORS_LOG,
-                    String.join(DelimiterConstant.SPACE_WITH_LF, result));
+            throw new DefaultFrameworkException(result);
         }
     }
 

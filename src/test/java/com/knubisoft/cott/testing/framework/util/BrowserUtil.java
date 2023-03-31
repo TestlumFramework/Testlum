@@ -5,31 +5,32 @@ import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.cott.testing.model.global_config.Web;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.BROWSER_INFO;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
 public class BrowserUtil {
 
     public List<AbstractBrowser> filterDefaultEnabledBrowsers() {
         Web web = GlobalTestConfigurationProvider.getDefaultUiConfigs().getWeb();
-        return Objects.nonNull(web)
+        return nonNull(web)
                 ? web.getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari().stream()
                 .filter(AbstractBrowser::isEnabled).collect(Collectors.toList())
                 : Collections.emptyList();
     }
 
     public Optional<AbstractBrowser> getBrowserBy(final String env, final String browserAlias) {
-        return StringUtils.isBlank(browserAlias)
+        return isBlank(browserAlias)
                 ? Optional.empty()
                 : GlobalTestConfigurationProvider.getWebSettings(env)
                 .getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari().stream()
@@ -39,7 +40,7 @@ public class BrowserUtil {
 
     public void manageWindowSize(final AbstractBrowser browser, final WebDriver webDriver) {
         String browserWindowSize = browser.getBrowserWindowSize();
-        if (StringUtils.isNotEmpty(browserWindowSize)) {
+        if (isNotBlank(browserWindowSize)) {
             String[] size = browserWindowSize.split(DelimiterConstant.X);
             int width = Integer.parseInt(size[0]);
             int height = Integer.parseInt(size[1]);
@@ -58,13 +59,13 @@ public class BrowserUtil {
     }
 
     public BrowserType getBrowserType(final AbstractBrowser browser) {
-        if (Objects.nonNull(browser.getBrowserType().getRemoteBrowser())) {
+        if (nonNull(browser.getBrowserType().getRemoteBrowser())) {
             return BrowserType.REMOTE;
         }
-        if (Objects.nonNull(browser.getBrowserType().getBrowserInDocker())) {
+        if (nonNull(browser.getBrowserType().getBrowserInDocker())) {
             return BrowserType.IN_DOCKER;
         }
-        if (Objects.nonNull(browser.getBrowserType().getBrowserStack())) {
+        if (nonNull(browser.getBrowserType().getBrowserStack())) {
             return BrowserType.BROWSER_STACK;
         }
         return BrowserType.LOCAL;
@@ -81,7 +82,7 @@ public class BrowserUtil {
             return browser.getBrowserType().getBrowserStack().getBrowserVersion();
         }
         String version = browser.getBrowserType().getLocalBrowser().getDriverVersion();
-        return StringUtils.isEmpty(version) ? "no version specified (the latest version is used)" : version;
+        return isBlank(version) ? "No browser version specified (the latest version is used)" : version;
     }
 
     public enum BrowserType {

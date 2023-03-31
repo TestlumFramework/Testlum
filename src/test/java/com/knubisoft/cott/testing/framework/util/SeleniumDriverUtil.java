@@ -11,9 +11,8 @@ import io.appium.java_client.remote.MobileCapabilityType;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-import java.util.Objects;
-
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
 
 @UtilityClass
 public class SeleniumDriverUtil {
@@ -22,7 +21,7 @@ public class SeleniumDriverUtil {
 
     public String getBrowserStackUrl(final UiConfig uiConfig) {
         BrowserStackLogin browserStack = uiConfig.getBrowserStackLogin();
-        if (Objects.nonNull(browserStack)) {
+        if (nonNull(browserStack)) {
             return format(BROWSER_STACK_URL_TEMPLATE, browserStack.getUsername(), browserStack.getAccessKey());
         }
         throw new DefaultFrameworkException("Cannot find BrowserStackLogin configuration");
@@ -37,7 +36,7 @@ public class SeleniumDriverUtil {
     }
 
     private String getServerUrl(final ConnectionType connectionType, final UiConfig uiConfig) {
-        return Objects.nonNull(connectionType.getAppiumServer())
+        return nonNull(connectionType.getAppiumServer())
                 ? connectionType.getAppiumServer().getServerUrl()
                 : getBrowserStackUrl(uiConfig);
     }
@@ -46,7 +45,7 @@ public class SeleniumDriverUtil {
                                        final DesiredCapabilities desiredCapabilities) {
         desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "5000");
         Capabilities capabilities = abstractDevice.getCapabilities();
-        if (Objects.nonNull(capabilities)) {
+        if (nonNull(capabilities)) {
             capabilities.getCapability()
                     .forEach(cap -> desiredCapabilities.setCapability(cap.getName(), cap.getValue()));
         }

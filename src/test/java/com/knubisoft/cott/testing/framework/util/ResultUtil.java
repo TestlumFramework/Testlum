@@ -40,7 +40,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -69,7 +68,6 @@ public class ResultUtil {
     public static final String EXPRESSION = "Expression";
     public static final String NO_EXPRESSION = "No expression";
     public static final String CONDITION = "Condition";
-    public static final String CONSTANT = "Constant";
     public static final String COOKIES = "Cookies";
     public static final String URL = "Url";
     public static final String FILE = "File";
@@ -200,6 +198,11 @@ public class ResultUtil {
     public void setExceptionResult(final CommandResult result, final Exception exception) {
         result.setSuccess(false);
         result.setException(exception);
+    }
+
+    public void setExpectedActual(final String expected, final String actual, final CommandResult result) {
+        result.setExpected(expected);
+        result.setActual(actual);
     }
 
     public void addDatabaseMetaData(final String databaseAlias,

@@ -9,7 +9,6 @@ import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.cott.testing.model.global_config.Native;
 import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,6 +21,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.NATIVE_AP
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.NATIVE_INFO;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.allNotNull;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @UtilityClass
 public class MobileUtil {
@@ -52,7 +52,7 @@ public class MobileUtil {
     }
 
     public Optional<MobilebrowserDevice> getMobilebrowserDeviceBy(final String env, final String deviceAlias) {
-        return StringUtils.isBlank(deviceAlias)
+        return isBlank(deviceAlias)
                 ? Optional.empty()
                 : GlobalTestConfigurationProvider.getMobilebrowserSettings(env)
                 .getDevices().getDevice().stream()
@@ -62,7 +62,7 @@ public class MobileUtil {
     }
 
     public Optional<NativeDevice> getNativeDeviceBy(final String env, final String deviceAlias) {
-        return StringUtils.isBlank(deviceAlias)
+        return isBlank(deviceAlias)
                 ? Optional.empty()
                 : GlobalTestConfigurationProvider.getNativeSettings(env)
                 .getDevices().getDevice().stream()

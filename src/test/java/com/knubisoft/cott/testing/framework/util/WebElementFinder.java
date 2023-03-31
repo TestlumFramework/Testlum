@@ -13,9 +13,10 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @UtilityClass
@@ -25,11 +26,11 @@ public final class WebElementFinder {
 
     static {
         final Map<LocatorType, ByType> map = new HashMap<>();
-        map.put(l -> Objects.nonNull(l.getXpath()), l -> By.xpath(l.getXpath()));
-        map.put(l -> Objects.nonNull(l.getId()), l -> By.id(l.getId()));
-        map.put(l -> Objects.nonNull(l.getClazz()), l -> By.className(l.getClazz()));
-        map.put(l -> Objects.nonNull(l.getCssSelector()), l -> By.cssSelector(l.getCssSelector()));
-        map.put(l -> Objects.nonNull(l.getText()), l -> By.text(l.getText()));
+        map.put(l -> nonNull(l.getXpath()), l -> By.xpath(l.getXpath()));
+        map.put(l -> nonNull(l.getId()), l -> By.id(l.getId()));
+        map.put(l -> nonNull(l.getClazz()), l -> By.className(l.getClazz()));
+        map.put(l -> nonNull(l.getCssSelector()), l -> By.cssSelector(l.getCssSelector()));
+        map.put(l -> nonNull(l.getText()), l -> By.text(l.getText()));
         SEARCH_TYPES = Collections.unmodifiableMap(map);
     }
 

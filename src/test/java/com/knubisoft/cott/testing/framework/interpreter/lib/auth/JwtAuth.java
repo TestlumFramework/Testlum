@@ -45,7 +45,7 @@ public class JwtAuth extends AbstractAuthStrategy {
         HttpHeaders headers = getHeaders();
         HttpEntity<String> request = new HttpEntity<>(body, headers);
         String response = doRequest(auth, request);
-        if (StringUtils.isNotEmpty(response)) {
+        if (StringUtils.isNotBlank(response)) {
             DocumentContext context = JsonPath.parse(response);
             return context.read(AuthorizationConstant.CONTENT_KEY_TOKEN);
         }

@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.CompareBuilder;
@@ -13,7 +14,6 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.model.scenario.S3;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +30,7 @@ import java.util.Optional;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INCORRECT_S3_PROCESSING;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @InterpreterForClass(S3.class)
@@ -56,7 +57,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     //CHECKSTYLE:OFF
     @SneakyThrows
     private void exec(final S3 s3, final String bucket, final String key, final CommandResult result) {
-        if (s3.getUpload() != null) {
+        if (nonNull(s3.getUpload())) {
             ResultUtil.addS3GeneralMetaData(bucket, UPLOAD_ACTION, key, bucket, result);
             final String fileName = inject(s3.getUpload());
             final File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
@@ -65,7 +66,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
             AliasEnv aliasEnv = new AliasEnv(bucket, dependencies.getEnvironment());
             this.amazonS3.get(aliasEnv).createBucket(bucket);
             this.amazonS3.get(aliasEnv).putObject(bucket, key, file);
-        } else if (s3.getDownload() != null) {
+        } else if (nonNull(s3.getDownload())) {
             ResultUtil.addS3GeneralMetaData(bucket, DOWNLOAD_ACTION, key, bucket, result);
             setContextBody(downloadAndCompareFile(bucket, key, inject(s3.getDownload()), result));
         }

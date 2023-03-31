@@ -7,6 +7,7 @@ import lombok.experimental.UtilityClass;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Modifier;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -32,7 +33,7 @@ public class InterpreterScanner {
     private void addInterpreterToMapIfExists(final CommandToInterpreterClassMap map,
                                              final Class<AbstractInterpreter<? extends AbstractCommand>> interpreter) {
         InterpreterForClass interpreterForClass = interpreter.getAnnotation(InterpreterForClass.class);
-        if (interpreterForClass == null) {
+        if (Objects.isNull(interpreterForClass)) {
             throw new DefaultFrameworkException(NOT_DECLARED_WITH_INTERPRETER_FOR_CLASS, interpreter);
         }
         map.put(interpreterForClass.value(), interpreter);

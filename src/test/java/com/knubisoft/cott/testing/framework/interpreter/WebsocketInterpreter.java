@@ -1,19 +1,19 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
 import com.knubisoft.cott.testing.framework.configuration.websocket.WebsocketConnectionManager;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.ConfigUtil;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
-import com.knubisoft.cott.testing.framework.util.GlobalUtil;
 import com.knubisoft.cott.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
@@ -58,11 +58,11 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     }
 
     @Override
-    protected void acceptImpl(final Websocket websocket, final CommandResult commandResult) {
+    protected void acceptImpl(final Websocket websocket, final CommandResult result) {
         List<CommandResult> subCommandsResultList = new LinkedList<>();
-        commandResult.setSubCommandsResult(subCommandsResultList);
+        result.setSubCommandsResult(subCommandsResultList);
         processWebsockets(websocket, subCommandsResultList);
-        ResultUtil.setExecutionResultIfSubCommandsFailed(commandResult);
+        ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
     private void processWebsockets(final Websocket websocket,
@@ -108,7 +108,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         } catch (Exception e) {
             ResultUtil.setExceptionResult(result, e);
             LogUtil.logException(e);
-            GlobalUtil.checkIfStopScenarioOnFailure(e);
+            ConfigUtil.checkIfStopScenarioOnFailure(e);
         } finally {
             result.setExecutionTime(stopWatch.getTime());
             stopWatch.stop();

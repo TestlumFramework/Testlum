@@ -81,8 +81,8 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
                 command.getClass().getSimpleName(),
                 command.getComment());
         LogUtil.logHotKeyInfo(command);
-        hotKeyCmdMethod.accept(command, subCommandResult);
         subCommandsResult.add(subCommandResult);
+        hotKeyCmdMethod.accept(command, subCommandResult);
     }
 
     private void singleKeyCommand(final Keys key) {

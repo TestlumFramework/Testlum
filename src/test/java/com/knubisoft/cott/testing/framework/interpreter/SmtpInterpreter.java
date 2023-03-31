@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -7,7 +8,6 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.model.scenario.Smtp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -36,8 +36,8 @@ public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
     }
 
     private void sendEmail(final Smtp smtp, final JavaMailSenderImpl javaMailSender) {
-        SimpleMailMessage simpleMailMessage = getSimpleMailMessage(smtp,
-                Objects.requireNonNull(javaMailSender.getUsername()));
+        String username = Objects.requireNonNull(javaMailSender.getUsername());
+        SimpleMailMessage simpleMailMessage = getSimpleMailMessage(smtp, username);
         try {
             javaMailSender.send(simpleMailMessage);
         } catch (Exception exception) {

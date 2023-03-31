@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
@@ -10,7 +11,6 @@ import com.knubisoft.cott.testing.framework.util.HttpValidator;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.model.scenario.Body;
 import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequest;
 import com.knubisoft.cott.testing.model.scenario.ElasticSearchRequestWithBody;
@@ -37,6 +37,7 @@ import org.springframework.http.MediaType;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -75,7 +76,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
                                     final HttpValidator httpValidator,
                                     final CommandResult result) {
         String expectedFile = expectedResponse.getFile();
-        if (expectedFile != null) {
+        if (Objects.nonNull(expectedFile)) {
             String actualBody = EntityUtils.toString(actual.getEntity());
             setContextBody(actualBody);
             String expectedBody = FileSearcher.searchFileToString(expectedFile, dependencies.getFile());

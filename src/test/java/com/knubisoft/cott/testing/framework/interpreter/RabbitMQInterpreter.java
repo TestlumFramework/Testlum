@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -9,7 +10,6 @@ import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.model.scenario.Rabbit;
 import com.knubisoft.cott.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.cott.testing.model.scenario.RmqHeader;
@@ -36,6 +36,8 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMAND_L
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @InterpreterForClass(Rabbit.class)
@@ -122,7 +124,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     }
 
     private void setHeaders(final SendRmqMessage send, final MessageProperties properties) {
-        if (send.getHeaders() != null) {
+        if (nonNull(send.getHeaders())) {
             for (RmqHeader rmqHeader : send.getHeaders().getHeader()) {
                 properties.setHeader(rmqHeader.getName(), rmqHeader.getValue());
             }
@@ -130,7 +132,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     }
 
     private void setCorrelationId(final SendRmqMessage send, final MessageProperties properties) {
-        if (!StringUtils.isEmpty(send.getCorrelationId())) {
+        if (StringUtils.isNotBlank(send.getCorrelationId())) {
             properties.setHeader(CORRELATION_ID, send.getCorrelationId());
         }
     }
@@ -150,7 +152,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         List<RabbitMQMessage> actualRmqMessages = new ArrayList<>();
         for (int i = 0; i < receive.getPrefetchCount(); i++) {
             RabbitMQMessage actualRmqMessage = receiveRmqMessage(receive, aliasEnv);
-            if (actualRmqMessage != null) {
+            if (nonNull(actualRmqMessage)) {
                 actualRmqMessages.add(actualRmqMessage);
             }
         }
@@ -159,7 +161,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
 
     private RabbitMQMessage receiveRmqMessage(final ReceiveRmqMessage receive, final AliasEnv aliasEnv) {
         Message actualMessage = rabbitTemplate.get(aliasEnv).receive(receive.getQueue(), receive.getTimeoutMillis());
-        if (actualMessage == null) {
+        if (isNull(actualMessage)) {
             return null;
         }
         RabbitMQMessage actualRmqMessage = new RabbitMQMessage(actualMessage);
@@ -188,13 +190,13 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     }
 
     private String getMessage(final SendRmqMessage send) {
-        return send.getFile() == null
+        return isNull(send.getFile())
                 ? send.getBody()
                 : FileSearcher.searchFileToString(send.getFile(), dependencies.getFile());
     }
 
     private String getMessage(final ReceiveRmqMessage receive) {
-        return receive.getFile() == null
+        return isNull(receive.getFile())
                 ? receive.getMessage()
                 : FileSearcher.searchFileToString(receive.getFile(), dependencies.getFile());
     }

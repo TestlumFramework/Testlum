@@ -45,6 +45,8 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMAND_L
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @InterpreterForClass(Kafka.class)
@@ -174,7 +176,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
     private List<Header> getHeaders(final SendKafkaMessage send) {
         List<Header> headers = new ArrayList<>();
-        if (send.getCorrelationId() != null) {
+        if (nonNull(send.getCorrelationId())) {
             byte[] correlationId = send.getCorrelationId().getBytes(StandardCharsets.UTF_8);
             RecordHeader correlationIdHeader = new RecordHeader(CORRELATION_ID, correlationId);
             headers.add(correlationIdHeader);
@@ -185,7 +187,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
     private List<Header> getHeadersFromSendMessage(final SendKafkaMessage send) {
         List<Header> headers = new ArrayList<>();
-        if (send.getHeaders() != null && !CollectionUtils.isEmpty(send.getHeaders().getHeader())) {
+        if (nonNull(send.getHeaders()) && !CollectionUtils.isEmpty(send.getHeaders().getHeader())) {
             for (KafkaHeader kafkaHeader : send.getHeaders().getHeader()) {
                 headers.add(convertToRecordHeader(kafkaHeader));
             }
@@ -200,13 +202,13 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     }
 
     private String getValue(final SendKafkaMessage send) {
-        return send.getFile() == null
+        return isNull(send.getFile())
                 ? send.getValue()
                 : FileSearcher.searchFileToString(send.getFile(), dependencies.getFile());
     }
 
     private String getValue(final ReceiveKafkaMessage receive) {
-        return receive.getFile() == null
+        return isNull(receive.getFile())
                 ? receive.getValue()
                 : FileSearcher.searchFileToString(receive.getFile(), dependencies.getFile());
     }

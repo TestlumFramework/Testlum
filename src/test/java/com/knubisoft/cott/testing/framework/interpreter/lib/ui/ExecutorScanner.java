@@ -3,11 +3,11 @@ package com.knubisoft.cott.testing.framework.interpreter.lib.ui;
 import com.google.common.base.Suppliers;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
-import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Modifier;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -31,11 +31,10 @@ public class ExecutorScanner {
         return map;
     }
 
-    @SneakyThrows
     private void addExecutorToMapIfExists(final CommandToExecutorClassMap map,
                                           final Class<AbstractUiExecutor<? extends AbstractUiCommand>> executor) {
         ExecutorForClass executorForClass = executor.getAnnotation(ExecutorForClass.class);
-        if (executorForClass == null) {
+        if (Objects.isNull(executorForClass)) {
             throw new DefaultFrameworkException(NOT_DECLARED_WITH_EXECUTOR_FOR_CLASS, executor);
         }
         map.put(executorForClass.value(), executor);

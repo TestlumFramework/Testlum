@@ -18,6 +18,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SLOW_COMMAND_PROCESSING;
@@ -49,7 +50,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         r.run();
         long ms = sw.getTime(TimeUnit.MILLISECONDS);
         Integer threshold = o.getThreshold();
-        if (threshold != null && ms > threshold) {
+        if (Objects.nonNull(threshold) && ms > threshold) {
             throw new DefaultFrameworkException(SLOW_COMMAND_PROCESSING, ms, threshold);
         }
     }

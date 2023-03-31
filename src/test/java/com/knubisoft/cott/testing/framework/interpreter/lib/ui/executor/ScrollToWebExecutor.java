@@ -3,7 +3,6 @@ package com.knubisoft.cott.testing.framework.interpreter.lib.ui.executor;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
-
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.JavascriptUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;

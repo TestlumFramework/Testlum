@@ -3,6 +3,7 @@ package com.knubisoft.cott.testing.framework.interpreter;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.ReceiveMessageResult;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.CompareBuilder;
@@ -12,7 +13,6 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.model.scenario.Sqs;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.ALIAS_LOG
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.QUEUE;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @InterpreterForClass(Sqs.class)
@@ -50,10 +51,10 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                                  final String alias) {
         log.info(ALIAS_LOG, alias);
         AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
-        if (sqs.getSend() != null) {
+        if (nonNull(sqs.getSend())) {
             ResultUtil.addMessageBrokerGeneralMetaData(alias, SEND_ACTION, QUEUE, queueName, result);
             sendMessage(queueName, sqs.getSend(), aliasEnv, result);
-        } else if (sqs.getReceive() != null) {
+        } else if (nonNull(sqs.getReceive())) {
             ResultUtil.addMessageBrokerGeneralMetaData(alias, RECEIVE_ACTION, QUEUE, queueName, result);
             setContextBody(receiveAndCompareMessage(queueName, sqs.getReceive(), aliasEnv, result));
         } else {

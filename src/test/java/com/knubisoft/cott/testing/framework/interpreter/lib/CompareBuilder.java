@@ -19,6 +19,7 @@ import java.util.function.Supplier;
 
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMPARISON_FOR_STEP_WAS_SKIPPED;
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @Getter
@@ -51,7 +52,7 @@ public class CompareBuilder {
     }
 
     public CompareBuilder withExpectedFile(final String fileName) {
-        if (fileName != null) {
+        if (nonNull(fileName)) {
             File file = FileSearcher.searchFileFromDir(scenarioFile, fileName);
             return tryToUseExpectedFile(file);
         }
@@ -67,7 +68,7 @@ public class CompareBuilder {
     }
 
     public void exec() {
-        if (expected != null) {
+        if (nonNull(expected)) {
             String actual = supplierActual.get();
             tryToCompare(actual);
         } else {

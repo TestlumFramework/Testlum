@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Setter
 public class InterpreterDependencies {
 
-    private final ApplicationContext cxt;
+    private final ApplicationContext context;
     private final File file;
     private final ScenarioContext scenarioContext;
     private final AtomicInteger position;

@@ -19,10 +19,10 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="subscription" type="{http://www.knubisoft.com/cott/testing/model/global-config}subscription"/&gt;
+ *         &lt;element name="parallelExecution" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
  *         &lt;element name="stopScenarioOnFailure" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *         &lt;element name="stopIfInvalidScenario" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *         &lt;element name="delayBetweenScenarioRuns" type="{http://www.knubisoft.com/cott/testing/model/global-config}delayBetweenScenarioRuns"/&gt;
- *         &lt;element name="parallelExecution" type="{http://www.knubisoft.com/cott/testing/model/global-config}parallelExecution"/&gt;
  *         &lt;element name="runScenariosByTag" type="{http://www.knubisoft.com/cott/testing/model/global-config}runScenariosByTag"/&gt;
  *         &lt;element name="report" type="{http://www.knubisoft.com/cott/testing/model/global-config}report"/&gt;
  *         &lt;element name="environments" type="{http://www.knubisoft.com/cott/testing/model/global-config}environments"/&gt;
@@ -37,10 +37,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "subscription",
+    "parallelExecution",
     "stopScenarioOnFailure",
     "stopIfInvalidScenario",
     "delayBetweenScenarioRuns",
-    "parallelExecution",
     "runScenariosByTag",
     "report",
     "environments"
@@ -50,12 +50,12 @@ public class GlobalTestConfiguration {
 
     @XmlElement(required = true)
     protected Subscription subscription;
+    @XmlElement(defaultValue = "false")
+    protected Boolean parallelExecution;
     protected boolean stopScenarioOnFailure;
     protected boolean stopIfInvalidScenario;
     @XmlElement(required = true)
     protected DelayBetweenScenarioRuns delayBetweenScenarioRuns;
-    @XmlElement(required = true)
-    protected ParallelExecution parallelExecution;
     @XmlElement(required = true)
     protected RunScenariosByTag runScenariosByTag;
     @XmlElement(required = true)
@@ -85,6 +85,30 @@ public class GlobalTestConfiguration {
      */
     public void setSubscription(Subscription value) {
         this.subscription = value;
+    }
+
+    /**
+     * Gets the value of the parallelExecution property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean isParallelExecution() {
+        return parallelExecution;
+    }
+
+    /**
+     * Sets the value of the parallelExecution property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setParallelExecution(Boolean value) {
+        this.parallelExecution = value;
     }
 
     /**
@@ -141,30 +165,6 @@ public class GlobalTestConfiguration {
      */
     public void setDelayBetweenScenarioRuns(DelayBetweenScenarioRuns value) {
         this.delayBetweenScenarioRuns = value;
-    }
-
-    /**
-     * Gets the value of the parallelExecution property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ParallelExecution }
-     *     
-     */
-    public ParallelExecution getParallelExecution() {
-        return parallelExecution;
-    }
-
-    /**
-     * Sets the value of the parallelExecution property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ParallelExecution }
-     *     
-     */
-    public void setParallelExecution(ParallelExecution value) {
-        this.parallelExecution = value;
     }
 
     /**

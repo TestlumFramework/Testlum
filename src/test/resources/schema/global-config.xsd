@@ -21,10 +21,10 @@
         <x:complexType>
             <x:sequence>
                 <x:element name="subscription" type="tns:subscription"/>
+                <x:element name="parallelExecution" type="x:boolean" default="false" minOccurs="0"/>
                 <x:element name="stopScenarioOnFailure" type="x:boolean"/>
                 <x:element name="stopIfInvalidScenario" type="x:boolean"/>
                 <x:element name="delayBetweenScenarioRuns" type="tns:delayBetweenScenarioRuns"/>
-                <x:element name="parallelExecution" type="tns:parallelExecution"/>
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
                 <x:element name="report" type="tns:report"/>
                 <x:element name="environments" type="tns:environments"/>
@@ -51,11 +51,6 @@
         <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
-    <x:complexType name="parallelExecution">
-        <x:attribute name="threads" type="tns:positiveIntegerMin1" default="1"/>
-        <x:attribute name="enabled" type="x:boolean" use="required"/>
-    </x:complexType>
-
     <x:simpleType name="positiveIntegerMin1">
         <x:restriction base="x:int">
             <x:minInclusive value="1"/>
@@ -78,5 +73,6 @@
     <x:complexType name="environment">
         <x:attribute name="folder" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:attribute name="threads" type="x:int" default="1"/>
     </x:complexType>
 </x:schema>

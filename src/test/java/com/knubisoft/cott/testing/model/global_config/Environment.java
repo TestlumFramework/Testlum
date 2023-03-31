@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="folder" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}nonEmptyString" /&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="threads" type="{http://www.w3.org/2001/XMLSchema}int" default="1" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -33,6 +34,8 @@ public class Environment {
     protected String folder;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
+    @XmlAttribute(name = "threads")
+    protected Integer threads;
 
     /**
      * Gets the value of the folder property.
@@ -72,6 +75,34 @@ public class Environment {
      */
     public void setEnabled(boolean value) {
         this.enabled = value;
+    }
+
+    /**
+     * Gets the value of the threads property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public int getThreads() {
+        if (threads == null) {
+            return  1;
+        } else {
+            return threads;
+        }
+    }
+
+    /**
+     * Sets the value of the threads property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setThreads(Integer value) {
+        this.threads = value;
     }
 
 }

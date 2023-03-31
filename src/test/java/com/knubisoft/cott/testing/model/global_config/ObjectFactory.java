@@ -262,14 +262,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ParallelExecution }
-     * 
-     */
-    public ParallelExecution createParallelExecution() {
-        return new ParallelExecution();
-    }
-
-    /**
      * Create an instance of {@link RunScenariosByTag }
      * 
      */

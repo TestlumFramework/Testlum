@@ -1,22 +1,19 @@
 package com.knubisoft.cott.testing.framework.env;
 
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
 import static java.util.Objects.isNull;
 
-@RequiredArgsConstructor
 public class KeyLocker {
 
     private final ConcurrentHashMap<Object, LockWrapper> keyToLocks = new ConcurrentHashMap<>();
-    private final int lockLimit;
 
-    public boolean tryLock(final Object key) {
+    public boolean tryLock(final Object key, final int lockLimit) {
         LockWrapper lockWrapper = keyToLocks.compute(key, (k, lock) ->
-                isNull(lock) ? new LockWrapper() : lock);
+                isNull(lock) ? new LockWrapper(lockLimit) : lock);
         return lockWrapper.lock.tryAcquire();
     }
 
@@ -28,7 +25,11 @@ public class KeyLocker {
         lockWrapper.lock.release();
     }
 
-    private class LockWrapper {
-        private final Semaphore lock = new Semaphore(Math.max(lockLimit, 1));
+    private static class LockWrapper {
+        private final Semaphore lock;
+
+        private LockWrapper(final int lockLimit) {
+            this.lock = new Semaphore(Math.max(lockLimit, 1));
+        }
     }
 }

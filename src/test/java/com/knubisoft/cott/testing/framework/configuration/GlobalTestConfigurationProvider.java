@@ -1,6 +1,7 @@
 package com.knubisoft.cott.testing.framework.configuration;
 
 import com.knubisoft.cott.testing.framework.constant.ExceptionMessage;
+import com.knubisoft.cott.testing.framework.constant.LogMessage;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.parser.XMLParsers;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
@@ -85,9 +86,12 @@ public class GlobalTestConfigurationProvider {
     }
 
     private static Integrations initIntegration(final Environment env) {
-        return XMLParsers.forIntegrations()
-                .process(FileSearcher.searchFileFromEnvFolder(
-                        env.getFolder(), TestResourceSettings.INTEGRATION_CONFIG_FILENAME));
+        return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
+                .map(configFile -> XMLParsers.forIntegrations().process(configFile))
+                .orElseGet(() -> {
+                    log.warn(LogMessage.DISABLED_CONFIGURATION, Integrations.class.getSimpleName());
+                    return new Integrations();
+                });
     }
 
     private static Map<String, UiConfig> collectUiConfigs() {
@@ -96,9 +100,12 @@ public class GlobalTestConfigurationProvider {
     }
 
     private static UiConfig initUiConfig(final Environment env) {
-        return XMLParsers.forUiConfig()
-                .process(FileSearcher.searchFileFromEnvFolder(
-                        env.getFolder(), TestResourceSettings.UI_CONFIG_FILENAME));
+        return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.UI_CONFIG_FILENAME)
+                .map(configFile -> XMLParsers.forUiConfig().process(configFile))
+                .orElseGet(() -> {
+                    log.warn(LogMessage.DISABLED_CONFIGURATION, UiConfig.class.getSimpleName());
+                    return new UiConfig();
+                });
     }
 
     private static Integrations defaultIntegrations() {

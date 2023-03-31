@@ -1,5 +1,7 @@
 package com.knubisoft.cott.testing.framework.env;
 
+import com.knubisoft.cott.testing.model.global_config.Environment;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -9,31 +11,31 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class EnvManager {
 
-    private static final ThreadLocal<String> THREAD_ENV = new ThreadLocal<>();
+    private static final ThreadLocal<Environment> THREAD_ENV = new ThreadLocal<>();
 
-    private final List<String> environments;
+    private final List<Environment> environments;
     private final KeyLocker keyLocker;
     private final Lock lock;
     private final Condition lockCondition;
 
-    public EnvManager(final List<String> environments, final int threads) {
+    public EnvManager(final List<Environment> environments) {
         this.environments = Collections.unmodifiableList(environments);
-        this.keyLocker = new KeyLocker(threads);
+        this.keyLocker = new KeyLocker();
         this.lock = new ReentrantLock();
         this.lockCondition = lock.newCondition();
     }
 
     public static String currentEnv() {
-        return THREAD_ENV.get();
+        return THREAD_ENV.get().getFolder();
     }
 
     public String acquireEnv() throws InterruptedException {
         lock.lock();
         try {
             while (true) {
-                Optional<String> env = tryToLockEnv();
+                Optional<Environment> env = tryToLockEnv();
                 if (env.isPresent()) {
-                    return env.get();
+                    return env.get().getFolder();
                 }
                 lockCondition.await();
             }
@@ -42,9 +44,9 @@ public class EnvManager {
         }
     }
 
-    private Optional<String> tryToLockEnv() {
+    private Optional<Environment> tryToLockEnv() {
         return environments.stream()
-                .filter(keyLocker::tryLock)
+                .filter(env -> keyLocker.tryLock(env.getFolder(), env.getThreads()))
                 .findFirst()
                 .map(env -> {
                     THREAD_ENV.set(env);

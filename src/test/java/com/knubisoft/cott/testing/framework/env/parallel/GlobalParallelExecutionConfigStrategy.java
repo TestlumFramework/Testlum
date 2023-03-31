@@ -1,6 +1,7 @@
 package com.knubisoft.cott.testing.framework.env.parallel;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.cott.testing.model.global_config.Environment;
 import lombok.RequiredArgsConstructor;
 import org.junit.platform.engine.ConfigurationParameters;
 import org.junit.platform.engine.support.hierarchical.ParallelExecutionConfiguration;
@@ -11,14 +12,12 @@ public class GlobalParallelExecutionConfigStrategy implements ParallelExecutionC
     private static final int DEFAULT_PARALLELISM = 1;
     private static final int KEEP_ALIVE_SECONDS = 30;
 
-    private final boolean isEnabled = GlobalTestConfigurationProvider.provide().getParallelExecution().isEnabled();
-    private final int envCount = GlobalTestConfigurationProvider.getEnabledEnvironments().size();
-    private final int threadCount = GlobalTestConfigurationProvider.provide().getParallelExecution().getThreads();
-
     @Override
     public ParallelExecutionConfiguration createConfiguration(final ConfigurationParameters parameters) {
-        int parallelism = isEnabled
-                ? Math.multiplyExact(envCount, Math.max(threadCount, DEFAULT_PARALLELISM))
+        boolean isParallelExecutionEnabled = GlobalTestConfigurationProvider.provide().isParallelExecution();
+        int parallelism = isParallelExecutionEnabled
+                ? GlobalTestConfigurationProvider.getEnabledEnvironments().stream()
+                .mapToInt(Environment::getThreads).sum()
                 : DEFAULT_PARALLELISM;
         return new GlobalParallelExecutionConfiguration(parallelism);
     }

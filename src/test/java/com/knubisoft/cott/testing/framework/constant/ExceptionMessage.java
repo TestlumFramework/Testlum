@@ -1,9 +1,13 @@
 package com.knubisoft.cott.testing.framework.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ANSI_RED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ANSI_RESET;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ANSI_YELLOW;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExceptionMessage {
     public static final String HTTP_CODE_EXPECTED_BUT_WAS = " Http code should be [%s] but was [%s]";
     public static final String HTTP_HEADERS_EXPECTED_BUT_WAS = " Http headers should be [%s] but was [%s]";
@@ -57,6 +61,7 @@ public class ExceptionMessage {
     public static final String MISSING_CONSTRUCTOR = "Missing constructor for class %s";
     public static final String UNABLE_FIND_VALUE_FOR_KEY = "Unable to find value for key %s. Available keys %s";
 
+    public static final String RETHROWN_ERRORS_TEMPLATE = "Errors:%n %s";
     public static final String UNKNOWN_METHOD = "Unknown method %s";
     public static final String PAGES_FOLDER_NOT_EXIST = "[pages] folder does not exist";
     public static final String COMPONENTS_FOLDER_NOT_EXIST = "[components] folder does not exist";
@@ -73,9 +78,6 @@ public class ExceptionMessage {
             + "There are no active scenarios by enabled tags" + ANSI_RESET;
     public static final String NO_ENABLED_TAGS_CONFIG = ANSI_RED + "No enabled tags in runScenariosByTag configuration"
             + ANSI_RESET;
-//    public static final String DISABLED_IN_CONFIG = ANSI_RED
-//            + "{} are disabled in config file. Scenarios with {} steps will be invalid"
-//            + ANSI_RESET;
     public static final String CONFIG_FILE_NAME_INPUT_REQUIREMENTS =
             "Use one of the options: -c={configuration-file-name} or --config={configuration-file-name}\n"
                     + "Please don't use spaces in the configuration file name. Allowed special character [._-:*#]\n"
@@ -103,7 +105,12 @@ public class ExceptionMessage {
                     + "Use one of the options: -g={path-to-initial-structure) or --generate={path-to-initial-structure)"
                     + "\nExample: -g=/user/folder/resources or --generate=/user/folder/resources\n"
                     + "\nYou entered ---> %s\n";
+    public static final String VARIATIONS_NOT_FOUND = "Variations for %s not found";
+    public static final String VARIATION_FILE_IS_EMPTY = "Variation %s file in the %s is empty";
+    public static final String VARIATIONS_NOT_USED = "Variations are present in the %s but not used";
 
+    public static final String VAR_TYPE_NOT_SUPPORTED = "Type of <%s> command is not supported";
+    public static final String ASSERT_TYPE_NOT_SUPPORTED = "Assert command %s not supported";
     public static final String NAVIGATE_NOT_SUPPORTED = "Navigate command %s not supported";
     public static final String DROP_DOWN_NOT_SUPPORTED = "Drop down by method by %s not supported";
     public static final String SCROLL_TO_ELEMENT_NOT_SUPPORTED = "Scroll to the element by %s percents not supported";
@@ -128,11 +135,7 @@ public class ExceptionMessage {
 
     public static final String UNSUPPORTED_MIGRATION_FORMAT = "Unsupported data file format was found "
             + "in <migration> tag. For %s allowed extensions are: %s, %s";
-
     public static final String DB_NOT_SUPPORTED = "Database by name %s not supported";
-
-    public static final String UNKNOWN_BROWSER_TYPE = "Unknown browser type was found. Available browser types are: "
-            + "<local browser>, <browser in docker>, <remote browser>";
 
     public static final String INTEGRATION_NOT_FOUND = "Cannot find integration configuration for <%s>";
     public static final String ALIAS_NOT_FOUND = "Cannot find enabled integration with alias <%s>";
@@ -165,8 +168,4 @@ public class ExceptionMessage {
             + "check your configuration in config file";
     public static final String MOBILEBROWSER_DRIVER_NOT_INIT = "The webDriver for <mobilebrowser> has not been "
             + "initialized, check your configuration in config file";
-
-    public static final String VARIATIONS_NOT_FOUND = "Variations for %s not found";
-    public static final String VARIATION_FILE_IS_EMPTY = "Variation %s file in the %s is empty";
-    public static final String VARIATIONS_NOT_USED = "Variations are present in the %s but not used";
 }

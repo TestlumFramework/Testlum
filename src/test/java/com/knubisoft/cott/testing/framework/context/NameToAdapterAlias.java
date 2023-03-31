@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ALIAS_BY_STORAGE_NAME_NOT_FOUND;
 
@@ -20,7 +21,7 @@ public class NameToAdapterAlias {
     public Metadata getByNameOrThrow(final String name) {
         String adapterName = name.toUpperCase(Locale.US);
         Metadata metadata = this.alias.get(adapterName);
-        if (metadata == null) {
+        if (Objects.isNull(metadata)) {
             throw new DefaultFrameworkException(ALIAS_BY_STORAGE_NAME_NOT_FOUND, adapterName, alias.keySet());
         }
         return metadata;

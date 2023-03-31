@@ -59,6 +59,11 @@ public final class LogMessage {
             + NEW_LOG_LINE + format(TABLE_FORMAT, "Exception", "{}") + NEW_LOG_LINE
             + LINE + ANSI_RESET + "\n";
 
+    public static final String DISABLED_CONFIGURATION = ANSI_YELLOW
+            + LINE + NEW_LOG_LINE
+            + "<{}> configuration not found or disabled. Scenarios that depend on this config will be invalid"
+            + NEW_LOG_LINE + LINE + ANSI_RESET;
+
     public static final String EXECUTION_STOP_SIGNAL_LOG = ANSI_YELLOW
             + LINE + NEW_LOG_LINE
             + "The execution has been stopped because of the enabled <StopScenarioOnFailure>"
@@ -74,12 +79,11 @@ public final class LogMessage {
     public static final String INITIAL_STRUCTURE_GENERATION_ERROR = ANSI_RED
             + "Failed to generate initial structure by path " + ANSI_BLUE_UNDERLINED + "{}" + ANSI_RESET;
 
-    public static final String FAILED_VARIABLE_WITH_PATH_LOG = "Failed variable <{}> comment <{}>";
-    public static final String FAILED_CONDITION_WITH_PATH_LOG = "Failed condition <{}> comment <{}>";
+    public static final String FAILED_VARIABLE_LOG = "Failed variable <{}> comment <{}>";
+    public static final String FAILED_CONDITION_LOG = "Failed condition <{}> comment <{}>";
 
     public static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
     public static final String BY_URL_LOG = format(TABLE_FORMAT, "URL", "{}");
-    public static final String RETHROWN_ERRORS_LOG = "Errors:%n %s";
     public static final String FAILED_VISITING_PATH_LOG = "Failed to visit path {}";
 
     public static final String WEBSOCKET_ACTION_INFO_LOG = format(TABLE_FORMAT,
@@ -144,7 +148,6 @@ public final class LogMessage {
     public static final String SUBJECT_LOG = format(TABLE_FORMAT, "Subject", "{}");
     public static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
     public static final String ATTRIBUTE_LOG = format(TABLE_FORMAT, "Attribute", "{}");
-    public static final String ACTION_LOG = format(TABLE_FORMAT, "Action", "{}");
     public static final String DESTINATION_LOG = format(TABLE_FORMAT, "Destination", "{}");
     public static final String SOURCE_LOG = format(TABLE_FORMAT, "Source", "{}");
     public static final String FROM_PHONE_NUMBER_LOG = format(TABLE_FORMAT, "'From' phone number", "{}");
@@ -173,7 +176,6 @@ public final class LogMessage {
     public static final String SERVER_ERROR_RESPONSE_LOG = format(TABLE_FORMAT, "Request failed", "{}");
     public static final String LOCAL_STORAGE_KEY = format(TABLE_FORMAT, "Local storage key", "{}");
     public static final String CLEAR_COOKIES_AFTER = format(TABLE_FORMAT, "Clear cookies after", "{}");
-
 
     public static final String BROWSER_INFO = "%s | type = %s | version = %s";
     public static final String MOBILEBROWSER_INFO = "Device name = %s | platform = %s | version = %s";

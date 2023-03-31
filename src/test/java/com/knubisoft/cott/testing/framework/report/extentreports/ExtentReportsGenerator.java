@@ -24,10 +24,11 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class ExtentReportsGenerator implements ReportGenerator {
 
@@ -98,7 +99,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     }
 
     private void addDeveloper(final ExtentTest extentTest, final String developerName) {
-        if (StringUtils.isNotEmpty(developerName)) {
+        if (isNotBlank(developerName)) {
             extentTest.assignAuthor(developerName);
         }
     }
@@ -120,10 +121,10 @@ public class ExtentReportsGenerator implements ReportGenerator {
         overviewTable[ONE][ZERO] = format(BOLD_TEXT_TEMPLATE, PATH_TO_SCENARIO);
         overviewTable[ONE][ONE] = filePath;
         overviewTable[TWO][ZERO] = format(BOLD_TEXT_TEMPLATE, DEVELOPER);
-        overviewTable[TWO][ONE] = StringUtils.isNotEmpty(developerName) ? developerName : StringUtils.EMPTY;
+        overviewTable[TWO][ONE] = isNotBlank(developerName) ? developerName : StringUtils.EMPTY;
         overviewTable[THREE][ZERO] = format(BOLD_TEXT_TEMPLATE, JIRA);
         String jira = overview.getJira();
-        overviewTable[THREE][ONE] = StringUtils.isNotEmpty(jira)
+        overviewTable[THREE][ONE] = isNotBlank(jira)
                 ? format(LINK_TEMPLATE, jira, jira) : StringUtils.EMPTY;
         return overviewTable;
     }
@@ -141,7 +142,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     }
 
     private String[][] createTableWithMobilebrowserDeviceInfo(final MobilebrowserDevice mobilebrowserDevice) {
-        AbstractCapabilities capabilities = Objects.nonNull(mobilebrowserDevice.getAppiumCapabilities())
+        AbstractCapabilities capabilities = nonNull(mobilebrowserDevice.getAppiumCapabilities())
                 ? mobilebrowserDevice.getAppiumCapabilities()
                 : mobilebrowserDevice.getBrowserStackCapabilities();
         String[][] browserInfoTable = new String[THREE][TWO];
@@ -155,7 +156,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     }
 
     private String[][] createTableWithNativeDeviceInfo(final NativeDevice nativeDevice) {
-        AbstractCapabilities capabilities = Objects.nonNull(nativeDevice.getAppiumCapabilities())
+        AbstractCapabilities capabilities = nonNull(nativeDevice.getAppiumCapabilities())
                 ? nativeDevice.getAppiumCapabilities()
                 : nativeDevice.getBrowserStackCapabilities();
         String[][] browserInfoTable = new String[THREE][TWO];
@@ -169,7 +170,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     }
 
     private void addBrowserInfo(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
-        if (StringUtils.isNotBlank(scenarioResult.getBrowser())) {
+        if (isNotBlank(scenarioResult.getBrowser())) {
             BrowserUtil.getBrowserBy(scenarioResult.getEnvironment(), scenarioResult.getBrowser())
                     .ifPresent(browser -> extentTest.info(
                             MarkupHelper.createTable(createTableWithBrowserInfo(browser))));
@@ -177,7 +178,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     }
 
     private void addMobilebrowserDeviceInfo(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
-        if (StringUtils.isNotBlank(scenarioResult.getMobilebrowserDevice())) {
+        if (isNotBlank(scenarioResult.getMobilebrowserDevice())) {
             MobileUtil.getMobilebrowserDeviceBy(scenarioResult.getEnvironment(),
                             scenarioResult.getMobilebrowserDevice())
                     .ifPresent(mobilebrowserDevice -> extentTest.info(
@@ -186,7 +187,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     }
 
     private void addNativeDeviceInfo(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
-        if (StringUtils.isNotBlank(scenarioResult.getNativeDevice())) {
+        if (isNotBlank(scenarioResult.getNativeDevice())) {
             MobileUtil.getNativeDeviceBy(scenarioResult.getEnvironment(), scenarioResult.getNativeDevice())
                     .ifPresent(nativeDevice -> extentTest.info(
                             MarkupHelper.createTable(createTableWithNativeDeviceInfo(nativeDevice))));
@@ -221,7 +222,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     }
 
     private void addScreenshotIfExists(final ExtentTest extentTest, final String screenshot) {
-        if (StringUtils.isNotEmpty(screenshot)) {
+        if (isNotBlank(screenshot)) {
             extentTest.info(MediaEntityBuilder.createScreenCaptureFromBase64String(screenshot,
                     format(BOLD_TEXT_TEMPLATE, SCREENSHOT)).build());
         }
@@ -250,7 +251,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private void addExpectedAndActual(final ExtentTest extentTest, final CommandResult stepExecutionInfo) {
         String expected = stepExecutionInfo.getExpected();
         String actual = stepExecutionInfo.getActual();
-        if (StringUtils.isNotEmpty(expected) && StringUtils.isNotEmpty(actual)) {
+        if (isNotBlank(expected) && isNotBlank(actual)) {
             ResultForComparison resultForComparison =
                     new ResultForComparison(format(PREFORMATTED_CODE_TEXT_TEMPLATE, expected),
                             format(PREFORMATTED_CODE_TEXT_TEMPLATE, actual));

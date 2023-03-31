@@ -37,7 +37,7 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEB
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_STOP_SIGNAL_LOG;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 
 @Slf4j
@@ -159,8 +159,8 @@ public class ScenarioRunner {
     }
 
     private void fillReportException(final Exception ex) {
-        if (isEmpty(scenarioResult.getCause())) {
-            String cause = isEmpty(ex.getMessage()) ? ex.getClass().getSimpleName() : ex.getMessage();
+        if (isBlank(scenarioResult.getCause())) {
+            String cause = isBlank(ex.getMessage()) ? ex.getClass().getSimpleName() : ex.getMessage();
             scenarioResult.setCause(cause);
             scenarioResult.setSuccess(false);
         }
@@ -188,6 +188,7 @@ public class ScenarioRunner {
 
     private InterpreterDependencies createDependencies() {
         return InterpreterDependencies.builder()
+                .context(ctx)
                 .file(scenarioArguments.getFile())
                 .scenarioContext(new ScenarioContext(scenarioArguments.getVariation()))
                 .position(idGenerator)

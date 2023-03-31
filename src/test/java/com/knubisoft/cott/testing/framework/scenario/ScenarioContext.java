@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,25 +20,22 @@ public class ScenarioContext {
 
     private final Map<String, String> contextMap;
     private final Map<String, Boolean> conditionMap = new HashMap<>();
+
     private final String bodyKeyUUID = UUID.randomUUID().toString();
 
     public void setBody(final String value) {
         set(bodyKeyUUID, value);
     }
 
-    public void set(final String key, final String value) {
-        contextMap.put(key, value);
-    }
-
-    public void setCondition(final String key, final Boolean value) {
-        conditionMap.put(key, value);
-    }
-
     public String getBody() {
         return contextMap.get(bodyKeyUUID);
     }
 
-    public String get(final String key) {
+    public void set(final String key, final String value) {
+        contextMap.put(key, value);
+    }
+
+    private String get(final String key) {
         String result = contextMap.get(key);
         if (isNull(result)) {
             throw new IllegalArgumentException(String.format(UNABLE_FIND_VALUE_FOR_KEY, key, contextMap));
@@ -47,11 +43,14 @@ public class ScenarioContext {
         return result;
     }
 
+    public void setCondition(final String key, final Boolean value) {
+        conditionMap.put(key, value);
+    }
+
     public Boolean getCondition(final String key) {
         Boolean result = conditionMap.get(key);
-        if (Objects.isNull(result)) {
-            throw new IllegalArgumentException(
-                    String.format(UNABLE_FIND_VALUE_FOR_KEY, key, conditionMap));
+        if (isNull(result)) {
+            throw new IllegalArgumentException(String.format(UNABLE_FIND_VALUE_FOR_KEY, key, conditionMap));
         }
         return result;
     }
@@ -60,7 +59,6 @@ public class ScenarioContext {
         if (StringUtils.isBlank(original)) {
             return original;
         }
-
         Matcher m = ROUTE_PATTERN.matcher(original);
         return getFormattedInject(original, m);
     }

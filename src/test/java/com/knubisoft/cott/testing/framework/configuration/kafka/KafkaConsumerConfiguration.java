@@ -2,6 +2,8 @@ package com.knubisoft.cott.testing.framework.configuration.kafka;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnKafkaEnabledCondition;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
+import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Kafka;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -27,25 +29,31 @@ import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZE
 public class KafkaConsumerConfiguration {
 
     @Bean
-    public Map<String, KafkaConsumer<String, String>> kafkaConsumer() {
-        final Map<String, KafkaConsumer<String, String>> consumerMap = new HashMap<>();
-        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().getKafkaIntegration().getKafka()) {
-            if (kafka.isEnabled()) {
-                createConsumerAndPutIntoMap(consumerMap, kafka);
-            }
-        }
+    public Map<AliasEnv, KafkaConsumer<String, String>> kafkaConsumer() {
+        final Map<AliasEnv, KafkaConsumer<String, String>> consumerMap = new HashMap<>();
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach((env, integrations) -> addKafkaConsumer(integrations, env, consumerMap));
         return consumerMap;
     }
 
-    private void createConsumerAndPutIntoMap(final Map<String, KafkaConsumer<String, String>> consumerMap,
-                                             final Kafka kafka) {
-        final Properties props = new Properties();
-        configureProperties(props, kafka);
-        consumerMap.put(kafka.getAlias(), new KafkaConsumer<>(props));
+    private void addKafkaConsumer(final Integrations integrations,
+                                  final String env,
+                                  final Map<AliasEnv, KafkaConsumer<String, String>> consumerMap) {
+        for (Kafka kafka : integrations.getKafkaIntegration().getKafka()) {
+            if (kafka.isEnabled()) {
+                KafkaConsumer<String, String> kafkaConsumer = createKafkaConsumer(kafka);
+                consumerMap.put(new AliasEnv(kafka.getAlias(), env), kafkaConsumer);
+            }
+        }
     }
 
-    private void configureProperties(final Properties props,
-                                     final Kafka kafka) {
+    private KafkaConsumer<String, String> createKafkaConsumer(final Kafka kafka) {
+        final Properties props = new Properties();
+        configureProperties(props, kafka);
+        return new KafkaConsumer<>(props);
+    }
+
+    private void configureProperties(final Properties props, final Kafka kafka) {
         props.put(BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapAddress());
         props.put(GROUP_ID_CONFIG, kafka.getGroupId());
         props.put(CLIENT_ID_CONFIG, kafka.getClientId());

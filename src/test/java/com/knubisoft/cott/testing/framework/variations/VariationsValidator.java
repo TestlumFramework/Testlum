@@ -13,7 +13,7 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VAR
 
 public class VariationsValidator {
 
-    private static final String WRAPPING_FORMAT = "{{%s}}";
+    private static final String VARIABLE_FORMAT = "{{%s}}";
 
     public void validateByScenario(final List<Map<String, String>> variationList,
                                    final Scenario scenario,
@@ -23,11 +23,10 @@ public class VariationsValidator {
                     scenario.getVariations(), filePath.getAbsolutePath());
         }
         String commands = JacksonMapperUtil.writeValueAsString(scenario.getCommands());
-        boolean noneMatch = variationList.get(0).keySet()
-                .stream()
-                .map(var -> String.format(WRAPPING_FORMAT, var))
+        boolean variablesNotUsedInCommands = variationList.get(0).keySet().stream()
+                .map(var -> String.format(VARIABLE_FORMAT, var))
                 .noneMatch(commands::contains);
-        if (noneMatch) {
+        if (variablesNotUsedInCommands) {
             throw new DefaultFrameworkException(VARIATIONS_NOT_USED, filePath.getAbsolutePath());
         }
     }

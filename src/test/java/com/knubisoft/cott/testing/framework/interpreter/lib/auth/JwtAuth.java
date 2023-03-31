@@ -8,7 +8,7 @@ import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.AuthUtil;
-import com.knubisoft.cott.testing.framework.util.ConfigUtil;
+import com.knubisoft.cott.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.model.global_config.Api;
 import com.knubisoft.cott.testing.model.scenario.Auth;
@@ -45,7 +45,7 @@ public class JwtAuth extends AbstractAuthStrategy {
         HttpHeaders headers = getHeaders();
         HttpEntity<String> request = new HttpEntity<>(body, headers);
         String response = doRequest(auth, request);
-        if (StringUtils.isNotEmpty(response)) {
+        if (StringUtils.isNotBlank(response)) {
             DocumentContext context = JsonPath.parse(response);
             return context.read(AuthorizationConstant.CONTENT_KEY_TOKEN);
         }
@@ -74,8 +74,9 @@ public class JwtAuth extends AbstractAuthStrategy {
     }
 
     private String getFullApiUrl(final Auth auth) {
-        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().getApis().getApi();
-        Api apiIntegration = (Api) ConfigUtil.findApiForAlias(apiList, auth.getApiAlias());
+        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().get(dependencies.getEnvironment())
+                .getApis().getApi();
+        Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, auth.getApiAlias());
         return apiIntegration.getUrl() + auth.getLoginEndpoint();
     }
 }

@@ -11,11 +11,11 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONNECTION_CLOSED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.CONNECTION_ESTABLISHED;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,7 +30,7 @@ public class WebsocketStompConnectionManager implements WebsocketConnectionManag
 
     @Override
     public void sendMessage(final WebsocketSend wsSend, final String payload) {
-        if (Objects.nonNull(stompSession)) {
+        if (nonNull(stompSession)) {
             stompSession.send(wsSend.getEndpoint(), payload);
         }
     }
@@ -38,7 +38,7 @@ public class WebsocketStompConnectionManager implements WebsocketConnectionManag
     @Override
     public LinkedList<String> receiveMessages(final String topic) {
         WebsocketMessageHandler websocketMessageHandler = topicToMessageHandler.get(topic);
-        if (websocketMessageHandler != null) {
+        if (nonNull(websocketMessageHandler)) {
             return websocketMessageHandler.getReceivedMessages();
         }
         throw new DefaultFrameworkException(WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND, topic);
@@ -49,7 +49,7 @@ public class WebsocketStompConnectionManager implements WebsocketConnectionManag
         WebsocketMessageHandler handler = new WebsocketMessageHandler();
         topicToMessageHandler.put(topic, handler);
         //todo save Subscription if 'unsubscribe' command is needed
-        if (Objects.nonNull(stompSession)) {
+        if (nonNull(stompSession)) {
             stompSession.subscribe(topic, handler);
         }
     }
@@ -63,7 +63,7 @@ public class WebsocketStompConnectionManager implements WebsocketConnectionManag
 
     @Override
     public void closeConnection() {
-        if (Objects.nonNull(stompSession)) {
+        if (nonNull(stompSession)) {
             stompSession.disconnect();
             log.info(CONNECTION_CLOSED, stompSession.getSessionId());
         }
@@ -71,6 +71,6 @@ public class WebsocketStompConnectionManager implements WebsocketConnectionManag
 
     @Override
     public boolean isConnected() {
-        return Objects.nonNull(stompSession) && stompSession.isConnected();
+        return nonNull(stompSession) && stompSession.isConnected();
     }
 }

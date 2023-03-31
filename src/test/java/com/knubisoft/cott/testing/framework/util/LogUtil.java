@@ -3,9 +3,6 @@ package com.knubisoft.cott.testing.framework.util;
 import com.amazonaws.services.simpleemail.model.Message;
 import com.knubisoft.cott.testing.framework.constant.LogMessage;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
-import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
-import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
-import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.cott.testing.model.scenario.Attribute;
@@ -30,7 +27,6 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -40,8 +36,6 @@ import software.amazon.awssdk.http.HttpStatusCode;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
@@ -115,20 +109,25 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.UI_EXECUT
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.VALUE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.VARIATION_LOG;
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
 @Slf4j
 public class LogUtil {
 
-    public void logScenarioDetails(final ScenarioArguments scenarioArguments,
-                                   final AtomicInteger atomicInteger) {
+    /* execution log */
+    public void logScenarioDetails(final ScenarioArguments scenarioArguments, final int scenarioId) {
         log.info(EMPTY);
-        log.info(SCENARIO_NUMBER_AND_PATH_LOG, atomicInteger, scenarioArguments.getFile().getAbsolutePath());
+        log.info(SCENARIO_NUMBER_AND_PATH_LOG, scenarioId, scenarioArguments.getFile().getAbsolutePath());
         Overview overview = scenarioArguments.getScenario().getOverview();
         logOverview(overview);
         if (scenarioArguments.isContainsUiSteps()) {
-            logUiInfo(scenarioArguments.getScenario().getVariations(), scenarioArguments.getBrowser(),
-                    scenarioArguments.getNativeDevice(), scenarioArguments.getMobilebrowserDevice());
+            logUiInfo(scenarioArguments.getScenario().getVariations(),
+                    scenarioArguments.getEnvironment(),
+                    scenarioArguments.getBrowser(),
+                    scenarioArguments.getMobilebrowserDevice(),
+                    scenarioArguments.getNativeDevice());
         }
     }
 
@@ -140,81 +139,28 @@ public class LogUtil {
         overview.getLink().forEach(link -> logOverviewPartInfo(OverviewPart.LINK, link));
     }
 
-    public void logAllQueries(final List<String> queries, final String alias) {
-        log.info(ALIAS_LOG, alias);
-        queries.forEach(query -> log.info(
-                format(TABLE_FORMAT, "Query", query.replaceAll(REGEX_MANY_SPACES, SPACE))));
-    }
-
-    public void logBrokerActionInfo(final String action, final String destination, final String content) {
-        log.info(LogMessage.BROKER_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), destination,
-                PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
-    }
-
-    public void logWebsocketActionInfo(final String action,
-                                       final String comment,
-                                       final String destination,
-                                       final String content) {
-        log.info(LogMessage.WEBSOCKET_ACTION_INFO_LOG, comment, action.toUpperCase(Locale.ROOT));
-        if (StringUtils.isNotBlank(destination)) {
-            log.info(DESTINATION_LOG, destination);
-        }
-        if (StringUtils.isNotBlank(content)) {
-            log.info(CONTENT_LOG, PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+    private void logOverviewPartInfo(final OverviewPart overviewPart, final String data) {
+        if (isNotBlank(data)) {
+            log.info(LogMessage.OVERVIEW_INFO_LOG, overviewPart.value(), data);
         }
     }
 
-    public void logLambdaInfo(final String alias, final String functionName, final String payload) {
-        log.info(ALIAS_LOG, alias);
-        log.info(LAMBDA_FUNCTION_LOG, functionName);
-        log.info(LAMBDA_PAYLOAD_LOG,
-                PrettifyStringJson.getJSONResult(payload).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
-    }
-
-    public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {
-        log.info(LogMessage.S3_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket, key, fileName);
-    }
-
-    public void logSESMessage(final Message sesMessage) {
-        StringBuilder message = new StringBuilder();
-        if (sesMessage.getBody() != null) {
-            appendBodyContentIfNotBlank(sesMessage.getBody().getHtml().getData(), "HTML", message);
-            appendBodyContentIfNotBlank(sesMessage.getBody().getText().getData(), "Text", message);
-        } else {
-            message.append("Message body is empty");
-        }
-        log.info(BODY_LOG, message);
-    }
-
-    private void appendBodyContentIfNotBlank(final String data, final String title, final StringBuilder sb) {
-        if (StringUtils.isNotBlank(data)) {
-            sb.append(format(LogMessage.SES_BODY_CONTENT_AND_TITLE_TEMPLATE,
-                    title,
-                    EMPTY,
-                    data.replaceAll(REGEX_NEW_LINE, format("%n%15s", EMPTY))));
-        }
-    }
-
-    private void logOverviewPartInfo(final OverviewPart part, final String data) {
-        if (StringUtils.isNotBlank(data)) {
-            log.info(LogMessage.OVERVIEW_INFO_LOG, part.getPartTitle(), data);
-        }
-    }
-
-    private void logUiInfo(final String variation, final AbstractBrowser browser, final NativeDevice nativeDevice,
-                           final MobilebrowserDevice mobilebrowserDevice) {
-        if (StringUtils.isNotBlank(variation)) {
+    private void logUiInfo(final String variation,
+                           final String environment,
+                           final String browserAlias,
+                           final String mobilebrowserAlias,
+                           final String nativeDeviceAlias) {
+        if (isNotBlank(variation)) {
             log.info(VARIATION_LOG, variation);
         }
-        if (Objects.nonNull(browser)) {
-            log.info(BROWSER_NAME_LOG, BrowserUtil.getBrowserInfo(browser));
-        }
-        if (Objects.nonNull(nativeDevice)) {
-            log.info(NATIVE_LOG, MobileUtil.getNativeDeviceInfo(nativeDevice));
-        }
-        if (Objects.nonNull(mobilebrowserDevice)) {
-            log.info(MOBILEBROWSER_LOG, MobileUtil.getMobilebrowserDeviceInfo(mobilebrowserDevice));
-        }
+        BrowserUtil.getBrowserBy(environment, browserAlias).ifPresent(abstractBrowser ->
+                log.info(BROWSER_NAME_LOG, BrowserUtil.getBrowserInfo(abstractBrowser)));
+
+        MobileUtil.getMobilebrowserDeviceBy(environment, mobilebrowserAlias).ifPresent(mobilebrowserDevice ->
+                log.info(MOBILEBROWSER_LOG, MobileUtil.getMobilebrowserDeviceInfo(mobilebrowserDevice)));
+
+        MobileUtil.getNativeDeviceBy(environment, nativeDeviceAlias).ifPresent(nativeDevice ->
+                log.info(NATIVE_LOG, MobileUtil.getNativeDeviceInfo(nativeDevice)));
     }
 
     public void logTestExecutionSummary(final TestExecutionSummary testExecutionSummary) {
@@ -241,11 +187,190 @@ public class LogUtil {
         }
     }
 
+    public void logNonParsedScenarioInfo(final String path, final String exception) {
+        log.error(INVALID_SCENARIO_LOG, path, exception);
+    }
+
+    /* general log */
+    public void logAlias(final String alias) {
+        log.info(ALIAS_LOG, alias);
+    }
+
+    public void logConditionInfo(final String name, final Boolean value) {
+        log.info(NAME_LOG, name);
+        log.info(VALUE_LOG, value.toString());
+    }
+
+    public void logExecutionTime(final long time, final AbstractCommand command) {
+        if (Ui.class.isAssignableFrom(command.getClass())) {
+            log.info(UI_EXECUTION_TIME_LOG, time);
+        } else {
+            log.info(EXECUTION_TIME_LOG, time);
+        }
+    }
+
+    public void logException(final Exception ex) {
+        if (isNotBlank(ex.getMessage())) {
+            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+        } else {
+            log.error(EXCEPTION_LOG, ex.toString());
+        }
+    }
+
+    public void logError(final Exception ex) {
+        log.error(LogMessage.ERROR_LOG, ex);
+    }
+
+    public void logStructureGeneration(final String path) {
+        log.info(INITIAL_STRUCTURE_GENERATION_SUCCESS, path);
+    }
+
+    public void logErrorStructureGeneration(final String path, final Exception ex) {
+        log.error(INITIAL_STRUCTURE_GENERATION_ERROR, path, ex);
+    }
+
+    /* integrations log */
+    public void logAuthInfo(final Auth auth) {
+        log.info(ALIAS_LOG, auth.getApiAlias());
+        log.info(ENDPOINT_LOG, auth.getLoginEndpoint());
+        log.info(CREDENTIALS_LOG, auth.getCredentials());
+    }
+
+    public void logResponseStatusError(final HttpClientErrorException exception) {
+        if (HttpStatusCode.NOT_FOUND == exception.getRawStatusCode()) {
+            log.info(INVALID_CREDENTIALS_LOG, exception.getRawStatusCode());
+        } else if (HttpStatusCode.BAD_GATEWAY == exception.getRawStatusCode()) {
+            log.info(SERVER_BAD_GATEWAY_RESPONSE_LOG, exception.getRawStatusCode());
+        } else {
+            log.info(SERVER_ERROR_RESPONSE_LOG, exception.getRawStatusCode());
+        }
+    }
+
+    public void logAllQueries(final List<String> queries, final String alias) {
+        log.info(ALIAS_LOG, alias);
+        queries.forEach(query -> log.info(
+                format(TABLE_FORMAT, "Query", query.replaceAll(REGEX_MANY_SPACES, SPACE))));
+    }
+
+    public void logSqlException(final Exception ex, final String query) {
+        if (isNotBlank(ex.getMessage())) {
+            log.error(ERROR_SQL_QUERY, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE),
+                    SqlUtil.getBrokenQuery(ex, query).replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+        } else {
+            log.error(ERROR_SQL_QUERY, ex.toString().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+        }
+    }
+
+    public void logBrokerActionInfo(final String action, final String destination, final String content) {
+        log.info(LogMessage.BROKER_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), destination,
+                PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+    }
+
+    public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {
+        log.info(LogMessage.S3_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket, key, fileName);
+    }
+
+    public void logSESMessage(final Message sesMessage) {
+        StringBuilder message = new StringBuilder();
+        if (nonNull(sesMessage.getBody())) {
+            appendBodyContentIfNotBlank(sesMessage.getBody().getHtml().getData(), "HTML", message);
+            appendBodyContentIfNotBlank(sesMessage.getBody().getText().getData(), "Text", message);
+        } else {
+            message.append("Message body is empty");
+        }
+        log.info(BODY_LOG, message);
+    }
+
+    private void appendBodyContentIfNotBlank(final String data, final String title, final StringBuilder sb) {
+        if (isNotBlank(data)) {
+            sb.append(format(LogMessage.SES_BODY_CONTENT_AND_TITLE_TEMPLATE,
+                    title,
+                    EMPTY,
+                    data.replaceAll(REGEX_NEW_LINE, format("%n%15s", EMPTY))));
+        }
+    }
+
+    public void logSesInfo(final Ses ses) {
+        log.info(ALIAS_LOG, ses.getAlias());
+        log.info(SOURCE_LOG, ses.getSource());
+        log.info(DESTINATION_LOG, ses.getDestination());
+    }
+
+    public void logSmtpInfo(final Smtp smtp, final JavaMailSenderImpl javaMailSender) {
+        log.info(ALIAS_LOG, smtp.getAlias());
+        log.info(SMTP_HOST_LOG, javaMailSender.getHost());
+        log.info(SMTP_PORT_LOG, javaMailSender.getPort());
+        log.info(SOURCE_LOG, javaMailSender.getUsername());
+        log.info(DESTINATION_LOG, smtp.getRecipientEmail());
+        log.info(SUBJECT_LOG, smtp.getSubject());
+        log.info(CONTENT_LOG, smtp.getText());
+    }
+
+    public void logTwilioInfo(final Twilio twilio, final String twilioPhoneNumber) {
+        log.info(FROM_PHONE_NUMBER_LOG, twilioPhoneNumber);
+        log.info(TO_PHONE_NUMBER_LOG, twilio.getDestinationPhoneNumber());
+        log.info(MESSAGE_LOG, twilio.getMessage());
+    }
+
+    public void logWebsocketActionInfo(final String action,
+                                       final String comment,
+                                       final String destination,
+                                       final String content) {
+        log.info(LogMessage.WEBSOCKET_ACTION_INFO_LOG, comment, action.toUpperCase(Locale.ROOT));
+        if (isNotBlank(destination)) {
+            log.info(DESTINATION_LOG, destination);
+        }
+        if (isNotBlank(content)) {
+            log.info(CONTENT_LOG, PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+        }
+    }
+
+    public void logLambdaInfo(final String alias, final String functionName, final String payload) {
+        log.info(ALIAS_LOG, alias);
+        log.info(LAMBDA_FUNCTION_LOG, functionName);
+        log.info(LAMBDA_PAYLOAD_LOG,
+                PrettifyStringJson.getJSONResult(payload).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+    }
+
+    public void logHttpInfo(final String alias, final String method, final String endpoint) {
+        log.info(ALIAS_LOG, alias);
+        log.info(HTTP_METHOD_LOG, method);
+        log.info(ENDPOINT_LOG, endpoint);
+    }
+
+    @SneakyThrows
+    public void logBodyContent(final HttpEntity body) {
+        if (nonNull(body)) {
+            logBody(IOUtils.toString(body.getContent(), StandardCharsets.UTF_8.name()));
+        }
+    }
+
+    public void logBody(final String body) {
+        if (isNotBlank(body)) {
+            log.info(BODY_LOG,
+                    PrettifyStringJson.getJSONResult(body)
+                            .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+        }
+    }
+
+    public void logVarInfo(final String name, final String value) {
+        log.info(NAME_LOG, name);
+        log.info(VALUE_LOG, value);
+    }
+
+    /* ui log */
     public void logUICommand(final int position, final AbstractCommand action) {
         log.info(UI_COMMAND_LOG, position, action.getClass().getSimpleName());
         log.info(COMMENT_LOG, action.getComment());
         if (action instanceof CommandWithLocator) {
             log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());
+        }
+    }
+
+    public void logUiAttributes(final boolean isClearCookies, final String storageKey) {
+        log.info(CLEAR_COOKIES_AFTER, isClearCookies);
+        if (isNotBlank(storageKey)) {
+            log.info(LOCAL_STORAGE_KEY, storageKey);
         }
     }
 
@@ -269,60 +394,16 @@ public class LogUtil {
         log.info(COMMAND_LOG, position, action.getClass().getSimpleName());
     }
 
-    public void logAssertAttributeInfo(final Attribute attribute, final int subCommandCounter) {
-        log.info(COMMAND_LOG, subCommandCounter, attribute.getClass().getSimpleName());
-        log.info(COMMENT_LOG, attribute.getComment());
-        log.info(LOCATOR_LOG, attribute.getLocatorId());
-        log.info(ATTRIBUTE_LOG, attribute.getName());
-        log.info(CONTENT_LOG, attribute.getContent());
-    }
-
-    public void logAlias(final String alias) {
-        log.info(ALIAS_LOG, alias);
-    }
-
-    public void logSesInfo(final Ses ses) {
-        log.info(ALIAS_LOG, ses.getAlias());
-        log.info(SOURCE_LOG, ses.getSource());
-        log.info(DESTINATION_LOG, ses.getDestination());
-    }
-
-    public void logVarInfo(final String name, final String value) {
-        log.info(NAME_LOG, name);
-        log.info(VALUE_LOG, value);
-    }
-
-    public void logConditionInfo(final String name, final Boolean value) {
-        log.info(NAME_LOG, name);
-        log.info(VALUE_LOG, value.toString());
-    }
-
-    public void logHttpInfo(final String alias, final String method, final String endpoint) {
-        log.info(ALIAS_LOG, alias);
-        log.info(HTTP_METHOD_LOG, method);
-        log.info(ENDPOINT_LOG, endpoint);
-    }
-
-    @SneakyThrows
-    public void logBodyContent(final HttpEntity body) {
-        if (body != null) {
-            logBody(IOUtils.toString(body.getContent(), StandardCharsets.UTF_8.name()));
-        }
-    }
-
-    public void logBody(final String body) {
-        if (StringUtils.isNotBlank(body)) {
-            log.info(BODY_LOG,
-                    PrettifyStringJson.getJSONResult(body)
-                            .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
-        }
-    }
-
-    public void logExecutionTime(final long time, final AbstractCommand command) {
-        if (Ui.class.isAssignableFrom(command.getClass())) {
-            log.info(UI_EXECUTION_TIME_LOG, time);
+    public void logImageComparisonInfo(final Image image) {
+        log.info(IMAGE_FOR_COMPARISON_LOG, image.getFile());
+        log.info(HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
+        CompareWith compareWith = image.getCompareWith();
+        if (nonNull(compareWith)) {
+            log.info(IMAGE_COMPARISON_TYPE_LOG, EXTRACT_THEN_COMPARE);
+            log.info(LOCATOR_LOG, compareWith.getLocatorId());
+            log.info(IMAGE_SOURCE_ATT_LOG, compareWith.getAttribute());
         } else {
-            log.info(EXECUTION_TIME_LOG, time);
+            log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_COMPARE);
         }
     }
 
@@ -336,108 +417,42 @@ public class LogUtil {
         }
     }
 
-    public void logDragAndDropInfo(final DragAndDrop dragAndDrop) {
-        if (StringUtils.isNotBlank(dragAndDrop.getFilePath())) {
-            log.info(DRAGGING_FILE_PATH, dragAndDrop.getFilePath());
-        } else if (StringUtils.isNotBlank(dragAndDrop.getFromLocatorId())) {
-            log.info(DRAGGING_FROM, dragAndDrop.getFromLocatorId());
-        }
-        log.info(DROPPING_TO, dragAndDrop.getToLocatorId());
-    }
-
-    public void logNonParsedScenarioInfo(final String path, final String exception) {
-        log.error(INVALID_SCENARIO_LOG, path, exception);
-    }
-
-    public void logUiAttributes(final boolean isClearCookies, final String storageKey) {
-        log.info(CLEAR_COOKIES_AFTER, isClearCookies);
-        if (StringUtils.isNotEmpty(storageKey)) {
-            log.info(LOCAL_STORAGE_KEY, storageKey);
-        }
-    }
-
-    public void logAuthInfo(final Auth auth) {
-        log.info(ALIAS_LOG, auth.getApiAlias());
-        log.info(ENDPOINT_LOG, auth.getLoginEndpoint());
-        log.info(CREDENTIALS_LOG, auth.getCredentials());
-    }
-
-    public void logResponseStatusError(final HttpClientErrorException exception) {
-        if (HttpStatusCode.NOT_FOUND == exception.getRawStatusCode()) {
-            log.info(INVALID_CREDENTIALS_LOG, exception.getRawStatusCode());
-        } else if (HttpStatusCode.BAD_GATEWAY == exception.getRawStatusCode()) {
-            log.info(SERVER_BAD_GATEWAY_RESPONSE_LOG, exception.getRawStatusCode());
-        } else {
-            log.info(SERVER_ERROR_RESPONSE_LOG, exception.getRawStatusCode());
-        }
-    }
-
-    public void logException(final Exception ex) {
-        if (StringUtils.isNotBlank(ex.getMessage())) {
-            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
-        } else {
-            log.error(EXCEPTION_LOG, ex.toString());
-        }
-    }
-
-    public void logError(final Exception ex) {
-        log.error(LogMessage.ERROR_LOG, ex);
-    }
-
-    public void logSqlException(final Exception ex, final String query) {
-        if (StringUtils.isNotBlank(ex.getMessage())) {
-            log.error(ERROR_SQL_QUERY, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE),
-                    SqlUtil.getBrokenQuery(ex, query).replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
-        } else {
-            log.error(ERROR_SQL_QUERY, ex.toString().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
-        }
-    }
-
     public void logHover(final int position, final CommandWithLocator action) {
         log.info(COMMAND_LOG, position, action.getClass().getSimpleName());
         log.info(COMMENT_LOG, action.getComment());
         log.info(LOCATOR_LOG, action.getLocatorId());
     }
 
-    public void logSmtpInfo(final Smtp smtp, final JavaMailSenderImpl javaMailSender) {
-        log.info(ALIAS_LOG, smtp.getAlias());
-        log.info(SMTP_HOST_LOG, javaMailSender.getHost());
-        log.info(SMTP_PORT_LOG, javaMailSender.getPort());
-        log.info(SOURCE_LOG, javaMailSender.getUsername());
-        log.info(DESTINATION_LOG, smtp.getRecipientEmail());
-        log.info(SUBJECT_LOG, smtp.getSubject());
-        log.info(CONTENT_LOG, smtp.getText());
-    }
-
-    public void logTwilioInfo(final Twilio twilio, final String twilioPhoneNumber) {
-        log.info(FROM_PHONE_NUMBER_LOG, twilioPhoneNumber);
-        log.info(TO_PHONE_NUMBER_LOG, twilio.getDestinationPhoneNumber());
-        log.info(MESSAGE_LOG, twilio.getMessage());
-    }
-
-    public void logImageComparisonInfo(final Image image) {
-        log.info(IMAGE_FOR_COMPARISON_LOG, image.getFile());
-        log.info(HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
-        CompareWith compareWith = image.getCompareWith();
-        if (Objects.nonNull(compareWith)) {
-            log.info(IMAGE_COMPARISON_TYPE_LOG, EXTRACT_THEN_COMPARE);
-            log.info(LOCATOR_LOG, compareWith.getLocatorId());
-            log.info(IMAGE_SOURCE_ATT_LOG, compareWith.getAttribute());
-        } else {
-            log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_COMPARE);
-        }
-    }
-
-    public void logStructureGeneration(final String path) {
-        log.info(INITIAL_STRUCTURE_GENERATION_SUCCESS, path);
-    }
-
-    public void logErrorStructureGeneration(final String path, final Exception ex) {
-        log.error(INITIAL_STRUCTURE_GENERATION_ERROR, path, ex);
-    }
-
     public void logHotKeyInfo(final AbstractUiCommand command) {
         log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
+    }
+
+    public void logAssertAttributeInfo(final Attribute attribute, final int position) {
+        log.info(COMMAND_LOG, position, attribute.getClass().getSimpleName());
+        log.info(COMMENT_LOG, attribute.getComment());
+        log.info(LOCATOR_LOG, attribute.getLocatorId());
+        log.info(ATTRIBUTE_LOG, attribute.getName());
+        log.info(CONTENT_LOG, attribute.getContent());
+    }
+
+    public void logAssertTitleCommand(final Title title, final int position) {
+        log.info(COMMAND_LOG, position, title.getClass().getSimpleName());
+        log.info(COMMENT_LOG, title.getComment());
+        log.info(CONTENT_LOG, title.getContent());
+    }
+
+    public void logDragAndDropInfo(final DragAndDrop dragAndDrop) {
+        if (isNotBlank(dragAndDrop.getFilePath())) {
+            log.info(DRAGGING_FILE_PATH, dragAndDrop.getFilePath());
+        } else if (isNotBlank(dragAndDrop.getFromLocatorId())) {
+            log.info(DRAGGING_FROM, dragAndDrop.getFromLocatorId());
+        }
+        log.info(DROPPING_TO, dragAndDrop.getToLocatorId());
+    }
+
+    public void logDragAndDropNativeInfo(final DragAndDropNative dragAndDropNative) {
+        log.info(DRAGGING_FROM, dragAndDropNative.getFromLocatorId());
+        log.info(DROPPING_TO, dragAndDropNative.getToLocatorId());
     }
 
     public void logSwipeNativeInfo(final SwipeNative swipeNative) {
@@ -445,7 +460,7 @@ public class LogUtil {
         log.info(SWIPE_QUANTITY, swipeNative.getQuantity());
         log.info(SWIPE_DIRECTION, swipeNative.getDirection());
         log.info(SWIPE_VALUE, swipeNative.getPercent());
-        if (StringUtils.isNotBlank(swipeNative.getLocatorId())) {
+        if (isNotBlank(swipeNative.getLocatorId())) {
             log.info(LOCATOR_LOG, swipeNative.getLocatorId());
         }
     }
@@ -454,19 +469,8 @@ public class LogUtil {
         log.info(SCROLL_TYPE, scrollNative.getType());
         log.info(SCROLL_DIRECTION_LOG, scrollNative.getDirection());
         log.info(SCROLL_VALUE, scrollNative.getValue());
-        if (StringUtils.isNotBlank(scrollNative.getLocatorId())) {
+        if (isNotBlank(scrollNative.getLocatorId())) {
             log.info(SCROLL_LOCATOR, scrollNative.getLocatorId());
         }
-    }
-
-    public void logDragAndDropNativeInfo(final DragAndDropNative dragAndDropNative) {
-        log.info(DRAGGING_FROM, dragAndDropNative.getFromLocatorId());
-        log.info(DROPPING_TO, dragAndDropNative.getToLocatorId());
-    }
-
-    public void logAssertTitleCommand(final Title title, final int subCommandCounter) {
-        log.info(COMMAND_LOG, subCommandCounter, title.getClass().getSimpleName());
-        log.info(COMMENT_LOG, title.getComment());
-        log.info(CONTENT_LOG, title.getContent());
     }
 }

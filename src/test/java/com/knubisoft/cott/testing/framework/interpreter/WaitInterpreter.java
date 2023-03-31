@@ -3,9 +3,9 @@ package com.knubisoft.cott.testing.framework.interpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.WaitUtil;
 import com.knubisoft.cott.testing.model.scenario.Wait;
-import com.knubisoft.cott.testing.framework.report.CommandResult;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 

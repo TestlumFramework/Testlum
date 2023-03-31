@@ -10,6 +10,7 @@ import java.util.Map;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INCORRECT_NAMING_FOR_LOCATOR_ID;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNABLE_TO_FIND_LOCATOR_BY_PATH;
+import static java.util.Objects.isNull;
 
 @UtilityClass
 public class GlobalLocators {
@@ -22,7 +23,7 @@ public class GlobalLocators {
 
     public Locator getLocator(final String name) {
         Locator locator = LOCATOR_MAP.get(name);
-        if (locator == null) {
+        if (isNull(locator)) {
             throw defaultFrameworkException(name);
         }
         return locator;

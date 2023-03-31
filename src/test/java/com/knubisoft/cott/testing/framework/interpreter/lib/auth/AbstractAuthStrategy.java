@@ -11,7 +11,8 @@ import static com.knubisoft.cott.testing.framework.constant.AuthorizationConstan
 
 @RequiredArgsConstructor
 public abstract class AbstractAuthStrategy implements AuthStrategy {
-    private final InterpreterDependencies dependencies;
+
+    protected final InterpreterDependencies dependencies;
 
     protected void login(final String token, final String prefix) {
         final InterpreterDependencies.Authorization authorization = new InterpreterDependencies.Authorization();

@@ -1,7 +1,7 @@
 package com.knubisoft.cott.testing.framework.configuration.ui;
 
-import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.SeleniumDriverUtil;
 import com.knubisoft.cott.testing.model.global_config.AppiumNativeCapabilities;
@@ -17,14 +17,16 @@ import io.appium.java_client.remote.AndroidMobileCapabilityType;
 import io.appium.java_client.remote.MobileCapabilityType;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNoneBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
 public class NativeDriverFactory {
@@ -52,10 +54,10 @@ public class NativeDriverFactory {
 
     private void setAndroidCapabilities(final NativeDevice nativeDevice,
                                         final DesiredCapabilities desiredCapabilities) {
-        if (Objects.nonNull(nativeDevice.getAppiumCapabilities())) {
+        if (nonNull(nativeDevice.getAppiumCapabilities())) {
             setAppiumCapabilities(nativeDevice, desiredCapabilities);
             setAppiumAndroidApp(desiredCapabilities, nativeDevice.getAppiumCapabilities());
-        } else if (Objects.nonNull(nativeDevice.getBrowserStackCapabilities())) {
+        } else if (nonNull(nativeDevice.getBrowserStackCapabilities())) {
             setBrowserStackCapabilities(nativeDevice, desiredCapabilities);
             setGooglePlayStoreCredentials(desiredCapabilities,
                     nativeDevice.getBrowserStackCapabilities().getGooglePlayLogin());
@@ -65,9 +67,9 @@ public class NativeDriverFactory {
 
     private void setIosCapabilities(final NativeDevice nativeDevice,
                                     final DesiredCapabilities desiredCapabilities) {
-        if (Objects.nonNull(nativeDevice.getAppiumCapabilities())) {
+        if (nonNull(nativeDevice.getAppiumCapabilities())) {
             setAppiumCapabilities(nativeDevice, desiredCapabilities);
-        } else if (Objects.nonNull(nativeDevice.getBrowserStackCapabilities())) {
+        } else if (nonNull(nativeDevice.getBrowserStackCapabilities())) {
             setBrowserStackCapabilities(nativeDevice, desiredCapabilities);
         }
         desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, "XCUITest");
@@ -78,7 +80,7 @@ public class NativeDriverFactory {
         AppiumNativeCapabilities capabilities = nativeDevice.getAppiumCapabilities();
         SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
         desiredCapabilities.setCapability(MobileCapabilityType.UDID, capabilities.getUdid());
-        if (StringUtils.isNotBlank(capabilities.getApp())) {
+        if (isNotBlank(capabilities.getApp())) {
             desiredCapabilities.setCapability(MobileCapabilityType.APP, capabilities.getApp());
         }
     }
@@ -93,7 +95,7 @@ public class NativeDriverFactory {
 
     private void setAppiumAndroidApp(final DesiredCapabilities desiredCapabilities,
                                      final AppiumNativeCapabilities capabilities) {
-        if (StringUtils.isNoneBlank(capabilities.getAppPackage(), capabilities.getAppActivity())) {
+        if (isNoneBlank(capabilities.getAppPackage(), capabilities.getAppActivity())) {
             desiredCapabilities.setCapability(AndroidMobileCapabilityType.APP_PACKAGE, capabilities.getAppPackage());
             desiredCapabilities.setCapability(AndroidMobileCapabilityType.APP_ACTIVITY, capabilities.getAppActivity());
         }
@@ -101,7 +103,7 @@ public class NativeDriverFactory {
 
     private void setGooglePlayStoreCredentials(final DesiredCapabilities desiredCapabilities,
                                                final GooglePlayLogin googlePlayLogin) {
-        if (Objects.nonNull(googlePlayLogin)) {
+        if (nonNull(googlePlayLogin)) {
             Map<String, String> map = new HashMap<>();
             map.put("username", googlePlayLogin.getEmail());
             map.put("password", googlePlayLogin.getPassword());

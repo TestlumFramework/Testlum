@@ -18,7 +18,8 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
-import java.util.Objects;
+
+import static java.util.Objects.nonNull;
 
 @UtilityClass
 public class MobilebrowserDriverFactory {
@@ -37,7 +38,7 @@ public class MobilebrowserDriverFactory {
         String serverUrl = SeleniumDriverUtil.getMobilebrowserConnectionUrl(uiConfig);
         WebDriver driver;
         Mobilebrowser settings = uiConfig.getMobilebrowser();
-        if (Objects.nonNull(settings.getConnection().getAppiumServer())) {
+        if (nonNull(settings.getConnection().getAppiumServer())) {
             driver = new AppiumDriver(new URL(serverUrl), desiredCapabilities);
         } else {
             driver = new RemoteWebDriver(new URL(serverUrl), desiredCapabilities);
@@ -48,11 +49,11 @@ public class MobilebrowserDriverFactory {
 
     private void setCommonCapabilities(final MobilebrowserDevice mobileDevice,
                                        final DesiredCapabilities desiredCapabilities) {
-        if (Objects.nonNull(mobileDevice.getAppiumCapabilities())) {
+        if (nonNull(mobileDevice.getAppiumCapabilities())) {
             AppiumCapabilities capabilities = mobileDevice.getAppiumCapabilities();
             SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, mobileDevice, capabilities);
             desiredCapabilities.setCapability(MobileCapabilityType.UDID, capabilities.getUdid());
-        } else if (Objects.nonNull(mobileDevice.getBrowserStackCapabilities())) {
+        } else if (nonNull(mobileDevice.getBrowserStackCapabilities())) {
             SeleniumDriverUtil.setCommonCapabilities(
                     desiredCapabilities, mobileDevice, mobileDevice.getBrowserStackCapabilities());
             desiredCapabilities.setCapability("browserstack.local", Boolean.TRUE);

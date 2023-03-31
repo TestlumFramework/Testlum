@@ -26,7 +26,6 @@ import io.github.bonigarcia.wdm.managers.OperaDriverManager;
 import io.github.bonigarcia.wdm.managers.SafariDriverManager;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -45,6 +44,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
 public class WebDriverFactory {
@@ -111,7 +112,7 @@ public class WebDriverFactory {
 
     private WebDriverManager setScreenResolution(final AbstractBrowser browser,
                                                  final WebDriverManager driverManager) {
-        return StringUtils.isNotEmpty(browser.getBrowserWindowSize())
+        return isNotBlank(browser.getBrowserWindowSize())
                 ? driverManager.browserInDocker().dockerScreenResolution(browser.getBrowserWindowSize()
                 + DEFAULT_DOCKER_SCREEN_COLORS_DEPTH) : driverManager.browserInDocker();
     }
@@ -122,10 +123,10 @@ public class WebDriverFactory {
         String dockerNetwork = browserInDockerSettings.getDockerNetwork();
         ScreenRecording screenRecordingSettings = browserInDockerSettings.getScreenRecording();
         driverManager.capabilities(browserOptions).browserVersion(browserInDockerSettings.getBrowserVersion());
-        if (StringUtils.isNotEmpty(dockerNetwork)) {
+        if (isNotBlank(dockerNetwork)) {
             driverManager.dockerNetwork(dockerNetwork);
         }
-        if (screenRecordingSettings != null && screenRecordingSettings.isEnabled()) {
+        if (nonNull(screenRecordingSettings) && screenRecordingSettings.isEnabled()) {
             driverManager.enableRecording().dockerRecordingOutput(screenRecordingSettings.getOutputFolder());
         }
         return browserInDockerSettings.isEnableVNC() ? driverManager.enableVnc().create() : driverManager.create();
@@ -135,7 +136,7 @@ public class WebDriverFactory {
                                      final MutableCapabilities browserOptions,
                                      final WebDriverManager driverManager) {
         String driverVersion = localBrowserSettings.getDriverVersion();
-        if (StringUtils.isNotEmpty(driverVersion)) {
+        if (isNotBlank(driverVersion)) {
             driverManager.driverVersion(driverVersion);
         }
         return driverManager.capabilities(browserOptions).create();
@@ -143,7 +144,7 @@ public class WebDriverFactory {
 
     private void setCapabilities(final AbstractBrowser browser, final MutableCapabilities driverOptions) {
         Capabilities capabilities = browser.getCapabilities();
-        if (capabilities != null) {
+        if (nonNull(capabilities)) {
             capabilities.getCapability().forEach(cap -> driverOptions.setCapability(cap.getName(), cap.getValue()));
         }
     }
@@ -163,7 +164,7 @@ public class WebDriverFactory {
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.setHeadless(browser.isHeadlessMode());
             BrowserOptionsArguments browserOptionsArguments = browser.getChromeOptionsArguments();
-            if (browserOptionsArguments != null) {
+            if (nonNull(browserOptionsArguments)) {
                 chromeOptions.addArguments(browserOptionsArguments.getArgument());
             }
             return chromeOptions;
@@ -181,7 +182,7 @@ public class WebDriverFactory {
             FirefoxOptions firefoxOptions = new FirefoxOptions();
             firefoxOptions.setHeadless(browser.isHeadlessMode());
             BrowserOptionsArguments browserOptionsArguments = browser.getFirefoxOptionsArguments();
-            if (browserOptionsArguments != null) {
+            if (nonNull(browserOptionsArguments)) {
                 firefoxOptions.addArguments(browserOptionsArguments.getArgument());
             }
             return firefoxOptions;
@@ -199,7 +200,7 @@ public class WebDriverFactory {
             EdgeOptions edgeOptions = new EdgeOptions();
             edgeOptions.setHeadless(browser.isHeadlessMode());
             BrowserOptionsArguments browserOptionsArguments = browser.getEdgeOptionsArguments();
-            if (browserOptionsArguments != null) {
+            if (nonNull(browserOptionsArguments)) {
                 edgeOptions.addArguments(browserOptionsArguments.getArgument());
             }
             return edgeOptions;
@@ -224,7 +225,7 @@ public class WebDriverFactory {
         private OperaOptions getOperaOptions(final Opera browser) {
             OperaOptions operaOptions = new OperaOptions();
             BrowserOptionsArguments browserOptionsArguments = browser.getOperaOptionsArguments();
-            if (browserOptionsArguments != null) {
+            if (nonNull(browserOptionsArguments)) {
                 operaOptions.addArguments(browserOptionsArguments.getArgument());
             }
             return operaOptions;

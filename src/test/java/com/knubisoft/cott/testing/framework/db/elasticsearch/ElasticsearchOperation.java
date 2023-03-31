@@ -1,10 +1,10 @@
 package com.knubisoft.cott.testing.framework.db.elasticsearch;
 
-import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnElasticEnabledCondition;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.Source;
 import com.knubisoft.cott.testing.framework.env.AliasEnv;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import lombok.SneakyThrows;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.client.RequestOptions;

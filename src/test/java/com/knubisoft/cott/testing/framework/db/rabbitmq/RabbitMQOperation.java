@@ -1,12 +1,12 @@
 package com.knubisoft.cott.testing.framework.db.rabbitmq;
 
-import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.Source;
-import com.knubisoft.cott.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.cott.testing.framework.env.AliasEnv;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
+import com.knubisoft.cott.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Rabbitmq;
 import com.rabbitmq.http.client.Client;
@@ -48,7 +48,8 @@ public class RabbitMQOperation implements StorageOperation {
     }
 
     private Rabbitmq findByName(final AliasEnv aliasEnv) {
-        List<Rabbitmq> rabbitmqs = integrations.get(aliasEnv.getEnvironment()).getRabbitmqIntegration().getRabbitmq();
+        List<Rabbitmq> rabbitmqs = integrations.get(aliasEnv.getEnvironment())
+                .getRabbitmqIntegration().getRabbitmq();
         return IntegrationsUtil.findForAlias(rabbitmqs, aliasEnv.getAlias());
     }
 }

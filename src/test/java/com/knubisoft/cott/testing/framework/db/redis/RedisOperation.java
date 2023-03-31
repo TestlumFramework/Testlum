@@ -1,11 +1,11 @@
 package com.knubisoft.cott.testing.framework.db.redis;
 
-import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnRedisEnabledCondition;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.Source;
 import com.knubisoft.cott.testing.framework.env.AliasEnv;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;

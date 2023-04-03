@@ -19,7 +19,6 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.BY_URL_LO
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMAND_TYPE_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NAVIGATE_TYPE;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NAVIGATE_URL;
-import static java.lang.String.format;
 
 @Slf4j
 @ExecutorForClass(Navigate.class)
@@ -43,7 +42,7 @@ public class NavigateExecutor extends AbstractUiExecutor<Navigate> {
                 break;
             case TO: navigateTo(navigate.getPath(), result);
                 break;
-            default: throw new DefaultFrameworkException(format(NAVIGATE_NOT_SUPPORTED, navigateCommand.value()));
+            default: throw new DefaultFrameworkException(NAVIGATE_NOT_SUPPORTED, navigateCommand.value());
         }
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
@@ -60,8 +59,9 @@ public class NavigateExecutor extends AbstractUiExecutor<Navigate> {
             return path;
         }
         if (UiType.MOBILE_BROWSER == dependencies.getUiType()) {
-            return GlobalTestConfigurationProvider.getMobilebrowserSettings().getBaseUrl() + path;
+            return GlobalTestConfigurationProvider.getMobilebrowserSettings(dependencies.getEnvironment())
+                    .getBaseUrl() + path;
         }
-        return GlobalTestConfigurationProvider.getWebSettings().getBaseUrl() + path;
+        return GlobalTestConfigurationProvider.getWebSettings(dependencies.getEnvironment()).getBaseUrl() + path;
     }
 }

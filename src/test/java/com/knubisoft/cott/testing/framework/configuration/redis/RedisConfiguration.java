@@ -2,6 +2,8 @@ package com.knubisoft.cott.testing.framework.configuration.redis;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnRedisEnabledCondition;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
+import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Redis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,36 +23,44 @@ import java.util.stream.Collectors;
 @Configuration
 @Conditional({OnRedisEnabledCondition.class})
 public class RedisConfiguration {
+
     @Bean
-    public Map<String, RedisStandaloneConfiguration> redisStandaloneConfiguration() {
-        final Map<String, RedisStandaloneConfiguration> redisIntegration = new HashMap<>();
-        for (Redis redis : GlobalTestConfigurationProvider.getIntegrations().getRedisIntegration().getRedis()) {
-            if (redis.isEnabled()) {
-                redisIntegration.put(redis.getAlias(),
-                        new RedisStandaloneConfiguration(redis.getHost(), redis.getPort()));
-            }
-        }
-        return redisIntegration;
+    public Map<AliasEnv, StringRedisConnection> stringRedisConnection(
+            @Autowired @Qualifier("redisConnectionFactory")
+            final Map<AliasEnv, JedisConnectionFactory> redisConnectionFactory) {
+        final Map<AliasEnv, StringRedisConnection> redisConnectionMap = new HashMap<>();
+        redisConnectionFactory.forEach((aliasEnv, jedisConnectionFactory) -> {
+            RedisConnection connection = jedisConnectionFactory.getConnection();
+            redisConnectionMap.put(aliasEnv, new DefaultStringRedisConnection(connection));
+        });
+        return redisConnectionMap;
     }
 
     @Bean("redisConnectionFactory")
-    public Map<String, JedisConnectionFactory> jedisConnectionFactory(
-            final Map<String, RedisStandaloneConfiguration> redisStandaloneConfiguration) {
-        return redisStandaloneConfiguration.entrySet()
-                .stream()
+    public Map<AliasEnv, JedisConnectionFactory> jedisConnectionFactory(
+            final Map<AliasEnv, RedisStandaloneConfiguration> redisStandaloneConfiguration) {
+        return redisStandaloneConfiguration.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         e -> new JedisConnectionFactory(e.getValue())));
     }
 
     @Bean
-    public Map<String, StringRedisConnection> stringRedisConnection(
-            @Autowired @Qualifier("redisConnectionFactory")
-            final Map<String, JedisConnectionFactory> redisConnectionFactory) {
-        final Map<String, StringRedisConnection> connections = new HashMap<>();
-        for (Map.Entry<String, JedisConnectionFactory> entry : redisConnectionFactory.entrySet()) {
-            RedisConnection connection = entry.getValue().getConnection();
-            connections.put(entry.getKey(), new DefaultStringRedisConnection(connection));
+    public Map<AliasEnv, RedisStandaloneConfiguration> redisStandaloneConfiguration() {
+        final Map<AliasEnv, RedisStandaloneConfiguration> redisConfigMap = new HashMap<>();
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach((env, integrations) -> addStandaloneConfig(integrations, env, redisConfigMap));
+        return redisConfigMap;
+    }
+
+    private void addStandaloneConfig(final Integrations integrations,
+                                     final String env,
+                                     final Map<AliasEnv, RedisStandaloneConfiguration> redisConfigMap) {
+        for (Redis redis : integrations.getRedisIntegration().getRedis()) {
+            if (redis.isEnabled()) {
+                RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(
+                        redis.getHost(), redis.getPort());
+                redisConfigMap.put(new AliasEnv(redis.getAlias(), env), redisStandaloneConfiguration);
+            }
         }
-        return connections;
     }
 }

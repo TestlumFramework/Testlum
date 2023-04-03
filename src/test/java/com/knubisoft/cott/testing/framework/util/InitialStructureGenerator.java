@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.DATA_FOLDER;
 import static com.knubisoft.cott.testing.framework.configuration.TestResourceSettings.LOCATORS_COMPONENTS_FOLDER;
@@ -28,8 +29,8 @@ public class InitialStructureGenerator {
     private static final String EXPECTED_EXAMPLE_FILENAME = "expected_1.json";
     private static final String JS_SCRIPT_EXAMPLE_FILENAME = "greating.js";
     private static final String SHELL_SCRIPT_EXAMPLE_FILENAME = "shell-1.sh";
-    private static final String TEST_SAMPLE_PATH = "initial-sample/";
-    private static final String EXAMPLE_TEST_FOLDER = SCENARIOS_FOLDER + "/default";
+    private static final String TEST_SAMPLE_PATH = "initial-sample";
+    private static final String EXAMPLE_TEST_FOLDER = SCENARIOS_FOLDER + File.separator + "default";
 
     private static final List<String> REQUIRED_FOLDER_NAMES = Collections.unmodifiableList(Arrays.asList(
             SCENARIOS_FOLDER, LOCATORS_PAGES_FOLDER, LOCATORS_COMPONENTS_FOLDER, REPORT_FOLDER, DATA_FOLDER));
@@ -71,8 +72,8 @@ public class InitialStructureGenerator {
 
     private void copyFileToFolder(final String fileName, final String path, final String folder) throws IOException {
         try (InputStream file = InitialStructureGenerator.class.getClassLoader()
-                .getResourceAsStream(TEST_SAMPLE_PATH + fileName)) {
-            if (file != null) {
+                .getResourceAsStream(TEST_SAMPLE_PATH + File.separator + fileName)) {
+            if (Objects.nonNull(file)) {
                 File target = Paths.get(path, folder, fileName).toFile();
                 FileUtils.copyToFile(file, target);
             }

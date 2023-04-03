@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -19,7 +20,7 @@ import java.util.Objects;
 public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
 
     @Autowired(required = false)
-    private Map<String, JavaMailSenderImpl> javaMailSenderMap;
+    private Map<AliasEnv, JavaMailSenderImpl> javaMailSenderMap;
 
     public SmtpInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -27,15 +28,16 @@ public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
 
     @Override
     protected void acceptImpl(final Smtp smtp, final CommandResult result) {
-        JavaMailSenderImpl javaMailSender = javaMailSenderMap.get(smtp.getAlias());
+        AliasEnv aliasEnv = new AliasEnv(smtp.getAlias(), dependencies.getEnvironment());
+        JavaMailSenderImpl javaMailSender = javaMailSenderMap.get(aliasEnv);
         LogUtil.logSmtpInfo(smtp, javaMailSender);
         ResultUtil.addSmtpMetaData(smtp, javaMailSender, result);
         sendEmail(smtp, javaMailSender);
     }
 
     private void sendEmail(final Smtp smtp, final JavaMailSenderImpl javaMailSender) {
-        SimpleMailMessage simpleMailMessage = getSimpleMailMessage(smtp,
-                Objects.requireNonNull(javaMailSender.getUsername()));
+        String username = Objects.requireNonNull(javaMailSender.getUsername());
+        SimpleMailMessage simpleMailMessage = getSimpleMailMessage(smtp, username);
         try {
             javaMailSender.send(simpleMailMessage);
         } catch (Exception exception) {
@@ -43,7 +45,7 @@ public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
         }
     }
 
-        private SimpleMailMessage getSimpleMailMessage(final Smtp smtp, final String username) {
+    private SimpleMailMessage getSimpleMailMessage(final Smtp smtp, final String username) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(username);
         message.setTo(smtp.getRecipientEmail());

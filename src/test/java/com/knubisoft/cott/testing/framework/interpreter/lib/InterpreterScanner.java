@@ -1,12 +1,13 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib;
 
 import com.google.common.base.Suppliers;
-import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import lombok.experimental.UtilityClass;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Modifier;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -32,7 +33,7 @@ public class InterpreterScanner {
     private void addInterpreterToMapIfExists(final CommandToInterpreterClassMap map,
                                              final Class<AbstractInterpreter<? extends AbstractCommand>> interpreter) {
         InterpreterForClass interpreterForClass = interpreter.getAnnotation(InterpreterForClass.class);
-        if (interpreterForClass == null) {
+        if (Objects.isNull(interpreterForClass)) {
             throw new DefaultFrameworkException(NOT_DECLARED_WITH_INTERPRETER_FOR_CLASS, interpreter);
         }
         map.put(interpreterForClass.value(), interpreter);
@@ -40,10 +41,10 @@ public class InterpreterScanner {
 
     @SuppressWarnings("unchecked")
     private Set<Class<AbstractInterpreter<? extends AbstractCommand>>> scan() {
-        return new Reflections(PACKAGE_TO_SCAN).getSubTypesOf(AbstractInterpreter.class).stream().
-                map(e -> (Class<AbstractInterpreter<? extends AbstractCommand>>) e).
-                filter(e -> !Modifier.isAbstract(e.getModifiers())).
-                collect(Collectors.toSet());
+        return new Reflections(PACKAGE_TO_SCAN).getSubTypesOf(AbstractInterpreter.class).stream()
+                .map(e -> (Class<AbstractInterpreter<? extends AbstractCommand>>) e)
+                .filter(e -> !Modifier.isAbstract(e.getModifiers()))
+                .collect(Collectors.toSet());
     }
 
     public CommandToInterpreterClassMap getInterpreters() {

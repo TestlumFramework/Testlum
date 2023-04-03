@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_CONDITION_WITH_PATH_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_CONDITION_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.CONDITION;
 
 @Slf4j
@@ -27,7 +27,7 @@ public class ConditionInterpreter extends AbstractInterpreter<Condition> {
         try {
             setConditionResult(condition, result);
         } catch (Exception e) {
-            log.info(FAILED_CONDITION_WITH_PATH_LOG, condition.getName(), condition.getComment());
+            log.info(FAILED_CONDITION_LOG, condition.getName(), condition.getComment());
             throw e;
         }
     }

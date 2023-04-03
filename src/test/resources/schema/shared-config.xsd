@@ -42,9 +42,15 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:simpleType name="xmlFileExtension">
+        <x:restriction base="x:string">
+            <x:pattern value="|.+(\.xml)"/>
+        </x:restriction>
+    </x:simpleType>
+
     <x:complexType name="tagValue">
         <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="enable" type="x:boolean" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
     <x:complexType name="hikari">
@@ -97,7 +103,7 @@
     </x:complexType>
 
     <x:complexType name="takeScreenshot">
-        <x:attribute name="enable" type="x:boolean" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
     <x:complexType name="elementAutowait">
@@ -110,6 +116,7 @@
         </x:choice>
         <x:attribute name="platformName" type="tns:platform" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
     </x:complexType>
 
     <x:simpleType name="platform">

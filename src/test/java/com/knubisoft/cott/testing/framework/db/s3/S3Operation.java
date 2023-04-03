@@ -3,20 +3,25 @@ package com.knubisoft.cott.testing.framework.db.s3;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.knubisoft.cott.testing.framework.configuration.condition.OnS3EnabledCondition;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.Source;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Objects;
 
+@Conditional({OnS3EnabledCondition.class})
 @Component
 public class S3Operation implements StorageOperation {
 
-    private final Map<String, AmazonS3> amazonS3;
+    private final Map<AliasEnv, AmazonS3> amazonS3;
 
-
-    public S3Operation(@Autowired(required = false) final Map<String, AmazonS3> amazonS3) {
+    public S3Operation(@Autowired(required = false) final Map<AliasEnv, AmazonS3> amazonS3) {
         this.amazonS3 = amazonS3;
     }
 
@@ -27,17 +32,20 @@ public class S3Operation implements StorageOperation {
 
     @Override
     public void clearSystem() {
-        for (Map.Entry<String, AmazonS3> entry : this.amazonS3.entrySet()) {
-            final String bucketName = entry.getKey();
-            final ListObjectsV2Result objectsInBucket = entry.getValue().listObjectsV2(bucketName);
-            this.deleteObjectsInBucket(bucketName, objectsInBucket);
-        }
+        this.amazonS3.forEach((aliasEnv, amazonS3) -> {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+                String bucketName = aliasEnv.getAlias();
+                ListObjectsV2Result objectsInBucket = amazonS3.listObjectsV2(bucketName);
+                this.deleteObjectsInBucket(amazonS3, objectsInBucket, bucketName);
+            }
+        });
     }
 
-    private void deleteObjectsInBucket(final String bucketName,
-                                       final ListObjectsV2Result objectsInBucket) {
+    private void deleteObjectsInBucket(final AmazonS3 amazonS3,
+                                       final ListObjectsV2Result objectsInBucket,
+                                       final String bucketName) {
         for (final S3ObjectSummary objectSummary : objectsInBucket.getObjectSummaries()) {
-            this.amazonS3.get(bucketName).deleteObject(bucketName, objectSummary.getKey());
+            amazonS3.deleteObject(bucketName, objectSummary.getKey());
         }
     }
 }

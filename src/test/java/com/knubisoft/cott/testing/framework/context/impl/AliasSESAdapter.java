@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.SES;
+
 @Conditional({OnSESEnabledCondition.class})
 @Component
 public class AliasSESAdapter implements AliasAdapter {
@@ -21,9 +24,9 @@ public class AliasSESAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Ses ses : GlobalTestConfigurationProvider.getIntegrations().getSesIntegration().getSes()) {
+        for (Ses ses : GlobalTestConfigurationProvider.getDefaultIntegrations().getSesIntegration().getSes()) {
             if (ses.isEnabled()) {
-                aliasMap.put(ses.getAlias(), getMetadataSES(ses));
+                aliasMap.put(SES + UNDERSCORE + ses.getAlias(), getMetadataSES(ses));
             }
         }
     }

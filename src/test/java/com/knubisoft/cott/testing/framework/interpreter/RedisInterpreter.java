@@ -1,19 +1,19 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
+import com.knubisoft.cott.testing.framework.db.StorageOperation;
+import com.knubisoft.cott.testing.framework.db.redis.RedisOperation;
+import com.knubisoft.cott.testing.framework.db.source.ListSource;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
-import com.knubisoft.cott.testing.framework.db.StorageOperation;
-import com.knubisoft.cott.testing.framework.db.redis.RedisOperation;
-import com.knubisoft.cott.testing.framework.db.source.ListSource;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.scenario.Redis;
-import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.stream.Collectors;

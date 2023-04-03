@@ -137,9 +137,9 @@ public final class HttpUtil {
                 .setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
                 .setBoundary(body.getMultipart().getBoundary());
         for (Part part : parts) {
-            if (Objects.nonNull(part.getText())) {
+            if (nonNull(part.getText())) {
                 builder.addTextBody(part.getName(), part.getText().getValue());
-            } else if (Objects.nonNull(part.getFile())) {
+            } else if (nonNull(part.getFile())) {
                 injectFromFile(dependencies, builder, part);
             }
         }
@@ -150,7 +150,7 @@ public final class HttpUtil {
                                 final MultipartEntityBuilder builder,
                                 final Part part) {
         File from = FileSearcher.searchFileFromDir(dependencies.getFile(), part.getFile().getValue());
-        builder.addBinaryBody(part.getName(), from, Objects.nonNull(part.getFile().getContentType())
+        builder.addBinaryBody(part.getName(), from, nonNull(part.getFile().getContentType())
                         ? ContentType.create(part.getFile().getContentType()) : ContentType.DEFAULT_BINARY,
                 part.getFile().getFileName());
     }

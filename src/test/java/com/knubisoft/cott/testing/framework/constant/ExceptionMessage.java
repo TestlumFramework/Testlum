@@ -162,7 +162,8 @@ public class ExceptionMessage {
             + "<mobilebrowser> & <native> tags";
     public static final String SAME_MOBILE_DEVICES = "Can`t use the same mobile devices for scenario with "
             + "<mobilebrowser> & <native> tags";
-    public static final String SAME_INTEGRATION_ALIASES = "Found more than one <%s> integration with alias <%s> in %s";
+    public static final String SAME_INTEGRATION_ALIASES =
+            ANSI_RED + "Found more than one <%s> integration with alias <%s> in %s" + ANSI_RESET;
     public static final String WEB_DRIVER_NOT_INIT = "The webDriver for <web> has not been initialized, "
             + "check your configuration in config file";
     public static final String NATIVE_DRIVER_NOT_INIT = "The webDriver for <native> has not been initialized, "

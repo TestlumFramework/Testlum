@@ -5,7 +5,6 @@
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
-    <x:include schemaLocation="shared.xsd"/>
     <x:include schemaLocation="overview.xsd"/>
     <x:include schemaLocation="tags.xsd"/>
     <x:include schemaLocation="mobilebrowser.xsd"/>
@@ -36,6 +35,7 @@
     <x:include schemaLocation="websocket.xsd"/>
     <x:include schemaLocation="graphql.xsd"/>
     <x:include schemaLocation="lambda.xsd"/>
+    <x:include schemaLocation="condition.xsd"/>
 
     <x:annotation>
         <x:appinfo>
@@ -61,7 +61,7 @@
             <x:sequence>
                 <x:element name="overview" type="tns:overview"/>
                 <x:element name="tags" type="tns:tags"/>
-                <x:choice maxOccurs="unbounded" minOccurs="1">
+                <x:choice maxOccurs="unbounded">
                     <x:element name="include" type="tns:include"/>
                     <x:element name="auth" type="tns:auth"/>
                     <x:element name="repeat" type="tns:repeat"/>
@@ -90,6 +90,7 @@
                     <x:element name="websocket" type="tns:websocket"/>
 
                     <x:element name="var" type="tns:var"/>
+                    <x:element name="condition" type="tns:condition"/>
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="shell" type="tns:shell"/>
                     <x:element name="smtp" type="tns:smtp"/>

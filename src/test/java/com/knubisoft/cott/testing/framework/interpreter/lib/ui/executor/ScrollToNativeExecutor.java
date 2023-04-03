@@ -8,10 +8,12 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.ScrollToNative;
 import io.appium.java_client.AppiumDriver;
-import java.util.Collections;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.interactions.Sequence;
+
+import java.util.Collections;
+
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ELEMENT_NOT_FOUND;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.SCROLL_TO_ELEMENT;
 

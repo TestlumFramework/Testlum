@@ -5,11 +5,11 @@ import com.knubisoft.cott.testing.framework.constant.MigrationConstant;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.exception.FileLinkingException;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.ConditionUtil;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.cott.testing.framework.util.StringPrettifier;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +18,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SLOW_COMMAND_PROCESSING;
@@ -39,7 +40,9 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         if (StringUtils.isNotBlank(o.getComment())) {
             log.info(COMMENT_LOG, o.getComment());
         }
-        checkExecutionTime(o, () -> acceptImpl(o, result));
+        if (ConditionUtil.isTrue(o.getCondition(), dependencies.getScenarioContext())) {
+            checkExecutionTime(o, () -> acceptImpl(o, result));
+        }
     }
 
     private void checkExecutionTime(final T o, final Runnable r) {
@@ -47,7 +50,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         r.run();
         long ms = sw.getTime(TimeUnit.MILLISECONDS);
         Integer threshold = o.getThreshold();
-        if (o.getThreshold() != null && ms > threshold) {
+        if (Objects.nonNull(threshold) && ms > threshold) {
             throw new DefaultFrameworkException(SLOW_COMMAND_PROCESSING, ms, threshold);
         }
     }
@@ -65,7 +68,6 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         }
     }
 
-    @SneakyThrows
     public String toString(final Object o) {
         return JacksonMapperUtil.writeValueAsString(o);
     }
@@ -74,7 +76,6 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         return dependencies.getScenarioContext().inject(original);
     }
 
-    @SneakyThrows
     protected void setContextBody(final String o) {
         dependencies.getScenarioContext().setBody(o);
     }

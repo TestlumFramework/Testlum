@@ -262,6 +262,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Condition }
+     * 
+     */
+    public Condition createCondition() {
+        return new Condition();
+    }
+
+    /**
      * Create an instance of {@link Wait }
      * 
      */
@@ -499,6 +507,22 @@ public class ObjectFactory {
      */
     public Assert createAssert() {
         return new Assert();
+    }
+
+    /**
+     * Create an instance of {@link Title }
+     * 
+     */
+    public Title createTitle() {
+        return new Title();
+    }
+
+    /**
+     * Create an instance of {@link Attribute }
+     * 
+     */
+    public Attribute createAttribute() {
+        return new Attribute();
     }
 
     /**

@@ -51,6 +51,7 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;element name="graphql" type="{http://www.knubisoft.com/cott/testing/model/scenario}graphql"/&gt;
  *           &lt;element name="websocket" type="{http://www.knubisoft.com/cott/testing/model/scenario}websocket"/&gt;
  *           &lt;element name="var" type="{http://www.knubisoft.com/cott/testing/model/scenario}var"/&gt;
+ *           &lt;element name="condition" type="{http://www.knubisoft.com/cott/testing/model/scenario}condition"/&gt;
  *           &lt;element name="wait" type="{http://www.knubisoft.com/cott/testing/model/scenario}wait"/&gt;
  *           &lt;element name="shell" type="{http://www.knubisoft.com/cott/testing/model/scenario}shell"/&gt;
  *           &lt;element name="smtp" type="{http://www.knubisoft.com/cott/testing/model/scenario}smtp"/&gt;
@@ -107,6 +108,7 @@ public class Scenario {
         @XmlElement(name = "graphql", type = Graphql.class),
         @XmlElement(name = "websocket", type = Websocket.class),
         @XmlElement(name = "var", type = Var.class),
+        @XmlElement(name = "condition", type = Condition.class),
         @XmlElement(name = "wait", type = Wait.class),
         @XmlElement(name = "shell", type = Shell.class),
         @XmlElement(name = "smtp", type = Smtp.class),
@@ -212,6 +214,7 @@ public class Scenario {
      * {@link Graphql }
      * {@link Websocket }
      * {@link Var }
+     * {@link Condition }
      * {@link Wait }
      * {@link Shell }
      * {@link Smtp }

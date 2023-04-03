@@ -5,8 +5,8 @@ import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import java.util.LinkedHashMap;
 
 public class CommandToExecutorClassMap
-    extends LinkedHashMap
-        <Class<? extends AbstractUiCommand>, Class<? extends AbstractUiExecutor<AbstractUiCommand>>> {
+        extends LinkedHashMap
+        <Class<? extends AbstractUiCommand>, Class<AbstractUiExecutor<? extends AbstractUiCommand>>> {
 
-        private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1;
 }

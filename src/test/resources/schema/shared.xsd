@@ -24,6 +24,7 @@
     <x:complexType name="abstractCommand" abstract="true">
         <x:attribute name="comment" type="tns:stringMin10" use="required"/>
         <x:attribute name="threshold" type="x:int"/>
+        <x:attribute name="condition" type="tns:nonEmptyString"/>
     </x:complexType>
 
     <x:complexType name="ui" abstract="true">
@@ -248,7 +249,7 @@
     <x:complexType name="fromUrl"/>
 
     <x:complexType name="fromDom">
-        <x:attribute name="xpath" type="tns:xpathPattern" use="required"/>
+        <x:attribute name="xpath" type="tns:xpathPattern"/>
     </x:complexType>
 
     <x:simpleType name="xpathPattern">

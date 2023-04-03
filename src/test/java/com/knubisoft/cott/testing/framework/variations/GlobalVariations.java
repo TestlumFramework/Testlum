@@ -9,9 +9,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VARIATIONS_NOT_FOUND;
+import static java.util.Objects.isNull;
 
 @UtilityClass
 public class GlobalVariations {
@@ -25,7 +25,7 @@ public class GlobalVariations {
         String fileName = scenario.getVariations();
         List<Map<String, String>> variationList = VARIATIONS.get(fileName);
 
-        if (Objects.isNull(variationList)) {
+        if (isNull(variationList)) {
             variationList = CSV_PARSER.parseVariations(fileName);
             VARIATIONS.putIfAbsent(fileName, variationList);
         }
@@ -34,7 +34,7 @@ public class GlobalVariations {
 
     public List<Map<String, String>> getVariations(final String fileName) {
         List<Map<String, String>> variationList = VARIATIONS.get(fileName);
-        if (Objects.isNull(variationList)) {
+        if (isNull(variationList)) {
             throw new DefaultFrameworkException(VARIATIONS_NOT_FOUND, fileName);
         }
         return variationList;

@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.RABBITMQ;
+
 @Conditional({OnRabbitMQEnabledCondition.class})
 @Component
 public class AliasRabbitAdapter implements AliasAdapter {
@@ -22,9 +25,9 @@ public class AliasRabbitAdapter implements AliasAdapter {
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
         for (Rabbitmq rabbitmq
-                : GlobalTestConfigurationProvider.getIntegrations().getRabbitmqIntegration().getRabbitmq()) {
+                : GlobalTestConfigurationProvider.getDefaultIntegrations().getRabbitmqIntegration().getRabbitmq()) {
             if (rabbitmq.isEnabled()) {
-                aliasMap.put(rabbitmq.getAlias(), getMetadataRabbit(rabbitmq));
+                aliasMap.put(RABBITMQ + UNDERSCORE + rabbitmq.getAlias(), getMetadataRabbit(rabbitmq));
             }
         }
     }

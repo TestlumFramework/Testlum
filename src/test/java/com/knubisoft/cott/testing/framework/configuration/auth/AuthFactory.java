@@ -7,7 +7,7 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.auth.AuthStrategy;
 import com.knubisoft.cott.testing.framework.interpreter.lib.auth.BasicAuth;
 import com.knubisoft.cott.testing.framework.interpreter.lib.auth.DefaultStrategy;
 import com.knubisoft.cott.testing.framework.interpreter.lib.auth.JwtAuth;
-import com.knubisoft.cott.testing.framework.util.ConfigUtil;
+import com.knubisoft.cott.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.cott.testing.model.global_config.Api;
 import com.knubisoft.cott.testing.model.global_config.Auth;
 import lombok.experimental.UtilityClass;
@@ -20,9 +20,10 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.AUT
 
 @UtilityClass
 public class AuthFactory {
+
     public AuthStrategy create(final InterpreterDependencies dependencies, final String alias) {
-        final Auth auth = getAuthConfig(alias);
-        // TODO i.doroshenko add OAUTH_2 to switch-case
+        final Auth auth = getAuthConfig(dependencies.getEnvironment(), alias);
+
         switch (auth.getAuthStrategy()) {
             case BASIC:
                 return new BasicAuth(dependencies);
@@ -35,14 +36,13 @@ public class AuthFactory {
         }
     }
 
-    private static Auth getAuthConfig(final String alias) {
-        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().getApis().getApi();
-        Api apiIntegration = (Api) ConfigUtil.findApiForAlias(apiList, alias);
+    private Auth getAuthConfig(final String env, final String alias) {
+        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().get(env).getApis().getApi();
+        Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, alias);
         if (Objects.nonNull(apiIntegration.getAuth())) {
             return apiIntegration.getAuth();
         }
         throw new DefaultFrameworkException(AUTH_NOT_FOUND, apiIntegration.getAlias());
-
     }
 
     private AuthStrategy createCustomStrategy(final String className) {

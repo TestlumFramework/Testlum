@@ -19,7 +19,7 @@
     </x:complexType>
 
     <x:complexType name="htmlReportGenerator">
-        <x:attribute name="enable" type="x:boolean" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
     <x:complexType name="klovServerReportGenerator">
@@ -27,7 +27,7 @@
             <x:element name="mongoDB" type="tns:mongodb"/>
             <x:element name="klovServer" type="tns:klovServer"/>
         </x:sequence>
-        <x:attribute name="enable" type="x:boolean" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
     <x:complexType name="mongodb">

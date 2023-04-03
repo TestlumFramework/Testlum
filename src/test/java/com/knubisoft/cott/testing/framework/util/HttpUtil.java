@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,6 +39,8 @@ import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EM
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INCORRECT_HTTP_PROCESSING;
 import static java.lang.String.format;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
 
 @UtilityClass
@@ -83,7 +84,7 @@ public final class HttpUtil {
     public HttpMethodMetadata getHttpMethodMetadata(final Http http) {
         return HTTP_METHOD_MAP.entrySet().stream()
                 .map(e -> new HttpMethodMetadata(e.getKey().apply(http), e.getValue()))
-                .filter(p -> Objects.nonNull(p.getHttpInfo()))
+                .filter(p -> nonNull(p.getHttpInfo()))
                 .findFirst()
                 .orElseThrow(() -> new DefaultFrameworkException(INCORRECT_HTTP_PROCESSING));
     }
@@ -91,13 +92,13 @@ public final class HttpUtil {
     public ESHttpMethodMetadata getESHttpMethodMetadata(final Elasticsearch elasticsearch) {
         return ES_HTTP_METHOD_MAP.entrySet().stream()
                 .map(e -> new ESHttpMethodMetadata(e.getKey().apply(elasticsearch), e.getValue()))
-                .filter(p -> Objects.nonNull(p.getElasticSearchRequest()))
+                .filter(p -> nonNull(p.getElasticSearchRequest()))
                 .findFirst()
                 .orElseThrow(() -> new DefaultFrameworkException(INCORRECT_HTTP_PROCESSING));
     }
 
     public boolean checkIfContentTypeIsJson(final Header contentTypeHeader) {
-        if (contentTypeHeader != null) {
+        if (nonNull(contentTypeHeader)) {
             return contentTypeHeader.getValue().equals(MediaType.APPLICATION_JSON_VALUE)
                     || contentTypeHeader.getValue().equals(MediaType.APPLICATION_JSON_UTF8_VALUE);
         }
@@ -109,14 +110,14 @@ public final class HttpUtil {
                                              final ContentType contentType,
                                              final AbstractInterpreter<?> interpreter,
                                              final InterpreterDependencies dependencies) throws IOException {
-        if (body == null) {
+        if (isNull(body)) {
             return getStringEntity(StringUtils.EMPTY, contentType);
-        } else if (body.getRaw() != null) {
+        } else if (nonNull(body.getRaw())) {
             String injected = interpreter.inject(body.getRaw().replaceAll(REGEX_MANY_SPACES, EMPTY));
             return getStringEntity(injected, contentType);
-        } else if (body.getFrom() != null) {
+        } else if (nonNull(body.getFrom())) {
             return injectFromFile(body, contentType, interpreter, dependencies);
-        } else if (body.getMultipart() != null) {
+        } else if (nonNull(body.getMultipart())) {
             return injectMultipartFile(body, dependencies);
         }
         String param = getFromParam(contentType, body, interpreter);
@@ -174,7 +175,7 @@ public final class HttpUtil {
     public void fillHeadersMap(final List<com.knubisoft.cott.testing.model.scenario.Header> headerList,
                                final Map<String, String> headers,
                                final InterpreterDependencies.Authorization authorization) {
-        if (authorization != null && !authorization.getHeaders().isEmpty()) {
+        if (nonNull(authorization) && !authorization.getHeaders().isEmpty()) {
             headers.putAll(authorization.getHeaders());
         }
         for (com.knubisoft.cott.testing.model.scenario.Header header : headerList) {

@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNKNOWN_METHOD;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_STATUS_CODE;
@@ -39,20 +40,20 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_STAT
 public class ApiClient {
 
     public ApiResponse call(final HttpMethod httpMethod,
-                            final String fullUrl,
+                            final String url,
                             final Map<String, String> headers,
                             final HttpEntity body) throws IOException {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            return executeHttpRequest(httpMethod, fullUrl, headers, body, httpClient);
+            return executeHttpRequest(httpMethod, url, headers, body, httpClient);
         }
     }
 
     private ApiResponse executeHttpRequest(final HttpMethod httpMethod,
-                                           final String fullUrl,
+                                           final String url,
                                            final Map<String, String> headers,
                                            final HttpEntity body,
                                            final CloseableHttpClient httpClient) throws IOException {
-        HttpUriRequest request = buildRequest(httpMethod, fullUrl, headers, body);
+        HttpUriRequest request = buildRequest(httpMethod, url, headers, body);
         try (CloseableHttpResponse response = httpClient.execute(request)) {
             return convertToApiResponse(response);
         }
@@ -64,33 +65,33 @@ public class ApiClient {
             responseHeaders.put(each.getName(), each.getValue());
         }
         HttpEntity entity = response.getEntity();
-        Object responseBody = entity == null ? StringUtils.EMPTY : httpEntityToResponseBody(entity);
+        Object responseBody = Objects.isNull(entity) ? StringUtils.EMPTY : httpEntityToResponseBody(entity);
         log.info(HTTP_STATUS_CODE, response.getStatusLine().getStatusCode(),
                 response.getStatusLine().getReasonPhrase());
         return new ApiResponse(response.getStatusLine().getStatusCode(), responseHeaders, responseBody);
     }
 
     private HttpUriRequest buildRequest(final HttpMethod httpMethod,
-                                        final String fullUrl,
+                                        final String url,
                                         final Map<String, String> headers,
                                         final HttpEntity body) {
-        HttpUriRequest request = getHttpRequest(httpMethod, fullUrl, body);
+        HttpUriRequest request = getHttpRequest(httpMethod, url, body);
         addRequestHeaders(request, headers);
         return request;
     }
 
     private HttpUriRequest getHttpRequest(final HttpMethod httpMethod,
-                                          final String uri,
+                                          final String url,
                                           final HttpEntity body) {
         switch (httpMethod) {
-            case GET: return new HttpGet(uri);
-            case DELETE: return new HttpDelete(uri);
-            case HEAD: return new HttpHead(uri);
-            case OPTIONS: return new HttpOptions(uri);
-            case TRACE: return new HttpTrace(uri);
-            case POST: return setRequestBody(new HttpPost(uri), body);
-            case PUT: return setRequestBody(new HttpPut(uri), body);
-            case PATCH: return setRequestBody(new HttpPatch(uri), body);
+            case GET: return new HttpGet(url);
+            case DELETE: return new HttpDelete(url);
+            case HEAD: return new HttpHead(url);
+            case OPTIONS: return new HttpOptions(url);
+            case TRACE: return new HttpTrace(url);
+            case POST: return setRequestBody(new HttpPost(url), body);
+            case PUT: return setRequestBody(new HttpPut(url), body);
+            case PATCH: return setRequestBody(new HttpPatch(url), body);
             default:
                 throw new DefaultFrameworkException(UNKNOWN_METHOD, httpMethod);
         }

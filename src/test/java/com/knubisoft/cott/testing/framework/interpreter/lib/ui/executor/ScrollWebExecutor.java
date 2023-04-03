@@ -15,8 +15,6 @@ import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.Scroll;
 import org.openqa.selenium.WebDriver;
 
-import static java.lang.String.format;
-
 @ExecutorForClass(Scroll.class)
 public class ScrollWebExecutor extends AbstractUiExecutor<Scroll> {
 
@@ -41,7 +39,7 @@ public class ScrollWebExecutor extends AbstractUiExecutor<Scroll> {
                 JavascriptUtil.executeJsScript(PageScrollScript.getPageScrollScript(scroll), webDriver);
                 break;
             default:
-                throw new DefaultFrameworkException(format(ExceptionMessage.SCROLL_TYPE_NOT_FOUND, scroll.getType()));
+                throw new DefaultFrameworkException(ExceptionMessage.SCROLL_TYPE_NOT_FOUND, scroll.getType());
         }
     }
 

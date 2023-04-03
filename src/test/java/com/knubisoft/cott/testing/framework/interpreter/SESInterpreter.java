@@ -7,16 +7,17 @@ import com.amazonaws.services.simpleemail.model.Destination;
 import com.amazonaws.services.simpleemail.model.Message;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 import com.amazonaws.services.simpleemail.model.VerifyEmailAddressRequest;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
-import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.model.scenario.Ses;
-import com.knubisoft.cott.testing.model.scenario.SesMessage;
-import com.knubisoft.cott.testing.model.scenario.SesTextContent;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
+import com.knubisoft.cott.testing.framework.util.ResultUtil;
+import com.knubisoft.cott.testing.model.scenario.Ses;
 import com.knubisoft.cott.testing.model.scenario.SesBody;
+import com.knubisoft.cott.testing.model.scenario.SesMessage;
+import com.knubisoft.cott.testing.model.scenario.SesTextContent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,7 +28,7 @@ import java.util.Map;
 public class SESInterpreter extends AbstractInterpreter<Ses> {
 
     @Autowired(required = false)
-    private Map<String, AmazonSimpleEmailService> amazonSimpleEmailService;
+    private Map<AliasEnv, AmazonSimpleEmailService> amazonSimpleEmailService;
 
     public SESInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -37,19 +38,20 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
     protected void acceptImpl(final Ses ses, final CommandResult result) {
         LogUtil.logSesInfo(ses);
         ResultUtil.addSesMetaData(ses, result);
-        verify(ses);
-        sendEmail(ses);
+        AliasEnv aliasEnv = new AliasEnv(ses.getAlias(), dependencies.getEnvironment());
+        verify(ses, aliasEnv);
+        sendEmail(ses, aliasEnv);
     }
 
-    private void verify(final Ses ses) {
+    private void verify(final Ses ses, final AliasEnv aliasEnv) {
         VerifyEmailAddressRequest verifyEmailAddressRequest = createVerifyEmailAddress(ses);
-        amazonSimpleEmailService.get(ses.getAlias()).verifyEmailAddress(verifyEmailAddressRequest);
+        amazonSimpleEmailService.get(aliasEnv).verifyEmailAddress(verifyEmailAddressRequest);
     }
 
-    private void sendEmail(final Ses ses) {
+    private void sendEmail(final Ses ses, final AliasEnv aliasEnv) {
         SendEmailRequest sendEmailRequest = createSendEmailRequest(ses);
         LogUtil.logSESMessage(sendEmailRequest.getMessage());
-        amazonSimpleEmailService.get(ses.getAlias()).sendEmail(sendEmailRequest);
+        amazonSimpleEmailService.get(aliasEnv).sendEmail(sendEmailRequest);
     }
 
     private VerifyEmailAddressRequest createVerifyEmailAddress(final Ses ses) {

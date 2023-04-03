@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.configuration.kafka;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnKafkaEnabledCondition;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.model.global_config.Kafka;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -12,43 +13,64 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.KafkaAdmin;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Configuration
 @Conditional({OnKafkaEnabledCondition.class})
 public class KafkaAdminConfiguration {
 
+    private final Map<String, List<Kafka>> kafkaMap = GlobalTestConfigurationProvider.getIntegrations()
+            .entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey,
+                    entry -> entry.getValue().getKafkaIntegration().getKafka()));
+
     @Bean
-    public Map<String, KafkaAdmin> kafkaAdmin() {
-        final Map<String, KafkaAdmin> adminMap = new HashMap<>();
-        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().getKafkaIntegration().getKafka()) {
-            if (kafka.isEnabled()) {
-                createAdminAndPutIntoMap(adminMap, kafka);
-            }
-        }
+    public Map<AliasEnv, KafkaAdmin> kafkaAdmin() {
+        final Map<AliasEnv, KafkaAdmin> adminMap = new HashMap<>();
+        kafkaMap.forEach((env, kafkaList) -> addKafkaAdmin(kafkaList, env, adminMap));
         return adminMap;
     }
 
-    private void createAdminAndPutIntoMap(final Map<String, KafkaAdmin> adminMap, final Kafka kafka) {
+    private void addKafkaAdmin(final List<Kafka> kafkaList,
+                               final String env,
+                               final Map<AliasEnv, KafkaAdmin> adminMap) {
+        for (Kafka kafka : kafkaList) {
+            if (kafka.isEnabled()) {
+                KafkaAdmin kafkaAdmin = createKafkaAdmin(kafka);
+                adminMap.put(new AliasEnv(kafka.getAlias(), env), kafkaAdmin);
+            }
+        }
+    }
+
+    private KafkaAdmin createKafkaAdmin(final Kafka kafka) {
         Map<String, Object> configs = new HashMap<>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapAddress());
-        adminMap.put(kafka.getAlias(), new KafkaAdmin(configs));
+        return new KafkaAdmin(configs);
     }
 
     @Bean
-    public Map<String, AdminClient> kafkaAdminClient() {
-        final Map<String, AdminClient> clientMap = new HashMap<>();
-        for (Kafka kafka : GlobalTestConfigurationProvider.getIntegrations().getKafkaIntegration().getKafka()) {
-            if (kafka.isEnabled()) {
-                createAdminClientAndPutIntoMap(clientMap, kafka);
-            }
-        }
+    public Map<AliasEnv, AdminClient> kafkaAdminClient() {
+        final Map<AliasEnv, AdminClient> clientMap = new HashMap<>();
+        kafkaMap.forEach((env, kafkaList) -> addAdminClient(kafkaList, env, clientMap));
         return clientMap;
     }
 
-    private void createAdminClientAndPutIntoMap(final Map<String, AdminClient> clientMap, final Kafka kafka) {
+    private void addAdminClient(final List<Kafka> kafkaList,
+                                final String env,
+                                final Map<AliasEnv, AdminClient> clientMap) {
+        for (Kafka kafka : kafkaList) {
+            if (kafka.isEnabled()) {
+                AdminClient adminClient = createAdminClient(kafka);
+                clientMap.put(new AliasEnv(kafka.getAlias(), env), adminClient);
+            }
+        }
+    }
+
+    private AdminClient createAdminClient(final Kafka kafka) {
         Map<String, Object> configs = new HashMap<>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapAddress());
-        clientMap.put(kafka.getAlias(), KafkaAdminClient.create(configs));
+        return KafkaAdminClient.create(configs);
     }
 }

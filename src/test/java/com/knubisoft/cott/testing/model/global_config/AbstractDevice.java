@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/choice&gt;
  *       &lt;attribute name="platformName" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}platform" /&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/cott/testing/model/global-config}aliasPattern" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -44,6 +45,8 @@ public abstract class AbstractDevice {
     protected Platform platformName;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
+    @XmlAttribute(name = "alias", required = true)
+    protected String alias;
 
     /**
      * Gets the value of the capabilities property.
@@ -107,6 +110,30 @@ public abstract class AbstractDevice {
      */
     public void setEnabled(boolean value) {
         this.enabled = value;
+    }
+
+    /**
+     * Gets the value of the alias property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getAlias() {
+        return alias;
+    }
+
+    /**
+     * Sets the value of the alias property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setAlias(String value) {
+        this.alias = value;
     }
 
 }

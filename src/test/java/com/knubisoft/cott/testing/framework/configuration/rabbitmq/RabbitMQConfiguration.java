@@ -2,11 +2,12 @@ package com.knubisoft.cott.testing.framework.configuration.rabbitmq;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.model.global_config.Rabbitmq;
 import com.rabbitmq.http.client.Client;
 import com.rabbitmq.http.client.ClientParameters;
 import com.rabbitmq.http.client.HttpComponentsRestTemplateConfigurator;
+import lombok.SneakyThrows;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -17,35 +18,46 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.COLON;
 
 @Configuration
 @Conditional({OnRabbitMQEnabledCondition.class})
 public class RabbitMQConfiguration {
+
     private static final String SCHEMA = "http://";
     private static final String API_PATH = "/api";
 
-    private final List<Rabbitmq> rabbitmqIntegration = GlobalTestConfigurationProvider
-            .getIntegrations().getRabbitmqIntegration().getRabbitmq();
+    private final Map<String, List<Rabbitmq>> rabbitmqMap = GlobalTestConfigurationProvider.getIntegrations()
+            .entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey,
+                    entry -> entry.getValue().getRabbitmqIntegration().getRabbitmq()));
 
     @Bean("rabbitMqClient")
-    public Map<String, Client> client() throws
-            MalformedURLException, URISyntaxException {
-        final Map<String, Client> clients = new HashMap<>();
-        for (Rabbitmq rabbitmq : rabbitmqIntegration) {
+    public Map<AliasEnv, Client> rabbitMqClient() {
+        final Map<AliasEnv, Client> clientMap = new HashMap<>();
+        rabbitmqMap.forEach((env, rabbitmqList) -> addClientParameters(rabbitmqList, env, clientMap));
+        return clientMap;
+    }
+
+    @SneakyThrows
+    private void addClientParameters(final List<Rabbitmq> rabbitmqs,
+                                     final String env,
+                                     final Map<AliasEnv, Client> clientMap) {
+        for (Rabbitmq rabbitmq : rabbitmqs) {
             if (rabbitmq.isEnabled()) {
                 ClientParameters clientParameters = createClientParameters(rabbitmq);
-                clients.put(rabbitmq.getAlias(), new Client(clientParameters));
+                clientMap.put(new AliasEnv(rabbitmq.getAlias(), env), new Client(clientParameters));
             }
         }
-        return clients;
     }
 
     private ClientParameters createClientParameters(final Rabbitmq rabbitmq) throws MalformedURLException {
-        final String url = SCHEMA + rabbitmq.getHost() + DelimiterConstant.COLON + rabbitmq.getApiPort() + API_PATH;
+        final String url = SCHEMA + rabbitmq.getHost() + COLON + rabbitmq.getApiPort() + API_PATH;
         return new ClientParameters()
                 .url(url)
                 .username(rabbitmq.getUsername())
@@ -54,37 +66,39 @@ public class RabbitMQConfiguration {
     }
 
     @Bean
-    public Map<String, AmqpAdmin> amqpAdmin(final Map<String, ConnectionFactory> connectionFactory) {
-        Map<String, AmqpAdmin> adminMap = new HashMap<>();
-        for (Map.Entry<String, ConnectionFactory> entry : connectionFactory.entrySet()) {
-            adminMap.put(entry.getKey(), new RabbitAdmin(entry.getValue()));
-        }
+    public Map<AliasEnv, AmqpAdmin> amqpAdmin(final Map<AliasEnv, ConnectionFactory> connectionFactory) {
+        Map<AliasEnv, AmqpAdmin> adminMap = new HashMap<>();
+        connectionFactory.forEach((aliasEnv, factory) -> adminMap.put(aliasEnv, new RabbitAdmin(factory)));
         return adminMap;
     }
 
     @Bean
-    public Map<String, RabbitTemplate> rabbitTemplate(final Map<String, ConnectionFactory> connectionFactory) {
-        Map<String, RabbitTemplate> templateMap = new HashMap<>();
-        for (Map.Entry<String, ConnectionFactory> entry : connectionFactory.entrySet()) {
-            templateMap.put(entry.getKey(), new RabbitTemplate(entry.getValue()));
-        }
+    public Map<AliasEnv, RabbitTemplate> rabbitTemplate(final Map<AliasEnv, ConnectionFactory> connectionFactory) {
+        Map<AliasEnv, RabbitTemplate> templateMap = new HashMap<>();
+        connectionFactory.forEach((aliasEnv, factory) -> templateMap.put(aliasEnv, new RabbitTemplate(factory)));
         return templateMap;
     }
 
     @Bean
-    public Map<String, ConnectionFactory> connectionFactory() {
-        Map<String, ConnectionFactory> connectionFactoryMap = new HashMap<>();
-        for (Rabbitmq rabbitmq : rabbitmqIntegration) {
-            if (rabbitmq.isEnabled()) {
-                CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
-                connectionFactoryMap.put(rabbitmq.getAlias(), configureConnectionFactory(rabbitmq, connectionFactory));
-            }
-        }
+    public Map<AliasEnv, ConnectionFactory> connectionFactory() {
+        Map<AliasEnv, ConnectionFactory> connectionFactoryMap = new HashMap<>();
+        rabbitmqMap.forEach((env, rabbitmqList) -> addConnectionFactory(rabbitmqList, env, connectionFactoryMap));
         return connectionFactoryMap;
     }
 
-    private CachingConnectionFactory configureConnectionFactory(final Rabbitmq rabbitmq,
-                                                                final CachingConnectionFactory connectionFactory) {
+    private void addConnectionFactory(final List<Rabbitmq> rabbitmqList,
+                                      final String env,
+                                      final Map<AliasEnv, ConnectionFactory> connectionFactoryMap) {
+        for (Rabbitmq rabbitmq : rabbitmqList) {
+            if (rabbitmq.isEnabled()) {
+                CachingConnectionFactory connectionFactory = createConnectionFactory(rabbitmq);
+                connectionFactoryMap.put(new AliasEnv(rabbitmq.getAlias(), env), connectionFactory);
+            }
+        }
+    }
+
+    private CachingConnectionFactory createConnectionFactory(final Rabbitmq rabbitmq) {
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
         connectionFactory.setHost(rabbitmq.getHost());
         connectionFactory.setPort(rabbitmq.getPort());
         connectionFactory.setUsername(rabbitmq.getUsername());

@@ -13,6 +13,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_VISITING_PATH_LOG;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @UtilityClass
@@ -62,12 +63,12 @@ public final class FileRemover {
 
         private boolean isFileWithSuffix(final Path file, final String suffix) {
             Path path = file.getFileName();
-            return path != null && path.toString().endsWith(suffix);
+            return nonNull(path) && path.toString().endsWith(suffix);
         }
 
         private boolean isFileWithPrefix(final Path file, final String prefix) {
             Path path = file.getFileName();
-            return path != null && path.toString().startsWith(prefix);
+            return nonNull(path) && path.toString().startsWith(prefix);
         }
     }
 }

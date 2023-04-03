@@ -1,12 +1,13 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
-import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
-import com.knubisoft.cott.testing.framework.util.VariableService;
+import com.knubisoft.cott.testing.framework.util.VariableHelper;
+import com.knubisoft.cott.testing.framework.util.VariableHelper.VarMethod;
+import com.knubisoft.cott.testing.framework.util.VariableHelper.VarPredicate;
 import com.knubisoft.cott.testing.model.scenario.Var;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,28 +15,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.function.Predicate;
 
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_VARIABLE_WITH_PATH_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_VARIABLE_LOG;
 import static java.util.Objects.nonNull;
 
 @Slf4j
 @InterpreterForClass(Var.class)
 public class VariableInterpreter extends AbstractInterpreter<Var> {
-    private final Map<VarFromPredicate, VarFromMethod> varToMethodMap;
+
+    private final Map<VarPredicate<Var>, VarMethod<Var>> varToMethodMap;
     @Autowired
-    private VariableService variableService;
+    private VariableHelper variableHelper;
 
     public VariableInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
-        Map<VarFromPredicate, VarFromMethod> generalVarMap = new HashMap<>();
-        generalVarMap.put(var -> nonNull(var.getSql()), this::getSQLResult);
-        generalVarMap.put(var -> nonNull(var.getFile()), this::getFileResult);
-        generalVarMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
-        generalVarMap.put(var -> nonNull(var.getPath()), this::getPathResult);
-        generalVarMap.put(var -> nonNull(var.getGenerate()), this::getGenerateResult);
-        varToMethodMap = Collections.unmodifiableMap(generalVarMap);
+        Map<VarPredicate<Var>, VarMethod<Var>> varMap = new HashMap<>();
+        varMap.put(var -> nonNull(var.getSql()), this::getSQLResult);
+        varMap.put(var -> nonNull(var.getFile()), this::getFileResult);
+        varMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
+        varMap.put(var -> nonNull(var.getPath()), this::getPathResult);
+        varToMethodMap = Collections.unmodifiableMap(varMap);
     }
 
     @Override
@@ -43,7 +42,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         try {
             setContextVariable(var, result);
         } catch (Exception e) {
-            log.info(FAILED_VARIABLE_WITH_PATH_LOG, var.getName(), var.getComment());
+            log.info(FAILED_VARIABLE_LOG, var.getName(), var.getComment());
             throw e;
         }
     }
@@ -55,40 +54,24 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     private String getValueForContext(final Var var, final CommandResult result) {
-        return varToMethodMap.keySet().stream()
-                .filter(key -> key.test(var))
-                .findFirst()
-                .map(varToMethodMap::get)
-                .orElseThrow(() -> new DefaultFrameworkException("Type of 'Var' tag is not supported"))
+        return variableHelper.lookupVarMethod(varToMethodMap, var)
                 .apply(var, result);
     }
 
-    private String getPathResult(final Var var, final CommandResult commandResult) {
-        return variableService.getPathResult(var.getPath(),
-                var.getName(), commandResult, dependencies.getScenarioContext());
+    private String getPathResult(final Var var, final CommandResult result) {
+        return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result);
     }
 
-    private String getExpressionResult(final Var var, final CommandResult commandResult) {
-        return variableService.getExpressionResult(var.getExpression(),
-                var.getName(), commandResult, dependencies.getScenarioContext());
+    private String getExpressionResult(final Var var, final CommandResult result) {
+        return variableHelper.getExpressionResult(
+                var.getExpression(), var.getName(), dependencies.getScenarioContext(), result);
     }
 
-    private String getFileResult(final Var var, final CommandResult commandResult) {
-        return variableService.getFileResult(var.getFile(),
-                dependencies.getFile(), var.getName(), commandResult);
+    private String getFileResult(final Var var, final CommandResult result) {
+        return variableHelper.getFileResult(var.getFile(), dependencies.getFile(), var.getName(), result);
     }
 
-    private String getSQLResult(final Var var, final CommandResult commandResult) {
-        return variableService.getSQLResult(var.getSql(), var.getName(),
-                commandResult, dependencies.getScenarioContext());
+    private String getSQLResult(final Var var, final CommandResult result) {
+        return variableHelper.getSQLResult(var.getSql(), var.getName(), dependencies.getScenarioContext(), result);
     }
-
-    private String getGenerateResult(final Var var, final CommandResult commandResult) {
-        return variableService.getGenerateResult(var.getGenerate(), var.getName(), commandResult);
-    }
-
-    private interface VarFromPredicate extends Predicate<Var> { }
-
-    private interface VarFromMethod extends BiFunction<Var, CommandResult, String> { }
-
 }

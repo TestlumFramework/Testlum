@@ -49,44 +49,47 @@ public class GlobalTestConfigValidator implements XMLValidator<GlobalTestConfigu
     }
 
     private static void checkNativeCapabilitiesToConnection(final Native nativeDevice) {
-        ConnectionType nativeConnection = nativeDevice.getConnection();
+        ConnectionType connection = nativeDevice.getConnection();
         List<NativeDevice> nativeDevices = nativeDevice.getDevices().getDevice();
         for (NativeDevice device : nativeDevices) {
-            if (Objects.nonNull(nativeConnection.getAppiumServer())) {
-                if (Objects.isNull(device.getAppiumCapabilities())) {
-                    throw new AbsentCapabilityException(
-                            "Appium capabilities are absent");
-                }
-            } else if (Objects.nonNull(nativeConnection.getBrowserStack())) {
-                if (Objects.isNull(device.getBrowserStackCapabilities())) {
-                    throw new AbsentCapabilityException(
-                            "BrowserStack capabilities are absent");
-                }
-            } else {
-                throw new AbsentConnectionException(
-                        "Connection server is absent");
+            checkForNative(connection, device);
+        }
+    }
+
+    private static void checkForNative(final ConnectionType nativeConnection, final NativeDevice device) {
+        if (Objects.nonNull(nativeConnection.getAppiumServer())) {
+            if (Objects.isNull(device.getAppiumCapabilities())) {
+                throw new AbsentCapabilityException("Appium capabilities are absent");
             }
+        } else if (Objects.nonNull(nativeConnection.getBrowserStack())) {
+            if (Objects.isNull(device.getBrowserStackCapabilities())) {
+                throw new AbsentCapabilityException("BrowserStack capabilities are absent");
+            }
+        } else {
+            throw new AbsentConnectionException("Connection server is absent");
         }
     }
 
     private static void checkMobilebrowserCapabilitiesToConnection(final Mobilebrowser mobilebrowser) {
-        ConnectionType mobilebrowserConnection = mobilebrowser.getConnection();
+        ConnectionType connection = mobilebrowser.getConnection();
         List<MobilebrowserDevice> mobilebrowserDevices = mobilebrowser.getDevices().getDevice();
         for (MobilebrowserDevice device : mobilebrowserDevices) {
-            if (Objects.nonNull(mobilebrowserConnection.getAppiumServer())) {
-                if (Objects.isNull(device.getAppiumCapabilities())) {
-                    throw new AbsentCapabilityException(
-                            "Appium capabilities are absent");
-                }
-            } else if (Objects.nonNull(mobilebrowserConnection.getBrowserStack())) {
-                if (Objects.isNull(device.getBrowserStackCapabilities())) {
-                    throw new AbsentCapabilityException(
-                            "BrowserStack capabilities are absent");
-                }
-            } else {
-                throw new AbsentConnectionException(
-                        "Connection server is absent");
+            checkForMobilebrowser(connection, device);
+        }
+    }
+
+    private static void checkForMobilebrowser(final ConnectionType mobilebrowserConnection,
+                                              final MobilebrowserDevice device) {
+        if (Objects.nonNull(mobilebrowserConnection.getAppiumServer())) {
+            if (Objects.isNull(device.getAppiumCapabilities())) {
+                throw new AbsentCapabilityException("Appium capabilities are absent");
             }
+        } else if (Objects.nonNull(mobilebrowserConnection.getBrowserStack())) {
+            if (Objects.isNull(device.getBrowserStackCapabilities())) {
+                throw new AbsentCapabilityException("BrowserStack capabilities are absent");
+            }
+        } else {
+            throw new AbsentConnectionException("Connection server is absent");
         }
     }
 }

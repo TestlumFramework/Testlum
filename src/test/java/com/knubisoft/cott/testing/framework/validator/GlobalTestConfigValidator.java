@@ -1,7 +1,11 @@
 package com.knubisoft.cott.testing.framework.validator;
 
+import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.cott.testing.framework.parser.XMLParsers;
+import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
+import com.knubisoft.cott.testing.model.global_config.Environment;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.cott.testing.model.global_config.Integration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
@@ -12,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SAME_INTEGRATION_ALIASES;
 
@@ -41,9 +46,14 @@ public class GlobalTestConfigValidator implements XMLValidator<GlobalTestConfigu
     }
 
     private void checkIntegrations(final GlobalTestConfiguration globalTestConfig) {
-        if (Objects.nonNull(globalTestConfig.getIntegrations())) {
-            getIntegrations(globalTestConfig.getIntegrations());
-            checkIntegrationsAliases();
+        List<Environment> enabledEnvs = globalTestConfig.getEnvironments().getEnv().stream()
+                .filter(Environment::isEnabled).collect(Collectors.toList());
+        for (Environment env : enabledEnvs) {
+            Integrations integrations = FileSearcher.searchFileFromEnvFolder(env.getFolder(),
+                            TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
+                    .map(configFile -> XMLParsers.forIntegrations().process(configFile)).get();
+            getIntegrations(integrations);
+            checkIntegrationsAliases(env);
         }
     }
 
@@ -59,12 +69,12 @@ public class GlobalTestConfigValidator implements XMLValidator<GlobalTestConfigu
                                 integrationLists.add((List<? extends Integration>) integrationList)));
     }
 
-    private void checkIntegrationsAliases() {
+    private void checkIntegrationsAliases(final Environment env) {
         integrationLists.forEach(integrationList -> integrationList.forEach(integration -> {
                     if (integrationList.stream().map(Integration::getAlias)
                             .filter(alias -> alias.equalsIgnoreCase(integration.getAlias())).count() > 1) {
                         throw new DefaultFrameworkException(SAME_INTEGRATION_ALIASES,
-                                integration.getClass().getSimpleName(), integration.getAlias());
+                                integration.getClass().getSimpleName(), integration.getAlias(), env.getFolder());
                     }
                 }
         ));

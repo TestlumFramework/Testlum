@@ -14,13 +14,14 @@ import com.knubisoft.cott.testing.model.scenario.TypeForOneValue;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.support.ui.Select;
 
+import java.util.Objects;
+
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.COMMAND_TYPE_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.VALUE_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.ALL_VALUES_DESELECT;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.DROP_DOWN_FOR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.DROP_DOWN_LOCATOR;
-import static java.lang.String.format;
 
 @Slf4j
 @ExecutorForClass(DropDown.class)
@@ -36,7 +37,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         result.put(DROP_DOWN_LOCATOR, locatorId);
         Select select = new Select(UiUtil.findWebElement(dependencies, locatorId));
         OneValue oneValue = dropDown.getOneValue();
-        if (oneValue != null) {
+        if (Objects.nonNull(oneValue)) {
             processOneValueFromDropDown(oneValue, select, result);
         } else {
             log.info(COMMAND_TYPE_LOG, ALL_VALUES_DESELECT);
@@ -68,7 +69,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
                 break;
             case VALUE: select.selectByValue(value);
                 break;
-            default: throw new DefaultFrameworkException(format(DROP_DOWN_NOT_SUPPORTED, method.value()));
+            default: throw new DefaultFrameworkException(DROP_DOWN_NOT_SUPPORTED, method.value());
         }
     }
 
@@ -80,7 +81,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
                 break;
             case VALUE: select.deselectByValue(value);
                 break;
-            default: throw new DefaultFrameworkException(format(DROP_DOWN_NOT_SUPPORTED, method.value()));
+            default: throw new DefaultFrameworkException(DROP_DOWN_NOT_SUPPORTED, method.value());
         }
     }
 }

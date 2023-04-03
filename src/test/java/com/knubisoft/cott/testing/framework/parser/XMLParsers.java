@@ -2,6 +2,8 @@ package com.knubisoft.cott.testing.framework.parser;
 
 import com.knubisoft.cott.testing.framework.schema.SchemaInitializer;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
+import com.knubisoft.cott.testing.model.global_config.Integrations;
+import com.knubisoft.cott.testing.model.global_config.UiConfig;
 import com.knubisoft.cott.testing.model.pages.Component;
 import com.knubisoft.cott.testing.model.pages.Page;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
@@ -13,6 +15,18 @@ public class XMLParsers {
     public XMLParser<GlobalTestConfiguration> forGlobalTestConfiguration() {
         return new XMLParser<>(SchemaInitializer.GLOBAL_CONFIG_SCHEMA,
                 com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration.class,
+                com.knubisoft.cott.testing.model.global_config.ObjectFactory.class);
+    }
+
+    public XMLParser<Integrations> forIntegrations() {
+        return new XMLParser<>(SchemaInitializer.INTEGRATION_SCHEMA,
+                com.knubisoft.cott.testing.model.global_config.Integrations.class,
+                com.knubisoft.cott.testing.model.global_config.ObjectFactory.class);
+    }
+
+    public XMLParser<UiConfig> forUiConfig() {
+        return new XMLParser<>(SchemaInitializer.UI_SCHEMA,
+                com.knubisoft.cott.testing.model.global_config.UiConfig.class,
                 com.knubisoft.cott.testing.model.global_config.ObjectFactory.class);
     }
 

@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
@@ -18,7 +19,7 @@ import java.util.Map;
 public class TwilioInterpreter extends AbstractInterpreter<Twilio> {
 
     @Autowired(required = false)
-    private Map<String, com.knubisoft.cott.testing.model.global_config.Twilio> twilioSettings;
+    private Map<AliasEnv, com.knubisoft.cott.testing.model.global_config.Twilio> twilioSettings;
 
     public TwilioInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -26,7 +27,8 @@ public class TwilioInterpreter extends AbstractInterpreter<Twilio> {
 
     @Override
     protected void acceptImpl(final Twilio twilio, final CommandResult result) {
-        com.knubisoft.cott.testing.model.global_config.Twilio twilioSetting = twilioSettings.get(twilio.getAlias());
+        AliasEnv aliasEnv = new AliasEnv(twilio.getAlias(), dependencies.getEnvironment());
+        com.knubisoft.cott.testing.model.global_config.Twilio twilioSetting = twilioSettings.get(aliasEnv);
         com.twilio.Twilio.init(twilioSetting.getAccountSid(), twilioSetting.getAuthToken());
         String twilioNumber = twilioSetting.getTwilioNumber();
         LogUtil.logTwilioInfo(twilio, twilioNumber);

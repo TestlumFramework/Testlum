@@ -5,32 +5,9 @@
           targetNamespace="http://www.knubisoft.com/cott/testing/model/global-config"
           elementFormDefault="qualified" jaxb:version="2.1">
 
-    <x:include schemaLocation="api-integration.xsd"/>
-    <x:include schemaLocation="graphql-integration.xsd"/>
-    <x:include schemaLocation="websocket-integration.xsd"/>
-    <x:include schemaLocation="postgres-integration.xsd"/>
-    <x:include schemaLocation="clickhouse-integration.xsd"/>
-    <x:include schemaLocation="mysql-integration.xsd"/>
-    <x:include schemaLocation="oracle-integration.xsd"/>
-    <x:include schemaLocation="redis-integration.xsd"/>
-    <x:include schemaLocation="mongo-integration.xsd"/>
-    <x:include schemaLocation="s3-integration.xsd"/>
-    <x:include schemaLocation="sqs-integration.xsd"/>
-    <x:include schemaLocation="kafka-integration.xsd"/>
-    <x:include schemaLocation="rabbitmq-integration.xsd"/>
-    <x:include schemaLocation="dynamo-integration.xsd"/>
-    <x:include schemaLocation="elasticsearch-integration.xsd"/>
-    <x:include schemaLocation="lambda-integration.xsd"/>
-    <x:include schemaLocation="sendgrid-integration.xsd"/>
-    <x:include schemaLocation="ses-integration.xsd"/>
-    <x:include schemaLocation="smtp-integration.xsd"/>
-    <x:include schemaLocation="twilio-integration.xsd"/>
-    <x:include schemaLocation="web-config.xsd"/>
-    <x:include schemaLocation="mobilebrowser-config.xsd"/>
-    <x:include schemaLocation="native-config.xsd"/>
-    <x:include schemaLocation="browserstack-config.xsd"/>
     <x:include schemaLocation="report.xsd"/>
-    <x:include schemaLocation="shared-config.xsd"/>
+    <x:include schemaLocation="ui-config.xsd"/>
+    <x:include schemaLocation="integration-config.xsd"/>
 
     <x:annotation>
         <x:appinfo>
@@ -44,55 +21,16 @@
         <x:complexType>
             <x:sequence>
                 <x:element name="subscription" type="tns:subscription"/>
+                <x:element name="parallelExecution" type="x:boolean" default="false" minOccurs="0"/>
                 <x:element name="stopScenarioOnFailure" type="x:boolean"/>
-                <x:element name="delayBetweenScenariosRuns" type="tns:delayBetweenScenariosRuns" minOccurs="0"/>
+                <x:element name="stopIfInvalidScenario" type="x:boolean"/>
+                <x:element name="delayBetweenScenarioRuns" type="tns:delayBetweenScenarioRuns"/>
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
                 <x:element name="report" type="tns:report"/>
-                <x:element name="web" type="tns:web" minOccurs="0"/>
-                <x:element name="mobilebrowser" type="tns:mobilebrowser" minOccurs="0"/>
-                <x:element name="native" type="tns:native" minOccurs="0"/>
-                <x:element name="browserStackLogin" type="tns:browserStackLogin" minOccurs="0"/>
-                <x:element name="integrations" type="tns:integrations" minOccurs="0"/>
+                <x:element name="environments" type="tns:environments"/>
             </x:sequence>
         </x:complexType>
     </x:element>
-
-    <x:complexType name="integrations">
-        <x:all>
-            <x:element name="apis" type="tns:apis" minOccurs="0"/>
-            <x:element name="websockets" type="tns:websockets" minOccurs="0"/>
-            <x:element name="postgresIntegration" type="tns:postgresIntegration" minOccurs="0"/>
-            <x:element name="clickhouseIntegration" type="tns:clickhouseIntegration" minOccurs="0"/>
-            <x:element name="mysqlIntegration" type="tns:mysqlIntegration" minOccurs="0"/>
-            <x:element name="oracleIntegration" type="tns:oracleIntegration" minOccurs="0"/>
-            <x:element name="redisIntegration" type="tns:redisIntegration" minOccurs="0"/>
-            <x:element name="mongoIntegration" type="tns:mongoIntegration" minOccurs="0"/>
-            <x:element name="s3Integration" type="tns:s3Integration" minOccurs="0"/>
-            <x:element name="sqsIntegration" type="tns:sqsIntegration" minOccurs="0"/>
-            <x:element name="kafkaIntegration" type="tns:kafkaIntegration" minOccurs="0"/>
-            <x:element name="rabbitmqIntegration" type="tns:rabbitmqIntegration" minOccurs="0"/>
-            <x:element name="dynamoIntegration" type="tns:dynamoIntegration" minOccurs="0"/>
-            <x:element name="elasticsearchIntegration" type="tns:elasticsearchIntegration" minOccurs="0"/>
-            <x:element name="lambdaIntegration" type="tns:lambdaIntegration" minOccurs="0"/>
-            <x:element name="sendgridIntegration" type="tns:sendgridIntegration" minOccurs="0"/>
-            <x:element name="sesIntegration" type="tns:sesIntegration" minOccurs="0"/>
-            <x:element name="smtpIntegration" type="tns:smtpIntegration" minOccurs="0"/>
-            <x:element name="twilioIntegration" type="tns:twilioIntegration" minOccurs="0"/>
-            <x:element name="graphqlIntegration" type="tns:graphqlIntegration" minOccurs="0"/>
-        </x:all>
-    </x:complexType>
-
-    <x:complexType name="delayBetweenScenariosRuns">
-        <x:attribute name="seconds" type="x:positiveInteger" use="required"/>
-        <x:attribute name="enabled" type="x:boolean" use="required"/>
-    </x:complexType>
-
-    <x:complexType name="runScenariosByTag">
-        <x:choice>
-            <x:element name="tag" type="tns:tagValue" maxOccurs="unbounded"/>
-        </x:choice>
-        <x:attribute name="enable" type="x:boolean" use="required"/>
-    </x:complexType>
 
     <x:complexType name="subscription">
         <x:choice>
@@ -107,4 +45,34 @@
             <x:enumeration value="free"/>
         </x:restriction>
     </x:simpleType>
+
+    <x:complexType name="delayBetweenScenarioRuns">
+        <x:attribute name="seconds" type="x:int" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="positiveIntegerMin1">
+        <x:restriction base="x:int">
+            <x:minInclusive value="1"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="runScenariosByTag">
+        <x:choice>
+            <x:element name="tag" type="tns:tagValue" maxOccurs="unbounded"/>
+        </x:choice>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="environments">
+        <x:sequence>
+            <x:element name="env" type="tns:environment" maxOccurs="unbounded"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="environment">
+        <x:attribute name="folder" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:attribute name="threads" type="x:int" default="1"/>
+    </x:complexType>
 </x:schema>

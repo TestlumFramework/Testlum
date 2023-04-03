@@ -1,9 +1,10 @@
 package com.knubisoft.cott.testing.framework.exception;
 
+import com.knubisoft.cott.testing.framework.constant.ExceptionMessage;
+
 import java.util.List;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE_WITH_LF;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.RETHROWN_ERRORS_LOG;
 
 public class DefaultFrameworkException extends RuntimeException {
 
@@ -15,7 +16,7 @@ public class DefaultFrameworkException extends RuntimeException {
     }
 
     public DefaultFrameworkException(final List<String> messages) {
-        super(String.format(RETHROWN_ERRORS_LOG, String.join(SPACE_WITH_LF, messages)));
+        super(String.format(ExceptionMessage.RETHROWN_ERRORS_TEMPLATE, String.join(SPACE_WITH_LF, messages)));
     }
 
     public DefaultFrameworkException(final String format, final Object... args) {

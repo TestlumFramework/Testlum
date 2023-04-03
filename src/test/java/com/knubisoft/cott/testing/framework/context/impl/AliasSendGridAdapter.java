@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.UNDERSCORE;
+import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.SENDGRID;
+
 @Conditional({OnSendgridEnabledCondition.class})
 @Component
 public class AliasSendGridAdapter implements AliasAdapter {
@@ -22,9 +25,9 @@ public class AliasSendGridAdapter implements AliasAdapter {
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
         for (Sendgrid sendgrid
-                : GlobalTestConfigurationProvider.getIntegrations().getSendgridIntegration().getSendgrid()) {
+                : GlobalTestConfigurationProvider.getDefaultIntegrations().getSendgridIntegration().getSendgrid()) {
             if (sendgrid.isEnabled()) {
-                aliasMap.put(sendgrid.getAlias(), getMetadataSendGrid(sendgrid));
+                aliasMap.put(SENDGRID + UNDERSCORE + sendgrid.getAlias(), getMetadataSendGrid(sendgrid));
             }
         }
     }

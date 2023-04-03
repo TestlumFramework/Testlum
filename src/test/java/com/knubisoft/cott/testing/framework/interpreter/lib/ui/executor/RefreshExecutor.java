@@ -7,10 +7,11 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.model.scenario.Refresh;
 import io.appium.java_client.AppiumDriver;
-import java.util.Collections;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.interactions.Sequence;
+
+import java.util.Collections;
 
 @ExecutorForClass(Refresh.class)
 public class RefreshExecutor extends AbstractUiExecutor<Refresh> {

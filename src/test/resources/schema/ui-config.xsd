@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/cott/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/cott/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:annotation>
+        <x:appinfo>
+            <jaxb:bindings
+                node="/x:schema/x:element[@name='uiConfig']//x:complexType//x:sequence">
+            </jaxb:bindings>
+        </x:appinfo>
+    </x:annotation>
+
+    <x:include schemaLocation="web-config.xsd"/>
+    <x:include schemaLocation="mobilebrowser-config.xsd"/>
+    <x:include schemaLocation="native-config.xsd"/>
+    <x:include schemaLocation="browserstack-config.xsd"/>
+
+    <x:element name="uiConfig">
+        <x:complexType>
+            <x:sequence>
+                <x:element name="web" type="tns:web" minOccurs="0"/>
+                <x:element name="mobilebrowser" type="tns:mobilebrowser" minOccurs="0"/>
+                <x:element name="native" type="tns:native" minOccurs="0"/>
+                <x:element name="browserStackLogin" type="tns:browserStackLogin" minOccurs="0"/>
+            </x:sequence>
+        </x:complexType>
+    </x:element>
+
+</x:schema>

@@ -2,7 +2,9 @@ package com.knubisoft.cott.testing.framework.configuration.datasource;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnMysqlEnabledCondition;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.framework.util.DataSourceUtil;
+import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Mysql;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -17,13 +19,21 @@ import java.util.Map;
 public class MysqlDataSourceConfiguration {
 
     @Bean("mySqlDataSource")
-    public Map<String, DataSource> mysqlDataSource() {
-        Map<String, DataSource> mysqlIntegration = new HashMap<>();
-        for (Mysql dataSource : GlobalTestConfigurationProvider.getIntegrations().getMysqlIntegration().getMysql()) {
+    public Map<AliasEnv, DataSource> mysqlDataSource() {
+        Map<AliasEnv, DataSource> dataSourceMap = new HashMap<>();
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach((env, integrations) -> collectDataSource(integrations, env, dataSourceMap));
+        return dataSourceMap;
+    }
+
+    private void collectDataSource(final Integrations integrations,
+                                   final String env,
+                                   final Map<AliasEnv, DataSource> dataSourceMap) {
+        for (Mysql dataSource : integrations.getMysqlIntegration().getMysql()) {
             if (dataSource.isEnabled()) {
-                mysqlIntegration.put(dataSource.getAlias(), DataSourceUtil.getHikariDataSource(dataSource));
+                dataSourceMap.put(new AliasEnv(dataSource.getAlias(), env),
+                        DataSourceUtil.getHikariDataSource(dataSource));
             }
         }
-        return mysqlIntegration;
     }
 }

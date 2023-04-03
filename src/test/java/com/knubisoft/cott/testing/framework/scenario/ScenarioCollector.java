@@ -4,8 +4,8 @@ import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfiguratio
 import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.parser.XMLParsers;
-import com.knubisoft.cott.testing.framework.util.ConfigUtil;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
+import com.knubisoft.cott.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.cott.testing.model.global_config.Api;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Auth;
@@ -20,11 +20,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.AUTH_NOT_FOUND;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 public class ScenarioCollector {
@@ -46,6 +46,25 @@ public class ScenarioCollector {
             applyXml(each, result);
         }
         return result;
+    }
+
+    private void walk(final File root, final List<File> scenarios) {
+        File[] listFiles = root.listFiles();
+        if (nonNull(listFiles)) {
+            for (File file : listFiles) {
+                processEachFile(scenarios, file);
+            }
+        }
+    }
+
+    private void processEachFile(final List<File> scenarios, final File file) {
+        if (file.isDirectory()) {
+            walk(file, scenarios);
+        } else {
+            if (file.getName().equals(TestResourceSettings.SCENARIO_FILENAME)) {
+                scenarios.add(file);
+            }
+        }
     }
 
     private void applyXml(final File xmlFile, final Result result) {
@@ -77,8 +96,7 @@ public class ScenarioCollector {
         return updatedCommands;
     }
 
-    private void addAbstractCommand(final List<AbstractCommand> updatedCommand,
-                                    final AbstractCommand command) {
+    private void addAbstractCommand(final List<AbstractCommand> updatedCommand, final AbstractCommand command) {
         if (command instanceof Auth) {
             addAuthCommands(updatedCommand, (Auth) command);
         } else if (command instanceof Include) {
@@ -88,6 +106,31 @@ public class ScenarioCollector {
         } else {
             updatedCommand.add(command);
         }
+    }
+
+    private void addAuthCommands(final List<AbstractCommand> updatedCommand, final Auth authCommand) {
+        Auth auth = new Auth();
+        auth.setComment(authCommand.getComment());
+        auth.setCredentials(authCommand.getCredentials());
+        auth.setApiAlias(authCommand.getApiAlias());
+        auth.setLoginEndpoint(authCommand.getLoginEndpoint());
+        updatedCommand.add(auth);
+        updatedCommand.addAll(authCommand.getCommands());
+        if (isAutoLogout(authCommand.getApiAlias())) {
+            Logout logout = new Logout();
+            logout.setAlias(authCommand.getApiAlias());
+            updatedCommand.add(logout);
+        }
+    }
+
+    private boolean isAutoLogout(final String alias) {
+        //todo move to interpreter
+        List<Api> apiList = GlobalTestConfigurationProvider.getDefaultIntegrations().getApis().getApi();
+        Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, alias);
+        if (nonNull(apiIntegration.getAuth())) {
+            return apiIntegration.getAuth().isAutoLogout();
+        }
+        throw new DefaultFrameworkException(AUTH_NOT_FOUND, apiIntegration.getAlias());
     }
 
     private void addIncludeCommands(final List<AbstractCommand> updatedCommands, final AbstractCommand command) {
@@ -105,55 +148,10 @@ public class ScenarioCollector {
         return XMLParsers.forScenario().process(file, scenarioValidator);
     }
 
-    private void addAuthCommands(final List<AbstractCommand> updatedCommand,
-                                 final Auth authCommand) {
-        Auth auth = new Auth();
-        auth.setComment(authCommand.getComment());
-        auth.setCredentials(authCommand.getCredentials());
-        auth.setApiAlias(authCommand.getApiAlias());
-        auth.setLoginEndpoint(authCommand.getLoginEndpoint());
-        updatedCommand.add(auth);
-        updatedCommand.addAll(authCommand.getCommands());
-        if (isAutoLogout(authCommand.getApiAlias())) {
-            Logout logout = new Logout();
-            logout.setAlias(authCommand.getApiAlias());
-            updatedCommand.add(logout);
-        }
-    }
-
-    private boolean isAutoLogout(final String alias) {
-        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().getApis().getApi();
-        Api apiIntegration = (Api) ConfigUtil.findApiForAlias(apiList, alias);
-        if (Objects.nonNull(apiIntegration.getAuth())) {
-            return apiIntegration.getAuth().isAutoLogout();
-        }
-        throw new DefaultFrameworkException(AUTH_NOT_FOUND, apiIntegration.getAlias());
-    }
-
-    private void addRepeatCommands(final List<AbstractCommand> updatedCommand,
-                                   final Repeat repeatCommand) {
+    private void addRepeatCommands(final List<AbstractCommand> updatedCommand, final Repeat repeatCommand) {
         int times = repeatCommand.getTimes().intValue();
         for (int i = 0; i < times; i++) {
             repeatCommand.getCommands().forEach(command -> addAbstractCommand(updatedCommand, command));
-        }
-    }
-
-    private void walk(final File root, final List<File> scenarios) {
-        File[] listFiles = root.listFiles();
-        if (listFiles != null) {
-            for (File file : listFiles) {
-                processEachFile(scenarios, file);
-            }
-        }
-    }
-
-    private void processEachFile(final List<File> scenarios, final File file) {
-        if (file.isDirectory()) {
-            walk(file, scenarios);
-        } else {
-            if (file.getName().equals(TestResourceSettings.SCENARIO_FILENAME)) {
-                scenarios.add(file);
-            }
         }
     }
 
@@ -166,7 +164,7 @@ public class ScenarioCollector {
             }
 
             private boolean getReadonlyValue(final MappingResult result) {
-                return result.scenario != null && (result.scenario.getTags().isReadonly());
+                return nonNull(result.scenario) && (result.scenario.getTags().isReadonly());
             }
         });
 

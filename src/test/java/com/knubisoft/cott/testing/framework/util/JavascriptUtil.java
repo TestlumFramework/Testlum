@@ -13,7 +13,6 @@ import java.util.List;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.JS_FILE_UNREADABLE;
-import static java.lang.String.format;
 
 @UtilityClass
 public class JavascriptUtil {
@@ -34,7 +33,7 @@ public class JavascriptUtil {
             List<String> commands = Files.readAllLines(jsFile.toPath());
             return String.join(EMPTY, commands);
         } catch (IOException e) {
-            throw new DefaultFrameworkException(format(JS_FILE_UNREADABLE, filePath));
+            throw new DefaultFrameworkException(JS_FILE_UNREADABLE, filePath);
         }
     }
 }

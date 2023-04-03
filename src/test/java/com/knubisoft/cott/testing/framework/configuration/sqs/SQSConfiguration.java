@@ -7,6 +7,8 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnSQSEnabledCondition;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
+import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Sqs;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -20,24 +22,32 @@ import java.util.Map;
 public class SQSConfiguration {
 
     @Bean
-    public Map<String, AmazonSQS> amazonSQS() {
-        final Map<String, AmazonSQS> sqsIntegration = new HashMap<>();
-        for (Sqs sqs : GlobalTestConfigurationProvider.getIntegrations().getSqsIntegration().getSqs()) {
-            if (sqs.isEnabled()) {
-                createSqsAndPutIntoMap(sqsIntegration, sqs);
-            }
-        }
-        return sqsIntegration;
+    public Map<AliasEnv, AmazonSQS> amazonSQS() {
+        final Map<AliasEnv, AmazonSQS> amazonSqsMap = new HashMap<>();
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach((env, integrations) -> addAmazonSqs(integrations, env, amazonSqsMap));
+        return amazonSqsMap;
     }
 
-    private void createSqsAndPutIntoMap(final Map<String, AmazonSQS> properties, final Sqs sqs) {
+    private void addAmazonSqs(final Integrations integrations,
+                              final String env,
+                              final Map<AliasEnv, AmazonSQS> amazonSqsMap) {
+        for (Sqs sqs : integrations.getSqsIntegration().getSqs()) {
+            if (sqs.isEnabled()) {
+                AmazonSQS amazonSqs = createAmazonSqs(sqs);
+                amazonSqsMap.put(new AliasEnv(sqs.getAlias(), env), amazonSqs);
+            }
+        }
+    }
+
+    private AmazonSQS createAmazonSqs(final Sqs sqs) {
         AwsClientBuilder.EndpointConfiguration endpointConfiguration =
                 new AwsClientBuilder.EndpointConfiguration(sqs.getEndpoint(), sqs.getRegion());
         BasicAWSCredentials basicAWSCredentials =
                 new BasicAWSCredentials(sqs.getAccessKeyId(), sqs.getSecretAccessKey());
         AWSStaticCredentialsProvider awsStaticCredentialsProvider =
                 new AWSStaticCredentialsProvider(basicAWSCredentials);
-        properties.put(sqs.getAlias(), buildAmazonSQS(endpointConfiguration, awsStaticCredentialsProvider));
+        return buildAmazonSQS(endpointConfiguration, awsStaticCredentialsProvider);
     }
 
     private AmazonSQS buildAmazonSQS(final AwsClientBuilder.EndpointConfiguration endpointConfiguration,
@@ -47,5 +57,4 @@ public class SQSConfiguration {
                 .withCredentials(awsStaticCredentialsProvider)
                 .build();
     }
-
 }

@@ -19,10 +19,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INCORRECT_HTTP_PROCESSING;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
 
 @UtilityClass
@@ -42,7 +43,7 @@ public final class SendGridUtil {
     public SendGridMethodMetadata getSendgridMethodMetadata(final Sendgrid sendgrid) {
         return HTTP_METHOD_MAP.entrySet().stream()
                 .map(e -> new SendGridMethodMetadata(e.getKey().apply(sendgrid), e.getValue()))
-                .filter(p -> Objects.nonNull(p.getHttpInfo()))
+                .filter(p -> nonNull(p.getHttpInfo()))
                 .findFirst()
                 .orElseThrow(() -> new DefaultFrameworkException(INCORRECT_HTTP_PROCESSING));
     }
@@ -50,11 +51,11 @@ public final class SendGridUtil {
     private String injectAppropriatePart(final Body body,
                                          final AbstractInterpreter<?> interpreter,
                                          final InterpreterDependencies dependencies) throws IOException {
-        if (body == null) {
+        if (isNull(body)) {
             return StringUtils.EMPTY;
-        } else if (body.getRaw() != null) {
+        } else if (nonNull(body.getRaw())) {
             return interpreter.inject(body.getRaw());
-        } else if (body.getFrom() != null) {
+        } else if (nonNull(body.getFrom())) {
             return injectFromFile(body, interpreter, dependencies);
         }
         return interpreter.inject(getFromParam(body, interpreter));

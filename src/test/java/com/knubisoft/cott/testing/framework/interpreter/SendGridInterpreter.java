@@ -1,6 +1,7 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
@@ -38,7 +39,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.EXPECTED_CODE
 public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
     @Autowired(required = false)
-    private Map<String, SendGrid> sendGrid;
+    private Map<AliasEnv, SendGrid> sendGrid;
 
     public SendGridInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -83,7 +84,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         result.put(CONTENT_TO_SEND, PrettifyStringJson.getJSONResult(body));
         LogUtil.logHttpInfo(alias, method.name(), endpoint);
         LogUtil.logBody(request.getBody());
-        return sendGrid.get(alias).api(request);
+        return sendGrid.get(new AliasEnv(alias, dependencies.getEnvironment())).api(request);
     }
 
     private void compare(final ApiResponse expected, final Response actual, final CommandResult result) {

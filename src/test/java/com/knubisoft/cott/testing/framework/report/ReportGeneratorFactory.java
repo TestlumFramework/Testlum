@@ -24,8 +24,8 @@ public class ReportGeneratorFactory {
     private void checkExtentReportsGenerators(final ExtentReports extentReports) {
         HtmlReportGenerator htmlReportGenerator = extentReports.getHtmlReportGenerator();
         KlovServerReportGenerator klovServerReportGenerator = extentReports.getKlovServerReportGenerator();
-        if (!htmlReportGenerator.isEnable()) {
-            if (Objects.isNull(klovServerReportGenerator) || !klovServerReportGenerator.isEnable()) {
+        if (!htmlReportGenerator.isEnabled()) {
+            if (Objects.isNull(klovServerReportGenerator) || !klovServerReportGenerator.isEnabled()) {
                 throw new DefaultFrameworkException("At least one report generator must be enabled");
             }
         }

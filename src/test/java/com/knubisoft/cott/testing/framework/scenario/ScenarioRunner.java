@@ -13,21 +13,20 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterScanner;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.MockDriver;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.report.ScenarioResult;
+import com.knubisoft.cott.testing.framework.util.BrowserUtil;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
+import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.model.ScenarioArguments;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.openqa.selenium.WebDriver;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.FUNCTION_FOR_COMMAND_NOT_FOUND;
@@ -36,6 +35,9 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.MOB
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NATIVE_DRIVER_NOT_INIT;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.WEB_DRIVER_NOT_INIT;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_STOP_SIGNAL_LOG;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 
 @Slf4j
@@ -48,14 +50,16 @@ public class ScenarioRunner {
 
     private final ScenarioArguments scenarioArguments;
     private final ApplicationContext ctx;
+
     private InterpreterDependencies dependencies;
     private boolean stopScenarioOnFailure;
     private CommandToInterpreterMap cmdToInterpreterMap;
 
     public ScenarioResult run() {
+        int scenarioId = SCENARIO_ID_GENERATOR.incrementAndGet();
         prepare();
-        prepareScenarioResult();
-        LogUtil.logScenarioDetails(scenarioArguments, SCENARIO_ID_GENERATOR);
+        prepareScenarioResult(scenarioId);
+        LogUtil.logScenarioDetails(scenarioArguments, scenarioId);
         runScenarioCommands();
         return scenarioResult;
     }
@@ -66,17 +70,18 @@ public class ScenarioRunner {
         this.cmdToInterpreterMap = createClassToInterpreterMap(dependencies);
     }
 
-    private void prepareScenarioResult() {
+    private void prepareScenarioResult(final int scenarioId) {
         Scenario scenario = scenarioArguments.getScenario();
-        scenarioResult.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
-        scenarioResult.setPath(scenarioArguments.getFile().getPath());
-        scenarioResult.setName(scenario.getOverview().getName());
+        scenarioResult.setId(scenarioId);
         scenarioResult.setOverview(scenario.getOverview());
+        scenarioResult.setName(scenario.getOverview().getName());
         scenarioResult.setTags(scenario.getTags());
+        scenarioResult.setPath(scenarioArguments.getFile().getPath());
         scenarioResult.setBrowser(scenarioArguments.getBrowser());
         scenarioResult.setMobilebrowserDevice(scenarioArguments.getMobilebrowserDevice());
         scenarioResult.setNativeDevice(scenarioArguments.getNativeDevice());
         scenarioResult.setSuccess(true);
+        scenarioResult.setEnvironment(scenarioArguments.getEnvironment());
     }
 
     private void runScenarioCommands() {
@@ -133,9 +138,10 @@ public class ScenarioRunner {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractInterpreter<AbstractCommand> getInterpreterOrThrow(final AbstractCommand command) {
         AbstractInterpreter<? extends AbstractCommand> interpreter = cmdToInterpreterMap.get(command.getClass());
-        if (interpreter == null) {
+        if (isNull(interpreter)) {
             throw new DefaultFrameworkException(FUNCTION_FOR_COMMAND_NOT_FOUND, command.getClass());
         }
         return (AbstractInterpreter<AbstractCommand>) interpreter;
@@ -143,7 +149,7 @@ public class ScenarioRunner {
 
     private void handleException(final CommandResult result) {
         Exception ex = result.getException();
-        if (ex != null) {
+        if (nonNull(ex)) {
             LogUtil.logException(ex);
             fillReportException(ex);
             if (stopScenarioOnFailure) {
@@ -153,14 +159,13 @@ public class ScenarioRunner {
     }
 
     private void fillReportException(final Exception ex) {
-        if (StringUtils.isEmpty(scenarioResult.getCause())) {
-            String cause = StringUtils.isEmpty(ex.getMessage()) ? ex.getClass().getSimpleName() : ex.getMessage();
+        if (isBlank(scenarioResult.getCause())) {
+            String cause = isBlank(ex.getMessage()) ? ex.getClass().getSimpleName() : ex.getMessage();
             scenarioResult.setCause(cause);
             scenarioResult.setSuccess(false);
         }
     }
 
-    @SneakyThrows
     private CommandToInterpreterMap createClassToInterpreterMap(final InterpreterDependencies dependencies) {
         CommandToInterpreterMap interpreterMap = new CommandToInterpreterMap();
         InterpreterScanner.getInterpreters().forEach(
@@ -182,33 +187,35 @@ public class ScenarioRunner {
     }
 
     private InterpreterDependencies createDependencies() {
-        return new InterpreterDependencies(
-                ctx,
-                createWebDriver(),
-                createNativeDriver(),
-                createMobilebrowserDriver(),
-                scenarioArguments.getFile(),
-                new ScenarioContext(scenarioArguments.getVariation()),
-                idGenerator
-        );
+        return InterpreterDependencies.builder()
+                .context(ctx)
+                .file(scenarioArguments.getFile())
+                .scenarioContext(new ScenarioContext(scenarioArguments.getVariation()))
+                .position(idGenerator)
+                .environment(scenarioArguments.getEnvironment())
+                .webDriver(createWebDriver())
+                .mobilebrowserDriver(createMobilebrowserDriver())
+                .nativeDriver(createNativeDriver())
+                .build();
     }
 
     private WebDriver createWebDriver() {
-        return Objects.nonNull(scenarioArguments.getBrowser())
-                ? WebDriverFactory.createDriver(scenarioArguments.getBrowser())
-                : new MockDriver(WEB_DRIVER_NOT_INIT);
+        return BrowserUtil.getBrowserBy(scenarioArguments.getEnvironment(), scenarioArguments.getBrowser())
+                .map(WebDriverFactory::createDriver)
+                .orElse(new MockDriver(WEB_DRIVER_NOT_INIT));
     }
 
     private WebDriver createMobilebrowserDriver() {
-        return Objects.nonNull(scenarioArguments.getMobilebrowserDevice())
-                ? MobilebrowserDriverFactory.createDriver(scenarioArguments.getMobilebrowserDevice())
-                : new MockDriver(MOBILEBROWSER_DRIVER_NOT_INIT);
+        return MobileUtil.getMobilebrowserDeviceBy(scenarioArguments.getEnvironment(),
+                        scenarioArguments.getMobilebrowserDevice())
+                .map(MobilebrowserDriverFactory::createDriver)
+                .orElse(new MockDriver(MOBILEBROWSER_DRIVER_NOT_INIT));
     }
 
     private WebDriver createNativeDriver() {
-        return Objects.nonNull(scenarioArguments.getNativeDevice())
-                ? NativeDriverFactory.createDriver(scenarioArguments.getNativeDevice())
-                : new MockDriver(NATIVE_DRIVER_NOT_INIT);
+        return MobileUtil.getNativeDeviceBy(scenarioArguments.getEnvironment(), scenarioArguments.getNativeDevice())
+                .map(NativeDriverFactory::createDriver)
+                .orElse(new MockDriver(NATIVE_DRIVER_NOT_INIT));
     }
 
     public interface CommandCallback {

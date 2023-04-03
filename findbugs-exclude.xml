@@ -5,29 +5,9 @@
     </Match>
 
     <Match>
-        <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.cott.testing.framework.locator.LocatorCollector"/>
-        <Method name="collectFileToPageMap"/>
-        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
-    </Match>
-
-    <Match>
         <Class name="com.knubisoft.cott.testing.framework.scenario.ScenarioRunner"/>
         <Method name="createInterpreterInstance"/>
         <Bug pattern="REC_CATCH_EXCEPTION"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.cott.testing.framework.util.FileSearcher"/>
-        <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.cott.testing.framework.scenario.ScenarioValidator"/>
-        <Bug pattern="UC_USELESS_OBJECT"/>
     </Match>
 
     <Match>
@@ -41,29 +21,8 @@
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.interpreter.ShellInterpreter$StreamHelper"/>
-        <Bug pattern="DM_DEFAULT_ENCODING"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.cott.testing.framework.interpreter.ShellInterpreter"/>
-        <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>
-    </Match>
-
-    <Match>
         <Class name="com.knubisoft.cott.testing.framework.interpreter.SmtpInterpreter"/>
         <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.cott.testing.framework.util.InitialStructureGenerator"/>
-        <Method name="copyFileToFolder"/>
-        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.cott.testing.framework.configuration.websocket.ClientStompSessionHandler"/>
-        <Bug pattern="BC_UNCONFIRMED_CAST"/>
     </Match>
 
     <Match>
@@ -78,11 +37,6 @@
 
     <Match>
         <Class name="com.knubisoft.cott.testing.framework.interpreter.lib.AbstractUiInterpreter"/>
-        <Bug pattern="BC_UNCONFIRMED_CAST"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.cott.testing.framework.configuration.ui.NativeDriverFactory"/>
         <Bug pattern="BC_UNCONFIRMED_CAST"/>
     </Match>
 

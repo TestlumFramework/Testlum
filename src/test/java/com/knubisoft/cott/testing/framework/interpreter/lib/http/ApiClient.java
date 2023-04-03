@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNKNOWN_METHOD;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HTTP_STATUS_CODE;
@@ -64,7 +65,7 @@ public class ApiClient {
             responseHeaders.put(each.getName(), each.getValue());
         }
         HttpEntity entity = response.getEntity();
-        Object responseBody = entity == null ? StringUtils.EMPTY : httpEntityToResponseBody(entity);
+        Object responseBody = Objects.isNull(entity) ? StringUtils.EMPTY : httpEntityToResponseBody(entity);
         log.info(HTTP_STATUS_CODE, response.getStatusLine().getStatusCode(),
                 response.getStatusLine().getReasonPhrase());
         return new ApiResponse(response.getStatusLine().getStatusCode(), responseHeaders, responseBody);

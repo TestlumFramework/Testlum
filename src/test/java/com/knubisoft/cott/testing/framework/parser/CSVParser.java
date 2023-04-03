@@ -19,13 +19,11 @@ public final class CSVParser {
 
     public static final int HEADER_ROW = 0;
 
-    @SneakyThrows
     public List<Map<String, String>> parseVariations(final String fileName) {
         List<String[]> variations = readVariationsFile(fileName);
         return getVariationsMapList(variations);
     }
 
-    //CHECKSTYLE:OFF
     @SneakyThrows
     private List<String[]> readVariationsFile(final String variationFileName) {
         File file = FileSearcher.searchFileFromDataFolder(variationFileName);
@@ -38,7 +36,6 @@ public final class CSVParser {
         }
         return variations;
     }
-    //CHECKSTYLE:ON
 
     private List<Map<String, String>> getVariationsMapList(final List<String[]> variations) {
         List<Map<String, String>> mapList = new ArrayList<>(variations.size());

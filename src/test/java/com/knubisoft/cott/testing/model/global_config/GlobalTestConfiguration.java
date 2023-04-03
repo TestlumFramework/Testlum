@@ -19,15 +19,13 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="subscription" type="{http://www.knubisoft.com/cott/testing/model/global-config}subscription"/&gt;
+ *         &lt;element name="parallelExecution" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
  *         &lt;element name="stopScenarioOnFailure" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
- *         &lt;element name="delayBetweenScenariosRuns" type="{http://www.knubisoft.com/cott/testing/model/global-config}delayBetweenScenariosRuns" minOccurs="0"/&gt;
+ *         &lt;element name="stopIfInvalidScenario" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="delayBetweenScenarioRuns" type="{http://www.knubisoft.com/cott/testing/model/global-config}delayBetweenScenarioRuns"/&gt;
  *         &lt;element name="runScenariosByTag" type="{http://www.knubisoft.com/cott/testing/model/global-config}runScenariosByTag"/&gt;
  *         &lt;element name="report" type="{http://www.knubisoft.com/cott/testing/model/global-config}report"/&gt;
- *         &lt;element name="web" type="{http://www.knubisoft.com/cott/testing/model/global-config}web" minOccurs="0"/&gt;
- *         &lt;element name="mobilebrowser" type="{http://www.knubisoft.com/cott/testing/model/global-config}mobilebrowser" minOccurs="0"/&gt;
- *         &lt;element name="native" type="{http://www.knubisoft.com/cott/testing/model/global-config}native" minOccurs="0"/&gt;
- *         &lt;element name="browserStackLogin" type="{http://www.knubisoft.com/cott/testing/model/global-config}browserStackLogin" minOccurs="0"/&gt;
- *         &lt;element name="integrations" type="{http://www.knubisoft.com/cott/testing/model/global-config}integrations" minOccurs="0"/&gt;
+ *         &lt;element name="environments" type="{http://www.knubisoft.com/cott/testing/model/global-config}environments"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -39,33 +37,31 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "subscription",
+    "parallelExecution",
     "stopScenarioOnFailure",
-    "delayBetweenScenariosRuns",
+    "stopIfInvalidScenario",
+    "delayBetweenScenarioRuns",
     "runScenariosByTag",
     "report",
-    "web",
-    "mobilebrowser",
-    "_native",
-    "browserStackLogin",
-    "integrations"
+    "environments"
 })
 @XmlRootElement(name = "globalTestConfiguration")
 public class GlobalTestConfiguration {
 
     @XmlElement(required = true)
     protected Subscription subscription;
+    @XmlElement(defaultValue = "false")
+    protected Boolean parallelExecution;
     protected boolean stopScenarioOnFailure;
-    protected DelayBetweenScenariosRuns delayBetweenScenariosRuns;
+    protected boolean stopIfInvalidScenario;
+    @XmlElement(required = true)
+    protected DelayBetweenScenarioRuns delayBetweenScenarioRuns;
     @XmlElement(required = true)
     protected RunScenariosByTag runScenariosByTag;
     @XmlElement(required = true)
     protected Report report;
-    protected Web web;
-    protected Mobilebrowser mobilebrowser;
-    @XmlElement(name = "native")
-    protected Native _native;
-    protected BrowserStackLogin browserStackLogin;
-    protected Integrations integrations;
+    @XmlElement(required = true)
+    protected Environments environments;
 
     /**
      * Gets the value of the subscription property.
@@ -92,6 +88,30 @@ public class GlobalTestConfiguration {
     }
 
     /**
+     * Gets the value of the parallelExecution property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean isParallelExecution() {
+        return parallelExecution;
+    }
+
+    /**
+     * Sets the value of the parallelExecution property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setParallelExecution(Boolean value) {
+        this.parallelExecution = value;
+    }
+
+    /**
      * Gets the value of the stopScenarioOnFailure property.
      * 
      */
@@ -108,27 +128,43 @@ public class GlobalTestConfiguration {
     }
 
     /**
-     * Gets the value of the delayBetweenScenariosRuns property.
+     * Gets the value of the stopIfInvalidScenario property.
      * 
-     * @return
-     *     possible object is
-     *     {@link DelayBetweenScenariosRuns }
-     *     
      */
-    public DelayBetweenScenariosRuns getDelayBetweenScenariosRuns() {
-        return delayBetweenScenariosRuns;
+    public boolean isStopIfInvalidScenario() {
+        return stopIfInvalidScenario;
     }
 
     /**
-     * Sets the value of the delayBetweenScenariosRuns property.
+     * Sets the value of the stopIfInvalidScenario property.
+     * 
+     */
+    public void setStopIfInvalidScenario(boolean value) {
+        this.stopIfInvalidScenario = value;
+    }
+
+    /**
+     * Gets the value of the delayBetweenScenarioRuns property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link DelayBetweenScenarioRuns }
+     *     
+     */
+    public DelayBetweenScenarioRuns getDelayBetweenScenarioRuns() {
+        return delayBetweenScenarioRuns;
+    }
+
+    /**
+     * Sets the value of the delayBetweenScenarioRuns property.
      * 
      * @param value
      *     allowed object is
-     *     {@link DelayBetweenScenariosRuns }
+     *     {@link DelayBetweenScenarioRuns }
      *     
      */
-    public void setDelayBetweenScenariosRuns(DelayBetweenScenariosRuns value) {
-        this.delayBetweenScenariosRuns = value;
+    public void setDelayBetweenScenarioRuns(DelayBetweenScenarioRuns value) {
+        this.delayBetweenScenarioRuns = value;
     }
 
     /**
@@ -180,123 +216,27 @@ public class GlobalTestConfiguration {
     }
 
     /**
-     * Gets the value of the web property.
+     * Gets the value of the environments property.
      * 
      * @return
      *     possible object is
-     *     {@link Web }
+     *     {@link Environments }
      *     
      */
-    public Web getWeb() {
-        return web;
+    public Environments getEnvironments() {
+        return environments;
     }
 
     /**
-     * Sets the value of the web property.
+     * Sets the value of the environments property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Web }
+     *     {@link Environments }
      *     
      */
-    public void setWeb(Web value) {
-        this.web = value;
-    }
-
-    /**
-     * Gets the value of the mobilebrowser property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Mobilebrowser }
-     *     
-     */
-    public Mobilebrowser getMobilebrowser() {
-        return mobilebrowser;
-    }
-
-    /**
-     * Sets the value of the mobilebrowser property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Mobilebrowser }
-     *     
-     */
-    public void setMobilebrowser(Mobilebrowser value) {
-        this.mobilebrowser = value;
-    }
-
-    /**
-     * Gets the value of the native property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Native }
-     *     
-     */
-    public Native getNative() {
-        return _native;
-    }
-
-    /**
-     * Sets the value of the native property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Native }
-     *     
-     */
-    public void setNative(Native value) {
-        this._native = value;
-    }
-
-    /**
-     * Gets the value of the browserStackLogin property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BrowserStackLogin }
-     *     
-     */
-    public BrowserStackLogin getBrowserStackLogin() {
-        return browserStackLogin;
-    }
-
-    /**
-     * Sets the value of the browserStackLogin property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BrowserStackLogin }
-     *     
-     */
-    public void setBrowserStackLogin(BrowserStackLogin value) {
-        this.browserStackLogin = value;
-    }
-
-    /**
-     * Gets the value of the integrations property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integrations }
-     *     
-     */
-    public Integrations getIntegrations() {
-        return integrations;
-    }
-
-    /**
-     * Sets the value of the integrations property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integrations }
-     *     
-     */
-    public void setIntegrations(Integrations value) {
-        this.integrations = value;
+    public void setEnvironments(Environments value) {
+        this.environments = value;
     }
 
 }

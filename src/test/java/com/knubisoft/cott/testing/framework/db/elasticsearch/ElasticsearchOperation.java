@@ -1,23 +1,29 @@
 package com.knubisoft.cott.testing.framework.db.elasticsearch;
 
+import com.knubisoft.cott.testing.framework.configuration.condition.OnElasticEnabledCondition;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.db.source.Source;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import lombok.SneakyThrows;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Objects;
 
+@Conditional({OnElasticEnabledCondition.class})
 @Component
 public class ElasticsearchOperation implements StorageOperation {
 
-    private final Map<String, RestHighLevelClient> restHighLevelClient;
+    private final Map<AliasEnv, RestHighLevelClient> restHighLevelClient;
 
     public ElasticsearchOperation(@Autowired(required = false)
-                                  final Map<String, RestHighLevelClient> restHighLevelClient) {
+                                  final Map<AliasEnv, RestHighLevelClient> restHighLevelClient) {
         this.restHighLevelClient = restHighLevelClient;
     }
 
@@ -30,8 +36,10 @@ public class ElasticsearchOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         DeleteIndexRequest request = new DeleteIndexRequest("*");
-        for (Map.Entry<String, RestHighLevelClient> entry : restHighLevelClient.entrySet()) {
-            restHighLevelClient.get(entry.getKey()).indices().delete(request, RequestOptions.DEFAULT);
+        for (Map.Entry<AliasEnv, RestHighLevelClient> entry : restHighLevelClient.entrySet()) {
+            if (Objects.equals(entry.getKey().getEnvironment(), EnvManager.currentEnv())) {
+                entry.getValue().indices().delete(request, RequestOptions.DEFAULT);
+            }
         }
     }
 }

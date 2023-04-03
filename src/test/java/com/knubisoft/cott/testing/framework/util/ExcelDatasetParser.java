@@ -68,7 +68,7 @@ public class ExcelDatasetParser {
     }
 
     private String getTableName(final Row row) {
-        if (row.getCell(0) != null) {
+        if (Objects.nonNull(row.getCell(0))) {
             return getCellValue(row.getCell(0));
         }
         throw new IllegalArgumentException("Please, fill any exist table in the xls/x file");

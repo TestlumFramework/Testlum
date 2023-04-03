@@ -1,8 +1,5 @@
 package com.knubisoft.cott.testing.framework.report;
 
-import com.knubisoft.cott.testing.model.global_config.AbstractBrowser;
-import com.knubisoft.cott.testing.model.global_config.MobilebrowserDevice;
-import com.knubisoft.cott.testing.model.global_config.NativeDevice;
 import com.knubisoft.cott.testing.model.scenario.Overview;
 import com.knubisoft.cott.testing.model.scenario.Tags;
 import lombok.Data;
@@ -15,16 +12,17 @@ public class ScenarioResult {
 
     private int id;
     private Overview overview;
+    private String name;
     private Tags tags;
     private String path;
-    private String name;
-    private AbstractBrowser browser;
-    private MobilebrowserDevice mobilebrowserDevice;
-    private NativeDevice nativeDevice;
+    private String browser;
+    private String mobilebrowserDevice;
+    private String nativeDevice;
 
     private boolean success;
     private String cause;
     private long executionTime;
+    private String environment;
 
     private List<CommandResult> commands = new ArrayList<>();
 }

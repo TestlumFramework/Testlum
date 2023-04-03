@@ -3,12 +3,14 @@ package com.knubisoft.cott.testing.framework.db.sql.executor;
 import com.knubisoft.cott.testing.framework.db.StorageOperation;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,7 +38,7 @@ public abstract class AbstractSqlExecutor {
     protected final JdbcTemplate template;
 
     public AbstractSqlExecutor(final DataSource dataSource) {
-        this.template = dataSource == null ? null : new JdbcTemplate(dataSource);
+        this.template = Objects.isNull(dataSource) ? null : new JdbcTemplate(dataSource);
     }
 
     public abstract void truncate();
@@ -65,7 +67,7 @@ public abstract class AbstractSqlExecutor {
         try {
             Object result = executeAppropriateQuery(queryResult.getQuery());
             queryResult.setContent(result);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             LogUtil.logSqlException(e, queryResult.getQuery());
             throw e;
         }

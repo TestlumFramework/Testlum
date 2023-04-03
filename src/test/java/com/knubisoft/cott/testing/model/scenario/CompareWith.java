@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="compareWith"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="locator" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}scenarioLocator" /&gt;
+ *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}scenarioLocator" /&gt;
  *       &lt;attribute name="attribute" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" default="src" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -29,33 +29,33 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "compareWith")
 public class CompareWith {
 
-    @XmlAttribute(name = "locator", required = true)
-    protected String locator;
+    @XmlAttribute(name = "locatorId", required = true)
+    protected String locatorId;
     @XmlAttribute(name = "attribute")
     protected String attribute;
 
     /**
-     * Gets the value of the locator property.
+     * Gets the value of the locatorId property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getLocator() {
-        return locator;
+    public String getLocatorId() {
+        return locatorId;
     }
 
     /**
-     * Sets the value of the locator property.
+     * Sets the value of the locatorId property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setLocator(String value) {
-        this.locator = value;
+    public void setLocatorId(String value) {
+        this.locatorId = value;
     }
 
     /**

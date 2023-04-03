@@ -3,21 +3,23 @@ package com.knubisoft.cott.testing.model.global_config;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for integrations complex type.
+ * <p>Java class for anonymous complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="integrations"&gt;
+ * &lt;complexType&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;all&gt;
  *         &lt;element name="apis" type="{http://www.knubisoft.com/cott/testing/model/global-config}apis" minOccurs="0"/&gt;
  *         &lt;element name="websockets" type="{http://www.knubisoft.com/cott/testing/model/global-config}websockets" minOccurs="0"/&gt;
+ *         &lt;element name="graphqlIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}graphqlIntegration" minOccurs="0"/&gt;
  *         &lt;element name="postgresIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}postgresIntegration" minOccurs="0"/&gt;
  *         &lt;element name="clickhouseIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}clickhouseIntegration" minOccurs="0"/&gt;
  *         &lt;element name="mysqlIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}mysqlIntegration" minOccurs="0"/&gt;
@@ -35,7 +37,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="sesIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}sesIntegration" minOccurs="0"/&gt;
  *         &lt;element name="smtpIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}smtpIntegration" minOccurs="0"/&gt;
  *         &lt;element name="twilioIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}twilioIntegration" minOccurs="0"/&gt;
- *         &lt;element name="graphqlIntegration" type="{http://www.knubisoft.com/cott/testing/model/global-config}graphqlIntegration" minOccurs="0"/&gt;
  *       &lt;/all&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -45,13 +46,15 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "integrations", propOrder = {
+@XmlType(name = "", propOrder = {
 
 })
+@XmlRootElement(name = "integrations")
 public class Integrations {
 
     protected Apis apis;
     protected Websockets websockets;
+    protected GraphqlIntegration graphqlIntegration;
     protected PostgresIntegration postgresIntegration;
     protected ClickhouseIntegration clickhouseIntegration;
     protected MysqlIntegration mysqlIntegration;
@@ -69,7 +72,6 @@ public class Integrations {
     protected SesIntegration sesIntegration;
     protected SmtpIntegration smtpIntegration;
     protected TwilioIntegration twilioIntegration;
-    protected GraphqlIntegration graphqlIntegration;
 
     /**
      * Gets the value of the apis property.
@@ -117,6 +119,30 @@ public class Integrations {
      */
     public void setWebsockets(Websockets value) {
         this.websockets = value;
+    }
+
+    /**
+     * Gets the value of the graphqlIntegration property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link GraphqlIntegration }
+     *     
+     */
+    public GraphqlIntegration getGraphqlIntegration() {
+        return graphqlIntegration;
+    }
+
+    /**
+     * Sets the value of the graphqlIntegration property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link GraphqlIntegration }
+     *     
+     */
+    public void setGraphqlIntegration(GraphqlIntegration value) {
+        this.graphqlIntegration = value;
     }
 
     /**
@@ -525,30 +551,6 @@ public class Integrations {
      */
     public void setTwilioIntegration(TwilioIntegration value) {
         this.twilioIntegration = value;
-    }
-
-    /**
-     * Gets the value of the graphqlIntegration property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link GraphqlIntegration }
-     *     
-     */
-    public GraphqlIntegration getGraphqlIntegration() {
-        return graphqlIntegration;
-    }
-
-    /**
-     * Sets the value of the graphqlIntegration property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link GraphqlIntegration }
-     *     
-     */
-    public void setGraphqlIntegration(GraphqlIntegration value) {
-        this.graphqlIntegration = value;
     }
 
 }

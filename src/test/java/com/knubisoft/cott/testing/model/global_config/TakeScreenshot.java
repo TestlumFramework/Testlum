@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="takeScreenshot"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="enable" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -28,23 +28,23 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "takeScreenshot")
 public class TakeScreenshot {
 
-    @XmlAttribute(name = "enable", required = true)
-    protected boolean enable;
+    @XmlAttribute(name = "enabled", required = true)
+    protected boolean enabled;
 
     /**
-     * Gets the value of the enable property.
+     * Gets the value of the enabled property.
      * 
      */
-    public boolean isEnable() {
-        return enable;
+    public boolean isEnabled() {
+        return enabled;
     }
 
     /**
-     * Sets the value of the enable property.
+     * Sets the value of the enabled property.
      * 
      */
-    public void setEnable(boolean value) {
-        this.enable = value;
+    public void setEnabled(boolean value) {
+        this.enabled = value;
     }
 
 }

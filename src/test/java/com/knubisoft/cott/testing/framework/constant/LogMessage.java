@@ -64,6 +64,11 @@ public final class LogMessage {
             + "<{}> configuration not found or disabled. Scenarios that depend on this config will be invalid"
             + NEW_LOG_LINE + LINE + ANSI_RESET;
 
+    public static final String INTEGRATIONS_NOT_FOUND = ANSI_YELLOW
+            + LINE + NEW_LOG_LINE
+            + "No integrations found in <{}>"
+            + NEW_LOG_LINE + LINE + ANSI_RESET;
+
     public static final String EXECUTION_STOP_SIGNAL_LOG = ANSI_YELLOW
             + LINE + NEW_LOG_LINE
             + "The execution has been stopped because of the enabled <StopScenarioOnFailure>"

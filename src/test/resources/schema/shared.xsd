@@ -186,6 +186,12 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:simpleType name="injectableScenarioLocator">
+        <x:restriction base="x:string">
+            <x:pattern value="([a-z0-9]+[A-Z]?[a-z0-9]?)*\.([a-z0-9]+[A-Z]?[a-z0-9]?)*|\{\{.*\}\}"/>
+        </x:restriction>
+    </x:simpleType>
+
     <x:simpleType name="aliasPattern">
         <x:restriction base="x:string">
             <x:pattern value="[a-zA-Z_\-/\d]+"/>
@@ -250,6 +256,16 @@
 
     <x:complexType name="fromDom">
         <x:attribute name="xpath" type="tns:xpathPattern"/>
+    </x:complexType>
+
+    <x:complexType name="fromElement">
+        <x:choice>
+            <x:element name="present" type="tns:elementPresent"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="elementPresent">
+        <x:attribute name="locatorId" type="tns:injectableScenarioLocator" use="required"/>
     </x:complexType>
 
     <x:simpleType name="xpathPattern">

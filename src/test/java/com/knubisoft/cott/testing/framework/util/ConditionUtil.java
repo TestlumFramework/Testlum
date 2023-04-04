@@ -15,8 +15,8 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.CONDITION;
 public class ConditionUtil {
 
     public boolean isTrue(final String conditionName,
-                          final CommandResult result,
-                          final ScenarioContext context) {
+                          final ScenarioContext context,
+                          final CommandResult result) {
         if (Objects.nonNull(conditionName)) {
             boolean conditionResult = context.getCondition(conditionName);
             log.info(CONDITION_LOG, conditionName, conditionResult);

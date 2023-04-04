@@ -6,10 +6,7 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,20 +31,13 @@ public final class WebElementFinder {
         SEARCH_TYPES = Collections.unmodifiableMap(map);
     }
 
-    public WebElement find(final Locator locator, final WebDriver driver, final int secondsToWait) {
+    public WebElement find(final Locator locator, final WebDriver driver) {
         return SEARCH_TYPES.entrySet().stream()
                 .filter(l -> l.getKey().test(locator))
                 .findFirst()
                 .map(l -> l.getValue().apply(locator))
-                .map(by -> getWebElement(by, driver, secondsToWait))
+                .map(driver::findElement)
                 .orElseThrow(() -> new DefaultFrameworkException("Web element for locator <%s> not found", locator));
-    }
-
-    private WebElement getWebElement(final org.openqa.selenium.By by,
-                                     final WebDriver driver,
-                                     final int secondsToWait) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(secondsToWait));
-        return wait.until(ExpectedConditions.presenceOfElementLocated(by));
     }
 
     private interface LocatorType extends Predicate<Locator> { }

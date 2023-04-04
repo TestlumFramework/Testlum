@@ -21,6 +21,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.net.URL;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,17 +38,27 @@ public class NativeDriverFactory {
         return getNativeWebDriver(nativeDevice, desiredCapabilities);
     }
 
-    @SneakyThrows
     private AppiumDriver getNativeWebDriver(final NativeDevice nativeDevice,
                                             final DesiredCapabilities desiredCapabilities) {
         UiConfig uiConfig = GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.currentEnv());
         String serverUrl = SeleniumDriverUtil.getNativeConnectionUrl(uiConfig);
+        AppiumDriver driver = newAppiumDriver(nativeDevice, serverUrl, desiredCapabilities);
+        int secondsToWait = uiConfig.getNative().getElementAutowait().getSeconds();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));
+        return driver;
+    }
+
+    @SneakyThrows
+    private AppiumDriver newAppiumDriver(final NativeDevice nativeDevice,
+                                         final String serverUrl,
+                                         final DesiredCapabilities desiredCapabilities) {
+        URL url = new URL(serverUrl);
         if (Platform.ANDROID == nativeDevice.getPlatformName()) {
             setAndroidCapabilities(nativeDevice, desiredCapabilities);
-            return new AndroidDriver(new URL(serverUrl), desiredCapabilities);
+            return new AndroidDriver(url, desiredCapabilities);
         } else if (Platform.IOS == nativeDevice.getPlatformName()) {
             setIosCapabilities(nativeDevice, desiredCapabilities);
-            return new IOSDriver(new URL(serverUrl), desiredCapabilities);
+            return new IOSDriver(url, desiredCapabilities);
         }
         throw new DefaultFrameworkException("Unknown mobile platform name: ", nativeDevice.getPlatformName());
     }

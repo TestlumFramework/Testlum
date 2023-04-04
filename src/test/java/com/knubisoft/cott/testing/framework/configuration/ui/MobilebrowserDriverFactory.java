@@ -18,7 +18,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
-import java.util.Objects;
+import java.time.Duration;
 
 import static java.util.Objects.nonNull;
 
@@ -33,21 +33,28 @@ public class MobilebrowserDriverFactory {
         return getMobilebrowserWebDriver(desiredCapabilities);
     }
 
-    @SneakyThrows
     private WebDriver getMobilebrowserWebDriver(final DesiredCapabilities desiredCapabilities) {
         UiConfig uiConfig = GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.currentEnv());
         String serverUrl = SeleniumDriverUtil.getMobilebrowserConnectionUrl(uiConfig);
-        WebDriver driver;
         Mobilebrowser settings = uiConfig.getMobilebrowser();
-        if (nonNull(settings.getConnection().getAppiumServer())) {
-            driver = new AppiumDriver(new URL(serverUrl), desiredCapabilities);
-        } else if (Objects.nonNull(settings.getConnection().getBrowserStack())) {
-            driver = new RemoteWebDriver(new URL(serverUrl), desiredCapabilities);
-        } else {
-            throw new DefaultFrameworkException("Unknown connection type: %s");
-        }
+        WebDriver driver = newWebDriver(settings, serverUrl, desiredCapabilities);
+        int secondsToWait = settings.getElementAutowait().getSeconds();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));
         driver.get(settings.getBaseUrl());
         return driver;
+    }
+
+    @SneakyThrows
+    private WebDriver newWebDriver(final Mobilebrowser settings,
+                                   final String serverUrl,
+                                   final DesiredCapabilities desiredCapabilities) {
+        URL url = new URL(serverUrl);
+        if (nonNull(settings.getConnection().getAppiumServer())) {
+            return new AppiumDriver(url, desiredCapabilities);
+        } else if (nonNull(settings.getConnection().getBrowserStack())) {
+            return new RemoteWebDriver(url, desiredCapabilities);
+        }
+        throw new DefaultFrameworkException("Unknown connection type in %s", settings.getClass().getSimpleName());
     }
 
     private void setCommonCapabilities(final MobilebrowserDevice mobileDevice,
@@ -72,7 +79,7 @@ public class MobilebrowserDriverFactory {
             desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, "XCUITest");
             desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Safari");
         } else {
-            throw new DefaultFrameworkException("Unknown mobile platform name: %s", mobileDevice.getPlatformName());
+            throw new DefaultFrameworkException("Unknown mobile platform name: ", mobileDevice.getPlatformName());
         }
     }
 }

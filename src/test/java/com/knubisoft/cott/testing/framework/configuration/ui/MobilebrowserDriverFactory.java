@@ -18,6 +18,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.net.URL;
+import java.util.Objects;
 
 import static java.util.Objects.nonNull;
 
@@ -40,7 +41,7 @@ public class MobilebrowserDriverFactory {
         Mobilebrowser settings = uiConfig.getMobilebrowser();
         if (nonNull(settings.getConnection().getAppiumServer())) {
             driver = new AppiumDriver(new URL(serverUrl), desiredCapabilities);
-        } else if (Objects.nonNull(connectionType.getBrowserStack())) {
+        } else if (Objects.nonNull(settings.getConnection().getBrowserStack())) {
             driver = new RemoteWebDriver(new URL(serverUrl), desiredCapabilities);
         } else {
             throw new DefaultFrameworkException("Unknown connection type: %s");

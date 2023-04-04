@@ -56,9 +56,7 @@ public class UiUtil {
 
     public WebElement findWebElement(final ExecutorDependencies dependencies, final String locatorId) {
         Locator locator = GlobalLocators.getLocator(locatorId);
-        int secondsToWait = dependencies.getUiType().getSettings(dependencies.getEnvironment())
-                .getElementAutowait().getSeconds();
-        return WebElementFinder.find(locator, dependencies.getDriver(), secondsToWait);
+        return WebElementFinder.find(locator, dependencies.getDriver());
     }
 
     public void highlightElementIfRequired(final Boolean isHighlight,

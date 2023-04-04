@@ -8,17 +8,15 @@ import com.knubisoft.cott.testing.framework.report.CommandResult;
 import com.knubisoft.cott.testing.framework.util.By;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
+import com.knubisoft.cott.testing.framework.util.UiUtil;
 import com.knubisoft.cott.testing.framework.util.VariableHelper;
 import com.knubisoft.cott.testing.framework.util.VariableHelper.VarMethod;
 import com.knubisoft.cott.testing.framework.util.VariableHelper.VarPredicate;
-import com.knubisoft.cott.testing.framework.util.UiUtil;
-import com.knubisoft.cott.testing.framework.util.VariableService;
-import com.knubisoft.cott.testing.model.scenario.ElementPresent;
 import com.knubisoft.cott.testing.model.scenario.WebVar;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Cookie;
-import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
@@ -38,7 +36,8 @@ import static java.util.Objects.nonNull;
 
 @Slf4j
 @ExecutorForClass(WebVar.class)
-public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
+public class
+WebVariableExecutor extends AbstractUiExecutor<WebVar> {
 
     private final Map<VarPredicate<WebVar>, VarMethod<WebVar>> varToMethodMap;
     @Autowired
@@ -47,14 +46,14 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     public WebVariableExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         Map<VarPredicate<WebVar>, VarMethod<WebVar>> webVarMap = new HashMap<>();
-        webVarMap.put(var -> nonNull(var.getSql()), this::getSQLResult);
-        webVarMap.put(var -> nonNull(var.getFile()), this::getFileResult);
-        webVarMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
-        webVarMap.put(var -> nonNull(var.getPath()), this::getPathResult);
-        webVarMap.put(var -> nonNull(var.getCookie()), this::getWebCookiesResult);
-        webVarMap.put(var -> nonNull(var.getDom()), this::getDomResult);
-        webVarMap.put(var -> nonNull(var.getUrl()), this::getUrlResult);
         webVarMap.put(var -> nonNull(var.getElement()), this::getElementResult);
+        webVarMap.put(var -> nonNull(var.getDom()), this::getDomResult);
+        webVarMap.put(var -> nonNull(var.getCookie()), this::getWebCookiesResult);
+        webVarMap.put(var -> nonNull(var.getUrl()), this::getUrlResult);
+        webVarMap.put(var -> nonNull(var.getPath()), this::getPathResult);
+        webVarMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
+        webVarMap.put(var -> nonNull(var.getFile()), this::getFileResult);
+        webVarMap.put(var -> nonNull(var.getSql()), this::getSQLResult);
         varToMethodMap = Collections.unmodifiableMap(webVarMap);
     }
 
@@ -77,6 +76,19 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     private String getValueForContext(final WebVar var, final CommandResult result) {
         return variableHelper.lookupVarMethod(varToMethodMap, var)
                 .apply(var, result);
+    }
+
+    private String getElementResult(final WebVar webVar, final CommandResult result) {
+        String valueResult;
+        try {
+            String locatorId = inject(webVar.getElement().getPresent().getLocatorId());
+            UiUtil.findWebElement(dependencies, locatorId);
+            valueResult = String.valueOf(true);
+        } catch (NoSuchElementException e) {
+            valueResult = String.valueOf(false);
+        }
+        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), NO_EXPRESSION, valueResult, result);
+        return valueResult;
     }
 
     private String getDomResult(final WebVar var, final CommandResult result) {
@@ -104,18 +116,6 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         String valueResult = dependencies.getDriver().getCurrentUrl();
         ResultUtil.addVariableMetaData(URL, var.getName(), NO_EXPRESSION, valueResult, result);
         return valueResult;
-    }
-
-    private String getElementResult(final WebVar webVar, final CommandResult result) {
-        ElementPresent present = webVar.getElement().getPresent();
-        try {
-            UiUtil.findWebElement(dependencies, inject(present.getLocatorId()));
-            ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), NO_EXPRESSION, "true", result);
-            return "true";
-        } catch (TimeoutException e) {
-            ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), NO_EXPRESSION, "false", result);
-            return "false";
-        }
     }
 
     private String getPathResult(final WebVar var, final CommandResult result) {

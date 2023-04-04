@@ -65,14 +65,14 @@ public class ResultUtil {
     public static final String JSON_PATH = "JSON path";
     public static final String XML_PATH = "Xml path";
     public static final String RELATIONAL_DB_QUERY = "Relational DB query";
+    public static final String FILE = "File";
     public static final String EXPRESSION = "Expression";
     public static final String NO_EXPRESSION = "No expression";
-    public static final String CONDITION = "Condition";
     public static final String COOKIES = "Cookies";
     public static final String URL = "Url";
-    public static final String FILE = "File";
     public static final String HTML_DOM = "HTML Dom";
-    public static final String ELEMENT_PRESENT = "If web element is present";
+    public static final String ELEMENT_PRESENT = "Is the web element present";
+    public static final String CONDITION = "Condition";
     public static final String ASSERT_LOCATOR = "Locator for assert command";
     public static final String ASSERT_ATTRIBUTE = "Assert command attribute";
     public static final String CLICK_LOCATOR = "Locator for click command";
@@ -100,11 +100,11 @@ public class ResultUtil {
     public static final String URL_TO_ACTUAL_IMAGE = "URL to actual image";
     public static final String ADDITIONAL_INFO = "Additional info";
     public static final String IMAGE_ATTACHED_TO_STEP = "Actual image attached to report step";
-    public static final String FROM_LOCATOR = "From element with locator";
-    public static final String FROM_LOCAL_FILE = "From local file";
-    public static final String TO_LOCATOR = "To element with locator";
     public static final String SCROLL_TO_ELEMENT = "Scrolling to element with locator id";
-    public static final String PERFORM_SWIPE = "Perform swipe with direction";
+    private static final String FROM_LOCATOR = "From element with locator";
+    private static final String FROM_LOCAL_FILE = "From local file";
+    private static final String TO_LOCATOR = "To element with locator";
+    private static final String PERFORM_SWIPE = "Perform swipe with direction";
     private static final String SWIPE_VALUE = "Swipe value in percent due to screen dimensions";
     private static final String SWIPE_QUANTITY = "Quantity of swipes";
     private static final String SWIPE_TYPE = "Swipe type";
@@ -149,6 +149,7 @@ public class ResultUtil {
     private static final String SHELL_FILES = "Shell files";
     private static final String SHELL_COMMANDS = "Shell commands";
     private static final String TYPE = "Type";
+    private static final String NAME = "Name";
     private static final String VALUE = "Value";
     private static final String HEADER_TEMPLATE = "%s: %s";
     private static final String MOVE_TO_EMPTY_SPACE = "Move to empty space after execution";
@@ -434,7 +435,7 @@ public class ResultUtil {
                                     final String value,
                                     final CommandResult result) {
         result.put(TYPE, type);
-        result.put(KEY, key);
+        result.put(NAME, key);
         result.put(EXPRESSION, expression);
         result.put(VALUE, value);
     }
@@ -445,7 +446,7 @@ public class ResultUtil {
                                      final Boolean value,
                                      final CommandResult result) {
         result.put(TYPE, type);
-        result.put(KEY, key);
+        result.put(NAME, key);
         result.put(EXPRESSION, expression);
         result.put(VALUE, value);
     }

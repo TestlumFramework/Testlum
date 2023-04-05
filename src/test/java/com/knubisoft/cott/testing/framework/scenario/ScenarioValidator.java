@@ -94,7 +94,7 @@ import com.knubisoft.cott.testing.model.scenario.WebVar;
 import com.knubisoft.cott.testing.model.scenario.Websocket;
 import com.knubisoft.cott.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.cott.testing.model.scenario.WebsocketSend;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -330,13 +330,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         this.abstractCommandValidatorsMap = Collections.unmodifiableMap(validatorMap);
     }
 
-    private void validateGraphqlCommand(final File xmlFile, final Graphql graphql) {
-        Stream.of(graphql.getPost(), graphql.getGet())
-                .filter(Objects::nonNull)
-                .filter(v -> StringUtils.hasText(v.getResponse().getFile()))
-                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v.getResponse().getFile()));
-    }
-
     @Override
     public void validate(final Scenario scenario, final File xmlFile) {
         if (scenario.isActive()) {
@@ -477,6 +470,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
+    private void validateGraphqlCommand(final File xmlFile, final Graphql graphql) {
+        Stream.of(graphql.getPost(), graphql.getGet())
+                .filter(Objects::nonNull)
+                .filter(v -> StringUtils.isNotBlank(v.getResponse().getFile()))
+                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v.getResponse().getFile()));
+    }
+
     private void validateWebsocketCommand(final File xmlFile, final Websocket websocket) {
         List<Object> commands = new ArrayList<>();
         if (nonNull(websocket.getStomp())) {
@@ -486,7 +486,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
         commands.stream()
                 .map(this::getWebsocketFilename)
-                .filter(org.apache.commons.lang3.StringUtils::isNotBlank)
+                .filter(StringUtils::isNotBlank)
                 .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
     }
 
@@ -534,7 +534,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateRabbitCommand(final File xmlFile, final Rabbit rabbit) {
         rabbit.getSendOrReceive().stream()
                 .map(this::getRabbitFilename)
-                .filter(org.apache.commons.lang3.StringUtils::isNotBlank)
+                .filter(StringUtils::isNotBlank)
                 .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
     }
 
@@ -549,7 +549,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateKafkaCommand(final File xmlFile, final Kafka kafka) {
         kafka.getSendOrReceive().stream()
                 .map(this::getKafkaFilename)
-                .filter(org.apache.commons.lang3.StringUtils::isNotBlank)
+                .filter(StringUtils::isNotBlank)
                 .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
     }
 
@@ -563,13 +563,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateSqsCommand(final File xmlFile, final Sqs sqs) {
         Stream.of(sqs.getReceive(), sqs.getSend())
-                .filter(org.apache.commons.lang3.StringUtils::isNotBlank).filter(o -> o.endsWith(JSON_EXTENSION))
+                .filter(StringUtils::isNotBlank).filter(o -> o.endsWith(JSON_EXTENSION))
                 .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
     }
 
     private void validateS3Command(final File xmlFile, final S3 s3) {
         Stream.of(s3.getDownload(), s3.getUpload())
-                .filter(org.apache.commons.lang3.StringUtils::isNotBlank)
+                .filter(StringUtils::isNotBlank)
                 .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
     }
 

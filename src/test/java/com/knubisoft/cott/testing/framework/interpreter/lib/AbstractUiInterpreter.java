@@ -5,9 +5,9 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependenc
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorProvider;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
+import com.knubisoft.cott.testing.framework.util.ConfigUtil;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
-import com.knubisoft.cott.testing.framework.util.ScenarioUtil;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.cott.testing.model.scenario.SwitchToFrame;
 import com.knubisoft.cott.testing.model.scenario.Ui;
@@ -36,8 +36,8 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
                 .driver(uiType.getAppropriateDriver(dependencies))
                 .scenarioContext(dependencies.getScenarioContext())
                 .position(dependencies.getPosition())
-                .takeScreenshots(uiType.isScreenshotsEnabled())
                 .uiType(uiType)
+                .environment(dependencies.getEnvironment())
                 .build();
     }
 
@@ -75,7 +75,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
         } catch (Exception e) {
             ResultUtil.setExceptionResult(subCommandResult, e);
             LogUtil.logException(e);
-            ScenarioUtil.checkIfStopScenarioOnFailure(e);
+            ConfigUtil.checkIfStopScenarioOnFailure(e);
         } finally {
             long execTime = stopWatch.getTime();
             stopWatch.stop();
@@ -86,9 +86,9 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
 
     private AbstractUiExecutor<AbstractUiCommand> getAppropriateExecutor(final AbstractUiCommand uiCommand,
                                                                          final ExecutorDependencies dependencies) {
-        AbstractUiExecutor<AbstractUiCommand> executor
-                = ExecutorProvider.getAppropriateExecutor(uiCommand, dependencies);
-        this.dependencies.getCxt().getAutowireCapableBeanFactory().autowireBean(executor);
+        AbstractUiExecutor<AbstractUiCommand> executor =
+                ExecutorProvider.getAppropriateExecutor(uiCommand, dependencies);
+        this.dependencies.getContext().getAutowireCapableBeanFactory().autowireBean(executor);
         return executor;
     }
 

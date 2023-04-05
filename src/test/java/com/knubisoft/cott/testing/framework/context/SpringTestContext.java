@@ -1,14 +1,16 @@
 package com.knubisoft.cott.testing.framework.context;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.cott.testing.framework.report.GlobalScenarioStatCollector;
+import com.knubisoft.cott.testing.framework.env.EnvManager;
 import com.knubisoft.cott.testing.framework.report.ReportGenerator;
 import com.knubisoft.cott.testing.framework.report.ReportGeneratorFactory;
+import com.knubisoft.cott.testing.model.global_config.Environment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -26,8 +28,12 @@ public class SpringTestContext {
     }
 
     @Bean
-    public GlobalScenarioStatCollector createNewStatCollector() {
-        return new GlobalScenarioStatCollector();
+    public EnvManager envManager() {
+        boolean isParallelExecutionEnabled = GlobalTestConfigurationProvider.provide().isParallelExecution();
+        List<Environment> enabledEnvList = GlobalTestConfigurationProvider.getEnabledEnvironments();
+        final List<Environment> envList = isParallelExecutionEnabled
+                ? enabledEnvList : Collections.singletonList(enabledEnvList.get(0));
+        return new EnvManager(envList);
     }
 
     @Bean

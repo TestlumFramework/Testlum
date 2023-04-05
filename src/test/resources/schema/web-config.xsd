@@ -39,9 +39,10 @@
             <x:element name="browserType" type="tns:browserType"/>
             <x:element name="capabilities" type="tns:capabilities" minOccurs="0"/>
         </x:sequence>
-        <x:attribute name="enable" type="x:boolean" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
         <x:attribute name="maximizedBrowserWindow" type="x:boolean" use="required"/>
         <x:attribute name="browserWindowSize" type="tns:windowSize"/>
+        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
     </x:complexType>
 
     <x:complexType name="browserType">
@@ -76,7 +77,7 @@
     </x:complexType>
 
     <x:complexType name="screenRecording">
-        <x:attribute name="enable" type="x:boolean" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
         <x:attribute name="outputFolder" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
@@ -95,7 +96,6 @@
             <x:element name="argument" type="tns:nonEmptyString" maxOccurs="unbounded"/>
         </x:sequence>
     </x:complexType>
-
 
     <x:complexType name="chrome">
         <x:complexContent>

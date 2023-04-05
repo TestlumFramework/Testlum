@@ -53,7 +53,7 @@ public class ImageComparisonUtil {
 
     private File getFileToSave(final File directoryToSave, final String expectedImageFullName) {
         verifyDirectoryToSave(directoryToSave);
-        return new File(directoryToSave.getAbsolutePath() + getImageNameToSave(expectedImageFullName));
+        return new File(directoryToSave.getAbsolutePath(), getImageNameToSave(expectedImageFullName));
     }
 
     private void verifyDirectoryToSave(final File directoryToSave) {
@@ -64,7 +64,7 @@ public class ImageComparisonUtil {
     }
 
     private String getImageNameToSave(final String expectedImageFullName) {
-        return format("/%s%s.%s",
+        return format("%s%s.%s",
                 TestResourceSettings.ACTUAL_IMAGE_PREFIX,
                 FilenameUtils.getBaseName(expectedImageFullName),
                 FilenameUtils.getExtension(expectedImageFullName));

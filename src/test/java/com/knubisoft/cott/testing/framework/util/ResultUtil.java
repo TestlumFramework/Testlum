@@ -31,7 +31,6 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import org.springframework.http.HttpMethod;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -41,13 +40,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
 public class ResultUtil {
@@ -64,16 +64,15 @@ public class ResultUtil {
     public static final String ACTUAL_CODE = "Actual code";
     public static final String JSON_PATH = "JSON path";
     public static final String XML_PATH = "Xml path";
-    public static final String POSTGRES_QUERY = "Postgres query";
     public static final String RELATIONAL_DB_QUERY = "Relational DB query";
+    public static final String FILE = "File";
     public static final String EXPRESSION = "Expression";
     public static final String NO_EXPRESSION = "No expression";
-    public static final String CONDITION = "Condition";
-    public static final String CONSTANT = "Constant";
     public static final String COOKIES = "Cookies";
     public static final String URL = "Url";
-    public static final String FILE = "File";
     public static final String HTML_DOM = "HTML Dom";
+    public static final String ELEMENT_PRESENT = "Is the web element present";
+    public static final String CONDITION = "Condition";
     public static final String ASSERT_LOCATOR = "Locator for assert command";
     public static final String ASSERT_ATTRIBUTE = "Assert command attribute";
     public static final String CLICK_LOCATOR = "Locator for click command";
@@ -96,18 +95,16 @@ public class ResultUtil {
     public static final String NATIVE_NAVIGATE_TO = "Navigate to destination";
     public static final String ALL_VALUES_DESELECT = "all values (deselect)";
     public static final String ONE_VALUE_TEMPLATE = "one value (%s)";
-    public static final String NUMBER_OF_REPETITIONS = "Number of repetitions";
     public static final String CLEAR_COOKIES_AFTER_EXECUTION = "Clear cookies after execution";
     public static final String CLEAR_LOCAL_STORAGE_BY_KEY = "Clear local storage by key";
     public static final String URL_TO_ACTUAL_IMAGE = "URL to actual image";
     public static final String ADDITIONAL_INFO = "Additional info";
     public static final String IMAGE_ATTACHED_TO_STEP = "Actual image attached to report step";
-    public static final String FROM_LOCATOR = "From element with locator";
-    public static final String FROM_LOCAL_FILE = "From local file";
-    public static final String TO_LOCATOR = "To element with locator";
     public static final String SCROLL_TO_ELEMENT = "Scrolling to element with locator id";
-    public static final String PERFORM_SWIPE = "Perform swipe with direction";
-    public static final String PERFORM_ELEMENT_SWIPE = "Performing element swipe with direction";
+    private static final String FROM_LOCATOR = "From element with locator";
+    private static final String FROM_LOCAL_FILE = "From local file";
+    private static final String TO_LOCATOR = "To element with locator";
+    private static final String PERFORM_SWIPE = "Perform swipe with direction";
     private static final String SWIPE_VALUE = "Swipe value in percent due to screen dimensions";
     private static final String SWIPE_QUANTITY = "Quantity of swipes";
     private static final String SWIPE_TYPE = "Swipe type";
@@ -152,6 +149,7 @@ public class ResultUtil {
     private static final String SHELL_FILES = "Shell files";
     private static final String SHELL_COMMANDS = "Shell commands";
     private static final String TYPE = "Type";
+    private static final String NAME = "Name";
     private static final String VALUE = "Value";
     private static final String HEADER_TEMPLATE = "%s: %s";
     private static final String MOVE_TO_EMPTY_SPACE = "Move to empty space after execution";
@@ -202,6 +200,11 @@ public class ResultUtil {
     public void setExceptionResult(final CommandResult result, final Exception exception) {
         result.setSuccess(false);
         result.setException(exception);
+    }
+
+    public void setExpectedActual(final String expected, final String actual, final CommandResult result) {
+        result.setExpected(expected);
+        result.setActual(actual);
     }
 
     public void addDatabaseMetaData(final String databaseAlias,
@@ -390,7 +393,7 @@ public class ResultUtil {
         result.setComment(comment);
         result.put(ALIAS, alias);
         result.put(ACTION, action);
-        if (StringUtils.isNotBlank(destinationValue)) {
+        if (isNotBlank(destinationValue)) {
             result.put(destination, destinationValue);
         }
     }
@@ -432,7 +435,7 @@ public class ResultUtil {
                                     final String value,
                                     final CommandResult result) {
         result.put(TYPE, type);
-        result.put(KEY, key);
+        result.put(NAME, key);
         result.put(EXPRESSION, expression);
         result.put(VALUE, value);
     }
@@ -443,7 +446,7 @@ public class ResultUtil {
                                      final Boolean value,
                                      final CommandResult result) {
         result.put(TYPE, type);
-        result.put(KEY, key);
+        result.put(NAME, key);
         result.put(EXPRESSION, expression);
         result.put(VALUE, value);
     }
@@ -480,9 +483,9 @@ public class ResultUtil {
 
     public void addDragAndDropMetaDada(final DragAndDrop dragAndDrop,
                                        final CommandResult result) {
-        if (StringUtils.isNotBlank(dragAndDrop.getFilePath())) {
+        if (isNotBlank(dragAndDrop.getFilePath())) {
             result.put(FROM_LOCAL_FILE, dragAndDrop.getFilePath());
-        } else if (StringUtils.isNotBlank(dragAndDrop.getFromLocatorId())) {
+        } else if (isNotBlank(dragAndDrop.getFromLocatorId())) {
             result.put(FROM_LOCATOR, dragAndDrop.getFromLocatorId());
         }
         result.put(TO_LOCATOR, dragAndDrop.getToLocatorId());
@@ -495,9 +498,9 @@ public class ResultUtil {
     }
 
     public void addHoversMetaData(final Hovers hovers, final CommandResult result) {
-        Boolean isMoveToEmptySpace = hovers.isMoveToEmptySpace();
-        if (isMoveToEmptySpace != null) {
-            result.put(MOVE_TO_EMPTY_SPACE, isMoveToEmptySpace);
+        boolean isMoveToEmptySpace = hovers.isMoveToEmptySpace();
+        if (isMoveToEmptySpace) {
+            result.put(MOVE_TO_EMPTY_SPACE, true);
         }
         AtomicInteger number = new AtomicInteger(1);
         hovers.getHover().forEach(hover -> {
@@ -511,13 +514,13 @@ public class ResultUtil {
         String key = sendAction.getKey();
         String correlationId = sendAction.getCorrelationId();
         KafkaHeaders kafkaHeaders = sendAction.getHeaders();
-        if (StringUtils.isNotEmpty(key)) {
+        if (isNotBlank(key)) {
             result.put(KEY, key);
         }
-        if (StringUtils.isNotEmpty(correlationId)) {
+        if (isNotBlank(correlationId)) {
             result.put(CORRELATION_ID, correlationId);
         }
-        if (kafkaHeaders != null) {
+        if (nonNull(kafkaHeaders)) {
             result.put(ADDITIONAL_HEADERS, kafkaHeaders.getHeader().stream().map(header ->
                     format(HEADER_TEMPLATE, header.getName(), header.getValue())).collect(Collectors.toList()));
         }
@@ -528,13 +531,13 @@ public class ResultUtil {
         String exchange = sendAction.getExchange();
         String correlationId = sendAction.getCorrelationId();
         RmqHeaders rabbitHeaders = sendAction.getHeaders();
-        if (StringUtils.isNotEmpty(exchange)) {
+        if (isNotBlank(exchange)) {
             result.put(EXCHANGE, exchange);
         }
-        if (StringUtils.isNotEmpty(correlationId)) {
+        if (isNotBlank(correlationId)) {
             result.put(CORRELATION_ID, correlationId);
         }
-        if (rabbitHeaders != null) {
+        if (nonNull(rabbitHeaders)) {
             result.put(ADDITIONAL_HEADERS, rabbitHeaders.getHeader().stream().map(header ->
                     format(HEADER_TEMPLATE, header.getName(), header.getValue())).collect(Collectors.toList()));
         }
@@ -553,7 +556,7 @@ public class ResultUtil {
         result.put(IMAGE_FOR_COMPARISON, image.getFile());
         result.put(HIGHLIGHT_DIFFERENCE, image.isHighlightDifference());
         CompareWith compareWith = image.getCompareWith();
-        if (Objects.nonNull(compareWith)) {
+        if (nonNull(compareWith)) {
             result.put(IMAGE_COMPARISON_TYPE, EXTRACT_THEN_COMPARE);
             result.put(IMAGE_LOCATOR, compareWith.getLocatorId());
             result.put(IMAGE_SOURCE_ATT, compareWith.getAttribute());
@@ -572,7 +575,7 @@ public class ResultUtil {
         result.put(SWIPE_QUANTITY, swipeNative.getQuantity());
         result.put(PERFORM_SWIPE, swipeNative.getDirection());
         result.put(SWIPE_VALUE, swipeNative.getPercent());
-        if (StringUtils.isNotBlank(swipeNative.getLocatorId())) {
+        if (isNotBlank(swipeNative.getLocatorId())) {
             result.put(SWIPE_LOCATOR, swipeNative.getLocatorId());
         }
     }

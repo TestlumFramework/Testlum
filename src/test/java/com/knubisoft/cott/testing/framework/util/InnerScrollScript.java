@@ -11,31 +11,31 @@ import com.knubisoft.cott.testing.model.scenario.ScrollMeasure;
 import lombok.Getter;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
 
 @Getter
 public enum InnerScrollScript {
 
-    VERTICAL_BY_CSS_SELECTOR(locator -> Objects.nonNull(locator.getCssSelector()),
+    VERTICAL_BY_CSS_SELECTOR(locator -> nonNull(locator.getCssSelector()),
             Locator::getCssSelector,
             "document.querySelector('%s').scrollBy(0, %s)",
             "document.querySelector('%s').scrollBy(0, document.querySelector('%s')"
                     + ".scrollHeight * %s)"),
-    VERTICAL_BY_ID(locator -> Objects.nonNull(locator.getId()),
+    VERTICAL_BY_ID(locator -> nonNull(locator.getId()),
             Locator::getId,
             "document.getElementById('%s').scrollBy(0, %s)",
             "document.getElementById('%s').scrollBy(0, document.getElementById('%s')"
                     + ".scrollHeight * %s)"),
-    VERTICAL_BY_CLASS(locator -> Objects.nonNull(locator.getClazz()),
+    VERTICAL_BY_CLASS(locator -> nonNull(locator.getClazz()),
             Locator::getClazz,
             "document.getElementsByClassName('%s').scrollBy(0, %s)",
             "document.getElementsByClassName('%s').scrollBy(0, "
                     + "document.getElementsByClassName('%s').scrollHeight * %s)"),
-    VERTICAL_BY_XPATH(locator -> Objects.nonNull(locator.getXpath()),
+    VERTICAL_BY_XPATH(locator -> nonNull(locator.getXpath()),
             Locator::getXpath,
             "document.evaluate('%s', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
                     + ".singleNodeValue.scrollBy(0, %s)",
@@ -72,7 +72,7 @@ public enum InnerScrollScript {
                             ? formatInnerPercentScript(e.getPercentageScript(), selector, value, scrollDirection)
                             : formatInnerPixelScript(e.getPixelScript(), selector, value, scrollDirection);
                 })
-                .orElseThrow(() -> new DefaultFrameworkException(format(ExceptionMessage.INVALID_LOCATOR, locator)));
+                .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.INVALID_LOCATOR, locator));
     }
 
     private static String formatInnerPixelScript(final String script,

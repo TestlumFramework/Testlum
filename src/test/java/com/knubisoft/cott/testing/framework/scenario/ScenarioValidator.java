@@ -5,14 +5,15 @@ import com.knubisoft.cott.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.util.BrowserUtil;
-import com.knubisoft.cott.testing.framework.util.ConfigUtil;
 import com.knubisoft.cott.testing.framework.util.DatasetValidator;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.util.HttpUtil;
+import com.knubisoft.cott.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.cott.testing.framework.util.MobileUtil;
 import com.knubisoft.cott.testing.framework.util.SendGridUtil;
 import com.knubisoft.cott.testing.framework.validator.XMLValidator;
 import com.knubisoft.cott.testing.framework.variations.GlobalVariations;
+import com.knubisoft.cott.testing.model.global_config.Api;
 import com.knubisoft.cott.testing.model.global_config.Apis;
 import com.knubisoft.cott.testing.model.global_config.AppiumCapabilities;
 import com.knubisoft.cott.testing.model.global_config.ClickhouseIntegration;
@@ -37,6 +38,7 @@ import com.knubisoft.cott.testing.model.global_config.SesIntegration;
 import com.knubisoft.cott.testing.model.global_config.SmtpIntegration;
 import com.knubisoft.cott.testing.model.global_config.SqsIntegration;
 import com.knubisoft.cott.testing.model.global_config.TwilioIntegration;
+import com.knubisoft.cott.testing.model.global_config.UiConfig;
 import com.knubisoft.cott.testing.model.global_config.Websockets;
 import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.AbstractUiCommand;
@@ -118,20 +120,23 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SAM
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SAME_MOBILE_DEVICES;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF;
 import static com.knubisoft.cott.testing.framework.constant.MigrationConstant.JSON_EXTENSION;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.ObjectUtils.allNotNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
-    private final Integrations integrations = GlobalTestConfigurationProvider.getIntegrations();
+    private final Integrations integrations = GlobalTestConfigurationProvider.getDefaultIntegrations();
 
     public ScenarioValidator() {
-
         Map<AbstractCommandPredicate, AbstractCommandValidator> validatorMap = new HashMap<>();
 
         validatorMap.put(o -> o instanceof Auth, (xmlFile, command) -> {
+            checkIntegrationExistence(integrations.getApis(), Apis.class);
             Auth auth = (Auth) command;
             validateFileExistenceInDataFolder(auth.getCredentials());
-            validateAlias(integrations.getApis().getApi(), auth.getApiAlias());
             validateAuthCommand(auth);
         });
 
@@ -141,30 +146,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateHttpCommand(xmlFile, http);
         });
 
-        validatorMap.put(o -> o instanceof Shell, (xmlFile, command) -> {
-            Shell shell = (Shell) command;
-            validateShellCommand(xmlFile, shell);
-        });
-
         validatorMap.put(o -> o instanceof Migrate, (xmlFile, command) -> {
             Migrate migrate = (Migrate) command;
             validateExistsDatasets(migrate);
-        });
-
-        validatorMap.put(o -> o instanceof Elasticsearch, (xmlFile, command) -> {
-            ElasticsearchIntegration elasticsearchIntegration = integrations.getElasticsearchIntegration();
-            checkIntegrationExistence(elasticsearchIntegration, ElasticsearchIntegration.class);
-            Elasticsearch elasticsearch = (Elasticsearch) command;
-            validateAlias(elasticsearchIntegration.getElasticsearch(), elasticsearch.getAlias());
-            validateElasticsearchCommand(xmlFile, elasticsearch);
-        });
-
-        validatorMap.put(o -> o instanceof S3, (xmlFile, command) -> {
-            S3Integration s3Integration = integrations.getS3Integration();
-            checkIntegrationExistence(s3Integration, S3Integration.class);
-            S3 s3 = (S3) command;
-            validateAlias(s3Integration.getS3(), s3.getAlias());
-            validateS3Command(xmlFile, s3);
         });
 
         validatorMap.put(o -> o instanceof Postgres, (xmlFile, command) -> {
@@ -189,6 +173,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             Oracle oracle = (Oracle) command;
             validateAlias(oracleIntegration.getOracle(), oracle.getAlias());
             validateFileIfExist(xmlFile, oracle.getFile());
+        });
+
+        validatorMap.put(o -> o instanceof Clickhouse, (xmlFile, command) -> {
+            ClickhouseIntegration clickhouseIntegration = integrations.getClickhouseIntegration();
+            checkIntegrationExistence(clickhouseIntegration, ClickhouseIntegration.class);
+            Clickhouse clickhouse = (Clickhouse) command;
+            validateAlias(clickhouseIntegration.getClickhouse(), clickhouse.getAlias());
+            validateFileIfExist(xmlFile, clickhouse.getFile());
         });
 
         validatorMap.put(o -> o instanceof Redis, (xmlFile, command) -> {
@@ -223,14 +215,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateGraphqlCommand(xmlFile, graphql);
         });
 
-        validatorMap.put(o -> o instanceof Clickhouse, (xmlFile, command) -> {
-            ClickhouseIntegration clickhouseIntegration = integrations.getClickhouseIntegration();
-            checkIntegrationExistence(clickhouseIntegration, ClickhouseIntegration.class);
-            Clickhouse clickhouse = (Clickhouse) command;
-            validateAlias(clickhouseIntegration.getClickhouse(), clickhouse.getAlias());
-            validateFileIfExist(xmlFile, clickhouse.getFile());
-        });
-
         validatorMap.put(o -> o instanceof Rabbit, (xmlFile, command) -> {
             RabbitmqIntegration rabbitmqIntegration = integrations.getRabbitmqIntegration();
             checkIntegrationExistence(rabbitmqIntegration, RabbitmqIntegration.class);
@@ -260,6 +244,22 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             checkIntegrationExistence(sesIntegration, SesIntegration.class);
             Ses ses = (Ses) command;
             validateAlias(sesIntegration.getSes(), ses.getAlias());
+        });
+
+        validatorMap.put(o -> o instanceof S3, (xmlFile, command) -> {
+            S3Integration s3Integration = integrations.getS3Integration();
+            checkIntegrationExistence(s3Integration, S3Integration.class);
+            S3 s3 = (S3) command;
+            validateAlias(s3Integration.getS3(), s3.getAlias());
+            validateS3Command(xmlFile, s3);
+        });
+
+        validatorMap.put(o -> o instanceof Elasticsearch, (xmlFile, command) -> {
+            ElasticsearchIntegration elasticsearchIntegration = integrations.getElasticsearchIntegration();
+            checkIntegrationExistence(elasticsearchIntegration, ElasticsearchIntegration.class);
+            Elasticsearch elasticsearch = (Elasticsearch) command;
+            validateAlias(elasticsearchIntegration.getElasticsearch(), elasticsearch.getAlias());
+            validateElasticsearchCommand(xmlFile, elasticsearch);
         });
 
         validatorMap.put(o -> o instanceof Sendgrid, (xmlFile, command) -> {
@@ -300,6 +300,11 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateLambdaCommand(xmlFile, lambda);
         });
 
+        validatorMap.put(o -> o instanceof Shell, (xmlFile, command) -> {
+            Shell shell = (Shell) command;
+            validateShellCommand(xmlFile, shell);
+        });
+
         validatorMap.put(o -> o instanceof Include, (xmlFile, command) -> {
             Include include = (Include) command;
             validateIncludeAction(include, xmlFile);
@@ -310,17 +315,17 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateVarCommand(xmlFile, var.getFile(), var.getSql());
         });
 
-        validatorMap.put(o -> o instanceof Web, (xmlFile, command) -> {
-            validateWebCommands((Web) command, xmlFile);
-        });
+        validatorMap.put(o -> o instanceof Web, (xmlFile, command) ->
+                validateWebCommands((Web) command, xmlFile)
+        );
 
-        validatorMap.put(o -> o instanceof Mobilebrowser, (xmlFile, command) -> {
-            validateMobilebrowserCommands((Mobilebrowser) command, xmlFile);
-        });
+        validatorMap.put(o -> o instanceof Mobilebrowser, (xmlFile, command) ->
+                validateMobilebrowserCommands((Mobilebrowser) command, xmlFile)
+        );
 
-        validatorMap.put(o -> o instanceof Native, (xmlFile, command) -> {
-            validateNativeCommands((Native) command);
-        });
+        validatorMap.put(o -> o instanceof Native, (xmlFile, command) ->
+                validateNativeCommands((Native) command)
+        );
 
         this.abstractCommandValidatorsMap = Collections.unmodifiableMap(validatorMap);
     }
@@ -342,7 +347,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateVariationsIfExist(final Scenario scenario, final File xmlFile) {
-        if (StringUtils.hasText(scenario.getVariations())) {
+        if (isNotBlank(scenario.getVariations())) {
             GlobalVariations.process(scenario, xmlFile);
         }
     }
@@ -357,11 +362,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateNativeAndMobileAppiumConfig() {
-        boolean isSameUrl = GlobalTestConfigurationProvider.getMobilebrowserSettings()
-                .getConnection().getAppiumServer().getServerUrl()
-                .equals(GlobalTestConfigurationProvider.getNativeSettings().getConnection()
-                        .getAppiumServer().getServerUrl());
-        if (isSameUrl) {
+        if (isSameUrl()) {
             throw new DefaultFrameworkException(SAME_APPIUM_URL);
         }
         if (isSameNativeAndMobileDevices()) {
@@ -369,14 +370,30 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
+    private boolean isSameUrl() {
+        return GlobalTestConfigurationProvider.getUiConfigs().values().stream()
+                .filter(uiConfig -> allNotNull(uiConfig.getMobilebrowser(), uiConfig.getNative()))
+                .filter(uiConfig -> allNotNull(uiConfig.getNative().getConnection().getAppiumServer(),
+                        uiConfig.getMobilebrowser().getConnection().getAppiumServer()))
+                .anyMatch(uiConfig -> Objects.equals(
+                        uiConfig.getMobilebrowser().getConnection().getAppiumServer().getServerUrl(),
+                        uiConfig.getNative().getConnection().getAppiumServer().getServerUrl()));
+    }
+
     private boolean isSameNativeAndMobileDevices() {
-        List<String> nativeUdids = MobileUtil.filterEnabledNativeDevices().stream()
+        return GlobalTestConfigurationProvider.getUiConfigs().values().stream()
+                .filter(uiConfig -> allNotNull(uiConfig.getMobilebrowser(), uiConfig.getNative()))
+                .anyMatch(this::isSameNativeAndMobileDevices);
+    }
+
+    private boolean isSameNativeAndMobileDevices(final UiConfig uiConfig) {
+        List<String> nativeUdids = uiConfig.getNative().getDevices().getDevice().stream()
                 .map(NativeDevice::getAppiumCapabilities)
                 .filter(Objects::nonNull)
                 .map(AppiumCapabilities::getUdid)
                 .collect(Collectors.toList());
 
-        return MobileUtil.filterEnabledMobilebrowserDevices().stream()
+        return uiConfig.getMobilebrowser().getDevices().getDevice().stream()
                 .map(MobilebrowserDevice::getAppiumCapabilities)
                 .filter(Objects::nonNull)
                 .map(AppiumCapabilities::getUdid)
@@ -384,33 +401,33 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateFileExistenceInDataFolder(final String commandFile) {
-        if (StringUtils.hasText(commandFile)) {
+        if (isNotBlank(commandFile)) {
             FileSearcher.searchFileFromDataFolder(commandFile);
         }
     }
 
     private void validateFileIfExist(final File xmlFile, final String commandFile) {
-        if (StringUtils.hasText(commandFile)) {
+        if (isNotBlank(commandFile)) {
             FileSearcher.searchFileFromDir(xmlFile, commandFile);
         }
     }
 
     private void checkIntegrationExistence(final Object integration, final Class<?> name) {
-        if (Objects.isNull(integration)) {
+        if (isNull(integration)) {
             throw new DefaultFrameworkException(INTEGRATION_NOT_FOUND, name.getSimpleName());
         }
     }
 
     private void validateAlias(final List<? extends Integration> integrationList, final String alias) {
-        ConfigUtil.checkIntegrationForAlias(integrationList, alias);
+        IntegrationsUtil.findForAlias(integrationList, alias);
     }
 
     //CHECKSTYLE:OFF
     private void validateVarCommand(final File xmlFile, final FromFile fromFile, final FromSQL fromSQL) {
-        if (Objects.nonNull(fromFile)) {
+        if (nonNull(fromFile)) {
             validateFileIfExist(xmlFile, fromFile.getFileName());
         }
-        if (Objects.nonNull(fromSQL)) {
+        if (nonNull(fromSQL)) {
             List<? extends Integration> integrationList;
             switch (fromSQL.getDbType()) {
                 case POSTGRES:
@@ -437,102 +454,46 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
     //CHECKSTYLE:ON
 
-    private void validateElasticsearchCommand(final File xmlFile, final Elasticsearch elasticsearch) {
-        Stream.of(elasticsearch.getPost(), elasticsearch.getGet(), elasticsearch.getPut(), elasticsearch.getDelete())
-                .filter(Objects::nonNull)
-                .filter(v -> StringUtils.hasText(v.getResponse().getFile()))
-                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v.getResponse().getFile()));
-    }
-
-    private void validateSqsCommand(final File xmlFile, final Sqs sqs) {
-        Stream.of(sqs.getReceive(), sqs.getSend())
-                .filter(StringUtils::hasText).filter(o -> o.endsWith(JSON_EXTENSION))
-                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
-    }
-
-    private void validateRabbitCommand(final File xmlFile, final Rabbit rabbit) {
-        rabbit.getSendOrReceive().stream()
-                .map(this::getRabbitFilename)
-                .filter(StringUtils::hasText)
-                .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
-    }
-
-    private String getRabbitFilename(final Object rabbitCommand) {
-        if (rabbitCommand instanceof SendRmqMessage) {
-            return ((SendRmqMessage) rabbitCommand).getFile();
-        } else {
-            return ((ReceiveRmqMessage) rabbitCommand).getFile();
+    private void validateAuthCommand(final Auth auth) {
+        Api apiIntegration = IntegrationsUtil.findApiForAlias(integrations.getApis().getApi(), auth.getApiAlias());
+        if (isNull(apiIntegration.getAuth())) {
+            throw new DefaultFrameworkException("//todo AUTH_NOT_FOUND", apiIntegration.getAlias());
         }
-    }
-
-    private void validateKafkaCommand(final File xmlFile, final Kafka kafka) {
-        kafka.getSendOrReceive().stream()
-                .map(this::getKafkaFilename)
-                .filter(StringUtils::hasText)
-                .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
-    }
-
-    private String getKafkaFilename(final Object kafkaCommand) {
-        if (kafkaCommand instanceof SendKafkaMessage) {
-            return ((SendKafkaMessage) kafkaCommand).getFile();
-        } else {
-            return ((ReceiveKafkaMessage) kafkaCommand).getFile();
+        boolean authCmdAliasNotMatch = auth.getCommands().stream()
+                .anyMatch(command -> command instanceof Http
+                        && !((Http) command).getAlias().equalsIgnoreCase(auth.getApiAlias()));
+        if (authCmdAliasNotMatch) {
+            throw new DefaultFrameworkException(AUTH_ALIASES_DOESNT_MATCH);
         }
-    }
-
-    private void validateS3Command(final File xmlFile, final S3 s3) {
-        Stream.of(s3.getDownload(), s3.getUpload())
-                .filter(StringUtils::hasText)
-                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
-    }
-
-    private void validateSendgridCommand(final File xmlFile, final Sendgrid sendgrid) {
-        SendgridInfo sendgridInfo = SendGridUtil.getSendgridMethodMetadata(sendgrid).getHttpInfo();
-        Response response = sendgridInfo.getResponse();
-        if (Objects.nonNull(response) && StringUtils.hasText(response.getFile())) {
-            FileSearcher.searchFileFromDir(xmlFile, response.getFile());
-        }
-
-        SendgridWithBody commandWithBody = (SendgridWithBody) sendgridInfo;
-        Body body = commandWithBody.getBody();
-        if (Objects.nonNull(body) && Objects.nonNull(body.getFrom())) {
-            FileSearcher.searchFileFromDir(xmlFile, body.getFrom().getFile());
-        }
-    }
-
-    private void validateExistsDatasets(final Migrate migrate) {
-        List<String> datasets = migrate.getDataset();
-        StorageName storageName = migrate.getName();
-        datasets.forEach(dataset -> DatasetValidator.validateDatasetByExtension(dataset, storageName));
     }
 
     private void validateHttpCommand(final File xmlFile, final Http http) {
-        ConfigUtil.findApiForAlias(integrations.getApis().getApi(), http.getAlias());
+        IntegrationsUtil.findApiForAlias(integrations.getApis().getApi(), http.getAlias());
 
         HttpInfo httpInfo = HttpUtil.getHttpMethodMetadata(http).getHttpInfo();
         Response response = httpInfo.getResponse();
-        if (Objects.nonNull(response) && StringUtils.hasText(response.getFile())) {
+        if (nonNull(response) && isNotBlank(response.getFile())) {
             FileSearcher.searchFileFromDir(xmlFile, response.getFile());
         }
     }
 
     private void validateWebsocketCommand(final File xmlFile, final Websocket websocket) {
         List<Object> commands = new ArrayList<>();
-        if (Objects.nonNull(websocket.getStomp())) {
+        if (nonNull(websocket.getStomp())) {
             addWebsocketCommandsToCheck(websocket.getStomp().getSubscribeOrSendOrReceive(), commands);
         } else {
             addWebsocketCommandsToCheck(websocket.getSendOrReceive(), commands);
         }
         commands.stream()
                 .map(this::getWebsocketFilename)
-                .filter(StringUtils::hasText)
+                .filter(org.apache.commons.lang3.StringUtils::isNotBlank)
                 .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
     }
 
     private void addWebsocketCommandsToCheck(final List<Object> commandList, final List<Object> commands) {
         commandList.stream()
                 .peek(commands::add)
-                .filter(ws -> ws instanceof WebsocketSend && Objects.nonNull(((WebsocketSend) ws).getReceive()))
+                .filter(ws -> ws instanceof WebsocketSend && nonNull(((WebsocketSend) ws).getReceive()))
                 .map(o -> ((WebsocketSend) o).getReceive())
                 .forEach(commands::add);
     }
@@ -548,26 +509,95 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateLambdaCommand(final File xmlFile, final Lambda lambda) {
         Response response = lambda.getResponse();
-        if (Objects.nonNull(response) && StringUtils.hasText(response.getFile())) {
+        if (nonNull(response) && isNotBlank(response.getFile())) {
             FileSearcher.searchFileFromDir(xmlFile, response.getFile());
         }
         LambdaBody body = lambda.getBody();
-        if (Objects.nonNull(body) && Objects.nonNull(body.getFrom())) {
+        if (nonNull(body) && nonNull(body.getFrom())) {
+            FileSearcher.searchFileFromDir(xmlFile, body.getFrom().getFile());
+        }
+    }
+
+    private void validateExistsDatasets(final Migrate migrate) {
+        List<String> datasets = migrate.getDataset();
+        StorageName storageName = migrate.getName();
+        datasets.forEach(dataset -> DatasetValidator.validateDatasetByExtension(dataset, storageName));
+    }
+
+    private void validateElasticsearchCommand(final File xmlFile, final Elasticsearch elasticsearch) {
+        Stream.of(elasticsearch.getPost(), elasticsearch.getGet(), elasticsearch.getPut(), elasticsearch.getDelete())
+                .filter(Objects::nonNull)
+                .filter(v -> isNotBlank(v.getResponse().getFile()))
+                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v.getResponse().getFile()));
+    }
+
+    private void validateRabbitCommand(final File xmlFile, final Rabbit rabbit) {
+        rabbit.getSendOrReceive().stream()
+                .map(this::getRabbitFilename)
+                .filter(org.apache.commons.lang3.StringUtils::isNotBlank)
+                .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
+    }
+
+    private String getRabbitFilename(final Object rabbitCommand) {
+        if (rabbitCommand instanceof SendRmqMessage) {
+            return ((SendRmqMessage) rabbitCommand).getFile();
+        } else {
+            return ((ReceiveRmqMessage) rabbitCommand).getFile();
+        }
+    }
+
+    private void validateKafkaCommand(final File xmlFile, final Kafka kafka) {
+        kafka.getSendOrReceive().stream()
+                .map(this::getKafkaFilename)
+                .filter(org.apache.commons.lang3.StringUtils::isNotBlank)
+                .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
+    }
+
+    private String getKafkaFilename(final Object kafkaCommand) {
+        if (kafkaCommand instanceof SendKafkaMessage) {
+            return ((SendKafkaMessage) kafkaCommand).getFile();
+        } else {
+            return ((ReceiveKafkaMessage) kafkaCommand).getFile();
+        }
+    }
+
+    private void validateSqsCommand(final File xmlFile, final Sqs sqs) {
+        Stream.of(sqs.getReceive(), sqs.getSend())
+                .filter(org.apache.commons.lang3.StringUtils::isNotBlank).filter(o -> o.endsWith(JSON_EXTENSION))
+                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
+    }
+
+    private void validateS3Command(final File xmlFile, final S3 s3) {
+        Stream.of(s3.getDownload(), s3.getUpload())
+                .filter(org.apache.commons.lang3.StringUtils::isNotBlank)
+                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
+    }
+
+    private void validateSendgridCommand(final File xmlFile, final Sendgrid sendgrid) {
+        SendgridInfo sendgridInfo = SendGridUtil.getSendgridMethodMetadata(sendgrid).getHttpInfo();
+        Response response = sendgridInfo.getResponse();
+        if (nonNull(response) && isNotBlank(response.getFile())) {
+            FileSearcher.searchFileFromDir(xmlFile, response.getFile());
+        }
+
+        SendgridWithBody commandWithBody = (SendgridWithBody) sendgridInfo;
+        Body body = commandWithBody.getBody();
+        if (nonNull(body) && nonNull(body.getFrom())) {
             FileSearcher.searchFileFromDir(xmlFile, body.getFrom().getFile());
         }
     }
 
     private void validateWebCommands(final Web command, final File xmlFile) {
-        if (BrowserUtil.filterEnabledBrowsers().isEmpty()
-                || !GlobalTestConfigurationProvider.getWebSettings().isEnabled()) {
+        if (BrowserUtil.filterDefaultEnabledBrowsers().isEmpty()
+                || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getWeb().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_BROWSERS);
         }
         validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);
     }
 
     private void validateMobilebrowserCommands(final Mobilebrowser command, final File xmlFile) {
-        if (MobileUtil.filterEnabledMobilebrowserDevices().isEmpty()
-                || !GlobalTestConfigurationProvider.getMobilebrowserSettings().isEnabled()) {
+        if (MobileUtil.filterDefaultEnabledMobilebrowserDevices().isEmpty()
+                || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getMobilebrowser().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_MOBILEBROWSER_DEVICE);
         }
         validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);
@@ -587,8 +617,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateNativeCommands(final Native command) {
-        if (MobileUtil.filterEnabledNativeDevices().isEmpty()
-                || !GlobalTestConfigurationProvider.getNativeSettings().isEnabled()) {
+        if (MobileUtil.filterDefaultEnabledNativeDevices().isEmpty()
+                || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getNative().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_NATIVE_DEVICE);
         }
         command.getClickOrInputOrAssert().forEach(o -> {
@@ -602,7 +632,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateLocator(final CommandWithOptionalLocator command, final String exceptionMessage) {
-        if (!StringUtils.hasText(command.getLocatorId())) {
+        if (!isNotBlank(command.getLocatorId())) {
             throw new DefaultFrameworkException(exceptionMessage);
         }
     }
@@ -615,15 +645,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
-    private void validateAuthCommand(final Auth auth) {
-        if (auth.getCommands().stream().anyMatch(command -> command instanceof Http
-                && !((Http) command).getAlias().equalsIgnoreCase(auth.getApiAlias()))) {
-            throw new DefaultFrameworkException(AUTH_ALIASES_DOESNT_MATCH);
-        }
-    }
-
     private void validateIncludeAction(final Include include, final File xmlFile) {
-        if (StringUtils.hasText(include.getScenario())) {
+        if (isNotBlank(include.getScenario())) {
             File includedScenarioFolder = new File(TestResourceSettings.getInstance().getScenariosFolder(),
                     include.getScenario());
             File includedFile = FileSearcher.searchFileFromDir(includedScenarioFolder,
@@ -637,11 +660,11 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateCommand(final AbstractCommand command, final File configFile) {
         abstractCommandValidatorsMap.keySet().stream()
                 .filter(key -> key.test(command))
+                .findFirst()
                 .map(abstractCommandValidatorsMap::get)
-                .forEach(v -> v.accept(configFile, command));
+                .ifPresent(v -> v.accept(configFile, command));
     }
 
     private interface AbstractCommandPredicate extends Predicate<AbstractCommand> { }
-
     private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> { }
 }

@@ -12,10 +12,12 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
 import io.appium.java_client.ios.IOSDriver;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
+
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.NAVIGATE_NOT_SUPPORTED;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.NATIVE_NAVIGATION_LOG;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NATIVE_NAVIGATE_TO;

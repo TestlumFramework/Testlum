@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;choice&gt;
  *         &lt;element name="tag" type="{http://www.knubisoft.com/cott/testing/model/global-config}tagValue" maxOccurs="unbounded"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="enable" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -36,8 +36,8 @@ import javax.xml.bind.annotation.XmlType;
 public class RunScenariosByTag {
 
     protected List<TagValue> tag;
-    @XmlAttribute(name = "enable", required = true)
-    protected boolean enable;
+    @XmlAttribute(name = "enabled", required = true)
+    protected boolean enabled;
 
     /**
      * Gets the value of the tag property.
@@ -69,19 +69,19 @@ public class RunScenariosByTag {
     }
 
     /**
-     * Gets the value of the enable property.
+     * Gets the value of the enabled property.
      * 
      */
-    public boolean isEnable() {
-        return enable;
+    public boolean isEnabled() {
+        return enabled;
     }
 
     /**
-     * Sets the value of the enable property.
+     * Sets the value of the enabled property.
      * 
      */
-    public void setEnable(boolean value) {
-        this.enable = value;
+    public void setEnabled(boolean value) {
+        this.enabled = value;
     }
 
 }

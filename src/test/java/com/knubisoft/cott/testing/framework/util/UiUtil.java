@@ -40,12 +40,10 @@ import static org.openqa.selenium.interactions.PointerInput.Origin.viewport;
 @UtilityClass
 public class UiUtil {
 
-    private static final int MAX_PERCENTS_VALUE = 100;
-
     private static final String FILE_PATH_PREFIX = "file:";
-
     private static final String APPIUM_LOCALHOST_ALIAS = "10.0.2.2";
     private static final String LOCALHOST = "localhost";
+    private static final int MAX_PERCENTS_VALUE = 100;
 
     public String resolveSendKeysType(final String value, final WebElement element, final File fromDir) {
         if (value.startsWith(FILE_PATH_PREFIX)) {
@@ -58,56 +56,59 @@ public class UiUtil {
 
     public WebElement findWebElement(final ExecutorDependencies dependencies, final String locatorId) {
         Locator locator = GlobalLocators.getLocator(locatorId);
-        return WebElementFinder.find(locator, dependencies.getDriver(), dependencies.getUiType().getAutoWait());
+        return WebElementFinder.find(locator, dependencies.getDriver());
     }
 
     public void highlightElementIfRequired(final Boolean isHighlight,
                                            final WebElement element,
                                            final WebDriver driver) {
-        if ((isHighlight == null || isHighlight) && !(driver instanceof AppiumDriver)) {
+        if ((Objects.isNull(isHighlight) || isHighlight) && !(driver instanceof AppiumDriver)) {
             JavascriptUtil.executeJsScript(element, HIGHLIGHT_SCRIPT, driver);
         }
     }
 
     public void waitForElementVisibility(final ExecutorDependencies dependencies, final WebElement element) {
-        WebDriverWait wait = new WebDriverWait(dependencies.getDriver(),
-                Duration.ofSeconds(dependencies.getUiType().getAutoWait()));
+        WebDriverWait wait = getWebDriverWait(dependencies);
         wait.until(ExpectedConditions.visibilityOf(element));
     }
 
     public void waitForElementToBeClickable(final ExecutorDependencies dependencies, final WebElement element) {
-        WebDriverWait wait = new WebDriverWait(dependencies.getDriver(),
-                Duration.ofSeconds(dependencies.getUiType().getAutoWait()));
+        WebDriverWait wait = getWebDriverWait(dependencies);
         highlightElementIfRequired(true, element, dependencies.getDriver());
         wait.until(ExpectedConditions.elementToBeClickable(element));
     }
 
     public void waitForElementToBeClickableNoHighlight(final ExecutorDependencies dependencies,
                                                        final WebElement element) {
-        WebDriverWait wait = new WebDriverWait(dependencies.getDriver(),
-                Duration.ofSeconds(dependencies.getUiType().getAutoWait()));
+        WebDriverWait wait = getWebDriverWait(dependencies);
         wait.until(ExpectedConditions.elementToBeClickable(element));
     }
 
     public void waitForTextToBePresentInElement(final ExecutorDependencies dependencies,
                                                 final WebElement element,
                                                 final String text) {
-        WebDriverWait wait = new WebDriverWait(dependencies.getDriver(),
-                Duration.ofSeconds(dependencies.getUiType().getAutoWait()));
+        WebDriverWait wait = getWebDriverWait(dependencies);
         wait.until(ExpectedConditions.textToBePresentInElement(element, text));
     }
 
     public void waitForElementToBeSelected(final ExecutorDependencies dependencies, final WebElement element) {
-        WebDriverWait wait = new WebDriverWait(dependencies.getDriver(),
-                Duration.ofSeconds(dependencies.getUiType().getAutoWait()));
+        WebDriverWait wait = getWebDriverWait(dependencies);
         wait.until(ExpectedConditions.elementToBeSelected(element));
     }
 
+    private WebDriverWait getWebDriverWait(final ExecutorDependencies dependencies) {
+        int secondsToWait = dependencies.getUiType().getSettings(dependencies.getEnvironment())
+                .getElementAutowait().getSeconds();
+        return new WebDriverWait(dependencies.getDriver(), Duration.ofSeconds(secondsToWait));
+    }
+
     public void takeScreenshotAndSaveIfRequired(final CommandResult result, final ExecutorDependencies dependencies) {
-        if (dependencies.isTakeScreenshots()) {
+        boolean isTakeScreenshots = dependencies.getUiType().getSettings(dependencies.getEnvironment())
+                .getTakeScreenshots().isEnabled();
+        if (isTakeScreenshots) {
             File screenshot = takeScreenshot(dependencies.getDriver());
-            File screenshotsFolder = new File(dependencies.getFile().getParent()
-                    + TestResourceSettings.SCREENSHOT_FOLDER);
+            File screenshotsFolder = new File(dependencies.getFile().getParent(),
+                    TestResourceSettings.SCREENSHOT_FOLDER);
             tryToCopyScreenshotFileToFolder(screenshot, screenshotsFolder, dependencies);
             putScreenshotToResult(result, screenshot);
         }
@@ -167,7 +168,7 @@ public class UiUtil {
     public float calculatePercentageValue(final float value) {
         float percent = value / MAX_PERCENTS_VALUE;
         if (percent > 1) {
-            throw new DefaultFrameworkException(format(SCROLL_TO_ELEMENT_NOT_SUPPORTED, value));
+            throw new DefaultFrameworkException(SCROLL_TO_ELEMENT_NOT_SUPPORTED, value);
         }
         return percent;
     }

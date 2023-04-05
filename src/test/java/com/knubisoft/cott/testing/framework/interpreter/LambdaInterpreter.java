@@ -1,6 +1,7 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
@@ -28,13 +29,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 @Slf4j
 @InterpreterForClass(Lambda.class)
 public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
 
     @Autowired(required = false)
-    private Map<String, LambdaClient> awsLambdaClients;
+    private Map<AliasEnv, LambdaClient> awsLambdaClients;
 
     public LambdaInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -68,7 +68,8 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
 
     private InvokeResponse invokeLambdaFunction(final InvokeRequest request, final String alias) {
         try {
-            return awsLambdaClients.get(alias).invoke(request);
+            AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
+            return awsLambdaClients.get(aliasEnv).invoke(request);
         } catch (LambdaException e) {
             LogUtil.logError(e);
             throw e;

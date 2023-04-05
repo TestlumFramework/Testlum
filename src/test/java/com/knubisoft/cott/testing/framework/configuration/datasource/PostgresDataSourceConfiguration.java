@@ -2,7 +2,9 @@ package com.knubisoft.cott.testing.framework.configuration.datasource;
 
 import com.knubisoft.cott.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.cott.testing.framework.configuration.condition.OnPostgresEnabledCondition;
+import com.knubisoft.cott.testing.framework.env.AliasEnv;
 import com.knubisoft.cott.testing.framework.util.DataSourceUtil;
+import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.Postgres;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -13,18 +15,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
+@Conditional({OnPostgresEnabledCondition.class})
 public class PostgresDataSourceConfiguration {
 
     @Bean("postgresDataSource")
-    @Conditional({OnPostgresEnabledCondition.class})
-    public Map<String, DataSource> postgresDataSource() {
-        Map<String, DataSource> postgresIntegration = new HashMap<>();
-        for (Postgres dataSource
-                : GlobalTestConfigurationProvider.getIntegrations().getPostgresIntegration().getPostgres()) {
+    public Map<AliasEnv, DataSource> postgresDataSource() {
+        Map<AliasEnv, DataSource> dataSourceMap = new HashMap<>();
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach((env, integrations) -> collectDataSource(integrations, env, dataSourceMap));
+        return dataSourceMap;
+    }
+
+    private void collectDataSource(final Integrations integrations,
+                                   final String env,
+                                   final Map<AliasEnv, DataSource> dataSourceMap) {
+        for (Postgres dataSource : integrations.getPostgresIntegration().getPostgres()) {
             if (dataSource.isEnabled()) {
-                postgresIntegration.put(dataSource.getAlias(), DataSourceUtil.getHikariDataSource(dataSource));
+                dataSourceMap.put(new AliasEnv(dataSource.getAlias(), env),
+                        DataSourceUtil.getHikariDataSource(dataSource));
             }
         }
-        return postgresIntegration;
     }
 }

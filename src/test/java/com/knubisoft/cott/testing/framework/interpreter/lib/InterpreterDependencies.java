@@ -2,6 +2,7 @@ package com.knubisoft.cott.testing.framework.interpreter.lib;
 
 import com.knubisoft.cott.testing.framework.scenario.ScenarioContext;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,35 +14,22 @@ import java.io.File;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Builder
 @Getter
 @Setter
 public class InterpreterDependencies {
 
+    private final ApplicationContext context;
     private final File file;
     private final ScenarioContext scenarioContext;
     private final AtomicInteger position;
+    private final String environment;
+
     private final WebDriver webDriver;
-    private final WebDriver nativeDriver;
     private final WebDriver mobilebrowserDriver;
-    private final ApplicationContext cxt;
+    private final WebDriver nativeDriver;
 
     private Authorization authorization;
-
-    public InterpreterDependencies(final ApplicationContext ctx,
-                                   final WebDriver webDriver,
-                                   final WebDriver nativeDriver,
-                                   final WebDriver mobilebrowserDriver,
-                                   final File file,
-                                   final ScenarioContext scenarioContext,
-                                   final AtomicInteger position) {
-        this.cxt = ctx;
-        this.webDriver = webDriver;
-        this.nativeDriver = nativeDriver;
-        this.mobilebrowserDriver = mobilebrowserDriver;
-        this.file = file;
-        this.scenarioContext = scenarioContext;
-        this.position = position;
-    }
 
     @Data
     @AllArgsConstructor

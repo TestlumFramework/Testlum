@@ -1,6 +1,5 @@
 package com.knubisoft.cott.testing.framework.interpreter.lib.ui.executor;
 
-import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
@@ -28,24 +27,20 @@ import java.util.function.Predicate;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.NEW_LINE;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SPACE;
-import static com.knubisoft.cott.testing.framework.constant.LogMessage.RETHROWN_ERRORS_LOG;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.ASSERT_TYPE_NOT_SUPPORTED;
 
 @ExecutorForClass(Assert.class)
 public class AssertExecutor extends AbstractUiExecutor<Assert> {
 
+    private final Map<AssertCmdPredicate, AssertMethod> assertCommandMap;
     private final List<String> exceptionResult = new ArrayList<>();
-
-    private final Map<AssertCommandPredicate, AssertMethod> assertCommandMap;
-
-    private AtomicInteger subCommandId = new AtomicInteger(0);
+    private final AtomicInteger commandId = new AtomicInteger();
 
     public AssertExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        Map<AssertCommandPredicate, AssertMethod> assertCommands = new HashMap<>();
-        assertCommands.put(a -> a instanceof Attribute,
-                (a, result) -> executeAttributeCommand((Attribute) a, result));
-        assertCommands.put(a -> a instanceof Title,
-                (a, result) -> executeTitleCommand((Title) a, result));
+        Map<AssertCmdPredicate, AssertMethod> assertCommands = new HashMap<>();
+        assertCommands.put(a -> a instanceof Attribute, (a, result) -> executeAttributeCommand((Attribute) a, result));
+        assertCommands.put(a -> a instanceof Title, (a, result) -> executeTitleCommand((Title) a, result));
         assertCommandMap = Collections.unmodifiableMap(assertCommands);
     }
 
@@ -53,51 +48,36 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
     public void execute(final Assert aAssert, final CommandResult result) {
         List<CommandResult> subCommandsResult = new ArrayList<>();
         result.setSubCommandsResult(subCommandsResult);
-        aAssert.getAttributeOrTitle().forEach(command -> assertCommandMap.keySet().stream()
-                .filter(cmd -> cmd.test(command))
-                .findFirst()
-                .map(assertCommandMap::get)
-                .orElseThrow(() -> new DefaultFrameworkException("Type of 'Assert' tag is not supported"))
-                .accept(command, subCommandsResult));
+        aAssert.getAttributeOrTitle().forEach(command -> {
+            CommandResult subCommandResult = createSubCommandResult(command);
+            subCommandsResult.add(subCommandResult);
+            executeSubCommand(command, subCommandResult);
+        });
         rethrowOnErrors();
     }
 
-    private void executeTitleCommand(final Title title, final List<CommandResult> subCommandsResult) {
-        title.setContent(inject(title.getContent()));
-        LogUtil.logAssertTitleCommand(title, subCommandId.incrementAndGet());
-        CommandResult subCommandResult = createSubCommandResult(title);
-        subCommandsResult.add(subCommandResult);
-        try {
-            String actual = dependencies.getDriver().getTitle();
-            String expected = title.getContent().replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
-            executeComparison(actual, expected, subCommandResult);
-            UiUtil.takeScreenshotAndSaveIfRequired(subCommandResult, dependencies);
-        } catch (Exception e) {
-            handleException(subCommandResult, e);
-        }
+    private void executeSubCommand(final AbstractUiCommand command, final CommandResult result) {
+        assertCommandMap.keySet().stream()
+                .filter(cmd -> cmd.test(command))
+                .findFirst()
+                .map(assertCommandMap::get)
+                .orElseThrow(() -> new DefaultFrameworkException(ASSERT_TYPE_NOT_SUPPORTED,
+                        command.getClass().getSimpleName()))
+                .accept(command, result);
     }
 
-    private void executeAttributeCommand(final Attribute attribute,
-                                         final List<CommandResult> subCommandsResult) {
+    private void executeAttributeCommand(final Attribute attribute, final CommandResult result) {
         injectFields(attribute);
-        LogUtil.logAssertAttributeInfo(attribute, subCommandId.incrementAndGet());
-        CommandResult subCommandResult = createSubCommandResult(attribute);
-        ResultUtil.addAssertAttributeMetaData(attribute, subCommandResult);
-        subCommandsResult.add(subCommandResult);
+        LogUtil.logAssertAttributeInfo(attribute, commandId.get());
+        ResultUtil.addAssertAttributeMetaData(attribute, result);
         try {
             String actual = getActualValue(attribute);
             String expected = attribute.getContent().replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
-            executeComparison(actual, expected, subCommandResult);
-            UiUtil.takeScreenshotAndSaveIfRequired(subCommandResult, dependencies);
+            executeComparison(actual, expected, result);
+            UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         } catch (Exception e) {
-            handleException(subCommandResult, e);
+            handleException(result, e);
         }
-    }
-
-    private void handleException(final CommandResult subCommandResult, final Exception e) {
-        LogUtil.logException(e);
-        exceptionResult.add(e.getMessage());
-        ResultUtil.setExceptionResult(subCommandResult, e);
     }
 
     private void injectFields(final Attribute attribute) {
@@ -113,38 +93,47 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
         return value.replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
     }
 
-    private CommandResult createSubCommandResult(final AbstractUiCommand command) {
-        return ResultUtil.createCommandResultForUiSubCommand(
-                subCommandId.get(),
-                command.getClass().getSimpleName(),
-                command.getComment());
+    private void executeTitleCommand(final Title title, final CommandResult result) {
+        title.setContent(inject(title.getContent()));
+        LogUtil.logAssertTitleCommand(title, commandId.get());
+        try {
+            String actual = dependencies.getDriver().getTitle();
+            executeComparison(actual, title.getContent(), result);
+            UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        } catch (Exception e) {
+            handleException(result, e);
+        }
     }
 
     private void executeComparison(final String actual,
                                    final String expected,
-                                   final CommandResult subCommandResult) {
-        setActualAndExpectedResult(actual, expected, subCommandResult);
+                                   final CommandResult result) {
+        ResultUtil.setExpectedActual(expected, actual, result);
         new CompareBuilder(dependencies.getFile(), dependencies.getPosition())
                 .withActual(actual)
                 .withExpected(expected)
                 .exec();
     }
 
-    public void rethrowOnErrors() {
+    private void handleException(final CommandResult result, final Exception e) {
+        LogUtil.logException(e);
+        ResultUtil.setExceptionResult(result, e);
+        exceptionResult.add(e.getMessage());
+    }
+
+    private CommandResult createSubCommandResult(final AbstractUiCommand command) {
+        return ResultUtil.createCommandResultForUiSubCommand(
+                commandId.incrementAndGet(),
+                command.getClass().getSimpleName(),
+                command.getComment());
+    }
+
+    private void rethrowOnErrors() {
         if (!exceptionResult.isEmpty()) {
-            throw new DefaultFrameworkException(RETHROWN_ERRORS_LOG,
-                    String.join(DelimiterConstant.SPACE_WITH_LF, exceptionResult));
+            throw new DefaultFrameworkException(exceptionResult);
         }
     }
 
-    private void setActualAndExpectedResult(final String actual,
-                                            final String expected,
-                                            final CommandResult result) {
-        result.setActual(actual);
-        result.setExpected(expected);
-    }
-
-    private interface AssertCommandPredicate extends Predicate<AbstractUiCommand> { }
-
-    private interface AssertMethod extends BiConsumer<AbstractUiCommand, List<CommandResult>> { }
+    private interface AssertCmdPredicate extends Predicate<AbstractUiCommand> { }
+    private interface AssertMethod extends BiConsumer<AbstractUiCommand, CommandResult> { }
 }

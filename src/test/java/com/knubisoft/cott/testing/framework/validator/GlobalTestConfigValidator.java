@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.Objects;
 
 public class GlobalTestConfigValidator implements XMLValidator<GlobalTestConfiguration> {
+
     private final SubscriptionValidator subscriptionValidator = new StripeValidationService();
 
     @Override

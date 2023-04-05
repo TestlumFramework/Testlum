@@ -5,31 +5,31 @@ import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.model.global_config.Environment;
 import com.knubisoft.cott.testing.model.global_config.Integration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SAME_INTEGRATION_ALIASES;
 import static java.util.Objects.nonNull;
 
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class IntegrationsValidator implements XMLValidator<Integrations> {
 
-    private static final Map<IntegrationsPredicate, IntegrationsFunction> INTEGRATIONS_MAP;
+    private static final Map<IntegrationsPredicate, IntegrationListMethod> INTEGRATIONS_TO_LISTS_MAP;
     private final Environment env;
 
     static {
-        final Map<IntegrationsPredicate, IntegrationsFunction> map = new HashMap<>(20);
-        map.put(i -> nonNull(i.getApis()), integrations -> integrations.getApis().getApi());
+        final Map<IntegrationsPredicate, IntegrationListMethod> map = new HashMap<>(20);
+        map.put(i -> nonNull(i.getApis()), i -> i.getApis().getApi());
         map.put(i -> nonNull(i.getWebsockets()), i -> i.getWebsockets().getApi());
         map.put(i -> nonNull(i.getS3Integration()), i -> i.getS3Integration().getS3());
         map.put(i -> nonNull(i.getSesIntegration()), i -> i.getSesIntegration().getSes());
@@ -49,7 +49,7 @@ public class IntegrationsValidator implements XMLValidator<Integrations> {
         map.put(i -> nonNull(i.getRabbitmqIntegration()), i -> i.getRabbitmqIntegration().getRabbitmq());
         map.put(i -> nonNull(i.getClickhouseIntegration()), i -> i.getClickhouseIntegration().getClickhouse());
         map.put(i -> nonNull(i.getElasticsearchIntegration()), i -> i.getElasticsearchIntegration().getElasticsearch());
-        INTEGRATIONS_MAP = Collections.unmodifiableMap(map);
+        INTEGRATIONS_TO_LISTS_MAP = Collections.unmodifiableMap(map);
     }
 
     @Override
@@ -58,39 +58,46 @@ public class IntegrationsValidator implements XMLValidator<Integrations> {
         if (integrationsLists.size() == 0) {
             log.warn(LogMessage.INTEGRATIONS_NOT_FOUND, env.getFolder());
         } else {
-            checkIntegrationsAliases(integrationsLists);
+            checkIntegrationsForSameAliases(integrationsLists);
         }
     }
 
-    private void checkIntegrationsAliases(final List<List<? extends Integration>> integrationsLists) {
-        for (List<? extends Integration> integrations : integrationsLists) {
-            integrations.forEach(integration -> {
-                long numOfSameAliases = integrations.stream()
-                        .filter(Integration::isEnabled)
-                        .map(Integration::getAlias)
-                        .filter(alias -> alias.equalsIgnoreCase(integration.getAlias())).count();
-                if (numOfSameAliases > 1) {
-                    throw new DefaultFrameworkException(SAME_INTEGRATION_ALIASES,
-                            integration.getClass().getSimpleName(), integration.getAlias(), env.getFolder());
+    private void checkIntegrationsForSameAliases(final List<List<? extends Integration>> declaredIntegrations) {
+        declaredIntegrations.forEach(integrationsList -> integrationsList.forEach(integration -> {
+            long numOfSameAliases = getNumOfSameAliases(integrationsList, integration);
+            if (numOfSameAliases > 1) {
+                throw new DefaultFrameworkException(SAME_INTEGRATION_ALIASES,
+                        integration.getClass().getSimpleName(), integration.getAlias(), env.getFolder());
+            }
+        }));
+    }
+
+    private long getNumOfSameAliases(final List<? extends Integration> integrationsList,
+                                     final Integration integration) {
+        long numOfSameAliases = 0;
+        String targetAlias = integration.getAlias();
+        for (Integration currentIntegration : integrationsList) {
+            if (currentIntegration.isEnabled()) {
+                String currentAlias = currentIntegration.getAlias();
+                if (targetAlias.equalsIgnoreCase(currentAlias)) {
+                    numOfSameAliases++;
                 }
-            });
+            }
         }
+        return numOfSameAliases;
     }
 
     private List<List<? extends Integration>> getDeclaredIntegrations(final Integrations integrations) {
-        return INTEGRATIONS_MAP.keySet().stream()
-                .filter(key -> key.test(integrations))
-                .map(INTEGRATIONS_MAP::get)
-                .map(value -> value.apply(integrations))
-                .collect(Collectors.toList());
+        List<List<? extends Integration>> declaredIntegrations = new ArrayList<>();
+        for (Map.Entry<IntegrationsPredicate, IntegrationListMethod> entry: INTEGRATIONS_TO_LISTS_MAP.entrySet()) {
+            if (entry.getKey().test(integrations)) {
+                List<? extends Integration> list = entry.getValue().apply(integrations);
+                declaredIntegrations.add(list);
+            }
+        }
+        return declaredIntegrations;
     }
 
-
-    private interface IntegrationsPredicate extends Predicate<Integrations> {
-
-    }
-
-    private interface IntegrationsFunction extends Function<Integrations, List<? extends Integration>> {
-
-    }
+    private interface IntegrationsPredicate extends Predicate<Integrations> { }
+    private interface IntegrationListMethod extends Function<Integrations, List<? extends Integration>> { }
 }

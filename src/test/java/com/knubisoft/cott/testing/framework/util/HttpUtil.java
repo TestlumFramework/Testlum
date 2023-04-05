@@ -10,7 +10,7 @@ import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
 import com.knubisoft.cott.testing.model.scenario.Http;
 import com.knubisoft.cott.testing.model.scenario.HttpInfo;
 import com.knubisoft.cott.testing.model.scenario.Param;
-import com.knubisoft.cott.testing.model.scenario.Part;
+import com.knubisoft.cott.testing.model.scenario.PartFile;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
@@ -147,27 +147,27 @@ public final class HttpUtil {
 
     private HttpEntity getFromMultipart(final Body body,
                                         final InterpreterDependencies dependencies) {
-        List<Part> parts = body.getMultipart().getPart();
+        List<Object> parts = body.getMultipart().getParamOrFrom();
         MultipartEntityBuilder builder = MultipartEntityBuilder.create()
                 .setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
                 .setBoundary(body.getMultipart().getBoundary());
-        for (Part part : parts) {
-            if (nonNull(part.getText())) {
-                builder.addTextBody(part.getName(), part.getText().getValue());
-            } else if (nonNull(part.getFile())) {
-                addFileBody(builder, part, dependencies);
+        for (Object part : parts) {
+            if (part instanceof Param) {
+                Param param = (Param) part;
+                builder.addTextBody(param.getName(), param.getData());
+            } else if (part instanceof PartFile) {
+                addFileBody(builder, (PartFile) part, dependencies);
             }
         }
         return builder.build();
     }
 
     private void addFileBody(final MultipartEntityBuilder builder,
-                             final Part part,
+                             final PartFile file,
                              final InterpreterDependencies dependencies) {
-        File from = FileSearcher.searchFileFromDir(dependencies.getFile(), part.getFile().getValue());
-        builder.addBinaryBody(part.getName(), from, nonNull(part.getFile().getContentType())
-                        ? ContentType.create(part.getFile().getContentType()) : ContentType.DEFAULT_BINARY,
-                part.getFile().getFileName());
+        File from = FileSearcher.searchFileFromDir(dependencies.getFile(), file.getFileName());
+        builder.addBinaryBody(file.getName(), from, nonNull(file.getContentType())
+                        ? ContentType.create(file.getContentType()) : ContentType.DEFAULT_BINARY, file.getFileName());
     }
 
     private HttpEntity getFromParameters(final Body body,

@@ -5,7 +5,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 
 
 /**
@@ -15,76 +14,51 @@ import javax.xml.bind.annotation.XmlValue;
  * 
  * <pre>
  * &lt;complexType name="partFile"&gt;
- *   &lt;simpleContent&gt;
- *     &lt;extension base="&lt;http://www.knubisoft.com/cott/testing/model/scenario&gt;nonEmptyString"&gt;
- *       &lt;attribute name="fileName" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="contentType" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
- *     &lt;/extension&gt;
- *   &lt;/simpleContent&gt;
+ *       &lt;attribute name="fileName" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
  * 
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "partFile", propOrder = {
-    "value"
-})
+@XmlType(name = "partFile")
 public class PartFile {
 
-    @XmlValue
-    protected String value;
-    @XmlAttribute(name = "fileName")
-    protected String fileName;
+    @XmlAttribute(name = "name", required = true)
+    protected String name;
     @XmlAttribute(name = "contentType")
     protected String contentType;
+    @XmlAttribute(name = "fileName", required = true)
+    protected String fileName;
 
     /**
-     * Gets the value of the value property.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getValue() {
-        return value;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Sets the value of the value property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    /**
-     * Gets the value of the fileName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getFileName() {
-        return fileName;
-    }
-
-    /**
-     * Sets the value of the fileName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setFileName(String value) {
-        this.fileName = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
     /**
@@ -109,6 +83,30 @@ public class PartFile {
      */
     public void setContentType(String value) {
         this.contentType = value;
+    }
+
+    /**
+     * Gets the value of the fileName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getFileName() {
+        return fileName;
+    }
+
+    /**
+     * Sets the value of the fileName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setFileName(String value) {
+        this.fileName = value;
     }
 
 }

@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="cookie" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromCookie"/&gt;
  *         &lt;element name="dom" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromDom"/&gt;
  *         &lt;element name="url" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromUrl"/&gt;
+ *         &lt;element name="element" type="{http://www.knubisoft.com/cott/testing/model/scenario}fromElement"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/cott/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
@@ -39,7 +40,8 @@ import javax.xml.bind.annotation.XmlType;
     "generate",
     "cookie",
     "dom",
-    "url"
+    "url",
+    "element"
 })
 public class WebVar
     extends AbstractUiCommand
@@ -53,6 +55,7 @@ public class WebVar
     protected FromCookie cookie;
     protected FromDom dom;
     protected FromUrl url;
+    protected FromElement element;
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
@@ -246,6 +249,30 @@ public class WebVar
      */
     public void setUrl(FromUrl value) {
         this.url = value;
+    }
+
+    /**
+     * Gets the value of the element property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FromElement }
+     *     
+     */
+    public FromElement getElement() {
+        return element;
+    }
+
+    /**
+     * Sets the value of the element property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FromElement }
+     *     
+     */
+    public void setElement(FromElement value) {
+        this.element = value;
     }
 
     /**

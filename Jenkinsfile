@@ -99,7 +99,7 @@ pipeline {
     always {
         script {
             sh "docker rmi ${SERVICE}:${TAG}"
-            sh 'docker rmi $(docker images -f "dangling=true" -q) || true'
+            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
         }
     }
     success {

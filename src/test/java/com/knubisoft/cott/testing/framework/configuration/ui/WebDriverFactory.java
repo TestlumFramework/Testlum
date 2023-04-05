@@ -18,6 +18,7 @@ import com.knubisoft.cott.testing.model.global_config.Opera;
 import com.knubisoft.cott.testing.model.global_config.RemoteBrowser;
 import com.knubisoft.cott.testing.model.global_config.Safari;
 import com.knubisoft.cott.testing.model.global_config.ScreenRecording;
+import com.knubisoft.cott.testing.model.global_config.Web;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.managers.ChromeDriverManager;
 import io.github.bonigarcia.wdm.managers.EdgeDriverManager;
@@ -37,6 +38,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariOptions;
 
 import java.net.URL;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,12 +71,13 @@ public class WebDriverFactory {
                 .map(webDriverFunction -> webDriverFunction.apply(browser))
                 .peek(driver -> BrowserUtil.manageWindowSize(browser, driver))
                 .findFirst().orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
-        String baseUrl = GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv()).getBaseUrl();
-        webDriver.get(baseUrl);
+        Web settings = GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv());
+        int secondsToWait = settings.getBrowserSettings().getElementAutowait().getSeconds();
+        webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));
+        webDriver.get(settings.getBaseUrl());
         return webDriver;
     }
 
-    @SneakyThrows
     private WebDriver getWebDriver(final AbstractBrowser browser,
                                    final MutableCapabilities browserOptions,
                                    final WebDriverManager driverManager) {
@@ -232,9 +235,6 @@ public class WebDriverFactory {
         }
     }
 
-    private interface BrowserPredicate extends Predicate<AbstractBrowser> {
-    }
-
-    private interface WebDriverFunction extends Function<AbstractBrowser, WebDriver> {
-    }
+    private interface BrowserPredicate extends Predicate<AbstractBrowser> { }
+    private interface WebDriverFunction extends Function<AbstractBrowser, WebDriver> { }
 }

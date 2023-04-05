@@ -28,11 +28,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,8 +101,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         Map<String, String> headers = getHeaders(httpInfo);
         LogUtil.logHttpInfo(alias, httpMethod.name(), endpoint);
         ResultUtil.addHttpMetaData(alias, httpMethod.name(), headers, endpoint, result);
-        String typeValue = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        ContentType contentType = ContentType.create(typeValue);
+        ContentType contentType = HttpUtil.computeContentType(headers);
         HttpEntity body = getBody(httpInfo, contentType);
         LogUtil.logBodyContent(body);
         String url = createFullUrl(endpoint, alias);
@@ -118,7 +114,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                                        final HttpEntity body) {
         try {
             return apiClient.call(httpMethod, url, headers, body);
-        } catch (IOException e) {
+        } catch (Exception e) {
             LogUtil.logError(e);
             throw new DefaultFrameworkException(e);
         }

@@ -39,7 +39,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -106,7 +105,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
                                        final HttpEntity body) {
         try {
             return apiClient.call(httpMethod, url, headers, body);
-        } catch (IOException e) {
+        } catch (Exception e) {
             LogUtil.logError(e);
             throw new DefaultFrameworkException(e);
         }

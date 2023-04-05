@@ -12,6 +12,8 @@ public class ExceptionMessage {
     public static final String HTTP_CODE_EXPECTED_BUT_WAS = " Http code should be [%s] but was [%s]";
     public static final String HTTP_HEADERS_EXPECTED_BUT_WAS = " Http headers should be [%s] but was [%s]";
     public static final String HTTP_BODY_EXPECTED_BUT_WAS = " Http body should be [%s] but was [%s]";
+    public static final String UNKNOWN_HTTP_METHOD = "Unknown http method: %s";
+    public static final String UNKNOWN_BODY_CONTENT = "Unknown body content provided";
     public static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";
     public static final String INCORRECT_S3_PROCESSING = "Incorrect S3 processing";
     public static final String INCORRECT_SQS_PROCESSING = "Incorrect SQS processing";
@@ -62,7 +64,6 @@ public class ExceptionMessage {
     public static final String UNABLE_FIND_VALUE_FOR_KEY = "Unable to find value for key %s. Available keys %s";
 
     public static final String RETHROWN_ERRORS_TEMPLATE = "Errors:%n %s";
-    public static final String UNKNOWN_METHOD = "Unknown method %s";
     public static final String PAGES_FOLDER_NOT_EXIST = "[pages] folder does not exist";
     public static final String COMPONENTS_FOLDER_NOT_EXIST = "[components] folder does not exist";
     public static final String SCENARIOS_FOLDER_NOT_EXIST = "[scenarios] folder does not exist";

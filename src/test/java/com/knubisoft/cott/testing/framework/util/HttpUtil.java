@@ -22,6 +22,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.INCORRECT_HTTP_PROCESSING;
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.UNKNOWN_BODY_CONTENT;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -70,17 +72,6 @@ public final class HttpUtil {
         ES_HTTP_METHOD_MAP.put(Elasticsearch::getTrace, HttpMethod.TRACE);
     }
 
-    public HttpEntity extractBody(final Body body,
-                                  final ContentType contentType,
-                                  final AbstractInterpreter<?> interpreter,
-                                  final InterpreterDependencies dependencies) {
-        try {
-            return injectAppropriatePart(body, contentType, interpreter, dependencies);
-        } catch (IOException e) {
-            throw new DefaultFrameworkException(e);
-        }
-    }
-
     public HttpMethodMetadata getHttpMethodMetadata(final Http http) {
         return HTTP_METHOD_MAP.entrySet().stream()
                 .map(e -> new HttpMethodMetadata(e.getKey().apply(http), e.getValue()))
@@ -97,70 +88,52 @@ public final class HttpUtil {
                 .orElseThrow(() -> new DefaultFrameworkException(INCORRECT_HTTP_PROCESSING));
     }
 
-    public boolean checkIfContentTypeIsJson(final Header contentTypeHeader) {
-        if (nonNull(contentTypeHeader)) {
-            return contentTypeHeader.getValue().equals(MediaType.APPLICATION_JSON_VALUE)
-                    || contentTypeHeader.getValue().equals(MediaType.APPLICATION_JSON_UTF8_VALUE);
+    public HttpEntity extractBody(final Body body,
+                                  final ContentType contentType,
+                                  final AbstractInterpreter<?> interpreter,
+                                  final InterpreterDependencies dependencies) {
+        try {
+            return getAppropriateEntity(body, contentType, interpreter, dependencies);
+        } catch (IOException e) {
+            throw new DefaultFrameworkException(e);
         }
-        return false;
     }
 
-    //CHECKSTYLE:OFF
-    private HttpEntity injectAppropriatePart(final Body body,
-                                             final ContentType contentType,
-                                             final AbstractInterpreter<?> interpreter,
-                                             final InterpreterDependencies dependencies) throws IOException {
+    private HttpEntity getAppropriateEntity(final Body body,
+                                            final ContentType contentType,
+                                            final AbstractInterpreter<?> interpreter,
+                                            final InterpreterDependencies dependencies) throws IOException {
         if (isNull(body)) {
-            return getStringEntity(StringUtils.EMPTY, contentType);
+            return newStringEntity(StringUtils.EMPTY, null);
         } else if (nonNull(body.getRaw())) {
-            String injected = interpreter.inject(body.getRaw().replaceAll(REGEX_MANY_SPACES, EMPTY));
-            return getStringEntity(injected, contentType);
+            return getFromRaw(body, contentType, interpreter);
         } else if (nonNull(body.getFrom())) {
-            return injectFromFile(body, contentType, interpreter, dependencies);
+            return getFromFile(body, contentType, interpreter, dependencies);
         } else if (nonNull(body.getMultipart())) {
-            return injectMultipartFile(body, dependencies);
+            return getFromMultipart(body, dependencies);
+        } else if (!body.getParam().isEmpty()) {
+            return getFromParameters(body, contentType, interpreter);
         }
-        String param = getFromParam(contentType, body, interpreter);
-        String injected = interpreter.inject(param);
-        return getStringEntity(injected, contentType);
+        throw new DefaultFrameworkException(UNKNOWN_BODY_CONTENT);
     }
-    //CHECKSTYLE:ON
 
-    private HttpEntity getStringEntity(final String body, final ContentType contentType) {
+    private HttpEntity newStringEntity(final String body, final ContentType contentType) {
         return new StringEntity(body, contentType);
     }
 
-    private HttpEntity injectMultipartFile(final Body body,
-                                           final InterpreterDependencies dependencies) {
-        List<Part> parts = body.getMultipart().getPart();
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create()
-                .setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
-                .setBoundary(body.getMultipart().getBoundary());
-        for (Part part : parts) {
-            if (nonNull(part.getText())) {
-                builder.addTextBody(part.getName(), part.getText().getValue());
-            } else if (nonNull(part.getFile())) {
-                injectFromFile(dependencies, builder, part);
-            }
-        }
-        return builder.build();
+    private HttpEntity getFromRaw(final Body body,
+                                  final ContentType contentType,
+                                  final AbstractInterpreter<?> interpreter) {
+        String injectedContent = interpreter.inject(body.getRaw().replaceAll(REGEX_MANY_SPACES, EMPTY));
+        return newStringEntity(injectedContent, contentType);
     }
 
-    private void injectFromFile(final InterpreterDependencies dependencies,
-                                final MultipartEntityBuilder builder,
-                                final Part part) {
-        File from = FileSearcher.searchFileFromDir(dependencies.getFile(), part.getFile().getValue());
-        builder.addBinaryBody(part.getName(), from, nonNull(part.getFile().getContentType())
-                        ? ContentType.create(part.getFile().getContentType()) : ContentType.DEFAULT_BINARY,
-                part.getFile().getFileName());
-    }
-
-    private HttpEntity injectFromFile(final Body body,
-                                      final ContentType contentType,
-                                      final AbstractInterpreter<?> interpreter,
-                                      final InterpreterDependencies dependencies) throws IOException {
+    private HttpEntity getFromFile(final Body body,
+                                   final ContentType contentType,
+                                   final AbstractInterpreter<?> interpreter,
+                                   final InterpreterDependencies dependencies) throws IOException {
         String injectedContent = injectFromFile(body, interpreter, dependencies.getFile());
-        return getStringEntity(injectedContent, contentType);
+        return newStringEntity(injectedContent, contentType);
     }
 
     public String injectFromFile(final Body body,
@@ -170,6 +143,53 @@ public final class HttpUtil {
         File from = FileSearcher.searchFileFromDir(fromDir, fileName);
         String content = FileUtils.readFileToString(from, StandardCharsets.UTF_8);
         return interpreter.inject(content);
+    }
+
+    private HttpEntity getFromMultipart(final Body body,
+                                        final InterpreterDependencies dependencies) {
+        List<Part> parts = body.getMultipart().getPart();
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create()
+                .setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
+                .setBoundary(body.getMultipart().getBoundary());
+        for (Part part : parts) {
+            if (nonNull(part.getText())) {
+                builder.addTextBody(part.getName(), part.getText().getValue());
+            } else if (nonNull(part.getFile())) {
+                addFileBody(builder, part, dependencies);
+            }
+        }
+        return builder.build();
+    }
+
+    private void addFileBody(final MultipartEntityBuilder builder,
+                             final Part part,
+                             final InterpreterDependencies dependencies) {
+        File from = FileSearcher.searchFileFromDir(dependencies.getFile(), part.getFile().getValue());
+        builder.addBinaryBody(part.getName(), from, nonNull(part.getFile().getContentType())
+                        ? ContentType.create(part.getFile().getContentType()) : ContentType.DEFAULT_BINARY,
+                part.getFile().getFileName());
+    }
+
+    private HttpEntity getFromParameters(final Body body,
+                                         final ContentType contentType,
+                                         final AbstractInterpreter<?> interpreter) {
+        String params = getRequestParams(body, contentType, interpreter);
+        String injected = interpreter.inject(params);
+        return newStringEntity(injected, contentType);
+    }
+
+    private String getRequestParams(final Body body,
+                                    final ContentType contentType,
+                                    final AbstractInterpreter<?> interpreter) {
+        Map<String, String> bodyParamMap = body.getParam().stream()
+                .collect(toMap(Param::getName, Param::getData, (k, v) -> k, LinkedHashMap::new));
+
+        if (ContentType.APPLICATION_JSON == contentType) {
+            return interpreter.toString(bodyParamMap);
+        }
+        return bodyParamMap.entrySet().stream()
+                .map(e -> format(EQUALS_BETWEEN_VALUES, e.getKey(), e.getValue()))
+                .collect(Collectors.joining(DelimiterConstant.AMPERSAND));
     }
 
     public void fillHeadersMap(final List<com.knubisoft.cott.testing.model.scenario.Header> headerList,
@@ -192,18 +212,17 @@ public final class HttpUtil {
         return injected;
     }
 
-    private String getFromParam(final ContentType contentType,
-                                final Body body,
-                                final AbstractInterpreter<?> interpreter) {
-        Map<String, String> bodyParamMap = body.getParam().stream()
-                .collect(toMap(Param::getName, Param::getData, (k, v) -> k, LinkedHashMap::new));
+    public ContentType computeContentType(final Map<String, String> headers) {
+        String typeValue = headers.computeIfAbsent(HttpHeaders.CONTENT_TYPE, type -> MediaType.APPLICATION_JSON_VALUE);
+        return ContentType.parse(typeValue);
+    }
 
-        if (ContentType.APPLICATION_JSON == contentType) {
-            return interpreter.toString(bodyParamMap);
+    public boolean checkIfContentTypeIsJson(final Header contentTypeHeader) {
+        if (nonNull(contentTypeHeader)) {
+            return contentTypeHeader.getValue().equals(MediaType.APPLICATION_JSON_VALUE)
+                    || contentTypeHeader.getValue().equals(MediaType.APPLICATION_JSON_UTF8_VALUE);
         }
-        return bodyParamMap.entrySet().stream()
-                .map(e -> format(EQUALS_BETWEEN_VALUES, e.getKey(), e.getValue()))
-                .collect(Collectors.joining(DelimiterConstant.AMPERSAND));
+        return false;
     }
 
     @RequiredArgsConstructor

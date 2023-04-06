@@ -12,7 +12,6 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_CONDITION_LOG;
-import static com.knubisoft.cott.testing.framework.util.ResultUtil.CONDITION;
 
 @Slf4j
 @InterpreterForClass(Condition.class)
@@ -35,14 +34,14 @@ public class ConditionInterpreter extends AbstractInterpreter<Condition> {
     private void setConditionResult(final Condition condition, final CommandResult result) {
         Boolean conditionResult = getConditionFromSpel(condition, result);
         dependencies.getScenarioContext().setCondition(condition.getName(), conditionResult);
-        LogUtil.logConditionInfo(condition.getName(), conditionResult);
     }
 
     private Boolean getConditionFromSpel(final Condition condition, final CommandResult result) {
         String injectedExpression = inject(condition.getSpel());
         Expression exp = new SpelExpressionParser().parseExpression(injectedExpression);
         Boolean conditionResult = exp.getValue(Boolean.class);
-        ResultUtil.addConditionMetaData(CONDITION, condition.getName(), injectedExpression, conditionResult, result);
+        LogUtil.logConditionInfo(condition.getName(), injectedExpression, conditionResult);
+        ResultUtil.addConditionMetaData(condition.getName(), injectedExpression, conditionResult, result);
         return conditionResult;
     }
 }

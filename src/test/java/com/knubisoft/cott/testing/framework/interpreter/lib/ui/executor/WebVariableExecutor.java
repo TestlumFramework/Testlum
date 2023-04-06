@@ -39,6 +39,7 @@ import static java.util.Objects.nonNull;
 public class
 WebVariableExecutor extends AbstractUiExecutor<WebVar> {
 
+    private static final int DOM_MAX_LOG_SIZE = 100;
     private final Map<VarPredicate<WebVar>, VarMethod<WebVar>> varToMethodMap;
     @Autowired
     private VariableHelper variableHelper;
@@ -100,7 +101,7 @@ WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         }
         String valueResult = dependencies.getDriver().getPageSource();
         ResultUtil.addVariableMetaData(HTML_DOM, var.getName(), NO_EXPRESSION, valueResult, result);
-        return valueResult;
+        return valueResult.length() > DOM_MAX_LOG_SIZE ? valueResult.substring(0, DOM_MAX_LOG_SIZE) : valueResult;
     }
 
     private String getWebCookiesResult(final WebVar var, final CommandResult result) {

@@ -60,6 +60,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.END_UI_CO
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXPRESSION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
@@ -196,8 +197,11 @@ public class LogUtil {
         log.info(ALIAS_LOG, alias);
     }
 
-    public void logConditionInfo(final String name, final Boolean value) {
+    public void logConditionInfo(final String name,
+                                 final String expression,
+                                 final Boolean value) {
         log.info(NAME_LOG, name);
+        log.info(EXPRESSION_LOG, expression);
         log.info(VALUE_LOG, value.toString());
     }
 

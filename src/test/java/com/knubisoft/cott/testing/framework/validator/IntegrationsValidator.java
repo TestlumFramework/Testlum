@@ -66,7 +66,7 @@ public class IntegrationsValidator implements XMLValidator<Integrations> {
 
     private void checkForSameAliases(final List<? extends Integration> integrationsList) {
         for (Integration integration : integrationsList) {
-            if (getNumOfSameAliases(integrationsList, integration) > 1) {
+            if (getNumOfSameAliases(integrationsList, integration.getAlias()) > 1) {
                 throw new DefaultFrameworkException(SAME_INTEGRATION_ALIASES,
                         integration.getClass().getSimpleName(), integration.getAlias(), env.getFolder());
             }
@@ -74,11 +74,10 @@ public class IntegrationsValidator implements XMLValidator<Integrations> {
     }
 
     private long getNumOfSameAliases(final List<? extends Integration> integrationsList,
-                                     final Integration currentIntegration) {
+                                     final String currentAlias) {
         long numOfSameAliases = 0;
         for (Integration anotherIntegration : integrationsList) {
-            if (anotherIntegration.isEnabled()
-                    && anotherIntegration.getAlias().equalsIgnoreCase(currentIntegration.getAlias())) {
+            if (anotherIntegration.isEnabled() && anotherIntegration.getAlias().equalsIgnoreCase(currentAlias)) {
                 numOfSameAliases++;
             }
         }

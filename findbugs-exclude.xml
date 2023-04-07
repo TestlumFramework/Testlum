@@ -26,6 +26,12 @@
     </Match>
 
     <Match>
+        <Class name="com.knubisoft.cott.testing.framework.interpreter.ConditionInterpreter"/>
+        <Method name="getConditionFromSpel"/>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+    </Match>
+
+    <Match>
         <Class name="com.knubisoft.cott.testing.framework.configuration.websocket.WebsocketMessageHandler"/>
         <Bug pattern="DM_DEFAULT_ENCODING"/>
     </Match>

@@ -80,7 +80,7 @@ public final class LogMessage {
             + "Failed to generate initial structure by path " + ANSI_BLUE_UNDERLINED + "{}" + ANSI_RESET;
 
     public static final String FAILED_VARIABLE_LOG = "Failed variable <{}> comment <{}>";
-    public static final String FAILED_CONDITION_LOG = "Failed condition <{}> comment <{}>";
+    public static final String FAILED_CONDITION_LOG = "Condition <{}> failed. Expression: {}";
 
     public static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
     public static final String BY_URL_LOG = format(TABLE_FORMAT, "URL", "{}");

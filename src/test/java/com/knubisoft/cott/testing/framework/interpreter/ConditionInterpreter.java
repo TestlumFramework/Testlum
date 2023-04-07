@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.interpreter;
 
+import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.InterpreterForClass;
@@ -11,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
+import java.util.Objects;
+
+import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.CONDITION_RESULT_NULL;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FAILED_CONDITION_LOG;
 
 @Slf4j
@@ -26,7 +30,7 @@ public class ConditionInterpreter extends AbstractInterpreter<Condition> {
         try {
             setConditionResult(condition, result);
         } catch (Exception e) {
-            log.info(FAILED_CONDITION_LOG, condition.getName(), condition.getComment());
+            log.info(FAILED_CONDITION_LOG, condition.getName(), condition.getSpel());
             throw e;
         }
     }
@@ -40,6 +44,9 @@ public class ConditionInterpreter extends AbstractInterpreter<Condition> {
         String injectedExpression = inject(condition.getSpel());
         Expression exp = new SpelExpressionParser().parseExpression(injectedExpression);
         Boolean conditionResult = exp.getValue(Boolean.class);
+        if (Objects.isNull(conditionResult)) {
+            throw new DefaultFrameworkException(CONDITION_RESULT_NULL);
+        }
         LogUtil.logConditionInfo(condition.getName(), injectedExpression, conditionResult);
         ResultUtil.addConditionMetaData(condition.getName(), injectedExpression, conditionResult, result);
         return conditionResult;

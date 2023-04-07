@@ -71,7 +71,7 @@ WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     private void setContextVariable(final WebVar var, final CommandResult result) {
         String value = getValueForContext(var, result);
         dependencies.getScenarioContext().set(var.getName(), value);
-        LogUtil.logVarInfo(var.getName(), value);
+        LogUtil.logVarInfo(var.getName(), StringUtils.abbreviate(value, DOM_MAX_LOG_SIZE));
     }
 
     private String getValueForContext(final WebVar var, final CommandResult result) {
@@ -101,7 +101,7 @@ WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         }
         String valueResult = dependencies.getDriver().getPageSource();
         ResultUtil.addVariableMetaData(HTML_DOM, var.getName(), NO_EXPRESSION, valueResult, result);
-        return valueResult.length() > DOM_MAX_LOG_SIZE ? valueResult.substring(0, DOM_MAX_LOG_SIZE) : valueResult;
+        return valueResult;
     }
 
     private String getWebCookiesResult(final WebVar var, final CommandResult result) {

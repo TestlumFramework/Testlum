@@ -168,4 +168,8 @@ public class ExceptionMessage {
             + "check your configuration in config file";
     public static final String MOBILEBROWSER_DRIVER_NOT_INIT = "The webDriver for <mobilebrowser> has not been "
             + "initialized, check your configuration in config file";
+
+    public static final String INVALID_APPIUM_CAPABILITIES = "Appium capabilities are absent";
+
+    public static final String INVALID_BROWSERSTACK_CAPABILITIES = "BrowserStack capabilities are absent";
 }

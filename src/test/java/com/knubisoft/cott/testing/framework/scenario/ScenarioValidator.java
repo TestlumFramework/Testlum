@@ -207,14 +207,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateFileIfExist(xmlFile, dynamo.getFile());
         });
 
-        validatorMap.put(o -> o instanceof Graphql, (xmlFile, command) -> {
-            GraphqlIntegration graphqlIntegration = integrations.getGraphqlIntegration();
-            checkIntegrationExistence(graphqlIntegration, GraphqlIntegration.class);
-            Graphql graphql = (Graphql) command;
-            validateAlias(graphqlIntegration.getApi(), graphql.getAlias());
-            validateGraphqlCommand(xmlFile, graphql);
-        });
-
         validatorMap.put(o -> o instanceof Rabbit, (xmlFile, command) -> {
             RabbitmqIntegration rabbitmqIntegration = integrations.getRabbitmqIntegration();
             checkIntegrationExistence(rabbitmqIntegration, RabbitmqIntegration.class);
@@ -282,6 +274,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             checkIntegrationExistence(twilioIntegration, TwilioIntegration.class);
             Twilio twilio = (Twilio) command;
             validateAlias(twilioIntegration.getTwilio(), twilio.getAlias());
+        });
+
+        validatorMap.put(o -> o instanceof Graphql, (xmlFile, command) -> {
+            GraphqlIntegration graphqlIntegration = integrations.getGraphqlIntegration();
+            checkIntegrationExistence(graphqlIntegration, GraphqlIntegration.class);
+            Graphql graphql = (Graphql) command;
+            validateAlias(graphqlIntegration.getApi(), graphql.getAlias());
+            validateGraphqlCommand(xmlFile, graphql);
         });
 
         validatorMap.put(o -> o instanceof Websocket, (xmlFile, command) -> {
@@ -473,7 +473,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateGraphqlCommand(final File xmlFile, final Graphql graphql) {
         Stream.of(graphql.getPost(), graphql.getGet())
                 .filter(Objects::nonNull)
-                .filter(v -> StringUtils.isNotBlank(v.getResponse().getFile()))
+                .filter(v -> isNotBlank(v.getResponse().getFile()))
                 .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v.getResponse().getFile()));
     }
 

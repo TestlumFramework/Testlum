@@ -5,11 +5,6 @@
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.interpreter.lib.http.ApiClient"/>
-        <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
-    </Match>
-
-    <Match>
         <Class name="com.knubisoft.cott.testing.framework.scenario.ScenarioRunner"/>
         <Method name="createInterpreterInstance"/>
         <Bug pattern="REC_CATCH_EXCEPTION"/>

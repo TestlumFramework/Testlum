@@ -436,7 +436,7 @@ public class LogUtil {
         log.info(COMMENT_LOG, attribute.getComment());
         log.info(LOCATOR_LOG, attribute.getLocatorId());
         log.info(ATTRIBUTE_LOG, attribute.getName());
-        log.info(CONTENT_LOG, attribute.getContent());
+        log.info(CONTENT_LOG, StringPrettifier.cut(attribute.getContent()));
     }
 
     public void logAssertTitleCommand(final Title title, final int position) {

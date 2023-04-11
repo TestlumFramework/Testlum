@@ -75,13 +75,10 @@ public class IntegrationsValidator implements XMLValidator<Integrations> {
 
     private long getNumOfSameAliases(final List<? extends Integration> integrationsList,
                                      final String currentAlias) {
-        long numOfSameAliases = 0;
-        for (Integration anotherIntegration : integrationsList) {
-            if (anotherIntegration.isEnabled() && anotherIntegration.getAlias().equalsIgnoreCase(currentAlias)) {
-                numOfSameAliases++;
-            }
-        }
-        return numOfSameAliases;
+        return integrationsList.stream()
+                .filter(Integration::isEnabled)
+                .filter(integration -> integration.getAlias().equalsIgnoreCase(currentAlias))
+                .count();
     }
 
     private interface IntegrationsPredicate extends Predicate<Integrations> { }

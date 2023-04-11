@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="fromDom"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="xpath" type="{http://www.knubisoft.com/cott/testing/model/scenario}xpathPattern" /&gt;
+ *       &lt;attribute name="locatorId" type="{http://www.knubisoft.com/cott/testing/model/scenario}injectableScenarioLocator" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -28,31 +28,31 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "fromDom")
 public class FromDom {
 
-    @XmlAttribute(name = "xpath")
-    protected String xpath;
+    @XmlAttribute(name = "locatorId")
+    protected String locatorId;
 
     /**
-     * Gets the value of the xpath property.
+     * Gets the value of the locatorId property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getXpath() {
-        return xpath;
+    public String getLocatorId() {
+        return locatorId;
     }
 
     /**
-     * Sets the value of the xpath property.
+     * Sets the value of the locatorId property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setXpath(String value) {
-        this.xpath = value;
+    public void setLocatorId(String value) {
+        this.locatorId = value;
     }
 
 }

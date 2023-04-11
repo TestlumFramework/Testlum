@@ -67,12 +67,11 @@ public class IntegrationsValidator implements XMLValidator<Integrations> {
         for (Integration integration : integrationList) {
             if (!aliasSet.add(integration.getAlias())) {
                 throw new DefaultFrameworkException(SAME_INTEGRATION_ALIASES,
-                        integration.getClass().getSimpleName(), integration.getAlias(), xmlFile.getAbsolutePath());
+                        integration.getClass().getSimpleName(), integration.getAlias(), xmlFile.getPath());
             }
         }
     }
 
     private interface IntegrationsPredicate extends Predicate<Integrations> { }
-
     private interface IntegrationListMethod extends Function<Integrations, List<? extends Integration>> { }
 }

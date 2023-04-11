@@ -19,6 +19,7 @@ import com.knubisoft.cott.testing.model.global_config.AppiumCapabilities;
 import com.knubisoft.cott.testing.model.global_config.ClickhouseIntegration;
 import com.knubisoft.cott.testing.model.global_config.DynamoIntegration;
 import com.knubisoft.cott.testing.model.global_config.ElasticsearchIntegration;
+import com.knubisoft.cott.testing.model.global_config.GraphqlIntegration;
 import com.knubisoft.cott.testing.model.global_config.Integration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
 import com.knubisoft.cott.testing.model.global_config.KafkaIntegration;
@@ -49,6 +50,7 @@ import com.knubisoft.cott.testing.model.scenario.Dynamo;
 import com.knubisoft.cott.testing.model.scenario.Elasticsearch;
 import com.knubisoft.cott.testing.model.scenario.FromFile;
 import com.knubisoft.cott.testing.model.scenario.FromSQL;
+import com.knubisoft.cott.testing.model.scenario.Graphql;
 import com.knubisoft.cott.testing.model.scenario.Http;
 import com.knubisoft.cott.testing.model.scenario.HttpInfo;
 import com.knubisoft.cott.testing.model.scenario.Include;
@@ -274,6 +276,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateAlias(twilioIntegration.getTwilio(), twilio.getAlias());
         });
 
+        validatorMap.put(o -> o instanceof Graphql, (xmlFile, command) -> {
+            GraphqlIntegration graphqlIntegration = integrations.getGraphqlIntegration();
+            checkIntegrationExistence(graphqlIntegration, GraphqlIntegration.class);
+            Graphql graphql = (Graphql) command;
+            validateAlias(graphqlIntegration.getApi(), graphql.getAlias());
+            validateGraphqlCommand(xmlFile, graphql);
+        });
+
         validatorMap.put(o -> o instanceof Websocket, (xmlFile, command) -> {
             Websockets wsIntegration = integrations.getWebsockets();
             checkIntegrationExistence(wsIntegration, Websockets.class);
@@ -458,6 +468,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         if (nonNull(response) && isNotBlank(response.getFile())) {
             FileSearcher.searchFileFromDir(xmlFile, response.getFile());
         }
+    }
+
+    private void validateGraphqlCommand(final File xmlFile, final Graphql graphql) {
+        Stream.of(graphql.getPost(), graphql.getGet())
+                .filter(Objects::nonNull)
+                .filter(v -> isNotBlank(v.getResponse().getFile()))
+                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v.getResponse().getFile()));
     }
 
     private void validateWebsocketCommand(final File xmlFile, final Websocket websocket) {

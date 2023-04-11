@@ -10,7 +10,7 @@ import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.OP
 @UtilityClass
 public class StringPrettifier {
 
-    private static final int LIMIT = 100;
+    private static final int CHAR_LIMIT_FOR_CUT = 100;
 
     public String prettify(final String string) {
         return string.replaceAll("\\s+", DelimiterConstant.EMPTY);
@@ -33,10 +33,10 @@ public class StringPrettifier {
     }
 
     public String cut(final String actual) {
-        if (actual.length() > LIMIT) {
-            return StringUtils.abbreviate(actual, LIMIT);
-        } else {
-            return actual;
+        if (actual.length() > CHAR_LIMIT_FOR_CUT) {
+            return StringUtils.abbreviate(actual, CHAR_LIMIT_FOR_CUT);
         }
+        return actual;
+
     }
 }

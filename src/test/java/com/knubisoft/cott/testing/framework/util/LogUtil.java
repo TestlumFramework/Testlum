@@ -199,10 +199,10 @@ public class LogUtil {
 
     public void logConditionInfo(final String name,
                                  final String expression,
-                                 final Boolean value) {
+                                 final boolean value) {
         log.info(NAME_LOG, name);
         log.info(EXPRESSION_LOG, expression);
-        log.info(VALUE_LOG, value.toString());
+        log.info(VALUE_LOG, value);
     }
 
     public void logExecutionTime(final long time, final AbstractCommand command) {
@@ -359,7 +359,7 @@ public class LogUtil {
 
     public void logVarInfo(final String name, final String value) {
         log.info(NAME_LOG, name);
-        log.info(VALUE_LOG, value);
+        log.info(VALUE_LOG, StringPrettifier.cut(value));
     }
 
     /* ui log */

@@ -38,7 +38,6 @@ import static java.util.Objects.nonNull;
 public class
 WebVariableExecutor extends AbstractUiExecutor<WebVar> {
 
-    private static final int DOM_MAX_LOG_SIZE = 100;
     private final Map<VarPredicate<WebVar>, VarMethod<WebVar>> varToMethodMap;
     @Autowired
     private VariableHelper variableHelper;
@@ -70,7 +69,7 @@ WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     private void setContextVariable(final WebVar var, final CommandResult result) {
         String value = getValueForContext(var, result);
         dependencies.getScenarioContext().set(var.getName(), value);
-        LogUtil.logVarInfo(var.getName(), StringUtils.abbreviate(value, DOM_MAX_LOG_SIZE));
+        LogUtil.logVarInfo(var.getName(), value);
     }
 
     private String getValueForContext(final WebVar var, final CommandResult result) {

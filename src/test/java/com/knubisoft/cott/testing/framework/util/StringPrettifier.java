@@ -32,7 +32,7 @@ public class StringPrettifier {
         return actual;
     }
 
-    public String cut(String actual) {
+    public String cut(final String actual) {
         if (actual.length() > LIMIT) {
             return StringUtils.abbreviate(actual, LIMIT);
         } else {

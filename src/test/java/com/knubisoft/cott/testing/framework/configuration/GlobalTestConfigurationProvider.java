@@ -34,6 +34,7 @@ public class GlobalTestConfigurationProvider {
     private static final Map<String, UiConfig> UI_CONFIGS = collectUiConfigs();
     private static final Integrations DEFAULT_INTEGRATIONS = defaultIntegrations();
     private static final UiConfig DEFAULT_UI_CONFIGS = defaultUiConfigs();
+    private static final IntegrationsValidator INTEGRATIONS_VALIDATOR = new IntegrationsValidator();
 
     public static GlobalTestConfiguration provide() {
         return GLOBAL_TEST_CONFIGURATION;
@@ -87,9 +88,8 @@ public class GlobalTestConfigurationProvider {
     }
 
     private static Integrations initIntegration(final Environment env) {
-        IntegrationsValidator integrationsValidator = new IntegrationsValidator();
         return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
-                .map(configFile -> XMLParsers.forIntegrations().process(configFile, integrationsValidator))
+                .map(configFile -> XMLParsers.forIntegrations().process(configFile, INTEGRATIONS_VALIDATOR))
                 .orElseGet(() -> {
                     log.warn(LogMessage.DISABLED_CONFIGURATION, Integrations.class.getSimpleName());
                     return new Integrations();

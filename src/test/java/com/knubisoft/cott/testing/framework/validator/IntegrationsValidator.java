@@ -1,17 +1,17 @@
 package com.knubisoft.cott.testing.framework.validator;
 
 import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.cott.testing.model.global_config.Environment;
 import com.knubisoft.cott.testing.model.global_config.Integration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -19,11 +19,9 @@ import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.SAM
 import static java.util.Objects.nonNull;
 
 @Slf4j
-@RequiredArgsConstructor
 public class IntegrationsValidator implements XMLValidator<Integrations> {
 
     private static final Map<IntegrationsPredicate, IntegrationListMethod> INTEGRATIONS_TO_LISTS_MAP;
-    private final Environment env;
 
     static {
         final Map<IntegrationsPredicate, IntegrationListMethod> map = new HashMap<>(20);
@@ -52,35 +50,29 @@ public class IntegrationsValidator implements XMLValidator<Integrations> {
 
     @Override
     public void validate(final Integrations integrations, final File xmlFile) {
-        checkEveryIntegration(integrations);
+        checkEachIntegration(integrations, xmlFile);
     }
 
-    private void checkEveryIntegration(final Integrations integrations) {
-        for (Map.Entry<IntegrationsPredicate, IntegrationListMethod> entry : INTEGRATIONS_TO_LISTS_MAP.entrySet()) {
-            if (entry.getKey().test(integrations)) {
-                List<? extends Integration> integrationsList = entry.getValue().apply(integrations);
-                checkForSameAliases(integrationsList);
+    private void checkEachIntegration(final Integrations integrations, final File xmlFile) {
+        INTEGRATIONS_TO_LISTS_MAP.forEach((notNullPredicate, getIntegrationList) -> {
+            if (notNullPredicate.test(integrations)) {
+                List<? extends Integration> integrationList = getIntegrationList.apply(integrations);
+                checkForSameAliases(integrationList, xmlFile);
             }
-        }
+        });
     }
 
-    private void checkForSameAliases(final List<? extends Integration> integrationsList) {
-        for (Integration integration : integrationsList) {
-            if (getNumOfSameAliases(integrationsList, integration.getAlias()) > 1) {
+    private void checkForSameAliases(final List<? extends Integration> integrationList, final File xmlFile) {
+        Set<String> aliasSet = new HashSet<>();
+        for (Integration integration : integrationList) {
+            if (!aliasSet.add(integration.getAlias())) {
                 throw new DefaultFrameworkException(SAME_INTEGRATION_ALIASES,
-                        integration.getClass().getSimpleName(), integration.getAlias(), env.getFolder());
+                        integration.getClass().getSimpleName(), integration.getAlias(), xmlFile.getAbsolutePath());
             }
         }
-    }
-
-    private long getNumOfSameAliases(final List<? extends Integration> integrationsList,
-                                     final String currentAlias) {
-        return integrationsList.stream()
-                .filter(Integration::isEnabled)
-                .filter(integration -> integration.getAlias().equalsIgnoreCase(currentAlias))
-                .count();
     }
 
     private interface IntegrationsPredicate extends Predicate<Integrations> { }
+
     private interface IntegrationListMethod extends Function<Integrations, List<? extends Integration>> { }
 }

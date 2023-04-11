@@ -88,7 +88,7 @@ public class GlobalTestConfigurationProvider {
 
     private static Integrations initIntegration(final Environment env) {
         return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
-                .map(configFile -> XMLParsers.forIntegrations().process(configFile, new IntegrationsValidator(env)))
+                .map(configFile -> XMLParsers.forIntegrations().process(configFile, new IntegrationsValidator()))
                 .orElseGet(() -> {
                     log.warn(LogMessage.DISABLED_CONFIGURATION, Integrations.class.getSimpleName());
                     return new Integrations();

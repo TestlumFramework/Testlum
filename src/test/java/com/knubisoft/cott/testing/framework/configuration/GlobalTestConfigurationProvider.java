@@ -6,6 +6,7 @@ import com.knubisoft.cott.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.cott.testing.framework.parser.XMLParsers;
 import com.knubisoft.cott.testing.framework.util.FileSearcher;
 import com.knubisoft.cott.testing.framework.validator.GlobalTestConfigValidator;
+import com.knubisoft.cott.testing.framework.validator.IntegrationsValidator;
 import com.knubisoft.cott.testing.model.global_config.Environment;
 import com.knubisoft.cott.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.cott.testing.model.global_config.Integrations;
@@ -28,7 +29,7 @@ public class GlobalTestConfigurationProvider {
     private static final GlobalTestConfiguration GLOBAL_TEST_CONFIGURATION = init();
 
     private static final List<Environment> ENVIRONMENTS = filterEnabledEnvironments();
-
+    private static final IntegrationsValidator INTEGRATIONS_VALIDATOR = new IntegrationsValidator();
     private static final Map<String, Integrations> INTEGRATIONS = collectIntegrations();
     private static final Map<String, UiConfig> UI_CONFIGS = collectUiConfigs();
     private static final Integrations DEFAULT_INTEGRATIONS = defaultIntegrations();
@@ -87,7 +88,7 @@ public class GlobalTestConfigurationProvider {
 
     private static Integrations initIntegration(final Environment env) {
         return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
-                .map(configFile -> XMLParsers.forIntegrations().process(configFile))
+                .map(configFile -> XMLParsers.forIntegrations().process(configFile, INTEGRATIONS_VALIDATOR))
                 .orElseGet(() -> {
                     log.warn(LogMessage.DISABLED_CONFIGURATION, Integrations.class.getSimpleName());
                     return new Integrations();

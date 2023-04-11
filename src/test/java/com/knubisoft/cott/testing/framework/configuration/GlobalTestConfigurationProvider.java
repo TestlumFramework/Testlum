@@ -29,12 +29,11 @@ public class GlobalTestConfigurationProvider {
     private static final GlobalTestConfiguration GLOBAL_TEST_CONFIGURATION = init();
 
     private static final List<Environment> ENVIRONMENTS = filterEnabledEnvironments();
-
+    private static final IntegrationsValidator INTEGRATIONS_VALIDATOR = new IntegrationsValidator();
     private static final Map<String, Integrations> INTEGRATIONS = collectIntegrations();
     private static final Map<String, UiConfig> UI_CONFIGS = collectUiConfigs();
     private static final Integrations DEFAULT_INTEGRATIONS = defaultIntegrations();
     private static final UiConfig DEFAULT_UI_CONFIGS = defaultUiConfigs();
-    private static final IntegrationsValidator INTEGRATIONS_VALIDATOR = new IntegrationsValidator();
 
     public static GlobalTestConfiguration provide() {
         return GLOBAL_TEST_CONFIGURATION;

@@ -5,7 +5,6 @@ import com.knubisoft.cott.testing.framework.interpreter.lib.ui.AbstractUiExecuto
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.cott.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.cott.testing.framework.report.CommandResult;
-import com.knubisoft.cott.testing.framework.util.By;
 import com.knubisoft.cott.testing.framework.util.LogUtil;
 import com.knubisoft.cott.testing.framework.util.ResultUtil;
 import com.knubisoft.cott.testing.framework.util.UiUtil;
@@ -91,15 +90,15 @@ WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         return valueResult;
     }
 
-    private String getDomResult(final WebVar var, final CommandResult result) {
-        String xpath = var.getDom().getXpath();
-        if (StringUtils.isNotBlank(xpath)) {
-            String valueResult = dependencies.getDriver().findElement(By.xpath(xpath)).getAttribute("outerHTML");
-            ResultUtil.addVariableMetaData(HTML_DOM, var.getName(), xpath, valueResult, result);
+    private String getDomResult(final WebVar webVar, final CommandResult result) {
+        String locatorId = inject(webVar.getDom().getLocatorId());
+        if (StringUtils.isNotBlank(locatorId)) {
+            String valueResult = UiUtil.findWebElement(dependencies, locatorId).getAttribute("outerHTML");
+            ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), locatorId, valueResult, result);
             return valueResult;
         }
         String valueResult = dependencies.getDriver().getPageSource();
-        ResultUtil.addVariableMetaData(HTML_DOM, var.getName(), NO_EXPRESSION, valueResult, result);
+        ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 

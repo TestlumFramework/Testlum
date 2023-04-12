@@ -49,4 +49,9 @@
         <Class name="com.knubisoft.cott.testing.framework.util.UiUtil"/>
         <Bug pattern="BC_UNCONFIRMED_CAST"/>
     </Match>
+
+    <Match>
+        <Class name="com.knubisoft.cott.testing.framework.interpreter.lib.http.ApiClient"/>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
+    </Match>
 </FindBugsFilter>

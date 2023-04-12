@@ -440,12 +440,10 @@ public class ResultUtil {
         result.put(VALUE, value);
     }
 
-    public void addConditionMetaData(final String type,
-                                     final String key,
+    public void addConditionMetaData(final String key,
                                      final String expression,
                                      final Boolean value,
                                      final CommandResult result) {
-        result.put(TYPE, type);
         result.put(NAME, key);
         result.put(EXPRESSION, expression);
         result.put(VALUE, value);

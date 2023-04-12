@@ -2,12 +2,15 @@ package com.knubisoft.cott.testing.framework.util;
 
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
 
 @UtilityClass
 public class StringPrettifier {
+
+    private static final int CHAR_LIMIT_FOR_CUT = 150;
 
     public String prettify(final String string) {
         return string.replaceAll("\\s+", DelimiterConstant.EMPTY);
@@ -27,5 +30,13 @@ public class StringPrettifier {
             return JacksonMapperUtil.writeValueAsStringWithDefaultPrettyPrinter(json);
         }
         return actual;
+    }
+
+    public String cut(final String actual) {
+        if (actual.length() > CHAR_LIMIT_FOR_CUT) {
+            return StringUtils.abbreviate(actual, CHAR_LIMIT_FOR_CUT);
+        }
+        return actual;
+
     }
 }

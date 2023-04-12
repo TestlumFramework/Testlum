@@ -19,8 +19,6 @@ import static java.util.Objects.nonNull;
 @RequiredArgsConstructor
 public final class HttpValidator {
 
-    private static final int LIMIT = 100;
-
     private final List<String> result = new ArrayList<>();
     private final AbstractInterpreter<?> interpreter;
 
@@ -53,7 +51,8 @@ public final class HttpValidator {
                                            final Map<String, String> actualHeaderMap) {
         String expected = interpreter.toString(expectedHeaders);
         String actual = interpreter.toString(actualHeaderMap);
-        result.add(format(ExceptionMessage.HTTP_HEADERS_EXPECTED_BUT_WAS, cut(expected), cut(actual)));
+        result.add(format(ExceptionMessage.HTTP_HEADERS_EXPECTED_BUT_WAS,
+                StringPrettifier.cut(expected), StringPrettifier.cut(actual)));
         interpreter.save(actual);
     }
 
@@ -64,7 +63,8 @@ public final class HttpValidator {
                 final String newExpected = StringPrettifier.prettify(expectedBody);
                 TreeComparator.compare(newExpected, newActual);
             } catch (ComparisonException e) {
-                result.add(format(ExceptionMessage.HTTP_BODY_EXPECTED_BUT_WAS, cut(expectedBody), cut(actualBody)));
+                result.add(format(ExceptionMessage.HTTP_BODY_EXPECTED_BUT_WAS,
+                        StringPrettifier.cut(expectedBody), StringPrettifier.cut(actualBody)));
                 interpreter.save(actualBody);
             }
         }
@@ -74,9 +74,5 @@ public final class HttpValidator {
         if (!result.isEmpty()) {
             throw new DefaultFrameworkException(result);
         }
-    }
-
-    private String cut(final String s) {
-        return StringUtils.abbreviate(s, LIMIT);
     }
 }

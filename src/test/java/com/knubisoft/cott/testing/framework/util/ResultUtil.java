@@ -71,6 +71,8 @@ public class ResultUtil {
     public static final String COOKIES = "Cookies";
     public static final String URL = "Url";
     public static final String HTML_DOM = "HTML Dom";
+    public static final String FULL_DOM = "Full Dom";
+    public static final String LOCATOR_ID = "Locator ID = %s";
     public static final String ELEMENT_PRESENT = "Is the web element present";
     public static final String CONDITION = "Condition";
     public static final String ASSERT_LOCATOR = "Locator for assert command";
@@ -438,6 +440,15 @@ public class ResultUtil {
         result.put(NAME, key);
         result.put(EXPRESSION, expression);
         result.put(VALUE, value);
+    }
+
+    public void addVariableMetaData(final String type,
+                                    final String key,
+                                    final String format,
+                                    final String expression,
+                                    final String value,
+                                    final CommandResult result) {
+        addVariableMetaData(type, key, format(format, expression), value, result);
     }
 
     public void addConditionMetaData(final String key,

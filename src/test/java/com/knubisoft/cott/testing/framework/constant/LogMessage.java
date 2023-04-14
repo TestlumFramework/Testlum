@@ -80,7 +80,7 @@ public final class LogMessage {
             + "Failed to generate initial structure by path " + ANSI_BLUE_UNDERLINED + "{}" + ANSI_RESET;
 
     public static final String FAILED_VARIABLE_LOG = "Failed variable <{}> comment <{}>";
-    public static final String FAILED_CONDITION_LOG = "Failed condition <{}> comment <{}>";
+    public static final String FAILED_CONDITION_LOG = "Condition <{}> failed. Expression: {}";
 
     public static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
     public static final String BY_URL_LOG = format(TABLE_FORMAT, "URL", "{}");
@@ -127,6 +127,7 @@ public final class LogMessage {
     public static final String MOBILEBROWSER_LOG = "Mobilebrowser device: {}";
     public static final String NATIVE_NAVIGATION_LOG = format(TABLE_FORMAT, "Navigate to", "{}");
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
+    public static final String EXPRESSION_LOG = format(TABLE_FORMAT, "Expression", "{}");
     public static final String SCROLL_LOCATOR = format(TABLE_FORMAT, "Scroll locator", "{}");
     public static final String SCROLL_TYPE = format(TABLE_FORMAT, "Scroll type", "{}");
     public static final String SCROLL_VALUE = format(TABLE_FORMAT, "Scroll value", "{}");

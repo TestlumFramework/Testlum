@@ -60,6 +60,7 @@ import static com.knubisoft.cott.testing.framework.constant.LogMessage.END_UI_CO
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
+import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXPRESSION_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
 import static com.knubisoft.cott.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
@@ -196,9 +197,12 @@ public class LogUtil {
         log.info(ALIAS_LOG, alias);
     }
 
-    public void logConditionInfo(final String name, final Boolean value) {
+    public void logConditionInfo(final String name,
+                                 final String expression,
+                                 final boolean value) {
         log.info(NAME_LOG, name);
-        log.info(VALUE_LOG, value.toString());
+        log.info(EXPRESSION_LOG, expression);
+        log.info(VALUE_LOG, value);
     }
 
     public void logExecutionTime(final long time, final AbstractCommand command) {
@@ -355,7 +359,7 @@ public class LogUtil {
 
     public void logVarInfo(final String name, final String value) {
         log.info(NAME_LOG, name);
-        log.info(VALUE_LOG, value);
+        log.info(VALUE_LOG, StringPrettifier.cut(value));
     }
 
     /* ui log */
@@ -432,7 +436,7 @@ public class LogUtil {
         log.info(COMMENT_LOG, attribute.getComment());
         log.info(LOCATOR_LOG, attribute.getLocatorId());
         log.info(ATTRIBUTE_LOG, attribute.getName());
-        log.info(CONTENT_LOG, attribute.getContent());
+        log.info(CONTENT_LOG, StringPrettifier.cut(attribute.getContent()));
     }
 
     public void logAssertTitleCommand(final Title title, final int position) {

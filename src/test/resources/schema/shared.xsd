@@ -231,7 +231,7 @@
     <x:complexType name="fromUrl"/>
 
     <x:complexType name="fromDom">
-        <x:attribute name="xpath" type="tns:xpathPattern"/>
+        <x:attribute name="locatorId" type="tns:injectableScenarioLocator"/>
     </x:complexType>
 
     <x:complexType name="fromElement">

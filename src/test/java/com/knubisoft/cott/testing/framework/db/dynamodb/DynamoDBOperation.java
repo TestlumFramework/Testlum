@@ -15,6 +15,7 @@ import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.DescribeTableRequest;
 import software.amazon.awssdk.services.dynamodb.model.DescribeTableResponse;
 import software.amazon.awssdk.services.dynamodb.model.ExecuteStatementResponse;
+import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 import software.amazon.awssdk.services.dynamodb.paginators.ScanIterable;
@@ -69,32 +70,28 @@ public class DynamoDBOperation implements StorageOperation {
         if (!FORBIDDEN_DDB_TABLE_NAME.equals(tableName)) {
             ScanIterable scanIterable = dbClient.scanPaginator(ScanRequest.builder().tableName(tableName).build());
             DescribeTableRequest tableRequest = DescribeTableRequest.builder().tableName(tableName).build();
-            DescribeTableResponse describeTableResponse = dbClient.describeTable(tableRequest);
-            String hashKey = describeTableResponse.table().keySchema().get(0).attributeName();
-            String rangeKey = describeTableResponse.table().keySchema().get(1).attributeName();
-            truncate(scanIterable, tableName, hashKey, rangeKey, dbClient);
+            DescribeTableResponse describeTable = dbClient.describeTable(tableRequest);
+            truncateTable(scanIterable, tableName, describeTable, dbClient);
         }
     }
 
-    private void truncate(final ScanIterable scanIterable,
-                          final String tableName,
-                          final String hashKey,
-                          final String rangeKey,
-                          final DynamoDbClient dbClient) {
+    private void truncateTable(final ScanIterable scanIterable,
+                               final String tableName,
+                               final DescribeTableResponse describeTable,
+                               final DynamoDbClient dbClient) {
         for (ScanResponse scanResponse : scanIterable) {
-            scanResponse.items().forEach(item -> deleteItem(tableName, hashKey, rangeKey, item, dbClient));
+            scanResponse.items().forEach(item -> deleteItem(tableName, describeTable, item, dbClient));
         }
     }
 
     private void deleteItem(final String tableName,
-                            final String hashKey,
-                            final String rangeKey,
+                            final DescribeTableResponse describeTable,
                             final Map<String, AttributeValue> item,
                             final DynamoDbClient dbClient) {
         Map<String, AttributeValue> deleteKey = new HashMap<>();
-        deleteKey.put(hashKey, item.get(hashKey));
-        if (Objects.nonNull(rangeKey)) {
-            deleteKey.put(rangeKey, item.get(rangeKey));
+        for (KeySchemaElement keySchemaElement : describeTable.table().keySchema()) {
+            String attributeName = keySchemaElement.attributeName();
+            deleteKey.put(attributeName, item.get(attributeName));
         }
         deleteItemByTableNameAndKey(tableName, deleteKey, dbClient);
     }

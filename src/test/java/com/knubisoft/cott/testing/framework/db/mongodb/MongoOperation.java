@@ -21,12 +21,10 @@ import java.util.stream.Collectors;
 @Component
 public class MongoOperation implements StorageOperation {
 
-    private static final String DROP_DATABASE = "{dropDatabase: 1}";
+    private final Map<AliasEnv, MongoDatabase> mongoDatabases;
 
-    private final Map<AliasEnv, MongoDatabase> mongoDatabase;
-
-    public MongoOperation(@Autowired(required = false) final Map<AliasEnv, MongoDatabase> mongoDatabase) {
-        this.mongoDatabase = mongoDatabase;
+    public MongoOperation(@Autowired(required = false) final Map<AliasEnv, MongoDatabase> mongoDatabases) {
+        this.mongoDatabases = mongoDatabases;
     }
 
     @Override
@@ -36,9 +34,11 @@ public class MongoOperation implements StorageOperation {
 
     @Override
     public void clearSystem() {
-        mongoDatabase.forEach((aliasEnv, mongoDatabase) -> {
+        mongoDatabases.forEach((aliasEnv, database) -> {
             if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
-                mongoDatabase.runCommand(Document.parse(DROP_DATABASE));
+                for (String collectionName : database.listCollectionNames()) {
+                    database.getCollection(collectionName).drop();
+                }
             }
         });
     }
@@ -51,7 +51,7 @@ public class MongoOperation implements StorageOperation {
 
     private String executeQuery(final String query, final String databaseAlias) {
         Document document = Document.parse(query);
-        Document result = mongoDatabase.get(AliasEnv.build(databaseAlias)).runCommand(document);
+        Document result = mongoDatabases.get(AliasEnv.build(databaseAlias)).runCommand(document);
         return JacksonMapperUtil.writeValueAsString(result);
     }
 }

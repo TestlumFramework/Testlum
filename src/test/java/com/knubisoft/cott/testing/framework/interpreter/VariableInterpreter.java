@@ -34,6 +34,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         varMap.put(var -> nonNull(var.getFile()), this::getFileResult);
         varMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
         varMap.put(var -> nonNull(var.getPath()), this::getPathResult);
+        varMap.put(var -> nonNull(var.getGenerate()), this::getRandomGenerateResult);
         varToMethodMap = Collections.unmodifiableMap(varMap);
     }
 
@@ -56,6 +57,10 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     private String getValueForContext(final Var var, final CommandResult result) {
         return variableHelper.lookupVarMethod(varToMethodMap, var)
                 .apply(var, result);
+    }
+
+    private String getRandomGenerateResult(final Var var, final CommandResult result) {
+        return variableHelper.getGenerateResult(var.getGenerate(), var.getName(), result);
     }
 
     private String getPathResult(final Var var, final CommandResult result) {

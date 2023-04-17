@@ -1,5 +1,6 @@
 package com.knubisoft.cott.testing.framework.util;
 
+import com.github.curiousoddman.rgxgen.RgxGen;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.knubisoft.cott.testing.framework.constant.DelimiterConstant;
@@ -14,9 +15,11 @@ import com.knubisoft.cott.testing.model.scenario.AbstractCommand;
 import com.knubisoft.cott.testing.model.scenario.FromExpression;
 import com.knubisoft.cott.testing.model.scenario.FromFile;
 import com.knubisoft.cott.testing.model.scenario.FromPath;
+import com.knubisoft.cott.testing.model.scenario.FromRandomGenerated;
 import com.knubisoft.cott.testing.model.scenario.FromSQL;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -34,9 +37,12 @@ import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
@@ -44,6 +50,7 @@ import static com.knubisoft.cott.testing.framework.constant.DelimiterConstant.SL
 import static com.knubisoft.cott.testing.framework.constant.ExceptionMessage.VAR_QUERY_RESULT_ERROR;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.EXPRESSION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.FILE;
+import static com.knubisoft.cott.testing.framework.util.ResultUtil.GENERATED_STRING;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.JSON_PATH;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NO_EXPRESSION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.RELATIONAL_DB_QUERY;
@@ -53,8 +60,21 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.XML_PATH;
 @Component
 public class VariableHelper {
 
+    private final Map<RandomPredicate, RandomFunction> randomFunctionMap;
     @Autowired
     private NameToAdapterAlias nameToAdapterAlias;
+
+    public VariableHelper() {
+        Map<RandomPredicate, RandomFunction> functionMap = new HashMap<>();
+        functionMap.put(rand -> Objects.nonNull(rand.getNumeric()),
+                rand -> RandomStringUtils.randomNumeric(rand.getLength()));
+        functionMap.put(rand -> Objects.nonNull(rand.getAlphabetic()),
+                rand -> RandomStringUtils.randomAlphabetic(rand.getLength()));
+        functionMap.put(rand -> Objects.nonNull(rand.getAlphanumeric()),
+                rand -> RandomStringUtils.randomAlphanumeric(rand.getLength()));
+        functionMap.put(rand -> Objects.nonNull(rand.getRandomRegexp()), this::getRandomStringByRegexp);
+        randomFunctionMap = Collections.unmodifiableMap(functionMap);
+    }
 
     public <T extends AbstractCommand> VarMethod<T> lookupVarMethod(final Map<VarPredicate<T>, VarMethod<T>> methodMap,
                                                                     final T var) {
@@ -64,6 +84,42 @@ public class VariableHelper {
                 .map(methodMap::get)
                 .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.VAR_TYPE_NOT_SUPPORTED,
                         var.getClass().getSimpleName()));
+    }
+
+    public String getGenerateResult(final FromRandomGenerated randomGenerate,
+                                    final String varName,
+                                    final CommandResult result) {
+        String valueResult = getAppropriateRandomString(randomGenerate);
+        if (Objects.nonNull(randomGenerate.getRandomRegexp())) {
+            ResultUtil.addVariableMetaData(GENERATED_STRING, varName,
+                    randomGenerate.getRandomRegexp().getPattern(), valueResult, result);
+        } else {
+            ResultUtil.addVariableMetaData(GENERATED_STRING, varName, NO_EXPRESSION, valueResult, result);
+        }
+        return valueResult;
+    }
+
+    private String getAppropriateRandomString(final FromRandomGenerated randomGenerate) {
+        return randomFunctionMap.keySet()
+                .stream()
+                .filter(key -> key.test(randomGenerate))
+                .findFirst()
+                .map(randomFunctionMap::get)
+                .orElseThrow(() -> new DefaultFrameworkException("Random method generation is not supported"))
+                .apply(randomGenerate);
+    }
+
+    private String getRandomStringByRegexp(final FromRandomGenerated rand) {
+        RgxGen rgxGen = new RgxGen(rand.getRandomRegexp().getPattern());
+        StringBuilder randomString = new StringBuilder(0);
+        while (randomString.length() < rand.getLength() - 1) {
+            int index = 0;
+            randomString.insert(index, rgxGen.generate());
+        }
+        if (randomString.length() > rand.getLength()) {
+            return randomString.substring(0, rand.getLength());
+        }
+        return randomString.toString().trim();
     }
 
     public String getFileResult(final FromFile fromFile,
@@ -177,4 +233,7 @@ public class VariableHelper {
 
     public interface VarPredicate<T extends AbstractCommand> extends Predicate<T> { }
     public interface VarMethod<T extends AbstractCommand> extends BiFunction<T, CommandResult, String> { }
+
+    private interface RandomPredicate extends Predicate<FromRandomGenerated> { }
+    private interface RandomFunction extends Function<FromRandomGenerated, String> { }
 }

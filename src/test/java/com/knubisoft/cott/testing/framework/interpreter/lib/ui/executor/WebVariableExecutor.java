@@ -53,6 +53,7 @@ WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         webVarMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
         webVarMap.put(var -> nonNull(var.getFile()), this::getFileResult);
         webVarMap.put(var -> nonNull(var.getSql()), this::getSQLResult);
+        webVarMap.put(var -> nonNull(var.getGenerate()), this::getRandomGenerateResult);
         varToMethodMap = Collections.unmodifiableMap(webVarMap);
     }
 
@@ -75,6 +76,10 @@ WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     private String getValueForContext(final WebVar var, final CommandResult result) {
         return variableHelper.lookupVarMethod(varToMethodMap, var)
                 .apply(var, result);
+    }
+
+    private String getRandomGenerateResult(final WebVar var, final CommandResult result) {
+        return variableHelper.getGenerateResult(var.getGenerate(), var.getName(), result);
     }
 
     private String getElementResult(final WebVar webVar, final CommandResult result) {

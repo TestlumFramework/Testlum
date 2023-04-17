@@ -350,11 +350,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link RandomGenerate }
+     * Create an instance of {@link FromRandomGenerated }
      * 
      */
-    public RandomGenerate createRandomGenerate() {
-        return new RandomGenerate();
+    public FromRandomGenerated createFromRandomGenerated() {
+        return new FromRandomGenerated();
     }
 
     /**
@@ -382,11 +382,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Regexp }
+     * Create an instance of {@link RandomRegexp }
      * 
      */
-    public Regexp createRegexp() {
-        return new Regexp();
+    public RandomRegexp createRandomRegexp() {
+        return new RandomRegexp();
     }
 
     /**

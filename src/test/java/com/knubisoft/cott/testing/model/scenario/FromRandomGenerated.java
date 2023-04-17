@@ -8,19 +8,19 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for randomGenerate complex type.
+ * <p>Java class for fromRandomGenerated complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="randomGenerate"&gt;
+ * &lt;complexType name="fromRandomGenerated"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;choice&gt;
  *         &lt;element name="numeric" type="{http://www.knubisoft.com/cott/testing/model/scenario}randomNumeric"/&gt;
  *         &lt;element name="alphabetic" type="{http://www.knubisoft.com/cott/testing/model/scenario}randomAlphabetic"/&gt;
  *         &lt;element name="alphanumeric" type="{http://www.knubisoft.com/cott/testing/model/scenario}randomAlphanumeric"/&gt;
- *         &lt;element name="regexp" type="{http://www.knubisoft.com/cott/testing/model/scenario}regexp"/&gt;
+ *         &lt;element name="randomRegexp" type="{http://www.knubisoft.com/cott/testing/model/scenario}randomRegexp"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="length" use="required" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
  *     &lt;/restriction&gt;
@@ -31,18 +31,18 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "randomGenerate", propOrder = {
+@XmlType(name = "fromRandomGenerated", propOrder = {
     "numeric",
     "alphabetic",
     "alphanumeric",
-    "regexp"
+    "randomRegexp"
 })
-public class RandomGenerate {
+public class FromRandomGenerated {
 
     protected RandomNumeric numeric;
     protected RandomAlphabetic alphabetic;
     protected RandomAlphanumeric alphanumeric;
-    protected Regexp regexp;
+    protected RandomRegexp randomRegexp;
     @XmlAttribute(name = "length", required = true)
     protected int length;
 
@@ -119,27 +119,27 @@ public class RandomGenerate {
     }
 
     /**
-     * Gets the value of the regexp property.
+     * Gets the value of the randomRegexp property.
      * 
      * @return
      *     possible object is
-     *     {@link Regexp }
+     *     {@link RandomRegexp }
      *     
      */
-    public Regexp getRegexp() {
-        return regexp;
+    public RandomRegexp getRandomRegexp() {
+        return randomRegexp;
     }
 
     /**
-     * Sets the value of the regexp property.
+     * Sets the value of the randomRegexp property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Regexp }
+     *     {@link RandomRegexp }
      *     
      */
-    public void setRegexp(Regexp value) {
-        this.regexp = value;
+    public void setRandomRegexp(RandomRegexp value) {
+        this.randomRegexp = value;
     }
 
     /**

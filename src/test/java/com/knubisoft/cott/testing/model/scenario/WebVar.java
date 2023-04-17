@@ -51,7 +51,7 @@ public class WebVar
     protected FromPath path;
     protected FromExpression expression;
     protected FromSQL sql;
-    protected RandomGenerate generate;
+    protected FromRandomGenerated generate;
     protected FromCookie cookie;
     protected FromDom dom;
     protected FromUrl url;
@@ -160,10 +160,10 @@ public class WebVar
      * 
      * @return
      *     possible object is
-     *     {@link RandomGenerate }
+     *     {@link FromRandomGenerated }
      *     
      */
-    public RandomGenerate getGenerate() {
+    public FromRandomGenerated getGenerate() {
         return generate;
     }
 
@@ -172,10 +172,10 @@ public class WebVar
      * 
      * @param value
      *     allowed object is
-     *     {@link RandomGenerate }
+     *     {@link FromRandomGenerated }
      *     
      */
-    public void setGenerate(RandomGenerate value) {
+    public void setGenerate(FromRandomGenerated value) {
         this.generate = value;
     }
 

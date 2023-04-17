@@ -59,12 +59,12 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
                 .apply(var, result);
     }
 
-    private String getRandomGenerateResult(final Var var, final CommandResult result) {
-        return variableHelper.getGenerateResult(var.getGenerate(), var.getName(), result);
+    private String getSQLResult(final Var var, final CommandResult result) {
+        return variableHelper.getSQLResult(var.getSql(), var.getName(), dependencies.getScenarioContext(), result);
     }
 
-    private String getPathResult(final Var var, final CommandResult result) {
-        return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result);
+    private String getFileResult(final Var var, final CommandResult result) {
+        return variableHelper.getFileResult(var.getFile(), dependencies.getFile(), var.getName(), result);
     }
 
     private String getExpressionResult(final Var var, final CommandResult result) {
@@ -72,11 +72,11 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
                 var.getExpression(), var.getName(), dependencies.getScenarioContext(), result);
     }
 
-    private String getFileResult(final Var var, final CommandResult result) {
-        return variableHelper.getFileResult(var.getFile(), dependencies.getFile(), var.getName(), result);
+    private String getPathResult(final Var var, final CommandResult result) {
+        return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result);
     }
 
-    private String getSQLResult(final Var var, final CommandResult result) {
-        return variableHelper.getSQLResult(var.getSql(), var.getName(), dependencies.getScenarioContext(), result);
+    private String getRandomGenerateResult(final Var var, final CommandResult result) {
+        return variableHelper.getGenerateResult(var.getGenerate(), var.getName(), result);
     }
 }

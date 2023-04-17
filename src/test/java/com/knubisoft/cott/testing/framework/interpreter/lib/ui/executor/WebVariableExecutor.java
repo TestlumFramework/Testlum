@@ -80,10 +80,6 @@ WebVariableExecutor extends AbstractUiExecutor<WebVar> {
                 .apply(var, result);
     }
 
-    private String getRandomGenerateResult(final WebVar var, final CommandResult result) {
-        return variableHelper.getGenerateResult(var.getGenerate(), var.getName(), result);
-    }
-
     private String getElementResult(final WebVar webVar, final CommandResult result) {
         String valueResult;
         String locatorId = inject(webVar.getElement().getPresent().getLocatorId());
@@ -139,5 +135,9 @@ WebVariableExecutor extends AbstractUiExecutor<WebVar> {
 
     private String getSQLResult(final WebVar var, final CommandResult result) {
         return variableHelper.getSQLResult(var.getSql(), var.getName(), dependencies.getScenarioContext(), result);
+    }
+
+    private String getRandomGenerateResult(final WebVar var, final CommandResult result) {
+        return variableHelper.getGenerateResult(var.getGenerate(), var.getName(), result);
     }
 }

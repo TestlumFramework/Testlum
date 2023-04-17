@@ -40,7 +40,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -55,6 +54,7 @@ import static com.knubisoft.cott.testing.framework.util.ResultUtil.JSON_PATH;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.NO_EXPRESSION;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.RELATIONAL_DB_QUERY;
 import static com.knubisoft.cott.testing.framework.util.ResultUtil.XML_PATH;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @Component
@@ -66,13 +66,13 @@ public class VariableHelper {
 
     public VariableHelper() {
         Map<RandomPredicate, RandomFunction> functionMap = new HashMap<>();
-        functionMap.put(rand -> Objects.nonNull(rand.getNumeric()),
+        functionMap.put(rand -> nonNull(rand.getNumeric()),
                 rand -> RandomStringUtils.randomNumeric(rand.getLength()));
-        functionMap.put(rand -> Objects.nonNull(rand.getAlphabetic()),
+        functionMap.put(rand -> nonNull(rand.getAlphabetic()),
                 rand -> RandomStringUtils.randomAlphabetic(rand.getLength()));
-        functionMap.put(rand -> Objects.nonNull(rand.getAlphanumeric()),
+        functionMap.put(rand -> nonNull(rand.getAlphanumeric()),
                 rand -> RandomStringUtils.randomAlphanumeric(rand.getLength()));
-        functionMap.put(rand -> Objects.nonNull(rand.getRandomRegexp()), this::getRandomStringByRegexp);
+        functionMap.put(rand -> nonNull(rand.getRandomRegexp()), this::getRandomStringByRegexp);
         randomFunctionMap = Collections.unmodifiableMap(functionMap);
     }
 
@@ -90,7 +90,7 @@ public class VariableHelper {
                                     final String varName,
                                     final CommandResult result) {
         String valueResult = getAppropriateRandomString(randomGenerate);
-        if (Objects.nonNull(randomGenerate.getRandomRegexp())) {
+        if (nonNull(randomGenerate.getRandomRegexp())) {
             ResultUtil.addVariableMetaData(GENERATED_STRING, varName,
                     randomGenerate.getRandomRegexp().getPattern(), valueResult, result);
         } else {

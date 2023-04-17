@@ -111,13 +111,13 @@ public class VariableHelper {
 
     private String getRandomStringByRegexp(final FromRandomGenerated rand) {
         RgxGen rgxGen = new RgxGen(rand.getRandomRegexp().getPattern());
-        StringBuilder randomString = new StringBuilder(0);
-        while (randomString.length() < rand.getLength() - 1) {
-            int index = 0;
-            randomString.insert(index, rgxGen.generate());
+        int length = rand.getLength();
+        StringBuilder randomString = new StringBuilder(length);
+        while (randomString.length() < length - 1) {
+            randomString.append(rgxGen.generate());
         }
-        if (randomString.length() > rand.getLength()) {
-            return randomString.substring(0, rand.getLength());
+        if (randomString.length() > length) {
+            return randomString.substring(0, length);
         }
         return randomString.toString().trim();
     }

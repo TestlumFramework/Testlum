@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.knubisoft</groupId>
-    <artifactId>cost-optimization-testing-tool</artifactId>
+    <artifactId>testlum</artifactId>
     <version>1.0</version>
-    <name>cost-optimization-testing-tool</name>
+    <name>TESTLUM</name>
 
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -15,7 +15,7 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <start-class>com.knubisoft.cott.starter.COTTStarter</start-class>
+        <start-class>com.knubisoft.testlum.starter.TESTLUMStarter</start-class>
 
         <selenium-java.version>4.0.0</selenium-java.version>
         <webdrivermanager.version>5.2.0</webdrivermanager.version>
@@ -1051,7 +1051,7 @@
     </dependencyManagement>
 
     <build>
-        <finalName>cott</finalName>
+        <finalName>testlum</finalName>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -1195,7 +1195,7 @@
                             <logViolationsToConsole>true</logViolationsToConsole>
                             <failsOnError>true</failsOnError>
                             <linkXRef>false</linkXRef>
-                            <excludes>**/com/knubisoft/cott/testing/model/**/*</excludes>
+                            <excludes>**/com/knubisoft/testlum/testing/model/**/*</excludes>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
                         </configuration>
                         <executions>
@@ -1243,7 +1243,7 @@
                             <minimumTokens>50</minimumTokens>
                             <targetJdk>${java.version}</targetJdk>
                             <excludes>
-                                <exclude>**/com/knubisoft/cott/testing/model/**/*.java
+                                <exclude>**/com/knubisoft/testlum/testing/model/**/*.java
                                 </exclude>
                             </excludes>
                         </configuration>

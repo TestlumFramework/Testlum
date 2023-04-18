@@ -5,48 +5,48 @@
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.scenario.ScenarioRunner"/>
+        <Class name="com.knubisoft.testlum.testing.framework.scenario.ScenarioRunner"/>
         <Method name="createInterpreterInstance"/>
         <Bug pattern="REC_CATCH_EXCEPTION"/>
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.util.ArgumentsUtils"/>
+        <Class name="com.knubisoft.testlum.testing.framework.util.ArgumentsUtils"/>
         <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.db.sql.executor.AbstractSqlExecutor"/>
+        <Class name="com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor"/>
         <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.interpreter.SmtpInterpreter"/>
+        <Class name="com.knubisoft.testlum.testing.framework.interpreter.SmtpInterpreter"/>
         <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.configuration.websocket.WebsocketMessageHandler"/>
+        <Class name="com.knubisoft.testlum.testing.framework.configuration.websocket.WebsocketMessageHandler"/>
         <Bug pattern="DM_DEFAULT_ENCODING"/>
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.util.JavascriptUtil"/>
+        <Class name="com.knubisoft.testlum.testing.framework.util.JavascriptUtil"/>
         <Bug pattern="BC_UNCONFIRMED_CAST"/>
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.interpreter.lib.AbstractUiInterpreter"/>
+        <Class name="com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractUiInterpreter"/>
         <Bug pattern="BC_UNCONFIRMED_CAST"/>
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.util.UiUtil"/>
+        <Class name="com.knubisoft.testlum.testing.framework.util.UiUtil"/>
         <Bug pattern="BC_UNCONFIRMED_CAST"/>
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.interpreter.lib.http.ApiClient"/>
+        <Class name="com.knubisoft.testlum.testing.framework.interpreter.lib.http.ApiClient"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
 </FindBugsFilter>

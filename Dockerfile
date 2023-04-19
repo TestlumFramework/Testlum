@@ -1,6 +1,6 @@
 FROM maven:3.8.5-openjdk-8 as maven-build
 
-WORKDIR /cott/
+WORKDIR /testlum/
 COPY . .
 RUN mvn clean install -DskipTests -Pquality-checking
 
@@ -60,10 +60,10 @@ RUN apt-get update -qqy \
 	&& apt-get -qqy install xvfb \
 	&& rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
-ARG JAR_FILE=target/cott-with-dependencies.jar
+ARG JAR_FILE=target/testlum-with-dependencies.jar
 
-WORKDIR /cott/
+WORKDIR /testlum/
 
-COPY --from=maven-build /cott/${JAR_FILE} cott.jar
+COPY --from=maven-build /testlum/${JAR_FILE} testlum.jar
 
-ENTRYPOINT ["java", "-jar", "cott.jar"]
+ENTRYPOINT ["java", "-jar", "testlum.jar"]

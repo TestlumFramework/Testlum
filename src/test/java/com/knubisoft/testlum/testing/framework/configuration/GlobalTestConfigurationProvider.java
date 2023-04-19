@@ -20,17 +20,16 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GlobalTestConfigurationProvider {
 
+    static final IntegrationsValidator INTEGRATIONS_VALIDATOR = new IntegrationsValidator();
+    private static final EnvsValidator ENVS_VALIDATOR = new EnvsValidator();
     private static final GlobalTestConfiguration GLOBAL_TEST_CONFIGURATION = init();
     private static final List<Environment> ENVIRONMENTS = filterEnabledEnvironments();
-    private static final IntegrationsValidator INTEGRATIONS_VALIDATOR = new IntegrationsValidator();
     private static final Map<String, Integrations> INTEGRATIONS = collectIntegrations();
     private static final Map<String, UiConfig> UI_CONFIGS = collectUiConfigs();
     private static final Integrations DEFAULT_INTEGRATIONS = defaultIntegrations();
@@ -82,51 +81,13 @@ public class GlobalTestConfigurationProvider {
                 .filter(Environment::isEnabled).collect(Collectors.toList());
     }
 
-    private static List<Optional<Integrations>> collectIntegrationXmls() {
-        return getEnabledEnvironments().stream()
-                .map(GlobalTestConfigurationProvider::findIntegrationXml)
-                .collect(Collectors.toList());
-    }
-
-    private static Optional<Integrations> findIntegrationXml(final Environment env) {
-        return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
-                .map(configFile -> XMLParsers.forIntegrations().process(configFile));
-    }
-
-    private static List<Optional<UiConfig>> collectUiXmls() {
-        return getEnabledEnvironments().stream()
-                .map(GlobalTestConfigurationProvider::findUiXml)
-                .collect(Collectors.toList());
-    }
-
-    private static Optional<UiConfig> findUiXml(final Environment env) {
-        return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.UI_CONFIG_FILENAME)
-                .map(configFile -> XMLParsers.forUiConfig().process(configFile));
-    }
-
-    private static void validateEnvsConfigFiles() {
-        validateFileSetFor(collectIntegrationXmls());
-        validateFileSetFor(collectUiXmls());
-    }
-
-    private static <T> void validateFileSetFor(final List<Optional<T>> list) {
-        long nullCount = list.stream()
-                .filter(Objects::isNull)
-                .count();
-
-        if (nullCount > 1
-                && nullCount != list.size()) {
-            throw new DefaultFrameworkException(ExceptionMessage.ENVS_CONFIGS_FOLDER_FILES_STRUCTURE_INCOMPATIBLE);
-        }
-    }
-
     private static Map<String, Integrations> collectIntegrations() {
+        ENVS_VALIDATOR.validate(TestResourceSettings.INTEGRATION_CONFIG_FILENAME);
         return getEnabledEnvironments().stream()
                 .collect(Collectors.toMap(Environment::getFolder, GlobalTestConfigurationProvider::initIntegration));
     }
 
     private static Integrations initIntegration(final Environment env) {
-        validateEnvsConfigFiles();
         return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
                 .map(configFile -> XMLParsers.forIntegrations().process(configFile, INTEGRATIONS_VALIDATOR))
                 .orElseGet(() -> {
@@ -136,12 +97,12 @@ public class GlobalTestConfigurationProvider {
     }
 
     private static Map<String, UiConfig> collectUiConfigs() {
+        ENVS_VALIDATOR.validate(TestResourceSettings.UI_CONFIG_FILENAME);
         return getEnabledEnvironments().stream()
                 .collect(Collectors.toMap(Environment::getFolder, GlobalTestConfigurationProvider::initUiConfig));
     }
 
     private static UiConfig initUiConfig(final Environment env) {
-        validateEnvsConfigFiles();
         return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.UI_CONFIG_FILENAME)
                 .map(configFile -> XMLParsers.forUiConfig().process(configFile))
                 .orElseGet(() -> {

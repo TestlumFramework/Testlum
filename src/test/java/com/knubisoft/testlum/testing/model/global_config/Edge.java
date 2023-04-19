@@ -1,0 +1,82 @@
+
+package com.knubisoft.testlum.testing.model.global_config;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlType;
+
+
+/**
+ * <p>Java class for edge complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+ * <pre>
+ * &lt;complexType name="edge"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/global-config}abstractBrowser"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="edgeOptionsArguments" type="{http://www.knubisoft.com/testlum/testing/model/global-config}browserOptionsArguments" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="headlessMode" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "edge", propOrder = {
+    "edgeOptionsArguments"
+})
+public class Edge
+    extends AbstractBrowser
+{
+
+    protected BrowserOptionsArguments edgeOptionsArguments;
+    @XmlAttribute(name = "headlessMode", required = true)
+    protected boolean headlessMode;
+
+    /**
+     * Gets the value of the edgeOptionsArguments property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link BrowserOptionsArguments }
+     *     
+     */
+    public BrowserOptionsArguments getEdgeOptionsArguments() {
+        return edgeOptionsArguments;
+    }
+
+    /**
+     * Sets the value of the edgeOptionsArguments property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BrowserOptionsArguments }
+     *     
+     */
+    public void setEdgeOptionsArguments(BrowserOptionsArguments value) {
+        this.edgeOptionsArguments = value;
+    }
+
+    /**
+     * Gets the value of the headlessMode property.
+     * 
+     */
+    public boolean isHeadlessMode() {
+        return headlessMode;
+    }
+
+    /**
+     * Sets the value of the headlessMode property.
+     * 
+     */
+    public void setHeadlessMode(boolean value) {
+        this.headlessMode = value;
+    }
+
+}

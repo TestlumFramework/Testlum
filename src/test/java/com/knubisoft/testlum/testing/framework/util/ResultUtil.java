@@ -67,6 +67,7 @@ public class ResultUtil {
     public static final String RELATIONAL_DB_QUERY = "Relational DB query";
     public static final String FILE = "File";
     public static final String EXPRESSION = "Expression";
+    public static final String CONSTANT = "Constant";
     public static final String NO_EXPRESSION = "No expression";
     public static final String COOKIES = "Cookies";
     public static final String URL = "Url";

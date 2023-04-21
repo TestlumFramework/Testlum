@@ -42,7 +42,7 @@
     <x:simpleType name="nonEmptyString">
         <x:restriction base="x:string">
             <x:minLength value="1"/>
-<!--            <x:pattern value="\S(.*\S)?"/>-->
+            <!--            <x:pattern value="\S(.*\S)?"/>-->
         </x:restriction>
     </x:simpleType>
 
@@ -207,6 +207,7 @@
         <x:choice>
             <x:element name="file" type="tns:fromFile"/>
             <x:element name="path" type="tns:fromPath"/>
+            <x:element name="constant" type="tns:fromConstant"/>
             <x:element name="expression" type="tns:fromExpression"/>
             <x:element name="sql" type="tns:fromSQL"/>
         </x:choice>
@@ -225,6 +226,10 @@
             <x:pattern value="/.+|\$.+"/>
         </x:restriction>
     </x:simpleType>
+
+    <x:complexType name="fromConstant">
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
 
     <x:complexType name="fromExpression">
         <x:attribute name="value" type="tns:nonEmptyString" use="required"/>

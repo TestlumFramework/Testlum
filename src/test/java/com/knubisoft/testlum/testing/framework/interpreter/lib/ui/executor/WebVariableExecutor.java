@@ -52,6 +52,7 @@ WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         webVarMap.put(var -> nonNull(var.getCookie()), this::getWebCookiesResult);
         webVarMap.put(var -> nonNull(var.getUrl()), this::getUrlResult);
         webVarMap.put(var -> nonNull(var.getPath()), this::getPathResult);
+        webVarMap.put(var -> nonNull(var.getConstant()), this::getConstantResult);
         webVarMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
         webVarMap.put(var -> nonNull(var.getFile()), this::getFileResult);
         webVarMap.put(var -> nonNull(var.getSql()), this::getSQLResult);
@@ -121,6 +122,11 @@ WebVariableExecutor extends AbstractUiExecutor<WebVar> {
 
     private String getPathResult(final WebVar var, final CommandResult result) {
         return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result);
+    }
+
+    private String getConstantResult(final WebVar var, final CommandResult result) {
+        return variableHelper.getConstantResult(
+                var.getConstant(), var.getName(), dependencies.getScenarioContext(), result);
     }
 
     private String getExpressionResult(final WebVar var, final CommandResult result) {

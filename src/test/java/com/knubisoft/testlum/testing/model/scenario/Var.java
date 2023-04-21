@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "var", propOrder = {
     "file",
     "path",
+    "constant",
     "expression",
     "sql"
 })
@@ -38,6 +39,7 @@ public class Var
 
     protected FromFile file;
     protected FromPath path;
+    protected FromConstant constant;
     protected FromExpression expression;
     protected FromSQL sql;
     @XmlAttribute(name = "name", required = true)
@@ -89,6 +91,30 @@ public class Var
      */
     public void setPath(FromPath value) {
         this.path = value;
+    }
+
+    /**
+     * Gets the value of the constant property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FromConstant }
+     *     
+     */
+    public FromConstant getConstant() {
+        return constant;
+    }
+
+    /**
+     * Sets the value of the constant property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FromConstant }
+     *     
+     */
+    public void setConstant(FromConstant value) {
+        this.constant = value;
     }
 
     /**

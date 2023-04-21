@@ -33,6 +33,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         varMap.put(var -> nonNull(var.getSql()), this::getSQLResult);
         varMap.put(var -> nonNull(var.getFile()), this::getFileResult);
         varMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
+        varMap.put(var -> nonNull(var.getConstant()), this::getConstantResult);
         varMap.put(var -> nonNull(var.getPath()), this::getPathResult);
         varToMethodMap = Collections.unmodifiableMap(varMap);
     }
@@ -60,6 +61,11 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
 
     private String getPathResult(final Var var, final CommandResult result) {
         return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result);
+    }
+
+    private String getConstantResult(final Var var, final CommandResult result) {
+        return variableHelper.getConstantResult(
+                var.getConstant(), var.getName(), dependencies.getScenarioContext(), result);
     }
 
     private String getExpressionResult(final Var var, final CommandResult result) {

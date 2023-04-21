@@ -2,7 +2,6 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.http;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.HttpUtil;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -29,7 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_METHOD;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_HTTP_METHOD;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HTTP_STATUS_CODE;
 
 @Slf4j

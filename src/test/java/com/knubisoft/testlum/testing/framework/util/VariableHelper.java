@@ -11,6 +11,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
+import com.knubisoft.testlum.testing.model.scenario.FromConstant;
 import com.knubisoft.testlum.testing.model.scenario.FromExpression;
 import com.knubisoft.testlum.testing.model.scenario.FromFile;
 import com.knubisoft.testlum.testing.model.scenario.FromPath;
@@ -42,6 +43,7 @@ import java.util.function.Predicate;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SLASH_SEPARATOR;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VAR_QUERY_RESULT_ERROR;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONSTANT;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.EXPRESSION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.FILE;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.JSON_PATH;
@@ -72,6 +74,16 @@ public class VariableHelper {
                                 final CommandResult result) {
         String valueResult = FileSearcher.searchFileToString(fromFile.getFileName(), file);
         ResultUtil.addVariableMetaData(FILE, varName, NO_EXPRESSION, valueResult, result);
+        return valueResult;
+    }
+
+    public String getConstantResult(final FromConstant fromConstant,
+                                    final String varName,
+                                    final ScenarioContext scenarioContext,
+                                    final CommandResult result) {
+        String value = fromConstant.getValue();
+        String valueResult = scenarioContext.inject(value);
+        ResultUtil.addVariableMetaData(CONSTANT, varName, NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 
@@ -175,6 +187,9 @@ public class VariableHelper {
         return queryParts[1];
     }
 
-    public interface VarPredicate<T extends AbstractCommand> extends Predicate<T> { }
-    public interface VarMethod<T extends AbstractCommand> extends BiFunction<T, CommandResult, String> { }
+    public interface VarPredicate<T extends AbstractCommand> extends Predicate<T> {
+    }
+
+    public interface VarMethod<T extends AbstractCommand> extends BiFunction<T, CommandResult, String> {
+    }
 }

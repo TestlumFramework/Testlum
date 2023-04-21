@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "webVar", propOrder = {
     "file",
     "path",
+    "constant",
     "expression",
     "sql",
     "cookie",
@@ -48,6 +49,7 @@ public class WebVar
 
     protected FromFile file;
     protected FromPath path;
+    protected FromConstant constant;
     protected FromExpression expression;
     protected FromSQL sql;
     protected FromCookie cookie;
@@ -103,6 +105,30 @@ public class WebVar
      */
     public void setPath(FromPath value) {
         this.path = value;
+    }
+
+    /**
+     * Gets the value of the constant property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FromConstant }
+     *     
+     */
+    public FromConstant getConstant() {
+        return constant;
+    }
+
+    /**
+     * Sets the value of the constant property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FromConstant }
+     *     
+     */
+    public void setConstant(FromConstant value) {
+        this.constant = value;
     }
 
     /**

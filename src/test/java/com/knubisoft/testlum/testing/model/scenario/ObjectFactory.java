@@ -366,6 +366,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FromConstant }
+     * 
+     */
+    public FromConstant createFromConstant() {
+        return new FromConstant();
+    }
+
+    /**
      * Create an instance of {@link FromExpression }
      * 
      */

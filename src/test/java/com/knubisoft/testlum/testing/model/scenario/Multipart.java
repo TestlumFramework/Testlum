@@ -54,20 +54,20 @@ public class Multipart {
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
      * This is why there is not a <CODE>set</CODE> method for the paramOrFrom property.
-     *
+     * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getParamOrFrom().add(newItem);
      * </pre>
      * 
-     *
+     * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link Param }
      * {@link PartFile }
      * 
-     *
+     * 
      */
     public List<Object> getParamOrFrom() {
         if (paramOrFrom == null) {

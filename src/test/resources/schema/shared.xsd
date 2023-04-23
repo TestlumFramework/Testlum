@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
-          targetNamespace="http://www.knubisoft.com/cott/testing/model/scenario"
-          xmlns:tns="http://www.knubisoft.com/cott/testing/model/scenario"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
@@ -42,7 +42,7 @@
     <x:simpleType name="nonEmptyString">
         <x:restriction base="x:string">
             <x:minLength value="1"/>
-<!--            <x:pattern value="\S(.*\S)?"/>-->
+            <!--            <x:pattern value="\S(.*\S)?"/>-->
         </x:restriction>
     </x:simpleType>
 
@@ -207,6 +207,7 @@
         <x:choice>
             <x:element name="file" type="tns:fromFile"/>
             <x:element name="path" type="tns:fromPath"/>
+            <x:element name="constant" type="tns:fromConstant"/>
             <x:element name="expression" type="tns:fromExpression"/>
             <x:element name="sql" type="tns:fromSQL"/>
             <x:element name="generate" type="tns:fromRandomGenerated"/>
@@ -246,6 +247,10 @@
             <x:pattern value="/.+|\$.+"/>
         </x:restriction>
     </x:simpleType>
+
+    <x:complexType name="fromConstant">
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
 
     <x:complexType name="fromExpression">
         <x:attribute name="value" type="tns:nonEmptyString" use="required"/>

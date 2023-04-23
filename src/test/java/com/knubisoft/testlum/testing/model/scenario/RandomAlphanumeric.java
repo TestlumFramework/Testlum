@@ -1,5 +1,5 @@
 
-package com.knubisoft.cott.testing.model.scenario;
+package com.knubisoft.testlum.testing.model.scenario;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

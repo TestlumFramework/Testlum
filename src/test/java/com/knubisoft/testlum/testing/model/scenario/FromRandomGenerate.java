@@ -1,5 +1,5 @@
 
-package com.knubisoft.cott.testing.model.scenario;
+package com.knubisoft.testlum.testing.model.scenario;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -8,19 +8,19 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for fromRandomGenerated complex type.
+ * <p>Java class for fromRandomGenerate complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="fromRandomGenerated"&gt;
+ * &lt;complexType name="fromRandomGenerate"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;choice&gt;
- *         &lt;element name="numeric" type="{http://www.knubisoft.com/cott/testing/model/scenario}randomNumeric"/&gt;
- *         &lt;element name="alphabetic" type="{http://www.knubisoft.com/cott/testing/model/scenario}randomAlphabetic"/&gt;
- *         &lt;element name="alphanumeric" type="{http://www.knubisoft.com/cott/testing/model/scenario}randomAlphanumeric"/&gt;
- *         &lt;element name="randomRegexp" type="{http://www.knubisoft.com/cott/testing/model/scenario}randomRegexp"/&gt;
+ *         &lt;element name="numeric" type="{http://www.knubisoft.com/testlum/testing/model/scenario}randomNumeric"/&gt;
+ *         &lt;element name="alphabetic" type="{http://www.knubisoft.com/testlum/testing/model/scenario}randomAlphabetic"/&gt;
+ *         &lt;element name="alphanumeric" type="{http://www.knubisoft.com/testlum/testing/model/scenario}randomAlphanumeric"/&gt;
+ *         &lt;element name="randomRegexp" type="{http://www.knubisoft.com/testlum/testing/model/scenario}randomRegexp"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="length" use="required" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
  *     &lt;/restriction&gt;
@@ -31,13 +31,13 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "fromRandomGenerated", propOrder = {
+@XmlType(name = "fromRandomGenerate", propOrder = {
     "numeric",
     "alphabetic",
     "alphanumeric",
     "randomRegexp"
 })
-public class FromRandomGenerated {
+public class FromRandomGenerate {
 
     protected RandomNumeric numeric;
     protected RandomAlphabetic alphabetic;

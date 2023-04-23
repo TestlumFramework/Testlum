@@ -350,14 +350,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FromRandomGenerated }
-     * 
-     */
-    public FromRandomGenerated createFromRandomGenerated() {
-        return new FromRandomGenerated();
-    }
-
-    /**
      * Create an instance of {@link RandomNumeric }
      * 
      */
@@ -422,6 +414,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FromSQL }
+     * 
+     */
+    public FromSQL createFromSQL() {
+        return new FromSQL();
+    }
+
+    /**
+     * Create an instance of {@link FromRandomGenerate }
+     * 
+     */
+    public FromRandomGenerate createFromRandomGenerate() {
+        return new FromRandomGenerate();
+    }
+
+    /**
      * Create an instance of {@link FromCookie }
      * 
      */
@@ -459,14 +467,6 @@ public class ObjectFactory {
      */
     public ElementPresent createElementPresent() {
         return new ElementPresent();
-    }
-
-    /**
-     * Create an instance of {@link FromSQL }
-     * 
-     */
-    public FromSQL createFromSQL() {
-        return new FromSQL();
     }
 
     /**

@@ -144,6 +144,6 @@ WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     private String getRandomGenerateResult(final WebVar var, final CommandResult result) {
-        return variableHelper.getGenerateResult(var.getGenerate(), var.getName(), result);
+        return variableHelper.getRandomGenerateResult(var.getGenerate(), var.getName(), result);
     }
 }

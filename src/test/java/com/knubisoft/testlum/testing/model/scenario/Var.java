@@ -43,7 +43,7 @@ public class Var
     protected FromConstant constant;
     protected FromExpression expression;
     protected FromSQL sql;
-    protected FromRandomGenerated generate;
+    protected FromRandomGenerate generate;
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
@@ -172,10 +172,10 @@ public class Var
      * 
      * @return
      *     possible object is
-     *     {@link FromRandomGenerated }
+     *     {@link FromRandomGenerate }
      *     
      */
-    public FromRandomGenerated getGenerate() {
+    public FromRandomGenerate getGenerate() {
         return generate;
     }
 
@@ -184,10 +184,10 @@ public class Var
      * 
      * @param value
      *     allowed object is
-     *     {@link FromRandomGenerated }
+     *     {@link FromRandomGenerate }
      *     
      */
-    public void setGenerate(FromRandomGenerated value) {
+    public void setGenerate(FromRandomGenerate value) {
         this.generate = value;
     }
 

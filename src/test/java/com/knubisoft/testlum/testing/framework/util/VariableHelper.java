@@ -16,7 +16,7 @@ import com.knubisoft.testlum.testing.model.scenario.FromConstant;
 import com.knubisoft.testlum.testing.model.scenario.FromExpression;
 import com.knubisoft.testlum.testing.model.scenario.FromFile;
 import com.knubisoft.testlum.testing.model.scenario.FromPath;
-import com.knubisoft.testlum.testing.model.scenario.FromRandomGenerated;
+import com.knubisoft.testlum.testing.model.scenario.FromRandomGenerate;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -62,66 +62,58 @@ import static java.util.Objects.nonNull;
 @Component
 public class VariableHelper {
 
-    private final Map<RandomPredicate, RandomFunction> randomFunctionMap;
+    private final Map<RandomPredicate, RandomFunction> randomGenerateMethodMap;
     @Autowired
     private NameToAdapterAlias nameToAdapterAlias;
 
     public VariableHelper() {
         Map<RandomPredicate, RandomFunction> functionMap = new HashMap<>();
-        functionMap.put(rand -> nonNull(rand.getNumeric()),
-                rand -> RandomStringUtils.randomNumeric(rand.getLength()));
-        functionMap.put(rand -> nonNull(rand.getAlphabetic()),
-                rand -> RandomStringUtils.randomAlphabetic(rand.getLength()));
-        functionMap.put(rand -> nonNull(rand.getAlphanumeric()),
-                rand -> RandomStringUtils.randomAlphanumeric(rand.getLength()));
-        functionMap.put(rand -> nonNull(rand.getRandomRegexp()), this::getRandomStringByRegexp);
-        randomFunctionMap = Collections.unmodifiableMap(functionMap);
+        functionMap.put(r -> nonNull(r.getNumeric()), r -> RandomStringUtils.randomNumeric(r.getLength()));
+        functionMap.put(r -> nonNull(r.getAlphabetic()), r -> RandomStringUtils.randomAlphabetic(r.getLength()));
+        functionMap.put(r -> nonNull(r.getAlphanumeric()), r -> RandomStringUtils.randomAlphanumeric(r.getLength()));
+        functionMap.put(r -> nonNull(r.getRandomRegexp()), this::generateStringByRegexp);
+        randomGenerateMethodMap = Collections.unmodifiableMap(functionMap);
     }
 
     public <T extends AbstractCommand> VarMethod<T> lookupVarMethod(final Map<VarPredicate<T>, VarMethod<T>> methodMap,
                                                                     final T var) {
-        return methodMap.keySet().stream()
-                .filter(key -> key.test(var))
+        return methodMap.entrySet().stream()
+                .filter(entry -> entry.getKey().test(var))
                 .findFirst()
-                .map(methodMap::get)
                 .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.VAR_TYPE_NOT_SUPPORTED,
-                        var.getClass().getSimpleName()));
+                        var.getClass().getSimpleName()))
+                .getValue();
     }
 
-    public String getGenerateResult(final FromRandomGenerated randomGenerate,
-                                    final String varName,
-                                    final CommandResult result) {
-        String valueResult = getAppropriateRandomString(randomGenerate);
-        if (nonNull(randomGenerate.getRandomRegexp())) {
-            ResultUtil.addVariableMetaData(GENERATED_STRING, varName,
-                    randomGenerate.getRandomRegexp().getPattern(), valueResult, result);
-        } else {
-            ResultUtil.addVariableMetaData(GENERATED_STRING, varName, NO_EXPRESSION, valueResult, result);
-        }
+    public String getRandomGenerateResult(final FromRandomGenerate randomGenerate,
+                                          final String varName,
+                                          final CommandResult result) {
+        String valueResult = getRandomGeneratedString(randomGenerate);
+        String exp = nonNull(randomGenerate.getRandomRegexp())
+                ? randomGenerate.getRandomRegexp().getPattern() : NO_EXPRESSION;
+        ResultUtil.addVariableMetaData(GENERATED_STRING, varName, exp, valueResult, result);
         return valueResult;
     }
 
-    private String getAppropriateRandomString(final FromRandomGenerated randomGenerate) {
-        return randomFunctionMap.keySet()
-                .stream()
-                .filter(key -> key.test(randomGenerate))
+    private String getRandomGeneratedString(final FromRandomGenerate randomGenerate) {
+        return randomGenerateMethodMap.entrySet().stream()
+                .filter(e -> e.getKey().test(randomGenerate))
                 .findFirst()
-                .map(randomFunctionMap::get)
-                .orElseThrow(() -> new DefaultFrameworkException("Random method generation is not supported"))
-                .apply(randomGenerate);
+                .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.GENERATION_METHOD_NOT_SUPPORTED))
+                .getValue().apply(randomGenerate);
     }
 
-    private String getRandomStringByRegexp(final FromRandomGenerated rand) {
-        RgxGen rgxGen = new RgxGen(rand.getRandomRegexp().getPattern());
-        int length = rand.getLength();
-        StringBuilder randomString = new StringBuilder(length);
-        while (randomString.length() < length - 1) {
+    private String generateStringByRegexp(final FromRandomGenerate randomGenerate) {
+        RgxGen rgxGen = new RgxGen(randomGenerate.getRandomRegexp().getPattern());
+        int requiredLength = randomGenerate.getLength();
+        StringBuilder randomString = new StringBuilder();
+        while (randomString.length() < requiredLength) {
             randomString.append(rgxGen.generate());
         }
-        if (randomString.length() > length) {
-            return randomString.substring(0, length);
+        if (randomString.length() > requiredLength) {
+            randomString.delete(requiredLength, randomString.length());
         }
-        return randomString.toString().trim();
+        return randomString.toString();
     }
 
     public String getFileResult(final FromFile fromFile,
@@ -246,6 +238,6 @@ public class VariableHelper {
     public interface VarPredicate<T extends AbstractCommand> extends Predicate<T> { }
     public interface VarMethod<T extends AbstractCommand> extends BiFunction<T, CommandResult, String> { }
 
-    private interface RandomPredicate extends Predicate<FromRandomGenerated> { }
-    private interface RandomFunction extends Function<FromRandomGenerated, String> { }
+    private interface RandomPredicate extends Predicate<FromRandomGenerate> { }
+    private interface RandomFunction extends Function<FromRandomGenerate, String> { }
 }

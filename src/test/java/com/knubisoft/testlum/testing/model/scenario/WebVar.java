@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlType;
     "constant",
     "expression",
     "sql",
+    "generate",
     "cookie",
     "dom",
     "url",
@@ -52,6 +53,7 @@ public class WebVar
     protected FromConstant constant;
     protected FromExpression expression;
     protected FromSQL sql;
+    protected FromRandomGenerate generate;
     protected FromCookie cookie;
     protected FromDom dom;
     protected FromUrl url;
@@ -177,6 +179,30 @@ public class WebVar
      */
     public void setSql(FromSQL value) {
         this.sql = value;
+    }
+
+    /**
+     * Gets the value of the generate property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FromRandomGenerate }
+     *     
+     */
+    public FromRandomGenerate getGenerate() {
+        return generate;
+    }
+
+    /**
+     * Sets the value of the generate property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FromRandomGenerate }
+     *     
+     */
+    public void setGenerate(FromRandomGenerate value) {
+        this.generate = value;
     }
 
     /**

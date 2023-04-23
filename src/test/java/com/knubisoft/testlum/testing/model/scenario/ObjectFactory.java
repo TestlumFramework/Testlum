@@ -350,6 +350,38 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link RandomNumeric }
+     * 
+     */
+    public RandomNumeric createRandomNumeric() {
+        return new RandomNumeric();
+    }
+
+    /**
+     * Create an instance of {@link RandomAlphabetic }
+     * 
+     */
+    public RandomAlphabetic createRandomAlphabetic() {
+        return new RandomAlphabetic();
+    }
+
+    /**
+     * Create an instance of {@link RandomAlphanumeric }
+     * 
+     */
+    public RandomAlphanumeric createRandomAlphanumeric() {
+        return new RandomAlphanumeric();
+    }
+
+    /**
+     * Create an instance of {@link RandomRegexp }
+     * 
+     */
+    public RandomRegexp createRandomRegexp() {
+        return new RandomRegexp();
+    }
+
+    /**
      * Create an instance of {@link FromFile }
      * 
      */
@@ -379,6 +411,22 @@ public class ObjectFactory {
      */
     public FromExpression createFromExpression() {
         return new FromExpression();
+    }
+
+    /**
+     * Create an instance of {@link FromSQL }
+     * 
+     */
+    public FromSQL createFromSQL() {
+        return new FromSQL();
+    }
+
+    /**
+     * Create an instance of {@link FromRandomGenerate }
+     * 
+     */
+    public FromRandomGenerate createFromRandomGenerate() {
+        return new FromRandomGenerate();
     }
 
     /**
@@ -419,14 +467,6 @@ public class ObjectFactory {
      */
     public ElementPresent createElementPresent() {
         return new ElementPresent();
-    }
-
-    /**
-     * Create an instance of {@link FromSQL }
-     * 
-     */
-    public FromSQL createFromSQL() {
-        return new FromSQL();
     }
 
     /**

@@ -32,9 +32,10 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         Map<VarPredicate<Var>, VarMethod<Var>> varMap = new HashMap<>();
         varMap.put(var -> nonNull(var.getSql()), this::getSQLResult);
         varMap.put(var -> nonNull(var.getFile()), this::getFileResult);
-        varMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
         varMap.put(var -> nonNull(var.getConstant()), this::getConstantResult);
+        varMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
         varMap.put(var -> nonNull(var.getPath()), this::getPathResult);
+        varMap.put(var -> nonNull(var.getGenerate()), this::getRandomGenerateResult);
         varToMethodMap = Collections.unmodifiableMap(varMap);
     }
 
@@ -59,8 +60,12 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
                 .apply(var, result);
     }
 
-    private String getPathResult(final Var var, final CommandResult result) {
-        return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result);
+    private String getSQLResult(final Var var, final CommandResult result) {
+        return variableHelper.getSQLResult(var.getSql(), var.getName(), dependencies.getScenarioContext(), result);
+    }
+
+    private String getFileResult(final Var var, final CommandResult result) {
+        return variableHelper.getFileResult(var.getFile(), dependencies.getFile(), var.getName(), result);
     }
 
     private String getConstantResult(final Var var, final CommandResult result) {
@@ -73,11 +78,11 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
                 var.getExpression(), var.getName(), dependencies.getScenarioContext(), result);
     }
 
-    private String getFileResult(final Var var, final CommandResult result) {
-        return variableHelper.getFileResult(var.getFile(), dependencies.getFile(), var.getName(), result);
+    private String getPathResult(final Var var, final CommandResult result) {
+        return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result);
     }
 
-    private String getSQLResult(final Var var, final CommandResult result) {
-        return variableHelper.getSQLResult(var.getSql(), var.getName(), dependencies.getScenarioContext(), result);
+    private String getRandomGenerateResult(final Var var, final CommandResult result) {
+        return variableHelper.getRandomGenerateResult(var.getGenerate(), var.getName(), result);
     }
 }

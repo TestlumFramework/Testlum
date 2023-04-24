@@ -111,6 +111,7 @@ public class ExceptionMessage {
     public static final String VARIATIONS_NOT_USED = "Variations are present in the %s but not used";
 
     public static final String VAR_TYPE_NOT_SUPPORTED = "Type of <%s> command is not supported";
+    public static final String GENERATION_METHOD_NOT_SUPPORTED = "Random string generation method is not supported";
     public static final String ASSERT_TYPE_NOT_SUPPORTED = "Assert command %s not supported";
     public static final String NAVIGATE_NOT_SUPPORTED = "Navigate command %s not supported";
     public static final String DROP_DOWN_NOT_SUPPORTED = "Drop down by method by %s not supported";

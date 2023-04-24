@@ -30,5 +30,4 @@ public class GlobalTestConfigValidator implements XMLValidator<GlobalTestConfigu
             throw e;
         }
     }
-
 }

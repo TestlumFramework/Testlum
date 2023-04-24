@@ -166,6 +166,11 @@ public class ExceptionMessage {
     public static final String SAME_INTEGRATION_ALIASES = ANSI_RED
             + "More than one enabled <%s> integration was found with alias <%s> in the config by path: %s"
             + ANSI_RESET;
+    public static final String CONNECTION_TYPE_NOT_DEFINED = ANSI_RED
+            + "Connection type not defined in the <%s> config by path: %s" + ANSI_RESET;
+    public static final String DEVICE_CONNECTION_CAPABILITIES_NOT_DEFINED = ANSI_RED
+            + "Appropriate connection capabilities for device with alias <%s> not defined "
+            + "in the <%s> config by path: %s" + ANSI_RESET;
     public static final String WEB_DRIVER_NOT_INIT = "The webDriver for <web> has not been initialized, "
             + "check your configuration in config file";
     public static final String NATIVE_DRIVER_NOT_INIT = "The webDriver for <native> has not been initialized, "
@@ -173,7 +178,4 @@ public class ExceptionMessage {
     public static final String MOBILEBROWSER_DRIVER_NOT_INIT = "The webDriver for <mobilebrowser> has not been "
             + "initialized, check your configuration in config file";
 
-    public static final String INVALID_APPIUM_CAPABILITIES = "Appium capabilities are absent";
-
-    public static final String INVALID_BROWSERSTACK_CAPABILITIES = "BrowserStack capabilities are absent";
 }

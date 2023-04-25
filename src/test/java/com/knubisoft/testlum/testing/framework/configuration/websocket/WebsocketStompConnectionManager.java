@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.websocket;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public class WebsocketStompConnectionManager implements WebsocketConnectionManag
     private final ClientStompSessionHandler websocketSessionHandler;
     private final String url;
 
-    private final Map<String, WebsocketMessageHandler> topicToMessageHandler = new HashMap<>();
+    private final Map<String, WebsocketStompMessageHandler> topicToMessageHandler = new HashMap<>();
     private StompSession stompSession;
 
     @Override
@@ -36,21 +37,21 @@ public class WebsocketStompConnectionManager implements WebsocketConnectionManag
     }
 
     @Override
-    public LinkedList<String> receiveMessages(final String topic) {
-        WebsocketMessageHandler websocketMessageHandler = topicToMessageHandler.get(topic);
-        if (nonNull(websocketMessageHandler)) {
-            return websocketMessageHandler.getReceivedMessages();
+    public LinkedList<String> receiveMessages(final WebsocketReceive wsReceive) {
+        WebsocketStompMessageHandler messageHandler = topicToMessageHandler.get(wsReceive.getTopic());
+        if (nonNull(messageHandler)) {
+            return messageHandler.getReceivedMessages();
         }
-        throw new DefaultFrameworkException(WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND, topic);
+        throw new DefaultFrameworkException(WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND, wsReceive.getTopic());
     }
 
     @Override
     public void subscribeTo(final String topic) {
-        WebsocketMessageHandler handler = new WebsocketMessageHandler();
-        topicToMessageHandler.put(topic, handler);
+        WebsocketStompMessageHandler messageHandler = new WebsocketStompMessageHandler();
+        topicToMessageHandler.put(topic, messageHandler);
         //todo save Subscription if 'unsubscribe' command is needed
         if (nonNull(stompSession)) {
-            stompSession.subscribe(topic, handler);
+            stompSession.subscribe(topic, messageHandler);
         }
     }
 

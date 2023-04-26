@@ -14,8 +14,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.util.LinkedList;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_CLOSED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_ESTABLISHED;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_CONNECTION_CLOSED;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_CONNECTION_ESTABLISHED;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -48,14 +48,14 @@ public class WebsocketStandardConnectionManager implements WebsocketConnectionMa
                 UriComponentsBuilder.fromUriString(url).build().toUri());
 
         websocketSession = connection.get();
-        log.info(CONNECTION_ESTABLISHED, websocketSession.getId());
+        log.info(WEBSOCKET_CONNECTION_ESTABLISHED, websocketSession.getId());
     }
 
     @Override
     public void closeConnection() throws Exception {
         if (nonNull(websocketSession)) {
             websocketSession.close();
-            log.info(CONNECTION_CLOSED, websocketSession.getId());
+            log.info(WEBSOCKET_CONNECTION_CLOSED, websocketSession.getId());
         }
     }
 

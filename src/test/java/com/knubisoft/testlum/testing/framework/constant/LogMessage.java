@@ -103,9 +103,11 @@ public final class LogMessage {
 
     public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
 
-    public static final String CONNECTION_ESTABLISHED = "Connection established: {}";
-    public static final String CONNECTION_CLOSED = "Connection closed: {}";
-    public static final String UNABLE_TO_DISCONNECT_BECAUSE_CONNECTION_CLOSED = "Unable to disconnect session "
+    public static final String WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND =
+            "Websocket message handler for topic <{}> not found";
+    public static final String WEBSOCKET_CONNECTION_ESTABLISHED = "Connection established: {}";
+    public static final String WEBSOCKET_CONNECTION_CLOSED = "Connection closed: {}";
+    public static final String UNABLE_TO_DISCONNECT_WEBSOCKET_BECAUSE_CLOSED = "Unable to disconnect session "
             + "because the connection was closed";
 
     public static final String TESTS_RUN_FAILED = "Test run failed";

@@ -19,7 +19,6 @@ import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSubscribe;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,10 +42,8 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SUBSCRIBE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UNABLE_TO_DISCONNECT_BECAUSE_CONNECTION_CLOSED;
 import static java.lang.String.format;
 
-@Slf4j
 @InterpreterForClass(Websocket.class)
 public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
@@ -155,7 +152,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
     private List<Object> getMessagesToCompare(final WebsocketReceive wsReceive, final AliasEnv aliasEnv) {
         WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(aliasEnv);
-        LinkedList<String> receivedMessages = wsConnectionManager.receiveMessages(wsReceive.getTopic());
+        LinkedList<String> receivedMessages = wsConnectionManager.receiveMessages(wsReceive);
         checkMessagesReceived(wsReceive, receivedMessages);
 
         int messageCount = wsReceive.getCount();
@@ -219,10 +216,8 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     @SneakyThrows
     private void disconnectIfEnabled(final boolean isDisconnectEnabled, final AliasEnv aliasEnv) {
         WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(aliasEnv);
-        if (isDisconnectEnabled && wsConnectionManager.isConnected()) {
+        if (isDisconnectEnabled) {
             wsConnectionManager.closeConnection();
-        } else if (isDisconnectEnabled && !wsConnectionManager.isConnected()) {
-            log.error(UNABLE_TO_DISCONNECT_BECAUSE_CONNECTION_CLOSED);
         }
     }
 }

@@ -8,7 +8,6 @@ import com.knubisoft.testlum.testing.model.global_config.Native;
 import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
 import com.knubisoft.testlum.testing.model.global_config.Platform;
 import com.knubisoft.testlum.testing.model.global_config.UiConfig;
-import com.knubisoft.testlum.testing.model.global_config.Web;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,12 +21,11 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 
 public class UiValidator {
 
-    public void validateUiConfig(Map<String, UiConfig> uiConfigMap) {
+    public void validateUiConfig(final Map<String, UiConfig> uiConfigMap) {
         List<String> envList = new ArrayList<>(uiConfigMap.keySet());
         List<Native> nativeList = uiConfigMap.values().stream()
                 .map(UiConfig::getNative)
                 .collect(Collectors.toList());
-//        validateWeb(envs, uiConfigs);
         validateNative(envList, nativeList);
     }
 
@@ -36,10 +34,11 @@ public class UiValidator {
                 .map(a -> a.getDevices().getDevice())
                 .collect(Collectors.toList());
         if (nativeList.size() > 0) {
-            int numOfDevices = deviceList.stream().findFirst().get().size();
             checkConnection(envList, nativeList);
             checkEnabledDevices(envList, deviceList);
             checkAliasesDifference(envList, deviceList);
+
+            int numOfDevices = deviceList.stream().findFirst().get().size();
             checkAliasesSimilarity(envList, numOfDevices, deviceList);
             checkPlatformSimilarity(envList, numOfDevices, deviceList);
         }
@@ -98,14 +97,10 @@ public class UiValidator {
 
     private void checkEnabledDevices(final List<String> envs,
                                      final List<? extends List<? extends AbstractDevice>> abstractDeviceList) {
-        long enabledDevices = -1;
-        boolean isFirstEnvDevices = true;
+        long firstEnvEnabledDevices = abstractDeviceList.stream().findFirst().get().size();
         for (int envNum = 0; envNum < abstractDeviceList.size(); envNum++) {
-            long numOfEnabledDevices = getNumOfEnabledDevices(abstractDeviceList.get(envNum));
-            if (isFirstEnvDevices) {
-                enabledDevices = numOfEnabledDevices;
-                isFirstEnvDevices = false;
-            } else if (numOfEnabledDevices != enabledDevices) {
+            long nextEnvEnabledDevices = getNumOfEnabledDevices(abstractDeviceList.get(envNum));
+            if (nextEnvEnabledDevices != firstEnvEnabledDevices) {
                 throw new DefaultFrameworkException(
                         "Every single <device> in <native> block must be either enabled or disabled in all configs\n"
                                 + "Invalid config: " + FileSearcher.searchFileFromEnvFolder(
@@ -156,11 +151,5 @@ public class UiValidator {
                 }
             }
         }
-    }
-
-    private void validateWeb(final List<String> envs, final List<UiConfig> uiConfigs) {
-        List<Web> webList = uiConfigs.stream()
-                .map(UiConfig::getWeb)
-                .collect(Collectors.toList());
     }
 }

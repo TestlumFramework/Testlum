@@ -94,6 +94,7 @@
         <com.twilio.sdk.version>9.0.0-rc.3</com.twilio.sdk.version>
         <image-comparison.version>4.4.0</image-comparison.version>
         <appium-client.version>8.1.1</appium-client.version>
+        <com.github.curious-odd-man.rgxgen.version>1.4</com.github.curious-odd-man.rgxgen.version>
         <skipGenerateModels>true</skipGenerateModels>
     </properties>
 
@@ -903,6 +904,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.curious-odd-man</groupId>
+            <artifactId>rgxgen</artifactId>
+            <version>${com.github.curious-odd-man.rgxgen.version}</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>

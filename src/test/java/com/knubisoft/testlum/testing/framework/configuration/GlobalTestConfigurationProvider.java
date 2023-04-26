@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.parser.XMLParsers;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.validator.GlobalTestConfigValidator;
+import com.knubisoft.testlum.testing.framework.validator.UiConfigValidator;
 import com.knubisoft.testlum.testing.framework.validator.IntegrationsValidator;
 import com.knubisoft.testlum.testing.framework.validator.UiValidator;
 import com.knubisoft.testlum.testing.model.global_config.Environment;
@@ -31,6 +32,7 @@ public class GlobalTestConfigurationProvider {
 
     private static final List<Environment> ENVIRONMENTS = filterEnabledEnvironments();
     private static final IntegrationsValidator INTEGRATIONS_VALIDATOR = new IntegrationsValidator();
+    private static final UiConfigValidator UI_CONFIG_VALIDATOR = new UiConfigValidator();
     private static final UiValidator UI_VALIDATOR = new UiValidator();
     private static final Map<String, Integrations> INTEGRATIONS = collectIntegrations();
     private static final Map<String, UiConfig> UI_CONFIGS = collectUiConfigs();
@@ -106,7 +108,7 @@ public class GlobalTestConfigurationProvider {
 
     private static UiConfig initUiConfig(final Environment env) {
         return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.UI_CONFIG_FILENAME)
-                .map(configFile -> XMLParsers.forUiConfig().process(configFile))
+                .map(configFile -> XMLParsers.forUiConfig().process(configFile, UI_CONFIG_VALIDATOR))
                 .orElseGet(() -> {
                     log.warn(LogMessage.DISABLED_CONFIGURATION, UiConfig.class.getSimpleName());
                     return new UiConfig();

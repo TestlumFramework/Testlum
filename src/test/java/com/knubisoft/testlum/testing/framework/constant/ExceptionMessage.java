@@ -110,6 +110,7 @@ public class ExceptionMessage {
     public static final String VARIATIONS_NOT_USED = "Variations are present in the %s but not used";
 
     public static final String VAR_TYPE_NOT_SUPPORTED = "Type of <%s> command is not supported";
+    public static final String GENERATION_METHOD_NOT_SUPPORTED = "Random string generation method is not supported";
     public static final String ASSERT_TYPE_NOT_SUPPORTED = "Assert command %s not supported";
     public static final String NAVIGATE_NOT_SUPPORTED = "Navigate command %s not supported";
     public static final String DROP_DOWN_NOT_SUPPORTED = "Drop down by method by %s not supported";
@@ -165,6 +166,11 @@ public class ExceptionMessage {
     public static final String SAME_INTEGRATION_ALIASES = ANSI_RED
             + "More than one enabled <%s> integration was found with alias <%s> in the config by path: %s"
             + ANSI_RESET;
+    public static final String CONNECTION_TYPE_NOT_DEFINED = ANSI_RED
+            + "Connection type not defined in the <%s> config by path: %s" + ANSI_RESET;
+    public static final String DEVICE_CONNECTION_CAPABILITIES_NOT_DEFINED = ANSI_RED
+            + "Appropriate connection capabilities for device with alias <%s> not defined "
+            + "in the <%s> config by path: %s" + ANSI_RESET;
     public static final String SAME_DEVICE_ALIASES = ANSI_RED
             + "More than one enabled <device> in <native> block was found with alias <%s> in the config by path: %s"
             + ANSI_RESET;
@@ -174,4 +180,5 @@ public class ExceptionMessage {
             + "check your configuration in config file";
     public static final String MOBILEBROWSER_DRIVER_NOT_INIT = "The webDriver for <mobilebrowser> has not been "
             + "initialized, check your configuration in config file";
+
 }

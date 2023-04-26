@@ -155,7 +155,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
     private List<Object> getMessagesToCompare(final WebsocketReceive wsReceive, final AliasEnv aliasEnv) {
         WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(aliasEnv);
-        LinkedList<String> receivedMessages = wsConnectionManager.receiveMessages(wsReceive.getTopic());
+        LinkedList<String> receivedMessages = wsConnectionManager.receiveMessages(wsReceive);
         checkMessagesReceived(wsReceive, receivedMessages);
 
         int messageCount = wsReceive.getCount();

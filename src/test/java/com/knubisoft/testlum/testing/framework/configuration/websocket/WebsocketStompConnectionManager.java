@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.configuration.websocket;
 
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +12,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_CLOSED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_ESTABLISHED;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UNABLE_TO_DISCONNECT_WEBSOCKET_BECAUSE_CLOSED;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_CONNECTION_CLOSED;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_CONNECTION_ESTABLISHED;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -42,7 +42,8 @@ public class WebsocketStompConnectionManager implements WebsocketConnectionManag
         if (nonNull(messageHandler)) {
             return messageHandler.getReceivedMessages();
         }
-        throw new DefaultFrameworkException(WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND, wsReceive.getTopic());
+        log.info(WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND, wsReceive.getTopic());
+        return new LinkedList<>();
     }
 
     @Override
@@ -59,14 +60,17 @@ public class WebsocketStompConnectionManager implements WebsocketConnectionManag
     public void openConnection() throws Exception {
         ListenableFuture<StompSession> connection = websocketStompClient.connect(url, websocketSessionHandler);
         stompSession = connection.get();
-        log.info(CONNECTION_ESTABLISHED, stompSession.getSessionId());
+        log.info(WEBSOCKET_CONNECTION_ESTABLISHED, stompSession.getSessionId());
     }
 
     @Override
     public void closeConnection() {
-        if (nonNull(stompSession)) {
+        topicToMessageHandler.clear();
+        if (isConnected()) {
             stompSession.disconnect();
-            log.info(CONNECTION_CLOSED, stompSession.getSessionId());
+            log.info(WEBSOCKET_CONNECTION_CLOSED, stompSession.getSessionId());
+        } else if (!isConnected()) {
+            log.info(UNABLE_TO_DISCONNECT_WEBSOCKET_BECAUSE_CLOSED);
         }
     }
 

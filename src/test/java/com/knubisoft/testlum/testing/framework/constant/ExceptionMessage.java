@@ -39,8 +39,6 @@ public class ExceptionMessage {
     public static final String WEBSOCKET_CONNECTION_FAILURE =
             "Something went wrong while connecting to websocket with name <%s>";
     public static final String UNEXPECTED_WEBSOCKET_MESSAGE_TYPE = "Unexpected websocket message type: %s";
-    public static final String WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND =
-            "Websocket message handler for topic %s not found";
 
     public static final String FUNCTION_FOR_COMMAND_NOT_FOUND = "Function for class %s not found. "
             + "Please register algorithm for interpreter";

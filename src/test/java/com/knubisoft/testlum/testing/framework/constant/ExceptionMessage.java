@@ -163,7 +163,7 @@ public class ExceptionMessage {
             + "<mobilebrowser> & <native> tags";
     public static final String SAME_MOBILE_DEVICES = "Can`t use the same mobile devices for scenario with "
             + "<mobilebrowser> & <native> tags";
-    public static final String SAME_INTEGRATION_ALIASES = ANSI_RED
+    public static final String SAME_INTEGRATION_ALIAS = ANSI_RED
             + "More than one enabled <%s> integration was found with alias <%s> in the config: %s"
             + ANSI_RESET;
     public static final String CONNECTION_TYPE_NOT_DEFINED = ANSI_RED
@@ -177,5 +177,23 @@ public class ExceptionMessage {
             + "check your configuration in config file";
     public static final String MOBILEBROWSER_DRIVER_NOT_INIT = "The webDriver for <mobilebrowser> has not been "
             + "initialized, check your configuration in config file";
-
+    public static final String INTEGRATION_NOT_ENABLED_IN_ALL_ENVS = "<%s> integrations must be configured in all "
+            + "enabled envs or not configured at all";
+    public static final String NUM_OF_ENABLED_INTEGRATIONS_NOT_MATCH = "Every single <%s> integration must be either"
+            + " present and enabled or absent/disabled in all enabled environments files\n"
+            + "Invalid config: %s";
+    public static final String INTEGRATION_ALIAS_NOT_MATCH = "Every single <%s> integration must have the"
+            + " same <alias> argument in all configs.\n"
+            + "Invalid aliases: %s";
+    public static final String AUTH_NUM_NOT_MATCH = "Every single <%s> integration must have the same"
+            + " setup for <auth> command in all configs";
+    public static final String AUTH_LOGOUT_NOT_MATCH = "Every single <%s> integration must have the"
+            + " same setup for <autoLogout> argument inside <auth> command in all configs\n"
+            + "Invalid config: %s";
+    public static final String AUTH_STRATEGY_NOT_MATCH = "Every single <%s> integration must have the same setup for "
+            + "<authStrategy> argument inside <auth> command in all configs\n"
+            + "Invalid config: %s";
+    public static final String AUTH_CUSTOM_CLASS_NAME_NOT_MATCH = "Every single <%s> integration must have the"
+            + " same setup for <authCustomClassName> argument inside <auth> command in all configs\n"
+            + "Invalid config: %s";
 }

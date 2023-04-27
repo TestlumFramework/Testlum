@@ -11,6 +11,7 @@ import com.knubisoft.testlum.testing.model.scenario.Http;
 import com.knubisoft.testlum.testing.model.scenario.HttpInfo;
 import com.knubisoft.testlum.testing.model.scenario.Param;
 import com.knubisoft.testlum.testing.model.scenario.PartFile;
+import com.knubisoft.testlum.testing.model.scenario.PartParam;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
@@ -152,9 +153,8 @@ public final class HttpUtil {
                 .setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
                 .setBoundary(body.getMultipart().getBoundary());
         for (Object part : parts) {
-            if (part instanceof Param) {
-                Param param = (Param) part;
-                builder.addTextBody(param.getName(), param.getData());
+            if (part instanceof PartParam) {
+                addTextBody(builder, (PartParam) part);
             } else if (part instanceof PartFile) {
                 addFileBody(builder, (PartFile) part, dependencies);
             }
@@ -162,12 +162,18 @@ public final class HttpUtil {
         return builder.build();
     }
 
+    private void addTextBody(final MultipartEntityBuilder builder,
+                             final PartParam param) {
+        builder.addTextBody(param.getName(), param.getData(), nonNull(param.getContentType())
+                ? ContentType.create(param.getContentType()) : ContentType.APPLICATION_JSON);
+    }
+
     private void addFileBody(final MultipartEntityBuilder builder,
                              final PartFile file,
                              final InterpreterDependencies dependencies) {
         File from = FileSearcher.searchFileFromDir(dependencies.getFile(), file.getFileName());
         builder.addBinaryBody(file.getName(), from, nonNull(file.getContentType())
-                        ? ContentType.create(file.getContentType()) : ContentType.DEFAULT_BINARY, file.getFileName());
+                ? ContentType.create(file.getContentType()) : ContentType.DEFAULT_BINARY, file.getFileName());
     }
 
     private HttpEntity getFromParameters(final Body body,

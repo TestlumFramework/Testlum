@@ -147,7 +147,7 @@ public final class HttpUtil {
 
     private HttpEntity getFromMultipart(final Body body,
                                         final InterpreterDependencies dependencies) {
-        List<Object> parts = body.getMultipart().getParamOrFrom();
+        List<Object> parts = body.getMultipart().getParamOrFile();
         MultipartEntityBuilder builder = MultipartEntityBuilder.create()
                 .setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
                 .setBoundary(body.getMultipart().getBoundary());

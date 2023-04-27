@@ -106,10 +106,16 @@
 
     <x:complexType name="multipart">
         <x:choice maxOccurs="unbounded">
-            <x:element name="param" type="tns:param" minOccurs="0" maxOccurs="unbounded"/>
-            <x:element name="from" type="tns:partFile" minOccurs="0" maxOccurs="unbounded"/>
+            <x:element name="param" type="tns:partParam" minOccurs="0" maxOccurs="unbounded"/>
+            <x:element name="file" type="tns:partFile" minOccurs="0" maxOccurs="unbounded"/>
         </x:choice>
         <x:attribute name="boundary" type="tns:nonEmptyString"/>
+    </x:complexType>
+
+    <x:complexType name="partParam">
+        <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="contentType" type="tns:nonEmptyString"/>
+        <x:attribute name="data" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
     <x:complexType name="partFile">

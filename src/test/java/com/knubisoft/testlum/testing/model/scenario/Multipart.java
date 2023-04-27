@@ -21,8 +21,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;choice maxOccurs="unbounded"&gt;
- *         &lt;element name="param" type="{http://www.knubisoft.com/testlum/testing/model/scenario}param" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element name="from" type="{http://www.knubisoft.com/testlum/testing/model/scenario}partFile" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="param" type="{http://www.knubisoft.com/testlum/testing/model/scenario}partParam" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="file" type="{http://www.knubisoft.com/testlum/testing/model/scenario}partFile" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="boundary" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
@@ -34,46 +34,46 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "multipart", propOrder = {
-    "paramOrFrom"
+    "paramOrFile"
 })
 public class Multipart {
 
     @XmlElements({
-        @XmlElement(name = "param", type = Param.class),
-        @XmlElement(name = "from", type = PartFile.class)
+        @XmlElement(name = "param", type = PartParam.class),
+        @XmlElement(name = "file", type = PartFile.class)
     })
-    protected List<Object> paramOrFrom;
+    protected List<Object> paramOrFile;
     @XmlAttribute(name = "boundary")
     protected String boundary;
 
     /**
-     * Gets the value of the paramOrFrom property.
+     * Gets the value of the paramOrFile property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the paramOrFrom property.
+     * This is why there is not a <CODE>set</CODE> method for the paramOrFile property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getParamOrFrom().add(newItem);
+     *    getParamOrFile().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Param }
+     * {@link PartParam }
      * {@link PartFile }
      * 
      * 
      */
-    public List<Object> getParamOrFrom() {
-        if (paramOrFrom == null) {
-            paramOrFrom = new ArrayList<Object>();
+    public List<Object> getParamOrFile() {
+        if (paramOrFile == null) {
+            paramOrFile = new ArrayList<Object>();
         }
-        return this.paramOrFrom;
+        return this.paramOrFile;
     }
 
     /**

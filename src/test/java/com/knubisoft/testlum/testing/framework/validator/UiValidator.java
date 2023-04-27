@@ -28,12 +28,12 @@ import static java.util.Objects.nonNull;
 public class UiValidator {
 
     private static final String UI_CONFIG_FILE_NAME = "ui.xml";
-    private static final String WEB_NUM_NOT_MATCH_WITH_ENVS_NUM = "Number of enabled <native> blocks does not match with"
-            + " number of enabled envs";
+    private static final String WEB_NUM_NOT_MATCH_WITH_ENVS_NUM = "Number of enabled <native> blocks does not match "
+            + "with number of enabled envs";
     private static final String NATIVE_NUM_NOT_MATCH_WITH_ENVS_NUM = "Number of enabled <native> blocks does not match "
             + "with number of enabled envs";
-    private static final String MOBILEBROWSER_NUM_NOT_MATCH_WITH_ENVS_NUM = "Number of enabled <native> blocks does not "
-            + "match with number of enabled envs";
+    private static final String MOBILEBROWSER_NUM_NOT_MATCH_WITH_ENVS_NUM = "Number of enabled <native> blocks does not"
+            + " match with number of enabled envs";
 
     public void validateUiConfig(final Map<String, UiConfig> uiConfigMap) {
         List<String> envList = new ArrayList<>(uiConfigMap.keySet());
@@ -60,11 +60,7 @@ public class UiValidator {
     }
 
     private void validateNative(final List<String> envList, final List<UiConfig> uiConfigList) {
-        List<Native> enabledNativeList = uiConfigList.stream()
-                .map(UiConfig::getNative)
-                .filter(Objects::nonNull)
-                .filter(Native::isEnabled)
-                .collect(Collectors.toList());
+        List<Native> enabledNativeList = getEnabledNativeList(uiConfigList);
         if (!enabledNativeList.isEmpty() && enabledNativeList.size() != envList.size()) {
             throw new DefaultFrameworkException(NATIVE_NUM_NOT_MATCH_WITH_ENVS_NUM);
         } else if (!enabledNativeList.isEmpty()) {
@@ -76,12 +72,16 @@ public class UiValidator {
         }
     }
 
-    private void validateMobileBrowser(final List<String> envList, final List<UiConfig> uiConfigList) {
-        List<Mobilebrowser> enabledMobilebrowserList = uiConfigList.stream()
-                .map(UiConfig::getMobilebrowser)
+    private List<Native> getEnabledNativeList(final List<UiConfig> uiConfigList) {
+        return uiConfigList.stream()
+                .map(UiConfig::getNative)
                 .filter(Objects::nonNull)
-                .filter(Mobilebrowser::isEnabled)
+                .filter(Native::isEnabled)
                 .collect(Collectors.toList());
+    }
+
+    private void validateMobileBrowser(final List<String> envList, final List<UiConfig> uiConfigList) {
+        List<Mobilebrowser> enabledMobilebrowserList = getEnabledMobilebrowserList(uiConfigList);
         if (!enabledMobilebrowserList.isEmpty() && enabledMobilebrowserList.size() != envList.size()) {
             throw new DefaultFrameworkException(MOBILEBROWSER_NUM_NOT_MATCH_WITH_ENVS_NUM);
         } else if (!enabledMobilebrowserList.isEmpty()) {
@@ -91,6 +91,14 @@ public class UiValidator {
             checkMobilebrowserConnection(envList, enabledMobilebrowserList);
             validateDevices(envList, deviceList);
         }
+    }
+
+    private List<Mobilebrowser> getEnabledMobilebrowserList(final List<UiConfig> uiConfigList) {
+        return uiConfigList.stream()
+                .map(UiConfig::getMobilebrowser)
+                .filter(Objects::nonNull)
+                .filter(Mobilebrowser::isEnabled)
+                .collect(Collectors.toList());
     }
 
     private void validateBrowsers(final List<String> envList,

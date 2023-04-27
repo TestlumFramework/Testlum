@@ -1,11 +1,14 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
 
 
 /**
@@ -15,13 +18,15 @@ import javax.xml.bind.annotation.XmlValue;
  * 
  * <pre>
  * &lt;complexType name="multipart"&gt;
- *   &lt;simpleContent&gt;
- *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema&gt;string"&gt;
- *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="path" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="fileName" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
- *     &lt;/extension&gt;
- *   &lt;/simpleContent&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice maxOccurs="unbounded"&gt;
+ *         &lt;element name="param" type="{http://www.knubisoft.com/testlum/testing/model/scenario}partParam" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="file" type="{http://www.knubisoft.com/testlum/testing/model/scenario}partFile" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;/choice&gt;
+ *       &lt;attribute name="boundary" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
  * 
@@ -29,113 +34,70 @@ import javax.xml.bind.annotation.XmlValue;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "multipart", propOrder = {
-    "value"
+    "paramOrFile"
 })
 public class Multipart {
 
-    @XmlValue
-    protected String value;
-    @XmlAttribute(name = "name", required = true)
-    protected String name;
-    @XmlAttribute(name = "path", required = true)
-    protected String path;
-    @XmlAttribute(name = "fileName")
-    protected String fileName;
+    @XmlElements({
+        @XmlElement(name = "param", type = PartParam.class),
+        @XmlElement(name = "file", type = PartFile.class)
+    })
+    protected List<Object> paramOrFile;
+    @XmlAttribute(name = "boundary")
+    protected String boundary;
 
     /**
-     * Gets the value of the value property.
+     * Gets the value of the paramOrFile property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the paramOrFile property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getParamOrFile().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link PartParam }
+     * {@link PartFile }
+     * 
+     * 
+     */
+    public List<Object> getParamOrFile() {
+        if (paramOrFile == null) {
+            paramOrFile = new ArrayList<Object>();
+        }
+        return this.paramOrFile;
+    }
+
+    /**
+     * Gets the value of the boundary property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getValue() {
-        return value;
+    public String getBoundary() {
+        return boundary;
     }
 
     /**
-     * Sets the value of the value property.
+     * Sets the value of the boundary property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
-
-    /**
-     * Gets the value of the path property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPath() {
-        return path;
-    }
-
-    /**
-     * Sets the value of the path property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPath(String value) {
-        this.path = value;
-    }
-
-    /**
-     * Gets the value of the fileName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getFileName() {
-        return fileName;
-    }
-
-    /**
-     * Sets the value of the fileName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setFileName(String value) {
-        this.fileName = value;
+    public void setBoundary(String value) {
+        this.boundary = value;
     }
 
 }

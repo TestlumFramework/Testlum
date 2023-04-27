@@ -100,31 +100,33 @@
     </x:complexType>
 
     <x:complexType name="param">
-        <x:simpleContent>
-            <x:extension base="x:string">
-                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="data" type="x:string" use="required"/>
-            </x:extension>
-        </x:simpleContent>
+        <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="data" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
     <x:complexType name="multipart">
-        <x:simpleContent>
-            <x:extension base="x:string">
-                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="path" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="fileName" type="tns:nonEmptyString"/>
-            </x:extension>
-        </x:simpleContent>
+        <x:choice maxOccurs="unbounded">
+            <x:element name="param" type="tns:partParam" minOccurs="0" maxOccurs="unbounded"/>
+            <x:element name="file" type="tns:partFile" minOccurs="0" maxOccurs="unbounded"/>
+        </x:choice>
+        <x:attribute name="boundary" type="tns:nonEmptyString"/>
+    </x:complexType>
+
+    <x:complexType name="partParam">
+        <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="contentType" type="tns:nonEmptyString"/>
+        <x:attribute name="data" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="partFile">
+        <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="contentType" type="tns:nonEmptyString"/>
+        <x:attribute name="fileName" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
     <x:complexType name="header">
-        <x:simpleContent>
-            <x:extension base="x:string">
-                <x:attribute name="name" type="tns:headerName" use="required"/>
-                <x:attribute name="data" type="x:string" use="required"/>
-            </x:extension>
-        </x:simpleContent>
+        <x:attribute name="name" type="tns:headerName" use="required"/>
+        <x:attribute name="data" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
     <x:simpleType name="headerName" final="restriction">

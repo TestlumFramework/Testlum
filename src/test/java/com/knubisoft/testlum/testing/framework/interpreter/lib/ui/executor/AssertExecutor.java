@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
+import com.knubisoft.testlum.testing.framework.locator.GlobalLocators;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
@@ -32,6 +33,7 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 @ExecutorForClass(Assert.class)
 public class AssertExecutor extends AbstractUiExecutor<Assert> {
 
+    public static final String XPATH_ATTRIBUTE_NAME_REGEX = ".*@([a-zA-Z0-9_-]+).*";
     private final Map<AssertCmdPredicate, AssertMethod> assertCommandMap;
     private final List<String> exceptionResult = new ArrayList<>();
     private final AtomicInteger commandId = new AtomicInteger();
@@ -70,20 +72,19 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
         injectFields(attribute);
         LogUtil.logAssertAttributeInfo(attribute, commandId.get());
         ResultUtil.addAssertAttributeMetaData(attribute, result);
+        compareWithResult(attribute.getName(), getActualName(attribute), result);
+        compareWithResult(attribute.getContent(), getActualValue(attribute), result);
+    }
+
+    private void compareWithResult(final String expected, final String actual, final CommandResult result) {
         try {
-            String actual = getActualValue(attribute);
-            String expected = attribute.getContent().replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
-            executeComparison(actual, expected, result);
+            String expectedFormatted = expected.replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
+            String actualFormatted = actual.replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
+            executeComparison(actualFormatted, expectedFormatted, result);
             UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         } catch (Exception e) {
             handleException(result, e);
         }
-    }
-
-    private void injectFields(final Attribute attribute) {
-        attribute.setLocatorId(inject(attribute.getLocatorId()));
-        attribute.setContent(inject(attribute.getContent()));
-        attribute.setName(inject(attribute.getName()));
     }
 
     private String getActualValue(final Attribute attribute) {
@@ -91,6 +92,18 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
         UiUtil.waitForElementVisibility(dependencies, webElement);
         String value = UiUtil.getElementAttribute(webElement, attribute.getName());
         return value.replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
+    }
+
+    private String getActualName(final Attribute attribute) {
+        String xpath = GlobalLocators.getLocator(attribute.getLocatorId()).getXpath();
+        String attributeName = xpath.replaceAll(XPATH_ATTRIBUTE_NAME_REGEX, "$1");
+        return attributeName.replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
+    }
+
+    private void injectFields(final Attribute attribute) {
+        attribute.setLocatorId(inject(attribute.getLocatorId()));
+        attribute.setContent(inject(attribute.getContent()));
+        attribute.setName(inject(attribute.getName()));
     }
 
     private void executeTitleCommand(final Title title, final CommandResult result) {

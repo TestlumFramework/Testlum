@@ -181,7 +181,7 @@ public class VariableHelper {
                                  final ScenarioContext scenarioContext,
                                  final CommandResult result) {
         DocumentContext contextBody = JsonPath.parse(scenarioContext.getBody());
-        String valueResult = contextBody.read(path).toString();
+        String valueResult = contextBody.read(path) != null ? contextBody.read(path).toString() : "null";
         ResultUtil.addVariableMetaData(JSON_PATH, varName, path, valueResult, result);
         return valueResult;
     }

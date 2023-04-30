@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,15 +43,14 @@ public class UiValidator {
 
     private void validateWeb(final List<String> envList,
                              final List<UiConfig> uiConfigList) {
-        List<Web> enabledNativeList = uiConfigList.stream()
+        List<Web> webList = uiConfigList.stream()
                 .map(UiConfig::getWeb)
-                .filter(Objects::nonNull)
                 .filter(Web::isEnabled)
                 .collect(Collectors.toList());
-        if (!enabledNativeList.isEmpty() && enabledNativeList.size() != envList.size()) {
+        if (!webList.isEmpty() && webList.size() != envList.size()) {
             throw new DefaultFrameworkException(WEB_NUM_NOT_MATCH_WITH_ENVS_NUM);
-        } else if (!enabledNativeList.isEmpty()) {
-            List<List<AbstractBrowser>> browserList = enabledNativeList.stream()
+        } else if (!webList.isEmpty()) {
+            List<List<AbstractBrowser>> browserList = webList.stream()
                     .map(webConfig -> webConfig.getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari())
                     .collect(Collectors.toList());
             validateBrowsers(envList, browserList);
@@ -60,14 +58,17 @@ public class UiValidator {
     }
 
     private void validateNative(final List<String> envList, final List<UiConfig> uiConfigList) {
-        List<Native> enabledNativeList = getEnabledNativeList(uiConfigList);
-        if (!enabledNativeList.isEmpty() && enabledNativeList.size() != envList.size()) {
+        List<Native> nativeList = getEnabledNativeList(uiConfigList);
+        if (!nativeList.isEmpty() && nativeList.size() != envList.size()) {
             throw new DefaultFrameworkException(NATIVE_NUM_NOT_MATCH_WITH_ENVS_NUM);
-        } else if (!enabledNativeList.isEmpty()) {
-            List<List<NativeDevice>> deviceList = enabledNativeList.stream()
+        } else if (!nativeList.isEmpty()) {
+            List<ConnectionType> connectionTypeList = nativeList.stream()
+                    .map(Native::getConnection)
+                    .collect(Collectors.toList());
+            checkConnection(envList, connectionTypeList);
+            List<List<NativeDevice>> deviceList = nativeList.stream()
                     .map(nativeConfig -> nativeConfig.getDevices().getDevice())
                     .collect(Collectors.toList());
-            checkNativeConnection(envList, enabledNativeList);
             validateDevices(envList, deviceList);
         }
     }
@@ -75,20 +76,22 @@ public class UiValidator {
     private List<Native> getEnabledNativeList(final List<UiConfig> uiConfigList) {
         return uiConfigList.stream()
                 .map(UiConfig::getNative)
-                .filter(Objects::nonNull)
                 .filter(Native::isEnabled)
                 .collect(Collectors.toList());
     }
 
     private void validateMobileBrowser(final List<String> envList, final List<UiConfig> uiConfigList) {
-        List<Mobilebrowser> enabledMobilebrowserList = getEnabledMobilebrowserList(uiConfigList);
-        if (!enabledMobilebrowserList.isEmpty() && enabledMobilebrowserList.size() != envList.size()) {
+        List<Mobilebrowser> mobilebrowserList = getEnabledMobilebrowserList(uiConfigList);
+        if (!mobilebrowserList.isEmpty() && mobilebrowserList.size() != envList.size()) {
             throw new DefaultFrameworkException(MOBILEBROWSER_NUM_NOT_MATCH_WITH_ENVS_NUM);
-        } else if (!enabledMobilebrowserList.isEmpty()) {
-            List<List<MobilebrowserDevice>> deviceList = enabledMobilebrowserList.stream()
+        } else if (!mobilebrowserList.isEmpty()) {
+            List<ConnectionType> connectionTypeList = mobilebrowserList.stream()
+                    .map(Mobilebrowser::getConnection)
+                    .collect(Collectors.toList());
+            checkConnection(envList, connectionTypeList);
+            List<List<MobilebrowserDevice>> deviceList = mobilebrowserList.stream()
                     .map(mobilebrowserConfig -> mobilebrowserConfig.getDevices().getDevice())
                     .collect(Collectors.toList());
-            checkMobilebrowserConnection(envList, enabledMobilebrowserList);
             validateDevices(envList, deviceList);
         }
     }
@@ -96,7 +99,6 @@ public class UiValidator {
     private List<Mobilebrowser> getEnabledMobilebrowserList(final List<UiConfig> uiConfigList) {
         return uiConfigList.stream()
                 .map(UiConfig::getMobilebrowser)
-                .filter(Objects::nonNull)
                 .filter(Mobilebrowser::isEnabled)
                 .collect(Collectors.toList());
     }
@@ -164,12 +166,9 @@ public class UiValidator {
                 .mapToInt(e -> 1).sum();
     }
 
-    private void checkNativeConnection(final List<String> envs,
-                                       final List<Native> nativeList) {
+    private void checkConnection(final List<String> envs,
+                                 final List<ConnectionType> connectionTypeList) {
         if (envs.size() > 1) {
-            List<ConnectionType> connectionTypeList = nativeList.stream()
-                    .map(Native::getConnection)
-                    .collect(Collectors.toList());
             if (connectionTypeList.stream()
                     .allMatch(connectionType -> nonNull(connectionType.getAppiumServer()))) {
                 checkAppiumServerUrl(envs, connectionTypeList);
@@ -177,23 +176,6 @@ public class UiValidator {
                     .allMatch(connectionType -> nonNull(connectionType.getBrowserStack()))) {
                 throw new DefaultFrameworkException(
                         "Connection type in <native> block must be the same in all ui configs");
-            }
-        }
-    }
-
-    private void checkMobilebrowserConnection(final List<String> envs,
-                                              final List<Mobilebrowser> nativeList) {
-        if (envs.size() > 1) {
-            List<ConnectionType> connectionTypeList = nativeList.stream()
-                    .map(Mobilebrowser::getConnection)
-                    .collect(Collectors.toList());
-            if (connectionTypeList.stream()
-                    .allMatch(connectionType -> nonNull(connectionType.getAppiumServer()))) {
-                checkAppiumServerUrl(envs, connectionTypeList);
-            } else if (!connectionTypeList.stream()
-                    .allMatch(connectionType -> nonNull(connectionType.getBrowserStack()))) {
-                throw new DefaultFrameworkException(
-                        "Connection type in <mobilebrowser> block must be the same in all ui configs");
             }
         }
     }

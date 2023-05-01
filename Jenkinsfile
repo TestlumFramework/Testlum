@@ -19,7 +19,7 @@ pipeline {
     environment {
         SERVICE = "testing-tool"
         SITE = "site-sample"
-        TEST_API = "test-api"
+        TEST_API = "mega-test-api"
         TAG = "${GIT_COMMIT}"
         SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/cott/mega-test-app.git"
         URL_TESTING_TOOL = "ssh://git@bitbucket.knubisoft.com:7999/cott/testlum.git"
@@ -66,7 +66,7 @@ pipeline {
     stage('build test api') {
         steps {
             dir("site") {
-                sh "docker build -f Dockerfile.jenkins -t ${TEST_API}:${TAG} ."
+                sh "docker build -f Dockerfile.jenkins -t ${TEST_API} ."
             }
         }
     }
@@ -112,7 +112,7 @@ pipeline {
     always {
         script {
             sh "docker rmi ${SERVICE}:${TAG}"
-            sh "docker rmi ${TEST_API}:${TAG}"
+            sh "docker rmi ${TEST_API}"
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
         }
     }

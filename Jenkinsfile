@@ -95,7 +95,7 @@ pipeline {
     stage('run test tool') {
         steps {
             dir("tool") {
-                sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -v "$(pwd)"/testlum-test-resources:/testlum/testlum-test-resources ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/testlum/testlum-test-resources/REGRESSION_TESTS_resources'
+                sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -v /etc/passwd:/etc/passwd:ro -v /etc/group:/etc/group:ro -v "$(pwd)"/testlum-test-resources:/testlum/testlum-test-resources ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/testlum/testlum-test-resources/REGRESSION_TESTS_resources'
                 sh "cat testlum-test-resources/REGRESSION_TESTS_resources/scenarios_execution_result.txt | awk '/successfully/{ exit 0 }/failed/{ exit 1 }'"
             }
         }

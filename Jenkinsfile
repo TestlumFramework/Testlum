@@ -35,7 +35,6 @@ pipeline {
     stage('Print job envs') {
         steps {
             echo "Print env"
-            sh 'sudo chown -R jenkins:jenkins /var/lib/jenkins/workspace'
             cleanWs()
             sh "env"
             sh "mkdir tool site"

@@ -14,13 +14,14 @@ pipeline {
                      defaultValue: 'master',
                      name: 'BRANCH_SITE',
                      type: 'PT_BRANCH',
-                     useRepository: '.*site-sample-v2-api.git')
+                     useRepository: '.*mega-test-app.git')
     }
     environment {
         SERVICE = "testing-tool"
         SITE = "site-sample"
+        TEST_API = "mega-test-api"
         TAG = "${GIT_COMMIT}"
-        SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/cott/site-sample-v2-api.git"
+        SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/cott/mega-test-app.git"
         URL_TESTING_TOOL = "ssh://git@bitbucket.knubisoft.com:7999/cott/testlum.git"
         URL_TESTING_TOOL_SCENARIOS = "ssh://git@bitbucket.knubisoft.com:7999/cott/testlum-test-resources.git"
         GIT_CREDENTIALS_ID = "bitbucket"
@@ -55,17 +56,32 @@ pipeline {
             }
         }
     }
-    stage('checkout site') {
+    stage('checkout test app') {
         steps {
             dir("site") {
                 git branch: "${params.BRANCH_SITE}", url: SITE_URL, credentialsId: GIT_CREDENTIALS_ID
             }
         }
     }
-    stage('start site') {
+    stage('build test api') {
         steps {
             dir("site") {
-                sh "docker-compose -f docker-compose-jenkins.yaml up -d --force-recreate && docker-compose -f docker-compose-selenium-grid.yaml up -d --force-recreate"
+                sh "docker build -f Dockerfile.jenkins -t ${TEST_API} ."
+            }
+        }
+    }
+    stage('start test api') {
+        steps {
+            dir("site") {
+                sh "docker-compose -f docker-compose-jenkins.yaml up -d --force-recreate "
+//                  && docker-compose -f docker-compose-selenium-grid.yaml up -d --force-recreate"
+            }
+        }
+    }
+    stage('start test app') {
+        steps {
+            dir("site") {
+                sh "sleep 20 && docker-compose -f docker-compose-api.yaml up -d --force-recreate "
             }
         }
     }
@@ -73,17 +89,14 @@ pipeline {
         steps {
             dir("tool") {
                 sh "docker build -f Dockerfile.jenkins -t ${SERVICE}:${TAG} ."
-                // sh "mvn clean install  -DskipTests"
             }
-
         }
     }
     stage('run test tool') {
         steps {
             dir("tool") {
-                sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -v "$(pwd)"/testlum-test-resources:/testlum/testlum-test-resources ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/testlum/testlum-test-resources/JENKINS_resources'
-                sh "cat testlum-test-resources/JENKINS_resources/scenarios_execution_result.txt | awk '/successfully/{ exit 0 }/failed/{ exit 1 }'"
-                // sh "java -jar ./target/e2e-testing-tool.jar -c=config-jenkins.xml -p=./testlum-test-resources/JENKINS_resources"
+                sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -v "$(pwd)"/testlum-test-resources:/testlum/testlum-test-resources ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/testlum/testlum-test-resources/REGRESSION_TESTS_resources'
+                sh "cat testlum-test-resources/REGRESSION_TESTS_resources/scenarios_execution_result.txt | awk '/successfully/{ exit 0 }/failed/{ exit 1 }'"
             }
         }
     }
@@ -99,6 +112,7 @@ pipeline {
     always {
         script {
             sh "docker rmi ${SERVICE}:${TAG}"
+            sh "docker rmi ${TEST_API}"
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
         }
     }

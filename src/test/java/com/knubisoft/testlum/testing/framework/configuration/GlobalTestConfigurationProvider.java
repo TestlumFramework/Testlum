@@ -25,11 +25,10 @@ import java.util.stream.Collectors;
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GlobalTestConfigurationProvider {
-
-    static final IntegrationsValidator INTEGRATIONS_VALIDATOR = new IntegrationsValidator();
-    private static final EnvsValidator ENVS_VALIDATOR = new EnvsValidator();
     private static final GlobalTestConfiguration GLOBAL_TEST_CONFIGURATION = init();
     private static final List<Environment> ENVIRONMENTS = filterEnabledEnvironments();
+    private static final EnvsValidator ENVS_VALIDATOR = new EnvsValidator();
+    private static final IntegrationsValidator INTEGRATIONS_VALIDATOR = new IntegrationsValidator();
     private static final Map<String, Integrations> INTEGRATIONS = collectIntegrations();
     private static final Map<String, UiConfig> UI_CONFIGS = collectUiConfigs();
     private static final Integrations DEFAULT_INTEGRATIONS = defaultIntegrations();

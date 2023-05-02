@@ -16,7 +16,7 @@ import static com.knubisoft.testlum.testing.framework.configuration.GlobalTestCo
 public class EnvsValidator {
     public void validate(final String configFileName) {
         List<Optional<File>> configs = collectEnvsConfigsFilesFor(configFileName);
-        validateEnvsFileSetFor(configs);
+        validateEnvsFileSetFor(configFileName, configs);
     }
 
     private static List<Optional<File>> collectEnvsConfigsFilesFor(final String configFileName) {
@@ -25,14 +25,15 @@ public class EnvsValidator {
                 .collect(Collectors.toList());
     }
 
-    private static <T> void validateEnvsFileSetFor(final List<Optional<T>> list) {
+    private static <T> void validateEnvsFileSetFor(final String configFileName, final List<Optional<T>> list) {
         long nullCount = list.stream()
                 .filter(element -> !element.isPresent())
                 .count();
 
-        if (nullCount >= 1
-                && nullCount != list.size()) {
-            throw new DefaultFrameworkException(ExceptionMessage.ENVS_CONFIGS_FOLDER_FILES_STRUCTURE_INCOMPATIBLE);
+        if (nullCount != 0 &&
+                nullCount != list.size()) {
+            throw new DefaultFrameworkException(
+                    String.format(ExceptionMessage.ENVS_CONFIGS_FOLDER_FILES_STRUCTURE_INCOMPATIBLE,configFileName));
         }
     }
 }

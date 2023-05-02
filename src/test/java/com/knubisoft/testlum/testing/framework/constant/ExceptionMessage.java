@@ -171,6 +171,7 @@ public class ExceptionMessage {
             + "check your configuration in config file";
     public static final String MOBILEBROWSER_DRIVER_NOT_INIT = "The webDriver for <mobilebrowser> has not been "
             + "initialized, check your configuration in config file";
-    public static final String ENVS_CONFIGS_FOLDER_FILES_STRUCTURE_INCOMPATIBLE = "Environment configs folder files "
-            + "structure is incompatible, check structure of configuration files in each environment folder is equal";
+    public static final String ENVS_CONFIGS_FOLDER_FILES_STRUCTURE_INCOMPATIBLE = "Files structure is incompatible"
+            + " for \"%s\" in config folders. Check structure of configuration files in each environment,"
+            + " folder must be equal";
 }

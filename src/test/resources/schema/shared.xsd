@@ -136,7 +136,7 @@
     </x:simpleType>
 
     <x:complexType name="file">
-        <x:attribute name="file" type="tns:jsonFileExtension" use="required"/>
+        <x:attribute name="file" type="tns:httpRequestFileExtension" use="required"/>
     </x:complexType>
 
     <x:simpleType name="codePattern" final="restriction">
@@ -153,6 +153,12 @@
     <x:simpleType name="jsonFileExtension">
         <x:restriction base="x:string">
             <x:pattern value=".+(\.json)"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="httpRequestFileExtension">
+        <x:restriction base="x:string">
+            <x:pattern value=".+(\.(json|graphql|gql))"/>
         </x:restriction>
     </x:simpleType>
 

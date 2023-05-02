@@ -1,5 +1,8 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
@@ -15,6 +18,7 @@ import com.knubisoft.testlum.testing.model.scenario.KafkaHeader;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
 import lombok.Data;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -116,10 +120,24 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                                  final CommandResult result,
                                  final AliasEnv aliasEnv) {
         String value = getValue(receive);
+        if (!receive.isHeaders()) {
+            value = removeHeadersFrom(value);
+        }
         LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getTopic(), value);
         createTopicIfNotExists(receive.getTopic(), aliasEnv);
         List<KafkaMessage> actualMessages = receiveKafkaMessages(receive, aliasEnv);
         compareMessages(actualMessages, value, result);
+    }
+
+    @SneakyThrows
+    private String removeHeadersFrom(final String value) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String escapeJson = value.replaceAll("\\n", "");
+        JsonNode jsonArray = objectMapper.readTree(escapeJson);
+        for (JsonNode jsonNode : jsonArray) {
+            ((ObjectNode) jsonNode).remove("headers");
+        }
+        return objectMapper.writeValueAsString(jsonArray);
     }
 
     private void compareMessages(final List<KafkaMessage> actualKafkaMessages,
@@ -133,11 +151,12 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         comparator.exec();
     }
 
-    private void sendMessage(final SendKafkaMessage send, final CommandResult result, final AliasEnv aliasEnv) {
+    private void sendMessage(final SendKafkaMessage send,
+                             final CommandResult result,
+                             final AliasEnv aliasEnv) {
         String message = getValue(send);
         LogUtil.logBrokerActionInfo(SEND_ACTION, send.getTopic(), message);
         result.put(MESSAGE_TO_SEND, message);
-
         createTopicIfNotExists(send.getTopic(), aliasEnv);
         sendMessage(send, message, aliasEnv);
     }

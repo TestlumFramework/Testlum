@@ -20,19 +20,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.MOBILEBROWSER_NUM_NOT_MATCH_WITH_ENVS_NUM;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NATIVE_NUM_NOT_MATCH_WITH_ENVS_NUM;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SAME_BROWSER_ALIASES;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SAME_DEVICE_ALIASES;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.WEB_NUM_NOT_MATCH_WITH_ENVS_NUM;
 import static java.util.Objects.nonNull;
 
 public class UiValidator {
 
     private static final String UI_CONFIG_FILE_NAME = "ui.xml";
-    private static final String WEB_NUM_NOT_MATCH_WITH_ENVS_NUM = "Number of enabled <native> blocks does not match "
-            + "with number of enabled envs";
-    private static final String NATIVE_NUM_NOT_MATCH_WITH_ENVS_NUM = "Number of enabled <native> blocks does not match "
-            + "with number of enabled envs";
-    private static final String MOBILEBROWSER_NUM_NOT_MATCH_WITH_ENVS_NUM = "Number of enabled <native> blocks does not"
-            + " match with number of enabled envs";
 
     public void validateUiConfig(final Map<String, UiConfig> uiConfigMap) {
         List<String> envList = new ArrayList<>(uiConfigMap.keySet());
@@ -272,7 +269,6 @@ public class UiValidator {
                                       final int envNum) {
         return abstractDeviceList.stream()
                 .map(integration -> integration.get(envNum))
-                .filter(AbstractDevice::isEnabled)
                 .map(AbstractDevice::getPlatformName)
                 .map(Platform::value)
                 .collect(Collectors.toList());

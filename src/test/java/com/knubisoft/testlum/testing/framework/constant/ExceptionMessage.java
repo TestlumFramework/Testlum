@@ -182,5 +182,11 @@ public class ExceptionMessage {
             + "check your configuration in config file";
     public static final String MOBILEBROWSER_DRIVER_NOT_INIT = "The webDriver for <mobilebrowser> has not been "
             + "initialized, check your configuration in config file";
+    public static final String WEB_NUM_NOT_MATCH_WITH_ENVS_NUM = "Number of enabled <native> blocks does not match "
+            + "with number of enabled envs";
+    public static final String NATIVE_NUM_NOT_MATCH_WITH_ENVS_NUM = "Number of enabled <native> blocks does not match "
+            + "with number of enabled envs";
+    public static final String MOBILEBROWSER_NUM_NOT_MATCH_WITH_ENVS_NUM = "Number of enabled <native> blocks does not"
+            + " match with number of enabled envs";
 
 }

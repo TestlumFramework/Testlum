@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="alphanumeric" type="{http://www.knubisoft.com/testlum/testing/model/scenario}randomAlphanumeric"/&gt;
  *         &lt;element name="randomRegexp" type="{http://www.knubisoft.com/testlum/testing/model/scenario}randomRegexp"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="length" use="required" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
+ *       &lt;attribute name="length" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}fromRandomGenerateLength" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;

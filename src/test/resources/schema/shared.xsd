@@ -278,10 +278,10 @@
             <x:element name="alphanumeric" type="tns:randomAlphanumeric"/>
             <x:element name="randomRegexp" type="tns:randomRegexp"/>
         </x:choice>
-        <x:attribute name="length" type="tns:fromRandomGenerateLength" use="required"/>
+        <x:attribute name="length" type="tns:generateStringLengthPattern" use="required"/>
     </x:complexType>
 
-    <x:simpleType name="fromRandomGenerateLength">
+    <x:simpleType name="generateStringLengthPattern">
         <x:restriction base="x:int">
             <x:minExclusive value="1"/>
             <x:maxExclusive value="100000001"/>

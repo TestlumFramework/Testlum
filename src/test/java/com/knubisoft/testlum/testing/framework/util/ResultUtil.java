@@ -67,6 +67,7 @@ public class ResultUtil {
     public static final String RELATIONAL_DB_QUERY = "Relational DB query";
     public static final String FILE = "File";
     public static final String EXPRESSION = "Expression";
+    public static final String CONSTANT = "Constant";
     public static final String NO_EXPRESSION = "No expression";
     public static final String COOKIES = "Cookies";
     public static final String URL = "Url";
@@ -75,6 +76,7 @@ public class ResultUtil {
     public static final String LOCATOR_ID = "Locator ID = %s";
     public static final String ELEMENT_PRESENT = "Is the web element present";
     public static final String CONDITION = "Condition";
+    public static final String GENERATED_STRING = "Randomly generated string";
     public static final String ASSERT_LOCATOR = "Locator for assert command";
     public static final String ASSERT_ATTRIBUTE = "Assert command attribute";
     public static final String CLICK_LOCATOR = "Locator for click command";

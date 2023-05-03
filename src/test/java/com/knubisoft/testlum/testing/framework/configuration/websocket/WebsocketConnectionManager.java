@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.websocket;
 
+import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
 
 import java.io.IOException;
@@ -9,7 +10,7 @@ public interface WebsocketConnectionManager {
 
     void sendMessage(WebsocketSend wsSend, String payload) throws IOException;
 
-    LinkedList<String> receiveMessages(String topic);
+    LinkedList<String> receiveMessages(WebsocketReceive wsReceive);
 
     void subscribeTo(String topic);
 

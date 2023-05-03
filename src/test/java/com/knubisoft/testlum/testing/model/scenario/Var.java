@@ -29,8 +29,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "var", propOrder = {
     "file",
     "path",
+    "constant",
     "expression",
-    "sql"
+    "sql",
+    "generate"
 })
 public class Var
     extends AbstractCommand
@@ -38,8 +40,10 @@ public class Var
 
     protected FromFile file;
     protected FromPath path;
+    protected FromConstant constant;
     protected FromExpression expression;
     protected FromSQL sql;
+    protected FromRandomGenerate generate;
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
@@ -92,6 +96,30 @@ public class Var
     }
 
     /**
+     * Gets the value of the constant property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FromConstant }
+     *     
+     */
+    public FromConstant getConstant() {
+        return constant;
+    }
+
+    /**
+     * Sets the value of the constant property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FromConstant }
+     *     
+     */
+    public void setConstant(FromConstant value) {
+        this.constant = value;
+    }
+
+    /**
      * Gets the value of the expression property.
      * 
      * @return
@@ -137,6 +165,30 @@ public class Var
      */
     public void setSql(FromSQL value) {
         this.sql = value;
+    }
+
+    /**
+     * Gets the value of the generate property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FromRandomGenerate }
+     *     
+     */
+    public FromRandomGenerate getGenerate() {
+        return generate;
+    }
+
+    /**
+     * Sets the value of the generate property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FromRandomGenerate }
+     *     
+     */
+    public void setGenerate(FromRandomGenerate value) {
+        this.generate = value;
     }
 
     /**

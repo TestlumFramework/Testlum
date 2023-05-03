@@ -129,7 +129,7 @@
     <x:complexType name="connectionType">
         <x:choice>
             <x:element name="appiumServer" type="tns:appiumServer"/>
-            <x:element name="browserStack"/>
+            <x:element name="browserStack" type="tns:browserStackServer"/>
         </x:choice>
     </x:complexType>
 
@@ -138,6 +138,8 @@
             <x:element name="serverUrl" type="tns:url"/>
         </x:choice>
     </x:complexType>
+
+    <x:complexType name="browserStackServer"/>
 
     <x:complexType name="abstractCapabilities" abstract="true">
         <x:sequence>

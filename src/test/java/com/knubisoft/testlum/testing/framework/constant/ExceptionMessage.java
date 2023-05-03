@@ -12,6 +12,8 @@ public class ExceptionMessage {
     public static final String HTTP_CODE_EXPECTED_BUT_WAS = " Http code should be [%s] but was [%s]";
     public static final String HTTP_HEADERS_EXPECTED_BUT_WAS = " Http headers should be [%s] but was [%s]";
     public static final String HTTP_BODY_EXPECTED_BUT_WAS = " Http body should be [%s] but was [%s]";
+    public static final String UNKNOWN_HTTP_METHOD = "Unknown http method: %s";
+    public static final String UNKNOWN_BODY_CONTENT = "Unknown body content provided";
     public static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";
     public static final String INCORRECT_S3_PROCESSING = "Incorrect S3 processing";
     public static final String INCORRECT_SQS_PROCESSING = "Incorrect SQS processing";
@@ -39,8 +41,6 @@ public class ExceptionMessage {
     public static final String WEBSOCKET_CONNECTION_FAILURE =
             "Something went wrong while connecting to websocket with name <%s>";
     public static final String UNEXPECTED_WEBSOCKET_MESSAGE_TYPE = "Unexpected websocket message type: %s";
-    public static final String WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND =
-            "Websocket message handler for topic %s not found";
 
     public static final String FUNCTION_FOR_COMMAND_NOT_FOUND = "Function for class %s not found. "
             + "Please register algorithm for interpreter";
@@ -62,7 +62,6 @@ public class ExceptionMessage {
     public static final String UNABLE_FIND_VALUE_FOR_KEY = "Unable to find value for key %s. Available keys %s";
 
     public static final String RETHROWN_ERRORS_TEMPLATE = "Errors:%n %s";
-    public static final String UNKNOWN_METHOD = "Unknown method %s";
     public static final String PAGES_FOLDER_NOT_EXIST = "[pages] folder does not exist";
     public static final String COMPONENTS_FOLDER_NOT_EXIST = "[components] folder does not exist";
     public static final String SCENARIOS_FOLDER_NOT_EXIST = "[scenarios] folder does not exist";
@@ -110,6 +109,7 @@ public class ExceptionMessage {
     public static final String VARIATIONS_NOT_USED = "Variations are present in the %s but not used";
 
     public static final String VAR_TYPE_NOT_SUPPORTED = "Type of <%s> command is not supported";
+    public static final String GENERATION_METHOD_NOT_SUPPORTED = "Random string generation method is not supported";
     public static final String ASSERT_TYPE_NOT_SUPPORTED = "Assert command %s not supported";
     public static final String NAVIGATE_NOT_SUPPORTED = "Navigate command %s not supported";
     public static final String DROP_DOWN_NOT_SUPPORTED = "Drop down by method by %s not supported";
@@ -165,6 +165,11 @@ public class ExceptionMessage {
     public static final String SAME_INTEGRATION_ALIASES = ANSI_RED
             + "More than one enabled <%s> integration was found with alias <%s> in the config by path: %s"
             + ANSI_RESET;
+    public static final String CONNECTION_TYPE_NOT_DEFINED = ANSI_RED
+            + "Connection type not defined in the <%s> config by path: %s" + ANSI_RESET;
+    public static final String DEVICE_CONNECTION_CAPABILITIES_NOT_DEFINED = ANSI_RED
+            + "Appropriate connection capabilities for device with alias <%s> not defined "
+            + "in the <%s> config by path: %s" + ANSI_RESET;
     public static final String WEB_DRIVER_NOT_INIT = "The webDriver for <web> has not been initialized, "
             + "check your configuration in config file";
     public static final String NATIVE_DRIVER_NOT_INIT = "The webDriver for <native> has not been initialized, "
@@ -174,4 +179,5 @@ public class ExceptionMessage {
     public static final String ENVS_CONFIGS_FOLDER_FILES_STRUCTURE_INCOMPATIBLE = "Files structure is incompatible"
             + " for \"%s\" in config folders. Check structure of configuration files in each environment,"
             + " folder must be equal";
+
 }

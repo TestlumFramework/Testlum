@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.websocket;
 
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,9 +12,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_CLOSED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_ESTABLISHED;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UNABLE_TO_DISCONNECT_WEBSOCKET_BECAUSE_CLOSED;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_CONNECTION_CLOSED;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_CONNECTION_ESTABLISHED;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -25,7 +26,7 @@ public class WebsocketStompConnectionManager implements WebsocketConnectionManag
     private final ClientStompSessionHandler websocketSessionHandler;
     private final String url;
 
-    private final Map<String, WebsocketMessageHandler> topicToMessageHandler = new HashMap<>();
+    private final Map<String, WebsocketStompMessageHandler> topicToMessageHandler = new HashMap<>();
     private StompSession stompSession;
 
     @Override
@@ -36,21 +37,22 @@ public class WebsocketStompConnectionManager implements WebsocketConnectionManag
     }
 
     @Override
-    public LinkedList<String> receiveMessages(final String topic) {
-        WebsocketMessageHandler websocketMessageHandler = topicToMessageHandler.get(topic);
-        if (nonNull(websocketMessageHandler)) {
-            return websocketMessageHandler.getReceivedMessages();
+    public LinkedList<String> receiveMessages(final WebsocketReceive wsReceive) {
+        WebsocketStompMessageHandler messageHandler = topicToMessageHandler.get(wsReceive.getTopic());
+        if (nonNull(messageHandler)) {
+            return messageHandler.getReceivedMessages();
         }
-        throw new DefaultFrameworkException(WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND, topic);
+        log.info(WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND, wsReceive.getTopic());
+        return new LinkedList<>();
     }
 
     @Override
     public void subscribeTo(final String topic) {
-        WebsocketMessageHandler handler = new WebsocketMessageHandler();
-        topicToMessageHandler.put(topic, handler);
+        WebsocketStompMessageHandler messageHandler = new WebsocketStompMessageHandler();
+        topicToMessageHandler.put(topic, messageHandler);
         //todo save Subscription if 'unsubscribe' command is needed
         if (nonNull(stompSession)) {
-            stompSession.subscribe(topic, handler);
+            stompSession.subscribe(topic, messageHandler);
         }
     }
 
@@ -58,14 +60,17 @@ public class WebsocketStompConnectionManager implements WebsocketConnectionManag
     public void openConnection() throws Exception {
         ListenableFuture<StompSession> connection = websocketStompClient.connect(url, websocketSessionHandler);
         stompSession = connection.get();
-        log.info(CONNECTION_ESTABLISHED, stompSession.getSessionId());
+        log.info(WEBSOCKET_CONNECTION_ESTABLISHED, stompSession.getSessionId());
     }
 
     @Override
     public void closeConnection() {
-        if (nonNull(stompSession)) {
+        topicToMessageHandler.clear();
+        if (isConnected()) {
             stompSession.disconnect();
-            log.info(CONNECTION_CLOSED, stompSession.getSessionId());
+            log.info(WEBSOCKET_CONNECTION_CLOSED, stompSession.getSessionId());
+        } else if (!isConnected()) {
+            log.info(UNABLE_TO_DISCONNECT_WEBSOCKET_BECAUSE_CLOSED);
         }
     }
 

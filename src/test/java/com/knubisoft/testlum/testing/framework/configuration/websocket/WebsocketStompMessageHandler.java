@@ -12,7 +12,7 @@ import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNEXPECTED_WEBSOCKET_MESSAGE_TYPE;
 
-public class WebsocketMessageHandler implements StompFrameHandler {
+public class WebsocketStompMessageHandler implements StompFrameHandler {
 
     private final LinkedList<String> messages = new LinkedList<>();
 

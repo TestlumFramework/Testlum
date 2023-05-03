@@ -30,10 +30,10 @@ public class EnvsValidator {
                 .filter(element -> !element.isPresent())
                 .count();
 
-        if (nullCount != 0 &&
-                nullCount != list.size()) {
+        if (nullCount != 0
+                && nullCount != list.size()) {
             throw new DefaultFrameworkException(
-                    String.format(ExceptionMessage.ENVS_CONFIGS_FOLDER_FILES_STRUCTURE_INCOMPATIBLE,configFileName));
+                    String.format(ExceptionMessage.ENVS_CONFIGS_FOLDER_FILES_STRUCTURE_INCOMPATIBLE, configFileName));
         }
     }
 }

@@ -52,6 +52,12 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:simpleType name="webAttributeNamePattern">
+        <x:restriction base="x:string">
+            <x:pattern value="[a-z]+"/>
+        </x:restriction>
+    </x:simpleType>
+
     <x:simpleType name="expectedPattern">
         <x:restriction base="x:string">
             <x:pattern value="expected_\d+.json"/>

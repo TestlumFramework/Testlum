@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="maxPollIntervalMs" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *         &lt;element name="clientId" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="groupId" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="autoCommitTimout" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -38,7 +39,8 @@ import javax.xml.bind.annotation.XmlType;
     "maxPollRecords",
     "maxPollIntervalMs",
     "clientId",
-    "groupId"
+    "groupId",
+    "autoCommitTimout"
 })
 public class Kafka
     extends Integration
@@ -54,6 +56,7 @@ public class Kafka
     protected String clientId;
     @XmlElement(required = true)
     protected String groupId;
+    protected Integer autoCommitTimout;
 
     /**
      * Gets the value of the bootstrapAddress property.
@@ -181,6 +184,30 @@ public class Kafka
      */
     public void setGroupId(String value) {
         this.groupId = value;
+    }
+
+    /**
+     * Gets the value of the autoCommitTimout property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getAutoCommitTimout() {
+        return autoCommitTimout;
+    }
+
+    /**
+     * Sets the value of the autoCommitTimout property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setAutoCommitTimout(Integer value) {
+        this.autoCommitTimout = value;
     }
 
 }

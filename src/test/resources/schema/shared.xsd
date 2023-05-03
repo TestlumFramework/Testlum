@@ -54,7 +54,7 @@
 
     <x:simpleType name="webAttributeNamePattern">
         <x:restriction base="x:string">
-            <x:pattern value="[a-z]+"/>
+            <x:pattern value="^[a-z]+([_-][a-z]+)*$"/>
         </x:restriction>
     </x:simpleType>
 

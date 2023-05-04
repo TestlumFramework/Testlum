@@ -23,7 +23,7 @@
                     <x:element name="maxPollIntervalMs" type="x:int"/>
                     <x:element name="clientId" type="tns:nonEmptyString"/>
                     <x:element name="groupId" type="tns:nonEmptyString"/>
-                    <x:element name="autoCommitTimout" type="x:int" minOccurs="0"/>
+                    <x:element name="autoCommitTimeout" type="x:int" minOccurs="0"/>
                 </x:sequence>
             </x:extension>
         </x:complexContent>

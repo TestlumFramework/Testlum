@@ -73,7 +73,7 @@ pipeline {
     stage('start test api') {
         steps {
             dir("site") {
-                sh "docker-compose -f docker-compose-jenkins.yaml up -d --force-recreate "
+                sh "docker-compose -f docker-compose-jenkins.yaml up -d --force-recreate --remove-orphans"
 //                  && docker-compose -f docker-compose-selenium-grid.yaml up -d --force-recreate"
             }
         }

@@ -112,8 +112,8 @@ pipeline {
     always {
         script {
 //             sh "docker-compose -f docker-compose-api.yaml down"
-            sh "docker rmi ${TEST_API}"
             sh "docker rmi ${SERVICE}:${TAG}"
+            sh "docker rmi -f ${TEST_API}"
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
         }
     }

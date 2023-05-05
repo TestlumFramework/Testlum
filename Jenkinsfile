@@ -82,7 +82,7 @@ pipeline {
     stage('start test app') {
         steps {
             dir("site") {
-                sh 'sleep 20 && java -jar TEST-API/target/mega-test-api.jar --spring.profiles.active=jenkins --spring.config.location="TEST-API/src/main/resources'
+                sh 'sleep 20 && java -jar TEST-API/target/mega-test-api.jar --spring.profiles.active=jenkins --spring.config.location="TEST-API/src/main/resources"'
 //                 sh "sleep 20 && docker-compose -f docker-compose-api.yaml up -d --force-recreate "
             }
         }

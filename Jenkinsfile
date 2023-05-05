@@ -74,7 +74,8 @@ pipeline {
     stage('start test api') {
         steps {
             dir("site") {
-                sh "docker-compose -f docker-compose-jenkins.yaml up -d --force-recreate "
+                sh "docker-compose -f /docker/docker-compose-jenkins.yaml up -d --force-recreate && sudo chown -R 113:117 *"
+//                 sh "docker-compose -f docker-compose-jenkins.yaml up -d --force-recreate && sudo chown -R 113:117 *"
 //                  && docker-compose -f docker-compose-selenium-grid.yaml up -d --force-recreate"
             }
         }
@@ -112,9 +113,10 @@ pipeline {
   }
   post {
     always {
-//         dir("site") {
+        dir("site") {
+            sh "docker-compose -f /docker/docker-compose-jenkins.yaml down"
 //             sh "docker-compose -f docker-compose-api.yaml down"
-//         }
+        }
         script {
             sh "docker rmi ${SERVICE}:${TAG}"
 //             sh "docker rmi -f ${TEST_API}"

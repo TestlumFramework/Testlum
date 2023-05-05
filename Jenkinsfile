@@ -24,7 +24,7 @@ pipeline {
         SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/cott/mega-test-app.git"
         URL_TESTING_TOOL = "ssh://git@bitbucket.knubisoft.com:7999/cott/testlum.git"
         URL_TESTING_TOOL_SCENARIOS = "ssh://git@bitbucket.knubisoft.com:7999/cott/testlum-test-resources.git"
-        GIT_CREDENTIALS_ID = "bitbucket"
+        GIT_CREDENTIALS_ID = "954f8583-fdd1-4359-b45c-3ccb24df6ba4"
         HOST='jenkins@192.168.0.7'
         PORT='22'
         HOST_DIR='/data/e2e-testing-tool'
@@ -66,7 +66,8 @@ pipeline {
     stage('build test api') {
         steps {
             dir("site") {
-                sh "docker build -f Dockerfile.jenkins -t ${TEST_API} ."
+                sh "mvn clean package -DskipTests"
+//                 sh "docker build -f Dockerfile.jenkins -t ${TEST_API} ."
             }
         }
     }
@@ -81,7 +82,8 @@ pipeline {
     stage('start test app') {
         steps {
             dir("site") {
-                sh "sleep 20 && docker-compose -f docker-compose-api.yaml up -d --force-recreate "
+                sh 'sleep 20 && java -jar TEST-API/target/mega-test-api.jar -Dspring.profiles.active=jenkins'
+//                 sh "sleep 20 && docker-compose -f docker-compose-api.yaml up -d --force-recreate "
             }
         }
     }
@@ -115,7 +117,7 @@ pipeline {
         }
         script {
             sh "docker rmi ${SERVICE}:${TAG}"
-//             sh "docker rmi -f ${TEST_API}"
+            sh "docker rmi -f ${TEST_API}"
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
         }
     }

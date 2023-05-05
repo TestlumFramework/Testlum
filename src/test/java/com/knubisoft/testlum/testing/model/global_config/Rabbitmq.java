@@ -1,9 +1,12 @@
 
 package com.knubisoft.testlum.testing.model.global_config;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -24,6 +27,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="apiPort" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *         &lt;element name="virtualHost" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="enabledMetrics" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="exchange" type="{http://www.knubisoft.com/testlum/testing/model/global-config}exchangeType" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="queue" type="{http://www.knubisoft.com/testlum/testing/model/global-config}rabbitmqQueue" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -40,7 +45,9 @@ import javax.xml.bind.annotation.XmlType;
     "password",
     "apiPort",
     "virtualHost",
-    "enabledMetrics"
+    "enabledMetrics",
+    "exchange",
+    "queue"
 })
 public class Rabbitmq
     extends Integration
@@ -57,6 +64,11 @@ public class Rabbitmq
     @XmlElement(required = true)
     protected String virtualHost;
     protected boolean enabledMetrics;
+    @XmlElement(required = true)
+    @XmlSchemaType(name = "string")
+    protected List<ExchangeType> exchange;
+    @XmlElement(required = true)
+    protected List<RabbitmqQueue> queue;
 
     /**
      * Gets the value of the host property.
@@ -200,6 +212,64 @@ public class Rabbitmq
      */
     public void setEnabledMetrics(boolean value) {
         this.enabledMetrics = value;
+    }
+
+    /**
+     * Gets the value of the exchange property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the exchange property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getExchange().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link ExchangeType }
+     * 
+     * 
+     */
+    public List<ExchangeType> getExchange() {
+        if (exchange == null) {
+            exchange = new ArrayList<ExchangeType>();
+        }
+        return this.exchange;
+    }
+
+    /**
+     * Gets the value of the queue property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the queue property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getQueue().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link RabbitmqQueue }
+     * 
+     * 
+     */
+    public List<RabbitmqQueue> getQueue() {
+        if (queue == null) {
+            queue = new ArrayList<RabbitmqQueue>();
+        }
+        return this.queue;
     }
 
 }

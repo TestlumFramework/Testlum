@@ -702,6 +702,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link RabbitmqQueue }
+     * 
+     */
+    public RabbitmqQueue createRabbitmqQueue() {
+        return new RabbitmqQueue();
+    }
+
+    /**
+     * Create an instance of {@link RabbitmqQueueConfig }
+     * 
+     */
+    public RabbitmqQueueConfig createRabbitmqQueueConfig() {
+        return new RabbitmqQueueConfig();
+    }
+
+    /**
      * Create an instance of {@link Dynamo }
      * 
      */

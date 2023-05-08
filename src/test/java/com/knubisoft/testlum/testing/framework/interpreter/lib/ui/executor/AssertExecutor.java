@@ -31,6 +31,7 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 
 @ExecutorForClass(Assert.class)
 public class AssertExecutor extends AbstractUiExecutor<Assert> {
+
     private final Map<AssertCmdPredicate, AssertMethod> assertCommandMap;
     private final List<String> exceptionResult = new ArrayList<>();
     private final AtomicInteger commandId = new AtomicInteger();
@@ -69,14 +70,10 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
         injectFields(attribute);
         LogUtil.logAssertAttributeInfo(attribute, commandId.get());
         ResultUtil.addAssertAttributeMetaData(attribute, result);
-        compareWithResult(attribute.getContent(), getActualValue(attribute), result);
-    }
-
-    private void compareWithResult(final String expected, final String actual, final CommandResult result) {
         try {
-            String expectedFormatted = expected.replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
-            String actualFormatted = actual.replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
-            executeComparison(actualFormatted, expectedFormatted, result);
+            String actual = getActualValue(attribute);
+            String expected = attribute.getContent().replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
+            executeComparison(actual, expected, result);
             UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         } catch (Exception e) {
             handleException(result, e);

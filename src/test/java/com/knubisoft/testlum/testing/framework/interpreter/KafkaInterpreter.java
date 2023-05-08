@@ -156,23 +156,21 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
         Iterable<ConsumerRecord<String, String>> iterable = consumerRecords.records(receive.getTopic());
         Iterator<ConsumerRecord<String, String>> iterator = iterable.iterator();
-        return convertConsumerRecordsToKafkaMessages(iterator, aliasEnv, receive.isReadNotCommitted());
+        List<KafkaMessage> kafkaMessages = convertConsumerRecordsToKafkaMessages(iterator);
+        if (!receive.isReadNotCommitted()) {
+            kafkaConsumer.get(aliasEnv).commitSync();
+        }
+        return kafkaMessages;
     }
 
     private List<KafkaMessage> convertConsumerRecordsToKafkaMessages(
-            final Iterator<ConsumerRecord<String, String>> iterator,
-            final AliasEnv aliasEnv,
-            final boolean readNotCommitted) {
+            final Iterator<ConsumerRecord<String, String>> iterator) {
         List<KafkaMessage> kafkaMessages = new ArrayList<>();
         while (iterator.hasNext()) {
             ConsumerRecord<String, String> consumerRecord = iterator.next();
             KafkaMessage kafkaMessage = new KafkaMessage(consumerRecord);
             kafkaMessages.add(kafkaMessage);
         }
-        if (!readNotCommitted) {
-            kafkaConsumer.get(aliasEnv).commitSync();
-        }
-        kafkaConsumer.get(aliasEnv).unsubscribe();
         return kafkaMessages;
     }
 

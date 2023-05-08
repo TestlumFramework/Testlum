@@ -118,6 +118,9 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         String value = getValue(receive);
         LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getTopic(), value);
         createTopicIfNotExists(receive.getTopic(), aliasEnv);
+        if (!receive.isHeaders()) {
+            receiveKafkaMessages(receive, aliasEnv).forEach(x -> x.headers.clear());
+        }
         List<KafkaMessage> actualMessages = receiveKafkaMessages(receive, aliasEnv);
         compareMessages(actualMessages, value, result);
     }
@@ -133,9 +136,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         comparator.exec();
     }
 
-    private void sendMessage(final SendKafkaMessage send,
-                             final CommandResult result,
-                             final AliasEnv aliasEnv) {
+    private void sendMessage(final SendKafkaMessage send, final CommandResult result, final AliasEnv aliasEnv) {
         String message = getValue(send);
         LogUtil.logBrokerActionInfo(SEND_ACTION, send.getTopic(), message);
         result.put(MESSAGE_TO_SEND, message);
@@ -157,31 +158,18 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
         Iterable<ConsumerRecord<String, String>> iterable = consumerRecords.records(receive.getTopic());
         Iterator<ConsumerRecord<String, String>> iterator = iterable.iterator();
-        return convertConsumerRecordsToKafkaMessages(receive, iterator);
+        return convertConsumerRecordsToKafkaMessages(iterator);
     }
 
     private List<KafkaMessage> convertConsumerRecordsToKafkaMessages(
-            final ReceiveKafkaMessage receive,
             final Iterator<ConsumerRecord<String, String>> iterator) {
         List<KafkaMessage> kafkaMessages = new ArrayList<>();
         while (iterator.hasNext()) {
-            ConsumerRecord<String, String> consumerRecord = receive.isHeaders()
-                    ? iterator.next()
-                    : buildNoHeadersConsumerRecord(iterator.next());
+            ConsumerRecord<String, String> consumerRecord = iterator.next();
             KafkaMessage kafkaMessage = new KafkaMessage(consumerRecord);
             kafkaMessages.add(kafkaMessage);
         }
         return kafkaMessages;
-    }
-
-    private static ConsumerRecord<String, String> buildNoHeadersConsumerRecord(
-            final ConsumerRecord<String, String> consumerRecord) {
-        return new ConsumerRecord<>(
-                consumerRecord.topic(),
-                consumerRecord.partition(),
-                consumerRecord.offset(),
-                consumerRecord.key(),
-                consumerRecord.value());
     }
 
     private ProducerRecord<String, String> buildProducerRecord(final SendKafkaMessage send, final String value) {
@@ -237,7 +225,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         private final String key;
         private final String value;
         private final String correlationId;
-        private final Map<String, String> headers;
+        private Map<String, String> headers;
 
         KafkaMessage(final ConsumerRecord<String, String> consumerRecord) {
             this.key = consumerRecord.key();

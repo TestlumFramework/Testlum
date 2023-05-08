@@ -65,9 +65,9 @@ public class KafkaConsumerConfiguration {
         props.put(MAX_POLL_INTERVAL_MS_CONFIG, kafka.getMaxPollIntervalMs());
         props.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        if (Objects.nonNull(kafka.getAutoCommitTimout())) {
+        if (Objects.nonNull(kafka.getAutoCommitTimeout())) {
             props.put(ENABLE_AUTO_COMMIT_CONFIG, true);
-            props.put(AUTO_COMMIT_INTERVAL_MS_CONFIG, kafka.getAutoCommitTimout());
+            props.put(AUTO_COMMIT_INTERVAL_MS_CONFIG, kafka.getAutoCommitTimeout());
         }
     }
 }

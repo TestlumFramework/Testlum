@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
@@ -24,7 +23,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="param" type="{http://www.knubisoft.com/testlum/testing/model/scenario}partParam" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element name="file" type="{http://www.knubisoft.com/testlum/testing/model/scenario}partFile" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="boundary" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -43,8 +41,6 @@ public class Multipart {
         @XmlElement(name = "file", type = PartFile.class)
     })
     protected List<Object> paramOrFile;
-    @XmlAttribute(name = "boundary")
-    protected String boundary;
 
     /**
      * Gets the value of the paramOrFile property.
@@ -74,30 +70,6 @@ public class Multipart {
             paramOrFile = new ArrayList<Object>();
         }
         return this.paramOrFile;
-    }
-
-    /**
-     * Gets the value of the boundary property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getBoundary() {
-        return boundary;
-    }
-
-    /**
-     * Sets the value of the boundary property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setBoundary(String value) {
-        this.boundary = value;
     }
 
 }

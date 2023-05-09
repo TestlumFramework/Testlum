@@ -28,7 +28,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
 import java.util.LinkedHashMap;
@@ -104,7 +103,6 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         ResultUtil.addHttpMetaData(alias, httpMethod.name(), headers, endpoint, result);
         ContentType contentType = HttpUtil.computeContentType(headers);
         HttpEntity body = getBody(httpInfo, contentType);
-        headers.put(HttpHeaders.CONTENT_TYPE, body.getContentType().getValue());
         LogUtil.logBodyContent(body);
         String url = createFullUrl(endpoint, alias);
         return getApiResponse(httpMethod, url, headers, body);

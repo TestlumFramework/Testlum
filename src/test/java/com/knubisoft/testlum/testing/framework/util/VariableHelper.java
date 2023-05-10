@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -181,7 +182,12 @@ public class VariableHelper {
                                  final ScenarioContext scenarioContext,
                                  final CommandResult result) {
         DocumentContext contextBody = JsonPath.parse(scenarioContext.getBody());
-        String valueResult = contextBody.read(path) != null ? contextBody.read(path).toString() : "null";
+        String valueResult;
+        if (Objects.nonNull(contextBody.read(path))) {
+            valueResult = contextBody.read(path).toString();
+        } else {
+            valueResult = null;
+        }
         ResultUtil.addVariableMetaData(JSON_PATH, varName, path, valueResult, result);
         return valueResult;
     }

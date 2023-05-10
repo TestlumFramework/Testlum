@@ -133,6 +133,7 @@ public class ResultUtil {
     private static final String ADDITIONAL_HEADERS = "Additional headers";
     private static final String TOPIC = "Topic";
     private static final String NUMBER_OF_MESSAGES = "Number of messages";
+    private static final String ALL_AVAILABLE_MESSAGES = "All available messages";
     private static final String ROUTING_KEY = "Routing Key";
     private static final String EXCHANGE = "Exchange";
     private static final String ACTION = "Action";
@@ -377,7 +378,8 @@ public class ResultUtil {
                                                  final String alias,
                                                  final CommandResult result) {
         addWebsocketGeneralInfo(RECEIVE, receiveAction.getComment(), alias, TOPIC, receiveAction.getTopic(), result);
-        result.put(NUMBER_OF_MESSAGES, receiveAction.getCount());
+        result.put(NUMBER_OF_MESSAGES, nonNull(receiveAction.getMaxRecords())
+                ? receiveAction.getMaxRecords().intValue() : ALL_AVAILABLE_MESSAGES);
         result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
     }
 

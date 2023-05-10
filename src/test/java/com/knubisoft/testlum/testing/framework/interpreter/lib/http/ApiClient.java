@@ -21,7 +21,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.parser.JSONParser;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
@@ -73,7 +72,7 @@ public class ApiClient {
                                         final Map<String, String> headers,
                                         final HttpEntity body) {
         HttpUriRequest request = getHttpRequest(httpMethod, url, body);
-        addRequestHeaders(request, headers, body);
+        addRequestHeaders(request, headers);
         return request;
     }
 
@@ -95,11 +94,7 @@ public class ApiClient {
     }
 
     private void addRequestHeaders(final HttpUriRequest request,
-                                   final Map<String, String> headers,
-                                   final HttpEntity body) {
-        if (Objects.nonNull(body) && !headers.get(HttpHeaders.CONTENT_TYPE).equals(body.getContentType().getValue())) {
-            headers.put(HttpHeaders.CONTENT_TYPE, body.getContentType().getValue());
-        }
+                                   final Map<String, String> headers) {
         for (Map.Entry<String, String> each : headers.entrySet()) {
             request.addHeader(each.getKey(), each.getValue());
         }

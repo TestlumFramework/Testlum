@@ -24,46 +24,9 @@
                     <x:element name="apiPort" type="x:int"/>
                     <x:element name="virtualHost" type="tns:nonEmptyString"/>
                     <x:element name="enabledMetrics" type="x:boolean"/>
-                    <x:element name="exchange" type="tns:exchangeType" maxOccurs="unbounded"/>
-                    <x:element name="queue" type="tns:rabbitmqQueue" maxOccurs="unbounded"/>
                 </x:sequence>
             </x:extension>
         </x:complexContent>
     </x:complexType>
-
-    <x:complexType name="rabbitmqQueue">
-        <x:complexContent>
-            <x:extension base="tns:rabbitmqQueueConfig">
-                <x:sequence>
-                    <x:element name="toExchange" type="tns:nonEmptyString"/>
-                    <x:element name="withRoutingKey" type="tns:nonEmptyString"/>
-                    <x:element name="destinationType" type="tns:destinationType"/>
-                </x:sequence>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
-    <x:simpleType name="destinationType">
-        <x:restriction base="x:string">
-            <x:enumeration value="queue"/>
-            <x:enumeration value="exchange"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:complexType name="rabbitmqQueueConfig">
-        <x:attribute name="name" type="tns:nonEmptyString"/>
-        <x:attribute name="durable" type="x:boolean"/>
-        <x:attribute name="exclusive" type="x:boolean"/>
-        <x:attribute name="autoDelete" type="x:boolean"/>
-    </x:complexType>
-
-    <x:simpleType name="exchangeType">
-        <x:restriction base="x:string">
-            <x:enumeration value="direct"/>
-            <x:enumeration value="topic"/>
-            <x:enumeration value="fanout"/>
-            <x:enumeration value="headers"/>
-        </x:restriction>
-    </x:simpleType>
 </x:schema>
 

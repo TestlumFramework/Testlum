@@ -18,10 +18,8 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -47,8 +45,6 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
 
     @Autowired(required = false)
     private Map<AliasEnv, RabbitTemplate> rabbitTemplate;
-    @Autowired(required = false)
-    private Map<AliasEnv, AmqpAdmin> amqpAdmin;
 
     public RabbitMQInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -106,8 +102,6 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         String message = getMessage(send);
         LogUtil.logBrokerActionInfo(SEND_ACTION, send.getRoutingKey(), message);
         result.put(MESSAGE_TO_SEND, message);
-
-        createQueueIfNotExists(send.getRoutingKey(), aliasEnv);
         sendMessage(send, message, aliasEnv);
     }
 
@@ -143,7 +137,6 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         String message = getMessage(receive);
         LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), message);
 
-        createQueueIfNotExists(receive.getQueue(), aliasEnv);
         List<RabbitMQMessage> actualRmqMessages = receiveRmqMessages(receive, aliasEnv);
         compareMessages(actualRmqMessages, message, result);
     }
@@ -199,10 +192,6 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         return isNull(receive.getFile())
                 ? receive.getMessage()
                 : FileSearcher.searchFileToString(receive.getFile(), dependencies.getFile());
-    }
-
-    private void createQueueIfNotExists(final String queue, final AliasEnv aliasEnv) {
-        amqpAdmin.get(aliasEnv).declareQueue(new Queue(queue));
     }
 
     @Data

@@ -23,6 +23,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
@@ -157,7 +159,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         Iterable<ConsumerRecord<String, String>> iterable = consumerRecords.records(receive.getTopic());
         Iterator<ConsumerRecord<String, String>> iterator = iterable.iterator();
         List<KafkaMessage> kafkaMessages = convertConsumerRecordsToKafkaMessages(iterator);
-        if (!receive.isReadNotCommitted()) {
+        if (receive.isCommit()) {
             kafkaConsumer.get(aliasEnv).commitSync();
         }
         return kafkaMessages;
@@ -218,8 +220,17 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     }
 
     private void createTopicIfNotExists(final String topic, final AliasEnv aliasEnv) {
-        NewTopic newTopic = new NewTopic(topic, NUM_PARTITIONS, (short) 1);
-        kafkaAdmin.get(aliasEnv).createOrModifyTopics(newTopic);
+        if (Objects.isNull(checkIfTopicExists(topic, aliasEnv))) {
+            NewTopic newTopic = new NewTopic(topic, NUM_PARTITIONS, (short) 1);
+            kafkaAdmin.get(aliasEnv).createOrModifyTopics(newTopic);
+        }
+    }
+
+    private String checkIfTopicExists(final String topic, final AliasEnv aliasEnv) {
+        Map<String, List<PartitionInfo>> topics = kafkaConsumer.get(aliasEnv).listTopics();
+        return topics.keySet().stream()
+                .filter(topic::equals)
+                .findFirst().orElse(null);
     }
 
     @Data

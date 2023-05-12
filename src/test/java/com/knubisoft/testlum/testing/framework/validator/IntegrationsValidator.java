@@ -20,6 +20,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings.INTEGRATION_CONFIG_FILENAME;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_CUSTOM_CLASS_NAME_NOT_MATCH;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_LOGOUT_NOT_MATCH;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_NUM_NOT_MATCH;
@@ -32,7 +33,6 @@ import static java.util.Objects.nonNull;
 
 public class IntegrationsValidator {
 
-    private static final String INTEGRATION_FILE_NAME = "integration.xml";
     private static final Map<IntegrationsPredicate, IntegrationListMethod> INTEGRATIONS_TO_LISTS_MAP;
 
     static {
@@ -114,7 +114,7 @@ public class IntegrationsValidator {
                 if (!aliasSet.add(integration.getAlias())) {
                     throw new DefaultFrameworkException(SAME_INTEGRATION_ALIAS, integration.getClass().getSimpleName(),
                             integration.getAlias(), FileSearcher.searchFileFromEnvFolder(envsList.get(envNum),
-                            INTEGRATION_FILE_NAME).get().getPath());
+                            INTEGRATION_CONFIG_FILENAME).get().getPath());
                 }
             }
         }
@@ -129,7 +129,7 @@ public class IntegrationsValidator {
             if (nextEnvEnabledIntegrations != firstEnvEnabledIntegrations) {
                 throw new DefaultFrameworkException(NUM_OF_ENABLED_INTEGRATIONS_NOT_MATCH, integrationName,
                         FileSearcher.searchFileFromEnvFolder(envsList.get(envNum),
-                                INTEGRATION_FILE_NAME).get().getPath());
+                                INTEGRATION_CONFIG_FILENAME).get().getPath());
             }
         }
     }
@@ -207,7 +207,7 @@ public class IntegrationsValidator {
             if (authList.get(envNum).isAutoLogout() != autoLogout) {
                 throw new DefaultFrameworkException(AUTH_LOGOUT_NOT_MATCH, integrationName,
                         FileSearcher.searchFileFromEnvFolder(envsList.get(envNum),
-                                INTEGRATION_FILE_NAME).get().getPath());
+                                INTEGRATION_CONFIG_FILENAME).get().getPath());
             }
         }
     }
@@ -220,7 +220,7 @@ public class IntegrationsValidator {
             if (authList.get(envNum).getAuthStrategy() != authStrategy) {
                 throw new DefaultFrameworkException(AUTH_STRATEGY_NOT_MATCH, integrationName,
                         FileSearcher.searchFileFromEnvFolder(envsList.get(envNum),
-                                INTEGRATION_FILE_NAME).get().getPath());
+                                INTEGRATION_CONFIG_FILENAME).get().getPath());
             }
         }
     }
@@ -234,7 +234,7 @@ public class IntegrationsValidator {
                     || !Objects.equals(authList.get(envNum).getAuthCustomClassName(), authCustomClassName)) {
                 throw new DefaultFrameworkException(AUTH_CUSTOM_CLASS_NAME_NOT_MATCH, integrationName,
                         FileSearcher.searchFileFromEnvFolder(envsList.get(envNum),
-                                INTEGRATION_FILE_NAME).get().getPath());
+                                INTEGRATION_CONFIG_FILENAME).get().getPath());
             }
         }
     }

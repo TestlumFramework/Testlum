@@ -117,6 +117,8 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Slf4j
 public class LogUtil {
 
+    private static final int MAX_CONTENT_LENGTH = 25 * 1024;
+
     /* execution log */
     public void logScenarioDetails(final ScenarioArguments scenarioArguments, final int scenarioId) {
         log.info(EMPTY);
@@ -344,7 +346,7 @@ public class LogUtil {
 
     @SneakyThrows
     public void logBodyContent(final HttpEntity body) {
-        if (nonNull(body)) {
+        if (nonNull(body) && body.getContentLength() < MAX_CONTENT_LENGTH) {
             logBody(IOUtils.toString(body.getContent(), StandardCharsets.UTF_8.name()));
         }
     }
@@ -352,7 +354,7 @@ public class LogUtil {
     public void logBody(final String body) {
         if (isNotBlank(body)) {
             log.info(BODY_LOG,
-                    PrettifyStringJson.getJSONResult(body)
+                    PrettifyStringJson.getJSONResult(StringPrettifier.cut(body))
                             .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
     }

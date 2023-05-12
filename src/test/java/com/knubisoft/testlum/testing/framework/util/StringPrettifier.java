@@ -4,6 +4,8 @@ import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
+
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
 
@@ -33,10 +35,9 @@ public class StringPrettifier {
     }
 
     public String cut(final String actual) {
-        if (actual.length() > CHAR_LIMIT_FOR_CUT) {
+        if (Objects.nonNull(actual) && actual.length() > CHAR_LIMIT_FOR_CUT) {
             return StringUtils.abbreviate(actual, CHAR_LIMIT_FOR_CUT);
         }
         return actual;
-
     }
 }

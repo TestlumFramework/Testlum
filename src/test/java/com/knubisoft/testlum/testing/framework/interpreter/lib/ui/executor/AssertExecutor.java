@@ -80,17 +80,17 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
         }
     }
 
+    private void injectFields(final Attribute attribute) {
+        attribute.setLocatorId(inject(attribute.getLocatorId()));
+        attribute.setContent(inject(attribute.getContent()));
+        attribute.setName(inject(attribute.getName()));
+    }
+
     private String getActualValue(final Attribute attribute) {
         WebElement webElement = UiUtil.findWebElement(dependencies, attribute.getLocatorId());
         UiUtil.waitForElementVisibility(dependencies, webElement);
         String value = UiUtil.getElementAttribute(webElement, attribute.getName());
         return value.replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
-    }
-
-    private void injectFields(final Attribute attribute) {
-        attribute.setLocatorId(inject(attribute.getLocatorId()));
-        attribute.setContent(inject(attribute.getContent()));
-        attribute.setName(inject(attribute.getName()));
     }
 
     private void executeTitleCommand(final Title title, final CommandResult result) {

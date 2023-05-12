@@ -63,9 +63,10 @@ public class IntegrationsValidator {
     public void validateIntegrations(final Map<String, Integrations> integrationsMap) {
         List<Integrations> integrationsList = new ArrayList<>(integrationsMap.values());
         List<String> envsList = new ArrayList<>(integrationsMap.keySet());
+
         INTEGRATIONS_TO_LISTS_MAP.forEach((notNullPredicate, getIntegrationList) -> {
-            List<? extends List<? extends Integration>> integrations =
-                    getIntegrationsFromAllEnvs(integrationsList, notNullPredicate, getIntegrationList);
+            List<? extends List<? extends Integration>> integrations = getIntegrationsFromAllEnvs(
+                    integrationsList, notNullPredicate, getIntegrationList);
             if (!integrations.isEmpty() && integrations.size() != envsList.size()) {
                 String integrationName = getIntegrationName(integrations);
                 throw new DefaultFrameworkException(INTEGRATION_NOT_ENABLED_IN_ALL_ENVS, integrationName);
@@ -91,24 +92,23 @@ public class IntegrationsValidator {
         checkAliasesDifference(envsList, integrations);
         if (integrations.size() > 1) {
             String integrationName = getIntegrationName(integrations);
-            int numOfEnabledIntegrations = getNumOfEnabledIntegrations(integrations.stream().findFirst().get());
-            checkNumberOfEnabledIntegrations(envsList, numOfEnabledIntegrations, integrations, integrationName);
-            checkAliasesSimilarity(integrations, numOfEnabledIntegrations, integrationName);
+            checkNumberOfEnabledIntegrations(envsList.size(), integrationName, integrations);
+            checkAliasesSimilarity(integrationName, integrations);
             if (isApiIntegration(integrations)) {
-                checkApiAuth(envsList, (List<List<Api>>) integrations, integrationName);
+                checkApiAuth((List<List<Api>>) integrations, integrationName);
             }
         }
     }
 
     private String getIntegrationName(final List<? extends List<? extends Integration>> integrationsList) {
-        List<? extends Integration> integrations = integrationsList.stream().findFirst().get();
-        Integration integration = integrations.stream().findFirst().get();
+        List<? extends Integration> integrations = integrationsList.get(0);
+        Integration integration = integrations.get(0);
         return integration.getClass().getSimpleName();
     }
 
     private void checkAliasesDifference(final List<String> envsList,
                                         final List<? extends List<? extends Integration>> integrationList) {
-        for (int envNum = 0; envNum < integrationList.size(); envNum++) {
+        for (int envNum = 0; envNum < envsList.size(); envNum++) {
             Set<String> aliasSet = new HashSet<>();
             for (Integration integration : integrationList.get(envNum)) {
                 if (!aliasSet.add(integration.getAlias())) {
@@ -120,16 +120,17 @@ public class IntegrationsValidator {
         }
     }
 
-    private void checkNumberOfEnabledIntegrations(final List<String> envsList,
-                                                  final int firstEnvEnabledIntegrations,
-                                                  final List<? extends List<? extends Integration>> integrationsList,
-                                                  final String integrationName) {
-        for (int envNum = 0; envNum < envsList.size(); envNum++) {
-            int nextEnvEnabledIntegrations = getNumOfEnabledIntegrations(integrationsList.get(envNum));
-            if (nextEnvEnabledIntegrations != firstEnvEnabledIntegrations) {
-                throw new DefaultFrameworkException(NUM_OF_ENABLED_INTEGRATIONS_NOT_MATCH, integrationName,
-                        FileSearcher.searchFileFromEnvFolder(envsList.get(envNum),
-                                INTEGRATION_CONFIG_FILENAME).get().getPath());
+    private void checkNumberOfEnabledIntegrations(final int envListSize,
+                                                  final String integrationName,
+                                                  final List<? extends List<? extends Integration>> integrationsList) {
+        int defaultNumOfEnabledIntegrations = -1;
+        for (int envNum = 0; envNum < envListSize; envNum++) {
+            if (defaultNumOfEnabledIntegrations == -1) {
+                defaultNumOfEnabledIntegrations = getNumOfEnabledIntegrations(integrationsList.get(envNum));
+            }
+            if (defaultNumOfEnabledIntegrations != getNumOfEnabledIntegrations(integrationsList.get(envNum))) {
+                throw new DefaultFrameworkException(NUM_OF_ENABLED_INTEGRATIONS_NOT_MATCH,
+                        integrationName, INTEGRATION_CONFIG_FILENAME);
             }
         }
     }
@@ -140,11 +141,15 @@ public class IntegrationsValidator {
                 .mapToInt(e -> 1).sum();
     }
 
-    private void checkAliasesSimilarity(final List<? extends List<? extends Integration>> integrationsList,
-                                        final int numOfEnabledIntegrations,
-                                        final String integrationName) {
-        for (int integration = 0; integration < numOfEnabledIntegrations; integration++) {
-            List<String> aliases = getAliases(integrationsList, integration);
+    private void checkAliasesSimilarity(final String integrationName,
+                                        final List<? extends List<? extends Integration>> integrationsList) {
+        for (int integration = 0; integration < getNumOfEnabledIntegrations(integrationsList.get(0)); integration++) {
+            int integrationNum = integration;
+            List<String> aliases = integrationsList.stream()
+                    .map(integrationList -> integrationList.get(integrationNum))
+                    .map(Integration::getAlias)
+                    .collect(Collectors.toList());
+
             if (aliases.stream().distinct().count() > 1) {
                 throw new DefaultFrameworkException(INTEGRATION_ALIAS_NOT_MATCH,
                         integrationName, String.join(", ", aliases));
@@ -152,89 +157,69 @@ public class IntegrationsValidator {
         }
     }
 
-    private List<String> getAliases(final List<? extends List<? extends Integration>> integrations,
-                                    final int integrationNum) {
-        return integrations.stream()
-                .map(integrationList -> integrationList.get(integrationNum))
-                .map(Integration::getAlias)
-                .collect(Collectors.toList());
-    }
-
     private boolean isApiIntegration(final List<? extends List<? extends Integration>> integrationsList) {
-        List<? extends Integration> integrations = integrationsList.stream().findFirst().get();
-        Integration integration = integrations.stream().findFirst().get();
+        List<? extends Integration> integrations = integrationsList.get(0);
+        Integration integration = integrations.get(0);
         return integration instanceof Api;
     }
 
-    private void checkApiAuth(final List<String> envsList,
-                              final List<List<Api>> apiList,
+    private void checkApiAuth(final List<List<Api>> apiList,
                               final String integrationName) {
-        List<Api> apis = apiList.stream().findFirst().get();
-        for (int apiNum = 0; apiNum < apis.size(); apiNum++) {
-            List<Auth> authList = getAuthList(apiList, apiNum);
-            if (checkAuthPresence(apiList, integrationName, authList)) {
-                checkAutoLogout(envsList, authList, integrationName);
-                checkAuthStrategy(envsList, authList, integrationName);
-                checkAuthCustomClassName(envsList, authList, integrationName);
+        for (int apiNum = 0; apiNum < apiList.get(0).size(); apiNum++) {
+            int finalApiNum = apiNum;
+            List<Auth> authList = apiList.stream()
+                    .map(api -> api.get(finalApiNum).getAuth())
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            if (checkAuthPresence(apiList.size(), authList.size(), integrationName)) {
+                checkAutoLogout(authList, integrationName);
+                checkAuthStrategy(authList, integrationName);
+                checkAuthCustomClassName(authList, integrationName);
             }
         }
     }
 
-    private List<Auth> getAuthList(final List<List<Api>> apiList, final int apiNum) {
-        return apiList.stream()
-                .map(api -> api.get(apiNum))
-                .map(Api::getAuth)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
-
-    private boolean checkAuthPresence(final List<List<Api>> apiList,
-                                      final String integrationName,
-                                      final List<Auth> authList) {
-        if (authList.size() == 0) {
+    private boolean checkAuthPresence(final int apiListSize,
+                                      final int authListSize,
+                                      final String integrationName) {
+        if (authListSize == 0) {
             return false;
-        } else if (authList.size() != apiList.size()) {
+        } else if (authListSize != apiListSize) {
             throw new DefaultFrameworkException(AUTH_NUM_NOT_MATCH, integrationName);
         }
         return true;
     }
 
-    private void checkAutoLogout(final List<String> envsList,
-                                 final List<Auth> authList,
+    private void checkAutoLogout(final List<Auth> authList,
                                  final String integrationName) {
-        boolean autoLogout = authList.stream().findFirst().get().isAutoLogout();
-        for (int envNum = 0; envNum < authList.size(); envNum++) {
-            if (authList.get(envNum).isAutoLogout() != autoLogout) {
-                throw new DefaultFrameworkException(AUTH_LOGOUT_NOT_MATCH, integrationName,
-                        FileSearcher.searchFileFromEnvFolder(envsList.get(envNum),
-                                INTEGRATION_CONFIG_FILENAME).get().getPath());
+        boolean defaultAutoLogout = authList.get(0).isAutoLogout();
+        for (Auth auth : authList) {
+            if (auth.isAutoLogout() != defaultAutoLogout) {
+                throw new DefaultFrameworkException(AUTH_LOGOUT_NOT_MATCH,
+                        integrationName, INTEGRATION_CONFIG_FILENAME);
             }
         }
     }
 
-    private void checkAuthStrategy(final List<String> envsList,
-                                   final List<Auth> authList,
+    private void checkAuthStrategy(final List<Auth> authList,
                                    final String integrationName) {
-        AuthStrategies authStrategy = authList.stream().findFirst().get().getAuthStrategy();
-        for (int envNum = 0; envNum < authList.size(); envNum++) {
-            if (authList.get(envNum).getAuthStrategy() != authStrategy) {
-                throw new DefaultFrameworkException(AUTH_STRATEGY_NOT_MATCH, integrationName,
-                        FileSearcher.searchFileFromEnvFolder(envsList.get(envNum),
-                                INTEGRATION_CONFIG_FILENAME).get().getPath());
+        AuthStrategies defaultAuthStrategy = authList.get(0).getAuthStrategy();
+        for (Auth auth : authList) {
+            if (auth.getAuthStrategy() != defaultAuthStrategy) {
+                throw new DefaultFrameworkException(AUTH_STRATEGY_NOT_MATCH,
+                        integrationName, INTEGRATION_CONFIG_FILENAME);
             }
         }
     }
 
-    private void checkAuthCustomClassName(final List<String> envsList,
-                                          final List<Auth> authList,
+    private void checkAuthCustomClassName(final List<Auth> authList,
                                           final String integrationName) {
-        String authCustomClassName = authList.stream().findFirst().get().getAuthCustomClassName();
-        for (int envNum = 0; envNum < authList.size(); envNum++) {
-            if ((Objects.isNull(authList.get(envNum).getAuthCustomClassName()) && nonNull(authCustomClassName))
-                    || !Objects.equals(authList.get(envNum).getAuthCustomClassName(), authCustomClassName)) {
-                throw new DefaultFrameworkException(AUTH_CUSTOM_CLASS_NAME_NOT_MATCH, integrationName,
-                        FileSearcher.searchFileFromEnvFolder(envsList.get(envNum),
-                                INTEGRATION_CONFIG_FILENAME).get().getPath());
+        String defaultCustomClassName = authList.get(0).getAuthCustomClassName();
+        for (Auth auth : authList) {
+            if ((Objects.isNull(auth.getAuthCustomClassName()) && nonNull(defaultCustomClassName))
+                    || !Objects.equals(auth.getAuthCustomClassName(), defaultCustomClassName)) {
+                throw new DefaultFrameworkException(AUTH_CUSTOM_CLASS_NAME_NOT_MATCH,
+                        integrationName, INTEGRATION_CONFIG_FILENAME);
             }
         }
     }

@@ -93,7 +93,8 @@ public class ApiClient {
         }
     }
 
-    private void addRequestHeaders(final HttpUriRequest request, final Map<String, String> headers) {
+    private void addRequestHeaders(final HttpUriRequest request,
+                                   final Map<String, String> headers) {
         for (Map.Entry<String, String> each : headers.entrySet()) {
             request.addHeader(each.getKey(), each.getValue());
         }

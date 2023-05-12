@@ -111,7 +111,7 @@ public final class HttpUtil {
         } else if (nonNull(body.getFrom())) {
             return getFromFile(body, contentType, interpreter, dependencies);
         } else if (nonNull(body.getMultipart())) {
-            return getFromMultipart(body, dependencies);
+            return getFromMultipart(body, dependencies, contentType);
         } else if (!body.getParam().isEmpty()) {
             return getFromParameters(body, contentType, interpreter);
         }
@@ -147,11 +147,12 @@ public final class HttpUtil {
     }
 
     private HttpEntity getFromMultipart(final Body body,
-                                        final InterpreterDependencies dependencies) {
+                                        final InterpreterDependencies dependencies,
+                                        final ContentType contentType) {
         List<Object> parts = body.getMultipart().getParamOrFile();
         MultipartEntityBuilder builder = MultipartEntityBuilder.create()
-                .setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
-                .setBoundary(body.getMultipart().getBoundary());
+                .setContentType(getMultipartType(contentType))
+                .setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
         for (Object part : parts) {
             if (part instanceof PartParam) {
                 addTextBody(builder, (PartParam) part);
@@ -160,6 +161,11 @@ public final class HttpUtil {
             }
         }
         return builder.build();
+    }
+
+    private ContentType getMultipartType(final ContentType contentType) {
+        return ContentType.MULTIPART_FORM_DATA.getMimeType().equals(contentType.getMimeType())
+                ? contentType : ContentType.MULTIPART_FORM_DATA;
     }
 
     private void addTextBody(final MultipartEntityBuilder builder,

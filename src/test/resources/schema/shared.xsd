@@ -115,7 +115,6 @@
             <x:element name="param" type="tns:partParam" minOccurs="0" maxOccurs="unbounded"/>
             <x:element name="file" type="tns:partFile" minOccurs="0" maxOccurs="unbounded"/>
         </x:choice>
-        <x:attribute name="boundary" type="tns:nonEmptyString"/>
     </x:complexType>
 
     <x:complexType name="partParam">

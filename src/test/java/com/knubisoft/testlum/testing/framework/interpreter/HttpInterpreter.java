@@ -28,12 +28,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @InterpreterForClass(Http.class)
@@ -103,9 +106,18 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         ResultUtil.addHttpMetaData(alias, httpMethod.name(), headers, endpoint, result);
         ContentType contentType = HttpUtil.computeContentType(headers);
         HttpEntity body = getBody(httpInfo, contentType);
+        mergeContentTypeFromBody(headers, body);
         LogUtil.logBodyContent(body);
         String url = createFullUrl(endpoint, alias);
         return getApiResponse(httpMethod, url, headers, body);
+    }
+
+    private void mergeContentTypeFromBody(final Map<String, String> headers, final HttpEntity body) {
+        if (nonNull(body) && nonNull(body.getContentType())) {
+            String contentType = body.getContentType().getValue();
+            headers.merge(HttpHeaders.CONTENT_TYPE, contentType, (k, v) -> contentType.equalsIgnoreCase(v)
+                    ? v : contentType);
+        }
     }
 
     private ApiResponse getApiResponse(final HttpMethod httpMethod,

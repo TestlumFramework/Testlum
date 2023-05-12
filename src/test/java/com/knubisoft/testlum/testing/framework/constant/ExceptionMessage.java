@@ -171,7 +171,7 @@ public class ExceptionMessage {
             + "Appropriate connection capabilities for device with alias <%s> not defined "
             + "in the <%s> config by path: %s" + ANSI_RESET;
     public static final String SAME_DEVICE_ALIASES = ANSI_RED
-            + "More than one enabled <device> in <native> block was found with alias <%s> in the config by path: %s"
+            + "More than one enabled <device> in <%s> block was found with alias <%s> in the config by path: %s"
             + ANSI_RESET;
     public static final String SAME_BROWSER_ALIASES = ANSI_RED
             + "More than one enabled <browser> in <web> block was found with alias <%s> in the config by path: %s"
@@ -182,11 +182,30 @@ public class ExceptionMessage {
             + "check your configuration in config file";
     public static final String MOBILEBROWSER_DRIVER_NOT_INIT = "The webDriver for <mobilebrowser> has not been "
             + "initialized, check your configuration in config file";
-    public static final String WEB_NUM_NOT_MATCH_WITH_ENVS_NUM = "Number of enabled <native> blocks does not match "
-            + "with number of enabled envs";
-    public static final String NATIVE_NUM_NOT_MATCH_WITH_ENVS_NUM = "Number of enabled <native> blocks does not match "
-            + "with number of enabled envs";
-    public static final String MOBILEBROWSER_NUM_NOT_MATCH_WITH_ENVS_NUM = "Number of enabled <native> blocks does not"
-            + " match with number of enabled envs";
+    public static final String WEB_NUM_NOT_MATCH_ENVS_NUM = ANSI_RED + "Number of enabled <web> blocks does not"
+            + " match with number of enabled envs" + ANSI_RESET;
+    public static final String NATIVE_NUM_NOT_MATCH_ENVS_NUM = ANSI_RED + "Number of enabled <native> blocks does"
+            + " not match with number of enabled envs" + ANSI_RESET;
+    public static final String MOBILEBROWSER_NUM_NOT_MATCH_ENVS_NUM = ANSI_RED + "Number of enabled "
+            + "<mobilebrowser> blocks does not match with number of enabled envs" + ANSI_RESET;
+    public static final String CONNECTION_TYPE_NOT_MATCH = ANSI_RED + "Connection type in <%s> block must be the same "
+            + "in all enabled environments (%s files)" + ANSI_RESET;
+    public static final String BROWSERSTACK_LOGIN_NOT_CONFIGURED = ANSI_RED + "If you use <browserStack> connection for"
+            + " <%s> block, <browserStackLogin> block must be configured in all enabled environments (%s files)"
+            + ANSI_RESET;
+    public static final String SAME_APPIUM_SERVER_URLS = ANSI_RED + "Appium server url must be different "
+            + "for each <%s> block in all enabled environments (%s files)" + ANSI_RESET;
+    public static final String NUM_OF_ENABLED_DEVICES_NOT_MATCH = ANSI_RED + "Num of enabled "
+            + "devices in <%s> block must be the same in all enabled environments (%s files)" + ANSI_RESET;
+    public static final String ALIASES_NOT_MATCH_IN_UI_CONFIG = ANSI_RED + "Every single <device> in <%s> block must "
+            + "have the same <alias> argument in all enabled environments (%s files)\n"
+            + "Invalid aliases: %s" + ANSI_RESET;
+    public static final String PLATFORMS_NOT_MATCH = ANSI_RED + "Every single <device> in <%s> block must have the"
+            + " same <platformName> argument in all enabled environments (%s files)" + ANSI_RESET;
+    public static final String DIFFERENT_BROWSER_ALIASES = ANSI_RED + "Every single <browser> in "
+            + "<web> block must have the same <alias> argument in all enabled environments (%s files)\n"
+            + "Invalid aliases: %s" + ANSI_RESET;
+    public static final String NUM_OF_ENABLED_BROWSERS_NOT_MATCH = ANSI_RED + "Num of enabled web browsers must be the "
+            + "same in all enabled environments (%s files)" + ANSI_RESET;
 
 }

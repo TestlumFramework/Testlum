@@ -334,6 +334,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link PartParam }
+     * 
+     */
+    public PartParam createPartParam() {
+        return new PartParam();
+    }
+
+    /**
+     * Create an instance of {@link PartFile }
+     * 
+     */
+    public PartFile createPartFile() {
+        return new PartFile();
+    }
+
+    /**
      * Create an instance of {@link Header }
      * 
      */

@@ -182,7 +182,7 @@
     <x:complexType name="include">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
-                <x:attribute name="scenario" type="tns:nonEmptyString"/>
+                <x:attribute name="scenario" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

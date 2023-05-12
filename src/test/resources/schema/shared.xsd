@@ -100,31 +100,33 @@
     </x:complexType>
 
     <x:complexType name="param">
-        <x:simpleContent>
-            <x:extension base="x:string">
-                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="data" type="x:string" use="required"/>
-            </x:extension>
-        </x:simpleContent>
+        <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="data" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
     <x:complexType name="multipart">
-        <x:simpleContent>
-            <x:extension base="x:string">
-                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="path" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="fileName" type="tns:nonEmptyString"/>
-            </x:extension>
-        </x:simpleContent>
+        <x:choice maxOccurs="unbounded">
+            <x:element name="param" type="tns:partParam" minOccurs="0" maxOccurs="unbounded"/>
+            <x:element name="file" type="tns:partFile" minOccurs="0" maxOccurs="unbounded"/>
+        </x:choice>
+        <x:attribute name="boundary" type="tns:nonEmptyString"/>
+    </x:complexType>
+
+    <x:complexType name="partParam">
+        <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="contentType" type="tns:nonEmptyString"/>
+        <x:attribute name="data" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="partFile">
+        <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="contentType" type="tns:nonEmptyString"/>
+        <x:attribute name="fileName" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
     <x:complexType name="header">
-        <x:simpleContent>
-            <x:extension base="x:string">
-                <x:attribute name="name" type="tns:headerName" use="required"/>
-                <x:attribute name="data" type="x:string" use="required"/>
-            </x:extension>
-        </x:simpleContent>
+        <x:attribute name="name" type="tns:headerName" use="required"/>
+        <x:attribute name="data" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
     <x:simpleType name="headerName" final="restriction">
@@ -134,7 +136,7 @@
     </x:simpleType>
 
     <x:complexType name="file">
-        <x:attribute name="file" type="tns:jsonFileExtension" use="required"/>
+        <x:attribute name="file" type="tns:httpRequestFileExtension" use="required"/>
     </x:complexType>
 
     <x:simpleType name="codePattern" final="restriction">
@@ -151,6 +153,12 @@
     <x:simpleType name="jsonFileExtension">
         <x:restriction base="x:string">
             <x:pattern value=".+(\.json)"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="httpRequestFileExtension">
+        <x:restriction base="x:string">
+            <x:pattern value=".+(\.(json|graphql|gql))"/>
         </x:restriction>
     </x:simpleType>
 
@@ -276,8 +284,15 @@
             <x:element name="alphanumeric" type="tns:randomAlphanumeric"/>
             <x:element name="randomRegexp" type="tns:randomRegexp"/>
         </x:choice>
-        <x:attribute name="length" type="x:int" use="required"/>
+        <x:attribute name="length" type="tns:generateStringLengthPattern" use="required"/>
     </x:complexType>
+
+    <x:simpleType name="generateStringLengthPattern">
+        <x:restriction base="x:int">
+            <x:minExclusive value="1"/>
+            <x:maxExclusive value="100000001"/>
+        </x:restriction>
+    </x:simpleType>
 
     <x:complexType name="fromCookie"/>
 

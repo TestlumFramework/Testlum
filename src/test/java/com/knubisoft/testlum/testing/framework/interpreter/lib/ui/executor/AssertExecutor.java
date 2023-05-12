@@ -109,7 +109,7 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
                                    final String expected,
                                    final CommandResult result) {
         ResultUtil.setExpectedActual(expected, actual, result);
-        new CompareBuilder(dependencies.getFile(), dependencies.getPosition())
+        new CompareBuilder(dependencies.getFile(), dependencies.getPosition(), dependencies.getScenarioContext())
                 .withActual(actual)
                 .withExpected(expected)
                 .exec();

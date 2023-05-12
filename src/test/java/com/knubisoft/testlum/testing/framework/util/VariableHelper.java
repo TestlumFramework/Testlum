@@ -237,10 +237,7 @@ public class VariableHelper {
     }
 
     public interface VarPredicate<T extends AbstractCommand> extends Predicate<T> { }
-
     public interface VarMethod<T extends AbstractCommand> extends BiFunction<T, CommandResult, String> { }
-
     private interface RandomPredicate extends Predicate<FromRandomGenerate> { }
-
     private interface RandomFunction extends Function<FromRandomGenerate, String> { }
 }

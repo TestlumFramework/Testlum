@@ -182,12 +182,7 @@ public class VariableHelper {
                                  final ScenarioContext scenarioContext,
                                  final CommandResult result) {
         DocumentContext contextBody = JsonPath.parse(scenarioContext.getBody());
-        String valueResult;
-        if (Objects.nonNull(contextBody.read(path))) {
-            valueResult = contextBody.read(path).toString();
-        } else {
-            valueResult = null;
-        }
+        String valueResult = Objects.nonNull(contextBody.read(path)) ? contextBody.read(path).toString() : null;
         ResultUtil.addVariableMetaData(JSON_PATH, varName, path, valueResult, result);
         return valueResult;
     }
@@ -242,8 +237,10 @@ public class VariableHelper {
     }
 
     public interface VarPredicate<T extends AbstractCommand> extends Predicate<T> { }
+
     public interface VarMethod<T extends AbstractCommand> extends BiFunction<T, CommandResult, String> { }
 
     private interface RandomPredicate extends Predicate<FromRandomGenerate> { }
+
     private interface RandomFunction extends Function<FromRandomGenerate, String> { }
 }

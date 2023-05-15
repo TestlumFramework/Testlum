@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
@@ -51,18 +52,13 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
     }
 
     public void dropFile(final WebElement target, final File source) {
-        File file = getDropFile(source);
+        File scenarioFolder = dependencies.getFile().getParentFile();
+        File file = FileSearcher.searchFileFromDir(scenarioFolder, source.getName());
         if (!file.exists()) {
             throw new DefaultFrameworkException(FILE_NOT_FOUND, file);
         }
         JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
         WebElement input = (WebElement) javascriptExecutor.executeScript(QUERY_FOR_DRAG_AND_DROP, target);
         input.sendKeys(file.getAbsolutePath());
-    }
-
-    private File getDropFile(final File source) {
-        String fileName = source.getName();
-        File scenarioFolder = dependencies.getFile().getParentFile();
-        return new File(scenarioFolder, fileName);
     }
 }

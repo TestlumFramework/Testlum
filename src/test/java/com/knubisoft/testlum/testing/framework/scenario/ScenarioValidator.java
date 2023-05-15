@@ -68,6 +68,7 @@ import com.knubisoft.testlum.testing.model.scenario.Postgres;
 import com.knubisoft.testlum.testing.model.scenario.Rabbit;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
+import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.Redis;
 import com.knubisoft.testlum.testing.model.scenario.Response;
 import com.knubisoft.testlum.testing.model.scenario.S3;
@@ -77,6 +78,7 @@ import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
+import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.Sendgrid;
 import com.knubisoft.testlum.testing.model.scenario.SendgridInfo;
 import com.knubisoft.testlum.testing.model.scenario.SendgridWithBody;
@@ -119,7 +121,6 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SAME_APPIUM_URL;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SAME_MOBILE_DEVICES;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF;
-import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.JSON_EXTENSION;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.allNotNull;
@@ -562,9 +563,18 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateSqsCommand(final File xmlFile, final Sqs sqs) {
-        Stream.of(sqs.getReceive(), sqs.getSend())
-                .filter(StringUtils::isNotBlank).filter(o -> o.endsWith(JSON_EXTENSION))
-                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
+        sqs.getSendOrReceive().stream()
+                .map(this::getSqsFilename)
+                .filter(StringUtils::isNotBlank)
+                .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
+    }
+
+    private String getSqsFilename(final Object sqsCommand) {
+        if (sqsCommand instanceof SendSqsMessage) {
+            return ((SendSqsMessage) sqsCommand).getFile();
+        } else {
+            return ((ReceiveSqsMessage) sqsCommand).getFile();
+        }
     }
 
     private void validateS3Command(final File xmlFile, final S3 s3) {

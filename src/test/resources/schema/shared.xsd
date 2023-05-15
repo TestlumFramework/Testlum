@@ -317,4 +317,10 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:simpleType name="positiveIntegerMin1">
+        <x:restriction base="x:int">
+            <x:minInclusive value="1"/>
+        </x:restriction>
+    </x:simpleType>
+
 </x:schema>

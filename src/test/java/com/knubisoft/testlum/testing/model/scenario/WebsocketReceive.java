@@ -1,9 +1,11 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
+import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -22,8 +24,8 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/choice&gt;
  *       &lt;attribute name="comment" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}stringMin10" /&gt;
  *       &lt;attribute name="topic" type="{http://www.knubisoft.com/testlum/testing/model/scenario}endpointPattern" /&gt;
- *       &lt;attribute name="count" type="{http://www.w3.org/2001/XMLSchema}int" default="0" /&gt;
- *       &lt;attribute name="timeoutMillis" type="{http://www.w3.org/2001/XMLSchema}int" default="3000" /&gt;
+ *       &lt;attribute name="maxRecords" type="{http://www.w3.org/2001/XMLSchema}nonNegativeInteger" /&gt;
+ *       &lt;attribute name="timeoutMillis" type="{http://www.w3.org/2001/XMLSchema}long" default="0" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -44,10 +46,11 @@ public class WebsocketReceive {
     protected String comment;
     @XmlAttribute(name = "topic")
     protected String topic;
-    @XmlAttribute(name = "count")
-    protected Integer count;
+    @XmlAttribute(name = "maxRecords")
+    @XmlSchemaType(name = "nonNegativeInteger")
+    protected BigInteger maxRecords;
     @XmlAttribute(name = "timeoutMillis")
-    protected Integer timeoutMillis;
+    protected Long timeoutMillis;
 
     /**
      * Gets the value of the message property.
@@ -146,31 +149,27 @@ public class WebsocketReceive {
     }
 
     /**
-     * Gets the value of the count property.
+     * Gets the value of the maxRecords property.
      * 
      * @return
      *     possible object is
-     *     {@link Integer }
+     *     {@link BigInteger }
      *     
      */
-    public int getCount() {
-        if (count == null) {
-            return  0;
-        } else {
-            return count;
-        }
+    public BigInteger getMaxRecords() {
+        return maxRecords;
     }
 
     /**
-     * Sets the value of the count property.
+     * Sets the value of the maxRecords property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Integer }
+     *     {@link BigInteger }
      *     
      */
-    public void setCount(Integer value) {
-        this.count = value;
+    public void setMaxRecords(BigInteger value) {
+        this.maxRecords = value;
     }
 
     /**
@@ -178,12 +177,12 @@ public class WebsocketReceive {
      * 
      * @return
      *     possible object is
-     *     {@link Integer }
+     *     {@link Long }
      *     
      */
-    public int getTimeoutMillis() {
+    public long getTimeoutMillis() {
         if (timeoutMillis == null) {
-            return  3000;
+            return  0L;
         } else {
             return timeoutMillis;
         }
@@ -194,10 +193,10 @@ public class WebsocketReceive {
      * 
      * @param value
      *     allowed object is
-     *     {@link Integer }
+     *     {@link Long }
      *     
      */
-    public void setTimeoutMillis(Integer value) {
+    public void setTimeoutMillis(Long value) {
         this.timeoutMillis = value;
     }
 

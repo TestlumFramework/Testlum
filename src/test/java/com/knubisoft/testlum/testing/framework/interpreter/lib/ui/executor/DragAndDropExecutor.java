@@ -51,11 +51,18 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
     }
 
     public void dropFile(final WebElement target, final File source) {
-        if (!source.exists()) {
-            throw new DefaultFrameworkException(FILE_NOT_FOUND, source);
+        File file = getDropFile(source);
+        if (!file.exists()) {
+            throw new DefaultFrameworkException(FILE_NOT_FOUND, file);
         }
         JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
         WebElement input = (WebElement) javascriptExecutor.executeScript(QUERY_FOR_DRAG_AND_DROP, target);
-        input.sendKeys(source.getAbsolutePath());
+        input.sendKeys(file.getAbsolutePath());
+    }
+
+    private File getDropFile(final File source) {
+        String fileName = source.getName();
+        File scenarioFolder = dependencies.getFile().getParentFile();
+        return new File(scenarioFolder, fileName);
     }
 }

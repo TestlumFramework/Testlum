@@ -115,6 +115,7 @@ pipeline {
             sh "docker rmi ${SERVICE}:${TAG} || true"
             sh "docker rmi -f ${TEST_API} || true"
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            sh 'docker network prune || true'
         }
     }
     success {

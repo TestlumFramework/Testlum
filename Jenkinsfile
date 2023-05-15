@@ -73,6 +73,8 @@ pipeline {
     stage('build test site') {
         steps {
             dir("site") {
+                sh "docker network create e2e_network"
+//                 sh "docker network create registry_registry-ui-net"
 //                 sh "docker-compose -f docker/docker-compose-site.yaml up -d --force-recreate"
             }
         }
@@ -115,7 +117,6 @@ pipeline {
             sh "docker rmi ${SERVICE}:${TAG} || true"
             sh "docker rmi -f ${TEST_API} || true"
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
-            sh 'docker network prune -f || true'
         }
     }
     success {

@@ -42,7 +42,7 @@ public class GlobalVariations {
             variationList = VARIATIONS.get(fileName);
         }
         if (nonNull(includedVariations)) {
-            variationList.addAll(addIncludedVariations(includedVariations));
+            variationList.addAll(getIncludedVariations(includedVariations));
         }
         if (isNull(variationList)) {
             throw new DefaultFrameworkException(VARIATIONS_NOT_FOUND, fileName);
@@ -50,7 +50,7 @@ public class GlobalVariations {
         return variationList;
     }
 
-    private List<Map<String, String>> addIncludedVariations(final List<String> includedVariations) {
+    private List<Map<String, String>> getIncludedVariations(final List<String> includedVariations) {
         List<Map<String, String>> variationsList = new ArrayList<>();
         if (Objects.nonNull(includedVariations)) {
             includedVariations.forEach(variationFilename -> variationsList.addAll(VARIATIONS.get(variationFilename)));

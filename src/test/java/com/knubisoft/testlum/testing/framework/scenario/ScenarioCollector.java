@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -31,6 +32,7 @@ public class ScenarioCollector {
 
     private final File rootTestResources;
     private final ScenarioValidator scenarioValidator;
+    private final List<String> includedVariations = new ArrayList<>();
 
     public ScenarioCollector() {
         TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
@@ -70,9 +72,9 @@ public class ScenarioCollector {
     private void applyXml(final File xmlFile, final Result result) {
         try {
             Scenario scenario = convertXmlToScenario(xmlFile);
-            result.add(new MappingResult(xmlFile, scenario, null));
+            result.add(new MappingResult(xmlFile, scenario, includedVariations, null));
         } catch (Exception e) {
-            result.add(new MappingResult(xmlFile, null, e));
+            result.add(new MappingResult(xmlFile, null, null, e));
         }
     }
 
@@ -136,6 +138,9 @@ public class ScenarioCollector {
     private void addIncludeCommands(final List<AbstractCommand> updatedCommands, final AbstractCommand command) {
         Include include = (Include) command;
         Scenario includedScenario = findIncludedScenarioAndParse(include);
+        if (Objects.nonNull(includedScenario.getVariations())) {
+            includedVariations.add(includedScenario.getVariations());
+        }
         updateScenario(includedScenario);
         updatedCommands.addAll(includedScenario.getCommands());
     }
@@ -181,6 +186,7 @@ public class ScenarioCollector {
     public static class MappingResult {
         public final File file;
         public final Scenario scenario;
+        public final List<String> includedVariations;
         public final Exception exception;
     }
 }

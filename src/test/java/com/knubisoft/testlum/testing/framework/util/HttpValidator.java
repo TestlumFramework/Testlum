@@ -64,8 +64,7 @@ public final class HttpValidator {
                 TreeComparator.compare(newExpected, newActual);
             } catch (ComparisonException e) {
                 result.add(format(ExceptionMessage.HTTP_BODY_EXPECTED_BUT_WAS,
-                        StringPrettifier.cut(newExpected),
-                        StringPrettifier.cut(newActual)));
+                        StringPrettifier.cut(newExpected), StringPrettifier.cut(newActual)));
                 interpreter.save(actualBody);
             }
         }

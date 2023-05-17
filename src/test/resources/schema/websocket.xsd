@@ -57,8 +57,8 @@
         </x:choice>
         <x:attribute name="comment" type="tns:stringMin10" use="required"/>
         <x:attribute name="topic" type="tns:endpointPattern"/>
-        <x:attribute name="count" type="x:int" default="0"/>
-        <x:attribute name="timeoutMillis" type="x:int" default="3000"/>
+        <x:attribute name="maxRecords" type="x:nonNegativeInteger"/>
+        <x:attribute name="timeoutMillis" type="x:long" default="0"/>
     </x:complexType>
 
 </x:schema>

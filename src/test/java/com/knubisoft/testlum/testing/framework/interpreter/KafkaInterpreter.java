@@ -155,13 +155,13 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
         Iterable<ConsumerRecord<String, String>> iterable = consumerRecords.records(receive.getTopic());
         Iterator<ConsumerRecord<String, String>> iterator = iterable.iterator();
-        boolean withHeaders = receive.isHeaders();
+        final boolean withHeaders = receive.isHeaders();
         return convertConsumerRecordsToKafkaMessages(iterator, withHeaders);
     }
 
     private List<KafkaMessage> convertConsumerRecordsToKafkaMessages(
             final Iterator<ConsumerRecord<String, String>> iterator,
-            final Boolean withHeaders) {
+            final boolean withHeaders) {
         List<KafkaMessage> kafkaMessages = new ArrayList<>();
         while (iterator.hasNext()) {
             ConsumerRecord<String, String> consumerRecord = iterator.next();
@@ -226,7 +226,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         private final String correlationId;
         private final Map<String, String> headers;
 
-        KafkaMessage(final ConsumerRecord<String, String> consumerRecord, final Boolean withHeaders) {
+        KafkaMessage(final ConsumerRecord<String, String> consumerRecord, final boolean withHeaders) {
             this.key = consumerRecord.key();
             this.value = consumerRecord.value();
             if (withHeaders) {

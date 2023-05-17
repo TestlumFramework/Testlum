@@ -187,4 +187,6 @@ public final class LogMessage {
     public static final String NATIVE_APPIUM_INFO = NATIVE_INFO + " | udid = %s";
     public static final String EXTRACT_THEN_COMPARE = "Extract from web element then compare";
     public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a screenshot then compare";
+    public static final String EXPECTED_FILE_NOT_PROVIDED = "Expected file not provided";
+    public static final String HEADERS_NOT_PROVIDED = "Headers not provided";
 }

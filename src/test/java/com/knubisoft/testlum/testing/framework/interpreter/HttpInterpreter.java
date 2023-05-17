@@ -34,6 +34,7 @@ import org.springframework.http.HttpMethod;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
@@ -74,12 +75,16 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                               final String actualBody,
                               final HttpValidator httpValidator,
                               final CommandResult result) {
-        String body = StringUtils.isBlank(expected.getFile())
-                ? DelimiterConstant.EMPTY
-                : FileSearcher.searchFileToString(expected.getFile(), dependencies.getFile());
-        result.setActual(PrettifyStringJson.getJSONResult(actualBody));
-        result.setExpected(PrettifyStringJson.getJSONResult(body));
-        httpValidator.validateBody(body, actualBody);
+        if (Objects.nonNull(expected.getFile())) {
+            String body = StringUtils.isBlank(expected.getFile())
+                    ? DelimiterConstant.EMPTY
+                    : FileSearcher.searchFileToString(expected.getFile(), dependencies.getFile());
+            result.setActual(PrettifyStringJson.getJSONResult(actualBody));
+            result.setExpected(PrettifyStringJson.getJSONResult(body));
+            httpValidator.validateBody(body, actualBody);
+        } else {
+            LogUtil.logNoExpectedFileProvided();
+        }
     }
 
     private void validateHeaders(final Response expected,
@@ -87,6 +92,8 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                                  final HttpValidator httpValidator) {
         if (!expected.getHeader().isEmpty()) {
             httpValidator.validateHeaders(getExpectedHeaders(expected), actual.getHeaders());
+        } else {
+            LogUtil.logNoHeadersProvided();
         }
     }
 

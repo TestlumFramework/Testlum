@@ -118,9 +118,6 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         String value = getValue(receive);
         LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getTopic(), value);
         createTopicIfNotExists(receive.getTopic(), aliasEnv);
-        if (!receive.isHeaders()) {
-            receiveKafkaMessages(receive, aliasEnv).forEach(x -> x.headers.clear());
-        }
         List<KafkaMessage> actualMessages = receiveKafkaMessages(receive, aliasEnv);
         compareMessages(actualMessages, value, result);
     }
@@ -158,15 +155,17 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
         Iterable<ConsumerRecord<String, String>> iterable = consumerRecords.records(receive.getTopic());
         Iterator<ConsumerRecord<String, String>> iterator = iterable.iterator();
-        return convertConsumerRecordsToKafkaMessages(iterator);
+        boolean withHeaders = receive.isHeaders();
+        return convertConsumerRecordsToKafkaMessages(iterator, withHeaders);
     }
 
     private List<KafkaMessage> convertConsumerRecordsToKafkaMessages(
-            final Iterator<ConsumerRecord<String, String>> iterator) {
+            final Iterator<ConsumerRecord<String, String>> iterator,
+            final Boolean withHeaders) {
         List<KafkaMessage> kafkaMessages = new ArrayList<>();
         while (iterator.hasNext()) {
             ConsumerRecord<String, String> consumerRecord = iterator.next();
-            KafkaMessage kafkaMessage = new KafkaMessage(consumerRecord);
+            KafkaMessage kafkaMessage = new KafkaMessage(consumerRecord, withHeaders);
             kafkaMessages.add(kafkaMessage);
         }
         return kafkaMessages;
@@ -225,16 +224,25 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         private final String key;
         private final String value;
         private final String correlationId;
-        private Map<String, String> headers;
+        private final Map<String, String> headers;
 
-        KafkaMessage(final ConsumerRecord<String, String> consumerRecord) {
+        KafkaMessage(final ConsumerRecord<String, String> consumerRecord, final Boolean withHeaders) {
             this.key = consumerRecord.key();
             this.value = consumerRecord.value();
+            if (withHeaders) {
+                this.headers = getHeaders(consumerRecord);
+                this.correlationId = headers.get(CORRELATION_ID);
+                this.headers.remove(CORRELATION_ID);
+            } else {
+                this.headers = null;
+                this.correlationId = null;
+            }
+        }
+
+        private static Map<String, String> getHeaders(final ConsumerRecord<String, String> consumerRecord) {
             Header[] headerArray = consumerRecord.headers().toArray();
-            this.headers = Arrays.stream(headerArray).collect(
-                    Collectors.toMap(Header::key, h -> new String(h.value(), StandardCharsets.UTF_8)));
-            this.correlationId = headers.get(CORRELATION_ID);
-            this.headers.remove(CORRELATION_ID);
+            return Arrays.stream(headerArray)
+                    .collect(Collectors.toMap(Header::key, h -> new String(h.value(), StandardCharsets.UTF_8)));
         }
     }
 }

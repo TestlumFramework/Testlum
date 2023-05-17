@@ -46,6 +46,7 @@ import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.Body;
 import com.knubisoft.testlum.testing.model.scenario.Clickhouse;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithOptionalLocator;
+import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.Dynamo;
 import com.knubisoft.testlum.testing.model.scenario.Elasticsearch;
 import com.knubisoft.testlum.testing.model.scenario.FromFile;
@@ -300,6 +301,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateLambdaCommand(xmlFile, lambda);
         });
 
+        validatorMap.put(o -> o instanceof Lambda, (xmlFile, command) -> {
+            LambdaIntegration lambdaIntegration = integrations.getLambdaIntegration();
+            checkIntegrationExistence(lambdaIntegration, LambdaIntegration.class);
+            Lambda lambda = (Lambda) command;
+            validateAlias(lambdaIntegration.getLambda(), lambda.getAlias());
+            validateLambdaCommand(xmlFile, lambda);
+        });
+
         validatorMap.put(o -> o instanceof Shell, (xmlFile, command) -> {
             Shell shell = (Shell) command;
             validateShellCommand(xmlFile, shell);
@@ -396,6 +405,11 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateFileExistenceInDataFolder(final String commandFile) {
         if (isNotBlank(commandFile)) {
             FileSearcher.searchFileFromDataFolder(commandFile);
+        }
+    }
+    private void validateFileExistenceInScenarioFolder(final File xmlFile, final String commandFile) {
+        if (isNotBlank(commandFile)) {
+            FileSearcher.searchFileFromScenarioFolder(xmlFile, commandFile);
         }
     }
 
@@ -603,10 +617,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);
     }
 
+    //CHECKSTYLE:OFF
     private void validateSubCommands(final List<AbstractUiCommand> subCommands, final File xmlFile) {
         subCommands.forEach(o -> {
             if (o instanceof Javascript) {
                 validateFileExistenceInDataFolder(((Javascript) o).getFile());
+            } else if (o instanceof DragAndDrop) {
+                validateFileExistenceInScenarioFolder(xmlFile, ((DragAndDrop) o).getFilePath());
             } else if (o instanceof Scroll && ScrollType.INNER == ((Scroll) o).getType()) {
                 validateLocator((Scroll) o, NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
             } else if (o instanceof WebVar) {
@@ -615,6 +632,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             }
         });
     }
+    //CHECKSTYLE:ON
 
     private void validateNativeCommands(final Native command) {
         if (MobileUtil.filterDefaultEnabledNativeDevices().isEmpty()
@@ -644,7 +662,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             shellFiles.forEach(this::validateFileExistenceInDataFolder);
         }
     }
-
+    
     private void validateIncludeAction(final Include include, final File xmlFile) {
         if (isNotBlank(include.getScenario())) {
             File includedScenarioFolder = new File(TestResourceSettings.getInstance().getScenariosFolder(),

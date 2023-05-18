@@ -31,10 +31,11 @@ public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
 
     @Override
     protected void acceptImpl(final Clickhouse clickhouse, final CommandResult result) {
+        String expected = getContentIfFile(clickhouse.getFile());
         String actual = getActual(clickhouse, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpectedFile(clickhouse.getFile());
+                .withExpected(expected);
 
         result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
         result.setActual(PrettifyStringJson.getJSONResult(actual));

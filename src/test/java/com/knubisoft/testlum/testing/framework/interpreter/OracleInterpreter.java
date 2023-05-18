@@ -36,10 +36,11 @@ public class OracleInterpreter extends AbstractInterpreter<Oracle> {
 
     @Override
     protected void acceptImpl(final Oracle oracle, final CommandResult result) {
+        String expected = getContentIfFile(oracle.getFile());
         String actual = getActual(oracle, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpectedFile(oracle.getFile());
+                .withExpected(expected);
 
         result.setActual(PrettifyStringJson.getJSONResult(actual));
         result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));

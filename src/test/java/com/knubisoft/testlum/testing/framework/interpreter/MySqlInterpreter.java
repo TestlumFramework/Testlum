@@ -31,10 +31,11 @@ public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
 
     @Override
     protected void acceptImpl(final Mysql mySql, final CommandResult result) {
+        String expected = getContentIfFile(mySql.getFile());
         String actual = getActual(mySql, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpectedFile(mySql.getFile());
+                .withExpected(expected);
 
         result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
         result.setActual(PrettifyStringJson.getJSONResult(actual));

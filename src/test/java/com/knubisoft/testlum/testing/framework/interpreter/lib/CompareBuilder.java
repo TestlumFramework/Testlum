@@ -3,7 +3,6 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.exception.ComparisonException;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
@@ -30,14 +29,11 @@ public class CompareBuilder {
     private final AtomicInteger position;
     private String expected;
     private Supplier<String> supplierActual;
-    private final ScenarioContext scenarioContext;
 
     public CompareBuilder(final File scenarioFile,
-                          final AtomicInteger position,
-                          final ScenarioContext scenarioContext) {
+                          final AtomicInteger position) {
         this.scenarioFile = scenarioFile;
         this.position = position;
-        this.scenarioContext = scenarioContext;
     }
 
     public CompareBuilder withActual(final Object actual) {
@@ -51,12 +47,8 @@ public class CompareBuilder {
     }
 
     public CompareBuilder withExpected(final String expected) {
-        this.expected = inject(String.valueOf(expected));
+        this.expected = expected;
         return this;
-    }
-
-    private String inject(final String original) {
-        return scenarioContext.inject(original);
     }
 
     public CompareBuilder withExpectedFile(final String fileName) {

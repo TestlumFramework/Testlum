@@ -31,10 +31,11 @@ public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
 
     @Override
     protected void acceptImpl(final Dynamo ddb, final CommandResult result) {
+        String expected = getContentIfFile(ddb.getFile());
         String actual = getActual(ddb, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpectedFile(ddb.getFile());
+                .withExpected(expected);
         result.setActual(actual);
         result.setExpected(comparator.getExpected());
         comparator.exec();

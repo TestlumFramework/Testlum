@@ -31,10 +31,11 @@ public class MongoDBInterpreter extends AbstractInterpreter<Mongo> {
 
     @Override
     protected void acceptImpl(final Mongo mongo, final CommandResult result) {
+        String expected = getContentIfFile(mongo.getFile());
         String actual = getActual(mongo, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpectedFile(mongo.getFile());
+                .withExpected(expected);
 
         result.setActual(PrettifyStringJson.getJSONResult(actual));
         result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));

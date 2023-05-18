@@ -3,7 +3,6 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.constant.MigrationConstant;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.framework.exception.FileLinkingException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
@@ -81,21 +80,16 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     }
 
     protected String getContentIfFile(final String fileOrContent) {
-        try {
-            if (fileOrContent.endsWith(MigrationConstant.JSON_EXTENSION)) {
-                return FileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
-            }
-        } catch (FileLinkingException e) {
-            // pass
+        if (fileOrContent.endsWith(MigrationConstant.JSON_EXTENSION)) {
+            final String expectedContent = FileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
+            return inject(expectedContent);
         }
         return fileOrContent;
-
     }
 
     protected CompareBuilder newCompare() {
         return new CompareBuilder(
                 dependencies.getFile(),
-                dependencies.getPosition(),
-                dependencies.getScenarioContext());
+                dependencies.getPosition());
     }
 }

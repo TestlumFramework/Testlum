@@ -31,10 +31,11 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
 
     @Override
     protected void acceptImpl(final Redis redis, final CommandResult result) {
+        String expected = getContentIfFile(redis.getFile());
         String actual = getActual(redis, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpectedFile(redis.getFile());
+                .withExpected(expected);
 
         result.setActual(PrettifyStringJson.getJSONResult(actual));
         result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));

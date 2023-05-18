@@ -301,14 +301,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateLambdaCommand(xmlFile, lambda);
         });
 
-        validatorMap.put(o -> o instanceof Lambda, (xmlFile, command) -> {
-            LambdaIntegration lambdaIntegration = integrations.getLambdaIntegration();
-            checkIntegrationExistence(lambdaIntegration, LambdaIntegration.class);
-            Lambda lambda = (Lambda) command;
-            validateAlias(lambdaIntegration.getLambda(), lambda.getAlias());
-            validateLambdaCommand(xmlFile, lambda);
-        });
-
         validatorMap.put(o -> o instanceof Shell, (xmlFile, command) -> {
             Shell shell = (Shell) command;
             validateShellCommand(xmlFile, shell);
@@ -662,7 +654,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             shellFiles.forEach(this::validateFileExistenceInDataFolder);
         }
     }
-    
+
     private void validateIncludeAction(final Include include, final File xmlFile) {
         if (isNotBlank(include.getScenario())) {
             File includedScenarioFolder = new File(TestResourceSettings.getInstance().getScenariosFolder(),

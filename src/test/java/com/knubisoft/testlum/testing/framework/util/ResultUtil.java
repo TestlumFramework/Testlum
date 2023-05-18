@@ -40,6 +40,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -57,7 +58,6 @@ public class ResultUtil {
     public static final String AUTHENTICATION_TYPE = "Authentication type";
     public static final String CREDENTIALS_FILE = "Credentials file";
     public static final String QUEUE = "Queue";
-    public static final String TIME = "Time";
     public static final String MESSAGE_TO_SEND = "Message to send";
     public static final String CONTENT_TO_SEND = "Content to send";
     public static final String EXPECTED_CODE = "Expected code";
@@ -156,6 +156,8 @@ public class ResultUtil {
     private static final String TYPE = "Type";
     private static final String NAME = "Name";
     private static final String VALUE = "Value";
+    private static final String TIME = "Time";
+    private static final String TIME_UNITE = "Time unit";
     private static final String HEADER_TEMPLATE = "%s: %s";
     private static final String MOVE_TO_EMPTY_SPACE = "Move to empty space after execution";
     private static final String HOVER_NUMBER_TEMPLATE = "Hover #%d";
@@ -378,8 +380,8 @@ public class ResultUtil {
                                                  final String alias,
                                                  final CommandResult result) {
         addWebsocketGeneralInfo(RECEIVE, receiveAction.getComment(), alias, TOPIC, receiveAction.getTopic(), result);
-        result.put(NUMBER_OF_MESSAGES, nonNull(receiveAction.getMaxRecords())
-                ? receiveAction.getMaxRecords().intValue() : ALL_AVAILABLE_MESSAGES);
+        result.put(NUMBER_OF_MESSAGES, nonNull(receiveAction.getLimit())
+                ? receiveAction.getLimit().intValue() : ALL_AVAILABLE_MESSAGES);
         result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
     }
 
@@ -462,6 +464,13 @@ public class ResultUtil {
         result.put(NAME, key);
         result.put(EXPRESSION, expression);
         result.put(VALUE, value);
+    }
+
+    public void addWaitMetaData(final String time,
+                                final TimeUnit unit,
+                                final CommandResult result) {
+        result.put(TIME, time);
+        result.put(TIME_UNITE, unit.name());
     }
 
     public void addDropDownForOneValueMetaData(final String type,

@@ -95,7 +95,6 @@
         <image-comparison.version>4.4.0</image-comparison.version>
         <appium-client.version>8.1.1</appium-client.version>
         <com.github.curious-odd-man.rgxgen.version>1.4</com.github.curious-odd-man.rgxgen.version>
-        <org.awaitility.version>4.2.0</org.awaitility.version>
         <skipGenerateModels>true</skipGenerateModels>
     </properties>
 
@@ -910,19 +909,6 @@
             <groupId>com.github.curious-odd-man</groupId>
             <artifactId>rgxgen</artifactId>
             <version>${com.github.curious-odd-man.rgxgen.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
-            <version>${org.awaitility.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.hamcrest</groupId>
-                    <artifactId>hamcrest</artifactId>
-                </exclusion>
-            </exclusions>
-            <scope>test</scope>
         </dependency>
 
     </dependencies>

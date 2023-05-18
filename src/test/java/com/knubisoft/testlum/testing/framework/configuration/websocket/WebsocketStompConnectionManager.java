@@ -48,11 +48,11 @@ public class WebsocketStompConnectionManager implements WebsocketConnectionManag
 
     @Override
     public void subscribeTo(final String topic) {
-        WebsocketStompMessageHandler messageHandler = new WebsocketStompMessageHandler();
-        topicToMessageHandler.put(topic, messageHandler);
         //todo save Subscription if 'unsubscribe' command is needed
         if (nonNull(stompSession)) {
+            WebsocketStompMessageHandler messageHandler = new WebsocketStompMessageHandler();
             stompSession.subscribe(topic, messageHandler);
+            topicToMessageHandler.put(topic, messageHandler);
         }
     }
 

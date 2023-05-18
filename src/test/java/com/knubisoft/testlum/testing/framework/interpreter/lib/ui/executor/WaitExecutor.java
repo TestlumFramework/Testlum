@@ -4,13 +4,14 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.WaitUtil;
 import com.knubisoft.testlum.testing.model.scenario.Wait;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.TimeUnit;
+
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WAIT_INFO_LOG;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.TIME;
 
 @ExecutorForClass(Wait.class)
 @Slf4j
@@ -20,12 +21,12 @@ public class WaitExecutor extends AbstractUiExecutor<Wait> {
         super(dependencies);
     }
 
-    @SneakyThrows
     @Override
     public void execute(final Wait wait, final CommandResult result) {
         String time = inject(wait.getTime());
-        result.put(TIME, time);
         log.info(WAIT_INFO_LOG, time, wait.getUnit());
-        WaitUtil.getTimeUnit(wait.getUnit(), result).sleep(Long.parseLong(time));
+        TimeUnit timeUnit = WaitUtil.getTimeUnit(wait.getUnit());
+        ResultUtil.addWaitMetaData(time, timeUnit, result);
+        WaitUtil.sleep(Long.parseLong(time), timeUnit);
     }
 }

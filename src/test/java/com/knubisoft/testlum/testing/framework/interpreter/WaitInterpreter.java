@@ -4,13 +4,14 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpret
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.WaitUtil;
 import com.knubisoft.testlum.testing.model.scenario.Wait;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.TimeUnit;
+
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WAIT_INFO_LOG;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.TIME;
 
 @Slf4j
 @InterpreterForClass(Wait.class)
@@ -21,11 +22,11 @@ public class WaitInterpreter extends AbstractInterpreter<Wait> {
     }
 
     @Override
-    @SneakyThrows
     protected void acceptImpl(final Wait wait, final CommandResult result) {
         String time = inject(wait.getTime());
         log.info(WAIT_INFO_LOG, time, wait.getUnit());
-        result.put(TIME, time);
-        WaitUtil.getTimeUnit(wait.getUnit(), result).sleep(Long.parseLong(time));
+        TimeUnit timeUnit = WaitUtil.getTimeUnit(wait.getUnit());
+        ResultUtil.addWaitMetaData(time, timeUnit, result);
+        WaitUtil.sleep(Long.parseLong(time), timeUnit);
     }
 }

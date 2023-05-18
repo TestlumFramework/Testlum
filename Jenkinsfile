@@ -73,6 +73,8 @@ pipeline {
     stage('build test site') {
         steps {
             dir("site") {
+//                 sh "docker network create e2e_network"
+//                 sh "docker network create registry_registry-ui-net"
 //                 sh "docker-compose -f docker/docker-compose-site.yaml up -d --force-recreate"
             }
         }

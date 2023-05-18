@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/choice&gt;
  *       &lt;attribute name="comment" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}stringMin10" /&gt;
  *       &lt;attribute name="topic" type="{http://www.knubisoft.com/testlum/testing/model/scenario}endpointPattern" /&gt;
- *       &lt;attribute name="maxRecords" type="{http://www.w3.org/2001/XMLSchema}nonNegativeInteger" /&gt;
+ *       &lt;attribute name="limit" type="{http://www.w3.org/2001/XMLSchema}positiveInteger" /&gt;
  *       &lt;attribute name="timeoutMillis" type="{http://www.w3.org/2001/XMLSchema}long" default="0" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -46,9 +46,9 @@ public class WebsocketReceive {
     protected String comment;
     @XmlAttribute(name = "topic")
     protected String topic;
-    @XmlAttribute(name = "maxRecords")
-    @XmlSchemaType(name = "nonNegativeInteger")
-    protected BigInteger maxRecords;
+    @XmlAttribute(name = "limit")
+    @XmlSchemaType(name = "positiveInteger")
+    protected BigInteger limit;
     @XmlAttribute(name = "timeoutMillis")
     protected Long timeoutMillis;
 
@@ -149,27 +149,27 @@ public class WebsocketReceive {
     }
 
     /**
-     * Gets the value of the maxRecords property.
+     * Gets the value of the limit property.
      * 
      * @return
      *     possible object is
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getMaxRecords() {
-        return maxRecords;
+    public BigInteger getLimit() {
+        return limit;
     }
 
     /**
-     * Sets the value of the maxRecords property.
+     * Sets the value of the limit property.
      * 
      * @param value
      *     allowed object is
      *     {@link BigInteger }
      *     
      */
-    public void setMaxRecords(BigInteger value) {
-        this.maxRecords = value;
+    public void setLimit(BigInteger value) {
+        this.limit = value;
     }
 
     /**

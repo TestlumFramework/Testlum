@@ -19,13 +19,13 @@ public class EnvsValidator {
         validateEnvsFileSetFor(configFileName, configs);
     }
 
-    private static List<Optional<File>> collectEnvsConfigsFilesFor(final String configFileName) {
+    private List<Optional<File>> collectEnvsConfigsFilesFor(final String configFileName) {
         return getEnabledEnvironments().stream()
                 .map(env -> FileSearcher.searchFileFromEnvFolder(env.getFolder(), configFileName))
                 .collect(Collectors.toList());
     }
 
-    private static <T> void validateEnvsFileSetFor(final String configFileName, final List<Optional<T>> list) {
+    private void validateEnvsFileSetFor(final String configFileName, final List<Optional<File>> list) {
         long nullCount = list.stream()
                 .filter(element -> !element.isPresent())
                 .count();

@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GlobalTestConfigurationProvider {
+    static final List<Environment> ENVIRONMENTS = filterEnabledEnvironments();
     private static final GlobalTestConfiguration GLOBAL_TEST_CONFIGURATION = init();
-    private static final List<Environment> ENVIRONMENTS = filterEnabledEnvironments();
     private static final EnvsValidator ENVS_VALIDATOR = new EnvsValidator();
     private static final IntegrationsValidator INTEGRATIONS_VALIDATOR = new IntegrationsValidator();
     private static final UiConfigValidator UI_CONFIG_VALIDATOR = new UiConfigValidator();

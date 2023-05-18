@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider.getEnabledEnvironments;
+import static com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider.ENVIRONMENTS;
 
 @Slf4j
 public class EnvsValidator {
@@ -20,7 +20,7 @@ public class EnvsValidator {
     }
 
     private List<Optional<File>> collectEnvsConfigsFilesFor(final String configFileName) {
-        return getEnabledEnvironments().stream()
+        return ENVIRONMENTS.stream()
                 .map(env -> FileSearcher.searchFileFromEnvFolder(env.getFolder(), configFileName))
                 .collect(Collectors.toList());
     }

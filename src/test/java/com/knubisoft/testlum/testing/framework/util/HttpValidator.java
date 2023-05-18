@@ -1,8 +1,5 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.ComparisonException;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;

@@ -202,6 +202,7 @@
                     <x:element name="hovers" type="tns:hovers"/>
                     <x:element name="closeTab" type="tns:closeTab"/>
                     <x:element name="switchToFrame" type="tns:switchToFrame"/>
+                    <x:element name="dragAndDrop" type="tns:dragAndDrop"/>
                     <x:element name="hotKey" type="tns:hotKey"/>
                 </x:choice>
             </x:extension>

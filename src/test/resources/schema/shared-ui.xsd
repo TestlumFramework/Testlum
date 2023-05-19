@@ -151,7 +151,7 @@
                 <x:sequence>
                     <x:element name="content" type="tns:nonEmptyString"/>
                 </x:sequence>
-                <x:attribute name="name" type="tns:stringWithoutSpacesPattern" use="required"/>
+                <x:attribute name="name" type="tns:webAttributeNamePattern" use="required"/>
                 <x:attribute name="locatorId" type="tns:injectableScenarioLocator" use="required"/>
             </x:extension>
         </x:complexContent>

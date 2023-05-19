@@ -86,13 +86,15 @@ public class GlobalTestConfigurationProvider {
     }
 
     private static Map<String, Integrations> collectIntegrations() {
-        return getEnabledEnvironments().stream()
+        Map<String, Integrations> integrationsMap = getEnabledEnvironments().stream()
                 .collect(Collectors.toMap(Environment::getFolder, GlobalTestConfigurationProvider::initIntegration));
+        INTEGRATIONS_VALIDATOR.validateIntegrations(integrationsMap);
+        return integrationsMap;
     }
 
     private static Integrations initIntegration(final Environment env) {
         return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
-                .map(configFile -> XMLParsers.forIntegrations().process(configFile, INTEGRATIONS_VALIDATOR))
+                .map(configFile -> XMLParsers.forIntegrations().process(configFile))
                 .orElseGet(() -> {
                     log.warn(LogMessage.DISABLED_CONFIGURATION, Integrations.class.getSimpleName());
                     return new Integrations();

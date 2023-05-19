@@ -17,7 +17,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <start-class>com.knubisoft.testlum.starter.TESTLUMStarter</start-class>
 
-        <selenium-java.version>4.3.0</selenium-java.version>
+        <selenium-java.version>4.1.4</selenium-java.version>
         <appium-client.version>8.1.1</appium-client.version>
         <webdrivermanager.version>5.2.0</webdrivermanager.version>
         <org.spring.boot.version>2.4.3</org.spring.boot.version>
@@ -894,6 +894,14 @@
             <artifactId>java-client</artifactId>
             <version>${appium-client.version}</version>
             <exclusions>
+                <exclusion>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>selenium-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>selenium-remote-driver</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>

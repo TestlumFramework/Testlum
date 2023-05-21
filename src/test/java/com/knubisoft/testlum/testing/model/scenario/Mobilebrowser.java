@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="hovers" type="{http://www.knubisoft.com/testlum/testing/model/scenario}hovers"/&gt;
  *         &lt;element name="closeTab" type="{http://www.knubisoft.com/testlum/testing/model/scenario}closeTab"/&gt;
  *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/testlum/testing/model/scenario}switchToFrame"/&gt;
+ *         &lt;element name="dragAndDrop" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dragAndDrop"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webVar"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="clearCookiesAfterExecution" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
@@ -69,6 +70,7 @@ public class Mobilebrowser
         @XmlElement(name = "hovers", type = Hovers.class),
         @XmlElement(name = "closeTab", type = CloseTab.class),
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
+        @XmlElement(name = "dragAndDrop", type = DragAndDrop.class),
         @XmlElement(name = "var", type = WebVar.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
@@ -109,6 +111,7 @@ public class Mobilebrowser
      * {@link Hovers }
      * {@link CloseTab }
      * {@link SwitchToFrame }
+     * {@link DragAndDrop }
      * {@link WebVar }
      * 
      * 

@@ -21,7 +21,6 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -149,11 +148,11 @@ public final class HttpUtil {
     private HttpEntity getFromMultipart(final Body body,
                                         final InterpreterDependencies dependencies,
                                         final ContentType contentType) {
-        List<Object> parts = body.getMultipart().getParamOrFile();
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create()
-                .setContentType(getMultipartType(contentType))
-                .setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-        for (Object part : parts) {
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        if (ContentType.MULTIPART_FORM_DATA.getMimeType().equalsIgnoreCase(contentType.getMimeType())) {
+            builder.setContentType(contentType);
+        }
+        for (Object part : body.getMultipart().getParamOrFile()) {
             if (part instanceof PartParam) {
                 addTextBody(builder, (PartParam) part);
             } else if (part instanceof PartFile) {
@@ -163,15 +162,10 @@ public final class HttpUtil {
         return builder.build();
     }
 
-    private ContentType getMultipartType(final ContentType contentType) {
-        return ContentType.MULTIPART_FORM_DATA.getMimeType().equals(contentType.getMimeType())
-                ? contentType : ContentType.MULTIPART_FORM_DATA;
-    }
-
     private void addTextBody(final MultipartEntityBuilder builder,
                              final PartParam param) {
         builder.addTextBody(param.getName(), param.getData(), nonNull(param.getContentType())
-                ? ContentType.create(param.getContentType()) : ContentType.APPLICATION_JSON);
+                ? ContentType.parse(param.getContentType()) : ContentType.DEFAULT_TEXT);
     }
 
     private void addFileBody(final MultipartEntityBuilder builder,
@@ -179,7 +173,7 @@ public final class HttpUtil {
                              final InterpreterDependencies dependencies) {
         File from = FileSearcher.searchFileFromDir(dependencies.getFile(), file.getFileName());
         builder.addBinaryBody(file.getName(), from, nonNull(file.getContentType())
-                ? ContentType.create(file.getContentType()) : ContentType.DEFAULT_BINARY, file.getFileName());
+                ? ContentType.parse(file.getContentType()) : ContentType.DEFAULT_BINARY, file.getFileName());
     }
 
     private HttpEntity getFromParameters(final Body body,

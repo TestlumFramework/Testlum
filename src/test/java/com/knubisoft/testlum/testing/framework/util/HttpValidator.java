@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.ComparisonException;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -64,7 +63,8 @@ public final class HttpValidator {
                 TreeComparator.compare(newExpected, newActual);
             } catch (ComparisonException e) {
                 result.add(format(ExceptionMessage.HTTP_BODY_EXPECTED_BUT_WAS,
-                        StringPrettifier.cut(expectedBody), StringPrettifier.cut(actualBody)));
+                        StringPrettifier.cut(PrettifyStringJson.getJSONResult(expectedBody)),
+                        StringPrettifier.cut(PrettifyStringJson.getJSONResult(actualBody))));
                 interpreter.save(actualBody);
             }
         }

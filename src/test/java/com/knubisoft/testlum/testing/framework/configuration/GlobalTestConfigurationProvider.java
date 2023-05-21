@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.validator.GlobalTestConfigValidator;
 import com.knubisoft.testlum.testing.framework.validator.UiConfigValidator;
 import com.knubisoft.testlum.testing.framework.validator.IntegrationsValidator;
+import com.knubisoft.testlum.testing.framework.validator.UiValidator;
 import com.knubisoft.testlum.testing.model.global_config.Environment;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -26,11 +27,13 @@ import java.util.stream.Collectors;
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GlobalTestConfigurationProvider {
+
     private static final GlobalTestConfiguration GLOBAL_TEST_CONFIGURATION = init();
+
     private static final List<Environment> ENVIRONMENTS = filterEnabledEnvironments();
-    private static final EnvsValidator ENVS_VALIDATOR = new EnvsValidator();
     private static final IntegrationsValidator INTEGRATIONS_VALIDATOR = new IntegrationsValidator();
     private static final UiConfigValidator UI_CONFIG_VALIDATOR = new UiConfigValidator();
+    private static final UiValidator UI_VALIDATOR = new UiValidator();
     private static final Map<String, Integrations> INTEGRATIONS = collectIntegrations();
     private static final Map<String, UiConfig> UI_CONFIGS = collectUiConfigs();
     private static final Integrations DEFAULT_INTEGRATIONS = defaultIntegrations();
@@ -83,14 +86,15 @@ public class GlobalTestConfigurationProvider {
     }
 
     private static Map<String, Integrations> collectIntegrations() {
-        ENVS_VALIDATOR.validate(TestResourceSettings.INTEGRATION_CONFIG_FILENAME, getEnabledEnvironments());
-        return getEnabledEnvironments().stream()
+        Map<String, Integrations> integrationsMap = getEnabledEnvironments().stream()
                 .collect(Collectors.toMap(Environment::getFolder, GlobalTestConfigurationProvider::initIntegration));
+        INTEGRATIONS_VALIDATOR.validateIntegrations(integrationsMap);
+        return integrationsMap;
     }
 
     private static Integrations initIntegration(final Environment env) {
         return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
-                .map(configFile -> XMLParsers.forIntegrations().process(configFile, INTEGRATIONS_VALIDATOR))
+                .map(configFile -> XMLParsers.forIntegrations().process(configFile))
                 .orElseGet(() -> {
                     log.warn(LogMessage.DISABLED_CONFIGURATION, Integrations.class.getSimpleName());
                     return new Integrations();
@@ -98,9 +102,10 @@ public class GlobalTestConfigurationProvider {
     }
 
     private static Map<String, UiConfig> collectUiConfigs() {
-        ENVS_VALIDATOR.validate(TestResourceSettings.UI_CONFIG_FILENAME, getEnabledEnvironments());
-        return getEnabledEnvironments().stream()
+        Map<String, UiConfig> uiConfigMap = getEnabledEnvironments().stream()
                 .collect(Collectors.toMap(Environment::getFolder, GlobalTestConfigurationProvider::initUiConfig));
+        UI_VALIDATOR.validateUiConfig(uiConfigMap);
+        return uiConfigMap;
     }
 
     private static UiConfig initUiConfig(final Environment env) {

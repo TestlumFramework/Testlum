@@ -14,10 +14,12 @@ public class OracleExecutor extends AbstractSqlExecutor {
 
     private static final String SELECT_ORACLE_TABLE_NAMES_AND_CONSTRAINTS_FOR_DISABLE =
             "SELECT x1.table_name, x1.constraint_name FROM user_tables t1, user_constraints x1 "
-                    + "WHERE t1.table_name = x1.table_name ORDER BY x1.r_constraint_name NULLS LAST";
+                    + "WHERE t1.table_name = x1.table_name AND x1.constraint_type <> 'C' "
+                    + "ORDER BY x1.r_constraint_name NULLS LAST";
     private static final String SELECT_ORACLE_TABLE_NAMES_AND_CONSTRAINTS_FOR_ENABLE =
             "SELECT x1.table_name, x1.constraint_name FROM user_tables t1, user_constraints x1 "
-                    + "WHERE t1.table_name = x1.table_name ORDER BY x1.r_constraint_name NULLS FIRST";
+                    + "WHERE t1.table_name = x1.table_name AND x1.constraint_type <> 'C' "
+                    + "ORDER BY x1.r_constraint_name NULLS FIRST";
     private static final String SELECT_ORACLE_TABLE_NAMES = "SELECT table_name FROM user_tables";
     private static final String DISABLE_CONSTRAINT = "ALTER TABLE %s DISABLE CONSTRAINT %s";
     private static final String TRUNCATE_TABLE = "TRUNCATE TABLE %1$s";

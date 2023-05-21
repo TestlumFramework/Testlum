@@ -32,7 +32,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.opera.OperaOptions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariOptions;
@@ -225,8 +224,8 @@ public class WebDriverFactory {
             return getWebDriver(browser, getOperaOptions(browser), new OperaDriverManager());
         }
 
-        private OperaOptions getOperaOptions(final Opera browser) {
-            OperaOptions operaOptions = new OperaOptions();
+        private ChromeOptions getOperaOptions(final Opera browser) {
+            ChromeOptions operaOptions = new ChromeOptions();
             BrowserOptionsArguments browserOptionsArguments = browser.getOperaOptionsArguments();
             if (nonNull(browserOptionsArguments)) {
                 operaOptions.addArguments(browserOptionsArguments.getArgument());

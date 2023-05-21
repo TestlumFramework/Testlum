@@ -225,4 +225,7 @@ public class ExceptionMessage {
     public static final String AUTH_CUSTOM_CLASS_NAME_NOT_MATCH = ANSI_RED + "Every single <%s> integration must have "
             + "the same setup for <authCustomClassName> argument inside <auth> command in all enabled environments "
             + "(%s files)\n" + ANSI_RESET;
+    public static final String ENVS_CONFIGS_FOLDER_FILES_STRUCTURE_INCOMPATIBLE = "Files structure is incompatible"
+            + " for \"%s\" in config folders. Check structure of configuration files in each environment,"
+            + " folder must be equal";
 }

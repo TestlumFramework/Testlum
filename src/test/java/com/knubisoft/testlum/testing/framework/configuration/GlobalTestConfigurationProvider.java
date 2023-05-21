@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class GlobalTestConfigurationProvider {
 
     private static final GlobalTestConfiguration GLOBAL_TEST_CONFIGURATION = init();
-
+    private static final EnvsValidator ENVS_VALIDATOR = new EnvsValidator();
     private static final List<Environment> ENVIRONMENTS = filterEnabledEnvironments();
     private static final IntegrationsValidator INTEGRATIONS_VALIDATOR = new IntegrationsValidator();
     private static final UiConfigValidator UI_CONFIG_VALIDATOR = new UiConfigValidator();
@@ -86,6 +86,7 @@ public class GlobalTestConfigurationProvider {
     }
 
     private static Map<String, Integrations> collectIntegrations() {
+        ENVS_VALIDATOR.validate(TestResourceSettings.INTEGRATION_CONFIG_FILENAME, getEnabledEnvironments());
         Map<String, Integrations> integrationsMap = getEnabledEnvironments().stream()
                 .collect(Collectors.toMap(Environment::getFolder, GlobalTestConfigurationProvider::initIntegration));
         INTEGRATIONS_VALIDATOR.validateIntegrations(integrationsMap);
@@ -102,6 +103,7 @@ public class GlobalTestConfigurationProvider {
     }
 
     private static Map<String, UiConfig> collectUiConfigs() {
+        ENVS_VALIDATOR.validate(TestResourceSettings.UI_CONFIG_FILENAME, getEnabledEnvironments());
         Map<String, UiConfig> uiConfigMap = getEnabledEnvironments().stream()
                 .collect(Collectors.toMap(Environment::getFolder, GlobalTestConfigurationProvider::initUiConfig));
         UI_VALIDATOR.validateUiConfig(uiConfigMap);

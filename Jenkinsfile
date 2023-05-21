@@ -85,7 +85,7 @@ pipeline {
                 sh "docker-compose -f docker/docker-compose-jenkins.yaml up -d --force-recreate"
 //                 && docker-compose -f docker-compose-selenium-grid.yaml up -d --force-recreate"
                 sh 'sleep 10'
-                sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -p 8080:8080 -d ${TEST_API} --name ${TEST_API} -e SPRING_PROFILES_ACTIVE=jenkins'
+                sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -e TZ=Europe/Kyiv -p 8080:8080 -d ${TEST_API} --name ${TEST_API} -e SPRING_PROFILES_ACTIVE=jenkins'
 //                 sh 'java -jar TEST-API/target/mega-test-api.jar --spring.profiles.active=jenkins --spring.config.location="TEST-API/src/main/resources/" &'
             }
         }
@@ -100,7 +100,7 @@ pipeline {
     stage('run testlum') {
         steps {
             dir("tool") {
-                sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -v "$(pwd)"/testlum-test-resources:/testlum/testlum-test-resources ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/testlum/testlum-test-resources/REGRESSION_TESTS_resources'
+                sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -e TZ=Europe/Kyiv -v "$(pwd)"/testlum-test-resources:/testlum/testlum-test-resources ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/testlum/testlum-test-resources/REGRESSION_TESTS_resources'
                 sh "cat testlum-test-resources/REGRESSION_TESTS_resources/scenarios_execution_result.txt | awk '/successfully/{ exit 0 }/failed/{ exit 1 }'"
                 // sh "java -jar ./target/e2e-testing-tool.jar -c=config-jenkins.xml -p=./testlum-test-resources/JENKINS_resources"
             }

@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
 import java.io.File;
+import java.time.ZoneOffset;
 import java.util.TimeZone;
 
 @UtilityClass
@@ -57,7 +58,7 @@ public final class JacksonMapperUtil {
         return JsonMapper.builder()
                 .findAndAddModules()
                 .addModule(new JavaTimeModule())
-                .defaultTimeZone(TimeZone.getDefault())
+                .defaultTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC))
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .build();
     }

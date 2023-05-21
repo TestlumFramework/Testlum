@@ -18,10 +18,9 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
         }
     }
 
-    public abstract void execute(T o, CommandResult result);
+    protected abstract void execute(T o, CommandResult result);
 
     protected String inject(final String original) {
         return dependencies.getScenarioContext().inject(original);
     }
-
 }

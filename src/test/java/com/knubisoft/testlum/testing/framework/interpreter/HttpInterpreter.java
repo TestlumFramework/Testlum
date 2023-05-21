@@ -122,8 +122,8 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     private void mergeContentTypeFromBody(final Map<String, String> headers, final HttpEntity body) {
         if (nonNull(body) && nonNull(body.getContentType())) {
             String contentType = body.getContentType().getValue();
-            headers.merge(HttpHeaders.CONTENT_TYPE, contentType, (k, v) -> contentType.equalsIgnoreCase(v)
-                    ? v : contentType);
+            headers.merge(HttpHeaders.CONTENT_TYPE, contentType,
+                    (k, v) -> contentType.equalsIgnoreCase(v) ? v : contentType);
         }
     }
 

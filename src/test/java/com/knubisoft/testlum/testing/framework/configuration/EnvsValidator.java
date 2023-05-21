@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Slf4j
 public class EnvsValidator {
     public void validate(final String configFileName, final List<Environment> enabledEnvironments) {
         List<Optional<File>> configs = collectEnvsConfigsFilesFor(configFileName, enabledEnvironments);

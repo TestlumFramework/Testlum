@@ -31,7 +31,7 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
 
     @Override
     protected void acceptImpl(final Redis redis, final CommandResult result) {
-        String expected = getContentIfFile(redis.getFile());
+        String expected = inject(getContentIfFile(redis.getFile()));
         String actual = getActual(redis, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)

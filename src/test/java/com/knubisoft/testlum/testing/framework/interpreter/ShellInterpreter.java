@@ -87,7 +87,7 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
 
     private void processExpectedAndActual(final int expectedCode, final Shell shell, final CommandResult result) {
         String actual = String.format(EXPECTED_RESULT, expectedCode);
-        String expectedContent = getContentIfFile(shell.getFile());
+        String expectedContent = inject(getContentIfFile(shell.getFile()));
         result.setActual(PrettifyStringJson.getJSONResult(actual));
         result.setExpected(PrettifyStringJson.getJSONResult(expectedContent));
 

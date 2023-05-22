@@ -32,7 +32,7 @@ public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
 
     @Override
     protected void acceptImpl(final Postgres postgres, final CommandResult result) {
-        String expected = getContentIfFile(postgres.getFile());
+        String expected = inject(getContentIfFile(postgres.getFile()));
         String actualPostgres = getActual(postgres, result);
         CompareBuilder compare = newCompare()
                 .withActual(actualPostgres)

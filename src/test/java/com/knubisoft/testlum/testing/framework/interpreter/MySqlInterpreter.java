@@ -31,7 +31,7 @@ public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
 
     @Override
     protected void acceptImpl(final Mysql mySql, final CommandResult result) {
-        String expected = getContentIfFile(mySql.getFile());
+        String expected = inject(getContentIfFile(mySql.getFile()));
         String actual = getActual(mySql, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)

@@ -36,7 +36,7 @@ public class OracleInterpreter extends AbstractInterpreter<Oracle> {
 
     @Override
     protected void acceptImpl(final Oracle oracle, final CommandResult result) {
-        String expected = getContentIfFile(oracle.getFile());
+        String expected = inject(getContentIfFile(oracle.getFile()));
         String actual = getActual(oracle, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)

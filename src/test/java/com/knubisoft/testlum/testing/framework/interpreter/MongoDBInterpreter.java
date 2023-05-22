@@ -31,7 +31,7 @@ public class MongoDBInterpreter extends AbstractInterpreter<Mongo> {
 
     @Override
     protected void acceptImpl(final Mongo mongo, final CommandResult result) {
-        String expected = getContentIfFile(mongo.getFile());
+        String expected = inject(getContentIfFile(mongo.getFile()));
         String actual = getActual(mongo, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)

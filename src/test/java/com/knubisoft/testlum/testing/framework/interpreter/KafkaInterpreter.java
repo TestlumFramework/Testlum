@@ -39,7 +39,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
@@ -220,7 +219,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     }
 
     private void createTopicIfNotExists(final String topic, final AliasEnv aliasEnv) {
-        if (Objects.isNull(checkIfTopicExists(topic, aliasEnv))) {
+        if (isNull(checkIfTopicExists(topic, aliasEnv))) {
             NewTopic newTopic = new NewTopic(topic, NUM_PARTITIONS, (short) 1);
             kafkaAdmin.get(aliasEnv).createOrModifyTopics(newTopic);
         }

@@ -71,7 +71,7 @@ public final class LogMessage {
 
     public static final String EXCEPTION_LOG = ANSI_RED
             + "----------------    EXCEPTION    -----------------"
-            + NEW_LOG_LINE + " {}" + NEW_LOG_LINE
+            + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
             + "--------------------------------------------------" + ANSI_RESET;
 
     public static final String INITIAL_STRUCTURE_GENERATION_SUCCESS = ANSI_GREEN + "Initial structure by path "

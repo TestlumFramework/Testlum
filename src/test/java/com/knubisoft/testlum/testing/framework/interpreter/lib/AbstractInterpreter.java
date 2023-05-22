@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_FILE_NAME_PROVIDED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SLOW_COMMAND_PROCESSING;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMENT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.POSITION_COMMAND_LOG;
@@ -81,7 +82,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
 
     protected String getContentIfFile(final String fileOrContent) {
         if (Objects.isNull(fileOrContent)) {
-            throw new NullPointerException();
+            throw new DefaultFrameworkException(NO_FILE_NAME_PROVIDED);
         }
         if (fileOrContent.endsWith(MigrationConstant.JSON_EXTENSION)) {
             return FileSearcher.searchFileToString(fileOrContent, dependencies.getFile());

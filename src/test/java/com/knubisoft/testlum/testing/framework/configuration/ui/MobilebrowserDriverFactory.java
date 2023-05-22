@@ -9,7 +9,6 @@ import com.knubisoft.testlum.testing.model.global_config.Mobilebrowser;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.testlum.testing.model.global_config.Platform;
 import com.knubisoft.testlum.testing.model.global_config.UiConfig;
-import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.remote.MobileCapabilityType;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -33,28 +32,16 @@ public class MobilebrowserDriverFactory {
         return getMobilebrowserWebDriver(desiredCapabilities);
     }
 
+    @SneakyThrows
     private WebDriver getMobilebrowserWebDriver(final DesiredCapabilities desiredCapabilities) {
         UiConfig uiConfig = GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.currentEnv());
         String serverUrl = SeleniumDriverUtil.getMobilebrowserConnectionUrl(uiConfig);
         Mobilebrowser settings = uiConfig.getMobilebrowser();
-        WebDriver driver = newWebDriver(settings, serverUrl, desiredCapabilities);
         int secondsToWait = settings.getElementAutowait().getSeconds();
+        WebDriver driver = new RemoteWebDriver(new URL(serverUrl), desiredCapabilities);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));
         driver.get(settings.getBaseUrl());
         return driver;
-    }
-
-    @SneakyThrows
-    private WebDriver newWebDriver(final Mobilebrowser settings,
-                                   final String serverUrl,
-                                   final DesiredCapabilities desiredCapabilities) {
-        URL url = new URL(serverUrl);
-        if (nonNull(settings.getConnection().getAppiumServer())) {
-            return new AppiumDriver(url, desiredCapabilities);
-        } else if (nonNull(settings.getConnection().getBrowserStack())) {
-            return new RemoteWebDriver(url, desiredCapabilities);
-        }
-        throw new DefaultFrameworkException("Unknown connection type in %s", settings.getClass().getSimpleName());
     }
 
     private void setCommonCapabilities(final MobilebrowserDevice mobileDevice,

@@ -53,8 +53,7 @@ public class WebsocketStompConnectionManager implements WebsocketConnectionManag
         boolean isSubscribed = topicToMessageHandler.containsKey(topic);
         if (isSubscribed) {
             log.info(WEBSOCKET_ALREADY_SUBSCRIBED, topic);
-        }
-        else if (nonNull(stompSession)) {
+        } else if (nonNull(stompSession)) {
             WebsocketStompMessageHandler messageHandler = new WebsocketStompMessageHandler();
             stompSession.subscribe(topic, messageHandler);
             topicToMessageHandler.put(topic, messageHandler);

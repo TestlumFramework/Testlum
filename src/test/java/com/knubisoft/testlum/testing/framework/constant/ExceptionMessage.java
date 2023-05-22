@@ -3,6 +3,7 @@ package com.knubisoft.testlum.testing.framework.constant;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import static com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings.INTEGRATION_CONFIG_FILENAME;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ANSI_RED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ANSI_RESET;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ANSI_YELLOW;
@@ -10,8 +11,8 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ANSI_Y
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExceptionMessage {
     public static final String HTTP_CODE_EXPECTED_BUT_WAS = " Http code should be [%s] but was [%s]";
-    public static final String HTTP_HEADERS_EXPECTED_BUT_WAS = " Http headers should be [%s]%nbut was [%s]";
-    public static final String HTTP_BODY_EXPECTED_BUT_WAS = " Http body should be [%s]%nbut was [%s]";
+    public static final String HTTP_HEADERS_EXPECTED_BUT_WAS = " Http headers should be [%s] but was [%s]";
+    public static final String HTTP_BODY_EXPECTED_BUT_WAS = " Http body should be [%s] but was [%s]";
     public static final String UNKNOWN_HTTP_METHOD = "Unknown http method: %s";
     public static final String UNKNOWN_BODY_CONTENT = "Unknown body content provided";
     public static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";
@@ -205,24 +206,22 @@ public class ExceptionMessage {
     public static final String NUM_OF_ENABLED_BROWSERS_NOT_MATCH = ANSI_RED + "Num of enabled web browsers must be the "
             + "same in all enabled environments (%s files)" + ANSI_RESET;
 
-    public static final String INTEGRATION_NOT_ENABLED_IN_ALL_ENVS = "<%s> integrations must be configured in all "
-            + "enabled envs or not configured at all";
-    public static final String SAME_INTEGRATION_ALIAS = ANSI_RED
-            + "More than one enabled <%s> integration was found with alias <%s> in the config: %s"
-            + ANSI_RESET;
-    public static final String NUM_OF_ENABLED_INTEGRATIONS_NOT_MATCH = ANSI_RED + "Every single <%s> integration must "
-            + "be either present and enabled or absent/disabled in all enabled environments (%s files)\n" + ANSI_RESET;
-    public static final String INTEGRATION_ALIAS_NOT_MATCH = ANSI_RED + "Every single <%s> integration must have the"
-            + " same <alias> argument in all enabled environments (%s files)\n" + ANSI_RESET;
-    public static final String AUTH_NUM_NOT_MATCH = ANSI_RED + "Every single <%s> integration must have the same"
-            + " setup for <auth> command in all enabled environments (%s files)" + ANSI_RESET;
-    public static final String AUTH_LOGOUT_NOT_MATCH = ANSI_RED + "Every single <%s> integration must have the"
-            + " same setup for <autoLogout> argument inside <auth> command in all enabled environments (%s files)\n"
-            + ANSI_RESET;
-    public static final String AUTH_STRATEGY_NOT_MATCH = ANSI_RED + "Every single <%s> integration must have the same "
-            + "setup for <authStrategy> argument inside <auth> command in all enabled environments (%s files)\n"
-            + ANSI_RESET;
-    public static final String AUTH_CUSTOM_CLASS_NAME_NOT_MATCH = ANSI_RED + "Every single <%s> integration must have "
-            + "the same setup for <authCustomClassName> argument inside <auth> command in all enabled environments "
-            + "(%s files)\n" + ANSI_RESET;
+    public static final String INTEGRATIONS_MISMATCH_ENVS = ANSI_RED + "<%s> integrations must be configured "
+            + "in all enabled environments or not configured at all" + ANSI_RESET;
+    public static final String SAME_INTEGRATION_ALIAS = ANSI_RED + "More than one enabled <%s> integration was found "
+            + "with alias <%s> in the config: %s" + ANSI_RESET;
+    public static final String INTEGRATION_ALIAS_NOT_MATCH = ANSI_RED + "<%s> integration with alias <%s> was "
+            + "not found in all enabled environments (" + INTEGRATION_CONFIG_FILENAME + " files)" + ANSI_RESET;
+    public static final String AUTH_NOT_PRESENT_IN_ALL_ENVS = ANSI_RED + "<api> integration with alias <%s> have "
+            + "configuration for <auth> command, but not in all enabled environments (" + INTEGRATION_CONFIG_FILENAME
+            + " files)" + ANSI_RESET;
+    public static final String AUTH_LOGOUT_NOT_MATCH = ANSI_RED + "<api> integration with alias <%s> must have the "
+            + "same setup for <autoLogout> argument inside <auth> command in all enabled environments ("
+            + INTEGRATION_CONFIG_FILENAME + " files)" + ANSI_RESET;
+    public static final String AUTH_STRATEGY_NOT_MATCH = ANSI_RED + "<api> integration with alias <%s> must have the "
+            + "same setup for <authStrategy> argument inside <auth> command in all enabled environments ("
+            + INTEGRATION_CONFIG_FILENAME + " files)" + ANSI_RESET;
+    public static final String AUTH_CUSTOM_CLASS_NAME_NOT_MATCH = ANSI_RED + "<api> integration with alias <%s> must "
+            + "have the same setup for <authCustomClassName> argument inside <auth> command in all enabled environments"
+            + " (" + INTEGRATION_CONFIG_FILENAME + " files)" + ANSI_RESET;
 }

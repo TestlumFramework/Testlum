@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_LOG;
@@ -204,7 +203,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     }
 
     private void createQueueIfNotExists(final String queue, final AliasEnv aliasEnv) {
-        if (Objects.isNull(checkIfQueueExists(queue, aliasEnv))) {
+        if (isNull(checkIfQueueExists(queue, aliasEnv))) {
             amqpAdmin.get(aliasEnv).declareQueue();
         }
     }

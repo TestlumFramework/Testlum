@@ -14,6 +14,7 @@ import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
+import com.knubisoft.testlum.testing.model.scenario.QueryParameters;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
@@ -82,6 +83,8 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILE
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NAME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NEW_LOG_LINE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REDIS_ARGUMENTS;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REDIS_COMMAND;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_BY_LOG;
@@ -256,6 +259,14 @@ public class LogUtil {
         log.info(ALIAS_LOG, alias);
         queries.forEach(query -> log.info(
                 format(TABLE_FORMAT, "Query", query.replaceAll(REGEX_MANY_SPACES, SPACE))));
+    }
+
+    public void logAllRedisQueries(final List<QueryParameters> redisQueries, final String alias) {
+        log.info(ALIAS_LOG, alias);
+        redisQueries.forEach(query -> {
+            log.info(format(TABLE_FORMAT, REDIS_COMMAND, query.getCommand()));
+            log.info(format(TABLE_FORMAT, REDIS_ARGUMENTS, query.getArg()));
+        });
     }
 
     public void logSqlException(final Exception ex, final String query) {

@@ -10,6 +10,7 @@ import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Hovers;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
+import com.knubisoft.testlum.testing.model.scenario.QueryParameters;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.RmqHeaders;
@@ -123,6 +124,8 @@ public class ResultUtil {
     private static final String TEXT = "Text";
     private static final String SOURCE = "Source";
     private static final String QUERIES = "Queries";
+    private static final String REDIS_COMMAND = "Command";
+    private static final String REDIS_ARGUMENTS = "Arguments";
     private static final String ENABLE = "Enable";
     private static final String DISABLE = "Disable";
     private static final String ENDPOINT = "Endpoint";
@@ -219,6 +222,16 @@ public class ResultUtil {
                                     final CommandResult result) {
         result.put(DATABASE_ALIAS, databaseAlias);
         result.put(QUERIES, queries);
+    }
+
+    public void addRedisMetaData(final String databaseAlias,
+                                 final List<QueryParameters> redisQueries,
+                                 final CommandResult result) {
+        result.put(DATABASE_ALIAS, databaseAlias);
+        redisQueries.forEach(query -> {
+            result.put(REDIS_COMMAND, query.getCommand());
+            result.put(REDIS_ARGUMENTS, query.getArg());
+        });
     }
 
     public void addMigrateMetaData(final String databaseName,

@@ -8,9 +8,11 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.model.scenario.QueryParameters;
 import com.knubisoft.testlum.testing.model.scenario.Redis;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,17 +47,17 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
 
     protected String getActual(final Redis redis, final CommandResult result) {
         String alias = redis.getAlias();
-        final List<String> queries = getRedisQueryList(redis);
-        LogUtil.logAllQueries(queries, redis.getAlias());
-        ResultUtil.addDatabaseMetaData(alias, queries, result);
-        final StorageOperation.StorageOperationResult apply = redisOperation.apply(new ListSource(queries),
-                alias);
+        final List<QueryParameters> redisQueries = redis.getQuery();
+        LogUtil.logAllRedisQueries(redisQueries, redis.getAlias());
+        ResultUtil.addRedisMetaData(alias, redisQueries, result);
+        final List<String> queries = convertToListString(redisQueries);
+        final StorageOperation.StorageOperationResult apply = redisOperation.apply(new ListSource(queries), alias);
         return toString(apply.getRaw());
     }
 
-    private List<String> getRedisQueryList(final Redis query) {
-        return query.getQuery().stream()
-                .map(this::inject)
+    private List<String> convertToListString(final List<QueryParameters> redisQueries) {
+        return redisQueries.stream()
+                .map(JacksonMapperUtil::writeValueAsString)
                 .collect(Collectors.toList());
     }
 }

@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="query" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="query" type="{http://www.knubisoft.com/testlum/testing/model/scenario}queryParameters" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}aliasPattern" /&gt;
  *       &lt;attribute name="file" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}expectedPattern" /&gt;
@@ -40,7 +40,7 @@ public class Redis
 {
 
     @XmlElement(required = true)
-    protected List<String> query;
+    protected List<QueryParameters> query;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
     @XmlAttribute(name = "file", required = true)
@@ -64,13 +64,13 @@ public class Redis
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link String }
+     * {@link QueryParameters }
      * 
      * 
      */
-    public List<String> getQuery() {
+    public List<QueryParameters> getQuery() {
         if (query == null) {
-            query = new ArrayList<String>();
+            query = new ArrayList<QueryParameters>();
         }
         return this.query;
     }

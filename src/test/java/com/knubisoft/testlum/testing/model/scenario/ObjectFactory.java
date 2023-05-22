@@ -822,6 +822,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link QueryParameters }
+     * 
+     */
+    public QueryParameters createQueryParameters() {
+        return new QueryParameters();
+    }
+
+    /**
      * Create an instance of {@link SendKafkaMessage }
      * 
      */

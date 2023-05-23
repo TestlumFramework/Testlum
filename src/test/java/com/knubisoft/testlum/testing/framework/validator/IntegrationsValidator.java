@@ -8,13 +8,13 @@ import com.knubisoft.testlum.testing.model.global_config.Integration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -93,12 +93,7 @@ public class IntegrationsValidator {
         checkAliasesDifference(envsList, integrations);
         if (envsList.size() > 1) {
             checkAliasesSimilarity(integrations);
-            if (integrations.get(0).get(0) instanceof Api) {
-                List<Map<String, Auth>> authMaps = getAuthMaps((List<List<Api>>) integrations);
-                Map<String, Auth> defaultAuthMap = authMaps.stream().min(Comparator.comparingInt(Map::size)).get();
-                authMaps.stream().flatMap(authMap -> authMap.entrySet().stream())
-                        .forEach(entry -> checkApiAuth(entry.getValue(), entry.getKey(), defaultAuthMap));
-            }
+            checkApiAuth(integrations);
         }
     }
 
@@ -136,35 +131,40 @@ public class IntegrationsValidator {
                         .collect(Collectors.toList())).get();
     }
 
-    private List<Map<String, Auth>> getAuthMaps(final List<List<Api>> apiList) {
-        return new ArrayList<>(Collections.singletonList(apiList.stream()
-                .flatMap(Collection::stream)
-                .filter(api -> nonNull(api.getAuth()))
-                .collect(Collectors.toMap(Integration::getAlias, Api::getAuth))));
+    private void checkApiAuth(List<? extends List<? extends Integration>> integrations) {
+        if (integrations.get(0).get(0) instanceof Api) {
+            List<Map<String, Auth>> authMaps = getAuthMaps((List<List<Api>>) integrations);
+            if (authMaps.size() > 1) {
+                Map<String, Auth> defaultAuthMap = authMaps.stream().min(Comparator.comparingInt(Map::size)).get();
+                authMaps.stream()
+                        .flatMap(authMap -> authMap.entrySet().stream())
+                        .forEach(entry -> checkAuth(entry.getValue(), entry.getKey(), defaultAuthMap));
+            }
+        }
     }
 
-    private void checkApiAuth(final Auth auth,
-                              final String alias,
-                              final Map<String, Auth> defaultApiAliasAndAuthMap) {
-        if (!defaultApiAliasAndAuthMap.containsKey(alias)) {
+    private List<Map<String, Auth>> getAuthMaps(final List<List<Api>> apiList) {
+        return apiList.stream()
+                .map(apis -> apis.stream()
+                        .filter(api -> nonNull(api.getAuth()))
+                        .collect(Collectors.toMap(Api::getAlias, Api::getAuth)))
+                .collect(Collectors.toList());
+    }
+
+    private void checkAuth(final Auth auth,
+                           final String alias,
+                           final Map<String, Auth> defaultAuthMap) {
+        if (!defaultAuthMap.containsKey(alias)) {
             throw new DefaultFrameworkException(AUTH_NOT_PRESENT_IN_ALL_ENVS, alias);
         }
-        if (!defaultApiAliasAndAuthMap.get(alias).isAutoLogout() == auth.isAutoLogout()) {
+        if (!defaultAuthMap.get(alias).isAutoLogout() == auth.isAutoLogout()) {
             throw new DefaultFrameworkException(AUTH_LOGOUT_NOT_MATCH, alias);
         }
-        if (!defaultApiAliasAndAuthMap.get(alias).getAuthStrategy().equals(auth.getAuthStrategy())) {
+        if (!Objects.equals(defaultAuthMap.get(alias).getAuthStrategy(), auth.getAuthStrategy())) {
             throw new DefaultFrameworkException(AUTH_STRATEGY_NOT_MATCH, alias);
         }
-        checkAuthCustomClassName(auth, alias, defaultApiAliasAndAuthMap);
-    }
-
-    private void checkAuthCustomClassName(final Auth auth,
-                                          final String alias,
-                                          final Map<String, Auth> defaultAuthMap) {
-        if (nonNull(defaultAuthMap.get(alias).getAuthCustomClassName()) && nonNull(auth.getAuthCustomClassName())) {
-            if (!defaultAuthMap.get(alias).getAuthCustomClassName().equals(auth.getAuthCustomClassName())) {
-                throw new DefaultFrameworkException(AUTH_CUSTOM_CLASS_NAME_NOT_MATCH, alias);
-            }
+        if (!Objects.equals(defaultAuthMap.get(alias).getAuthCustomClassName(), auth.getAuthCustomClassName())) {
+            throw new DefaultFrameworkException(AUTH_CUSTOM_CLASS_NAME_NOT_MATCH, alias);
         }
     }
 

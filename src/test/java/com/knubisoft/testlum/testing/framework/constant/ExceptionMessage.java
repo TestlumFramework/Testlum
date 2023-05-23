@@ -11,8 +11,8 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ANSI_Y
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExceptionMessage {
     public static final String HTTP_CODE_EXPECTED_BUT_WAS = " Http code should be [%s] but was [%s]";
-    public static final String HTTP_HEADERS_EXPECTED_BUT_WAS = " Http headers should be [%s] but was [%s]";
-    public static final String HTTP_BODY_EXPECTED_BUT_WAS = " Http body should be [%s] but was [%s]";
+    public static final String HTTP_HEADERS_EXPECTED_BUT_WAS = " Http headers should be [%s]%nbut was [%s]";
+    public static final String HTTP_BODY_EXPECTED_BUT_WAS = " Http body should be [%s]%nbut was [%s]";
     public static final String UNKNOWN_HTTP_METHOD = "Unknown http method: %s";
     public static final String UNKNOWN_BODY_CONTENT = "Unknown body content provided";
     public static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";

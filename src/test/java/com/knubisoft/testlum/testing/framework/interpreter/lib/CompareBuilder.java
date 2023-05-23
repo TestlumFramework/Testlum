@@ -10,6 +10,7 @@ import com.knubisoft.testlum.testing.framework.util.TreeComparator;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,12 +48,12 @@ public class CompareBuilder {
     }
 
     public CompareBuilder withExpected(final String expected) {
-        this.expected = expected;
+        this.expected = String.valueOf(expected);
         return this;
     }
 
     public CompareBuilder withExpectedFile(final String fileName) {
-        if (nonNull(fileName)) {
+        if (StringUtils.isNotBlank(fileName)) {
             File file = FileSearcher.searchFileFromDir(scenarioFile, fileName);
             return tryToUseExpectedFile(file);
         }
@@ -68,6 +69,7 @@ public class CompareBuilder {
     }
 
     public void exec() {
+        //must be nonNull
         if (nonNull(expected)) {
             String actual = supplierActual.get();
             tryToCompare(actual);

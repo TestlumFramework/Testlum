@@ -8,8 +8,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Kafka;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeader;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;

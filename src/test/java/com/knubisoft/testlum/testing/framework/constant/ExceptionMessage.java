@@ -47,7 +47,6 @@ public class ExceptionMessage {
 
     public static final String EXECUTOR_FOR_UI_COMMAND_NOT_FOUND = "Executor for class %s not found.";
 
-    public static final String NO_FILE_NAME_PROVIDED = "Unable to find file. Please provide filename.";
     public static final String UNABLE_FIND_FILE_IN_ROOT_FOLDER = "Unable to find file by key [%1$s] "
             + "Initial scan folder [%2$s] with strategy recursive walk to root folder [%3$s]";
 

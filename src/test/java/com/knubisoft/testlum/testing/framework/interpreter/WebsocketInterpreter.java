@@ -12,15 +12,14 @@ import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.framework.util.WaitUtil;
 import com.knubisoft.testlum.testing.model.scenario.Websocket;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSubscribe;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -45,6 +44,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SUBSCR
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @InterpreterForClass(Websocket.class)
 public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
@@ -189,7 +189,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     }
 
     private Object toJsonObject(final String content) {
-        if (nonNull(content)
+        if (isNotBlank(content)
                 && ((content.startsWith(OPEN_BRACE) && content.endsWith(CLOSE_BRACE))
                 || (content.startsWith(OPEN_SQUARE_BRACKET) && content.endsWith(CLOSE_SQUARE_BRACKET)))) {
             return JacksonMapperUtil.readValue(content, Object.class);
@@ -222,7 +222,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     }
 
     private String getValue(final String message, final String file) {
-        return StringUtils.isNotBlank(message)
+        return isNotBlank(message)
                 ? message
                 : FileSearcher.searchFileToString(file, dependencies.getFile());
     }

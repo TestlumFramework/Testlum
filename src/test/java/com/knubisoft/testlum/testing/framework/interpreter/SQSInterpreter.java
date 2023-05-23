@@ -27,7 +27,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIV
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.QUEUE;
-import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 @InterpreterForClass(Sqs.class)
@@ -52,10 +52,10 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                                  final String alias) {
         log.info(ALIAS_LOG, alias);
         AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
-        if (nonNull(sqs.getSend())) {
+        if (isNotBlank(sqs.getSend())) {
             ResultUtil.addMessageBrokerGeneralMetaData(alias, SEND_ACTION, QUEUE, queueName, result);
             sendMessage(queueName, sqs.getSend(), aliasEnv, result);
-        } else if (nonNull(sqs.getReceive())) {
+        } else if (isNotBlank(sqs.getReceive())) {
             ResultUtil.addMessageBrokerGeneralMetaData(alias, RECEIVE_ACTION, QUEUE, queueName, result);
             setContextBody(receiveAndCompareMessage(queueName, sqs.getReceive(), aliasEnv, result));
         } else {

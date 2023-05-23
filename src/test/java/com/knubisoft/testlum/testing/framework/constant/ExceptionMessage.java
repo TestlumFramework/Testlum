@@ -225,4 +225,5 @@ public class ExceptionMessage {
     public static final String AUTH_CUSTOM_CLASS_NAME_NOT_MATCH = ANSI_RED + "Every single <%s> integration must have "
             + "the same setup for <authCustomClassName> argument inside <auth> command in all enabled environments "
             + "(%s files)\n" + ANSI_RESET;
+    public static final String REDIS_COMMAND_NOT_FOUND = "Redis command was not provided";
 }

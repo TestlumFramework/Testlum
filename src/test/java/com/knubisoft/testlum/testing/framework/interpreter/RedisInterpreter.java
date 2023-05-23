@@ -12,8 +12,8 @@ import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.model.scenario.QueryParameters;
 import com.knubisoft.testlum.testing.model.scenario.Redis;
+import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -47,15 +47,15 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
 
     protected String getActual(final Redis redis, final CommandResult result) {
         String alias = redis.getAlias();
-        final List<QueryParameters> redisQueries = redis.getQuery();
+        final List<RedisQuery> redisQueries = redis.getQuery();
         LogUtil.logAllRedisQueries(redisQueries, redis.getAlias());
-        ResultUtil.addRedisMetaData(alias, redisQueries, result);
         final List<String> queries = convertToListString(redisQueries);
+        ResultUtil.addDatabaseMetaData(alias, queries, result);
         final StorageOperation.StorageOperationResult apply = redisOperation.apply(new ListSource(queries), alias);
         return toString(apply.getRaw());
     }
 
-    private List<String> convertToListString(final List<QueryParameters> redisQueries) {
+    private List<String> convertToListString(final List<RedisQuery> redisQueries) {
         return redisQueries.stream()
                 .map(JacksonMapperUtil::writeValueAsString)
                 .collect(Collectors.toList());

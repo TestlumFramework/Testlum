@@ -10,9 +10,9 @@ import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Hovers;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
-import com.knubisoft.testlum.testing.model.scenario.QueryParameters;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
+import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import com.knubisoft.testlum.testing.model.scenario.RmqHeaders;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
@@ -222,16 +222,6 @@ public class ResultUtil {
                                     final CommandResult result) {
         result.put(DATABASE_ALIAS, databaseAlias);
         result.put(QUERIES, queries);
-    }
-
-    public void addRedisMetaData(final String databaseAlias,
-                                 final List<QueryParameters> redisQueries,
-                                 final CommandResult result) {
-        result.put(DATABASE_ALIAS, databaseAlias);
-        redisQueries.forEach(query -> {
-            result.put(REDIS_COMMAND, query.getCommand());
-            result.put(REDIS_ARGUMENTS, query.getArg());
-        });
     }
 
     public void addMigrateMetaData(final String databaseName,

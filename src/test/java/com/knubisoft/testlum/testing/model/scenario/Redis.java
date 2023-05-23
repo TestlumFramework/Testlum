@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="query" type="{http://www.knubisoft.com/testlum/testing/model/scenario}queryParameters" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="query" type="{http://www.knubisoft.com/testlum/testing/model/scenario}redisQuery" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}aliasPattern" /&gt;
  *       &lt;attribute name="file" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}expectedPattern" /&gt;
@@ -40,7 +40,7 @@ public class Redis
 {
 
     @XmlElement(required = true)
-    protected List<QueryParameters> query;
+    protected List<RedisQuery> query;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
     @XmlAttribute(name = "file", required = true)
@@ -64,13 +64,13 @@ public class Redis
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link QueryParameters }
+     * {@link RedisQuery }
      * 
      * 
      */
-    public List<QueryParameters> getQuery() {
+    public List<RedisQuery> getQuery() {
         if (query == null) {
-            query = new ArrayList<QueryParameters>();
+            query = new ArrayList<RedisQuery>();
         }
         return this.query;
     }

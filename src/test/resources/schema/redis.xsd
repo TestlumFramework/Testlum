@@ -11,7 +11,7 @@
     <x:complexContent>
       <x:extension base="tns:abstractCommand">
         <x:sequence>
-          <x:element name="query" type="tns:queryParameters" minOccurs="1" maxOccurs="unbounded"/>
+          <x:element name="query" type="tns:redisQuery" minOccurs="1" maxOccurs="unbounded"/>
         </x:sequence>
         <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
         <x:attribute name="file" type="tns:expectedPattern" use="required"/>
@@ -19,7 +19,7 @@
     </x:complexContent>
   </x:complexType>
 
-  <x:complexType name="queryParameters">
+  <x:complexType name="redisQuery">
     <x:sequence>
       <x:element name="command" type="tns:nonEmptyString"/>
       <x:element name="arg" type="tns:nonEmptyString" maxOccurs="unbounded"/>

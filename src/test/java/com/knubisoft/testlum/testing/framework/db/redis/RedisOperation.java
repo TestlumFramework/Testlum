@@ -5,8 +5,9 @@ import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
-import com.knubisoft.testlum.testing.model.scenario.QueryParameters;
+import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.data.redis.connection.StringRedisConnection;
@@ -16,7 +17,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.REDIS_COMMAND_NOT_FOUND;
 
 @Conditional({OnRedisEnabledCondition.class})
 @Component
@@ -52,13 +56,9 @@ public class RedisOperation implements StorageOperation {
     }
 
     private String executeQuery(final String query, final String databaseAlias) {
-//        LinkedList<String> instructions = Arrays.stream(query.split(DelimiterConstant.HASH))
-//                .map(String::trim)
-//                .filter(StringUtils::isNotBlank)
-//                .collect(Collectors.toCollection(LinkedList::new));
-        QueryParameters redisQuery = JacksonMapperUtil.readValue(query, QueryParameters.class);
-
-        String command = Objects.requireNonNull(redisQuery.getCommand());
+        RedisQuery redisQuery = JacksonMapperUtil.readValue(query, RedisQuery.class);
+        String command = Optional.of(redisQuery.getCommand())
+                .orElseThrow(() -> new DefaultFrameworkException(REDIS_COMMAND_NOT_FOUND));
         String[] args = redisQuery.getArg().toArray(new String[0]);
 
         Object response = stringRedisConnection.get(AliasEnv.build(databaseAlias)).execute(command, args);

@@ -822,11 +822,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link QueryParameters }
+     * Create an instance of {@link RedisQuery }
      * 
      */
-    public QueryParameters createQueryParameters() {
-        return new QueryParameters();
+    public RedisQuery createRedisQuery() {
+        return new RedisQuery();
     }
 
     /**

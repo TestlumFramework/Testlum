@@ -14,7 +14,7 @@ import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
-import com.knubisoft.testlum.testing.model.scenario.QueryParameters;
+import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
@@ -261,7 +261,7 @@ public class LogUtil {
                 format(TABLE_FORMAT, "Query", query.replaceAll(REGEX_MANY_SPACES, SPACE))));
     }
 
-    public void logAllRedisQueries(final List<QueryParameters> redisQueries, final String alias) {
+    public void logAllRedisQueries(final List<RedisQuery> redisQueries, final String alias) {
         log.info(ALIAS_LOG, alias);
         redisQueries.forEach(query -> {
             log.info(format(TABLE_FORMAT, REDIS_COMMAND, query.getCommand()));

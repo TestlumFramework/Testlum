@@ -20,7 +20,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_FILE_NAME_PROVIDED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SLOW_COMMAND_PROCESSING;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMENT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.POSITION_COMMAND_LOG;
@@ -90,9 +89,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         return fileOrContent;
     }
 
-    protected CompareBuilder newCompare() {
-        return new CompareBuilder(
-                dependencies.getFile(),
-                dependencies.getPosition());
+    public CompareBuilder newCompare() {
+        return new CompareBuilder(dependencies.getFile(), dependencies.getPosition());
     }
 }

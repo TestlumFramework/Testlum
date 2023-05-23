@@ -9,8 +9,8 @@ import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.util.HttpValidator;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Body;
 import com.knubisoft.testlum.testing.model.scenario.ElasticSearchRequest;
 import com.knubisoft.testlum.testing.model.scenario.ElasticSearchRequestWithBody;
@@ -20,6 +20,7 @@ import com.knubisoft.testlum.testing.model.scenario.Header;
 import com.knubisoft.testlum.testing.model.scenario.Param;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.entity.ContentType;
@@ -35,7 +36,6 @@ import org.springframework.http.HttpMethod;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -74,12 +74,12 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
                                     final HttpValidator httpValidator,
                                     final CommandResult result) {
         String expectedFile = expectedResponse.getFile();
-        if (Objects.nonNull(expectedFile)) {
+        if (StringUtils.isNotBlank(expectedFile)) {
             String actualBody = EntityUtils.toString(actual.getEntity());
             setContextBody(actualBody);
             String expectedBody = FileSearcher.searchFileToString(expectedFile, dependencies.getFile());
-            result.setActual(PrettifyStringJson.getJSONResult(actualBody));
-            result.setExpected(PrettifyStringJson.getJSONResult(expectedBody));
+            result.setActual(StringPrettifier.asJsonResult(actualBody));
+            result.setExpected(StringPrettifier.asJsonResult(expectedBody));
             httpValidator.validateBody(expectedBody, actualBody);
         }
     }

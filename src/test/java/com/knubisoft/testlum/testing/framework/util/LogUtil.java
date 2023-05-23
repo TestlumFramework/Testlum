@@ -269,7 +269,7 @@ public class LogUtil {
 
     public void logBrokerActionInfo(final String action, final String destination, final String content) {
         log.info(LogMessage.BROKER_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), destination,
-                PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+                StringPrettifier.asJsonResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
     public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {
@@ -327,15 +327,17 @@ public class LogUtil {
             log.info(DESTINATION_LOG, destination);
         }
         if (isNotBlank(content)) {
-            log.info(CONTENT_LOG, PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+            log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
     }
 
     public void logLambdaInfo(final String alias, final String functionName, final String payload) {
         log.info(ALIAS_LOG, alias);
         log.info(LAMBDA_FUNCTION_LOG, functionName);
-        log.info(LAMBDA_PAYLOAD_LOG,
-                PrettifyStringJson.getJSONResult(payload).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+        if (isNotBlank(payload)) {
+            log.info(LAMBDA_PAYLOAD_LOG,
+                    StringPrettifier.asJsonResult(payload).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+        }
     }
 
     public void logHttpInfo(final String alias, final String method, final String endpoint) {
@@ -354,7 +356,7 @@ public class LogUtil {
     public void logBody(final String body) {
         if (isNotBlank(body)) {
             log.info(BODY_LOG,
-                    PrettifyStringJson.getJSONResult(StringPrettifier.cut(body))
+                    StringPrettifier.asJsonResult(StringPrettifier.cut(body))
                             .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
     }

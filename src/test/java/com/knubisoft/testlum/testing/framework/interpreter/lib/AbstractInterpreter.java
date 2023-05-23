@@ -92,7 +92,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
 
     }
 
-    protected CompareBuilder newCompare() {
+    public CompareBuilder newCompare() {
         return new CompareBuilder(dependencies.getFile(), dependencies.getPosition());
     }
 }

@@ -9,7 +9,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.PrettifyStringJson;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.Postgres;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +37,8 @@ public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
                 .withActual(actualPostgres)
                 .withExpectedFile(postgres.getFile());
 
-        result.setExpected(PrettifyStringJson.getJSONResult(compare.getExpected()));
-        result.setActual(PrettifyStringJson.getJSONResult(actualPostgres));
+        result.setExpected(StringPrettifier.asJsonResult(compare.getExpected()));
+        result.setActual(StringPrettifier.asJsonResult(actualPostgres));
         compare.exec();
         setContextBody(actualPostgres);
     }

@@ -62,7 +62,6 @@ public class IntegrationsValidator {
     public void validateIntegrations(final Map<String, Integrations> integrationsMap) {
         List<String> envsList = new ArrayList<>(integrationsMap.keySet());
         List<Integrations> integrationsList = new ArrayList<>(integrationsMap.values());
-
         INTEGRATIONS_TO_LISTS_MAP.forEach((notNullPredicate, getIntegrationList) -> {
             List<? extends List<? extends Integration>> integrations =
                     getAllEnvsIntegrations(integrationsList, notNullPredicate, getIntegrationList);
@@ -112,7 +111,11 @@ public class IntegrationsValidator {
     }
 
     private void checkAliasesSimilarity(final List<? extends List<? extends Integration>> integrationsList) {
-        List<String> defaultAliases = getDefaultAliases(integrationsList);
+        List<String> defaultAliases = integrationsList.stream()
+                .min(Comparator.comparingInt((List<? extends Integration> integrationList) -> integrationList.size()))
+                .map(integrationList -> integrationList.stream()
+                        .map(Integration::getAlias)
+                        .collect(Collectors.toList())).get();
         for (List<? extends Integration> integrations : integrationsList) {
             for (Integration integration : integrations) {
                 if (!defaultAliases.contains(integration.getAlias())) {
@@ -123,17 +126,13 @@ public class IntegrationsValidator {
         }
     }
 
-    private List<String> getDefaultAliases(final List<? extends List<? extends Integration>> integrations) {
-        return integrations.stream()
-                .min(Comparator.comparingInt((List<? extends Integration> integrationList) -> integrationList.size()))
-                .map(integrationList -> integrationList.stream()
-                        .map(Integration::getAlias)
-                        .collect(Collectors.toList())).get();
-    }
-
     private void checkApiAuth(List<? extends List<? extends Integration>> integrations) {
         if (integrations.get(0).get(0) instanceof Api) {
-            List<Map<String, Auth>> authMaps = getAuthMaps((List<List<Api>>) integrations);
+            List<Map<String, Auth>> authMaps = ((List<List<Api>>) integrations).stream()
+                    .map(apis -> apis.stream()
+                            .filter(api -> nonNull(api.getAuth()))
+                            .collect(Collectors.toMap(Api::getAlias, Api::getAuth)))
+                    .collect(Collectors.toList());
             if (authMaps.size() > 1) {
                 Map<String, Auth> defaultAuthMap = authMaps.stream().min(Comparator.comparingInt(Map::size)).get();
                 authMaps.stream()
@@ -141,14 +140,6 @@ public class IntegrationsValidator {
                         .forEach(entry -> checkAuth(entry.getValue(), entry.getKey(), defaultAuthMap));
             }
         }
-    }
-
-    private List<Map<String, Auth>> getAuthMaps(final List<List<Api>> apiList) {
-        return apiList.stream()
-                .map(apis -> apis.stream()
-                        .filter(api -> nonNull(api.getAuth()))
-                        .collect(Collectors.toMap(Api::getAlias, Api::getAuth)))
-                .collect(Collectors.toList());
     }
 
     private void checkAuth(final Auth auth,

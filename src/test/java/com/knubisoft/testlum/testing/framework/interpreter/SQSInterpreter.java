@@ -14,8 +14,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.Sqs;
@@ -36,6 +36,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
 
 @Slf4j
 @InterpreterForClass(Sqs.class)
@@ -102,7 +103,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         String queue = sendRequest.getQueueUrl();
         String message = sendRequest.getMessageBody();
         LogUtil.logBrokerActionInfo(SEND_ACTION, queue, message);
-        result.put("Message to send", PrettifyStringJson.getJSONResult(message));
+        result.put(MESSAGE_TO_SEND, StringPrettifier.asJsonResult(message));
         this.amazonSQS.get(aliasEnv).sendMessage(sendRequest);
     }
 
@@ -129,8 +130,8 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         final CompareBuilder comparator = newCompare()
                 .withExpected(getContentIfFile(fileOrContent))
                 .withActual(message);
-        result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
-        result.setActual(PrettifyStringJson.getJSONResult(message));
+        result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
+        result.setActual(StringPrettifier.asJsonResult(message));
         comparator.exec();
     }
 

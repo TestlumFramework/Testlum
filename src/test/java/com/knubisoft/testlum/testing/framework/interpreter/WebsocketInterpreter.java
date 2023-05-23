@@ -12,7 +12,7 @@ import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.PrettifyStringJson;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.WaitUtil;
 import com.knubisoft.testlum.testing.model.scenario.Websocket;
@@ -149,8 +149,8 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         LogUtil.logWebsocketActionInfo(RECEIVE_ACTION, wsReceive.getComment(), wsReceive.getTopic(), expectedContent);
 
         final List<Object> actualContent = getMessagesToCompare(wsReceive, aliasEnv);
-        result.setActual(PrettifyStringJson.getJSONResult(toString(actualContent)));
-        result.setExpected(PrettifyStringJson.getJSONResult(expectedContent));
+        result.setActual(StringPrettifier.asJsonResult(toString(actualContent)));
+        result.setExpected(StringPrettifier.asJsonResult(expectedContent));
 
         executeComparison(actualContent, expectedContent);
     }

@@ -9,7 +9,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.PrettifyStringJson;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.Oracle;
 import lombok.extern.slf4j.Slf4j;
@@ -41,8 +41,8 @@ public class OracleInterpreter extends AbstractInterpreter<Oracle> {
                 .withActual(actual)
                 .withExpectedFile(oracle.getFile());
 
-        result.setActual(PrettifyStringJson.getJSONResult(actual));
-        result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
+        result.setActual(StringPrettifier.asJsonResult(actual));
+        result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
 
         comparator.exec();
         setContextBody(actual);

@@ -10,8 +10,8 @@ import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.util.HttpValidator;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Header;
 import com.knubisoft.testlum.testing.model.scenario.Lambda;
 import com.knubisoft.testlum.testing.model.scenario.LambdaBody;
@@ -91,8 +91,8 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
         String body = StringUtils.isBlank(expected.getFile())
                 ? DelimiterConstant.EMPTY
                 : FileSearcher.searchFileToString(expected.getFile(), dependencies.getFile());
-        result.setActual(PrettifyStringJson.getJSONResult(actualBody));
-        result.setExpected(PrettifyStringJson.getJSONResult(body));
+        result.setActual(StringPrettifier.asJsonResult(actualBody));
+        result.setExpected(StringPrettifier.asJsonResult(body));
         httpValidator.validateBody(body, actualBody);
     }
 

@@ -9,7 +9,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.PrettifyStringJson;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.Mysql;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +36,8 @@ public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
                 .withActual(actual)
                 .withExpectedFile(mySql.getFile());
 
-        result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
-        result.setActual(PrettifyStringJson.getJSONResult(actual));
+        result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
+        result.setActual(StringPrettifier.asJsonResult(actual));
 
         comparator.exec();
         setContextBody(actual);

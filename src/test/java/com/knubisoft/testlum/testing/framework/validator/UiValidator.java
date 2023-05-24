@@ -414,8 +414,6 @@ public class UiValidator {
     }
 
     private interface UiConfigPredicate extends Predicate<UiConfig> { }
-
     private interface UiConfigToBaseurl extends Function<UiConfig, String> { }
-
     private interface UiConfigToConnectionType extends Function<UiConfig, ConnectionType> { }
 }

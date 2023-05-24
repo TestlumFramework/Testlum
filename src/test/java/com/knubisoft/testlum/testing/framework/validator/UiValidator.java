@@ -168,20 +168,21 @@ public class UiValidator {
     }
 
     private void validateDevicesAndBrowsers(final List<String> envList, final List<UiConfig> uiConfigs) {
-        UI_CONFIG_METHOD_MAP.forEach((configName, configMap) -> configMap.forEach((nonNullPredicate, configMethod) -> {
-            List<? extends List<?>> deviceOrBrowserList =
-                    getAllDevicesOrBrowsers(uiConfigs, nonNullPredicate, configMethod);
+        UI_CONFIG_METHOD_MAP.forEach((configName, configMap) -> configMap.forEach((nullCheck, configMethod) -> {
+            List<? extends List<?>> deviceOrBrowserList = getDevicesOrBrowsers(uiConfigs, nullCheck, configMethod);
             if (!deviceOrBrowserList.isEmpty()) {
                 List<?> defaultDevicesOrBrowsers = getDefaultDevicesOrBrowsers(deviceOrBrowserList);
                 checkAliasesDifferAndMatch(configName, envList, defaultDevicesOrBrowsers, deviceOrBrowserList);
-                validateDevices(configName, envList, uiConfigs, defaultDevicesOrBrowsers, deviceOrBrowserList);
+                if (configName.equals(NATIVE.name()) || configName.equals(MOBILE_BROWSER.name())) {
+                    validateDevices(configName, envList, uiConfigs, defaultDevicesOrBrowsers, deviceOrBrowserList);
+                }
             }
         }));
     }
 
-    private List<? extends List<?>> getAllDevicesOrBrowsers(final List<UiConfig> uiConfigs,
-                                                            final UiConfigPredicate nonNullPredicate,
-                                                            final Function<UiConfig, ?> configMethod) {
+    private List<? extends List<?>> getDevicesOrBrowsers(final List<UiConfig> uiConfigs,
+                                                         final UiConfigPredicate nonNullPredicate,
+                                                         final Function<UiConfig, ?> configMethod) {
         return uiConfigs.stream()
                 .filter(nonNullPredicate)
                 .map(configMethod)
@@ -259,13 +260,15 @@ public class UiValidator {
                                  final List<UiConfig> uiConfigs,
                                  final List<?> defaultDevices,
                                  final List<? extends List<?>> devicesList) {
-        if (configName.equals(NATIVE.name()) || configName.equals(MOBILE_BROWSER.name())) {
-            List<? extends AbstractDevice> defaultDeviceList = (List<? extends AbstractDevice>) defaultDevices;
-            List<? extends List<? extends AbstractDevice>> deviceList =
-                    (List<? extends List<? extends AbstractDevice>>) devicesList;
-            checkPlatformNameMatch(configName, defaultDeviceList, deviceList);
+        List<? extends AbstractDevice> defaultDeviceList = (List<? extends AbstractDevice>) defaultDevices;
+        List<? extends List<? extends AbstractDevice>> deviceList =
+                (List<? extends List<? extends AbstractDevice>>) devicesList;
+        checkPlatformNameMatch(configName, defaultDeviceList, deviceList);
+        if (configName.equals(MOBILE_BROWSER.name())) {
             checkMobilebrowserCapabilities(configName, envList, uiConfigs, getAllMobilbrowserDevices(deviceList),
                     getDefaultMobilebrowserDeviceMap(defaultDeviceList));
+        }
+        if (configName.equals(NATIVE.name())) {
             checkNativeCapabilities(configName, envList, uiConfigs, getAllNativeDevices(deviceList),
                     getDefaultNativeDeviceMap(defaultDeviceList));
         }
@@ -305,16 +308,14 @@ public class UiValidator {
                                                 final List<UiConfig> uiConfigs,
                                                 final List<List<MobilebrowserDevice>> mobilebrowserList,
                                                 final Map<String, MobilebrowserDevice> mBDeviceDefaultMap) {
-        if (configName.equals(MOBILE_BROWSER.name())) {
-            for (int envNum = 0; envNum < uiConfigs.size(); envNum++) {
-                for (MobilebrowserDevice mobileDevice : mobilebrowserList.get(envNum)) {
-                    ConnectionType cT = uiConfigs.get(envNum).getMobilebrowser().getConnection();
-                    MobilebrowserDevice defaultDevice = mBDeviceDefaultMap.get(mobileDevice.getAlias());
-                    checkMobilebrowserAppiumCapabilities(envNum, configName, cT,
-                            envList, mobileDevice, defaultDevice.getAppiumCapabilities());
-                    checkMobilebrowserBrowserStackCapapabilities(envNum, configName, cT,
-                            envList, mobileDevice, defaultDevice.getBrowserStackCapabilities());
-                }
+        for (int envNum = 0; envNum < uiConfigs.size(); envNum++) {
+            for (MobilebrowserDevice mobileDevice : mobilebrowserList.get(envNum)) {
+                ConnectionType cT = uiConfigs.get(envNum).getMobilebrowser().getConnection();
+                MobilebrowserDevice defaultDevice = mBDeviceDefaultMap.get(mobileDevice.getAlias());
+                checkMobilebrowserAppiumCapabilities(envNum, configName, cT,
+                        envList, mobileDevice, defaultDevice.getAppiumCapabilities());
+                checkMobilebrowserBrowserStackCapapabilities(envNum, configName, cT,
+                        envList, mobileDevice, defaultDevice.getBrowserStackCapabilities());
             }
         }
     }
@@ -370,16 +371,14 @@ public class UiValidator {
                                          final List<UiConfig> uiConfigs,
                                          final List<List<NativeDevice>> nativeList,
                                          final Map<String, NativeDevice> nativeDeviceDefaultMap) {
-        if (configName.equals(NATIVE.name())) {
-            for (int envNum = 0; envNum < uiConfigs.size(); envNum++) {
-                for (NativeDevice nativeDevice : nativeList.get(envNum)) {
-                    ConnectionType cT = uiConfigs.get(envNum).getNative().getConnection();
-                    NativeDevice defaultDevice = nativeDeviceDefaultMap.get(nativeDevice.getAlias());
-                    checkNativeAppiumCapabilities(envNum, configName, cT,
-                            envList, nativeDevice, defaultDevice.getAppiumCapabilities());
-                    checkNativeBrowserStackCapabilities(envNum, configName, cT,
-                            envList, nativeDevice, defaultDevice.getBrowserStackCapabilities());
-                }
+        for (int envNum = 0; envNum < uiConfigs.size(); envNum++) {
+            for (NativeDevice nativeDevice : nativeList.get(envNum)) {
+                ConnectionType cT = uiConfigs.get(envNum).getNative().getConnection();
+                NativeDevice defaultDevice = nativeDeviceDefaultMap.get(nativeDevice.getAlias());
+                checkNativeAppiumCapabilities(envNum, configName, cT,
+                        envList, nativeDevice, defaultDevice.getAppiumCapabilities());
+                checkNativeBrowserStackCapabilities(envNum, configName, cT,
+                        envList, nativeDevice, defaultDevice.getBrowserStackCapabilities());
             }
         }
     }
@@ -415,6 +414,8 @@ public class UiValidator {
     }
 
     private interface UiConfigPredicate extends Predicate<UiConfig> { }
+
     private interface UiConfigToBaseurl extends Function<UiConfig, String> { }
+
     private interface UiConfigToConnectionType extends Function<UiConfig, ConnectionType> { }
 }

@@ -182,6 +182,8 @@ public class ExceptionMessage {
             + " match the number of enabled environments" + ANSI_RESET;
     public static final String BASE_URLS_ARE_SAME = ANSI_RED + "<baseUrl> must be different for each <%s> block in all "
             + "enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
+    public static final String ENVIRONMENT_MISSING_DEVICES_OR_BROWSERS = ANSI_RED + "One or more of your environments "
+            + "does not have enabled <%ss> in <%s> block" + ANSI_RESET;
     public static final String UI_CONFIG_ALIASES_NOT_DIFFER = ANSI_RED + "More than one enabled <%s> in <%s> "
             + "block with alias <%s> was found in the config by path: %s" + ANSI_RESET;
     public static final String UI_CONFIG_ALIASES_NOT_MATCH = ANSI_RED + "Enabled <%s> in <%s> block with alias <%s> not"

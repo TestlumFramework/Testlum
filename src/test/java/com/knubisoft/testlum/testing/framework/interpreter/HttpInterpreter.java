@@ -1,7 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -24,7 +23,6 @@ import com.knubisoft.testlum.testing.model.scenario.HttpInfo;
 import com.knubisoft.testlum.testing.model.scenario.HttpInfoWithBody;
 import com.knubisoft.testlum.testing.model.scenario.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,14 +74,12 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                               final HttpValidator httpValidator,
                               final CommandResult result) {
         if (Objects.nonNull(expected.getFile())) {
-            String body = StringUtils.isBlank(expected.getFile())
-                    ? DelimiterConstant.EMPTY
-                    : FileSearcher.searchFileToString(expected.getFile(), dependencies.getFile());
+            String body = FileSearcher.searchFileToString(expected.getFile(), dependencies.getFile());
             result.setActual(PrettifyStringJson.getJSONResult(actualBody));
             result.setExpected(PrettifyStringJson.getJSONResult(body));
             httpValidator.validateBody(body, actualBody);
         } else {
-            LogUtil.logNoExpectedFileProvided();
+            LogUtil.logBodyValidationSkipped();
         }
     }
 
@@ -92,8 +88,6 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                                  final HttpValidator httpValidator) {
         if (!expected.getHeader().isEmpty()) {
             httpValidator.validateHeaders(getExpectedHeaders(expected), actual.getHeaders());
-        } else {
-            LogUtil.logNoHeadersProvided();
         }
     }
 

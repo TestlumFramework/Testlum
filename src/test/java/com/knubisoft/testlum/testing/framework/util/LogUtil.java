@@ -60,11 +60,10 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.END_UI
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXPECTED_FILE_NOT_PROVIDED;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SKIPPED_BODY_VALIDATION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXPRESSION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HEADERS_NOT_PROVIDED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
@@ -361,12 +360,8 @@ public class LogUtil {
         }
     }
 
-    public void logNoExpectedFileProvided() {
-        log.info(EXPECTED_FILE_NOT_PROVIDED);
-    }
-
-    public void logNoHeadersProvided() {
-        log.info(HEADERS_NOT_PROVIDED);
+    public void logBodyValidationSkipped() {
+        log.info(SKIPPED_BODY_VALIDATION);
     }
 
     public void logVarInfo(final String name, final String value) {

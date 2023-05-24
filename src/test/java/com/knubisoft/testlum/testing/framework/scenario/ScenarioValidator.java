@@ -109,6 +109,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_ALIASES_DOESNT_MATCH;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INTEGRATION_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
@@ -393,15 +394,15 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .anyMatch(nativeUdids::contains);
     }
 
-    private void validateFileExistenceInDataFolder(final String commandFile) {
-        if (isNotBlank(commandFile)) {
-            FileSearcher.searchFileFromDataFolder(commandFile);
+    private void validateFileExistenceInDataFolder(final String fileName) {
+        if (isNotBlank(fileName)) {
+            FileSearcher.searchFileFromDataFolder(fileName);
         }
     }
 
-    private void validateFileIfExist(final File xmlFile, final String commandFile) {
-        if (isNotBlank(commandFile)) {
-            FileSearcher.searchFileFromDir(xmlFile, commandFile);
+    private void validateFileIfExist(final File xmlFile, final String fileName) {
+        if (isNotBlank(fileName)) {
+            FileSearcher.searchFileFromDir(xmlFile, fileName);
         }
     }
 
@@ -450,7 +451,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateAuthCommand(final Auth auth) {
         Api apiIntegration = IntegrationsUtil.findApiForAlias(integrations.getApis().getApi(), auth.getApiAlias());
         if (isNull(apiIntegration.getAuth())) {
-            throw new DefaultFrameworkException("//todo AUTH_NOT_FOUND", apiIntegration.getAlias());
+            throw new DefaultFrameworkException(AUTH_NOT_FOUND, apiIntegration.getAlias());
         }
         boolean authCmdAliasNotMatch = auth.getCommands().stream()
                 .anyMatch(command -> command instanceof Http

@@ -14,8 +14,8 @@ import com.knubisoft.testlum.testing.framework.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.util.HttpValidator;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.scenario.Body;
 import com.knubisoft.testlum.testing.model.scenario.Header;
@@ -77,8 +77,8 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         String body = StringUtils.isBlank(expected.getFile())
                 ? DelimiterConstant.EMPTY
                 : FileSearcher.searchFileToString(expected.getFile(), dependencies.getFile());
-        result.setActual(PrettifyStringJson.getJSONResult(actualBody));
-        result.setExpected(PrettifyStringJson.getJSONResult(body));
+        result.setActual(StringPrettifier.asJsonResult(actualBody));
+        result.setExpected(StringPrettifier.asJsonResult(body));
         httpValidator.validateBody(body, actualBody);
     }
 

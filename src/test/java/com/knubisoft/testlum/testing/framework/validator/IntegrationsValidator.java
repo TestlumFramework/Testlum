@@ -60,18 +60,18 @@ public class IntegrationsValidator {
     }
 
     public void validateIntegrations(final Map<String, Integrations> integrationsMap) {
-        List<String> envsList = new ArrayList<>(integrationsMap.keySet());
-        List<Integrations> integrationsList = new ArrayList<>(integrationsMap.values());
-        INTEGRATIONS_TO_LISTS_MAP.forEach((notNullPredicate, getIntegrationList) -> {
-            List<? extends List<? extends Integration>> integrations =
-                    getAllEnvsIntegrations(integrationsList, notNullPredicate, getIntegrationList);
-            if (!integrations.isEmpty() && integrations.size() != envsList.size()) {
+        for (Map.Entry<IntegrationsPredicate, IntegrationListMethod> entry : INTEGRATIONS_TO_LISTS_MAP.entrySet()) {
+            List<? extends List<? extends Integration>> integrations = getAllEnvsIntegrations(
+                    new ArrayList<>(integrationsMap.values()), entry.getKey(), entry.getValue());
+            if (!integrations.isEmpty() && integrations.size() != integrationsMap.keySet().size()) {
                 throw new DefaultFrameworkException(INTEGRATIONS_MISMATCH_ENVS,
                         integrations.get(0).get(0).getClass().getSimpleName());
             } else if (!integrations.isEmpty()) {
-                validate(envsList, integrations);
+                List<String> defaultAliases = getDefaultAliases(integrations);
+                checkIfAliasesDifferAndMatch(new ArrayList<>(integrationsMap.keySet()), defaultAliases, integrations);
+                checkApiAuth(integrations);
             }
-        });
+        }
     }
 
     private List<List<? extends Integration>> getAllEnvsIntegrations(final List<Integrations> integrationsList,
@@ -87,17 +87,17 @@ public class IntegrationsValidator {
                 .collect(Collectors.toList());
     }
 
-    private void validate(final List<String> envsList,
-                          final List<? extends List<? extends Integration>> integrations) {
-        checkAliasesDifference(envsList, integrations);
-        if (envsList.size() > 1) {
-            checkAliasesSimilarity(integrations);
-            checkApiAuth(integrations);
-        }
+    private List<String> getDefaultAliases(final List<? extends List<? extends Integration>> integrationsList) {
+        return integrationsList.stream()
+                .min(Comparator.comparingInt((List<? extends Integration> integrationList) -> integrationList.size()))
+                .map(integrationList -> integrationList.stream()
+                        .map(Integration::getAlias)
+                        .collect(Collectors.toList())).get();
     }
 
-    private void checkAliasesDifference(final List<String> envsList,
-                                        final List<? extends List<? extends Integration>> integrationList) {
+    private void checkIfAliasesDifferAndMatch(final List<String> envsList,
+                                              final List<String> defaultAliases,
+                                              final List<? extends List<? extends Integration>> integrationList) {
         for (int envNum = 0; envNum < envsList.size(); envNum++) {
             Set<String> aliasSet = new HashSet<>();
             for (Integration integration : integrationList.get(envNum)) {
@@ -105,29 +105,12 @@ public class IntegrationsValidator {
                     throw new DefaultFrameworkException(SAME_INTEGRATION_ALIAS, integration.getClass().getSimpleName(),
                             integration.getAlias(), FileSearcher.searchFileFromEnvFolder(envsList.get(envNum),
                             INTEGRATION_CONFIG_FILENAME).get().getPath());
-                }
-            }
-        }
-    }
-
-    private void checkAliasesSimilarity(final List<? extends List<? extends Integration>> integrationsList) {
-        List<String> defaultAliases = getDefaultAliases(integrationsList);
-        for (List<? extends Integration> integrations : integrationsList) {
-            for (Integration integration : integrations) {
-                if (!defaultAliases.contains(integration.getAlias())) {
+                } else if (!defaultAliases.contains(integration.getAlias())) {
                     throw new DefaultFrameworkException(INTEGRATION_ALIAS_NOT_MATCH,
                             integration.getClass().getSimpleName(), integration.getAlias());
                 }
             }
         }
-    }
-
-    private List<String> getDefaultAliases(final List<? extends List<? extends Integration>> integrationsList) {
-        return integrationsList.stream()
-                .min(Comparator.comparingInt((List<? extends Integration> integrationList) -> integrationList.size()))
-                .map(integrationList -> integrationList.stream()
-                        .map(Integration::getAlias)
-                        .collect(Collectors.toList())).get();
     }
 
     private void checkApiAuth(final List<? extends List<? extends Integration>> integrations) {

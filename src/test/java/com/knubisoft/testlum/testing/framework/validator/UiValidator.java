@@ -60,31 +60,33 @@ public class UiValidator {
     static {
         final Map<String, Map<UiConfigPredicate, Function<UiConfig, ?>>> configMethodMap = new HashMap<>();
         configMethodMap.put(WEB.name(), new HashMap<UiConfigPredicate, Function<UiConfig, ?>>() {{
-            put(c -> nonNull(c.getWeb()), UiConfig::getWeb);
+            put(c -> nonNull(c.getWeb()) && c.getWeb().isEnabled(), UiConfig::getWeb);
         }});
         configMethodMap.put(NATIVE.name(), new HashMap<UiConfigPredicate, Function<UiConfig, ?>>() {{
-            put(c -> nonNull(c.getNative()), UiConfig::getNative);
+            put(c -> nonNull(c.getNative()) && c.getNative().isEnabled(), UiConfig::getNative);
         }});
         configMethodMap.put(MOBILE_BROWSER.name(), new HashMap<UiConfigPredicate, Function<UiConfig, ?>>() {{
-            put(c -> nonNull(c.getMobilebrowser()), UiConfig::getMobilebrowser);
+            put(c -> nonNull(c.getMobilebrowser()) && c.getMobilebrowser().isEnabled(), UiConfig::getMobilebrowser);
         }});
         UI_CONFIG_METHOD_MAP = Collections.unmodifiableMap(configMethodMap);
 
         final Map<String, Map<UiConfigPredicate, UiConfigToBaseurl>> baseUrlMethodMap = new HashMap<>();
         baseUrlMethodMap.put(WEB.name(), new HashMap<UiConfigPredicate, UiConfigToBaseurl>() {{
-            put(c -> nonNull(c.getWeb()), c -> c.getWeb().getBaseUrl());
+            put(c -> nonNull(c.getWeb()) && c.getWeb().isEnabled(), c -> c.getWeb().getBaseUrl());
         }});
         baseUrlMethodMap.put(MOBILE_BROWSER.name(), new HashMap<UiConfigPredicate, UiConfigToBaseurl>() {{
-            put(c -> nonNull(c.getMobilebrowser()), c -> c.getMobilebrowser().getBaseUrl());
+            put(c -> nonNull(c.getMobilebrowser()) && c.getMobilebrowser().isEnabled(),
+                    c -> c.getMobilebrowser().getBaseUrl());
         }});
         BASE_URL_METHOD_MAP = Collections.unmodifiableMap(baseUrlMethodMap);
 
         final Map<String, Map<UiConfigPredicate, UiConfigToConnectionType>> cTMethodMap = new HashMap<>();
         cTMethodMap.put(NATIVE.name(), new HashMap<UiConfigPredicate, UiConfigToConnectionType>() {{
-            put(c -> nonNull(c.getNative()), c -> c.getNative().getConnection());
+            put(c -> nonNull(c.getNative()) && c.getNative().isEnabled(), c -> c.getNative().getConnection());
         }});
         cTMethodMap.put(MOBILE_BROWSER.name(), new HashMap<UiConfigPredicate, UiConfigToConnectionType>() {{
-            put(c -> nonNull(c.getMobilebrowser()), c -> c.getMobilebrowser().getConnection());
+            put(c -> nonNull(c.getMobilebrowser()) && c.getMobilebrowser().isEnabled(),
+                    c -> c.getMobilebrowser().getConnection());
         }});
         CONNECTION_METHOD_MAP = Collections.unmodifiableMap(cTMethodMap);
     }
@@ -105,7 +107,6 @@ public class UiValidator {
             List<?> uiConfig = uiConfigList.stream()
                     .filter(nonNullPredicate)
                     .map(configMethod)
-                    .filter(this::isConfigEnabled)
                     .collect(Collectors.toList());
             if (!uiConfig.isEmpty() && uiConfig.size() != envNum) {
                 throw new DefaultFrameworkException(UI_CONFIG_NOT_PRESENT_IN_ALL_ENVS, configName);
@@ -201,17 +202,11 @@ public class UiValidator {
         return uiConfigs.stream()
                 .filter(nonNullPredicate)
                 .map(configMethod)
-                .filter(this::isConfigEnabled)
                 .map(config -> getDeviceOrBrowserList(config).stream()
                         .filter(this::isDeviceOrBrowserEnabled)
                         .collect(Collectors.toList()))
                 .filter(deviceOrBrowserList -> !deviceOrBrowserList.isEmpty())
                 .collect(Collectors.toList());
-    }
-
-    private <T> boolean isConfigEnabled(final T config) {
-        return config instanceof Web ? ((Web) config).isEnabled() : config instanceof Native
-                ? ((Native) config).isEnabled() : ((Mobilebrowser) config).isEnabled();
     }
 
     private <T> List<?> getDeviceOrBrowserList(final T config) {

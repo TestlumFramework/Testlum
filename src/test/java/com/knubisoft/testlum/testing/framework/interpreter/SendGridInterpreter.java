@@ -10,9 +10,9 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.HttpValidator;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.SendGridUtil;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Body;
 import com.knubisoft.testlum.testing.model.scenario.Sendgrid;
 import com.knubisoft.testlum.testing.model.scenario.SendgridInfo;
@@ -56,8 +56,8 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         ResultUtil.addSendGridMetaData(alias, method.name(), headers, endpoint, result);
         ApiResponse expected = getExpected(sendgridInfo);
         Response actual = getActual(sendgridInfo, method, alias, endpoint, result);
-        result.setExpected(PrettifyStringJson.getJSONResult(toString(expected.getBody())));
-        result.setActual(PrettifyStringJson.getJSONResult(toString(actual.getBody())));
+        result.setExpected(StringPrettifier.asJsonResult(toString(expected.getBody())));
+        result.setActual(StringPrettifier.asJsonResult(toString(actual.getBody())));
         compare(expected, actual, result);
         setContextBody(actual.getBody());
     }
@@ -81,7 +81,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         request.setMethod(method);
         request.setEndpoint(endpoint);
         request.setBody(body);
-        result.put(CONTENT_TO_SEND, PrettifyStringJson.getJSONResult(body));
+        result.put(CONTENT_TO_SEND, StringPrettifier.asJsonResult(body));
         LogUtil.logHttpInfo(alias, method.name(), endpoint);
         LogUtil.logBody(request.getBody());
         return sendGrid.get(new AliasEnv(alias, dependencies.getEnvironment())).api(request);

@@ -9,8 +9,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Oracle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +36,14 @@ public class OracleInterpreter extends AbstractInterpreter<Oracle> {
 
     @Override
     protected void acceptImpl(final Oracle oracle, final CommandResult result) {
+        String expected = inject(getContentIfFile(oracle.getFile()));
         String actual = getActual(oracle, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpectedFile(oracle.getFile());
+                .withExpected(expected);
 
-        result.setActual(PrettifyStringJson.getJSONResult(actual));
-        result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
+        result.setActual(StringPrettifier.asJsonResult(actual));
+        result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
 
         comparator.exec();
         setContextBody(actual);

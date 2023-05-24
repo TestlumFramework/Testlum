@@ -8,8 +8,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Rabbit;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.RmqHeader;
@@ -185,8 +185,8 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         CompareBuilder comparator = newCompare()
                 .withExpected(message)
                 .withActual(actualRmqMessages);
-        result.setActual(PrettifyStringJson.getJSONResult(toString(actualRmqMessages)));
-        result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
+        result.setActual(StringPrettifier.asJsonResult(toString(actualRmqMessages)));
+        result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
         comparator.exec();
     }
 

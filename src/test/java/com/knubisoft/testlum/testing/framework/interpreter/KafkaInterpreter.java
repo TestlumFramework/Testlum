@@ -151,15 +151,15 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
     private List<KafkaMessage> receiveKafkaMessages(final ReceiveKafkaMessage receive, final AliasEnv aliasEnv) {
         Duration timeout = Duration.ofMillis(receive.getTimeoutMillis());
-
-        kafkaConsumer.get(aliasEnv).subscribe(Collections.singleton(receive.getTopic()));
-        ConsumerRecords<String, String> consumerRecords = kafkaConsumer.get(aliasEnv).poll(timeout);
+        KafkaConsumer<String, String> consumer = kafkaConsumer.get(aliasEnv);
+        consumer.subscribe(Collections.singleton(receive.getTopic()));
+        ConsumerRecords<String, String> consumerRecords = consumer.poll(timeout);
 
         Iterable<ConsumerRecord<String, String>> iterable = consumerRecords.records(receive.getTopic());
         Iterator<ConsumerRecord<String, String>> iterator = iterable.iterator();
         List<KafkaMessage> kafkaMessages = convertConsumerRecordsToKafkaMessages(iterator);
         if (receive.isCommit()) {
-            kafkaConsumer.get(aliasEnv).commitSync();
+            consumer.commitSync();
         }
         return kafkaMessages;
     }
@@ -219,17 +219,16 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     }
 
     private void createTopicIfNotExists(final String topic, final AliasEnv aliasEnv) {
-        if (isNull(checkIfTopicExists(topic, aliasEnv))) {
+        if (!checkIfTopicExists(topic, aliasEnv)) {
             NewTopic newTopic = new NewTopic(topic, NUM_PARTITIONS, (short) 1);
             kafkaAdmin.get(aliasEnv).createOrModifyTopics(newTopic);
         }
     }
 
-    private String checkIfTopicExists(final String topic, final AliasEnv aliasEnv) {
+    private boolean checkIfTopicExists(final String topic, final AliasEnv aliasEnv) {
         Map<String, List<PartitionInfo>> topics = kafkaConsumer.get(aliasEnv).listTopics();
         return topics.keySet().stream()
-                .filter(topic::equals)
-                .findFirst().orElse(null);
+                .anyMatch(topic::equals);
     }
 
     @Data

@@ -14,8 +14,6 @@ import com.knubisoft.testlum.testing.model.scenario.Rabbit;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.RmqHeader;
 import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
-import com.rabbitmq.http.client.Client;
-import com.rabbitmq.http.client.domain.QueueInfo;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +21,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -50,8 +49,6 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     private Map<AliasEnv, RabbitTemplate> rabbitTemplate;
     @Autowired(required = false)
     private Map<AliasEnv, AmqpAdmin> amqpAdmin;
-    @Autowired(required = false)
-    private Map<AliasEnv, Client> rabbitMqClient;
 
     public RabbitMQInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -203,17 +200,13 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     }
 
     private void createQueueIfNotExists(final String queue, final AliasEnv aliasEnv) {
-        if (isNull(checkIfQueueExists(queue, aliasEnv))) {
-            amqpAdmin.get(aliasEnv).declareQueue();
+        if (!checkIfQueueExists(queue, aliasEnv)) {
+            amqpAdmin.get(aliasEnv).declareQueue(new Queue(queue));
         }
     }
 
-    private QueueInfo checkIfQueueExists(final String queue, final AliasEnv aliasEnv) {
-        List<QueueInfo> queues = rabbitMqClient.get(aliasEnv).getQueues();
-        return queues.stream()
-                .filter(queueInfo -> queue.equals(queueInfo.getName()))
-                .findFirst()
-                .orElse(null);
+    private boolean checkIfQueueExists(final String queue, final AliasEnv aliasEnv) {
+        return !isNull(amqpAdmin.get(aliasEnv).getQueueProperties(queue));
     }
 
     @Data

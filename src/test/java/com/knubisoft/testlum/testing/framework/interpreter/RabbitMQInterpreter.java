@@ -106,7 +106,6 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         String message = getMessage(send);
         LogUtil.logBrokerActionInfo(SEND_ACTION, send.getRoutingKey(), message);
         result.put(MESSAGE_TO_SEND, message);
-
         createQueueIfNotExists(send.getRoutingKey(), aliasEnv);
         sendMessage(send, message, aliasEnv);
     }
@@ -142,7 +141,6 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                                  final AliasEnv aliasEnv) {
         String message = getMessage(receive);
         LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), message);
-
         createQueueIfNotExists(receive.getQueue(), aliasEnv);
         List<RabbitMQMessage> actualRmqMessages = receiveRmqMessages(receive, aliasEnv);
         compareMessages(actualRmqMessages, message, result);
@@ -202,7 +200,13 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     }
 
     private void createQueueIfNotExists(final String queue, final AliasEnv aliasEnv) {
-        amqpAdmin.get(aliasEnv).declareQueue(new Queue(queue));
+        if (!checkIfQueueExists(queue, aliasEnv)) {
+            amqpAdmin.get(aliasEnv).declareQueue(new Queue(queue));
+        }
+    }
+
+    private boolean checkIfQueueExists(final String queue, final AliasEnv aliasEnv) {
+        return !isNull(amqpAdmin.get(aliasEnv).getQueueProperties(queue));
     }
 
     @Data

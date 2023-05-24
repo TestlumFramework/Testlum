@@ -50,7 +50,7 @@ public class StringPrettifier {
     //use this method only to add value to CommandResult
     public String asJsonResult(final String json) {
         if (StringUtils.isBlank(json)) {
-            return json;
+            return DelimiterConstant.EMPTY;
         }
         try {
             return getPrettyJson(json);

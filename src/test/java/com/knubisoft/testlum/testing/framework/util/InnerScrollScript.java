@@ -15,27 +15,27 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static java.lang.String.format;
-import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Getter
 public enum InnerScrollScript {
 
-    VERTICAL_BY_CSS_SELECTOR(locator -> nonNull(locator.getCssSelector()),
+    VERTICAL_BY_CSS_SELECTOR(locator -> isNotBlank(locator.getCssSelector()),
             Locator::getCssSelector,
             "document.querySelector('%s').scrollBy(0, %s)",
             "document.querySelector('%s').scrollBy(0, document.querySelector('%s')"
                     + ".scrollHeight * %s)"),
-    VERTICAL_BY_ID(locator -> nonNull(locator.getId()),
+    VERTICAL_BY_ID(locator -> isNotBlank(locator.getId()),
             Locator::getId,
             "document.getElementById('%s').scrollBy(0, %s)",
             "document.getElementById('%s').scrollBy(0, document.getElementById('%s')"
                     + ".scrollHeight * %s)"),
-    VERTICAL_BY_CLASS(locator -> nonNull(locator.getClazz()),
+    VERTICAL_BY_CLASS(locator -> isNotBlank(locator.getClazz()),
             Locator::getClazz,
             "document.getElementsByClassName('%s').scrollBy(0, %s)",
             "document.getElementsByClassName('%s').scrollBy(0, "
                     + "document.getElementsByClassName('%s').scrollHeight * %s)"),
-    VERTICAL_BY_XPATH(locator -> nonNull(locator.getXpath()),
+    VERTICAL_BY_XPATH(locator -> isNotBlank(locator.getXpath()),
             Locator::getXpath,
             "document.evaluate('%s', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
                     + ".singleNodeValue.scrollBy(0, %s)",

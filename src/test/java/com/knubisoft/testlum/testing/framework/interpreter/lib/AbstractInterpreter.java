@@ -3,7 +3,6 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.constant.MigrationConstant;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.framework.exception.FileLinkingException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
@@ -12,7 +11,6 @@ import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 
 import java.io.File;
@@ -25,6 +23,7 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMENT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.POSITION_COMMAND_LOG;
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 public abstract class AbstractInterpreter<T extends AbstractCommand> {
@@ -37,7 +36,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
 
     public final void apply(final T o, final CommandResult result) {
         log.info(format(POSITION_COMMAND_LOG, dependencies.getPosition().get(), o.getClass().getSimpleName()));
-        if (StringUtils.isNotBlank(o.getComment())) {
+        if (isNotBlank(o.getComment())) {
             log.info(COMMENT_LOG, o.getComment());
         }
         if (ConditionUtil.isTrue(o.getCondition(), dependencies.getScenarioContext(), result)) {
@@ -81,15 +80,10 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     }
 
     protected String getContentIfFile(final String fileOrContent) {
-        try {
-            if (fileOrContent.endsWith(MigrationConstant.JSON_EXTENSION)) {
-                return FileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
-            }
-        } catch (FileLinkingException e) {
-            // pass
+        if (isNotBlank(fileOrContent) && fileOrContent.endsWith(MigrationConstant.JSON_EXTENSION)) {
+            return FileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
         }
         return fileOrContent;
-
     }
 
     public CompareBuilder newCompare() {

@@ -8,8 +8,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Kafka;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeader;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
@@ -23,6 +23,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,13 +151,17 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
     private List<KafkaMessage> receiveKafkaMessages(final ReceiveKafkaMessage receive, final AliasEnv aliasEnv) {
         Duration timeout = Duration.ofMillis(receive.getTimeoutMillis());
-
-        kafkaConsumer.get(aliasEnv).subscribe(Collections.singleton(receive.getTopic()));
-        ConsumerRecords<String, String> consumerRecords = kafkaConsumer.get(aliasEnv).poll(timeout);
+        KafkaConsumer<String, String> consumer = kafkaConsumer.get(aliasEnv);
+        consumer.subscribe(Collections.singleton(receive.getTopic()));
+        ConsumerRecords<String, String> consumerRecords = consumer.poll(timeout);
 
         Iterable<ConsumerRecord<String, String>> iterable = consumerRecords.records(receive.getTopic());
         Iterator<ConsumerRecord<String, String>> iterator = iterable.iterator();
-        return convertConsumerRecordsToKafkaMessages(iterator);
+        List<KafkaMessage> kafkaMessages = convertConsumerRecordsToKafkaMessages(iterator);
+        if (receive.isCommit()) {
+            consumer.commitSync();
+        }
+        return kafkaMessages;
     }
 
     private List<KafkaMessage> convertConsumerRecordsToKafkaMessages(
@@ -214,8 +219,16 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     }
 
     private void createTopicIfNotExists(final String topic, final AliasEnv aliasEnv) {
-        NewTopic newTopic = new NewTopic(topic, NUM_PARTITIONS, (short) 1);
-        kafkaAdmin.get(aliasEnv).createOrModifyTopics(newTopic);
+        if (!checkIfTopicExists(topic, aliasEnv)) {
+            NewTopic newTopic = new NewTopic(topic, NUM_PARTITIONS, (short) 1);
+            kafkaAdmin.get(aliasEnv).createOrModifyTopics(newTopic);
+        }
+    }
+
+    private boolean checkIfTopicExists(final String topic, final AliasEnv aliasEnv) {
+        Map<String, List<PartitionInfo>> topics = kafkaConsumer.get(aliasEnv).listTopics();
+        return topics.keySet().stream()
+                .anyMatch(topic::equals);
     }
 
     @Data

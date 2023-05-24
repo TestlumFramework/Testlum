@@ -395,15 +395,15 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .anyMatch(nativeUdids::contains);
     }
 
-    private void validateFileExistenceInDataFolder(final String commandFile) {
-        if (isNotBlank(commandFile)) {
-            FileSearcher.searchFileFromDataFolder(commandFile);
+    private void validateFileExistenceInDataFolder(final String fileName) {
+        if (isNotBlank(fileName)) {
+            FileSearcher.searchFileFromDataFolder(fileName);
         }
     }
 
-    private void validateFileIfExist(final File xmlFile, final String commandFile) {
-        if (isNotBlank(commandFile)) {
-            FileSearcher.searchFileFromDir(xmlFile, commandFile);
+    private void validateFileIfExist(final File xmlFile, final String fileName) {
+        if (isNotBlank(fileName)) {
+            FileSearcher.searchFileFromDir(xmlFile, fileName);
         }
     }
 

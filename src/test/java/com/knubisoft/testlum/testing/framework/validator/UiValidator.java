@@ -51,8 +51,8 @@ import static java.util.Objects.nonNull;
 public class UiValidator {
 
     private static final Map<String, Map<UiConfigPredicate, Function<UiConfig, ?>>> UI_CONFIG_METHOD_MAP;
-    private static final Map<String, Map<UiConfigPredicate, Function<UiConfig, String>>> BASE_URL_METHOD_MAP;
-    private static final Map<String, Map<UiConfigPredicate, Function<UiConfig, ConnectionType>>> CONNECTION_METHOD_MAP;
+    private static final Map<String, Map<UiConfigPredicate, UiConfigToBaseurl>> BASE_URL_METHOD_MAP;
+    private static final Map<String, Map<UiConfigPredicate, UiConfigToConnectionType>> CONNECTION_METHOD_MAP;
     private static final String DEVICE = "device";
     private static final String BROWSER = "browser";
 
@@ -69,20 +69,20 @@ public class UiValidator {
         }});
         UI_CONFIG_METHOD_MAP = Collections.unmodifiableMap(configMethodMap);
 
-        final Map<String, Map<UiConfigPredicate, Function<UiConfig, String>>> baseUrlMethodMap = new HashMap<>();
-        baseUrlMethodMap.put(WEB.name(), new HashMap<UiConfigPredicate, Function<UiConfig, String>>() {{
+        final Map<String, Map<UiConfigPredicate, UiConfigToBaseurl>> baseUrlMethodMap = new HashMap<>();
+        baseUrlMethodMap.put(WEB.name(), new HashMap<UiConfigPredicate, UiConfigToBaseurl>() {{
             put(c -> nonNull(c.getWeb()), c -> c.getWeb().getBaseUrl());
         }});
-        baseUrlMethodMap.put(MOBILE_BROWSER.name(), new HashMap<UiConfigPredicate, Function<UiConfig, String>>() {{
+        baseUrlMethodMap.put(MOBILE_BROWSER.name(), new HashMap<UiConfigPredicate, UiConfigToBaseurl>() {{
             put(c -> nonNull(c.getMobilebrowser()), c -> c.getMobilebrowser().getBaseUrl());
         }});
         BASE_URL_METHOD_MAP = Collections.unmodifiableMap(baseUrlMethodMap);
 
-        final Map<String, Map<UiConfigPredicate, Function<UiConfig, ConnectionType>>> cTMethodMap = new HashMap<>();
-        cTMethodMap.put(NATIVE.name(), new HashMap<UiConfigPredicate, Function<UiConfig, ConnectionType>>() {{
+        final Map<String, Map<UiConfigPredicate, UiConfigToConnectionType>> cTMethodMap = new HashMap<>();
+        cTMethodMap.put(NATIVE.name(), new HashMap<UiConfigPredicate, UiConfigToConnectionType>() {{
             put(c -> nonNull(c.getNative()), c -> c.getNative().getConnection());
         }});
-        cTMethodMap.put(MOBILE_BROWSER.name(), new HashMap<UiConfigPredicate, Function<UiConfig, ConnectionType>>() {{
+        cTMethodMap.put(MOBILE_BROWSER.name(), new HashMap<UiConfigPredicate, UiConfigToConnectionType>() {{
             put(c -> nonNull(c.getMobilebrowser()), c -> c.getMobilebrowser().getConnection());
         }});
         CONNECTION_METHOD_MAP = Collections.unmodifiableMap(cTMethodMap);
@@ -415,4 +415,6 @@ public class UiValidator {
     }
 
     private interface UiConfigPredicate extends Predicate<UiConfig> { }
+    private interface UiConfigToBaseurl extends Function<UiConfig, String> { }
+    private interface UiConfigToConnectionType extends Function<UiConfig, ConnectionType> { }
 }

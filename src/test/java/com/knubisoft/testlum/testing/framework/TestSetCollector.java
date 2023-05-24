@@ -165,6 +165,6 @@ public class TestSetCollector {
     }
 
     private boolean variationsExist(final MappingResult entry) {
-        return nonNull(entry.scenario) && (StringUtils.isNotBlank(entry.scenario.getVariations()));
+        return nonNull(entry.scenario) && StringUtils.isNotBlank(entry.scenario.getVariations());
     }
 }

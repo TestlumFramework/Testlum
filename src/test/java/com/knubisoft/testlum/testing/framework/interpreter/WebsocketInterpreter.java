@@ -12,23 +12,22 @@ import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
+import com.knubisoft.testlum.testing.framework.util.WaitUtil;
 import com.knubisoft.testlum.testing.model.scenario.Websocket;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSubscribe;
 import lombok.SneakyThrows;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.awaitility.Awaitility;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -45,11 +44,13 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SUBSCR
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @InterpreterForClass(Websocket.class)
 public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
-    private static final int ALL_AVAILABLE_MESSAGES = -1;
+    private static final int ALL_AVAILABLE_MESSAGES = 0;
+    private static final int CHECK_PERIOD_MS = 100;
 
     @Autowired(required = false)
     private Map<AliasEnv, WebsocketConnectionManager> wsConnectionSupplier;
@@ -148,8 +149,8 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         LogUtil.logWebsocketActionInfo(RECEIVE_ACTION, wsReceive.getComment(), wsReceive.getTopic(), expectedContent);
 
         final List<Object> actualContent = getMessagesToCompare(wsReceive, aliasEnv);
-        result.setActual(PrettifyStringJson.getJSONResult(toString(actualContent)));
-        result.setExpected(PrettifyStringJson.getJSONResult(expectedContent));
+        result.setActual(StringPrettifier.asJsonResult(toString(actualContent)));
+        result.setExpected(StringPrettifier.asJsonResult(expectedContent));
 
         executeComparison(actualContent, expectedContent);
     }
@@ -162,37 +163,35 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
     private List<Object> achieveRequiredMessageCount(final WebsocketReceive wsReceive,
                                                      final LinkedList<String> receivedMessages) {
-        int requiredMessageCount = nonNull(wsReceive.getMaxRecords())
-                ? wsReceive.getMaxRecords().intValue() : ALL_AVAILABLE_MESSAGES;
+        int requiredMessageCount = nonNull(wsReceive.getLimit())
+                ? wsReceive.getLimit().intValue() : ALL_AVAILABLE_MESSAGES;
 
         checkMessagesAreReceived(requiredMessageCount, wsReceive.getTimeoutMillis(), receivedMessages);
 
-        if (requiredMessageCount > 0) {
-            return IntStream.range(0, requiredMessageCount)
-                    .mapToObj(id -> receivedMessages.pollFirst())
-                    .map(this::toJsonObject)
-                    .collect(Collectors.toList());
-        }
-        return Collections.unmodifiableList(receivedMessages);
+        int limit = (requiredMessageCount <= ALL_AVAILABLE_MESSAGES) ? receivedMessages.size() : requiredMessageCount;
+        return IntStream.range(0, limit)
+                .mapToObj(id -> receivedMessages.pollFirst())
+                .filter(Objects::nonNull)
+                .map(this::toJsonObject)
+                .collect(Collectors.toList());
     }
 
     private void checkMessagesAreReceived(final int requiredMessageCount,
                                           final long timeoutMillis,
                                           final LinkedList<String> receivedMessages) {
-        if (requiredMessageCount <= 0 && timeoutMillis > 0) {
-            Awaitility.waitAtMost(timeoutMillis, TimeUnit.MILLISECONDS);
-//            TimeUnit.MILLISECONDS.sleep(timeoutMillis);
+        if (requiredMessageCount <= ALL_AVAILABLE_MESSAGES && timeoutMillis > 0) {
+            WaitUtil.sleep(timeoutMillis, TimeUnit.MILLISECONDS);
         }
         if (requiredMessageCount > receivedMessages.size() && timeoutMillis > 0) {
-            Awaitility.waitAtMost(timeoutMillis, TimeUnit.MILLISECONDS)
-                    .until(() -> receivedMessages.size() >= requiredMessageCount);
+            WaitUtil.waitUntil(() -> receivedMessages.size() >= requiredMessageCount,
+                    timeoutMillis, TimeUnit.MILLISECONDS, CHECK_PERIOD_MS);
         }
     }
 
     private Object toJsonObject(final String content) {
-        if (nonNull(content)
-                && (content.startsWith(OPEN_BRACE) && content.endsWith(CLOSE_BRACE))
-                || (content.startsWith(OPEN_SQUARE_BRACKET) && content.endsWith(CLOSE_SQUARE_BRACKET))) {
+        if (isNotBlank(content)
+                && ((content.startsWith(OPEN_BRACE) && content.endsWith(CLOSE_BRACE))
+                || (content.startsWith(OPEN_SQUARE_BRACKET) && content.endsWith(CLOSE_SQUARE_BRACKET)))) {
             return JacksonMapperUtil.readValue(content, Object.class);
         }
         return content;
@@ -223,7 +222,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     }
 
     private String getValue(final String message, final String file) {
-        return StringUtils.isNotBlank(message)
+        return isNotBlank(message)
                 ? message
                 : FileSearcher.searchFileToString(file, dependencies.getFile());
     }

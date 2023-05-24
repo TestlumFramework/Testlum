@@ -44,6 +44,7 @@ import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
 public final class HttpUtil {
@@ -164,7 +165,7 @@ public final class HttpUtil {
 
     private void addTextBody(final MultipartEntityBuilder builder,
                              final PartParam param) {
-        builder.addTextBody(param.getName(), param.getData(), nonNull(param.getContentType())
+        builder.addTextBody(param.getName(), param.getData(), isNotBlank(param.getContentType())
                 ? ContentType.parse(param.getContentType()) : ContentType.DEFAULT_TEXT);
     }
 
@@ -172,7 +173,7 @@ public final class HttpUtil {
                              final PartFile file,
                              final InterpreterDependencies dependencies) {
         File from = FileSearcher.searchFileFromDir(dependencies.getFile(), file.getFileName());
-        builder.addBinaryBody(file.getName(), from, nonNull(file.getContentType())
+        builder.addBinaryBody(file.getName(), from, isNotBlank(file.getContentType())
                 ? ContentType.parse(file.getContentType()) : ContentType.DEFAULT_BINARY, file.getFileName());
     }
 

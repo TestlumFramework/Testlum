@@ -71,7 +71,7 @@ public final class LogMessage {
 
     public static final String EXCEPTION_LOG = ANSI_RED
             + "----------------    EXCEPTION    -----------------"
-            + NEW_LOG_LINE + " {}" + NEW_LOG_LINE
+            + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
             + "--------------------------------------------------" + ANSI_RESET;
 
     public static final String INITIAL_STRUCTURE_GENERATION_SUCCESS = ANSI_GREEN + "Initial structure by path "
@@ -103,12 +103,14 @@ public final class LogMessage {
 
     public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
 
-    public static final String WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND =
-            "Websocket message handler for topic <{}> not found";
+    public static final String WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND = ANSI_ORANGE
+            + "Websocket message handler for topic <{}> not found" + ANSI_RESET;
+    public static final String WEBSOCKET_ALREADY_SUBSCRIBED = ANSI_ORANGE
+            + "The topic <{}> has already been subscribed to" + ANSI_RESET;
     public static final String WEBSOCKET_CONNECTION_ESTABLISHED = "Connection established: {}";
     public static final String WEBSOCKET_CONNECTION_CLOSED = "Connection closed: {}";
-    public static final String UNABLE_TO_DISCONNECT_WEBSOCKET_BECAUSE_CLOSED = "Unable to disconnect session "
-            + "because the connection was closed";
+    public static final String UNABLE_TO_DISCONNECT_WEBSOCKET_BECAUSE_CLOSED = ANSI_ORANGE
+            + "Unable to disconnect session because the connection was closed" + ANSI_RESET;
 
     public static final String TESTS_RUN_FAILED = "Test run failed";
     public static final String TEST_EXECUTION_SUMMARY_TEMPLATE =

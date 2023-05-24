@@ -6,8 +6,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
-import com.knubisoft.testlum.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Shell;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -87,9 +87,9 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
 
     private void processExpectedAndActual(final int expectedCode, final Shell shell, final CommandResult result) {
         String actual = String.format(EXPECTED_RESULT, expectedCode);
-        String expectedContent = getContentIfFile(shell.getFile());
-        result.setActual(PrettifyStringJson.getJSONResult(actual));
-        result.setExpected(PrettifyStringJson.getJSONResult(expectedContent));
+        String expectedContent = inject(getContentIfFile(shell.getFile()));
+        result.setActual(StringPrettifier.asJsonResult(actual));
+        result.setExpected(StringPrettifier.asJsonResult(expectedContent));
 
         CompareBuilder compare = newCompare()
                 .withActual(actual)

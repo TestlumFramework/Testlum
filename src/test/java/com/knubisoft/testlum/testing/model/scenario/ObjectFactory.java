@@ -822,6 +822,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link RedisQuery }
+     * 
+     */
+    public RedisQuery createRedisQuery() {
+        return new RedisQuery();
+    }
+
+    /**
      * Create an instance of {@link SendSqsMessage }
      * 
      */

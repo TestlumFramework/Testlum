@@ -83,8 +83,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILE
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NAME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NEW_LOG_LINE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REDIS_ARGUMENTS;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REDIS_COMMAND;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_BY_LOG;
@@ -258,14 +257,14 @@ public class LogUtil {
     public void logAllQueries(final List<String> queries, final String alias) {
         log.info(ALIAS_LOG, alias);
         queries.forEach(query -> log.info(
-                format(TABLE_FORMAT, "Query", query.replaceAll(REGEX_MANY_SPACES, SPACE))));
+                format(TABLE_FORMAT, QUERY, query.replaceAll(REGEX_MANY_SPACES, SPACE))));
     }
 
     public void logAllRedisQueries(final List<RedisQuery> redisQueries, final String alias) {
         log.info(ALIAS_LOG, alias);
         redisQueries.forEach(query -> {
-            log.info(format(TABLE_FORMAT, REDIS_COMMAND, query.getCommand()));
-            log.info(format(TABLE_FORMAT, REDIS_ARGUMENTS, query.getArg()));
+            String args = String.join(SPACE, query.getArg());
+            log.info(format(TABLE_FORMAT, QUERY, query.getCommand() + SPACE + args));
         });
     }
 

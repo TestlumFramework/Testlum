@@ -12,7 +12,6 @@ import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
-import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import com.knubisoft.testlum.testing.model.scenario.RmqHeaders;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
@@ -124,8 +123,6 @@ public class ResultUtil {
     private static final String TEXT = "Text";
     private static final String SOURCE = "Source";
     private static final String QUERIES = "Queries";
-    private static final String REDIS_COMMAND = "Command";
-    private static final String REDIS_ARGUMENTS = "Arguments";
     private static final String ENABLE = "Enable";
     private static final String DISABLE = "Disable";
     private static final String ENDPOINT = "Endpoint";

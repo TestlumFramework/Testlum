@@ -49,8 +49,8 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
     protected String getActual(final Redis redis, final CommandResult result) {
         String alias = redis.getAlias();
         final List<RedisQuery> redisQueries = redis.getQuery();
-        LogUtil.logAllRedisQueries(redisQueries, redis.getAlias());
         final List<String> queries = convertToListString(redisQueries);
+        LogUtil.logAllRedisQueries(redisQueries, redis.getAlias());
         ResultUtil.addDatabaseMetaData(alias, queries, result);
         final StorageOperation.StorageOperationResult apply = redisOperation.apply(new ListSource(queries), alias);
         return toString(apply.getRaw());

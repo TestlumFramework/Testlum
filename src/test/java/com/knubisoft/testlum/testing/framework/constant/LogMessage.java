@@ -191,4 +191,5 @@ public final class LogMessage {
     public static final String NATIVE_APPIUM_INFO = NATIVE_INFO + " | udid = %s";
     public static final String EXTRACT_THEN_COMPARE = "Extract from web element then compare";
     public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a screenshot then compare";
+    public static final String QUERY = "Query";
 }

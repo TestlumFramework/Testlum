@@ -14,6 +14,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.MockDriver;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
+import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
@@ -56,10 +57,10 @@ public class ScenarioRunner {
     private CommandToInterpreterMap cmdToInterpreterMap;
 
     public ScenarioResult run() {
-        int scenarioId = SCENARIO_ID_GENERATOR.incrementAndGet();
         prepare();
-        prepareScenarioResult(scenarioId);
-        LogUtil.logScenarioDetails(scenarioArguments, scenarioId);
+        injectScenario();
+        prepareScenarioResult();
+        LogUtil.logScenarioDetails(scenarioArguments, scenarioResult.getId());
         runScenarioCommands();
         return scenarioResult;
     }
@@ -70,9 +71,18 @@ public class ScenarioRunner {
         this.cmdToInterpreterMap = createClassToInterpreterMap(dependencies);
     }
 
-    private void prepareScenarioResult(final int scenarioId) {
+    private void injectScenario() {
         Scenario scenario = scenarioArguments.getScenario();
-        scenarioResult.setId(scenarioId);
+        List<AbstractCommand> commands = InjectionUtil.injectObject(
+                scenario.getCommands(), dependencies.getScenarioContext());
+        scenario.getCommands().clear();
+        scenario.getCommands().addAll(commands);
+        scenario.setOverview(InjectionUtil.injectObject(scenario.getOverview(), dependencies.getScenarioContext()));
+    }
+
+    private void prepareScenarioResult() {
+        Scenario scenario = scenarioArguments.getScenario();
+        scenarioResult.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
         scenarioResult.setOverview(scenario.getOverview());
         scenarioResult.setName(scenario.getOverview().getName());
         scenarioResult.setTags(scenario.getTags());

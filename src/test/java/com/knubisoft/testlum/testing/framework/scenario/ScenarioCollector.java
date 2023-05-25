@@ -77,8 +77,9 @@ public class ScenarioCollector {
     }
 
     private Scenario convertXmlToScenario(final File xmlFile) {
-        Scenario scenario = XMLParsers.forScenario().process(xmlFile, scenarioValidator);
+        Scenario scenario = XMLParsers.forScenario().process(xmlFile);
         updateScenario(scenario);
+        scenarioValidator.validate(scenario, xmlFile);
         return scenario;
     }
 

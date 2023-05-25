@@ -225,5 +225,5 @@ public class ExceptionMessage {
             + "the same setup for <authCustomClassName> argument inside <auth> command in all enabled environments "
             + "(%s files)\n" + ANSI_RESET;
     public static final String REDIS_COMMAND_NOT_FOUND = "Redis command was not provided";
-    public static final String DRAG_N_DROP_FILE_NOT_FOUND = "File for Drag and Drop is not provided";
+    public static final String FILE_NOT_FOUND = "File not found: %s";
 }

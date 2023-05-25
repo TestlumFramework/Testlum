@@ -17,7 +17,7 @@ import org.openqa.selenium.interactions.Actions;
 
 import java.io.File;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DRAG_N_DROP_FILE_NOT_FOUND;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FILE_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.JavascriptConstant.QUERY_FOR_DRAG_AND_DROP;
 
 @ExecutorForClass(DragAndDrop.class)
@@ -52,7 +52,7 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
 
     public void dropFile(final WebElement target, final File source) {
         if (!source.exists()) {
-            throw new DefaultFrameworkException(DRAG_N_DROP_FILE_NOT_FOUND, source);
+            throw new DefaultFrameworkException(FILE_NOT_FOUND, source);
         }
         JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
         WebElement input = (WebElement) javascriptExecutor.executeScript(QUERY_FOR_DRAG_AND_DROP, target);

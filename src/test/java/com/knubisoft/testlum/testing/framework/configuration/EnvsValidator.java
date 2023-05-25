@@ -4,7 +4,6 @@ import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.model.global_config.Environment;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.List;

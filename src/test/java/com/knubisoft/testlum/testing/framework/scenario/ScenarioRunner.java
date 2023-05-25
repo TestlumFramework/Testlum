@@ -60,7 +60,6 @@ public class ScenarioRunner {
         prepare();
         injectScenario();
         prepareScenarioResult();
-        LogUtil.logScenarioDetails(scenarioArguments, scenarioResult.getId());
         runScenarioCommands();
         return scenarioResult;
     }
@@ -73,10 +72,6 @@ public class ScenarioRunner {
 
     private void injectScenario() {
         Scenario scenario = scenarioArguments.getScenario();
-        List<AbstractCommand> commands = InjectionUtil.injectObject(
-                scenario.getCommands(), dependencies.getScenarioContext());
-        scenario.getCommands().clear();
-        scenario.getCommands().addAll(commands);
         scenario.setOverview(InjectionUtil.injectObject(scenario.getOverview(), dependencies.getScenarioContext()));
     }
 
@@ -95,6 +90,7 @@ public class ScenarioRunner {
     }
 
     private void runScenarioCommands() {
+        LogUtil.logScenarioDetails(scenarioArguments, scenarioResult.getId());
         try {
             runCommands(scenarioArguments.getScenario().getCommands());
         } catch (StopSignalException ignore) {

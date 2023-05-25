@@ -23,7 +23,7 @@ public class ArgumentsUtils {
     public static final Pattern LINUX_PATH_PATTERN =
             Pattern.compile("^(-p=|--path=)(./|/|(./[a-zA-Z0-9_-]+)|(/[a-zA-Z0-9_-]+))+$");
     public static final Pattern WIN_PATH_PATTERN =
-            Pattern.compile("^(-p=|--path=)(.\\\\|\\\\|(.\\\\[a-zA-Z0-9_-]+)|(\\\\[a-zA-Z0-9_-]+))+$");
+            Pattern.compile("^(-p=|--path=)(([a-zA-Z]:\\\\[a-zA-Z0-9_-]*)|(\\\\[a-zA-Z0-9_-]*))+$");
     public static final Pattern STRUCTURE_PATH_PATTERN =
             Pattern.compile("^(-g=|--generate=)(./|/|(./[a-zA-Z0-9_-]+)|(/[a-zA-Z0-9_-]+))+$");
 

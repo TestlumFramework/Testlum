@@ -78,15 +78,15 @@ public class ScenarioCollector {
 
     private Scenario convertXmlToScenario(final File xmlFile) {
         Scenario scenario = XMLParsers.forScenario().process(xmlFile);
-        scenarioValidator.validate(updateScenario(scenario), xmlFile);
+        updateScenario(scenario);
+        scenarioValidator.validate(scenario, xmlFile);
         return scenario;
     }
 
-    private Scenario updateScenario(final Scenario scenario) {
+    private void updateScenario(final Scenario scenario) {
         List<AbstractCommand> updatedCommands = updateCommands(scenario.getCommands());
         scenario.getCommands().clear();
         scenario.getCommands().addAll(updatedCommands);
-        return scenario;
     }
 
     private List<AbstractCommand> updateCommands(final List<AbstractCommand> commands) {

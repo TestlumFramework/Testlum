@@ -220,4 +220,6 @@ public class ExceptionMessage {
     public static final String AUTH_CUSTOM_CLASS_NAME_NOT_MATCH = ANSI_RED + "<api> integration with alias <%s> must "
             + "have the same setup for <authCustomClassName> argument in <auth> command in all enabled environments"
             + " (" + INTEGRATION_CONFIG_FILENAME + " files)" + ANSI_RESET;
+    public static final String SAME_PORT_OR_ENDPOINT = ANSI_RED + "<%s> %s used more than once in your "
+            + "environments (" + INTEGRATION_CONFIG_FILENAME + " files)" + ANSI_RESET;
 }

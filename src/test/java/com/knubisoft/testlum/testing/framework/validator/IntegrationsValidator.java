@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.global_config.Auth;
+import com.knubisoft.testlum.testing.model.global_config.DatabaseConfig;
 import com.knubisoft.testlum.testing.model.global_config.Integration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 
@@ -33,6 +34,8 @@ import static java.util.Objects.nonNull;
 public class IntegrationsValidator {
 
     private static final Map<IntegrationsPredicate, IntegrationListMethod> INTEGRATIONS_TO_LISTS_MAP;
+    public static final String URL_OCCURS_MORE_THAN_ONCE = "<%s> url used more than once in your enabled environments ("
+            + INTEGRATION_CONFIG_FILENAME + " files)";
 
     static {
         final Map<IntegrationsPredicate, IntegrationListMethod> map = new HashMap<>(20);
@@ -70,8 +73,31 @@ public class IntegrationsValidator {
                 List<String> defaultAliases = getDefaultAliases(integrations);
                 checkIfAliasesDifferAndMatch(new ArrayList<>(integrationsMap.keySet()), defaultAliases, integrations);
                 checkApiAuth(integrations);
+                validateUrlsAndPorts(integrations);
             }
         }
+    }
+
+    private void validateUrlsAndPorts(List<? extends List<? extends Integration>> integrationsList) {
+        List<? extends List<? extends DatabaseConfig>> dbConfigs = integrationsList.stream()
+                .map(integrations -> integrations.stream()
+                        .filter(integration -> integration instanceof DatabaseConfig)
+                        .map(integration -> (DatabaseConfig) integration)
+                        .collect(Collectors.toList()))
+                .filter(databaseConfigs -> !databaseConfigs.isEmpty())
+                .collect(Collectors.toList());
+        if (!dbConfigs.isEmpty()) {
+            checkAllEnvsUrls(dbConfigs);
+        }
+    }
+
+    private void checkAllEnvsUrls(final List<? extends List<? extends DatabaseConfig>> dbConfigs) {
+        Set<String> urlsSet = new HashSet<>();
+        dbConfigs.forEach(dbConfigList -> dbConfigList.forEach(dbConfig -> {
+            if (!urlsSet.add(dbConfig.getConnectionUrl())) {
+                throw new DefaultFrameworkException(URL_OCCURS_MORE_THAN_ONCE, dbConfig.getConnectionUrl());
+            }
+        }));
     }
 
     private List<List<? extends Integration>> getAllEnvsIntegrations(final List<Integrations> integrationsList,

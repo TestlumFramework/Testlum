@@ -181,21 +181,6 @@ public class UiValidator {
         }));
     }
 
-    private void validateDevicesAndBrowsers(final String configName,
-                                            final List<String> envList,
-                                            final List<UiConfig> uiConfigs,
-                                            final List<? extends List<?>> deviceOrBrowserList) {
-        List<?> defaultDevicesOrBrowsers = getDefaultDevicesOrBrowsers(deviceOrBrowserList);
-        checkAliasesDifferAndMatch(configName, envList, defaultDevicesOrBrowsers, deviceOrBrowserList);
-        if (configName.equals(NATIVE.name()) || configName.equals(MOBILE_BROWSER.name())) {
-            List<? extends AbstractDevice> defaultDevices = (List<? extends AbstractDevice>) defaultDevicesOrBrowsers;
-            List<? extends List<? extends AbstractDevice>> deviceList =
-                    (List<? extends List<? extends AbstractDevice>>) deviceOrBrowserList;
-            checkPlatformNameMatch(configName, defaultDevices, deviceList);
-            validateDeviceCapabilities(configName, envList, uiConfigs, defaultDevices, deviceList);
-        }
-    }
-
     private List<? extends List<?>> getDevicesOrBrowsers(final List<UiConfig> uiConfigs,
                                                          final UiConfigPredicate nonNullPredicate,
                                                          final Function<UiConfig, ?> configMethod) {
@@ -218,6 +203,21 @@ public class UiValidator {
     private <T> boolean isDeviceOrBrowserEnabled(final T deviceOrBrowser) {
         return deviceOrBrowser instanceof AbstractDevice ? ((AbstractDevice) deviceOrBrowser).isEnabled()
                 : ((AbstractBrowser) deviceOrBrowser).isEnabled();
+    }
+
+    private void validateDevicesAndBrowsers(final String configName,
+                                            final List<String> envList,
+                                            final List<UiConfig> uiConfigs,
+                                            final List<? extends List<?>> deviceOrBrowserList) {
+        List<?> defaultDevicesOrBrowsers = getDefaultDevicesOrBrowsers(deviceOrBrowserList);
+        checkAliasesDifferAndMatch(configName, envList, defaultDevicesOrBrowsers, deviceOrBrowserList);
+        if (configName.equals(NATIVE.name()) || configName.equals(MOBILE_BROWSER.name())) {
+            List<? extends AbstractDevice> defaultDevices = (List<? extends AbstractDevice>) defaultDevicesOrBrowsers;
+            List<? extends List<? extends AbstractDevice>> deviceList =
+                    (List<? extends List<? extends AbstractDevice>>) deviceOrBrowserList;
+            checkPlatformNameMatch(configName, defaultDevices, deviceList);
+            validateDeviceCapabilities(configName, envList, uiConfigs, defaultDevices, deviceList);
+        }
     }
 
     private <T> List<?> getDefaultDevicesOrBrowsers(final List<? extends List<? extends T>> deviceOrBrowserList) {
@@ -244,6 +244,14 @@ public class UiValidator {
         }
     }
 
+    private static <T> List<String> getDefaultAliasesList(final List<T> defaultAliasesList) {
+        return defaultAliasesList.get(0) instanceof AbstractDevice
+                ? ((List<AbstractDevice>) defaultAliasesList).stream()
+                .map(AbstractDevice::getAlias).collect(Collectors.toList())
+                : ((List<AbstractBrowser>) defaultAliasesList).stream()
+                .map(AbstractBrowser::getAlias).collect(Collectors.toList());
+    }
+
     private <T> String getAlias(final T deviceOrBrowser) {
         return deviceOrBrowser instanceof AbstractDevice
                 ? ((AbstractDevice) deviceOrBrowser).getAlias() : ((AbstractBrowser) deviceOrBrowser).getAlias();
@@ -258,12 +266,17 @@ public class UiValidator {
                 .replace(TestResourceSettings.getInstance().getTestResourcesFolder().getPath(), StringUtils.EMPTY);
     }
 
-    private static <T> List<String> getDefaultAliasesList(final List<T> defaultAliasesList) {
-        return defaultAliasesList.get(0) instanceof AbstractDevice
-                ? ((List<AbstractDevice>) defaultAliasesList).stream()
-                .map(AbstractDevice::getAlias).collect(Collectors.toList())
-                : ((List<AbstractBrowser>) defaultAliasesList).stream()
-                .map(AbstractBrowser::getAlias).collect(Collectors.toList());
+    private void checkPlatformNameMatch(final String configName,
+                                        final List<? extends AbstractDevice> defaultDevicesList,
+                                        final List<? extends List<? extends AbstractDevice>> devicesList) {
+        for (List<? extends AbstractDevice> devices : devicesList) {
+            for (AbstractDevice device : devices) {
+                if (defaultDevicesList.stream()
+                        .anyMatch(d -> !d.getPlatformName().value().equals(device.getPlatformName().value()))) {
+                    throw new DefaultFrameworkException(DEVICE_PLATFORMS_NOT_MATCH, configName, device.getAlias());
+                }
+            }
+        }
     }
 
     private void validateDeviceCapabilities(final String configName,
@@ -278,19 +291,6 @@ public class UiValidator {
         if (configName.equals(NATIVE.name())) {
             checkNativeCapabilities(configName, envList, uiConfigs, getAllNativeDevices(deviceList),
                     getDefaultNativeDeviceMap(defaultDeviceList));
-        }
-    }
-
-    private void checkPlatformNameMatch(final String configName,
-                                        final List<? extends AbstractDevice> defaultDevicesList,
-                                        final List<? extends List<? extends AbstractDevice>> devicesList) {
-        for (List<? extends AbstractDevice> devices : devicesList) {
-            for (AbstractDevice device : devices) {
-                if (defaultDevicesList.stream()
-                        .anyMatch(d -> !d.getPlatformName().value().equals(device.getPlatformName().value()))) {
-                    throw new DefaultFrameworkException(DEVICE_PLATFORMS_NOT_MATCH, configName, device.getAlias());
-                }
-            }
         }
     }
 

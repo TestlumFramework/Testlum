@@ -401,7 +401,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
     private void validateFileExistenceInScenarioFolder(final File xmlFile, final String commandFile) {
         if (isNotBlank(commandFile)) {
-            FileSearcher.searchFileFromScenarioFolder(xmlFile, commandFile);
+            FileSearcher.searchFileFromDir(xmlFile, commandFile);
         }
     }
 

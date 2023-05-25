@@ -21,7 +21,6 @@ import java.util.Optional;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DUPLICATE_FILENAME;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DUPLICATE_FOLDER_NAME;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FILE_NOT_FOUND;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -66,12 +65,6 @@ public final class FileSearcher {
             throw new FileLinkingException(DATA_FOLDER, DATA_FOLDER, targetName);
         }
         return file;
-    }
-    public void searchFileFromScenarioFolder(final File scenarioFolder, final String fileName) {
-        final File file = FileSearcher.searchFileFromDir(scenarioFolder, fileName);
-        if (!file.exists()) {
-            throw new DefaultFrameworkException(FILE_NOT_FOUND, file);
-        }
     }
 
     public Optional<File> searchFileFromEnvFolder(final String folder, final String fileName) {

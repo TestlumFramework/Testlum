@@ -46,15 +46,15 @@ import static java.util.Objects.nonNull;
 
 public class IntegrationsValidator {
 
-    private static final Map<IntegrationsPredicate, IntegrationListMethod> INTEGRATIONS_TO_LISTS_MAP;
-    private static final Map<IntegrationPredicate, Function<Integration, ?>> INTEGRATIONS_LISTS;
+    private static final Map<IntegrationsPredicate, IntegrationsListMethod> INTEGRATIONS_TO_LISTS_MAP;
+    private static final Map<IntegrationPredicate, IntegrationListMethod> INTEGRATIONS_LISTS;
     private static final String URL = "url";
     private static final String PORT = "port";
     private static final String API_KEY = "api key";
     private static final String ENDPOINT = "endpoint";
 
     static {
-        final Map<IntegrationsPredicate, IntegrationListMethod> map1 = new HashMap<>(20);
+        final Map<IntegrationsPredicate, IntegrationsListMethod> map1 = new HashMap<>(20);
         map1.put(i -> nonNull(i.getApis()), i -> i.getApis().getApi());
         map1.put(i -> nonNull(i.getWebsockets()), i -> i.getWebsockets().getApi());
         map1.put(i -> nonNull(i.getS3Integration()), i -> i.getS3Integration().getS3());
@@ -77,7 +77,7 @@ public class IntegrationsValidator {
         map1.put(i -> nonNull(i.getElasticsearchIntegration()), i -> i.getElasticsearchIntegration().getElasticsearch());
         INTEGRATIONS_TO_LISTS_MAP = Collections.unmodifiableMap(map1);
 
-        final Map<IntegrationPredicate, Function<Integration, ?>> map2 = new HashMap<>();
+        final Map<IntegrationPredicate, IntegrationListMethod> map2 = new HashMap<>();
         map2.put(i -> i instanceof DatabaseConfig, integration -> integration);
         map2.put(i -> i instanceof Clickhouse, integration -> integration);
         map2.put(i -> i instanceof Redis, integration -> integration);
@@ -95,7 +95,7 @@ public class IntegrationsValidator {
     }
 
     public void validateIntegrations(final Map<String, Integrations> integrationsMap) {
-        for (Map.Entry<IntegrationsPredicate, IntegrationListMethod> entry : INTEGRATIONS_TO_LISTS_MAP.entrySet()) {
+        for (Map.Entry<IntegrationsPredicate, IntegrationsListMethod> entry : INTEGRATIONS_TO_LISTS_MAP.entrySet()) {
             List<? extends List<? extends Integration>> integrations = getAllEnvsIntegrations(
                     new ArrayList<>(integrationsMap.values()), entry.getKey(), entry.getValue());
             if (!integrations.isEmpty() && integrations.size() != integrationsMap.keySet().size()) {
@@ -112,10 +112,10 @@ public class IntegrationsValidator {
 
     private List<List<? extends Integration>> getAllEnvsIntegrations(final List<Integrations> integrationsList,
                                                                      final IntegrationsPredicate notNullPredicate,
-                                                                     final IntegrationListMethod integrationExtractor) {
+                                                                     final IntegrationsListMethod integrationsMethod) {
         return integrationsList.stream()
                 .filter(notNullPredicate)
-                .map(integrationExtractor)
+                .map(integrationsMethod)
                 .map(integrations -> integrations.stream()
                         .filter(Integration::isEnabled)
                         .collect(Collectors.toList()))
@@ -187,7 +187,7 @@ public class IntegrationsValidator {
     }
 
     private void validateUrlsAndPorts(List<? extends List<? extends Integration>> integrationsList) {
-        for (Map.Entry<IntegrationPredicate, Function<Integration, ?>> entry : INTEGRATIONS_LISTS.entrySet()) {
+        for (Map.Entry<IntegrationPredicate, IntegrationListMethod> entry : INTEGRATIONS_LISTS.entrySet()) {
             List<List<?>> integrations = getIntegrations(integrationsList, entry.getKey(), entry.getValue());
             checkDbConfigUrls(integrations);
             checkClickhouseUrls(integrations);
@@ -207,11 +207,11 @@ public class IntegrationsValidator {
 
     private List<List<?>> getIntegrations(final List<? extends List<? extends Integration>> integrationsList,
                                           final IntegrationPredicate instanceOfPredicate,
-                                          final Function<Integration,?> getIntegrationsMethod) {
+                                          final IntegrationListMethod integrationMethod) {
         return integrationsList.stream()
                 .map(integrationList -> integrationList.stream()
                         .filter(instanceOfPredicate)
-                        .map(getIntegrationsMethod)
+                        .map(integrationMethod)
                         .collect(Collectors.toList()))
                 .filter(integrationList -> !integrationList.isEmpty())
                 .collect(Collectors.toList());
@@ -375,5 +375,6 @@ public class IntegrationsValidator {
 
     private interface IntegrationPredicate extends Predicate<Integration> { }
     private interface IntegrationsPredicate extends Predicate<Integrations> { }
-    private interface IntegrationListMethod extends Function<Integrations, List<? extends Integration>> { }
+    private interface IntegrationListMethod extends Function<Integration, Integration> { }
+    private interface IntegrationsListMethod extends Function<Integrations, List<? extends Integration>> { }
 }

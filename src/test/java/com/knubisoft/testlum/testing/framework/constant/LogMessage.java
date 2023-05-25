@@ -192,4 +192,6 @@ public final class LogMessage {
     public static final String EXTRACT_THEN_COMPARE = "Extract from web element then compare";
     public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a screenshot then compare";
     public static final String QUERY = "Query";
+    public static final String SKIPPED_BODY_VALIDATION = "Validation of the response body skipped. "
+            + "No expected file provided";
 }

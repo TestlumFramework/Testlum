@@ -8,10 +8,12 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Redis;
+import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,17 +48,17 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
 
     protected String getActual(final Redis redis, final CommandResult result) {
         String alias = redis.getAlias();
-        final List<String> queries = getRedisQueryList(redis);
-        LogUtil.logAllQueries(queries, redis.getAlias());
+        final List<RedisQuery> redisQueries = redis.getQuery();
+        final List<String> queries = convertToListString(redisQueries);
+        LogUtil.logAllRedisQueries(redisQueries, redis.getAlias());
         ResultUtil.addDatabaseMetaData(alias, queries, result);
-        final StorageOperation.StorageOperationResult apply = redisOperation.apply(new ListSource(queries),
-                alias);
+        final StorageOperation.StorageOperationResult apply = redisOperation.apply(new ListSource(queries), alias);
         return toString(apply.getRaw());
     }
 
-    private List<String> getRedisQueryList(final Redis query) {
-        return query.getQuery().stream()
-                .map(this::inject)
+    private List<String> convertToListString(final List<RedisQuery> redisQueries) {
+        return redisQueries.stream()
+                .map(JacksonMapperUtil::writeValueAsString)
                 .collect(Collectors.toList());
     }
 }

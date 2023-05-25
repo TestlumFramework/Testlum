@@ -61,6 +61,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.END_UI
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SKIPPED_BODY_VALIDATION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXPRESSION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
@@ -369,6 +370,10 @@ public class LogUtil {
                     StringPrettifier.asJsonResult(StringPrettifier.cut(body))
                             .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
+    }
+
+    public void logBodyValidationSkipped() {
+        log.info(SKIPPED_BODY_VALIDATION);
     }
 
     public void logVarInfo(final String name, final String value) {

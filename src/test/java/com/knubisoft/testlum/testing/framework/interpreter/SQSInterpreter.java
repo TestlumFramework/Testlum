@@ -11,8 +11,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Sqs;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +25,9 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.QUEUE;
-import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 @InterpreterForClass(Sqs.class)
@@ -51,10 +52,10 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                                  final String alias) {
         log.info(ALIAS_LOG, alias);
         AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
-        if (nonNull(sqs.getSend())) {
+        if (isNotBlank(sqs.getSend())) {
             ResultUtil.addMessageBrokerGeneralMetaData(alias, SEND_ACTION, QUEUE, queueName, result);
             sendMessage(queueName, sqs.getSend(), aliasEnv, result);
-        } else if (nonNull(sqs.getReceive())) {
+        } else if (isNotBlank(sqs.getReceive())) {
             ResultUtil.addMessageBrokerGeneralMetaData(alias, RECEIVE_ACTION, QUEUE, queueName, result);
             setContextBody(receiveAndCompareMessage(queueName, sqs.getReceive(), aliasEnv, result));
         } else {
@@ -68,7 +69,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                              final CommandResult result) {
         String message = inject(getContentIfFile(fileOrContent));
         LogUtil.logBrokerActionInfo(SEND_ACTION, queue, message);
-        result.put("Message to send", PrettifyStringJson.getJSONResult(message));
+        result.put(MESSAGE_TO_SEND, StringPrettifier.asJsonResult(message));
         String queueUrl = createQueueIfNotExists(queue, aliasEnv);
         this.amazonSQS.get(aliasEnv).sendMessage(queueUrl, message);
     }
@@ -95,10 +96,10 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
 
     private void compareMessage(final String fileOrContent, final String message, final CommandResult result) {
         final CompareBuilder comparator = newCompare()
-                .withExpected(getContentIfFile(fileOrContent))
+                .withExpected(inject(getContentIfFile(fileOrContent)))
                 .withActual(message);
-        result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
-        result.setActual(PrettifyStringJson.getJSONResult(message));
+        result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
+        result.setActual(StringPrettifier.asJsonResult(message));
         comparator.exec();
     }
 

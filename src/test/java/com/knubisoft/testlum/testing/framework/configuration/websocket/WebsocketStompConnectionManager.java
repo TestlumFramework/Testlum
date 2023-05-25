@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UNABLE_TO_DISCONNECT_WEBSOCKET_BECAUSE_CLOSED;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_ALREADY_SUBSCRIBED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_CONNECTION_CLOSED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_CONNECTION_ESTABLISHED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND;
@@ -49,7 +50,10 @@ public class WebsocketStompConnectionManager implements WebsocketConnectionManag
     @Override
     public void subscribeTo(final String topic) {
         //todo save Subscription if 'unsubscribe' command is needed
-        if (nonNull(stompSession)) {
+        boolean isSubscribed = topicToMessageHandler.containsKey(topic);
+        if (isSubscribed) {
+            log.info(WEBSOCKET_ALREADY_SUBSCRIBED, topic);
+        } else if (nonNull(stompSession)) {
             WebsocketStompMessageHandler messageHandler = new WebsocketStompMessageHandler();
             stompSession.subscribe(topic, messageHandler);
             topicToMessageHandler.put(topic, messageHandler);

@@ -3,12 +3,10 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
-import com.knubisoft.testlum.testing.framework.locator.GlobalLocators;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
-import com.knubisoft.testlum.testing.model.pages.Locator;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.BackSpace;
 import com.knubisoft.testlum.testing.model.scenario.Copy;
@@ -96,7 +94,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
 
     private void cutCommand(final Cut cut, final CommandResult result) {
         action.keyDown(getWebElement(cut.getLocatorId(), result), ctrlKey)
-                .sendKeys("a").sendKeys("x").keyUp(ctrlKey).build().perform();
+                .sendKeys("x").keyUp(ctrlKey).build().perform();
     }
 
     private void pasteCommand(final Paste paste, final CommandResult result) {
@@ -106,7 +104,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
 
     private void copyCommand(final Copy copy, final CommandResult result) {
         action.keyDown(getWebElement(copy.getLocatorId(), result), ctrlKey)
-                .sendKeys("a").sendKeys("c").keyUp(ctrlKey).build().perform();
+                .sendKeys("c").keyUp(ctrlKey).build().perform();
     }
 
 
@@ -121,9 +119,8 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     }
 
     private WebElement getElementForHotKey(final String locatorId, final CommandResult result) {
-        Locator locator = GlobalLocators.getLocator(locatorId);
-        result.put(HOTKEY_LOCATOR, locator.getLocatorId());
-        log.info(HOTKEY_COMMAND_LOCATOR, locator.getLocatorId());
+        result.put(HOTKEY_LOCATOR, locatorId);
+        log.info(HOTKEY_COMMAND_LOCATOR, locatorId);
         return UiUtil.findWebElement(dependencies, locatorId);
     }
 

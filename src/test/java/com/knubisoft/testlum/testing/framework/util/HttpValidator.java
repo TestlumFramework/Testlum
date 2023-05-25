@@ -56,17 +56,15 @@ public final class HttpValidator {
     }
 
     public void validateBody(final String expectedBody, final String actualBody) {
-        if (nonNull(expectedBody)) {
-            try {
-                final String newActual = StringPrettifier.prettify(actualBody);
-                final String newExpected = StringPrettifier.prettify(expectedBody);
-                TreeComparator.compare(newExpected, newActual);
-            } catch (ComparisonException e) {
-                result.add(format(ExceptionMessage.HTTP_BODY_EXPECTED_BUT_WAS,
-                        StringPrettifier.cut(PrettifyStringJson.getJSONResult(expectedBody)),
-                        StringPrettifier.cut(PrettifyStringJson.getJSONResult(actualBody))));
-                interpreter.save(actualBody);
-            }
+        try {
+            interpreter.newCompare()
+                    .withExpected(expectedBody)
+                    .withActual(actualBody)
+                    .exec();
+        } catch (ComparisonException e) {
+            result.add(format(ExceptionMessage.HTTP_BODY_EXPECTED_BUT_WAS,
+                    StringPrettifier.asJsonResult(StringPrettifier.cut(expectedBody)),
+                    StringPrettifier.asJsonResult(StringPrettifier.cut(actualBody))));
         }
     }
 

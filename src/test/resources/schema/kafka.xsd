@@ -43,6 +43,7 @@
     <x:attribute name="topic" type="tns:nonEmptyString" use="required"/>
     <x:attribute name="timeoutMillis" type="x:long" default="1500"/>
     <x:attribute name="headers" type="x:boolean" default="true"/>
+    <x:attribute name="commit" type="x:boolean" default="false"/>
   </x:complexType>
 
   <x:complexType name="kafkaHeaders">

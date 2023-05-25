@@ -9,8 +9,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.PrettifyStringJson;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Mysql;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +31,14 @@ public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
 
     @Override
     protected void acceptImpl(final Mysql mySql, final CommandResult result) {
+        String expected = inject(getContentIfFile(mySql.getFile()));
         String actual = getActual(mySql, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpectedFile(mySql.getFile());
+                .withExpected(expected);
 
-        result.setExpected(PrettifyStringJson.getJSONResult(comparator.getExpected()));
-        result.setActual(PrettifyStringJson.getJSONResult(actual));
+        result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
+        result.setActual(StringPrettifier.asJsonResult(actual));
 
         comparator.exec();
         setContextBody(actual);

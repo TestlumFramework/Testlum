@@ -51,12 +51,6 @@
         <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
-    <x:simpleType name="positiveIntegerMin1">
-        <x:restriction base="x:int">
-            <x:minInclusive value="1"/>
-        </x:restriction>
-    </x:simpleType>
-
     <x:complexType name="runScenariosByTag">
         <x:choice>
             <x:element name="tag" type="tns:tagValue" maxOccurs="unbounded"/>

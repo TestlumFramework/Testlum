@@ -36,14 +36,15 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_HTTP_PROCESSING;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_BODY_CONTENT;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
 public final class HttpUtil {
@@ -124,7 +125,7 @@ public final class HttpUtil {
     private HttpEntity getFromRaw(final Body body,
                                   final ContentType contentType,
                                   final AbstractInterpreter<?> interpreter) {
-        String injectedContent = interpreter.inject(body.getRaw().replaceAll(REGEX_MANY_SPACES, EMPTY));
+        String injectedContent = interpreter.inject(body.getRaw().replaceAll(REGEX_MANY_SPACES, SPACE).trim());
         return newStringEntity(injectedContent, contentType);
     }
 
@@ -164,7 +165,7 @@ public final class HttpUtil {
 
     private void addTextBody(final MultipartEntityBuilder builder,
                              final PartParam param) {
-        builder.addTextBody(param.getName(), param.getData(), nonNull(param.getContentType())
+        builder.addTextBody(param.getName(), param.getData(), isNotBlank(param.getContentType())
                 ? ContentType.parse(param.getContentType()) : ContentType.DEFAULT_TEXT);
     }
 
@@ -172,7 +173,7 @@ public final class HttpUtil {
                              final PartFile file,
                              final InterpreterDependencies dependencies) {
         File from = FileSearcher.searchFileFromDir(dependencies.getFile(), file.getFileName());
-        builder.addBinaryBody(file.getName(), from, nonNull(file.getContentType())
+        builder.addBinaryBody(file.getName(), from, isNotBlank(file.getContentType())
                 ? ContentType.parse(file.getContentType()) : ContentType.DEFAULT_BINARY, file.getFileName());
     }
 

@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="topic" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="timeoutMillis" type="{http://www.w3.org/2001/XMLSchema}long" default="1500" /&gt;
  *       &lt;attribute name="headers" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
+ *       &lt;attribute name="commit" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -45,6 +46,8 @@ public class ReceiveKafkaMessage {
     protected Long timeoutMillis;
     @XmlAttribute(name = "headers")
     protected Boolean headers;
+    @XmlAttribute(name = "commit")
+    protected Boolean commit;
 
     /**
      * Gets the value of the value property.
@@ -172,6 +175,34 @@ public class ReceiveKafkaMessage {
      */
     public void setHeaders(Boolean value) {
         this.headers = value;
+    }
+
+    /**
+     * Gets the value of the commit property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isCommit() {
+        if (commit == null) {
+            return false;
+        } else {
+            return commit;
+        }
+    }
+
+    /**
+     * Sets the value of the commit property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setCommit(Boolean value) {
+        this.commit = value;
     }
 
 }

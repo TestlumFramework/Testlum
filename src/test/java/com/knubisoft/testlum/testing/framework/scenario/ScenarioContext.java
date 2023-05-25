@@ -37,6 +37,7 @@ public class ScenarioContext {
 
     private String get(final String key) {
         String result = contextMap.get(key);
+        //must be isNull
         if (isNull(result)) {
             throw new IllegalArgumentException(String.format(UNABLE_FIND_VALUE_FOR_KEY, key, contextMap));
         }

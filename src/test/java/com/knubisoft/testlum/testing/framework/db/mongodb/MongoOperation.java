@@ -37,7 +37,9 @@ public class MongoOperation implements StorageOperation {
         mongoDatabases.forEach((aliasEnv, database) -> {
             if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 for (String collectionName : database.listCollectionNames()) {
-                    database.getCollection(collectionName).drop();
+                    if (database.getCollection(collectionName).countDocuments() > 0) {
+                        database.getCollection(collectionName).drop();
+                    }
                 }
             }
         });

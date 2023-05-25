@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
@@ -155,7 +156,7 @@ public class UiUtil {
 
     public String getElementAttribute(final WebElement webElement, final String attributeName) {
         String attribute = webElement.getAttribute(attributeName);
-        if (Objects.isNull(attribute)) {
+        if (StringUtils.isBlank(attribute)) {
             throw new DefaultFrameworkException(WEB_ELEMENT_ATTRIBUTE_NOT_EXIST, attributeName);
         }
         return attribute;

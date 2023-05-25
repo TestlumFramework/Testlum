@@ -14,6 +14,7 @@ import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
+import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
@@ -60,6 +61,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.END_UI
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SKIPPED_BODY_VALIDATION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXPRESSION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
@@ -82,6 +84,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILE
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NAME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NEW_LOG_LINE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_BY_LOG;
@@ -255,7 +258,15 @@ public class LogUtil {
     public void logAllQueries(final List<String> queries, final String alias) {
         log.info(ALIAS_LOG, alias);
         queries.forEach(query -> log.info(
-                format(TABLE_FORMAT, "Query", query.replaceAll(REGEX_MANY_SPACES, SPACE))));
+                format(TABLE_FORMAT, QUERY, query.replaceAll(REGEX_MANY_SPACES, SPACE))));
+    }
+
+    public void logAllRedisQueries(final List<RedisQuery> redisQueries, final String alias) {
+        log.info(ALIAS_LOG, alias);
+        redisQueries.forEach(query -> {
+            String args = String.join(SPACE, query.getArg());
+            log.info(format(TABLE_FORMAT, QUERY, query.getCommand() + SPACE + args));
+        });
     }
 
     public void logSqlException(final Exception ex, final String query) {
@@ -269,7 +280,7 @@ public class LogUtil {
 
     public void logBrokerActionInfo(final String action, final String destination, final String content) {
         log.info(LogMessage.BROKER_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), destination,
-                PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+                StringPrettifier.asJsonResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
     public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {
@@ -327,15 +338,17 @@ public class LogUtil {
             log.info(DESTINATION_LOG, destination);
         }
         if (isNotBlank(content)) {
-            log.info(CONTENT_LOG, PrettifyStringJson.getJSONResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+            log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
     }
 
     public void logLambdaInfo(final String alias, final String functionName, final String payload) {
         log.info(ALIAS_LOG, alias);
         log.info(LAMBDA_FUNCTION_LOG, functionName);
-        log.info(LAMBDA_PAYLOAD_LOG,
-                PrettifyStringJson.getJSONResult(payload).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+        if (isNotBlank(payload)) {
+            log.info(LAMBDA_PAYLOAD_LOG,
+                    StringPrettifier.asJsonResult(payload).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+        }
     }
 
     public void logHttpInfo(final String alias, final String method, final String endpoint) {
@@ -354,9 +367,13 @@ public class LogUtil {
     public void logBody(final String body) {
         if (isNotBlank(body)) {
             log.info(BODY_LOG,
-                    PrettifyStringJson.getJSONResult(StringPrettifier.cut(body))
+                    StringPrettifier.asJsonResult(StringPrettifier.cut(body))
                             .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
+    }
+
+    public void logBodyValidationSkipped() {
+        log.info(SKIPPED_BODY_VALIDATION);
     }
 
     public void logVarInfo(final String name, final String value) {

@@ -30,6 +30,8 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NUM_OF_ENABLED_INTEGRATIONS_NOT_MATCH;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SAME_INTEGRATION_ALIAS;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class IntegrationsValidator {
 
@@ -216,7 +218,7 @@ public class IntegrationsValidator {
                                           final String integrationName) {
         String defaultCustomClassName = authList.get(0).getAuthCustomClassName();
         for (Auth auth : authList) {
-            if ((Objects.isNull(auth.getAuthCustomClassName()) && nonNull(defaultCustomClassName))
+            if ((isBlank(auth.getAuthCustomClassName()) && isNotBlank(defaultCustomClassName))
                     || !Objects.equals(auth.getAuthCustomClassName(), defaultCustomClassName)) {
                 throw new DefaultFrameworkException(AUTH_CUSTOM_CLASS_NAME_NOT_MATCH,
                         integrationName, INTEGRATION_CONFIG_FILENAME);

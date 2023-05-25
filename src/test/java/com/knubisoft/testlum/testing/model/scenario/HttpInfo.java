@@ -1,13 +1,14 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -20,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="response" type="{http://www.knubisoft.com/testlum/testing/model/scenario}response" minOccurs="0"/&gt;
+ *         &lt;element name="response" type="{http://www.knubisoft.com/testlum/testing/model/scenario}response"/&gt;
  *         &lt;element name="header" type="{http://www.knubisoft.com/testlum/testing/model/scenario}header" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="endpoint" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}endpointPattern" /&gt;
@@ -47,6 +48,7 @@ import javax.xml.bind.annotation.XmlType;
 })
 public abstract class HttpInfo {
 
+    @XmlElement(required = true)
     protected Response response;
     protected List<Header> header;
     @XmlAttribute(name = "endpoint", required = true)

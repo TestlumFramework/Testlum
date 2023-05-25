@@ -96,8 +96,15 @@ public class TestSetCollector {
     //CHECKSTYLE:ON
 
     private Stream<Arguments> getArgumentsWithoutUiSteps(final MappingResult entry) {
-        ScenarioArguments scenarioArguments = buildScenarioArguments(entry);
-        return Stream.of(convertToNamedArguments(scenarioArguments));
+        if (variationsExist(entry)) {
+            return getVariationList(entry).stream().map(variations -> getArgumentsWithoutUiSteps(entry, variations));
+        }
+        return Stream.of(getArgumentsWithoutUiSteps(entry, new HashMap<>()));
+    }
+
+    private Arguments getArgumentsWithoutUiSteps(final MappingResult entry, final Map<String, String> variations) {
+        ScenarioArguments scenarioArguments = buildScenarioArguments(entry, variations);
+        return convertToNamedArguments(scenarioArguments);
     }
 
     private Stream<Arguments> getArgumentsWithUiSteps(final MappingResult entry,
@@ -105,8 +112,8 @@ public class TestSetCollector {
                                                       final String mobilebrowserAlias,
                                                       final String nativeAlias) {
         if (variationsExist(entry)) {
-            return getVariationList(entry).stream().map(variation ->
-                    getArgumentsWithUiSteps(entry, browserAlias, mobilebrowserAlias, nativeAlias, variation));
+            return getVariationList(entry).stream().map(variations ->
+                    getArgumentsWithUiSteps(entry, browserAlias, mobilebrowserAlias, nativeAlias, variations));
         } else {
             return Stream.of(
                     getArgumentsWithUiSteps(entry, browserAlias, mobilebrowserAlias, nativeAlias, new HashMap<>()));
@@ -117,9 +124,9 @@ public class TestSetCollector {
                                               final String browserAlias,
                                               final String mobilebrowserAlias,
                                               final String nativeAlias,
-                                              final Map<String, String> variation) {
+                                              final Map<String, String> variations) {
         ScenarioArguments scenarioArguments = buildScenarioArguments(
-                entry, browserAlias, mobilebrowserAlias, nativeAlias, variation);
+                entry, browserAlias, mobilebrowserAlias, nativeAlias, variations);
         return convertToNamedArguments(scenarioArguments);
     }
 
@@ -127,7 +134,7 @@ public class TestSetCollector {
                                                      final String browserAlias,
                                                      final String mobilebrowserAlias,
                                                      final String nativeAlias,
-                                                     final Map<String, String> variation) {
+                                                     final Map<String, String> variations) {
         return ScenarioArguments.builder()
                 .path(getShortPath(entry.file))
                 .file(entry.file)
@@ -136,18 +143,18 @@ public class TestSetCollector {
                 .browser(browserAlias)
                 .mobilebrowserDevice(mobilebrowserAlias)
                 .nativeDevice(nativeAlias)
-                .variation(variation)
+                .variations(variations)
                 .containsUiSteps(true)
                 .build();
     }
 
-    private ScenarioArguments buildScenarioArguments(final MappingResult entry) {
+    private ScenarioArguments buildScenarioArguments(final MappingResult entry, final Map<String, String> variations) {
         return ScenarioArguments.builder()
                 .path(getShortPath(entry.file))
                 .file(entry.file)
                 .scenario(entry.scenario)
                 .exception(entry.exception)
-                .variation(new HashMap<>())
+                .variations(variations)
                 .build();
     }
 
@@ -160,11 +167,11 @@ public class TestSetCollector {
                 .replace(TestResourceSettings.getInstance().getScenariosFolder().toString(), StringUtils.EMPTY);
     }
 
-    private List<Map<String, String>> getVariationList(final MappingResult entry) {
-        return GlobalVariations.getVariations(entry.scenario.getVariations());
-    }
-
     private boolean variationsExist(final MappingResult entry) {
         return nonNull(entry.scenario) && StringUtils.isNotBlank(entry.scenario.getVariations());
+    }
+
+    private List<Map<String, String>> getVariationList(final MappingResult entry) {
+        return GlobalVariations.getVariations(entry.scenario.getVariations());
     }
 }

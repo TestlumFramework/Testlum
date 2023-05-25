@@ -38,6 +38,8 @@ public final class LogMessage {
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
     public static final String CONDITION_LOG = format(TABLE_FORMAT, "Condition", "<{}> : {}");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
+    public static final String QUERY = format(TABLE_FORMAT, "Query", "{}");
+    public static final String REDIS_QUERY = format(TABLE_FORMAT, "Query", "{} {}");
     public static final String ERROR_SQL_QUERY = ANSI_RED + "Error while executing SQL query -> "
             + "{}" + ANSI_ORANGE + NEW_LOG_LINE + "{}" + ANSI_RESET;
     public static final String SCENARIO_NUMBER_AND_PATH_LOG = ANSI_GREEN
@@ -148,6 +150,8 @@ public final class LogMessage {
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "HTTP method", "{}");
     public static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
     public static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
+    public static final String SKIPPED_BODY_VALIDATION = "Validation of the response body was skipped "
+            + "because of no expected file";
     public static final String SMTP_HOST_LOG = format(TABLE_FORMAT, "SMTP Host", "{}");
     public static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");
     public static final String SUBJECT_LOG = format(TABLE_FORMAT, "Subject", "{}");
@@ -181,8 +185,6 @@ public final class LogMessage {
     public static final String SERVER_ERROR_RESPONSE_LOG = format(TABLE_FORMAT, "Request failed", "{}");
     public static final String LOCAL_STORAGE_KEY = format(TABLE_FORMAT, "Local storage key", "{}");
     public static final String CLEAR_COOKIES_AFTER = format(TABLE_FORMAT, "Clear cookies after", "{}");
-    public static final String REDIS_COMMAND = "Command";
-    public static final String REDIS_ARGUMENTS = "Arguments";
 
     public static final String BROWSER_INFO = "%s | type = %s | version = %s";
     public static final String MOBILEBROWSER_INFO = "Device name = %s | platform = %s | version = %s";
@@ -191,5 +193,4 @@ public final class LogMessage {
     public static final String NATIVE_APPIUM_INFO = NATIVE_INFO + " | udid = %s";
     public static final String EXTRACT_THEN_COMPARE = "Extract from web element then compare";
     public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a screenshot then compare";
-    public static final String QUERY = "Query";
 }

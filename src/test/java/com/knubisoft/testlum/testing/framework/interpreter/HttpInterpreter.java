@@ -1,7 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -24,9 +23,9 @@ import com.knubisoft.testlum.testing.model.scenario.HttpInfo;
 import com.knubisoft.testlum.testing.model.scenario.HttpInfoWithBody;
 import com.knubisoft.testlum.testing.model.scenario.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
+import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -74,12 +73,14 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                               final String actualBody,
                               final HttpValidator httpValidator,
                               final CommandResult result) {
-        String body = StringUtils.isBlank(expected.getFile())
-                ? DelimiterConstant.EMPTY
-                : FileSearcher.searchFileToString(expected.getFile(), dependencies.getFile());
-        result.setActual(StringPrettifier.asJsonResult(actualBody));
-        result.setExpected(StringPrettifier.asJsonResult(body));
-        httpValidator.validateBody(body, actualBody);
+        if (StringUtils.isNotBlank(expected.getFile())) {
+            String body = FileSearcher.searchFileToString(expected.getFile(), dependencies.getFile());
+            result.setActual(StringPrettifier.asJsonResult(actualBody));
+            result.setExpected(StringPrettifier.asJsonResult(body));
+            httpValidator.validateBody(body, actualBody);
+        } else {
+            LogUtil.logBodyValidationSkipped();
+        }
     }
 
     private void validateHeaders(final Response expected,

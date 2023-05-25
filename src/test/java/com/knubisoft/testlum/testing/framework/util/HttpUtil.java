@@ -36,8 +36,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_HTTP_PROCESSING;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_BODY_CONTENT;
 import static java.lang.String.format;
@@ -125,7 +125,7 @@ public final class HttpUtil {
     private HttpEntity getFromRaw(final Body body,
                                   final ContentType contentType,
                                   final AbstractInterpreter<?> interpreter) {
-        String injectedContent = interpreter.inject(body.getRaw().replaceAll(REGEX_MANY_SPACES, EMPTY));
+        String injectedContent = interpreter.inject(body.getRaw().replaceAll(REGEX_MANY_SPACES, SPACE).trim());
         return newStringEntity(injectedContent, contentType);
     }
 

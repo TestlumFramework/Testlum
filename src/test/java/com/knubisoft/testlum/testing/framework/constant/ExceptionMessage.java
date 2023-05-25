@@ -175,9 +175,7 @@ public class ExceptionMessage {
             + "check your configuration in config file";
     public static final String MOBILEBROWSER_DRIVER_NOT_INIT = "The webDriver for <mobilebrowser> has not been "
             + "initialized, check your configuration in config file";
-
-
-
+    public static final String REDIS_COMMAND_NOT_FOUND = "Redis command was not provided";
     public static final String UI_CONFIG_NOT_PRESENT_IN_ALL_ENVS = ANSI_RED + "Number of enabled <%s> blocks does not"
             + " match the number of enabled environments" + ANSI_RESET;
     public static final String BASE_URLS_ARE_SAME = ANSI_RED + "<baseUrl> must be different for each <%s> block in all "
@@ -198,42 +196,6 @@ public class ExceptionMessage {
     public static final String DEVICE_PLATFORMS_NOT_MATCH = ANSI_RED + "<device> in <%s> block with alias <%s> must "
             + "have the same <platformName> param in all enabled environments (" + UI_CONFIG_FILENAME + " files)"
             + ANSI_RESET;
-    public static final String SAME_APPIUM_SERVER_URLS = ANSI_RED + "Appium server url must be different "
-            + "for each <%s> block in all enabled environments (%s files)" + ANSI_RESET;
-    public static final String NUM_OF_ENABLED_DEVICES_NOT_MATCH = ANSI_RED + "Num of enabled "
-            + "devices in <%s> block must be the same in all enabled environments (%s files)" + ANSI_RESET;
-    public static final String ALIASES_NOT_MATCH_IN_UI_CONFIG = ANSI_RED + "Every single <device> in <%s> block must "
-            + "have the same <alias> argument in all enabled environments (%s files)\n"
-            + "Invalid aliases: %s" + ANSI_RESET;
-    public static final String PLATFORMS_NOT_MATCH = ANSI_RED + "Every single <device> in <%s> block must have the"
-            + " same <platformName> argument in all enabled environments (%s files)" + ANSI_RESET;
-    public static final String DIFFERENT_BROWSER_ALIASES = ANSI_RED + "Every single <browser> in "
-            + "<web> block must have the same <alias> argument in all enabled environments (%s files)\n"
-            + "Invalid aliases: %s" + ANSI_RESET;
-    public static final String NUM_OF_ENABLED_BROWSERS_NOT_MATCH = ANSI_RED + "Num of enabled web browsers must be the "
-            + "same in all enabled environments (%s files)" + ANSI_RESET;
-
-    public static final String INTEGRATION_NOT_ENABLED_IN_ALL_ENVS = "<%s> integrations must be configured in all "
-            + "enabled envs or not configured at all";
-    public static final String SAME_INTEGRATION_ALIAS = ANSI_RED
-            + "More than one enabled <%s> integration was found with alias <%s> in the config: %s"
-            + ANSI_RESET;
-    public static final String NUM_OF_ENABLED_INTEGRATIONS_NOT_MATCH = ANSI_RED + "Every single <%s> integration must "
-            + "be either present and enabled or absent/disabled in all enabled environments (%s files)\n" + ANSI_RESET;
-    public static final String INTEGRATION_ALIAS_NOT_MATCH = ANSI_RED + "Every single <%s> integration must have the"
-            + " same <alias> argument in all enabled environments (%s files)\n" + ANSI_RESET;
-    public static final String AUTH_NUM_NOT_MATCH = ANSI_RED + "Every single <%s> integration must have the same"
-            + " setup for <auth> command in all enabled environments (%s files)" + ANSI_RESET;
-    public static final String AUTH_LOGOUT_NOT_MATCH = ANSI_RED + "Every single <%s> integration must have the"
-            + " same setup for <autoLogout> argument inside <auth> command in all enabled environments (%s files)\n"
-            + ANSI_RESET;
-    public static final String AUTH_STRATEGY_NOT_MATCH = ANSI_RED + "Every single <%s> integration must have the same "
-            + "setup for <authStrategy> argument inside <auth> command in all enabled environments (%s files)\n"
-            + ANSI_RESET;
-    public static final String AUTH_CUSTOM_CLASS_NAME_NOT_MATCH = ANSI_RED + "Every single <%s> integration must have "
-            + "the same setup for <authCustomClassName> argument inside <auth> command in all enabled environments "
-            + "(%s files)\n" + ANSI_RESET;
-    public static final String REDIS_COMMAND_NOT_FOUND = "Redis command was not provided";
     public static final String CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE = ANSI_RED + "<device> with alias <%s> "
             + "in <%s> block has capabilities type that does not match with block <connection> type in the config by "
             + "path: %s" + ANSI_RESET;

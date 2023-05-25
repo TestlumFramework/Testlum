@@ -181,6 +181,8 @@ public final class LogMessage {
     public static final String SERVER_ERROR_RESPONSE_LOG = format(TABLE_FORMAT, "Request failed", "{}");
     public static final String LOCAL_STORAGE_KEY = format(TABLE_FORMAT, "Local storage key", "{}");
     public static final String CLEAR_COOKIES_AFTER = format(TABLE_FORMAT, "Clear cookies after", "{}");
+    public static final String REDIS_COMMAND = "Command";
+    public static final String REDIS_ARGUMENTS = "Arguments";
 
     public static final String BROWSER_INFO = "%s | type = %s | version = %s";
     public static final String MOBILEBROWSER_INFO = "Device name = %s | platform = %s | version = %s";
@@ -189,6 +191,7 @@ public final class LogMessage {
     public static final String NATIVE_APPIUM_INFO = NATIVE_INFO + " | udid = %s";
     public static final String EXTRACT_THEN_COMPARE = "Extract from web element then compare";
     public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a screenshot then compare";
+    public static final String QUERY = "Query";
     public static final String SKIPPED_BODY_VALIDATION = "Validation of the response body skipped. "
             + "No expected file provided";
 }

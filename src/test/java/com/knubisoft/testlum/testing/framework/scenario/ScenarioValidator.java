@@ -47,6 +47,7 @@ import com.knubisoft.testlum.testing.model.scenario.Body;
 import com.knubisoft.testlum.testing.model.scenario.Clickhouse;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithOptionalLocator;
 import com.knubisoft.testlum.testing.model.scenario.Dynamo;
+import com.knubisoft.testlum.testing.model.scenario.ElasticSearchResponse;
 import com.knubisoft.testlum.testing.model.scenario.Elasticsearch;
 import com.knubisoft.testlum.testing.model.scenario.FromFile;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
@@ -526,10 +527,11 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateElasticsearchCommand(final File xmlFile, final Elasticsearch elasticsearch) {
-        Stream.of(elasticsearch.getPost(), elasticsearch.getGet(), elasticsearch.getPut(), elasticsearch.getDelete())
-                .filter(Objects::nonNull)
-                .filter(v -> isNotBlank(v.getResponse().getFile()))
-                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v.getResponse().getFile()));
+        ElasticSearchResponse elasticSearchResponse = HttpUtil.getESHttpMethodMetadata(elasticsearch)
+                .getElasticSearchRequest().getResponse();
+        if (nonNull(elasticSearchResponse) && isNotBlank(elasticSearchResponse.getFile())) {
+            FileSearcher.searchFileFromDir(xmlFile, elasticSearchResponse.getFile());
+        }
     }
 
     private void validateRabbitCommand(final File xmlFile, final Rabbit rabbit) {

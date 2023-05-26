@@ -20,7 +20,7 @@ public class ScenarioArguments {
     private final String browser;
     private final String mobilebrowserDevice;
     private final String nativeDevice;
-    private final Map<String, String> variation;
+    private final Map<String, String> variations;
     private final boolean containsUiSteps;
 
     private String environment;

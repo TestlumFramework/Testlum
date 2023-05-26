@@ -190,7 +190,7 @@ public class ScenarioRunner {
         return InterpreterDependencies.builder()
                 .context(ctx)
                 .file(scenarioArguments.getFile())
-                .scenarioContext(new ScenarioContext(scenarioArguments.getVariation()))
+                .scenarioContext(new ScenarioContext(scenarioArguments.getVariations()))
                 .position(idGenerator)
                 .environment(scenarioArguments.getEnvironment())
                 .webDriver(createWebDriver())

@@ -10,6 +10,11 @@ public class InjectionUtil {
     public <T> T injectObject(final T t, final ScenarioContext scenarioContext) {
         String asJson = JacksonMapperUtil.writeValueAsString(t);
         String injected = scenarioContext.inject(asJson);
-        return JacksonMapperUtil.readValue(injected, (Class<T>) t.getClass());
+        try {
+            return JacksonMapperUtil.readValue(injected, (Class<T>) t.getClass());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 }

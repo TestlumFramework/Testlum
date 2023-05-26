@@ -247,7 +247,7 @@
 
     <x:simpleType name="xjpathPattern">
         <x:restriction base="x:string">
-            <x:pattern value="/.+|\$.+"/>
+            <x:pattern value="/.*|\$.+"/>
         </x:restriction>
     </x:simpleType>
 

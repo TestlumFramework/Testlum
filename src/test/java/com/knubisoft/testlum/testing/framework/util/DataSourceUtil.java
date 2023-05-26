@@ -17,6 +17,7 @@ public final class DataSourceUtil {
         setAdditionalHikariSettings(hikariDataSourceOriginal, dataSource);
         if (StringUtils.isNotBlank(dataSource.getSchema())) {
             hikariDataSourceOriginal.setSchema(dataSource.getSchema());
+            hikariDataSourceOriginal.setCatalog(dataSource.getSchema());
         }
         return hikariDataSourceOriginal;
     }

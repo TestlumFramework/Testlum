@@ -61,7 +61,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.END_UI
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SKIPPED_BODY_VALIDATION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXPRESSION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
@@ -85,6 +84,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NAME_L
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NEW_LOG_LINE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUERY;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REDIS_QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_BY_LOG;
@@ -94,6 +94,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_VALUE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SERVER_ERROR_RESPONSE_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SKIPPED_BODY_VALIDATION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SMTP_HOST_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SMTP_PORT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SOURCE_LOG;
@@ -104,7 +105,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_QUANTITY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_TYPE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_VALUE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
@@ -257,16 +257,13 @@ public class LogUtil {
 
     public void logAllQueries(final List<String> queries, final String alias) {
         log.info(ALIAS_LOG, alias);
-        queries.forEach(query -> log.info(
-                format(TABLE_FORMAT, QUERY, query.replaceAll(REGEX_MANY_SPACES, SPACE))));
+        queries.forEach(query -> log.info(QUERY, query.replaceAll(REGEX_MANY_SPACES, SPACE)));
     }
 
     public void logAllRedisQueries(final List<RedisQuery> redisQueries, final String alias) {
         log.info(ALIAS_LOG, alias);
-        redisQueries.forEach(query -> {
-            String args = String.join(SPACE, query.getArg());
-            log.info(format(TABLE_FORMAT, QUERY, query.getCommand() + SPACE + args));
-        });
+        redisQueries.forEach(query ->
+                log.info(REDIS_QUERY, query.getCommand(), String.join(SPACE, query.getArg())));
     }
 
     public void logSqlException(final Exception ex, final String query) {

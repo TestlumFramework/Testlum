@@ -20,7 +20,8 @@ public class OracleExecutor extends AbstractSqlExecutor {
             "SELECT x1.table_name, x1.constraint_name FROM user_tables t1, user_constraints x1 "
                     + "WHERE t1.table_name = x1.table_name AND x1.constraint_type <> 'C' "
                     + "ORDER BY x1.r_constraint_name NULLS FIRST";
-    private static final String SELECT_ORACLE_TABLE_NAMES = "SELECT table_name FROM user_tables";
+    private static final String SELECT_ORACLE_TABLE_NAMES = "SELECT table_name FROM user_tables "
+            + "WHERE table_name IN (SELECT table_name FROM user_tab_columns GROUP BY table_name HAVING COUNT(*) > 0)";
     private static final String DISABLE_CONSTRAINT = "ALTER TABLE %s DISABLE CONSTRAINT %s";
     private static final String TRUNCATE_TABLE = "TRUNCATE TABLE %1$s";
     private static final String ENABLE_CONSTRAINT = "ALTER TABLE %s ENABLE CONSTRAINT %s";

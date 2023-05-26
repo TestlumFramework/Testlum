@@ -3,6 +3,7 @@ package com.knubisoft.testlum.testing.framework.interpreter;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.testlum.testing.framework.db.source.FileSource;
+import com.knubisoft.testlum.testing.framework.db.source.ListSource;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -58,13 +59,21 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     private List<Source> createSourceList(final List<String> datasets) {
         return datasets.stream()
                 .map(this::createSource)
+                .map(this::injectQueries)
                 .collect(Collectors.toList());
     }
 
-    private FileSource createSource(final String datasetName) {
+    private Source createSource(final String datasetName) {
         File dataset = FileSearcher.searchFileFromDataFolder(datasetName);
         log.info(DATASET_PATH_LOG, dataset.getAbsolutePath());
         return new FileSource(dataset);
+    }
+
+    private Source injectQueries(final Source source) {
+        List<String> queries = source.getQueries().stream()
+                .map(this::inject)
+                .collect(Collectors.toList());
+        return new ListSource(queries);
     }
 
     private void applyDatasets(final List<Source> datasets,

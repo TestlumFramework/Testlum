@@ -25,6 +25,7 @@ import com.knubisoft.testlum.testing.model.scenario.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
+import org.junit.platform.commons.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -32,7 +33,6 @@ import org.springframework.http.HttpMethod;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
@@ -73,7 +73,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                               final String actualBody,
                               final HttpValidator httpValidator,
                               final CommandResult result) {
-        if (Objects.nonNull(expected.getFile())) {
+        if (StringUtils.isNotBlank(expected.getFile())) {
             String body = FileSearcher.searchFileToString(expected.getFile(), dependencies.getFile());
             result.setActual(StringPrettifier.asJsonResult(actualBody));
             result.setExpected(StringPrettifier.asJsonResult(body));

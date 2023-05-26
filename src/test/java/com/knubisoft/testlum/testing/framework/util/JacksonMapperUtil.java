@@ -30,10 +30,6 @@ public final class JacksonMapperUtil {
         return MAPPER.readValue(content, javaType);
     }
 
-    public ObjectMapper instance() {
-        return MAPPER_TYPE;
-    }
-
     @SneakyThrows
     public <T> T readValue(final File content, final Class<T> valueType) {
         return MAPPER.readValue(content, valueType);
@@ -76,5 +72,9 @@ public final class JacksonMapperUtil {
                 .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE);
+    }
+
+    public ObjectMapper instance() {
+        return MAPPER_TYPE;
     }
 }

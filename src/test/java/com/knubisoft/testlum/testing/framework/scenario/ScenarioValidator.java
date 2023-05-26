@@ -401,11 +401,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             FileSearcher.searchFileFromDataFolder(fileName);
         }
     }
-    private void validateFileExistenceInScenarioFolder(final File xmlFile, final String commandFile) {
-        if (isNotBlank(commandFile)) {
-            FileSearcher.searchFileFromDir(xmlFile, commandFile);
-        }
-    }
 
     private void validateFileIfExist(final File xmlFile, final String fileName) {
         if (isNotBlank(fileName)) {
@@ -618,7 +613,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             if (o instanceof Javascript) {
                 validateFileExistenceInDataFolder(((Javascript) o).getFile());
             } else if (o instanceof DragAndDrop) {
-                validateFileExistenceInScenarioFolder(xmlFile, ((DragAndDrop) o).getFilePath());
+                validateFileIfExist(xmlFile, ((DragAndDrop) o).getFilePath());
             } else if (o instanceof Scroll && ScrollType.INNER == ((Scroll) o).getType()) {
                 validateLocator((Scroll) o, NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
             } else if (o instanceof WebVar) {

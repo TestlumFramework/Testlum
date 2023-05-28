@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;

@@ -63,7 +63,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
     @Override
     protected void acceptImpl(final Websocket w, final CommandResult result) {
-        Websocket websocket = InjectionUtil.injectObject(w, new TypeReference<Websocket>() {},
+        Websocket websocket = InjectionUtil.injectObject(w, new TypeReference<Websocket>() { },
                 dependencies.getScenarioContext());
 
         List<CommandResult> subCommandsResultList = new LinkedList<>();

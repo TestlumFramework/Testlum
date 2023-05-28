@@ -74,7 +74,7 @@ public class ScenarioRunner {
 
     private void injectScenario() {
         Scenario scenario = scenarioArguments.getScenario();
-        scenario.setOverview(InjectionUtil.injectObject(scenario.getOverview(), new TypeReference<Overview>() {},
+        scenario.setOverview(InjectionUtil.injectObject(scenario.getOverview(), new TypeReference<Overview>() { },
                 dependencies.getScenarioContext()));
     }
 

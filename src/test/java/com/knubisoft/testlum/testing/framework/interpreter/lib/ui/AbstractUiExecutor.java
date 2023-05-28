@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.ui;
 
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
+import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 
 public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
@@ -13,8 +14,9 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
     }
 
     public final void apply(final T o, final CommandResult result) {
-        if (ConditionUtil.isTrue(o.getCondition(), dependencies.getScenarioContext(), result)) {
-            execute(o, result);
+        T t = InjectionUtil.injectObject(o, dependencies.getScenarioContext());
+        if (ConditionUtil.isTrue(t.getCondition(), dependencies.getScenarioContext(), result)) {
+            execute(t, result);
         }
     }
 

@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
+import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
@@ -35,12 +36,13 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     }
 
     public final void apply(final T o, final CommandResult result) {
-        log.info(format(POSITION_COMMAND_LOG, dependencies.getPosition().get(), o.getClass().getSimpleName()));
-        if (isNotBlank(o.getComment())) {
-            log.info(COMMENT_LOG, o.getComment());
+        T t = InjectionUtil.injectObject(o, dependencies.getScenarioContext());
+        log.info(format(POSITION_COMMAND_LOG, dependencies.getPosition().get(), t.getClass().getSimpleName()));
+        if (isNotBlank(t.getComment())) {
+            log.info(COMMENT_LOG, t.getComment());
         }
-        if (ConditionUtil.isTrue(o.getCondition(), dependencies.getScenarioContext(), result)) {
-            checkExecutionTime(o, () -> acceptImpl(o, result));
+        if (ConditionUtil.isTrue(t.getCondition(), dependencies.getScenarioContext(), result)) {
+            checkExecutionTime(t, () -> acceptImpl(t, result));
         }
     }
 

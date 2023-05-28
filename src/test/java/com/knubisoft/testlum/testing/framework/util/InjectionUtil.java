@@ -17,7 +17,7 @@ public class InjectionUtil {
         JsonNode jsonNode = JacksonMapperUtil.instance().readTree(injected);
 //        Class<T> aClass = (Class<T>) t.getClass();
 //        JavaType javaType = JacksonMapperUtil.instance().getTypeFactory().constructParametricType(aClass, aClass);
-        JavaType javaType = JacksonMapperUtil.instance().getTypeFactory().constructType(t.getClass());
+        JavaType javaType = JacksonMapperUtil.instance().constructType(t.getClass());
 //        return JacksonMapperUtil.readValue(injected, (Class<T>) t.getClass());
 //        return JacksonMapperUtil.instance().readValue(injected, javaType);
         return JacksonMapperUtil.instance().convertValue(jsonNode, javaType);

@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -14,7 +15,10 @@ public class InjectionUtil {
         String injected = scenarioContext.inject(asJson);
 //            JsonNode jsonNode = JacksonMapperUtil.instance().readTree(injected);
 //        T o = JacksonMapperUtil.instance().readerFor(t.getClass()).readValue(injected);
-        T o = JacksonMapperUtil.instance().readerFor(t.getClass()).createParser(injected).readValueAs((Class<T>)t.getClass());
+        Class<T> aClass = (Class<T>) t.getClass();
+        JavaType javaType = JacksonMapperUtil.instance().getTypeFactory().constructType(aClass);
+//        return JacksonMapperUtil.readValue(injected, (Class<T>) t.getClass());
+        T o = (T) JacksonMapperUtil.instance().readerFor(javaType).createParser(injected).readValueAs(t.getClass());
         return o;
     }
 

@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.ui.MobilebrowserDriverFactory;
 import com.knubisoft.testlum.testing.framework.configuration.ui.NativeDriverFactory;
@@ -20,6 +21,7 @@ import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
+import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,7 +74,8 @@ public class ScenarioRunner {
 
     private void injectScenario() {
         Scenario scenario = scenarioArguments.getScenario();
-        scenario.setOverview(InjectionUtil.injectObject(scenario.getOverview(), dependencies.getScenarioContext()));
+        scenario.setOverview(InjectionUtil.injectObject(scenario.getOverview(), new TypeReference<Overview>() {},
+                dependencies.getScenarioContext()));
     }
 
     private void prepareScenarioResult() {

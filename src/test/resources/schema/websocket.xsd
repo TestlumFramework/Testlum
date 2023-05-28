@@ -11,7 +11,9 @@
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:choice>
-                    <x:element name="stomp" type="tns:websocketStomp" minOccurs="0"/>
+                    <x:choice>
+                        <x:element name="stomp" type="tns:websocketStomp"/>
+                    </x:choice>
                     <x:choice maxOccurs="unbounded">
                         <x:element name="send" type="tns:websocketSend"/>
                         <x:element name="receive" type="tns:websocketReceive"/>

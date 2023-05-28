@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.util;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -27,6 +28,11 @@ public final class JacksonMapperUtil {
 
     @SneakyThrows
     public <T> T readValue(final String content, final JavaType javaType) {
+        return MAPPER.readValue(content, javaType);
+    }
+
+    @SneakyThrows
+    public <T> T readValue(final String content, final TypeReference<T> javaType) {
         return MAPPER.readValue(content, javaType);
     }
 

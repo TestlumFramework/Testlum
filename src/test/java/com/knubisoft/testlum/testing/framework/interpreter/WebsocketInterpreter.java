@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.knubisoft.testlum.testing.framework.configuration.websocket.WebsocketConnectionManager;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -10,6 +11,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
+import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
@@ -60,7 +62,10 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     }
 
     @Override
-    protected void acceptImpl(final Websocket websocket, final CommandResult result) {
+    protected void acceptImpl(final Websocket w, final CommandResult result) {
+        Websocket websocket = InjectionUtil.injectObject(w, new TypeReference<Websocket>() {},
+                dependencies.getScenarioContext());
+
         List<CommandResult> subCommandsResultList = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResultList);
         processWebsockets(websocket, subCommandsResultList);

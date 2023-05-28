@@ -13,8 +13,8 @@ public class InjectionUtil {
         String asJson = JacksonMapperUtil.instance().writeValueAsString(t);
         String injected = scenarioContext.inject(asJson);
 //            JsonNode jsonNode = JacksonMapperUtil.instance().readTree(injected);
-        T o = JacksonMapperUtil.instance().readerFor(t.getClass()).readValue(injected);
-//        T o = JacksonMapperUtil.instance().readerFor(t.getClass()).createParser(injected).readValueAs((Class<T>)t.getClass());
+//        T o = JacksonMapperUtil.instance().readerFor(t.getClass()).readValue(injected);
+        T o = JacksonMapperUtil.instance().readerFor(t.getClass()).createParser(injected).readValueAs((Class<T>)t.getClass());
         return o;
     }
 

@@ -155,7 +155,7 @@ public class UiUtil {
     }
 
     public String getElementAttribute(final WebElement webElement, final String attributeName) {
-        String attribute = webElement.getAttribute(attributeName);
+        String attribute = webElement.getDomAttribute(attributeName);
         if (StringUtils.isBlank(attribute)) {
             throw new DefaultFrameworkException(WEB_ELEMENT_ATTRIBUTE_NOT_EXIST, attributeName);
         }

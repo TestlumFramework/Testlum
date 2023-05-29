@@ -97,6 +97,10 @@ public final class LogMessage {
             "Queue", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Content", "{}");
 
+    public static final String SQS_ACTION_INFO_LOG = format(TABLE_FORMAT,
+            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Queue", "{}");
+
     public static final String S3_ACTION_INFO_LOG = format(TABLE_FORMAT,
             "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Bucket", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,

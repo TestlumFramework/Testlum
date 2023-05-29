@@ -25,11 +25,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_SQS_PROCESSING;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
@@ -102,23 +101,23 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         this.amazonSQS.get(aliasEnv).sendMessage(sendRequest);
     }
 
-    private String receiveMessages(final ReceiveSqsMessage receiveAction,
+    private List<String> receiveMessages(final ReceiveSqsMessage receiveAction,
                                    final AliasEnv aliasEnv,
                                    final CommandResult result) {
         final ReceiveMessageRequest receiveRequest = createReceiveRequest(receiveAction, aliasEnv);
-        final String message = receiveMessage(receiveRequest.getQueueUrl(), aliasEnv);
-        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receiveAction.getQueue(), message);
-        compareMessage(getMessageToReceive(receiveAction), message, result);
-        return message;
+        final List<String> messages = receiveMessage(receiveRequest, aliasEnv);
+        LogUtil.logSqsReceiveInfo(RECEIVE_ACTION, receiveAction.getQueue(), messages);
+        compareMessage(getMessageToReceive(receiveAction), messages.toString(), result);
+        return messages;
     }
 
-    private String receiveMessage(final String queueUrl, final AliasEnv aliasEnv) {
-        ReceiveMessageResult receiveMessageResult = this.amazonSQS.get(aliasEnv).receiveMessage(queueUrl);
-        Iterator<Message> messages = receiveMessageResult.getMessages().iterator();
-        return Optional.ofNullable(messages.hasNext() ? messages.next() : null)
-                .map(Message::getBody)
-                .map(String::new)
-                .orElse(null);
+    private List<String> receiveMessage(final ReceiveMessageRequest receiveRequest, final AliasEnv aliasEnv) {
+        List<String> sqsMessages = new ArrayList<>();
+        ReceiveMessageResult receiveMessageResult = this.amazonSQS.get(aliasEnv).receiveMessage(receiveRequest);
+        for (Message message : receiveMessageResult.getMessages()) {
+            sqsMessages.add(message.getBody());
+        }
+        return sqsMessages;
     }
 
     private void compareMessage(final String fileOrContent, final String message, final CommandResult result) {

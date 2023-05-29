@@ -280,6 +280,14 @@ public class LogUtil {
                 StringPrettifier.asJsonResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
+    public void logSqsReceiveInfo(final String action, final String destination, final List<String> messages) {
+        log.info(LogMessage.SQS_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), destination);
+        messages.forEach(message -> {
+            log.info(LogMessage.CONTENT_LOG,
+                    StringPrettifier.asJsonResult(message).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+        });
+    }
+
     public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {
         log.info(LogMessage.S3_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket, key, fileName);
     }

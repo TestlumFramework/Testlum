@@ -48,7 +48,7 @@
 
     <x:simpleType name="stringWithoutSpacesPattern">
         <x:restriction base="x:string">
-            <x:pattern value="\S+"/>
+            <x:pattern value="\S(.*\S)?"/>
         </x:restriction>
     </x:simpleType>
 

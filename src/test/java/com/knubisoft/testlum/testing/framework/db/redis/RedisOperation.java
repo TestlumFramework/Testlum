@@ -14,6 +14,7 @@ import org.springframework.data.redis.connection.StringRedisConnection;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -69,7 +70,11 @@ public class RedisOperation implements StorageOperation {
         if (result instanceof byte[]) {
             return new String((byte[]) result, StandardCharsets.UTF_8);
         } else {
-            return String.valueOf(result);
+            List<String> stringList = new ArrayList<>();
+            for (Object response : (ArrayList<?>) result) {
+                stringList.add(new String((byte[]) response, StandardCharsets.UTF_8));
+            }
+            return stringList.toString();
         }
     }
 }

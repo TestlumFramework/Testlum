@@ -73,6 +73,7 @@
     <x:simpleType name="stringMin10">
         <x:restriction base="x:string">
             <x:minLength value="10"/>
+            <x:pattern value="\S(.*\S)?"/>
         </x:restriction>
     </x:simpleType>
 

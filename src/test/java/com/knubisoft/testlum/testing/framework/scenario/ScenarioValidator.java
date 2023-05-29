@@ -54,6 +54,7 @@ import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import com.knubisoft.testlum.testing.model.scenario.Graphql;
 import com.knubisoft.testlum.testing.model.scenario.Http;
 import com.knubisoft.testlum.testing.model.scenario.HttpInfo;
+import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.Include;
 import com.knubisoft.testlum.testing.model.scenario.Javascript;
 import com.knubisoft.testlum.testing.model.scenario.Kafka;
@@ -327,7 +328,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         );
 
         validatorMap.put(o -> o instanceof Native, (xmlFile, command) ->
-                validateNativeCommands((Native) command)
+                validateNativeCommands((Native) command, xmlFile)
         );
 
         this.abstractCommandValidatorsMap = Collections.unmodifiableMap(validatorMap);
@@ -617,7 +618,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateSubCommands(final List<AbstractUiCommand> subCommands, final File xmlFile) {
-        subCommands.forEach(o -> {
+        for (AbstractUiCommand o : subCommands) {
             if (o instanceof Javascript) {
                 validateFileExistenceInDataFolder(((Javascript) o).getFile());
             } else if (o instanceof Scroll && ScrollType.INNER == ((Scroll) o).getType()) {
@@ -625,11 +626,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             } else if (o instanceof WebVar) {
                 WebVar webVar = (WebVar) o;
                 validateVarCommand(xmlFile, webVar.getFile(), webVar.getSql());
+            } else if (o instanceof Image) {
+                validateFileIfExist(xmlFile, ((Image) o).getFile());
             }
-        });
+        }
     }
 
-    private void validateNativeCommands(final Native command) {
+    private void validateNativeCommands(final Native command, final File xmlFile) {
         if (MobileUtil.filterDefaultEnabledNativeDevices().isEmpty()
                 || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getNative().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_NATIVE_DEVICE);
@@ -637,9 +640,10 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         command.getClickOrInputOrAssert().forEach(o -> {
             if (o instanceof SwipeNative && SwipeType.ELEMENT == ((SwipeNative) o).getType()) {
                 validateLocator((SwipeNative) o, NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE);
-            }
-            if (o instanceof ScrollNative && ScrollType.INNER == ((ScrollNative) o).getType()) {
+            } else if (o instanceof ScrollNative && ScrollType.INNER == ((ScrollNative) o).getType()) {
                 validateLocator((ScrollNative) o, NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
+            } else if (o instanceof Image) {
+                validateFileIfExist(xmlFile, ((Image) o).getFile());
             }
         });
     }

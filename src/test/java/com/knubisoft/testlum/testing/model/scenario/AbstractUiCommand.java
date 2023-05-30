@@ -46,6 +46,7 @@ import javax.xml.bind.annotation.XmlType;
     CommandWithLocator.class,
     Refresh.class,
     WebVar.class,
+    UiCondition.class,
     WebView.class,
     NavigateNative.class,
     CommandWithOptionalLocator.class

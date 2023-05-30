@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="hotKey" type="{http://www.knubisoft.com/testlum/testing/model/scenario}hotKey"/&gt;
  *         &lt;element name="closeTab" type="{http://www.knubisoft.com/testlum/testing/model/scenario}closeTab"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webVar"/&gt;
+ *         &lt;element name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiCondition"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="clearCookiesAfterExecution" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *       &lt;attribute name="clearLocalStorageByKey" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
@@ -73,7 +74,8 @@ public class Web
         @XmlElement(name = "dragAndDrop", type = DragAndDrop.class),
         @XmlElement(name = "hotKey", type = HotKey.class),
         @XmlElement(name = "closeTab", type = CloseTab.class),
-        @XmlElement(name = "var", type = WebVar.class)
+        @XmlElement(name = "var", type = WebVar.class),
+        @XmlElement(name = "condition", type = UiCondition.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "clearCookiesAfterExecution")
@@ -116,6 +118,7 @@ public class Web
      * {@link HotKey }
      * {@link CloseTab }
      * {@link WebVar }
+     * {@link UiCondition }
      * 
      * 
      */

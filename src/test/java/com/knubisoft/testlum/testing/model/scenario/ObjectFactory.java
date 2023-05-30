@@ -766,6 +766,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link UiCondition }
+     * 
+     */
+    public UiCondition createUiCondition() {
+        return new UiCondition();
+    }
+
+    /**
      * Create an instance of {@link WebView }
      * 
      */

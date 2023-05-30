@@ -61,11 +61,11 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                                final ApiResponse actual,
                                final CommandResult result) {
         HttpValidator httpValidator = new HttpValidator(this);
-        httpValidator.validateCode(expected.getCode(), actual.getCode());
         String actualBody = String.valueOf(actual.getBody());
         setContextBody(actualBody);
         validateBody(expected, actualBody, httpValidator, result);
         validateHeaders(expected, actual, httpValidator);
+        httpValidator.validateCode(expected.getCode(), actual.getCode());
         httpValidator.rethrowOnErrors();
     }
 

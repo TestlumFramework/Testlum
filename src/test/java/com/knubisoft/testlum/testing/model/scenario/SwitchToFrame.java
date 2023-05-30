@@ -1,13 +1,13 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/testlum/testing/model/scenario}switchToFrame"/&gt;
  *         &lt;element name="dragAndDrop" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dragAndDrop"/&gt;
  *         &lt;element name="hotKey" type="{http://www.knubisoft.com/testlum/testing/model/scenario}hotKey"/&gt;
+ *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webVar"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -68,7 +69,8 @@ public class SwitchToFrame
         @XmlElement(name = "closeTab", type = CloseTab.class),
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
         @XmlElement(name = "dragAndDrop", type = DragAndDrop.class),
-        @XmlElement(name = "hotKey", type = HotKey.class)
+        @XmlElement(name = "hotKey", type = HotKey.class),
+        @XmlElement(name = "var", type = WebVar.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
 
@@ -106,6 +108,7 @@ public class SwitchToFrame
      * {@link SwitchToFrame }
      * {@link DragAndDrop }
      * {@link HotKey }
+     * {@link WebVar }
      * 
      * 
      */

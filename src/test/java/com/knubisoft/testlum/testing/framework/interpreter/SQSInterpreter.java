@@ -101,14 +101,13 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         this.amazonSQS.get(aliasEnv).sendMessage(sendRequest);
     }
 
-    private List<String> receiveMessages(final ReceiveSqsMessage receiveAction,
+    private void receiveMessages(final ReceiveSqsMessage receiveAction,
                                    final AliasEnv aliasEnv,
                                    final CommandResult result) {
         final ReceiveMessageRequest receiveRequest = createReceiveRequest(receiveAction, aliasEnv);
         final List<String> messages = receiveMessage(receiveRequest, aliasEnv);
         LogUtil.logSqsReceiveInfo(RECEIVE_ACTION, receiveAction.getQueue(), messages);
         compareMessage(getMessageToReceive(receiveAction), messages.toString(), result);
-        return messages;
     }
 
     private List<String> receiveMessage(final ReceiveMessageRequest receiveRequest, final AliasEnv aliasEnv) {

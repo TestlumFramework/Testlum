@@ -766,6 +766,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link NativeVar }
+     * 
+     */
+    public NativeVar createNativeVar() {
+        return new NativeVar();
+    }
+
+    /**
      * Create an instance of {@link WebView }
      * 
      */

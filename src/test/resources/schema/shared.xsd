@@ -42,7 +42,7 @@
     <x:simpleType name="nonEmptyString">
         <x:restriction base="x:string">
             <x:minLength value="1"/>
-            <!--            <x:pattern value="\S(.*\S)?"/>-->
+            <x:pattern value="\S(.*\S)?"/>
         </x:restriction>
     </x:simpleType>
 

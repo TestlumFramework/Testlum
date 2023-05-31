@@ -346,6 +346,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         uiValidatorMap.put(o -> o instanceof Scroll && ScrollType.INNER == ((Scroll) o).getType(),
                 (xmlFile, command) -> validateLocator((Scroll) command, NO_LOCATOR_FOUND_FOR_INNER_SCROLL));
 
+        uiValidatorMap.put(o -> o instanceof Image, (xmlFile, command) ->
+                validateFileIfExist(xmlFile, ((Image) command).getFile()));
+
         uiValidatorMap.put(o -> o instanceof DragAndDrop, (xmlFile, command) ->
                 validateFileIfExist(xmlFile, ((DragAndDrop) command).getFileName()));
 

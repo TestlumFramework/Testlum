@@ -91,7 +91,7 @@ pipeline {
     stage('start test site') {
         steps {
             dir("site/TEST-UI") {
-//                 sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -e TZ=Europe/Kiev -p 3000:3000 -d ${TEST_SITE} --name ${TEST_SITE}'
+                sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -e TZ=Europe/Kiev -p 3000:3000 -d ${TEST_SITE} --name ${TEST_SITE}'
             }
         }
     }

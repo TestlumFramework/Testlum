@@ -24,9 +24,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.NEW_LINE;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ASSERT_TYPE_NOT_SUPPORTED;
 
 @ExecutorForClass(Assert.class)
@@ -70,14 +67,11 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
         injectFields(attribute);
         LogUtil.logAssertAttributeInfo(attribute, commandId.get());
         ResultUtil.addAssertAttributeMetaData(attribute, result);
-        try {
-            String actual = getActualValue(attribute);
-            String expected = attribute.getContent().replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
-            executeComparison(actual, expected, result);
-            UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
-        } catch (Exception e) {
-            handleException(result, e);
-        }
+        String actual = getActualValue(attribute);
+        String expected = attribute.getContent();
+        ResultUtil.setExpectedActual(expected, actual, result);
+        executeComparison(actual, expected, result);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void injectFields(final Attribute attribute) {
@@ -88,31 +82,27 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
 
     private String getActualValue(final Attribute attribute) {
         WebElement webElement = UiUtil.findWebElement(dependencies, attribute.getLocatorId());
-        UiUtil.waitForElementVisibility(dependencies, webElement);
-        String value = UiUtil.getElementAttribute(webElement, attribute.getName());
-        return value.replaceAll(SPACE, EMPTY).replaceAll(NEW_LINE, EMPTY);
+        return UiUtil.getElementAttribute(webElement, attribute.getName(), dependencies.getDriver());
     }
 
     private void executeTitleCommand(final Title title, final CommandResult result) {
         title.setContent(inject(title.getContent()));
         LogUtil.logAssertTitleCommand(title, commandId.get());
+        String actual = dependencies.getDriver().getTitle();
+        ResultUtil.setExpectedActual(title.getContent(), actual, result);
+        executeComparison(actual, title.getContent(), result);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+    }
+
+    private void executeComparison(final String actual, final String expected, final CommandResult result) {
         try {
-            String actual = dependencies.getDriver().getTitle();
-            executeComparison(actual, title.getContent(), result);
-            UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+            new CompareBuilder(dependencies.getFile(), dependencies.getPosition())
+                    .withActual(actual)
+                    .withExpected(expected)
+                    .exec();
         } catch (Exception e) {
             handleException(result, e);
         }
-    }
-
-    private void executeComparison(final String actual,
-                                   final String expected,
-                                   final CommandResult result) {
-        ResultUtil.setExpectedActual(expected, actual, result);
-        new CompareBuilder(dependencies.getFile(), dependencies.getPosition())
-                .withActual(actual)
-                .withExpected(expected)
-                .exec();
     }
 
     private void handleException(final CommandResult result, final Exception e) {

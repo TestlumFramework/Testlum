@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice&gt;
  *         &lt;element name="fromLocatorId" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scenarioLocator"/&gt;
- *         &lt;element name="filePath" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="fileName" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="toLocatorId" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scenarioLocator" /&gt;
  *     &lt;/extension&gt;
@@ -31,14 +31,14 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "dragAndDrop", propOrder = {
     "fromLocatorId",
-    "filePath"
+    "fileName"
 })
 public class DragAndDrop
     extends AbstractUiCommand
 {
 
     protected String fromLocatorId;
-    protected String filePath;
+    protected String fileName;
     @XmlAttribute(name = "toLocatorId", required = true)
     protected String toLocatorId;
 
@@ -67,27 +67,27 @@ public class DragAndDrop
     }
 
     /**
-     * Gets the value of the filePath property.
+     * Gets the value of the fileName property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getFilePath() {
-        return filePath;
+    public String getFileName() {
+        return fileName;
     }
 
     /**
-     * Sets the value of the filePath property.
+     * Sets the value of the fileName property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setFilePath(String value) {
-        this.filePath = value;
+    public void setFileName(String value) {
+        this.fileName = value;
     }
 
     /**

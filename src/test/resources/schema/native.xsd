@@ -24,6 +24,7 @@
                     <x:element name="scrollTo" type="tns:scrollToNative"/>
                     <x:element name="swipe" type="tns:swipeNative"/>
                     <x:element name="webView" type="tns:webView"/>
+                    <x:element name="var" type="tns:nativeVar"/>
                     <x:element name="condition" type="tns:uiCondition"/>
                 </x:choice>
             </x:extension>
@@ -48,6 +49,7 @@
                     <x:element name="hovers" type="tns:hovers"/>
                     <x:element name="closeTab" type="tns:closeTab"/>
                     <x:element name="switchToFrame" type="tns:switchToFrame"/>
+                    <x:element name="var" type="tns:nativeVar"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>

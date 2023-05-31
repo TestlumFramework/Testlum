@@ -395,4 +395,16 @@
         </x:complexContent>
     </x:complexType>
 
+    <x:complexType name="nativeVar">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice>
+                    <x:group ref="tns:generalVarType"/>
+                    <x:element name="element" type="tns:fromElement"/>
+                </x:choice>
+                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
 </x:schema>

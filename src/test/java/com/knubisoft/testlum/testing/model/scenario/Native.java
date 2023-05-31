@@ -1,13 +1,13 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="scrollTo" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scrollToNative"/&gt;
  *         &lt;element name="swipe" type="{http://www.knubisoft.com/testlum/testing/model/scenario}swipeNative"/&gt;
  *         &lt;element name="webView" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webView"/&gt;
+ *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeVar"/&gt;
  *         &lt;element name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiCondition"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
@@ -63,6 +64,8 @@ public class Native
         @XmlElement(name = "scroll", type = ScrollNative.class),
         @XmlElement(name = "scrollTo", type = ScrollToNative.class),
         @XmlElement(name = "swipe", type = SwipeNative.class),
+        @XmlElement(name = "webView", type = WebView.class),
+        @XmlElement(name = "var", type = NativeVar.class),
         @XmlElement(name = "webView", type = WebView.class),
         @XmlElement(name = "condition", type = UiCondition.class)
     })
@@ -99,8 +102,9 @@ public class Native
      * {@link ScrollToNative }
      * {@link SwipeNative }
      * {@link WebView }
+     * {@link NativeVar }
      * {@link UiCondition }
-     * 
+     *
      * 
      */
     public List<AbstractUiCommand> getClickOrInputOrAssert() {

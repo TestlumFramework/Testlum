@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.google.gson.Gson;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
@@ -55,6 +56,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
     private static final String CORRELATION_ID = "correlationId";
     private static final int NUM_PARTITIONS = 1;
+    public static final String HEADERS = "headers";
 
     @Autowired(required = false)
     private Map<AliasEnv, KafkaProducer<String, String>> kafkaProducer;
@@ -120,16 +122,21 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getTopic(), value);
         createTopicIfNotExists(receive.getTopic(), aliasEnv);
         List<KafkaMessage> actualMessages = receiveKafkaMessages(receive, aliasEnv);
-        compareMessages(actualMessages, value, result);
+        compareMessages(actualMessages, receive.isHeaders(), value, result);
     }
 
     private void compareMessages(final List<KafkaMessage> actualKafkaMessages,
+                                 final boolean isHeaders,
                                  final String value,
                                  final CommandResult result) {
+        List<?> messages = isHeaders ? actualKafkaMessages : actualKafkaMessages.stream()
+                .map(message -> new Gson().toJsonTree(message).getAsJsonObject())
+                .peek(message -> message.remove(HEADERS))
+                .collect(Collectors.toList());
         CompareBuilder comparator = newCompare()
                 .withExpected(value)
-                .withActual(actualKafkaMessages);
-        result.setActual(StringPrettifier.asJsonResult(toString(actualKafkaMessages)));
+                .withActual(messages);
+        result.setActual(StringPrettifier.asJsonResult(toString(messages)));
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
         comparator.exec();
     }
@@ -157,7 +164,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
         Iterable<ConsumerRecord<String, String>> iterable = consumerRecords.records(receive.getTopic());
         Iterator<ConsumerRecord<String, String>> iterator = iterable.iterator();
-        List<KafkaMessage> kafkaMessages = convertConsumerRecordsToKafkaMessages(iterator, receive.isHeaders());
+        List<KafkaMessage> kafkaMessages = convertConsumerRecordsToKafkaMessages(iterator);
         if (receive.isCommit()) {
             consumer.commitSync();
         }
@@ -165,12 +172,11 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     }
 
     private List<KafkaMessage> convertConsumerRecordsToKafkaMessages(
-            final Iterator<ConsumerRecord<String, String>> iterator,
-            final boolean withHeaders) {
+            final Iterator<ConsumerRecord<String, String>> iterator) {
         List<KafkaMessage> kafkaMessages = new ArrayList<>();
         while (iterator.hasNext()) {
             ConsumerRecord<String, String> consumerRecord = iterator.next();
-            KafkaMessage kafkaMessage = new KafkaMessage(consumerRecord, withHeaders);
+            KafkaMessage kafkaMessage = new KafkaMessage(consumerRecord);
             kafkaMessages.add(kafkaMessage);
         }
         return kafkaMessages;
@@ -239,17 +245,12 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         private final String correlationId;
         private final Map<String, String> headers;
 
-        KafkaMessage(final ConsumerRecord<String, String> consumerRecord, final boolean withHeaders) {
+        KafkaMessage(final ConsumerRecord<String, String> consumerRecord) {
             this.key = consumerRecord.key();
             this.value = consumerRecord.value();
-            if (withHeaders) {
-                this.headers = getHeaders(consumerRecord);
-                this.correlationId = headers.get(CORRELATION_ID);
-                this.headers.remove(CORRELATION_ID);
-            } else {
-                this.headers = null;
-                this.correlationId = null;
-            }
+            this.headers = getHeaders(consumerRecord);
+            this.correlationId = headers.get(CORRELATION_ID);
+            this.headers.remove(CORRELATION_ID);
         }
 
         private static Map<String, String> getHeaders(final ConsumerRecord<String, String> consumerRecord) {

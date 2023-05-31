@@ -34,7 +34,7 @@ public class ClickExecutor extends AbstractUiExecutor<Click> {
     private void clickWithMethod(final ClickMethod method, final WebElement element, final CommandResult result) {
         if (ClickMethod.JS == method) {
             result.put(CLICK_METHOD, "javascript");
-            JavascriptUtil.executeJsScript(element, CLICK_SCRIPT, dependencies.getDriver());
+            JavascriptUtil.executeJsScript(CLICK_SCRIPT, dependencies.getDriver(), element);
         } else {
             result.put(CLICK_METHOD, "selenium");
             element.click();

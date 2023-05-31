@@ -65,6 +65,7 @@ import com.knubisoft.testlum.testing.model.scenario.Mobilebrowser;
 import com.knubisoft.testlum.testing.model.scenario.Mongo;
 import com.knubisoft.testlum.testing.model.scenario.Mysql;
 import com.knubisoft.testlum.testing.model.scenario.Native;
+import com.knubisoft.testlum.testing.model.scenario.NativeVar;
 import com.knubisoft.testlum.testing.model.scenario.Oracle;
 import com.knubisoft.testlum.testing.model.scenario.Postgres;
 import com.knubisoft.testlum.testing.model.scenario.Rabbit;
@@ -632,6 +633,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
+    //CHECKSTYLE:OFF
     private void validateNativeCommands(final Native command, final File xmlFile) {
         if (MobileUtil.filterDefaultEnabledNativeDevices().isEmpty()
                 || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getNative().isEnabled()) {
@@ -642,11 +644,15 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 validateLocator((SwipeNative) o, NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE);
             } else if (o instanceof ScrollNative && ScrollType.INNER == ((ScrollNative) o).getType()) {
                 validateLocator((ScrollNative) o, NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
+            } else if (o instanceof NativeVar) {
+                NativeVar nativeVar = (NativeVar) o;
+                validateVarCommand(xmlFile, nativeVar.getFile(), nativeVar.getSql());
             } else if (o instanceof Image) {
                 validateFileIfExist(xmlFile, ((Image) o).getFile());
             }
         });
     }
+    //CHECKSTYLE:ON
 
     private void validateLocator(final CommandWithOptionalLocator command, final String exceptionMessage) {
         if (!isNotBlank(command.getLocatorId())) {

@@ -45,6 +45,7 @@ public class UiUtil {
     private static final String APPIUM_LOCALHOST_ALIAS = "10.0.2.2";
     private static final String LOCALHOST = "localhost";
     private static final int MAX_PERCENTS_VALUE = 100;
+    private static final String HREF_ATTRIBUTE = "href";
 
     public String resolveSendKeysType(final String value, final WebElement element, final File fromDir) {
         if (value.startsWith(FILE_PATH_PREFIX)) {
@@ -155,7 +156,12 @@ public class UiUtil {
     }
 
     public String getElementAttribute(final WebElement webElement, final String attributeName) {
-        String attribute = webElement.getDomAttribute(attributeName);
+        String attribute;
+        if (attributeName.equals(HREF_ATTRIBUTE)) {
+            attribute = webElement.getDomAttribute(attributeName);
+        } else {
+            attribute = webElement.getAttribute(attributeName);
+        }
         if (StringUtils.isBlank(attribute)) {
             throw new DefaultFrameworkException(WEB_ELEMENT_ATTRIBUTE_NOT_EXIST, attributeName);
         }

@@ -2,7 +2,10 @@ package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.Message;
+import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
+import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.amazonaws.services.sqs.model.ReceiveMessageResult;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -10,24 +13,30 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
+import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
+import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.Sqs;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_SQS_PROCESSING;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.QUEUE;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 @InterpreterForClass(Sqs.class)
@@ -41,47 +50,65 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     }
 
     @Override
-    protected void acceptImpl(final Sqs sqs, final CommandResult result) {
-        String queue = inject(sqs.getQueue());
-        runSqsOperation(sqs, queue, result, sqs.getAlias());
+    protected void acceptImpl(final Sqs sqs, final CommandResult commandResult) {
+        List<CommandResult> subCommandsResultList = new LinkedList<>();
+        int actionNumber = 1;
+        for (Object action : sqs.getSendOrReceive()) {
+            log.info(COMMAND_LOG, dependencies.getPosition().incrementAndGet(), action.getClass().getSimpleName());
+            CommandResult result = ResultUtil.createNewCommandResultInstance(actionNumber);
+            processEachAction(action, sqs.getAlias(), result);
+            subCommandsResultList.add(result);
+            actionNumber++;
+        }
+        commandResult.setSubCommandsResult(subCommandsResultList);
+        ResultUtil.setExecutionResultIfSubCommandsFailed(commandResult);
     }
 
-    private void runSqsOperation(final Sqs sqs,
-                                 final String queueName,
-                                 final CommandResult result,
-                                 final String alias) {
+    private void processEachAction(final Object action, final String alias, final CommandResult subCommandResult) {
+        StopWatch stopWatch = StopWatch.createStarted();
+        try {
+            processSqsAction(action, alias, subCommandResult);
+        } catch (Exception e) {
+            LogUtil.logException(e);
+            ResultUtil.setExceptionResult(subCommandResult, e);
+        } finally {
+            subCommandResult.setExecutionTime(stopWatch.getTime());
+            stopWatch.stop();
+        }
+    }
+
+    private void processSqsAction(final Object action, final String alias, final CommandResult subCommandResult) {
         log.info(ALIAS_LOG, alias);
         AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
-        if (isNotBlank(sqs.getSend())) {
-            ResultUtil.addMessageBrokerGeneralMetaData(alias, SEND_ACTION, QUEUE, queueName, result);
-            sendMessage(queueName, sqs.getSend(), aliasEnv, result);
-        } else if (isNotBlank(sqs.getReceive())) {
-            ResultUtil.addMessageBrokerGeneralMetaData(alias, RECEIVE_ACTION, QUEUE, queueName, result);
-            setContextBody(receiveAndCompareMessage(queueName, sqs.getReceive(), aliasEnv, result));
+        if (action instanceof SendSqsMessage) {
+            SendSqsMessage send = (SendSqsMessage) action;
+            ResultUtil.addSqsInfoForSendAction(send, alias, subCommandResult);
+            sendMessage(send, aliasEnv, subCommandResult);
+        } else if (action instanceof ReceiveSqsMessage) {
+            ReceiveSqsMessage receive = (ReceiveSqsMessage) action;
+            ResultUtil.addSqsInfoForReceiveAction(receive, alias, subCommandResult);
+            receiveMessages(receive, aliasEnv, subCommandResult);
         } else {
             throw new DefaultFrameworkException(INCORRECT_SQS_PROCESSING);
         }
     }
 
-    private void sendMessage(final String queue,
-                             final String fileOrContent,
-                             final AliasEnv aliasEnv,
-                             final CommandResult result) {
-        String message = inject(getContentIfFile(fileOrContent));
+    private void sendMessage(final SendSqsMessage send, final AliasEnv aliasEnv, final CommandResult result) {
+        SendMessageRequest sendRequest = createSendRequest(send, aliasEnv);
+        String queue = sendRequest.getQueueUrl();
+        String message = sendRequest.getMessageBody();
         LogUtil.logBrokerActionInfo(SEND_ACTION, queue, message);
         result.put(MESSAGE_TO_SEND, StringPrettifier.asJsonResult(message));
-        String queueUrl = createQueueIfNotExists(queue, aliasEnv);
-        this.amazonSQS.get(aliasEnv).sendMessage(queueUrl, message);
+        this.amazonSQS.get(aliasEnv).sendMessage(sendRequest);
     }
 
-    private String receiveAndCompareMessage(final String queue,
-                                            final String fileOrContent,
-                                            final AliasEnv aliasEnv,
-                                            final CommandResult result) {
-        final String queueUrl = createQueueIfNotExists(queue, aliasEnv);
-        final String message = receiveMessage(queueUrl, aliasEnv);
-        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, queue, message);
-        compareMessage(fileOrContent, message, result);
+    private String receiveMessages(final ReceiveSqsMessage receiveAction,
+                                   final AliasEnv aliasEnv,
+                                   final CommandResult result) {
+        final ReceiveMessageRequest receiveRequest = createReceiveRequest(receiveAction, aliasEnv);
+        final String message = receiveMessage(receiveRequest.getQueueUrl(), aliasEnv);
+        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receiveAction.getQueue(), message);
+        compareMessage(getMessageToReceive(receiveAction), message, result);
         return message;
     }
 
@@ -104,6 +131,45 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     }
 
     private String createQueueIfNotExists(final String queue, final AliasEnv aliasEnv) {
-        return this.amazonSQS.get(aliasEnv).createQueue(queue).getQueueUrl();
+        try {
+            return amazonSQS.get(aliasEnv).getQueueUrl(queue).getQueueUrl();
+        } catch (QueueDoesNotExistException e) {
+            return this.amazonSQS.get(aliasEnv).createQueue(queue).getQueueUrl();
+        }
+    }
+
+    private SendMessageRequest createSendRequest(final SendSqsMessage sendAction, final AliasEnv aliasEnv) {
+        SendMessageRequest sendRequest = new SendMessageRequest();
+        String message = getMessageToSend(sendAction);
+        sendRequest.setQueueUrl(createQueueIfNotExists(sendAction.getQueue(), aliasEnv));
+        sendRequest.setMessageBody(message);
+        sendRequest.setDelaySeconds(sendAction.getDelaySeconds());
+        sendRequest.setMessageDeduplicationId(sendAction.getMessageDeduplicationId());
+        sendRequest.setMessageGroupId(sendAction.getMessageGroupId());
+        return sendRequest;
+    }
+
+    private ReceiveMessageRequest createReceiveRequest(final ReceiveSqsMessage receiveAction, final AliasEnv aliasEnv) {
+        ReceiveMessageRequest receiveRequest = new ReceiveMessageRequest();
+        receiveRequest.setQueueUrl(createQueueIfNotExists(receiveAction.getQueue(), aliasEnv));
+        receiveRequest.setMaxNumberOfMessages(receiveAction.getMaxNumberOfMessages());
+        receiveRequest.setVisibilityTimeout(receiveAction.getVisibilityTimeout());
+        receiveRequest.setWaitTimeSeconds(receiveAction.getWaitTimeSeconds());
+        receiveRequest.setReceiveRequestAttemptId(receiveAction.getReceiveRequestAttemptId());
+        return receiveRequest;
+    }
+
+    private String getMessageToSend(final SendSqsMessage send) {
+        return getValue(send.getValue(), send.getFile());
+    }
+
+    private String getMessageToReceive(final ReceiveSqsMessage receive) {
+        return getValue(receive.getValue(), receive.getFile());
+    }
+
+    private String getValue(final String message, final String file) {
+        return StringUtils.isNotBlank(message)
+                ? message
+                : FileSearcher.searchFileToString(file, dependencies.getFile());
     }
 }

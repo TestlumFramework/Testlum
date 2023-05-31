@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.db.sqs;
 
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.ListQueuesResult;
+import com.amazonaws.services.sqs.model.PurgeQueueRequest;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSQSEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -36,7 +37,7 @@ public class SQSOperation implements StorageOperation {
             if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 ListQueuesResult listQueuesResult = amazonSQS.listQueues();
                 List<String> queueUrls = listQueuesResult.getQueueUrls();
-                queueUrls.forEach(amazonSQS::deleteQueue);
+                queueUrls.forEach(queueUrl -> amazonSQS.purgeQueue(new PurgeQueueRequest(queueUrl)));
             }
         });
     }

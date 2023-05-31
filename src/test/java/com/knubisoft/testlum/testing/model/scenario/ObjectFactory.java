@@ -830,6 +830,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link SendSqsMessage }
+     * 
+     */
+    public SendSqsMessage createSendSqsMessage() {
+        return new SendSqsMessage();
+    }
+
+    /**
+     * Create an instance of {@link ReceiveSqsMessage }
+     * 
+     */
+    public ReceiveSqsMessage createReceiveSqsMessage() {
+        return new ReceiveSqsMessage();
+    }
+
+    /**
      * Create an instance of {@link SendKafkaMessage }
      * 
      */

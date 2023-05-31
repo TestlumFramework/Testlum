@@ -73,7 +73,7 @@ pipeline {
     stage('build test site') {
         steps {
             dir("site/TEST-UI") {
-                sh "npm install"
+                sh "docker build -f Dockerfile.jenkins -t ${TEST_SITE} ."
             }
         }
     }
@@ -91,8 +91,7 @@ pipeline {
     stage('start test site') {
         steps {
             dir("site/TEST-UI") {
-                sh 'sleep 5'
-                sh 'pm2 start "npm run dev" --name ${TEST_SITE}'
+                sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -e TZ=Europe/Kiev -p 3000:3000 -d ${TEST_SITE} --name ${TEST_SITE}'
             }
         }
     }
@@ -118,14 +117,13 @@ pipeline {
         dir("site") {
             sh "docker-compose -f docker/docker-compose-jenkins.yaml down || true"
             sh "docker-compose -f docker/docker-compose-selenium-grid.yaml down || true"
+        }
+        script {
             sh "docker rm -f -v \$(docker ps -q) || true"
             sh "docker rmi ${SERVICE}:${TAG} || true"
             sh "docker rmi -f ${TEST_API} || true"
+            sh "docker rmi -f ${TEST_SITE} || true"
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
-        }
-        dir("site/TEST-UI") {
-            sh 'pm2 stop ${TEST_SITE}'
-            sh 'pm2 delete ${TEST_SITE}'
         }
     }
     success {

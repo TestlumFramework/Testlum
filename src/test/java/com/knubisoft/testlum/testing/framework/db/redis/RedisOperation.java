@@ -69,10 +69,9 @@ public class RedisOperation implements StorageOperation {
         if (result instanceof byte[]) {
             return new String((byte[]) result, StandardCharsets.UTF_8);
         } else if (result instanceof List<?>) {
-            List<String> stringList = ((List<byte[]>) result).stream()
+            return ((List<byte[]>) result).stream()
                     .map(bytes -> new String(bytes, StandardCharsets.UTF_8))
-                    .collect(Collectors.toList());
-            return stringList.toString();
+                    .collect(Collectors.toList()).toString();
         } else {
             return String.valueOf(result);
         }

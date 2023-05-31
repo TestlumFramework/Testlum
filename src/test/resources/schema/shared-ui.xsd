@@ -332,7 +332,7 @@
             <x:extension base="tns:abstractUiCommand">
                 <x:choice>
                     <x:element name="fromLocatorId" type="tns:scenarioLocator"/>
-                    <x:element name="filePath" type="tns:nonEmptyString"/>
+                    <x:element name="fileName" type="tns:nonEmptyString"/>
                 </x:choice>
                 <x:attribute name="toLocatorId" type="tns:scenarioLocator" use="required"/>
             </x:extension>

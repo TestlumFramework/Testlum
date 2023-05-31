@@ -156,12 +156,8 @@ public class UiUtil {
     }
 
     public String getElementAttribute(final WebElement webElement, final String attributeName) {
-        String attribute;
-        if (attributeName.equals(HREF_ATTRIBUTE)) {
-            attribute = webElement.getDomAttribute(attributeName);
-        } else {
-            attribute = webElement.getAttribute(attributeName);
-        }
+        String attribute = HREF_ATTRIBUTE.equals(attributeName) ?
+                webElement.getDomAttribute(attributeName) : webElement.getAttribute(attributeName);
         if (StringUtils.isBlank(attribute)) {
             throw new DefaultFrameworkException(WEB_ELEMENT_ATTRIBUTE_NOT_EXIST, attributeName);
         }

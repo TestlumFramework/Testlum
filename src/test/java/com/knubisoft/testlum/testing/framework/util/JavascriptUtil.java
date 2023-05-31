@@ -17,9 +17,9 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 @UtilityClass
 public class JavascriptUtil {
 
-    public void executeJsScript(final WebElement element, final String script, final WebDriver driver) {
+    public Object executeJsScript(final WebElement element, final String script, final WebDriver driver) {
         JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
-        javascriptExecutor.executeScript(script, element);
+        return javascriptExecutor.executeScript(script, element);
     }
 
     public void executeJsScript(final String script, final WebDriver driver) {

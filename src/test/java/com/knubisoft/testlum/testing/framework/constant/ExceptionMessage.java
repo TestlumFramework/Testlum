@@ -147,6 +147,7 @@ public class ExceptionMessage {
     public static final String WEB_ELEMENT_ATTRIBUTE_NOT_EXIST = "Web element does not have attribute <%s>";
     public static final String FOUND_MORE_THEN_ONE_ELEMENT = "More than one element was found by locator <%s>";
     public static final String ELEMENT_NOT_FOUND = "Element with locator <%s> was not found during 'scrollTo'";
+    public static final String DRAG_AND_DROP_FILE_NOT_FOUND = "Drag and drop file with name <%s> not found";
     public static final String SCROLL_TYPE_NOT_FOUND = "Scroll type <%s> not supported";
     public static final String SWIPE_TYPE_NOT_FOUND = "Swipe direction <%s> is not supported";
     public static final String TAB_NOT_FOUND = "Available tab that can be closed not found";
@@ -225,5 +226,4 @@ public class ExceptionMessage {
             + "the same setup for <authCustomClassName> argument inside <auth> command in all enabled environments "
             + "(%s files)\n" + ANSI_RESET;
     public static final String REDIS_COMMAND_NOT_FOUND = "Redis command was not provided";
-    public static final String FILE_NOT_FOUND = "File not found: %s";
 }

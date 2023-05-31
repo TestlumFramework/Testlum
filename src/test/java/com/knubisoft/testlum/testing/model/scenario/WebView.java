@@ -1,13 +1,13 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="hovers" type="{http://www.knubisoft.com/testlum/testing/model/scenario}hovers"/&gt;
  *         &lt;element name="closeTab" type="{http://www.knubisoft.com/testlum/testing/model/scenario}closeTab"/&gt;
  *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/testlum/testing/model/scenario}switchToFrame"/&gt;
+ *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeVar"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -64,7 +65,8 @@ public class WebView
         @XmlElement(name = "navigate", type = Navigate.class),
         @XmlElement(name = "hovers", type = Hovers.class),
         @XmlElement(name = "closeTab", type = CloseTab.class),
-        @XmlElement(name = "switchToFrame", type = SwitchToFrame.class)
+        @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
+        @XmlElement(name = "var", type = NativeVar.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
 
@@ -100,6 +102,7 @@ public class WebView
      * {@link Hovers }
      * {@link CloseTab }
      * {@link SwitchToFrame }
+     * {@link NativeVar }
      * 
      * 
      */

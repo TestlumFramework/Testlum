@@ -37,8 +37,7 @@ import static java.util.Objects.nonNull;
 
 @Slf4j
 @ExecutorForClass(WebVar.class)
-public class
-WebVariableExecutor extends AbstractUiExecutor<WebVar> {
+public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
 
     private final Map<VarPredicate<WebVar>, VarMethod<WebVar>> varToMethodMap;
     @Autowired

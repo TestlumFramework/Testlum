@@ -11,7 +11,6 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
@@ -33,8 +32,10 @@ import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SCROLL_TO_ELEMENT_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.WEB_ELEMENT_ATTRIBUTE_NOT_EXIST;
+import static com.knubisoft.testlum.testing.framework.constant.JavascriptConstant.ELEMENT_ARGUMENTS_SCRIPT;
 import static com.knubisoft.testlum.testing.framework.constant.JavascriptConstant.HIGHLIGHT_SCRIPT;
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.openqa.selenium.interactions.PointerInput.Origin.viewport;
 
 @Slf4j
@@ -64,7 +65,7 @@ public class UiUtil {
                                            final WebElement element,
                                            final WebDriver driver) {
         if ((Objects.isNull(isHighlight) || isHighlight) && !(driver instanceof AppiumDriver)) {
-            JavascriptUtil.executeJsScript(element, HIGHLIGHT_SCRIPT, driver);
+            JavascriptUtil.executeJsScript(HIGHLIGHT_SCRIPT, driver, element);
         }
     }
 
@@ -154,9 +155,11 @@ public class UiUtil {
         }
     }
 
-    public String getElementAttribute(final WebElement webElement, final String attributeName) {
-        String attribute = webElement.getAttribute(attributeName);
-        if (StringUtils.isBlank(attribute)) {
+    public String getElementAttribute(final WebElement element, final String attributeName, final WebDriver driver) {
+        String attribute = (String) JavascriptUtil.executeJsScript(
+                ELEMENT_ARGUMENTS_SCRIPT, driver, element, attributeName);
+        attribute = isBlank(attribute) ? element.getAttribute(attributeName) : attribute;
+        if (isBlank(attribute)) {
             throw new DefaultFrameworkException(WEB_ELEMENT_ATTRIBUTE_NOT_EXIST, attributeName);
         }
         return attribute;

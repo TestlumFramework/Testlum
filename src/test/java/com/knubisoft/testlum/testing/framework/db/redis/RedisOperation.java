@@ -65,11 +65,16 @@ public class RedisOperation implements StorageOperation {
         return convertResult(response);
     }
 
+    @SuppressWarnings("unchecked")
     private String convertResult(final Object result) {
         if (result instanceof byte[]) {
             return new String((byte[]) result, StandardCharsets.UTF_8);
-        } else {
-            return String.valueOf(result);
+        } else if (result instanceof List<?>) {
+            return ((List<byte[]>) result).stream()
+                    .map(bytes -> new String(bytes, StandardCharsets.UTF_8))
+                    .collect(Collectors.toList())
+                    .toString();
         }
+        return String.valueOf(result);
     }
 }

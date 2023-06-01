@@ -4,7 +4,6 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,14 +16,9 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 @UtilityClass
 public class JavascriptUtil {
 
-    public void executeJsScript(final WebElement element, final String script, final WebDriver driver) {
+    public Object executeJsScript(final String script, final WebDriver driver, final Object... arg) {
         JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
-        javascriptExecutor.executeScript(script, element);
-    }
-
-    public void executeJsScript(final String script, final WebDriver driver) {
-        JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
-        javascriptExecutor.executeScript(script);
+        return javascriptExecutor.executeScript(script, arg);
     }
 
     public String readCommands(final String filePath) {

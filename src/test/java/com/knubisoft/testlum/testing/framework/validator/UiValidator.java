@@ -104,11 +104,11 @@ public class UiValidator {
 
     private void validateConfigsPresence(final int envNum, final List<UiConfig> uiConfigList) {
         UI_CONFIG_METHOD_MAP.forEach((configName, configMap) -> configMap.forEach((nonNullPredicate, configMethod) -> {
-            List<?> uiConfig = uiConfigList.stream()
+            List<?> uiConfigs = uiConfigList.stream()
                     .filter(nonNullPredicate)
                     .map(configMethod)
                     .collect(Collectors.toList());
-            if (!uiConfig.isEmpty() && uiConfig.size() != envNum) {
+            if (!uiConfigs.isEmpty() && uiConfigs.size() != envNum) {
                 throw new DefaultFrameworkException(UI_CONFIG_NOT_PRESENT_IN_ALL_ENVS, configName);
             }
         }));
@@ -176,7 +176,7 @@ public class UiValidator {
                 throw new DefaultFrameworkException(ENVIRONMENT_MISSING_DEVICES_OR_BROWSERS,
                         getName(deviceOrBrowserList.get(0).get(0)), configName);
             } else if (!deviceOrBrowserList.isEmpty()) {
-                validateDevicesAndBrowsers(configName, envList, uiConfigs, deviceOrBrowserList);
+                devicesAndBrowsersValidation(configName, envList, uiConfigs, deviceOrBrowserList);
             }
         }));
     }
@@ -205,10 +205,11 @@ public class UiValidator {
                 : ((AbstractBrowser) deviceOrBrowser).isEnabled();
     }
 
-    private void validateDevicesAndBrowsers(final String configName,
-                                            final List<String> envList,
-                                            final List<UiConfig> uiConfigs,
-                                            final List<? extends List<?>> deviceOrBrowserList) {
+    @SuppressWarnings("unchecked")
+    private void devicesAndBrowsersValidation(final String configName,
+                                              final List<String> envList,
+                                              final List<UiConfig> uiConfigs,
+                                              final List<? extends List<?>> deviceOrBrowserList) {
         List<?> defaultDevicesOrBrowsers = getDefaultDevicesOrBrowsers(deviceOrBrowserList);
         checkAliasesDifferAndMatch(configName, envList, defaultDevicesOrBrowsers, deviceOrBrowserList);
         if (configName.equals(NATIVE.name()) || configName.equals(MOBILE_BROWSER.name())) {
@@ -244,6 +245,7 @@ public class UiValidator {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> List<String> getDefaultAliasesList(final List<T> defaultAliasesList) {
         return defaultAliasesList.get(0) instanceof AbstractDevice
                 ? ((List<AbstractDevice>) defaultAliasesList).stream()

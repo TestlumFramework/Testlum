@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.db.redis;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRedisEnabledCondition;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
@@ -71,7 +72,8 @@ public class RedisOperation implements StorageOperation {
             return new String((byte[]) result, StandardCharsets.UTF_8);
         } else if (result instanceof List<?>) {
             return ((List<byte[]>) result).stream()
-                    .map(bytes -> new String(bytes, StandardCharsets.UTF_8))
+                    .map(bytes ->
+                            Objects.isNull(bytes) ? DelimiterConstant.EMPTY : new String(bytes, StandardCharsets.UTF_8))
                     .collect(Collectors.toList())
                     .toString();
         }

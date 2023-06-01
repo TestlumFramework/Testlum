@@ -766,6 +766,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link NativeVar }
+     * 
+     */
+    public NativeVar createNativeVar() {
+        return new NativeVar();
+    }
+
+    /**
      * Create an instance of {@link WebView }
      * 
      */
@@ -827,6 +835,22 @@ public class ObjectFactory {
      */
     public RedisQuery createRedisQuery() {
         return new RedisQuery();
+    }
+
+    /**
+     * Create an instance of {@link SendSqsMessage }
+     * 
+     */
+    public SendSqsMessage createSendSqsMessage() {
+        return new SendSqsMessage();
+    }
+
+    /**
+     * Create an instance of {@link ReceiveSqsMessage }
+     * 
+     */
+    public ReceiveSqsMessage createReceiveSqsMessage() {
+        return new ReceiveSqsMessage();
     }
 
     /**

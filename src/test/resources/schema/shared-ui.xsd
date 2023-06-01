@@ -204,6 +204,7 @@
                     <x:element name="switchToFrame" type="tns:switchToFrame"/>
                     <x:element name="dragAndDrop" type="tns:dragAndDrop"/>
                     <x:element name="hotKey" type="tns:hotKey"/>
+                    <x:element name="var" type="tns:webVar"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>
@@ -331,7 +332,7 @@
             <x:extension base="tns:abstractUiCommand">
                 <x:choice>
                     <x:element name="fromLocatorId" type="tns:scenarioLocator"/>
-                    <x:element name="filePath" type="tns:nonEmptyString"/>
+                    <x:element name="fileName" type="tns:nonEmptyString"/>
                 </x:choice>
                 <x:attribute name="toLocatorId" type="tns:scenarioLocator" use="required"/>
             </x:extension>
@@ -377,6 +378,18 @@
                     <x:element name="cookie" type="tns:fromCookie"/>
                     <x:element name="dom" type="tns:fromDom"/>
                     <x:element name="url" type="tns:fromUrl"/>
+                    <x:element name="element" type="tns:fromElement"/>
+                </x:choice>
+                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="nativeVar">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice>
+                    <x:group ref="tns:generalVarType"/>
                     <x:element name="element" type="tns:fromElement"/>
                 </x:choice>
                 <x:attribute name="name" type="tns:nonEmptyString" use="required"/>

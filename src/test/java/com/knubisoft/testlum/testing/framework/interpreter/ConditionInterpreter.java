@@ -4,18 +4,19 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpret
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.ConditionHelper;
 import com.knubisoft.testlum.testing.model.scenario.Condition;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.expression.Expression;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_CONDITION_LOG;
 
 @Slf4j
 @InterpreterForClass(Condition.class)
 public class ConditionInterpreter extends AbstractInterpreter<Condition> {
+
+    @Autowired
+    private ConditionHelper conditionHelper;
 
     public ConditionInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -24,24 +25,12 @@ public class ConditionInterpreter extends AbstractInterpreter<Condition> {
     @Override
     protected void acceptImpl(final Condition condition, final CommandResult result) {
         try {
-            setConditionResult(condition, result);
+            String injectedSpel = inject(condition.getSpel());
+            boolean conditionResult = conditionHelper.getConditionFromSpel(injectedSpel, condition.getName(), result);
+            dependencies.getScenarioContext().setCondition(condition.getName(), conditionResult);
         } catch (Exception e) {
             log.info(FAILED_CONDITION_LOG, condition.getName(), condition.getSpel());
             throw e;
         }
-    }
-
-    private void setConditionResult(final Condition condition, final CommandResult result) {
-        boolean conditionResult = getConditionFromSpel(condition, result);
-        dependencies.getScenarioContext().setCondition(condition.getName(), conditionResult);
-    }
-
-    private boolean getConditionFromSpel(final Condition condition, final CommandResult result) {
-        String injectedExpression = inject(condition.getSpel());
-        Expression exp = new SpelExpressionParser().parseExpression(injectedExpression);
-        boolean conditionResult = Boolean.TRUE.equals(exp.getValue(Boolean.class));
-        LogUtil.logConditionInfo(condition.getName(), injectedExpression, conditionResult);
-        ResultUtil.addConditionMetaData(condition.getName(), injectedExpression, conditionResult, result);
-        return conditionResult;
     }
 }

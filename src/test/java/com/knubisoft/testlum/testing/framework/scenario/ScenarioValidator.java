@@ -55,6 +55,7 @@ import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import com.knubisoft.testlum.testing.model.scenario.Graphql;
 import com.knubisoft.testlum.testing.model.scenario.Http;
 import com.knubisoft.testlum.testing.model.scenario.HttpInfo;
+import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.Include;
 import com.knubisoft.testlum.testing.model.scenario.Javascript;
 import com.knubisoft.testlum.testing.model.scenario.Kafka;
@@ -344,6 +345,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
         uiValidatorMap.put(o -> o instanceof Scroll && ScrollType.INNER == ((Scroll) o).getType(),
                 (xmlFile, command) -> validateLocator((Scroll) command, NO_LOCATOR_FOUND_FOR_INNER_SCROLL));
+
+        uiValidatorMap.put(o -> o instanceof Image, (xmlFile, command) ->
+                validateFileIfExist(xmlFile, ((Image) command).getFile()));
 
         uiValidatorMap.put(o -> o instanceof DragAndDrop, (xmlFile, command) ->
                 validateFileIfExist(xmlFile, ((DragAndDrop) command).getFileName()));

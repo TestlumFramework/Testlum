@@ -170,12 +170,21 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         while (iterator.hasNext()) {
             ConsumerRecord<String, String> consumerRecord = iterator.next();
             KafkaMessage kafkaMessage = new KafkaMessage(consumerRecord);
+            setHeadersToKafkaMessage(isHeaders, kafkaMessage, consumerRecord);
             kafkaMessages.add(kafkaMessage);
         }
-        if (!isHeaders) {
-            kafkaMessages.forEach(kafkaMessage -> kafkaMessage.getHeaders().clear());
-        }
         return kafkaMessages;
+    }
+
+    private void setHeadersToKafkaMessage(final boolean isHeaders,
+                                          final KafkaMessage kafkaMessage,
+                                          final ConsumerRecord<String, String> consumerRecord) {
+        if (isHeaders) {
+            Header[] headerArray = consumerRecord.headers().toArray();
+            kafkaMessage.setHeaders(Arrays.stream(headerArray).collect(
+                    Collectors.toMap(Header::key, h -> new String(h.value(), StandardCharsets.UTF_8))));
+            kafkaMessage.getHeaders().remove(CORRELATION_ID);
+        }
     }
 
     private ProducerRecord<String, String> buildProducerRecord(final SendKafkaMessage send, final String value) {
@@ -239,16 +248,15 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         private final String key;
         private final String value;
         private final String correlationId;
-        private final Map<String, String> headers;
+        private Map<String, String> headers;
 
         KafkaMessage(final ConsumerRecord<String, String> consumerRecord) {
             this.key = consumerRecord.key();
             this.value = consumerRecord.value();
             Header[] headerArray = consumerRecord.headers().toArray();
-            this.headers = Arrays.stream(headerArray).collect(
+            Map<String, String> headers = Arrays.stream(headerArray).collect(
                     Collectors.toMap(Header::key, h -> new String(h.value(), StandardCharsets.UTF_8)));
             this.correlationId = headers.get(CORRELATION_ID);
-            this.headers.remove(CORRELATION_ID);
         }
     }
 }

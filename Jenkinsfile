@@ -18,7 +18,7 @@ pipeline {
     }
     environment {
         SERVICE = "testing-tool"
-        SITE = "site-sample"
+        TEST_SITE = "mega-test-site"
         TEST_API = "mega-test-api"
         TAG = "${GIT_COMMIT}"
         SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/cott/mega-test-app.git"
@@ -72,21 +72,27 @@ pipeline {
     }
     stage('build test site') {
         steps {
-            dir("site") {
-//                 sh "docker network create e2e_network"
-//                 sh "docker network create registry_registry-ui-net"
-//                 sh "docker-compose -f docker/docker-compose-site.yaml up -d --force-recreate"
+            dir("site/TEST-UI") {
+                sh "docker build -f Dockerfile.jenkins -t ${TEST_SITE} ."
             }
         }
     }
-    stage('start test app') {
+    stage('start test api') {
         steps {
             dir("site") {
                 sh "docker-compose -f docker/docker-compose-jenkins.yaml up -d --force-recreate"
-//                 && docker-compose -f docker-compose-selenium-grid.yaml up -d --force-recreate"
-                sh 'sleep 10'
+                sh 'sleep 5'
                 sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -e TZ=Europe/Kiev -p 8080:8080 -d ${TEST_API} --name ${TEST_API} -e SPRING_PROFILES_ACTIVE=jenkins'
 //                 sh 'java -jar TEST-API/target/mega-test-api.jar --spring.profiles.active=jenkins --spring.config.location="TEST-API/src/main/resources/" &'
+            }
+        }
+    }
+    stage('start test site') {
+        steps {
+            dir("site") {
+                sh "docker-compose -f docker/docker-compose-selenium-grid.yaml up -d --force-recreate"
+                sh "docker-compose -f docker/docker-compose-app.yaml up -d --force-recreate"
+//                 sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -e TZ=Europe/Kiev -p 3000:3000 -d ${TEST_SITE} --name ${TEST_SITE}'
             }
         }
     }
@@ -111,11 +117,14 @@ pipeline {
     always {
         dir("site") {
             sh "docker-compose -f docker/docker-compose-jenkins.yaml down || true"
+            sh "docker-compose -f docker/docker-compose-selenium-grid.yaml down || true"
+            sh "docker-compose -f docker/docker-compose-app.yaml down || true"
         }
         script {
             sh "docker rm -f -v \$(docker ps -q) || true"
             sh "docker rmi ${SERVICE}:${TAG} || true"
             sh "docker rmi -f ${TEST_API} || true"
+            sh "docker rmi -f ${TEST_SITE} || true"
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
         }
     }

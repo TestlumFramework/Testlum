@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.REDIS_COMMAND_NOT_FOUND;
+import static java.util.Objects.isNull;
 
 @Conditional({OnRedisEnabledCondition.class})
 @Component
@@ -72,8 +73,7 @@ public class RedisOperation implements StorageOperation {
             return new String((byte[]) result, StandardCharsets.UTF_8);
         } else if (result instanceof List<?>) {
             return ((List<byte[]>) result).stream()
-                    .map(bytes ->
-                            Objects.isNull(bytes) ? DelimiterConstant.EMPTY : new String(bytes, StandardCharsets.UTF_8))
+                    .map(bytes -> isNull(bytes) ? DelimiterConstant.EMPTY : new String(bytes, StandardCharsets.UTF_8))
                     .collect(Collectors.toList())
                     .toString();
         }

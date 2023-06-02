@@ -470,8 +470,8 @@ public class LogUtil {
     }
 
     public void logDragAndDropInfo(final DragAndDrop dragAndDrop) {
-        if (isNotBlank(dragAndDrop.getFilePath())) {
-            log.info(DRAGGING_FILE_PATH, dragAndDrop.getFilePath());
+        if (isNotBlank(dragAndDrop.getFileName())) {
+            log.info(DRAGGING_FILE_PATH, dragAndDrop.getFileName());
         } else if (isNotBlank(dragAndDrop.getFromLocatorId())) {
             log.info(DRAGGING_FROM, dragAndDrop.getFromLocatorId());
         }

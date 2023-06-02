@@ -15,6 +15,7 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.StringRedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class RedisConfiguration {
         final Map<AliasEnv, StringRedisConnection> redisConnectionMap = new HashMap<>();
         redisConnectionFactory.forEach((aliasEnv, jedisConnectionFactory) -> {
             RedisConnection connection = jedisConnectionFactory.getConnection();
-            redisConnectionMap.put(aliasEnv, new DefaultStringRedisConnection(connection));
+            redisConnectionMap.put(aliasEnv, new DefaultStringRedisConnection(connection, new StringRedisSerializer()));
         });
         return redisConnectionMap;
     }

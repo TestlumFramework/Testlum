@@ -59,6 +59,7 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
     private List<String> convertToListString(final List<RedisQuery> redisQueries) {
         return redisQueries.stream()
                 .map(JacksonMapperUtil::writeValueAsString)
+                .map(this::inject)
                 .collect(Collectors.toList());
     }
 }

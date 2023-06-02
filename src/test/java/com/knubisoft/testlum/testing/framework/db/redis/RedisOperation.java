@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.db.redis;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRedisEnabledCondition;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.REDIS_COMMAND_NOT_FOUND;
+import static java.util.Objects.isNull;
 
 @Conditional({OnRedisEnabledCondition.class})
 @Component
@@ -65,11 +67,16 @@ public class RedisOperation implements StorageOperation {
         return convertResult(response);
     }
 
+    @SuppressWarnings("unchecked")
     private String convertResult(final Object result) {
         if (result instanceof byte[]) {
             return new String((byte[]) result, StandardCharsets.UTF_8);
-        } else {
-            return String.valueOf(result);
+        } else if (result instanceof List<?>) {
+            return ((List<byte[]>) result).stream()
+                    .map(bytes -> isNull(bytes) ? DelimiterConstant.EMPTY : new String(bytes, StandardCharsets.UTF_8))
+                    .collect(Collectors.toList())
+                    .toString();
         }
+        return String.valueOf(result);
     }
 }

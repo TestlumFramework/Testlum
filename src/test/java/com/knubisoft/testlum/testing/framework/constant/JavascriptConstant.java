@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JavascriptConstant {
     public static final String CLICK_SCRIPT = "arguments[0].click();";
+    public static final String ELEMENT_ARGUMENTS_SCRIPT = "return arguments[0].getAttribute(arguments[1])";
     public static final String HIGHLIGHT_SCRIPT = "arguments[0].setAttribute('style', "
             + "'background: grey; border: 3px solid yellow;');";
     public static final String SCROLL_TO_ELEMENT_SCRIPT =

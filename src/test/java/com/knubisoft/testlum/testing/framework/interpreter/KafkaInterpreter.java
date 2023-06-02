@@ -170,7 +170,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         while (iterator.hasNext()) {
             ConsumerRecord<String, String> consumerRecord = iterator.next();
             KafkaMessage kafkaMessage = new KafkaMessage(consumerRecord);
-            setHeadersToKafkaMessage(isHeaders, kafkaMessage, consumerRecord);
+            setHeadersToKafkaMessage(isHeaders, kafkaMessage, consumerRecord.headers().toArray());
             kafkaMessages.add(kafkaMessage);
         }
         return kafkaMessages;
@@ -178,9 +178,8 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
     private void setHeadersToKafkaMessage(final boolean isHeaders,
                                           final KafkaMessage kafkaMessage,
-                                          final ConsumerRecord<String, String> consumerRecord) {
+                                          final Header[] headerArray) {
         if (isHeaders) {
-            Header[] headerArray = consumerRecord.headers().toArray();
             kafkaMessage.setHeaders(Arrays.stream(headerArray).collect(
                     Collectors.toMap(Header::key, h -> new String(h.value(), StandardCharsets.UTF_8))));
             kafkaMessage.getHeaders().remove(CORRELATION_ID);

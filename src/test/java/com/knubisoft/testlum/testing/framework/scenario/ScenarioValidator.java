@@ -114,6 +114,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOUBLE_OPEN_BRACE;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_ALIASES_DOESNT_MATCH;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
@@ -433,13 +434,15 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateFileExistenceInDataFolder(final String fileName) {
-        if (isNotBlank(fileName)) {
+        //todo: add file existence validation if variations
+        if (isNotBlank(fileName) && !fileName.trim().startsWith(DOUBLE_OPEN_BRACE)) {
             FileSearcher.searchFileFromDataFolder(fileName);
         }
     }
 
     private void validateFileIfExist(final File xmlFile, final String fileName) {
-        if (isNotBlank(fileName)) {
+        //todo: add file existence validation if variations
+        if (isNotBlank(fileName) && !fileName.trim().startsWith(DOUBLE_OPEN_BRACE)) {
             FileSearcher.searchFileFromDir(xmlFile, fileName);
         }
     }

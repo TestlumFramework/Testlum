@@ -15,6 +15,7 @@ public class DelimiterConstant {
     public static final String OPEN_SQUARE_BRACKET = "[";
     public static final String CLOSE_BRACE = "}";
     public static final String OPEN_BRACE = "{";
+    public static final String DOUBLE_OPEN_BRACE = "{{";
     public static final String EQUALS_MARK = "=";
     public static final String SEMICOLON = ";";
     public static final String COLON = ":";
@@ -22,7 +23,7 @@ public class DelimiterConstant {
     public static final String COMMA = ",";
     public static final String LOGIC_MORE = ">";
     public static final String LOGIC_LESS = "<";
-    public static final String DOUBLE_BRACKETS = "((";
+    public static final String DOUBLE_OPEN_PARENTHESIS = "((";
     public static final String REGEX_SPACE = "\\s";
     public static final String REGEX_MANY_SPACES = "\\s{2,}";
     public static final String SLASH_SEPARATOR = "/";

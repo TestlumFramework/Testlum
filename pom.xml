@@ -25,7 +25,7 @@
         <io.jsonwebtoken.version>0.11.2</io.jsonwebtoken.version>
         <com.stripe-java.version>22.3.0</com.stripe-java.version>
 
-        <jackson.version>2.13.3</jackson.version>
+        <jackson.version>2.15.0</jackson.version>
         <javax.xml.jaxp-api.version>1.4.2</javax.xml.jaxp-api.version>
         <javax.xml.version>2.3.1</javax.xml.version>
         <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>

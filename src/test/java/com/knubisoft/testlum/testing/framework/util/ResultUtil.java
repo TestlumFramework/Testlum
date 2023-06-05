@@ -534,8 +534,8 @@ public class ResultUtil {
 
     public void addDragAndDropMetaDada(final DragAndDrop dragAndDrop,
                                        final CommandResult result) {
-        if (isNotBlank(dragAndDrop.getFilePath())) {
-            result.put(FROM_LOCAL_FILE, dragAndDrop.getFilePath());
+        if (isNotBlank(dragAndDrop.getFileName())) {
+            result.put(FROM_LOCAL_FILE, dragAndDrop.getFileName());
         } else if (isNotBlank(dragAndDrop.getFromLocatorId())) {
             result.put(FROM_LOCATOR, dragAndDrop.getFromLocatorId());
         }

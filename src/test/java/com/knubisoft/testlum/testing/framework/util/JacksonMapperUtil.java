@@ -2,7 +2,6 @@ package com.knubisoft.testlum.testing.framework.util;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -18,7 +17,6 @@ import java.io.File;
 public final class JacksonMapperUtil {
 
     private static final ObjectMapper MAPPER = buildObjectMapper();
-    private static final ObjectMapper MAPPER_TYPE = buildObjectMapper();
     private static final ObjectMapper DYNAMODB_MAPPER = createObjectMapperWithFieldVisibility();
 
     @SneakyThrows
@@ -27,18 +25,13 @@ public final class JacksonMapperUtil {
     }
 
     @SneakyThrows
-    public <T> T readValue(final String content, final JavaType javaType) {
-        return MAPPER.readValue(content, javaType);
-    }
-
-    @SneakyThrows
-    public <T> T readValue(final String content, final TypeReference<T> javaType) {
-        return MAPPER.readValue(content, javaType);
-    }
-
-    @SneakyThrows
     public <T> T readValue(final File content, final Class<T> valueType) {
         return MAPPER.readValue(content, valueType);
+    }
+
+    @SneakyThrows
+    public <T> T readValue(final String content, final JavaType javaType) {
+        return MAPPER.readValue(content, javaType);
     }
 
     @SneakyThrows
@@ -80,7 +73,4 @@ public final class JacksonMapperUtil {
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE);
     }
 
-    public ObjectMapper instance() {
-        return MAPPER_TYPE;
-    }
 }

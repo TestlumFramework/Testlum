@@ -434,12 +434,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateFileExistenceInDataFolder(final String fileName) {
+        //todo: add file existence validation if variations
         if (isNotBlank(fileName) && !fileName.trim().startsWith(DOUBLE_OPEN_BRACE)) {
             FileSearcher.searchFileFromDataFolder(fileName);
         }
     }
 
     private void validateFileIfExist(final File xmlFile, final String fileName) {
+        //todo: add file existence validation if variations
         if (isNotBlank(fileName) && !fileName.trim().startsWith(DOUBLE_OPEN_BRACE)) {
             FileSearcher.searchFileFromDir(xmlFile, fileName);
         }

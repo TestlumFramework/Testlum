@@ -58,7 +58,7 @@ public class ScenarioRunner {
 
     public ScenarioResult run() {
         prepare();
-        injectScenario();
+        injectOverview();
         prepareScenarioResult();
         runScenarioCommands();
         return scenarioResult;
@@ -70,7 +70,7 @@ public class ScenarioRunner {
         this.cmdToInterpreterMap = createClassToInterpreterMap(dependencies);
     }
 
-    private void injectScenario() {
+    private void injectOverview() {
         Scenario scenario = scenarioArguments.getScenario();
         scenario.setOverview(InjectionUtil.injectObject(scenario.getOverview(), dependencies.getScenarioContext()));
     }

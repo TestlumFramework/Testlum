@@ -88,23 +88,23 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     }
 
     private void highlightCommand(final Highlight highlight, final CommandResult result) {
-        action.keyDown(getWebElement(highlight.getLocatorId(), result), ctrlKey)
+        action.click(getWebElement(highlight.getLocatorId(), result)).keyDown(ctrlKey)
                 .sendKeys("a").keyUp(ctrlKey).build().perform();
     }
 
     private void cutCommand(final Cut cut, final CommandResult result) {
-        action.keyDown(getWebElement(cut.getLocatorId(), result), ctrlKey)
-                .sendKeys("x").keyUp(ctrlKey).build().perform();
+        action.click(getWebElement(cut.getLocatorId(), result)).keyDown(ctrlKey)
+                .sendKeys("a").sendKeys("x").keyUp(ctrlKey).build().perform();
     }
 
     private void pasteCommand(final Paste paste, final CommandResult result) {
-        action.keyDown(getWebElement(paste.getLocatorId(), result), ctrlKey)
+        action.click(getWebElement(paste.getLocatorId(), result)).keyDown(ctrlKey)
                 .sendKeys("v").keyUp(ctrlKey).build().perform();
     }
 
     private void copyCommand(final Copy copy, final CommandResult result) {
-        action.keyDown(getWebElement(copy.getLocatorId(), result), ctrlKey)
-                .sendKeys("c").keyUp(ctrlKey).build().perform();
+        action.click(getWebElement(copy.getLocatorId(), result)).keyDown(ctrlKey)
+                .sendKeys("a").sendKeys("c").keyUp(ctrlKey).build().perform();
     }
 
 

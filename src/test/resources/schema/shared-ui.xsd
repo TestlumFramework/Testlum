@@ -313,7 +313,7 @@
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:choice>
-                    <x:element name="compareWithFullScreen"/>
+                    <x:element name="compareWithFullScreen" type="x:boolean"/>
                     <x:element name="compareWith" type="tns:compareWith"/>
                 </x:choice>
                 <x:attribute name="file" type="tns:imageExtension" use="required"/>

@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice&gt;
- *         &lt;element name="compareWithFullScreen" type="{http://www.w3.org/2001/XMLSchema}anyType"/&gt;
+ *         &lt;element name="compareWithFullScreen" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *         &lt;element name="compareWith" type="{http://www.knubisoft.com/testlum/testing/model/scenario}compareWith"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="file" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}imageExtension" /&gt;
@@ -38,7 +38,7 @@ public class Image
     extends AbstractUiCommand
 {
 
-    protected Object compareWithFullScreen;
+    protected Boolean compareWithFullScreen;
     protected CompareWith compareWith;
     @XmlAttribute(name = "file", required = true)
     protected String file;
@@ -50,10 +50,10 @@ public class Image
      * 
      * @return
      *     possible object is
-     *     {@link Object }
+     *     {@link Boolean }
      *     
      */
-    public Object getCompareWithFullScreen() {
+    public Boolean isCompareWithFullScreen() {
         return compareWithFullScreen;
     }
 
@@ -62,10 +62,10 @@ public class Image
      * 
      * @param value
      *     allowed object is
-     *     {@link Object }
+     *     {@link Boolean }
      *     
      */
-    public void setCompareWithFullScreen(Object value) {
+    public void setCompareWithFullScreen(Boolean value) {
         this.compareWithFullScreen = value;
     }
 

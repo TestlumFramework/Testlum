@@ -6,8 +6,6 @@ import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 
-import static java.util.Objects.nonNull;
-
 public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
 
     protected final ExecutorDependencies dependencies;
@@ -17,10 +15,11 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
     }
 
     public final void apply(final T o, final CommandResult result) {
-        result.setComment(o.getComment());
-        LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), o);
-        if (ConditionUtil.isTrue(o.getCondition(), dependencies.getScenarioContext(), result)) {
-            execute(o, result);
+        T t = InjectionUtil.injectObject(o, dependencies.getScenarioContext());
+        result.setComment(t.getComment());
+        LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), t);
+        if (ConditionUtil.isTrue(t.getCondition(), dependencies.getScenarioContext(), result)) {
+            execute(t, result);
         }
     }
 
@@ -28,12 +27,5 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
 
     protected String inject(final String original) {
         return dependencies.getScenarioContext().inject(original);
-    }
-
-    protected <Y> Y injectCommand(final Y o, final Class<Y> clazz) {
-        if (nonNull(o)) {
-            return InjectionUtil.injectObject(o, clazz, dependencies.getScenarioContext());
-        }
-        return null;
     }
 }

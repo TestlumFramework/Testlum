@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -18,6 +20,7 @@ public final class JacksonMapperUtil {
 
     private static final ObjectMapper MAPPER = buildObjectMapper();
     private static final ObjectMapper DYNAMODB_MAPPER = createObjectMapperWithFieldVisibility();
+    private static final ObjectMapper COPY_MAPPER = createObjectMapperForDeepCopy();
 
     @SneakyThrows
     public <T> T readValue(final String content, final Class<T> valueType) {
@@ -30,8 +33,9 @@ public final class JacksonMapperUtil {
     }
 
     @SneakyThrows
-    public <T> T readValue(final String content, final JavaType javaType) {
-        return MAPPER.readValue(content, javaType);
+    public <T> T readCopiedValue(final String content, final Class<T> valueType) {
+        JavaType javaType = COPY_MAPPER.getTypeFactory().constructType(valueType);
+        return COPY_MAPPER.readValue(content, javaType);
     }
 
     @SneakyThrows
@@ -71,6 +75,25 @@ public final class JacksonMapperUtil {
                 .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE);
+    }
+
+    private ObjectMapper createObjectMapperForDeepCopy() {
+        PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
+                .allowIfSubTypeIsArray()
+//                .allowIfSubType("java.util.")
+//                .allowIfSubType("java.lang.")
+                .allowIfSubType("com.knubisoft.testlum.testing.model.scenario.")
+                .build();
+
+        return JsonMapper.builder()
+                .polymorphicTypeValidator(ptv)
+//                .activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT)
+//                .activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE, JsonTypeInfo.As.WRAPPER_OBJECT)
+//                .activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_CONCRETE_AND_ARRAYS, JsonTypeInfo.As.WRAPPER_ARRAY)
+//                .deactivateDefaultTyping()
+                .findAndAddModules()
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .build();
     }
 
 }

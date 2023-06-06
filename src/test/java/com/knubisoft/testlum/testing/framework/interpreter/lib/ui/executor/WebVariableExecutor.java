@@ -60,8 +60,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     @Override
-    public void execute(final WebVar o, final CommandResult result) {
-        WebVar var = injectCommand(o, WebVar.class);
+    public void execute(final WebVar var, final CommandResult result) {
         try {
             setContextVariable(var, result);
         } catch (Exception e) {

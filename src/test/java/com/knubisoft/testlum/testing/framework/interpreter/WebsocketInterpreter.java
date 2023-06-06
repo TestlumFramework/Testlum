@@ -18,7 +18,6 @@ import com.knubisoft.testlum.testing.framework.util.WaitUtil;
 import com.knubisoft.testlum.testing.model.scenario.Websocket;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
-import com.knubisoft.testlum.testing.model.scenario.WebsocketStomp;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSubscribe;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.time.StopWatch;
@@ -62,7 +61,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
     @Override
     protected void acceptImpl(final Websocket o, final CommandResult result) {
-        Websocket websocket = injectWebsocket(o);
+        Websocket websocket = injectCommand(o);
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         processWebsockets(websocket, subCommandsResult);
@@ -234,20 +233,5 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         if (isDisconnectEnabled) {
             wsConnectionManager.closeConnection();
         }
-    }
-
-    //todo improve
-    private Websocket injectWebsocket(final Websocket websocket) {
-        Websocket injected = new Websocket();
-        injected.setAlias(inject(websocket.getAlias()));
-        injected.setComment(websocket.getComment());
-        injected.setCondition(websocket.getCondition());
-        injected.setDisconnect(websocket.isDisconnect());
-        injected.setThreshold(websocket.getThreshold());
-        injected.setStomp(injectCommand(websocket.getStomp(), WebsocketStomp.class));
-        injected.getSendOrReceive().addAll(websocket.getSendOrReceive().stream()
-                .map(o -> injectCommand(o, o.getClass()))
-                .collect(Collectors.toList()));
-        return injected;
     }
 }

@@ -31,7 +31,7 @@ public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
 
     @Override
     protected void acceptImpl(final Clickhouse o, final CommandResult result) {
-        Clickhouse clickhouse = injectCommand(o, Clickhouse.class);
+        Clickhouse clickhouse = injectCommand(o);
         String expected = inject(getContentIfFile(clickhouse.getFile()));
         String actual = getActual(clickhouse, result);
         CompareBuilder comparator = newCompare()

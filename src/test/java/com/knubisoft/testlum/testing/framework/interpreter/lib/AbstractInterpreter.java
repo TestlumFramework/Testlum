@@ -93,7 +93,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         return fileOrContent;
     }
 
-    protected <U> U injectCommand(final U o, final Class<U> clazz) {
-        return InjectionUtil.injectObject(o, clazz, dependencies.getScenarioContext());
+    protected <U> U injectCommand(final U o) {
+        return InjectionUtil.injectObject(o, dependencies.getScenarioContext());
     }
 }

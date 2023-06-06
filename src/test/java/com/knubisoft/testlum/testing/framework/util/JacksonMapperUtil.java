@@ -45,11 +45,11 @@ public final class JacksonMapperUtil {
     }
 
     @SneakyThrows
-    public static String writeAsStringForDynamoDbOnly(final Object value) {
+    public String writeAsStringForDynamoDbOnly(final Object value) {
         return DYNAMODB_MAPPER.writeValueAsString(value);
     }
 
-    private static ObjectMapper buildObjectMapper() {
+    private ObjectMapper buildObjectMapper() {
         return JsonMapper.builder()
                 .findAndAddModules()
                 .addModule(new JavaTimeModule())
@@ -57,7 +57,7 @@ public final class JacksonMapperUtil {
                 .build();
     }
 
-    private static ObjectMapper createObjectMapperWithFieldVisibility() {
+    private ObjectMapper createObjectMapperWithFieldVisibility() {
         ObjectMapper mapper = new ObjectMapper();
         VisibilityChecker<?> config = configMapper(mapper);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
@@ -65,7 +65,7 @@ public final class JacksonMapperUtil {
         return mapper;
     }
 
-    private static VisibilityChecker<?> configMapper(final ObjectMapper mapper) {
+    private VisibilityChecker<?> configMapper(final ObjectMapper mapper) {
         return mapper.getSerializationConfig().getDefaultVisibilityChecker()
                 .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
                 .withGetterVisibility(JsonAutoDetect.Visibility.NONE)

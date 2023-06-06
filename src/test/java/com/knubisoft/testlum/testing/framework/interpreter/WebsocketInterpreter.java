@@ -61,7 +61,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
     @Override
     protected void acceptImpl(final Websocket o, final CommandResult result) {
-        Websocket websocket = injectCommand(o, Websocket.class);
+        Websocket websocket = injectWebsocket(o);
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         processWebsockets(websocket, subCommandsResult);
@@ -124,8 +124,10 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
             sendMessage((WebsocketSend) action, aliasEnv, result);
         } else if (action instanceof WebsocketReceive) {
             receiveMessages((WebsocketReceive) action, aliasEnv, result);
-        } else {
+        } else if (action instanceof WebsocketSubscribe) {
             subscribeToTopic((WebsocketSubscribe) action, aliasEnv, result);
+        } else {
+            throw new DefaultFrameworkException("//todo");
         }
     }
 
@@ -231,5 +233,23 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         if (isDisconnectEnabled) {
             wsConnectionManager.closeConnection();
         }
+    }
+
+    private Websocket injectWebsocket(final Websocket websocket) {
+        //todo improve
+        Websocket injected = new Websocket();
+        injected.setAlias(inject(websocket.getAlias()));
+        injected.setComment(websocket.getComment());
+        injected.setCondition(websocket.getCondition());
+        injected.setDisconnect(websocket.isDisconnect());
+        injected.setThreshold(websocket.getThreshold());
+        if (nonNull(websocket.getStomp())) {
+            injected.setStomp(injectCommand(websocket.getStomp()));
+        } else if (nonNull(websocket.getSendOrReceive())) {
+            injected.getSendOrReceive().addAll(websocket.getSendOrReceive().stream()
+                    .map(this::injectCommand)
+                    .collect(Collectors.toList()));
+        }
+        return injected;
     }
 }

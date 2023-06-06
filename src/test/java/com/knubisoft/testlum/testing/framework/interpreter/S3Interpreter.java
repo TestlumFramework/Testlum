@@ -30,6 +30,7 @@ import java.util.Optional;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_S3_PROCESSING;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
@@ -57,6 +58,9 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     //CHECKSTYLE:OFF
     @SneakyThrows
     private void exec(final S3 s3, final String bucket, final String key, final CommandResult result) {
+        if (isBlank(s3.getUpload()) &&  isNotBlank(s3.getDownload())) {
+            throw new DefaultFrameworkException(INCORRECT_S3_PROCESSING);
+        }
         if (isNotBlank(s3.getUpload())) {
             ResultUtil.addS3GeneralMetaData(bucket, UPLOAD_ACTION, key, bucket, result);
             final String fileName = inject(s3.getUpload());
@@ -64,13 +68,13 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
             result.put("File name", fileName);
             LogUtil.logS3ActionInfo(UPLOAD_ACTION, bucket, key, fileName);
             AliasEnv aliasEnv = new AliasEnv(bucket, dependencies.getEnvironment());
-            this.amazonS3.get(aliasEnv).createBucket(bucket);
+//            this.amazonS3.get(aliasEnv).createBucket(new CreateBucketRequest(bucket, "eu-central-1"));
             this.amazonS3.get(aliasEnv).putObject(bucket, key, file);
-        } else if (isNotBlank(s3.getDownload())) {
+        }
+        if (isNotBlank(s3.getDownload())) {
             ResultUtil.addS3GeneralMetaData(bucket, DOWNLOAD_ACTION, key, bucket, result);
             setContextBody(downloadAndCompareFile(bucket, key, inject(s3.getDownload()), result));
         }
-        throw new DefaultFrameworkException(INCORRECT_S3_PROCESSING);
     }
 
     private String downloadAndCompareFile(final String bucket,

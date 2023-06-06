@@ -12,6 +12,7 @@ import com.knubisoft.testlum.testing.framework.report.GlobalScenarioStatCollecto
 import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioRunner;
+import com.knubisoft.testlum.testing.framework.util.ConnectionManager;
 import com.knubisoft.testlum.testing.framework.util.FileRemover;
 import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.global_config.DelayBetweenScenarioRuns;
@@ -66,6 +67,9 @@ public class RootTest {
 
     @Autowired
     private ReportGenerator reportGenerator;
+
+    @Autowired
+    private ConnectionManager connectionManager;
 
     @BeforeAll
     public void beforeAll() throws Exception {
@@ -130,5 +134,6 @@ public class RootTest {
     @AfterAll
     public void afterAll() {
         reportGenerator.generateReport(globalScenarioStatCollector);
+        connectionManager.closeConnections();
     }
 }

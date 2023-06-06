@@ -80,9 +80,10 @@ public final class JacksonMapperUtil {
     private ObjectMapper createObjectMapperForDeepCopy() {
         PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
                 .allowIfSubTypeIsArray()
-//                .allowIfSubType("java.util.")
-//                .allowIfSubType("java.lang.")
+                .allowIfSubType("java.util.List")
+                .allowIfBaseType("java.util.List")
                 .allowIfSubType("com.knubisoft.testlum.testing.model.scenario.")
+                .allowIfBaseType("com.knubisoft.testlum.testing.model.scenario.")
                 .build();
 
         return JsonMapper.builder()

@@ -710,6 +710,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CompareWithFullScreen }
+     * 
+     */
+    public CompareWithFullScreen createCompareWithFullScreen() {
+        return new CompareWithFullScreen();
+    }
+
+    /**
      * Create an instance of {@link CompareWith }
      * 
      */

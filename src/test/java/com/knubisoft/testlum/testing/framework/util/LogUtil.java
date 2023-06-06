@@ -381,7 +381,9 @@ public class LogUtil {
     /* ui log */
     public void logUICommand(final int position, final AbstractCommand action) {
         log.info(UI_COMMAND_LOG, position, action.getClass().getSimpleName());
-        log.info(COMMENT_LOG, action.getComment());
+        if (isNotBlank(action.getComment())) {
+            log.info(COMMENT_LOG, action.getComment());
+        }
         if (action instanceof CommandWithLocator) {
             log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());
         }
@@ -445,6 +447,7 @@ public class LogUtil {
 
     public void logHotKeyInfo(final AbstractUiCommand command) {
         log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
+        log.info(COMMENT_LOG, command.getComment());
     }
 
     public void logAssertAttributeInfo(final Attribute attribute, final int position) {

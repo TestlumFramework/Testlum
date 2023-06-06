@@ -30,10 +30,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_SQS_PROCESSING;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
@@ -50,44 +49,43 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     }
 
     @Override
-    protected void acceptImpl(final Sqs sqs, final CommandResult commandResult) {
-        List<CommandResult> subCommandsResultList = new LinkedList<>();
-        int actionNumber = 1;
+    protected void acceptImpl(final Sqs sqs, final CommandResult result) {
+        LogUtil.logAlias(sqs.getAlias());
+        List<CommandResult> subCommandsResult = new LinkedList<>();
+        result.setSubCommandsResult(subCommandsResult);
+        final AtomicInteger commandId = new AtomicInteger();
         for (Object action : sqs.getSendOrReceive()) {
-            log.info(COMMAND_LOG, dependencies.getPosition().incrementAndGet(), action.getClass().getSimpleName());
-            CommandResult result = ResultUtil.createNewCommandResultInstance(actionNumber);
-            processEachAction(action, sqs.getAlias(), result);
-            subCommandsResultList.add(result);
-            actionNumber++;
+            LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action.getClass().getSimpleName());
+            CommandResult commandResult = ResultUtil.newCommandResultInstance(commandId.incrementAndGet());
+            subCommandsResult.add(commandResult);
+            processEachAction(action, sqs.getAlias(), commandResult);
         }
-        commandResult.setSubCommandsResult(subCommandsResultList);
-        ResultUtil.setExecutionResultIfSubCommandsFailed(commandResult);
+        ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
-    private void processEachAction(final Object action, final String alias, final CommandResult subCommandResult) {
+    private void processEachAction(final Object action, final String alias, final CommandResult result) {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
-            processSqsAction(action, alias, subCommandResult);
+            processSqsAction(action, alias, result);
         } catch (Exception e) {
             LogUtil.logException(e);
-            ResultUtil.setExceptionResult(subCommandResult, e);
+            ResultUtil.setExceptionResult(result, e);
         } finally {
-            subCommandResult.setExecutionTime(stopWatch.getTime());
+            result.setExecutionTime(stopWatch.getTime());
             stopWatch.stop();
         }
     }
 
-    private void processSqsAction(final Object action, final String alias, final CommandResult subCommandResult) {
-        log.info(ALIAS_LOG, alias);
+    private void processSqsAction(final Object action, final String alias, final CommandResult result) {
         AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
         if (action instanceof SendSqsMessage) {
             SendSqsMessage send = (SendSqsMessage) action;
-            ResultUtil.addSqsInfoForSendAction(send, alias, subCommandResult);
-            sendMessage(send, aliasEnv, subCommandResult);
+            ResultUtil.addSqsInfoForSendAction(send, alias, result);
+            sendMessage(send, aliasEnv, result);
         } else if (action instanceof ReceiveSqsMessage) {
             ReceiveSqsMessage receive = (ReceiveSqsMessage) action;
-            ResultUtil.addSqsInfoForReceiveAction(receive, alias, subCommandResult);
-            receiveMessages(receive, aliasEnv, subCommandResult);
+            ResultUtil.addSqsInfoForReceiveAction(receive, alias, result);
+            receiveMessages(receive, aliasEnv, result);
         } else {
             throw new DefaultFrameworkException(INCORRECT_SQS_PROCESSING);
         }

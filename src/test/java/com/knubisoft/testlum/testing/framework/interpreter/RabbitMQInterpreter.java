@@ -26,13 +26,14 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
@@ -56,53 +57,52 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
 
     @Override
     protected void acceptImpl(final Rabbit rabbit, final CommandResult result) {
+        LogUtil.logAlias(rabbit.getAlias());
         List<CommandResult> subCommandsResult = new LinkedList<>();
-        int actionNumber = 1;
-        for (Object action : rabbit.getSendOrReceive()) {
-            CommandResult subCommandResult = ResultUtil.createNewCommandResultInstance(actionNumber);
-            log.info(COMMAND_LOG, dependencies.getPosition().incrementAndGet(), action.getClass().getSimpleName());
-            processEachAction(action, rabbit.getAlias(), subCommandResult);
-            subCommandsResult.add(subCommandResult);
-            actionNumber++;
-        }
         result.setSubCommandsResult(subCommandsResult);
+        final AtomicInteger commandId = new AtomicInteger();
+        for (Object action : rabbit.getSendOrReceive()) {
+            LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action.getClass().getSimpleName());
+            CommandResult commandResult = ResultUtil.newCommandResultInstance(commandId.incrementAndGet());
+            subCommandsResult.add(commandResult);
+            processEachAction(action, rabbit.getAlias(), commandResult);
+        }
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
     private void processEachAction(final Object action,
                                    final String alias,
-                                   final CommandResult subCommandResult) {
+                                   final CommandResult result) {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
-            runRabbitMqOperation(subCommandResult, action, alias);
+            runRabbitMqOperation(action, alias, result);
         } catch (Exception e) {
-            ResultUtil.setExceptionResult(subCommandResult, e);
+            ResultUtil.setExceptionResult(result, e);
             LogUtil.logException(e);
         } finally {
-            subCommandResult.setExecutionTime(stopWatch.getTime());
+            result.setExecutionTime(stopWatch.getTime());
             stopWatch.stop();
         }
     }
 
-    private void runRabbitMqOperation(final CommandResult subCommandResult,
-                                      final Object action,
-                                      final String alias) {
-        log.info(ALIAS_LOG, alias);
+    private void runRabbitMqOperation(final Object action,
+                                      final String alias,
+                                      final CommandResult result) {
         AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
         if (action instanceof SendRmqMessage) {
             SendRmqMessage sendAction = (SendRmqMessage) action;
-            ResultUtil.addRabbitMQInfoForSendAction(sendAction, alias, subCommandResult);
-            sendMessage((SendRmqMessage) action, subCommandResult, aliasEnv);
+            ResultUtil.addRabbitMQInfoForSendAction(sendAction, alias, result);
+            sendMessage((SendRmqMessage) action, aliasEnv, result);
         } else {
             ReceiveRmqMessage receiveAction = (ReceiveRmqMessage) action;
-            ResultUtil.addRabbitMQInfoForReceiveAction(receiveAction, alias, subCommandResult);
-            receiveMessages((ReceiveRmqMessage) action, subCommandResult, aliasEnv);
+            ResultUtil.addRabbitMQInfoForReceiveAction(receiveAction, alias, result);
+            receiveMessages((ReceiveRmqMessage) action, aliasEnv, result);
         }
     }
 
     private void sendMessage(final SendRmqMessage send,
-                             final CommandResult result,
-                             final AliasEnv aliasEnv) {
+                             final AliasEnv aliasEnv,
+                             final CommandResult result) {
         String message = getMessage(send);
         LogUtil.logBrokerActionInfo(SEND_ACTION, send.getRoutingKey(), message);
         result.put(MESSAGE_TO_SEND, message);
@@ -137,8 +137,8 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     }
 
     private void receiveMessages(final ReceiveRmqMessage receive,
-                                 final CommandResult result,
-                                 final AliasEnv aliasEnv) {
+                                 final AliasEnv aliasEnv,
+                                 final CommandResult result) {
         String message = getMessage(receive);
         LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), message);
         createQueueIfNotExists(receive.getQueue(), aliasEnv);
@@ -147,14 +147,10 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     }
 
     private List<RabbitMQMessage> receiveRmqMessages(final ReceiveRmqMessage receive, final AliasEnv aliasEnv) {
-        List<RabbitMQMessage> actualRmqMessages = new ArrayList<>();
-        for (int i = 0; i < receive.getPrefetchCount(); i++) {
-            RabbitMQMessage actualRmqMessage = receiveRmqMessage(receive, aliasEnv);
-            if (nonNull(actualRmqMessage)) {
-                actualRmqMessages.add(actualRmqMessage);
-            }
-        }
-        return actualRmqMessages;
+        return IntStream.range(0, receive.getPrefetchCount())
+                .mapToObj(i -> receiveRmqMessage(receive, aliasEnv))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     private RabbitMQMessage receiveRmqMessage(final ReceiveRmqMessage receive, final AliasEnv aliasEnv) {

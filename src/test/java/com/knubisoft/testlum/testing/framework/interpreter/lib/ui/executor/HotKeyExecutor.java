@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.HOT_KEY_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND_LOCATOR;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.HOTKEY_LOCATOR;
 
@@ -65,22 +67,22 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     public void execute(final HotKey hotKey, final CommandResult result) {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
-        hotKey.getCopyOrPasteOrCut().forEach(command -> hotKeyCmdMethods.keySet().stream()
-                .filter(key -> key.test(command))
-                .map(hotKeyCmdMethods::get)
-                .forEach(method -> executeHotKeyCommand(command, method, subCommandsResult)));
+        hotKey.getCopyOrPasteOrCut().forEach(command -> {
+            CommandResult commandResult = ResultUtil.newUiCommandResultInstance(
+                    dependencies.getPosition().get(), command);
+            subCommandsResult.add(commandResult);
+            LogUtil.logHotKeyInfo(command);
+            executeHotKeyCommand(command, commandResult);
+        });
     }
 
-    private void executeHotKeyCommand(final AbstractUiCommand command,
-                                      final HotKeyCommandMethod hotKeyCmdMethod,
-                                      final List<CommandResult> subCommandsResult) {
-        CommandResult subCommandResult = ResultUtil.createCommandResultForUiSubCommand(
-                dependencies.getPosition().intValue(),
-                command.getClass().getSimpleName(),
-                command.getComment());
-        LogUtil.logHotKeyInfo(command);
-        subCommandsResult.add(subCommandResult);
-        hotKeyCmdMethod.accept(command, subCommandResult);
+    private void executeHotKeyCommand(final AbstractUiCommand command, final CommandResult result) {
+        hotKeyCmdMethods.entrySet().stream()
+                .filter(commandMethod -> commandMethod.getKey().test(command))
+                .findFirst()
+                .orElseThrow(() -> new DefaultFrameworkException(HOT_KEY_NOT_SUPPORTED,
+                        command.getClass().getSimpleName()))
+                .getValue().accept(command, result);
     }
 
     private void singleKeyCommand(final Keys key) {

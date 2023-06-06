@@ -18,7 +18,7 @@ public final class LogMessage {
     public static final String RECEIVE_ACTION = "receive";
     public static final String SUBSCRIBE = "subscribe";
 
-    public static final String COMPARISON_FOR_STEP_WAS_SKIPPED = "Comparison for step [%s] was skipped";
+    public static final String COMPARISON_FOR_STEP_WAS_SKIPPED = "Comparison for step [{}] was skipped";
 
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_RED = "\u001B[31m";
@@ -31,7 +31,7 @@ public final class LogMessage {
 
     public static final String ERROR_LOG = "Error ->";
     public static final String POSITION_COMMAND_LOG = ANSI_YELLOW
-            + "--------- Scenario step #%d - %s ---------" + ANSI_RESET;
+            + "--------- Scenario step #{} - {} ---------" + ANSI_RESET;
     public static final String UI_COMMAND_LOG = ANSI_CYAN + "------- UI command #{} - {} -------" + ANSI_RESET;
     public static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
     public static final String REPEAT_FINISHED_LOG = ANSI_CYAN + "------- Repeat is finished -------" + ANSI_RESET;

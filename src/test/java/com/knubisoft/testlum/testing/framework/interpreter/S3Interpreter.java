@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_S3_PROCESSING;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
@@ -48,7 +47,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
 
     @Override
     protected void acceptImpl(final S3 s3, final CommandResult result) {
-        log.info(ALIAS_LOG, s3.getAlias());
+        LogUtil.logAlias(s3.getAlias());
         String bucket = s3.getAlias();
         String key = inject(s3.getKey());
         exec(s3, bucket, key, result);

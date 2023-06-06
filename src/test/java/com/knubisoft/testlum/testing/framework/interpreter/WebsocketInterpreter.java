@@ -60,18 +60,18 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     }
 
     @Override
-    protected void acceptImpl(final Websocket websocket, final CommandResult result) {
-        List<CommandResult> subCommandsResultList = new LinkedList<>();
-        result.setSubCommandsResult(subCommandsResultList);
-        processWebsockets(websocket, subCommandsResultList);
+    protected void acceptImpl(final Websocket o, final CommandResult result) {
+        Websocket websocket = injectCommand(o, Websocket.class);
+        List<CommandResult> subCommandsResult = new LinkedList<>();
+        result.setSubCommandsResult(subCommandsResult);
+        processWebsockets(websocket, subCommandsResult);
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
-    private void processWebsockets(final Websocket websocket,
-                                   final List<CommandResult> subCommandsResultList) {
+    private void processWebsockets(final Websocket websocket, final List<CommandResult> subCommandsResult) {
         AliasEnv aliasEnv = new AliasEnv(websocket.getAlias(), dependencies.getEnvironment());
         openConnection(aliasEnv);
-        runActions(websocket, subCommandsResultList);
+        runActions(websocket, subCommandsResult);
         disconnectIfEnabled(websocket.isDisconnect(), aliasEnv);
     }
 
@@ -88,16 +88,15 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         }
     }
 
-    private void runActions(final Websocket websocket,
-                            final List<CommandResult> subCommandsResultList) {
+    private void runActions(final Websocket websocket, final List<CommandResult> subCommandsResult) {
         List<Object> websocketActions = isNull(websocket.getStomp())
                 ? websocket.getSendOrReceive()
                 : websocket.getStomp().getSubscribeOrSendOrReceive();
         websocketActions.forEach(action -> {
             LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action);
-            CommandResult result = ResultUtil.createNewCommandResultInstance(dependencies.getPosition().intValue());
-            processEachAction(action, websocket.getAlias(), result);
-            subCommandsResultList.add(result);
+            CommandResult commandResult = ResultUtil.newCommandResultInstance(dependencies.getPosition().get());
+            subCommandsResult.add(commandResult);
+            processEachAction(action, websocket.getAlias(), commandResult);
         });
     }
 
@@ -197,8 +196,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         return content;
     }
 
-    private void executeComparison(final List<Object> actualContent,
-                                   final String expectedContent) {
+    private void executeComparison(final List<Object> actualContent, final String expectedContent) {
         CompareBuilder comparator = newCompare()
                 .withExpected(expectedContent)
                 .withActual(actualContent);

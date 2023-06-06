@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
+import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
@@ -35,11 +36,13 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     }
 
     public final void apply(final T o, final CommandResult result) {
-        log.info(format(POSITION_COMMAND_LOG, dependencies.getPosition().get(), o.getClass().getSimpleName()));
+        log.info(POSITION_COMMAND_LOG, dependencies.getPosition().get(), o.getClass().getSimpleName());
         if (isNotBlank(o.getComment())) {
-            log.info(COMMENT_LOG, o.getComment());
+            String comment = inject(o.getComment());
+            log.info(COMMENT_LOG, comment);
+            result.setComment(comment);
         }
-        if (ConditionUtil.isTrue(o.getCondition(), dependencies.getScenarioContext(), result)) {
+        if (ConditionUtil.isTrue(inject(o.getCondition()), dependencies.getScenarioContext(), result)) {
             checkExecutionTime(o, () -> acceptImpl(o, result));
         }
     }
@@ -55,6 +58,10 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     }
 
     protected abstract void acceptImpl(T o, CommandResult result);
+
+    public CompareBuilder newCompare() {
+        return new CompareBuilder(dependencies.getFile(), dependencies.getPosition().get());
+    }
 
     public void save(final String actual) {
         try {
@@ -86,7 +93,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         return fileOrContent;
     }
 
-    public CompareBuilder newCompare() {
-        return new CompareBuilder(dependencies.getFile(), dependencies.getPosition());
+    protected <U> U injectCommand(final U o, final Class<U> clazz) {
+        return InjectionUtil.injectObject(o, clazz, dependencies.getScenarioContext());
     }
 }

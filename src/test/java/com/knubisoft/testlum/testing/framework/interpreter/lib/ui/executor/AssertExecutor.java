@@ -42,7 +42,8 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
     }
 
     @Override
-    public void execute(final Assert aAssert, final CommandResult result) {
+    public void execute(final Assert o, final CommandResult result) {
+        Assert aAssert = injectCommand(o, Assert.class);
         List<CommandResult> subCommandsResult = new ArrayList<>();
         result.setSubCommandsResult(subCommandsResult);
         aAssert.getAttributeOrTitle().forEach(command -> {

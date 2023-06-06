@@ -17,13 +17,13 @@ import org.apache.commons.lang3.time.StopWatch;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SLOW_COMMAND_PROCESSING;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMENT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.POSITION_COMMAND_LOG;
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
@@ -52,7 +52,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         r.run();
         long ms = sw.getTime(TimeUnit.MILLISECONDS);
         Integer threshold = o.getThreshold();
-        if (Objects.nonNull(threshold) && ms > threshold) {
+        if (nonNull(threshold) && ms > threshold) {
             throw new DefaultFrameworkException(SLOW_COMMAND_PROCESSING, ms, threshold);
         }
     }
@@ -94,6 +94,9 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     }
 
     protected <U> U injectCommand(final U o) {
-        return InjectionUtil.injectObject(o, dependencies.getScenarioContext());
+        if (nonNull(o)) {
+            return InjectionUtil.injectObject(o, dependencies.getScenarioContext());
+        }
+        return null;
     }
 }

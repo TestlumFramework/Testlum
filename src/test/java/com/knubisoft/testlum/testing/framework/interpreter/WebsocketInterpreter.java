@@ -235,21 +235,18 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         }
     }
 
+    //todo improve
     private Websocket injectWebsocket(final Websocket websocket) {
-        //todo improve
         Websocket injected = new Websocket();
         injected.setAlias(inject(websocket.getAlias()));
         injected.setComment(websocket.getComment());
         injected.setCondition(websocket.getCondition());
         injected.setDisconnect(websocket.isDisconnect());
         injected.setThreshold(websocket.getThreshold());
-        if (nonNull(websocket.getStomp())) {
-            injected.setStomp(injectCommand(websocket.getStomp()));
-        } else if (nonNull(websocket.getSendOrReceive())) {
-            injected.getSendOrReceive().addAll(websocket.getSendOrReceive().stream()
-                    .map(this::injectCommand)
-                    .collect(Collectors.toList()));
-        }
+        injected.setStomp(injectCommand(websocket.getStomp()));
+        injected.getSendOrReceive().addAll(websocket.getSendOrReceive().stream()
+                .map(this::injectCommand)
+                .collect(Collectors.toList()));
         return injected;
     }
 }

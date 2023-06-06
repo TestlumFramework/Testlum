@@ -93,9 +93,10 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         return fileOrContent;
     }
 
-    protected <U> U injectCommand(final U o) {
+//    @SuppressWarnings("unchecked")
+    protected <Y> Y injectCommand(final Y o, final Class<?> clazz) {
         if (nonNull(o)) {
-            return InjectionUtil.injectObject(o, dependencies.getScenarioContext());
+            return InjectionUtil.injectObject(o, clazz, dependencies.getScenarioContext());
         }
         return null;
     }

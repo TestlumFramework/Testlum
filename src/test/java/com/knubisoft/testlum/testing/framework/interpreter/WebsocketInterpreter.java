@@ -18,6 +18,7 @@ import com.knubisoft.testlum.testing.framework.util.WaitUtil;
 import com.knubisoft.testlum.testing.model.scenario.Websocket;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
+import com.knubisoft.testlum.testing.model.scenario.WebsocketStomp;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSubscribe;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.time.StopWatch;
@@ -243,9 +244,9 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         injected.setCondition(websocket.getCondition());
         injected.setDisconnect(websocket.isDisconnect());
         injected.setThreshold(websocket.getThreshold());
-        injected.setStomp(injectCommand(websocket.getStomp()));
+        injected.setStomp(injectCommand(websocket.getStomp(), WebsocketStomp.class));
         injected.getSendOrReceive().addAll(websocket.getSendOrReceive().stream()
-                .map(this::injectCommand)
+                .map(o -> injectCommand(o, o.getClass()))
                 .collect(Collectors.toList()));
         return injected;
     }

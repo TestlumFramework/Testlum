@@ -15,7 +15,7 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
     }
 
     public final void apply(final T o, final CommandResult result) {
-        T t = InjectionUtil.injectObject(o, dependencies.getScenarioContext());
+        T t = InjectionUtil.injectObject(o, o.getClass(), dependencies.getScenarioContext());
         result.setComment(t.getComment());
         LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), t);
         if (ConditionUtil.isTrue(t.getCondition(), dependencies.getScenarioContext(), result)) {

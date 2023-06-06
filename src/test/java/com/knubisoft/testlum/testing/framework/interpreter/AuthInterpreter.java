@@ -22,7 +22,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
 
     @Override
     protected void acceptImpl(final Auth o, final CommandResult result) {
-        Auth auth = injectCommand(o);
+        Auth auth = injectCommand(o, Auth.class);
         AuthStrategy authStrategy = AuthFactory.create(dependencies, auth.getApiAlias());
         result.put(API_ALIAS, auth.getApiAlias());
         result.put(CREDENTIALS_FILE, auth.getCredentials());

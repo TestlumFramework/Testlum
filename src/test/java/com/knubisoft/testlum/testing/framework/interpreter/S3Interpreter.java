@@ -61,6 +61,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         if (isBlank(s3.getUpload()) &&  isNotBlank(s3.getDownload())) {
             throw new DefaultFrameworkException(INCORRECT_S3_PROCESSING);
         }
+
         if (isNotBlank(s3.getUpload())) {
             ResultUtil.addS3GeneralMetaData(bucket, UPLOAD_ACTION, key, bucket, result);
             final String fileName = inject(s3.getUpload());

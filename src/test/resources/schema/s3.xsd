@@ -16,6 +16,7 @@
         </x:choice>
         <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
         <x:attribute name="key" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="bucket" type="tns:nonEmptyString" use="required"/>
       </x:extension>
     </x:complexContent>
   </x:complexType>

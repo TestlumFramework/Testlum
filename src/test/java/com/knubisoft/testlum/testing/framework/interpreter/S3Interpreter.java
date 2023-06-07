@@ -50,7 +50,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     @Override
     protected void acceptImpl(final S3 s3, final CommandResult result) {
         log.info(ALIAS_LOG, s3.getAlias());
-        String bucket = s3.getAlias();
+        String bucket = s3.getBucket();
         String key = inject(s3.getKey());
         exec(s3, bucket, key, result);
     }
@@ -58,23 +58,23 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     //CHECKSTYLE:OFF
     @SneakyThrows
     private void exec(final S3 s3, final String bucket, final String key, final CommandResult result) {
-        if (isBlank(s3.getUpload()) &&  isNotBlank(s3.getDownload())) {
+        String uploadFile = s3.getUpload();
+        String downloadFile = s3.getDownload();
+        if (isBlank(uploadFile) && isBlank(downloadFile)) {
             throw new DefaultFrameworkException(INCORRECT_S3_PROCESSING);
         }
-
-        if (isNotBlank(s3.getUpload())) {
+        if (isNotBlank(uploadFile)) {
             ResultUtil.addS3GeneralMetaData(bucket, UPLOAD_ACTION, key, bucket, result);
-            final String fileName = inject(s3.getUpload());
+            final String fileName = inject(uploadFile);
             final File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
             result.put("File name", fileName);
             LogUtil.logS3ActionInfo(UPLOAD_ACTION, bucket, key, fileName);
             AliasEnv aliasEnv = new AliasEnv(bucket, dependencies.getEnvironment());
-//            this.amazonS3.get(aliasEnv).createBucket(new CreateBucketRequest(bucket, "eu-central-1"));
             this.amazonS3.get(aliasEnv).putObject(bucket, key, file);
         }
-        if (isNotBlank(s3.getDownload())) {
+        if (isNotBlank(downloadFile)) {
             ResultUtil.addS3GeneralMetaData(bucket, DOWNLOAD_ACTION, key, bucket, result);
-            setContextBody(downloadAndCompareFile(bucket, key, inject(s3.getDownload()), result));
+            setContextBody(downloadAndCompareFile(bucket, key, inject(downloadFile), result));
         }
     }
 

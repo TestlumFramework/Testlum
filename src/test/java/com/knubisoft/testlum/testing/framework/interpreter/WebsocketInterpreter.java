@@ -127,8 +127,9 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
             receiveMessages((WebsocketReceive) action, aliasEnv, result);
         } else if (action instanceof WebsocketSubscribe) {
             subscribeToTopic((WebsocketSubscribe) action, aliasEnv, result);
+        } else {
+            throw new DefaultFrameworkException(UNKNOWN_WEBSOCKET_COMMAND, action.getClass().getSimpleName());
         }
-        throw new DefaultFrameworkException(UNKNOWN_WEBSOCKET_COMMAND, action.getClass().getSimpleName());
     }
 
     private void sendMessage(final WebsocketSend wsSend,

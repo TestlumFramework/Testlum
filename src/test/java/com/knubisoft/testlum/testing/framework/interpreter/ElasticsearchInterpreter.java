@@ -74,7 +74,8 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
                                     final HttpValidator httpValidator,
                                     final CommandResult result) {
         String expectedFile = expectedResponse.getFile();
-        if (StringUtils.isNotBlank(expectedFile)) {
+        if (StringUtils.isNotBlank(expectedFile)
+                && !HttpMethod.HEAD.name().equals((actual.getRequestLine().getMethod()))) {
             String actualBody = EntityUtils.toString(actual.getEntity());
             setContextBody(actualBody);
             String expectedBody = FileSearcher.searchFileToString(expectedFile, dependencies.getFile());

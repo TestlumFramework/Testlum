@@ -64,12 +64,12 @@ public class WebDriverFactory {
     }
 
     public WebDriver createDriver(final AbstractBrowser browser) {
-        WebDriver webDriver = DRIVER_INITIALIZER_MAP.keySet().stream()
-                .filter(key -> key.test(browser))
-                .map(DRIVER_INITIALIZER_MAP::get)
-                .map(webDriverFunction -> webDriverFunction.apply(browser))
-                .peek(driver -> BrowserUtil.manageWindowSize(browser, driver))
-                .findFirst().orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
+        WebDriver webDriver = DRIVER_INITIALIZER_MAP.entrySet().stream()
+                .filter(function -> function.getKey().test(browser))
+                .findFirst()
+                .map(function -> function.getValue().apply(browser))
+                .orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
+        BrowserUtil.manageWindowSize(browser, webDriver);
         Web settings = GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv());
         int secondsToWait = settings.getBrowserSettings().getElementAutowait().getSeconds();
         webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));
@@ -234,6 +234,9 @@ public class WebDriverFactory {
         }
     }
 
-    private interface BrowserPredicate extends Predicate<AbstractBrowser> { }
-    private interface WebDriverFunction extends Function<AbstractBrowser, WebDriver> { }
+    private interface BrowserPredicate extends Predicate<AbstractBrowser> {
+    }
+
+    private interface WebDriverFunction extends Function<AbstractBrowser, WebDriver> {
+    }
 }

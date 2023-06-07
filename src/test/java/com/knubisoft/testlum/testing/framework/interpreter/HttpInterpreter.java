@@ -49,7 +49,8 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     }
 
     @Override
-    protected void acceptImpl(final Http http, final CommandResult result) {
+    protected void acceptImpl(final Http o, final CommandResult result) {
+        Http http = injectCommand(o);
         HttpUtil.HttpMethodMetadata metadata = HttpUtil.getHttpMethodMetadata(http);
         HttpInfo httpInfo = metadata.getHttpInfo();
         HttpMethod httpMethod = metadata.getHttpMethod();
@@ -92,16 +93,14 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     }
 
     private Map<String, String> getExpectedHeaders(final Response expected) {
-        Map<String, String> expectedHeaders =
-                expected.getHeader().stream().collect(Collectors.toMap(Header::getName, Header::getData));
-        return HttpUtil.injectAndGetHeaders(expectedHeaders, this);
+        return expected.getHeader().stream().collect(Collectors.toMap(Header::getName, Header::getData));
     }
 
     protected ApiResponse getActual(final HttpInfo httpInfo,
                                     final HttpMethod httpMethod,
                                     final String alias,
                                     final CommandResult result) {
-        String endpoint = inject(httpInfo.getEndpoint());
+        String endpoint = httpInfo.getEndpoint();
         Map<String, String> headers = getHeaders(httpInfo);
         LogUtil.logHttpInfo(alias, httpMethod.name(), endpoint);
         ResultUtil.addHttpMetaData(alias, httpMethod.name(), headers, endpoint, result);
@@ -137,7 +136,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         Map<String, String> headers = new LinkedHashMap<>();
         InterpreterDependencies.Authorization authorization = dependencies.getAuthorization();
         HttpUtil.fillHeadersMap(httpInfo.getHeader(), headers, authorization);
-        return HttpUtil.injectAndGetHeaders(headers, this);
+        return headers;
     }
 
     private HttpEntity getBody(final HttpInfo httpInfo, final ContentType contentType) {

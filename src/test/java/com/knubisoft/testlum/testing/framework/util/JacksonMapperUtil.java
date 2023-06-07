@@ -33,17 +33,6 @@ public final class JacksonMapperUtil {
     }
 
     @SneakyThrows
-    public <T> T readCopiedValue(final String content, final Class<T> valueType) {
-        JavaType javaType = COPY_MAPPER.getTypeFactory().constructType(valueType);
-        return COPY_MAPPER.readValue(content, javaType);
-    }
-
-    @SneakyThrows
-    public String writeValueToCopiedString(final Object value) {
-        return COPY_MAPPER.writeValueAsString(value);
-    }
-
-    @SneakyThrows
     public String writeValueAsString(final Object value) {
         return MAPPER.writeValueAsString(value);
     }
@@ -56,6 +45,17 @@ public final class JacksonMapperUtil {
     @SneakyThrows
     public String writeAsStringForDynamoDbOnly(final Object value) {
         return DYNAMODB_MAPPER.writeValueAsString(value);
+    }
+
+    @SneakyThrows
+    public <T> T readCopiedValue(final String content, final Class<T> valueType) {
+        JavaType javaType = COPY_MAPPER.getTypeFactory().constructType(valueType);
+        return COPY_MAPPER.readValue(content, javaType);
+    }
+
+    @SneakyThrows
+    public String writeValueToCopiedString(final Object value) {
+        return COPY_MAPPER.writeValueAsString(value);
     }
 
     private ObjectMapper buildObjectMapper() {
@@ -81,46 +81,17 @@ public final class JacksonMapperUtil {
                 .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE);
     }
-//
-//    private ObjectMapper createObjectMapperForDeepCopy() {
-//        PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
-//                .allowIfSubTypeIsArray()
-//                .allowIfSubType("java.util.List")
-//                .allowIfBaseType("java.util.List")
-//                .allowIfSubType("com.knubisoft.testlum.testing.model.scenario.")
-//                .allowIfBaseType("com.knubisoft.testlum.testing.model.scenario.")
-//                .build();
-//
-//        return JsonMapper.builder()
-//                .polymorphicTypeValidator(ptv)
-////                .activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT)
-////                .activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE, JsonTypeInfo.As.WRAPPER_OBJECT)
-////                .activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_CONCRETE_AND_ARRAYS, JsonTypeInfo.As.WRAPPER_ARRAY)
-////                .deactivateDefaultTyping()
-//                .findAndAddModules()
-//                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-//                .build();
-//    }
 
     private ObjectMapper createObjectMapperForDeepCopy() {
         PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
-//                .allowIfSubTypeIsArray()
-                .allowIfSubType("java.lang.")
                 .allowIfSubType("java.util.")
-//                .allowIfBaseType("java.util.List")
                 .allowIfSubType("com.knubisoft.testlum.testing.model.scenario.")
-//                .allowIfBaseType("com.knubisoft.testlum.testing.model.scenario.")
                 .build();
 
         return JsonMapper.builder()
-//                .polymorphicTypeValidator(ptv)
                 .activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT)
                 .activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE)
                 .activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_CONCRETE_AND_ARRAYS)
-//                .deactivateDefaultTyping()
-//                .findAndAddModules()
-//                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .build();
     }
-
 }

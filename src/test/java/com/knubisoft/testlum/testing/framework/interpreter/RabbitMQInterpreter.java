@@ -90,12 +90,8 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                                       final CommandResult result) {
         AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
         if (action instanceof SendRmqMessage) {
-            SendRmqMessage sendAction = (SendRmqMessage) action;
-            ResultUtil.addRabbitMQInfoForSendAction(sendAction, alias, result);
             sendMessage((SendRmqMessage) action, aliasEnv, result);
         } else {
-            ReceiveRmqMessage receiveAction = (ReceiveRmqMessage) action;
-            ResultUtil.addRabbitMQInfoForReceiveAction(receiveAction, alias, result);
             receiveMessages((ReceiveRmqMessage) action, aliasEnv, result);
         }
     }
@@ -103,8 +99,9 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     private void sendMessage(final SendRmqMessage send,
                              final AliasEnv aliasEnv,
                              final CommandResult result) {
-        String message = getMessage(send);
+        String message = getMessageToSend(send);
         LogUtil.logBrokerActionInfo(SEND_ACTION, send.getRoutingKey(), message);
+        ResultUtil.addRabbitMQInfoForSendAction(send, aliasEnv.getAlias(), result);
         result.put(MESSAGE_TO_SEND, message);
         createQueueIfNotExists(send.getRoutingKey(), aliasEnv);
         sendMessage(send, message, aliasEnv);
@@ -139,8 +136,9 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     private void receiveMessages(final ReceiveRmqMessage receive,
                                  final AliasEnv aliasEnv,
                                  final CommandResult result) {
-        String message = getMessage(receive);
+        String message = getMessageToReceive(receive);
         LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), message);
+        ResultUtil.addRabbitMQInfoForReceiveAction(receive, aliasEnv.getAlias(), result);
         createQueueIfNotExists(receive.getQueue(), aliasEnv);
         List<RabbitMQMessage> actualRmqMessages = receiveRmqMessages(receive, aliasEnv);
         compareMessages(actualRmqMessages, message, result);
@@ -183,26 +181,28 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         comparator.exec();
     }
 
-    private String getMessage(final SendRmqMessage send) {
-        return isNull(send.getFile())
-                ? send.getBody()
-                : FileSearcher.searchFileToString(send.getFile(), dependencies.getFile());
+    private String getMessageToSend(final SendRmqMessage send) {
+        return getValue(send.getBody(), send.getFile());
     }
 
-    private String getMessage(final ReceiveRmqMessage receive) {
-        return isNull(receive.getFile())
-                ? receive.getMessage()
-                : FileSearcher.searchFileToString(receive.getFile(), dependencies.getFile());
+    private String getMessageToReceive(final ReceiveRmqMessage receive) {
+        return getValue(receive.getMessage(), receive.getFile());
+    }
+
+    private String getValue(final String message, final String file) {
+        return StringUtils.isNotBlank(message)
+                ? message
+                : FileSearcher.searchFileToString(file, dependencies.getFile());
     }
 
     private void createQueueIfNotExists(final String queue, final AliasEnv aliasEnv) {
-        if (!checkIfQueueExists(queue, aliasEnv)) {
+        if (checkIsQueueNotExists(queue, aliasEnv)) {
             amqpAdmin.get(aliasEnv).declareQueue(new Queue(queue));
         }
     }
 
-    private boolean checkIfQueueExists(final String queue, final AliasEnv aliasEnv) {
-        return !isNull(amqpAdmin.get(aliasEnv).getQueueProperties(queue));
+    private boolean checkIsQueueNotExists(final String queue, final AliasEnv aliasEnv) {
+        return isNull(amqpAdmin.get(aliasEnv).getQueueProperties(queue));
     }
 
     @Data

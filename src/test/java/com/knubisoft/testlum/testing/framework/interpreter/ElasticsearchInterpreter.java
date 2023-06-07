@@ -51,7 +51,8 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     }
 
     @Override
-    protected void acceptImpl(final Elasticsearch elasticsearch, final CommandResult result) {
+    protected void acceptImpl(final Elasticsearch o, final CommandResult result) {
+        Elasticsearch elasticsearch = injectCommand(o);
         HttpUtil.ESHttpMethodMetadata esHttpMethodMetadata = HttpUtil.getESHttpMethodMetadata(elasticsearch);
         ElasticSearchRequest elasticSearchRequest = esHttpMethodMetadata.getElasticSearchRequest();
         HttpMethod httpMethod = esHttpMethodMetadata.getHttpMethod();
@@ -103,7 +104,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
                                final HttpMethod httpMethod,
                                final String alias,
                                final CommandResult result) {
-        String endpoint = inject(elasticSearchRequest.getEndpoint());
+        String endpoint = elasticSearchRequest.getEndpoint();
         Map<String, String> headers = getHeaders(elasticSearchRequest);
         LogUtil.logHttpInfo(alias, httpMethod.name(), endpoint);
         ResultUtil.addElasticsearchMetaData(alias, httpMethod.name(), headers, endpoint, result);

@@ -16,6 +16,7 @@ import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -23,7 +24,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -67,7 +66,8 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     }
 
     @Override
-    protected void acceptImpl(final Kafka kafka, final CommandResult result) {
+    protected void acceptImpl(final Kafka o, final CommandResult result) {
+        Kafka kafka = injectCommand(o);
         LogUtil.logAlias(kafka.getAlias());
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
@@ -101,21 +101,18 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                                     final CommandResult result) {
         AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
         if (action instanceof SendKafkaMessage) {
-            SendKafkaMessage sendAction = (SendKafkaMessage) action;
-            ResultUtil.addKafkaInfoForSendAction(sendAction, alias, result);
-            sendMessage(sendAction, aliasEnv, result);
+            sendMessage((SendKafkaMessage) action, aliasEnv, result);
         } else {
-            ReceiveKafkaMessage receiveAction = (ReceiveKafkaMessage) action;
-            ResultUtil.addKafkaInfoForReceiveAction(receiveAction, alias, result);
-            receiveMessages(receiveAction, aliasEnv, result);
+            receiveMessages((ReceiveKafkaMessage) action, aliasEnv, result);
         }
     }
 
     private void receiveMessages(final ReceiveKafkaMessage receive,
                                  final AliasEnv aliasEnv,
                                  final CommandResult result) {
-        String value = getValue(receive);
+        String value = getMessageToReceive(receive);
         LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getTopic(), value);
+        ResultUtil.addKafkaInfoForReceiveAction(receive, aliasEnv.getAlias(), result);
         createTopicIfNotExists(receive.getTopic(), aliasEnv);
         List<KafkaMessage> actualMessages = receiveKafkaMessages(receive, aliasEnv);
         compareMessages(actualMessages, value, result);
@@ -135,8 +132,9 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     private void sendMessage(final SendKafkaMessage send,
                              final AliasEnv aliasEnv,
                              final CommandResult result) {
-        String message = getValue(send);
+        String message = getMessageToSend(send);
         LogUtil.logBrokerActionInfo(SEND_ACTION, send.getTopic(), message);
+        ResultUtil.addKafkaInfoForSendAction(send, aliasEnv.getAlias(), result);
         result.put(MESSAGE_TO_SEND, message);
 
         createTopicIfNotExists(send.getTopic(), aliasEnv);
@@ -207,29 +205,29 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         return new RecordHeader(headerName, headerValue);
     }
 
-    private String getValue(final SendKafkaMessage send) {
-        return isNull(send.getFile())
-                ? send.getValue()
-                : FileSearcher.searchFileToString(send.getFile(), dependencies.getFile());
+    private String getMessageToSend(final SendKafkaMessage send) {
+        return getValue(send.getValue(), send.getFile());
     }
 
-    private String getValue(final ReceiveKafkaMessage receive) {
-        return isNull(receive.getFile())
-                ? receive.getValue()
-                : FileSearcher.searchFileToString(receive.getFile(), dependencies.getFile());
+    private String getMessageToReceive(final ReceiveKafkaMessage receive) {
+        return getValue(receive.getValue(), receive.getFile());
+    }
+
+    private String getValue(final String message, final String file) {
+        return StringUtils.isNotBlank(message)
+                ? message
+                : FileSearcher.searchFileToString(file, dependencies.getFile());
     }
 
     private void createTopicIfNotExists(final String topic, final AliasEnv aliasEnv) {
-        if (!checkIfTopicExists(topic, aliasEnv)) {
+        if (checkIsTopicNotExists(topic, aliasEnv)) {
             NewTopic newTopic = new NewTopic(topic, NUM_PARTITIONS, (short) 1);
             kafkaAdmin.get(aliasEnv).createOrModifyTopics(newTopic);
         }
     }
 
-    private boolean checkIfTopicExists(final String topic, final AliasEnv aliasEnv) {
-        Map<String, List<PartitionInfo>> topics = kafkaConsumer.get(aliasEnv).listTopics();
-        return topics.keySet().stream()
-                .anyMatch(topic::equals);
+    private boolean checkIsTopicNotExists(final String topic, final AliasEnv aliasEnv) {
+        return kafkaConsumer.get(aliasEnv).listTopics().keySet().stream().noneMatch(topic::equals);
     }
 
     @Data

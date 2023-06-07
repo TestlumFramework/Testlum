@@ -11,7 +11,5 @@ public class InjectionUtil {
         String asJson = JacksonMapperUtil.writeValueToCopiedString(t);
         String injected = scenarioContext.inject(asJson);
         return JacksonMapperUtil.readCopiedValue(injected, (Class<T>) t.getClass());
-//        JavaType javaType = JacksonMapperUtil.getTypeFactory().constructType((Class<T>) t.getClass());
-//        return JacksonMapperUtil.readCopiedValue(injected, javaType);
     }
 }

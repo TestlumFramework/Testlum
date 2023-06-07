@@ -37,14 +37,15 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     }
 
     @Override
-    protected void acceptImpl(final Migrate migrate, final CommandResult result) {
+    protected void acceptImpl(final Migrate o, final CommandResult result) {
+        Migrate migrate = injectCommand(o);
         String storageName = migrate.getName().name();
         String databaseAlias = migrate.getAlias();
         List<String> datasets = migrate.getDataset();
-        ResultUtil.addMigrateMetaData(storageName, databaseAlias, datasets, result);
         if (StringUtils.isBlank(storageName)) {
             throw new DefaultFrameworkException(NAME_FOR_MIGRATION_MUST_PRESENT);
         }
+        ResultUtil.addMigrateMetaData(storageName, databaseAlias, datasets, result);
         LogUtil.logAlias(databaseAlias);
         migrate(datasets, storageName, databaseAlias);
     }

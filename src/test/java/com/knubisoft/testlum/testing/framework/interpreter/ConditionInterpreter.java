@@ -22,7 +22,8 @@ public class ConditionInterpreter extends AbstractInterpreter<Condition> {
     }
 
     @Override
-    protected void acceptImpl(final Condition condition, final CommandResult result) {
+    protected void acceptImpl(final Condition o, final CommandResult result) {
+        Condition condition = injectCommand(o);
         try {
             setConditionResult(condition, result);
         } catch (Exception e) {

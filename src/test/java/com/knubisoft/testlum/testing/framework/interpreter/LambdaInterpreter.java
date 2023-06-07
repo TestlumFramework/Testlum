@@ -7,7 +7,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
-import com.knubisoft.testlum.testing.framework.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.util.HttpValidator;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
@@ -41,7 +40,8 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
     }
 
     @Override
-    protected void acceptImpl(final Lambda lambda, final CommandResult result) {
+    protected void acceptImpl(final Lambda o, final CommandResult result) {
+        Lambda lambda = injectCommand(o);
         String payload = getPayload(lambda.getBody());
         ResultUtil.addLambdaGeneralMetaData(lambda.getAlias(), lambda.getFunctionName(), payload, result);
         LogUtil.logLambdaInfo(lambda.getAlias(), lambda.getFunctionName(), payload);
@@ -52,10 +52,9 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
     }
 
     private String getPayload(final LambdaBody body) {
-        String payload = StringUtils.isNotBlank(body.getRaw())
+        return StringUtils.isNotBlank(body.getRaw())
                 ? body.getRaw()
                 : FileSearcher.searchFileToString(body.getFrom().getFile(), dependencies.getFile());
-        return inject(payload);
     }
 
     private InvokeResponse getLambdaFunctionResponse(final Lambda lambda, final String payload) {
@@ -103,14 +102,12 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
             Map<String, String> actualHeaderMap = actualHeaders.entrySet().stream()
                     .collect(Collectors.toMap(
                             Map.Entry::getKey, entry -> String.join(DelimiterConstant.SEMICOLON, entry.getValue())));
-            Map<String, String> expectedHeaderMap = getInjectedHeaders(expected);
-            httpValidator.validateHeaders(expectedHeaderMap, actualHeaderMap);
+            httpValidator.validateHeaders(getExpectedHeaders(expected), actualHeaderMap);
         }
     }
 
-    private Map<String, String> getInjectedHeaders(final Response expected) {
-        Map<String, String> headers = expected.getHeader().stream()
+    private Map<String, String> getExpectedHeaders(final Response expected) {
+        return expected.getHeader().stream()
                 .collect(Collectors.toMap(Header::getName, Header::getData));
-        return HttpUtil.injectAndGetHeaders(headers, this);
     }
 }

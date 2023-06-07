@@ -102,25 +102,25 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     }
 
     private void receiveMessages(final ReceiveSqsMessage receiveAction,
-                                   final AliasEnv aliasEnv,
-                                   final CommandResult result) {
+                                 final AliasEnv aliasEnv,
+                                 final CommandResult result) {
         final ReceiveMessageRequest receiveRequest = createReceiveRequest(receiveAction, aliasEnv);
-        final List<String> messages = receiveMessage(receiveRequest, aliasEnv);
+        final List<String> messages = receiveMessages(receiveRequest, aliasEnv);
         LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receiveAction.getQueue(), getMessageToReceive(receiveAction));
-        compareMessage(getMessageToReceive(receiveAction), messages.toString(), result);
+        compareMessage(getMessageToReceive(receiveAction), messages, result);
     }
 
-    private List<String> receiveMessage(final ReceiveMessageRequest receiveRequest, final AliasEnv aliasEnv) {
+    private List<String> receiveMessages(final ReceiveMessageRequest receiveRequest, final AliasEnv aliasEnv) {
         ReceiveMessageResult receiveMessageResult = this.amazonSQS.get(aliasEnv).receiveMessage(receiveRequest);
         return receiveMessageResult.getMessages().stream().map(Message::getBody).collect(Collectors.toList());
     }
 
-    private void compareMessage(final String fileOrContent, final String message, final CommandResult result) {
+    private void compareMessage(final String fileOrContent, final List<String> messages, final CommandResult result) {
         final CompareBuilder comparator = newCompare()
                 .withExpected(inject(getContentIfFile(fileOrContent)))
-                .withActual(message);
+                .withActual(messages);
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
-        result.setActual(StringPrettifier.asJsonResult(message));
+        result.setActual(StringPrettifier.asJsonResult(toString(messages)));
         comparator.exec();
     }
 

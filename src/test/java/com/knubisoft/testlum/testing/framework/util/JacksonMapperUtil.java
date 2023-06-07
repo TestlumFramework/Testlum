@@ -39,6 +39,11 @@ public final class JacksonMapperUtil {
     }
 
     @SneakyThrows
+    public String writeValueToCopiedString(final Object value) {
+        return COPY_MAPPER.writeValueAsString(value);
+    }
+
+    @SneakyThrows
     public String writeValueAsString(final Object value) {
         return MAPPER.writeValueAsString(value);
     }

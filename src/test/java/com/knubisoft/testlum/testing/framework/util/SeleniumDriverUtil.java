@@ -11,6 +11,10 @@ import io.appium.java_client.remote.MobileCapabilityType;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import java.util.Objects;
+
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.BROWSER_STACK_CONFIGURATION_NOT_FOUND;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_CONNECTION_TYPE;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 
@@ -24,7 +28,7 @@ public class SeleniumDriverUtil {
         if (nonNull(browserStack)) {
             return format(BROWSER_STACK_URL_TEMPLATE, browserStack.getUsername(), browserStack.getAccessKey());
         }
-        throw new DefaultFrameworkException("Cannot find BrowserStackLogin configuration");
+        throw new DefaultFrameworkException(BROWSER_STACK_CONFIGURATION_NOT_FOUND);
     }
 
     public String getMobilebrowserConnectionUrl(final UiConfig uiConfig) {
@@ -36,9 +40,12 @@ public class SeleniumDriverUtil {
     }
 
     private String getServerUrl(final ConnectionType connectionType, final UiConfig uiConfig) {
-        return nonNull(connectionType.getAppiumServer())
-                ? connectionType.getAppiumServer().getServerUrl()
-                : getBrowserStackUrl(uiConfig);
+        if (Objects.nonNull(connectionType.getAppiumServer())) {
+            return connectionType.getAppiumServer().getServerUrl();
+        } else if (Objects.nonNull(connectionType.getBrowserStack())) {
+            return getBrowserStackUrl(uiConfig);
+        }
+        throw new DefaultFrameworkException(UNKNOWN_CONNECTION_TYPE, connectionType.getClass().getSimpleName());
     }
 
     public void setDefaultCapabilities(final AbstractDevice abstractDevice,

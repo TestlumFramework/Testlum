@@ -82,7 +82,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
 
     private String getElementResult(final WebVar webVar, final CommandResult result) {
         String valueResult;
-        String locatorId = inject(webVar.getElement().getPresent().getLocatorId());
+        String locatorId = webVar.getElement().getPresent().getLocatorId();
         try {
             UiUtil.findWebElement(dependencies, locatorId);
             valueResult = String.valueOf(true);
@@ -94,7 +94,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     private String getDomResult(final WebVar webVar, final CommandResult result) {
-        String locatorId = inject(webVar.getDom().getLocatorId());
+        String locatorId = webVar.getDom().getLocatorId();
         if (StringUtils.isNotBlank(locatorId)) {
             String valueResult = UiUtil.findWebElement(dependencies, locatorId).getAttribute("outerHTML");
             ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), LOCATOR_ID, locatorId, valueResult, result);
@@ -125,13 +125,11 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     private String getConstantResult(final WebVar var, final CommandResult result) {
-        return variableHelper.getConstantResult(
-                var.getConstant(), var.getName(), dependencies.getScenarioContext(), result);
+        return variableHelper.getConstantResult(var.getConstant(), var.getName(), result);
     }
 
     private String getExpressionResult(final WebVar var, final CommandResult result) {
-        return variableHelper.getExpressionResult(
-                var.getExpression(), var.getName(), dependencies.getScenarioContext(), result);
+        return variableHelper.getExpressionResult(var.getExpression(), var.getName(), result);
     }
 
     private String getFileResult(final WebVar var, final CommandResult result) {
@@ -139,7 +137,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     private String getSQLResult(final WebVar var, final CommandResult result) {
-        return variableHelper.getSQLResult(var.getSql(), var.getName(), dependencies.getScenarioContext(), result);
+        return variableHelper.getSQLResult(var.getSql(), var.getName(), result);
     }
 
     private String getRandomGenerateResult(final WebVar var, final CommandResult result) {

@@ -38,11 +38,11 @@ public class ConditionInterpreter extends AbstractInterpreter<Condition> {
     }
 
     private boolean getConditionFromSpel(final Condition condition, final CommandResult result) {
-        String injectedExpression = inject(condition.getSpel());
-        Expression exp = new SpelExpressionParser().parseExpression(injectedExpression);
+        String expression = condition.getSpel();
+        Expression exp = new SpelExpressionParser().parseExpression(expression);
         boolean conditionResult = Boolean.TRUE.equals(exp.getValue(Boolean.class));
-        LogUtil.logConditionInfo(condition.getName(), injectedExpression, conditionResult);
-        ResultUtil.addConditionMetaData(condition.getName(), injectedExpression, conditionResult, result);
+        LogUtil.logConditionInfo(condition.getName(), expression, conditionResult);
+        ResultUtil.addConditionMetaData(condition.getName(), expression, conditionResult, result);
         return conditionResult;
     }
 }

@@ -56,7 +56,8 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     }
 
     @Override
-    protected void acceptImpl(final Rabbit rabbit, final CommandResult result) {
+    protected void acceptImpl(final Rabbit o, final CommandResult result) {
+        Rabbit rabbit = injectCommand(o);
         LogUtil.logAlias(rabbit.getAlias());
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);

@@ -15,7 +15,6 @@ import com.knubisoft.testlum.testing.model.scenario.PartParam;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -27,8 +26,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -95,7 +92,7 @@ public final class HttpUtil {
                                   final InterpreterDependencies dependencies) {
         try {
             return getAppropriateEntity(body, contentType, interpreter, dependencies);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new DefaultFrameworkException(e);
         }
     }
@@ -103,7 +100,7 @@ public final class HttpUtil {
     private HttpEntity getAppropriateEntity(final Body body,
                                             final ContentType contentType,
                                             final AbstractInterpreter<?> interpreter,
-                                            final InterpreterDependencies dependencies) throws IOException {
+                                            final InterpreterDependencies dependencies) {
         if (isNull(body)) {
             return newStringEntity(StringUtils.EMPTY, null);
         } else if (nonNull(body.getRaw())) {
@@ -132,17 +129,16 @@ public final class HttpUtil {
     private HttpEntity getFromFile(final Body body,
                                    final ContentType contentType,
                                    final AbstractInterpreter<?> interpreter,
-                                   final InterpreterDependencies dependencies) throws IOException {
+                                   final InterpreterDependencies dependencies) {
         String injectedContent = injectFromFile(body, interpreter, dependencies.getFile());
         return newStringEntity(injectedContent, contentType);
     }
 
     public String injectFromFile(final Body body,
                                  final AbstractInterpreter<?> interpreter,
-                                 final File fromDir) throws IOException {
+                                 final File fromDir) {
         String fileName = body.getFrom().getFile();
-        File from = FileSearcher.searchFileFromDir(fromDir, fileName);
-        String content = FileUtils.readFileToString(from, StandardCharsets.UTF_8);
+        String content = FileSearcher.searchFileToString(fileName, fromDir);
         return interpreter.inject(content);
     }
 

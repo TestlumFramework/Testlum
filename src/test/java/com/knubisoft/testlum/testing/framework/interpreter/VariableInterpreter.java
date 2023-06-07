@@ -40,7 +40,8 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     @Override
-    protected void acceptImpl(final Var var, final CommandResult result) {
+    protected void acceptImpl(final Var o, final CommandResult result) {
+        Var var = injectCommand(o);
         try {
             setContextVariable(var, result);
         } catch (Exception e) {
@@ -61,7 +62,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     private String getSQLResult(final Var var, final CommandResult result) {
-        return variableHelper.getSQLResult(var.getSql(), var.getName(), dependencies.getScenarioContext(), result);
+        return variableHelper.getSQLResult(var.getSql(), var.getName(), result);
     }
 
     private String getFileResult(final Var var, final CommandResult result) {
@@ -69,13 +70,11 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     private String getConstantResult(final Var var, final CommandResult result) {
-        return variableHelper.getConstantResult(
-                var.getConstant(), var.getName(), dependencies.getScenarioContext(), result);
+        return variableHelper.getConstantResult(var.getConstant(), var.getName(), result);
     }
 
     private String getExpressionResult(final Var var, final CommandResult result) {
-        return variableHelper.getExpressionResult(
-                var.getExpression(), var.getName(), dependencies.getScenarioContext(), result);
+        return variableHelper.getExpressionResult(var.getExpression(), var.getName(), result);
     }
 
     private String getPathResult(final Var var, final CommandResult result) {

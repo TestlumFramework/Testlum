@@ -25,6 +25,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_MOBILE_PLATFORM_NAME;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -60,7 +61,7 @@ public class NativeDriverFactory {
             setIosCapabilities(nativeDevice, desiredCapabilities);
             return new IOSDriver(url, desiredCapabilities);
         }
-        throw new DefaultFrameworkException("Unknown mobile platform name: %s", nativeDevice.getPlatformName());
+        throw new DefaultFrameworkException(UNKNOWN_MOBILE_PLATFORM_NAME, nativeDevice.getPlatformName().value());
     }
 
     private void setAndroidCapabilities(final NativeDevice nativeDevice,

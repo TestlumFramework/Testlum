@@ -40,6 +40,7 @@ public class ExceptionMessage {
 
     public static final String WEBSOCKET_CONNECTION_FAILURE =
             "Something went wrong while connecting to websocket with name <%s>";
+    public static final String UNKNOWN_WEBSOCKET_COMMAND = "Unknown websocket command: %s";
     public static final String UNEXPECTED_WEBSOCKET_MESSAGE_TYPE = "Unexpected websocket message type: %s";
 
     public static final String FUNCTION_FOR_COMMAND_NOT_FOUND = "Function for class %s not found. "
@@ -118,6 +119,9 @@ public class ExceptionMessage {
     public static final String JS_FILE_UNREADABLE = "The .js file by path ./javascript/%s unreadable";
 
     public static final String DRIVER_INITIALIZER_NOT_FOUND = "Driver initializer not found";
+    public static final String UNKNOWN_MOBILE_PLATFORM_NAME = "Unknown mobile platform name: %s";
+    public static final String UNKNOWN_CONNECTION_TYPE = "Unknown connection type: %s";
+    public static final String BROWSER_STACK_CONFIGURATION_NOT_FOUND = "Cannot find <BrowserStackLogin> configuration";
 
     public static final String STOP_IF_NON_PARSED_SCENARIO = ANSI_YELLOW
             + "The execution has been stopped because of the enabled <StopIfInvalidScenario>" + ANSI_RESET;

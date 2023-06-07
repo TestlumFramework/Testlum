@@ -551,10 +551,7 @@ public class ResultUtil {
     }
 
     public void addHoversMetaData(final Hovers hovers, final CommandResult result) {
-        boolean isMoveToEmptySpace = hovers.isMoveToEmptySpace();
-        if (isMoveToEmptySpace) {
-            result.put(MOVE_TO_EMPTY_SPACE, true);
-        }
+        result.put(MOVE_TO_EMPTY_SPACE, hovers.isMoveToEmptySpace());
         AtomicInteger number = new AtomicInteger(1);
         hovers.getHover().forEach(hover -> {
             String hoverNumber = format(HOVER_NUMBER_TEMPLATE, number.getAndIncrement());

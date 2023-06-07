@@ -1,10 +1,8 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.model.scenario.Body;
-import com.knubisoft.testlum.testing.model.scenario.Header;
 import com.knubisoft.testlum.testing.model.scenario.Param;
 import com.knubisoft.testlum.testing.model.scenario.Sendgrid;
 import com.knubisoft.testlum.testing.model.scenario.SendgridInfo;
@@ -14,10 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -48,53 +44,37 @@ public final class SendGridUtil {
                 .orElseThrow(() -> new DefaultFrameworkException(INCORRECT_HTTP_PROCESSING));
     }
 
-    private String injectAppropriatePart(final Body body,
-                                         final AbstractInterpreter<?> interpreter,
-                                         final InterpreterDependencies dependencies) throws IOException {
+    public String extractBody(final Body body, final InterpreterDependencies dependencies) {
+        try {
+            return getAppropriateBody(body, dependencies);
+        } catch (Exception e) {
+            throw new DefaultFrameworkException(e);
+        }
+    }
+
+    private String getAppropriateBody(final Body body, final InterpreterDependencies dependencies) {
         if (isNull(body)) {
             return StringUtils.EMPTY;
         } else if (nonNull(body.getRaw())) {
-            return interpreter.inject(body.getRaw());
+            return getFromRaw(body);
         } else if (nonNull(body.getFrom())) {
-            return injectFromFile(body, interpreter, dependencies);
+            return getFromFile(body, dependencies);
         }
-        return interpreter.inject(getFromParam(body, interpreter));
+        return getFromParam(body);
     }
 
-    private String injectFromFile(final Body body,
-                                  final AbstractInterpreter<?> interpreter,
-                                  final InterpreterDependencies dependencies) throws IOException {
-        return HttpUtil.injectFromFile(body, interpreter, dependencies.getFile());
+    private String getFromRaw(final Body body) {
+        return body.getRaw();
     }
 
-    public Map<String, String> injectAndGetHeaders(final Map<String, String> headersMap,
-                                                   final AbstractInterpreter<?> interpreter) {
-        return HttpUtil.injectAndGetHeaders(headersMap, interpreter);
+    private String getFromFile(final Body body, final InterpreterDependencies dependencies) {
+        return FileSearcher.searchFileToString(body.getFrom().getFile(), dependencies.getFile());
     }
 
-    public void fillHeadersMap(final List<Header> headerList,
-                               final Map<String, String> headers,
-                               final InterpreterDependencies.Authorization authorization) {
-        HttpUtil.fillHeadersMap(headerList, headers, authorization);
-    }
-
-    private String getFromParam(final Body body,
-                                final AbstractInterpreter<?> interpreter) {
-        List<Param> params = body.getParam();
-        Map<String, String> bodyParamMap = params.stream()
+    private String getFromParam(final Body body) {
+        Map<String, String> bodyParamMap = body.getParam().stream()
                 .collect(toMap(Param::getName, Param::getData, (k, v) -> k, LinkedHashMap::new));
-
-        return interpreter.toString(bodyParamMap);
-    }
-
-    public String extractBody(final Body body,
-                              final AbstractInterpreter<?> interpreter,
-                              final InterpreterDependencies dependencies) {
-        try {
-            return injectAppropriatePart(body, interpreter, dependencies);
-        } catch (IOException e) {
-            throw new DefaultFrameworkException(e);
-        }
+        return JacksonMapperUtil.writeValueAsString(bodyParamMap);
     }
 
     @RequiredArgsConstructor

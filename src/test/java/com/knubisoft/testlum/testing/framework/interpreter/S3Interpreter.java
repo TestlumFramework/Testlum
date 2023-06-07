@@ -46,50 +46,57 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     }
 
     @Override
-    protected void acceptImpl(final S3 s3, final CommandResult result) {
+    protected void acceptImpl(final S3 o, final CommandResult result) {
+        S3 s3 = injectCommand(o);
         LogUtil.logAlias(s3.getAlias());
         String bucket = s3.getAlias();
-        String key = inject(s3.getKey());
-        exec(s3, bucket, key, result);
+        String key = s3.getKey();
+        execute(s3, bucket, key, result);
     }
 
-    //CHECKSTYLE:OFF
     @SneakyThrows
-    private void exec(final S3 s3, final String bucket, final String key, final CommandResult result) {
+    private void execute(final S3 s3, final String bucket, final String key, final CommandResult result) {
         if (isNotBlank(s3.getUpload())) {
             ResultUtil.addS3GeneralMetaData(bucket, UPLOAD_ACTION, key, bucket, result);
-            final String fileName = inject(s3.getUpload());
-            final File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
-            result.put("File name", fileName);
-            LogUtil.logS3ActionInfo(UPLOAD_ACTION, bucket, key, fileName);
-            AliasEnv aliasEnv = new AliasEnv(bucket, dependencies.getEnvironment());
-            this.amazonS3.get(aliasEnv).createBucket(bucket);
-            this.amazonS3.get(aliasEnv).putObject(bucket, key, file);
+            uploadFile(s3, bucket, key, result);
         } else if (isNotBlank(s3.getDownload())) {
             ResultUtil.addS3GeneralMetaData(bucket, DOWNLOAD_ACTION, key, bucket, result);
-            setContextBody(downloadAndCompareFile(bucket, key, inject(s3.getDownload()), result));
+            String file = downloadFile(bucket, key, s3.getDownload(), result);
+            setContextBody(file);
         }
         throw new DefaultFrameworkException(INCORRECT_S3_PROCESSING);
     }
 
-    private String downloadAndCompareFile(final String bucket,
-                                          final String key,
-                                          final String fileName,
-                                          final CommandResult result) throws IOException {
+    private void uploadFile(final S3 s3, final String bucket, final String key, final CommandResult result) {
+        final String fileName = s3.getUpload();
+        final File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
+        result.put("File name", fileName);
+        LogUtil.logS3ActionInfo(UPLOAD_ACTION, bucket, key, fileName);
+        AliasEnv aliasEnv = new AliasEnv(bucket, dependencies.getEnvironment());
+        if (!amazonS3.get(aliasEnv).doesBucketExistV2(bucket)) {
+            amazonS3.get(aliasEnv).createBucket(bucket);
+        }
+        amazonS3.get(aliasEnv).putObject(bucket, key, file);
+    }
+
+    private String downloadFile(final String bucket,
+                                final String key,
+                                final String fileName,
+                                final CommandResult result) throws IOException {
         LogUtil.logS3ActionInfo(DOWNLOAD_ACTION, bucket, key, fileName);
         File expectedFile = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
         InputStream expectedStream = FileUtils.openInputStream(expectedFile);
         String expected = IOUtils.toString(expectedStream, StandardCharsets.UTF_8);
         String actual = downloadFile(bucket, key).orElse(null);
+        result.setExpected(expected);
+        result.setActual(actual);
+
         CompareBuilder comparator = newCompare()
                 .withExpected(expected)
                 .withActual(actual);
-        result.setExpected(expected);
-        result.setActual(actual);
         comparator.exec();
         return actual;
     }
-    //CHECKSTYLE:ON
 
     private Optional<String> downloadFile(final String bucket, final String key) throws IOException {
         try {

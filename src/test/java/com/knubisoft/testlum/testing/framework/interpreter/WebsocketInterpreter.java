@@ -37,6 +37,7 @@ import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_WEBSOCKET_COMMAND;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.WEBSOCKET_CONNECTION_FAILURE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
@@ -126,9 +127,8 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
             receiveMessages((WebsocketReceive) action, aliasEnv, result);
         } else if (action instanceof WebsocketSubscribe) {
             subscribeToTopic((WebsocketSubscribe) action, aliasEnv, result);
-        } else {
-            throw new DefaultFrameworkException("//todo");
         }
+        throw new DefaultFrameworkException(UNKNOWN_WEBSOCKET_COMMAND, action.getClass().getSimpleName());
     }
 
     private void sendMessage(final WebsocketSend wsSend,

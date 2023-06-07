@@ -8,7 +8,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.ApiClient;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.ApiResponse;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.util.HttpValidator;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
@@ -75,7 +74,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                               final HttpValidator httpValidator,
                               final CommandResult result) {
         if (StringUtils.isNotBlank(expected.getFile())) {
-            String body = FileSearcher.searchFileToString(expected.getFile(), dependencies.getFile());
+            String body = getContentIfFile(expected.getFile());
             result.setActual(StringPrettifier.asJsonResult(actualBody));
             result.setExpected(StringPrettifier.asJsonResult(body));
             httpValidator.validateBody(body, actualBody);

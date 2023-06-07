@@ -128,19 +128,16 @@ public class VariableHelper {
 
     public String getConstantResult(final FromConstant fromConstant,
                                     final String varName,
-                                    final ScenarioContext scenarioContext,
                                     final CommandResult result) {
-        String value = fromConstant.getValue();
-        String valueResult = scenarioContext.inject(value);
+        String valueResult = fromConstant.getValue();
         ResultUtil.addVariableMetaData(CONSTANT, varName, NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 
     public String getExpressionResult(final FromExpression fromExpression,
                                       final String varName,
-                                      final ScenarioContext scenarioContext,
                                       final CommandResult result) {
-        String expression = scenarioContext.inject(fromExpression.getValue());
+        String expression = fromExpression.getValue();
         ExpressionParser parser = new SpelExpressionParser();
         Expression exp = parser.parseExpression(expression);
         String valueResult = exp.getValue(String.class);
@@ -189,24 +186,20 @@ public class VariableHelper {
 
     public String getSQLResult(final FromSQL fromSQL,
                                final String varName,
-                               final ScenarioContext scenarioContext,
                                final CommandResult result) {
         String metadataKey = fromSQL.getDbType().name() + DelimiterConstant.UNDERSCORE + fromSQL.getAlias();
         StorageOperation storageOperation = nameToAdapterAlias.getByNameOrThrow(metadataKey).getStorageOperation();
-        String valueResult = getActualQueryResult(fromSQL, storageOperation, scenarioContext);
+        String valueResult = getActualQueryResult(fromSQL, storageOperation);
         ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, varName, fromSQL.getQuery(), valueResult, result);
         return valueResult;
     }
 
-    private String getActualQueryResult(final FromSQL fromSQL,
-                                        final StorageOperation storageOperation,
-                                        final ScenarioContext scenarioContext) {
+    private String getActualQueryResult(final FromSQL fromSQL, final StorageOperation storageOperation) {
         String alias = fromSQL.getAlias();
-        String query = scenarioContext.inject(fromSQL.getQuery());
-        List<String> singleQuery = new ArrayList<>(Collections.singletonList(query));
+        List<String> singleQuery = new ArrayList<>(Collections.singletonList(fromSQL.getQuery()));
         LogUtil.logAllQueries(singleQuery, alias);
         StorageOperation.StorageOperationResult queryResult = storageOperation.apply(
-                new ListSource(singleQuery), scenarioContext.inject(alias));
+                new ListSource(singleQuery), alias);
         return getResultValue(queryResult, getKeyOfQueryResultValue(queryResult));
     }
 

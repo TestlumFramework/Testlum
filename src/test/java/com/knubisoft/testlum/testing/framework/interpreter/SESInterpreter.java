@@ -35,7 +35,8 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
     }
 
     @Override
-    protected void acceptImpl(final Ses ses, final CommandResult result) {
+    protected void acceptImpl(final Ses o, final CommandResult result) {
+        Ses ses = injectCommand(o);
         LogUtil.logSesInfo(ses);
         ResultUtil.addSesMetaData(ses, result);
         AliasEnv aliasEnv = new AliasEnv(ses.getAlias(), dependencies.getEnvironment());

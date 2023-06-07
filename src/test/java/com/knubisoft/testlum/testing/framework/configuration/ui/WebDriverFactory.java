@@ -234,9 +234,6 @@ public class WebDriverFactory {
         }
     }
 
-    private interface BrowserPredicate extends Predicate<AbstractBrowser> {
-    }
-
-    private interface WebDriverFunction extends Function<AbstractBrowser, WebDriver> {
-    }
+    private interface BrowserPredicate extends Predicate<AbstractBrowser> { }
+    private interface WebDriverFunction extends Function<AbstractBrowser, WebDriver> { }
 }

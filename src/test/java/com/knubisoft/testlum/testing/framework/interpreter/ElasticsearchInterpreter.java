@@ -147,7 +147,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         for (Header header : elasticSearchRequest.getHeader()) {
             headers.put(header.getName(), header.getData());
         }
-        return HttpUtil.injectAndGetHeaders(headers, this);
+        return headers;
     }
 
     private Map<String, String> getParams(final ElasticSearchRequest request) {

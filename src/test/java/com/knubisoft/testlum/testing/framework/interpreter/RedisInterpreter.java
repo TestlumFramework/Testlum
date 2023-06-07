@@ -8,7 +8,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
@@ -32,12 +31,12 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
     }
 
     @Override
-    protected void acceptImpl(final Redis redis, final CommandResult result) {
-        String expected = inject(getContentIfFile(redis.getFile()));
+    protected void acceptImpl(final Redis o, final CommandResult result) {
+        Redis redis = injectCommand(o);
         String actual = getActual(redis, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpected(expected);
+                .withExpectedFile(redis.getFile());
 
         result.setActual(StringPrettifier.asJsonResult(actual));
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
@@ -48,18 +47,17 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
 
     protected String getActual(final Redis redis, final CommandResult result) {
         String alias = redis.getAlias();
-        final List<RedisQuery> redisQueries = redis.getQuery();
-        final List<String> queries = convertToListString(redisQueries);
-        LogUtil.logAllRedisQueries(redisQueries, redis.getAlias());
+        List<RedisQuery> redisQueries = redis.getQuery();
+        List<String> queries = convertToStringQueries(redisQueries);
+        LogUtil.logAllRedisQueries(redisQueries, alias);
         ResultUtil.addDatabaseMetaData(alias, queries, result);
-        final StorageOperation.StorageOperationResult apply = redisOperation.apply(new ListSource(queries), alias);
+        StorageOperation.StorageOperationResult apply = redisOperation.apply(new ListSource(queries), alias);
         return toString(apply.getRaw());
     }
 
-    private List<String> convertToListString(final List<RedisQuery> redisQueries) {
+    private List<String> convertToStringQueries(final List<RedisQuery> redisQueries) {
         return redisQueries.stream()
-                .map(JacksonMapperUtil::writeValueAsString)
-                .map(this::inject)
+                .map(this::toString)
                 .collect(Collectors.toList());
     }
 }

@@ -49,7 +49,8 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     }
 
     @Override
-    protected void acceptImpl(final Sqs sqs, final CommandResult result) {
+    protected void acceptImpl(final Sqs o, final CommandResult result) {
+        Sqs sqs = injectCommand(o);
         LogUtil.logAlias(sqs.getAlias());
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
@@ -79,13 +80,9 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     private void processSqsAction(final Object action, final String alias, final CommandResult result) {
         AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
         if (action instanceof SendSqsMessage) {
-            SendSqsMessage send = (SendSqsMessage) action;
-            ResultUtil.addSqsInfoForSendAction(send, alias, result);
-            sendMessage(send, aliasEnv, result);
+            sendMessage((SendSqsMessage) action, aliasEnv, result);
         } else if (action instanceof ReceiveSqsMessage) {
-            ReceiveSqsMessage receive = (ReceiveSqsMessage) action;
-            ResultUtil.addSqsInfoForReceiveAction(receive, alias, result);
-            receiveMessages(receive, aliasEnv, result);
+            receiveMessages((ReceiveSqsMessage) action, aliasEnv, result);
         } else {
             throw new DefaultFrameworkException(INCORRECT_SQS_PROCESSING);
         }
@@ -93,25 +90,35 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
 
     private void sendMessage(final SendSqsMessage send, final AliasEnv aliasEnv, final CommandResult result) {
         SendMessageRequest sendRequest = createSendRequest(send, aliasEnv);
-        String queue = sendRequest.getQueueUrl();
         String message = sendRequest.getMessageBody();
-        LogUtil.logBrokerActionInfo(SEND_ACTION, queue, message);
+        LogUtil.logBrokerActionInfo(SEND_ACTION, sendRequest.getQueueUrl(), message);
+        ResultUtil.addSqsInfoForSendAction(send, aliasEnv.getAlias(), result);
         result.put(MESSAGE_TO_SEND, StringPrettifier.asJsonResult(message));
         this.amazonSQS.get(aliasEnv).sendMessage(sendRequest);
     }
 
-    private String receiveMessages(final ReceiveSqsMessage receiveAction,
-                                   final AliasEnv aliasEnv,
-                                   final CommandResult result) {
-        final ReceiveMessageRequest receiveRequest = createReceiveRequest(receiveAction, aliasEnv);
-        final String message = receiveMessage(receiveRequest.getQueueUrl(), aliasEnv);
-        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receiveAction.getQueue(), message);
-        compareMessage(getMessageToReceive(receiveAction), message, result);
-        return message;
+    private SendMessageRequest createSendRequest(final SendSqsMessage send, final AliasEnv aliasEnv) {
+        SendMessageRequest sendRequest = new SendMessageRequest();
+        sendRequest.setQueueUrl(createQueueIfNotExists(send.getQueue(), aliasEnv));
+        sendRequest.setMessageBody(getMessageToSend(send));
+        sendRequest.setDelaySeconds(send.getDelaySeconds());
+        sendRequest.setMessageDeduplicationId(send.getMessageDeduplicationId());
+        sendRequest.setMessageGroupId(send.getMessageGroupId());
+        return sendRequest;
     }
 
-    private String receiveMessage(final String queueUrl, final AliasEnv aliasEnv) {
-        ReceiveMessageResult receiveMessageResult = this.amazonSQS.get(aliasEnv).receiveMessage(queueUrl);
+    private void receiveMessages(final ReceiveSqsMessage receive,
+                                 final AliasEnv aliasEnv,
+                                 final CommandResult result) {
+        final String message = receiveMessages(receive, aliasEnv);
+        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), message);
+        ResultUtil.addSqsInfoForReceiveAction(receive, aliasEnv.getAlias(), result);
+        compareMessage(getMessageToReceive(receive), message, result);
+    }
+
+    private String receiveMessages(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
+        ReceiveMessageRequest receiveMessageRequest = createReceiveRequest(receive, aliasEnv);
+        ReceiveMessageResult receiveMessageResult = this.amazonSQS.get(aliasEnv).receiveMessage(receiveMessageRequest);
         Iterator<Message> messages = receiveMessageResult.getMessages().iterator();
         return Optional.ofNullable(messages.hasNext() ? messages.next() : null)
                 .map(Message::getBody)
@@ -119,9 +126,19 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                 .orElse(null);
     }
 
+    private ReceiveMessageRequest createReceiveRequest(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
+        ReceiveMessageRequest receiveRequest = new ReceiveMessageRequest();
+        receiveRequest.setQueueUrl(createQueueIfNotExists(receive.getQueue(), aliasEnv));
+        receiveRequest.setMaxNumberOfMessages(receive.getMaxNumberOfMessages());
+        receiveRequest.setVisibilityTimeout(receive.getVisibilityTimeout());
+        receiveRequest.setWaitTimeSeconds(receive.getWaitTimeSeconds());
+        receiveRequest.setReceiveRequestAttemptId(receive.getReceiveRequestAttemptId());
+        return receiveRequest;
+    }
+
     private void compareMessage(final String expectedContent, final String message, final CommandResult result) {
         final CompareBuilder comparator = newCompare()
-                .withExpected(inject(expectedContent))
+                .withExpected(expectedContent)
                 .withActual(message);
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
         result.setActual(StringPrettifier.asJsonResult(message));
@@ -134,27 +151,6 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         } catch (QueueDoesNotExistException e) {
             return this.amazonSQS.get(aliasEnv).createQueue(queue).getQueueUrl();
         }
-    }
-
-    private SendMessageRequest createSendRequest(final SendSqsMessage sendAction, final AliasEnv aliasEnv) {
-        SendMessageRequest sendRequest = new SendMessageRequest();
-        String message = getMessageToSend(sendAction);
-        sendRequest.setQueueUrl(createQueueIfNotExists(sendAction.getQueue(), aliasEnv));
-        sendRequest.setMessageBody(message);
-        sendRequest.setDelaySeconds(sendAction.getDelaySeconds());
-        sendRequest.setMessageDeduplicationId(sendAction.getMessageDeduplicationId());
-        sendRequest.setMessageGroupId(sendAction.getMessageGroupId());
-        return sendRequest;
-    }
-
-    private ReceiveMessageRequest createReceiveRequest(final ReceiveSqsMessage receiveAction, final AliasEnv aliasEnv) {
-        ReceiveMessageRequest receiveRequest = new ReceiveMessageRequest();
-        receiveRequest.setQueueUrl(createQueueIfNotExists(receiveAction.getQueue(), aliasEnv));
-        receiveRequest.setMaxNumberOfMessages(receiveAction.getMaxNumberOfMessages());
-        receiveRequest.setVisibilityTimeout(receiveAction.getVisibilityTimeout());
-        receiveRequest.setWaitTimeSeconds(receiveAction.getWaitTimeSeconds());
-        receiveRequest.setReceiveRequestAttemptId(receiveAction.getReceiveRequestAttemptId());
-        return receiveRequest;
     }
 
     private String getMessageToSend(final SendSqsMessage send) {

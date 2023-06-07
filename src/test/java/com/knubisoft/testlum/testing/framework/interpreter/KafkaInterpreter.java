@@ -35,6 +35,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -252,9 +253,8 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         KafkaMessage(final ConsumerRecord<String, String> consumerRecord) {
             this.key = consumerRecord.key();
             this.value = consumerRecord.value();
-            Header[] headerArray = consumerRecord.headers().toArray();
-            Map<String, String> headers = Arrays.stream(headerArray).collect(
-                    Collectors.toMap(Header::key, h -> new String(h.value(), StandardCharsets.UTF_8)));
+            Map<String, String> headers = new HashMap<>();
+            consumerRecord.headers().forEach(h -> headers.put(h.key(), new String(h.value(), StandardCharsets.UTF_8)));
             this.correlationId = headers.get(CORRELATION_ID);
         }
     }

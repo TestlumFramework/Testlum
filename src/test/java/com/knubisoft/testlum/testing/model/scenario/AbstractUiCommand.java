@@ -35,6 +35,8 @@ import javax.xml.bind.annotation.XmlType;
     Attribute.class,
     CloseTab.class,
     HotKey.class,
+    Copy.class,
+    Cut.class,
     Tab.class,
     Enter.class,
     BackSpace.class,

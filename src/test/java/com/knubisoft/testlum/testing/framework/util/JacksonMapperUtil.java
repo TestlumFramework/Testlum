@@ -53,10 +53,10 @@ public final class JacksonMapperUtil {
         return COPY_MAPPER.readValue(content, javaType);
     }
 
-//    @SneakyThrows
-//    public String writeValueToCopiedString(final Object value) {
-//        return COPY_MAPPER.writeValueAsString(value);
-//    }
+    @SneakyThrows
+    public String writeValueToCopiedString(final Object value) {
+        return COPY_MAPPER.writeValueAsString(value);
+    }
 
     private ObjectMapper buildObjectMapper() {
         return JsonMapper.builder()

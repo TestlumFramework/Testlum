@@ -8,7 +8,7 @@ public class InjectionUtil {
 
     @SuppressWarnings("unchecked")
     public <T> T injectObject(final T t, final ScenarioContext scenarioContext) {
-        String asJson = JacksonMapperUtil.writeValueAsString(t);
+        String asJson = JacksonMapperUtil.writeValueToCopiedString(t);
         String injected = scenarioContext.inject(asJson);
         return JacksonMapperUtil.readCopiedValue(injected, (Class<T>) t.getClass());
     }

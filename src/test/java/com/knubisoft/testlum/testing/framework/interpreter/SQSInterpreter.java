@@ -119,9 +119,9 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                 .orElse(null);
     }
 
-    private void compareMessage(final String fileOrContent, final String message, final CommandResult result) {
+    private void compareMessage(final String expectedContent, final String message, final CommandResult result) {
         final CompareBuilder comparator = newCompare()
-                .withExpected(inject(getContentIfFile(fileOrContent)))
+                .withExpected(inject(expectedContent))
                 .withActual(message);
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
         result.setActual(StringPrettifier.asJsonResult(message));

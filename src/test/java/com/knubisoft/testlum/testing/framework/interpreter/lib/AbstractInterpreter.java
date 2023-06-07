@@ -59,7 +59,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     public void save(final String actual) {
         try {
             File target = new File(dependencies.getFile().getParent(),
-                    String.format(TestResourceSettings.FILENAME_TO_SAVE, dependencies.getPosition().get()));
+                    format(TestResourceSettings.FILENAME_TO_SAVE, dependencies.getPosition().get()));
             FileUtils.writeStringToFile(target, StringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
         } catch (IOException e) {
             log.error(e.getMessage());

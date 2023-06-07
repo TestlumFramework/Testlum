@@ -13,7 +13,8 @@ public class PostgresExecutor extends AbstractSqlExecutor {
     private static final String ALTER_TABLE_ENABLE_TRIGGER_ALL = "ALTER TABLE \"%s\" ENABLE TRIGGER ALL";
     private static final String TRUNCATE_TABLE_AND_RESTART_SEQUENCE = "TRUNCATE \"%s\" RESTART IDENTITY CASCADE";
     private static final String SELECT_POSTGRES_TABLE_NAMES = "SELECT tablename FROM pg_tables "
-            + "WHERE schemaname = '%s' AND tablename != 'flyway_schema_history';";
+            + "WHERE schemaname = '%s' AND tablename != 'flyway_schema_history' "
+            + "AND tablename IN (SELECT relname FROM pg_stat_user_tables WHERE n_tup_ins > 0);";
 
     private static final List<String> TRUNCATE_QUERIES = Arrays.asList(
             ALTER_TABLE_DISABLE_TRIGGER_ALL,

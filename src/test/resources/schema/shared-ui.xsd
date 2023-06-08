@@ -231,7 +231,7 @@
 
     <x:complexType name="copy">
         <x:complexContent>
-            <x:extension base="tns:commandWithOptionalLocator"/>
+            <x:extension base="tns:abstractUiCommand"/>
         </x:complexContent>
     </x:complexType>
 
@@ -243,7 +243,7 @@
 
     <x:complexType name="cut">
         <x:complexContent>
-            <x:extension base="tns:commandWithOptionalLocator"/>
+            <x:extension base="tns:abstractUiCommand"/>
         </x:complexContent>
     </x:complexType>
 

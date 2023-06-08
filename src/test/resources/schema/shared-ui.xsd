@@ -160,7 +160,7 @@
     <x:complexType name="clear">
         <x:complexContent>
             <x:extension base="tns:commandWithLocator">
-                <x:attribute name="highlight" type="x:boolean" use="required"/>
+                <x:attribute name="highlight" type="x:boolean" default="true"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

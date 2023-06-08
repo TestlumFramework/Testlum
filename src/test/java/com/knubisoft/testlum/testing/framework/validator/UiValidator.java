@@ -211,7 +211,7 @@ public class UiValidator {
                 .map(UiConfig::getBrowserStackLogin)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        if (browserStackLoginList.size() != uiConfigList.size()) {
+        if (browserStackLoginList.size() == uiConfigList.size()) {
             throw new DefaultFrameworkException(BROWSERSTACK_LOGIN_NOT_CONFIGURED, configName, UI_CONFIG_FILENAME);
         }
     }

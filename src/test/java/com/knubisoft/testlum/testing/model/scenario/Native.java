@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="swipe" type="{http://www.knubisoft.com/testlum/testing/model/scenario}swipeNative"/&gt;
  *         &lt;element name="webView" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webView"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeVar"/&gt;
+ *         &lt;element name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiCondition"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -64,7 +65,9 @@ public class Native
         @XmlElement(name = "scrollTo", type = ScrollToNative.class),
         @XmlElement(name = "swipe", type = SwipeNative.class),
         @XmlElement(name = "webView", type = WebView.class),
-        @XmlElement(name = "var", type = NativeVar.class)
+        @XmlElement(name = "var", type = NativeVar.class),
+        @XmlElement(name = "webView", type = WebView.class),
+        @XmlElement(name = "condition", type = UiCondition.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
 
@@ -100,7 +103,8 @@ public class Native
      * {@link SwipeNative }
      * {@link WebView }
      * {@link NativeVar }
-     * 
+     * {@link UiCondition }
+     *
      * 
      */
     public List<AbstractUiCommand> getClickOrInputOrAssert() {

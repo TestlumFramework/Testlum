@@ -54,13 +54,13 @@
 
     <x:simpleType name="webAttributeNamePattern">
         <x:restriction base="x:string">
-            <x:pattern value="([a-zA-Z]+-?)+"/>
+            <x:pattern value="(\{{2})?([a-zA-Z]+-?)+(\}{2})?"/>
         </x:restriction>
     </x:simpleType>
 
     <x:simpleType name="expectedPattern">
         <x:restriction base="x:string">
-            <x:pattern value="expected_\d+.json|\{\{expected_\d+\}\}.json"/>
+            <x:pattern value="(\{{2})?expected_\d+.json(\}{2})?"/>
         </x:restriction>
     </x:simpleType>
 
@@ -188,7 +188,7 @@
 
     <x:simpleType name="aliasPattern">
         <x:restriction base="x:string">
-            <x:pattern value="[a-zA-Z_\-/\d]+"/>
+            <x:pattern value="(\{{2})?[a-zA-Z_\-/\d]+(\}{2})?"/>
         </x:restriction>
     </x:simpleType>
 

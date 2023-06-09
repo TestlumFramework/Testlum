@@ -78,7 +78,7 @@
     <x:simpleType name="slashStartedOrUrlString">
         <x:restriction base="x:string">
             <x:minLength value="2"/>
-            <x:pattern value="(/[^/].+)|(https?://.+)"/>
+            <x:pattern value="(\{{2})?(/[^/].+)|(https?://.+)"/>
         </x:restriction>
     </x:simpleType>
 

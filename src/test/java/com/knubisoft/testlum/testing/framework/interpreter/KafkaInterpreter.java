@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.util.CollectionUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,7 +47,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAN
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -157,7 +157,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         ConsumerRecords<String, String> consumerRecords = consumer.poll(timeout);
         Iterable<ConsumerRecord<String, String>> iterable = consumerRecords.records(receive.getTopic());
         Iterator<ConsumerRecord<String, String>> iterator = iterable.iterator();
-        List<KafkaMessage> kafkaMessages = convertConsumerRecordsToKafkaMessages(iterator, receive.isHeaders());
+        List<KafkaMessage> kafkaMessages = convertConsumerRecordsToKafkaMessages(iterator, receive);
         if (receive.isCommit()) {
             consumer.commitSync();
         }
@@ -166,20 +166,20 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
     private List<KafkaMessage> convertConsumerRecordsToKafkaMessages(
             final Iterator<ConsumerRecord<String, String>> iterator,
-            final boolean isHeaders) {
+            final ReceiveKafkaMessage receive) {
         List<KafkaMessage> kafkaMessages = new ArrayList<>();
         while (iterator.hasNext()) {
             ConsumerRecord<String, String> consumerRecord = iterator.next();
-            KafkaMessage kafkaMessage = createKafkaMessage(isHeaders, consumerRecord);
+            KafkaMessage kafkaMessage = createKafkaMessage(consumerRecord, receive.isHeaders());
             kafkaMessages.add(kafkaMessage);
         }
         return kafkaMessages;
     }
 
-    private KafkaMessage createKafkaMessage(final boolean isHeaders,
-                                            final ConsumerRecord<String, String> consumerRecord) {
+    private KafkaMessage createKafkaMessage(final ConsumerRecord<String, String> consumerRecord,
+                                            final boolean isHeaders) {
         Map<String, String> headers = new HashMap<>();
-        consumerRecord.headers().forEach(h -> headers.put(h.key(), new String(h.value(), UTF_8)));
+        consumerRecord.headers().forEach(h -> headers.put(h.key(), new String(h.value(), StandardCharsets.UTF_8)));
         KafkaMessage kafkaMessage = KafkaMessage.builder()
                 .key(consumerRecord.key())
                 .value(consumerRecord.value())
@@ -199,7 +199,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     private List<Header> getHeaders(final SendKafkaMessage send) {
         List<Header> headers = new ArrayList<>();
         if (nonNull(send.getCorrelationId())) {
-            byte[] correlationId = send.getCorrelationId().getBytes(UTF_8);
+            byte[] correlationId = send.getCorrelationId().getBytes(StandardCharsets.UTF_8);
             RecordHeader correlationIdHeader = new RecordHeader(CORRELATION_ID, correlationId);
             headers.add(correlationIdHeader);
         }
@@ -219,7 +219,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
     private Header convertToRecordHeader(final KafkaHeader kafkaHeader) {
         String headerName = kafkaHeader.getName();
-        byte[] headerValue = kafkaHeader.getValue().getBytes(UTF_8);
+        byte[] headerValue = kafkaHeader.getValue().getBytes(StandardCharsets.UTF_8);
         return new RecordHeader(headerName, headerValue);
     }
 

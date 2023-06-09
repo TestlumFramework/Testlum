@@ -3,10 +3,15 @@ package com.knubisoft.testlum.testing.framework.db.sql.executor;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.SneakyThrows;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +27,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.LF;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 
+@SuppressWarnings("SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING")
 public abstract class AbstractSqlExecutor {
 
     private static final String SPACE_PLUS = " +";
@@ -52,6 +58,33 @@ public abstract class AbstractSqlExecutor {
                 requireNonNull(template).execute(format(query, table));
             }
         }
+    }
+
+    @SneakyThrows
+    protected void mysqlTruncate(final String selectTableNamesQuery,
+                                 final String rowCountQuery,
+                                 final List<String> truncateQueries) {
+        HikariDataSource dataSource = (HikariDataSource) requireNonNull(template.getDataSource());
+        final String schemaName = dataSource.getSchema();
+        List<String> tables = template.queryForList(format(selectTableNamesQuery, schemaName), String.class);
+        for (String table : tables) {
+            if (getRowsCount(table, rowCountQuery) > 0) {
+                for (String query : truncateQueries) {
+                    requireNonNull(template).execute(format(query, table));
+                }
+            }
+        }
+    }
+
+    private int getRowsCount(final String table, final String rowCountQuery) throws SQLException {
+        try (Connection connection = requireNonNull(template.getDataSource()).getConnection();
+             PreparedStatement statement = connection.prepareStatement(format(rowCountQuery, table));
+             ResultSet resultSet = statement.executeQuery()) {
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+        }
+        return 0;
     }
 
     public List<StorageOperation.QueryResult<Object>> executeQueries(final List<String> queries) {

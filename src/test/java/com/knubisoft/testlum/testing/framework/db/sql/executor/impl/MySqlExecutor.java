@@ -15,7 +15,8 @@ public class MySqlExecutor extends AbstractSqlExecutor {
     private static final String ENABLE_FOREIGN_KEYS_CHECKS = "SET FOREIGN_KEY_CHECKS=1;";
     private static final String TRUNCATE_TABLE = "TRUNCATE TABLE `%s`";
     private static final String SELECT_MYSQL_TABLE_NAMES = "SELECT TABLE_NAME FROM information_schema.tables "
-            + "WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME != 'flyway_schema_history' AND TABLE_ROWS > 0;";
+            + "WHERE TABLE_SCHEMA = '%s' AND TABLE_NAME != 'flyway_schema_history';";
+    private static final String SELECT_COUNT_OF_ROWS = "SELECT COUNT(*) FROM %s;";
 
     private static final List<String> TRUNCATE_QUERIES = Arrays.asList(
             DISABLE_FOREIGN_KEY_CHECKS,
@@ -28,6 +29,6 @@ public class MySqlExecutor extends AbstractSqlExecutor {
 
     @Override
     public void truncate() {
-        super.defaultTruncate(SELECT_MYSQL_TABLE_NAMES, TRUNCATE_QUERIES);
+        super.mysqlTruncate(SELECT_MYSQL_TABLE_NAMES, SELECT_COUNT_OF_ROWS, TRUNCATE_QUERIES);
     }
 }

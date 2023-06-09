@@ -191,7 +191,7 @@ public final class HttpUtil {
         Map<String, String> bodyParamMap = body.getParam().stream()
                 .collect(toMap(Param::getName, Param::getData, (k, v) -> k, LinkedHashMap::new));
 
-        if (ContentType.APPLICATION_JSON == contentType) {
+        if (ContentType.APPLICATION_JSON.getMimeType().equalsIgnoreCase(contentType.getMimeType())) {
             return interpreter.toString(bodyParamMap);
         }
         return bodyParamMap.entrySet().stream()

@@ -42,8 +42,7 @@ import javax.xml.bind.annotation.XmlType;
     ElasticsearchGetRequest.class,
     ElasticSearchRequestWithBody.class,
     ElasticsearchDeleteRequest.class,
-    ElasticsearchHeadRequest.class,
-    ElasticsearchOptionsRequest.class
+    ElasticsearchHeadRequest.class
 })
 public abstract class ElasticSearchRequest {
 

@@ -49,4 +49,9 @@
         <Class name="com.knubisoft.testlum.testing.framework.interpreter.lib.http.ApiClient"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
+
+    <Match>
+        <Class name="com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor"/>
+        <Bug pattern="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"/>
+    </Match>
 </FindBugsFilter>

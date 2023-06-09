@@ -36,8 +36,9 @@ import org.springframework.http.HttpMethod;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.nonNull;
 
 
 @Slf4j
@@ -76,7 +77,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
                                     final CommandResult result) {
         String expectedFile = expectedResponse.getFile();
         if (StringUtils.isNotBlank(expectedFile)) {
-            String actualBody = EntityUtils.toString(Optional.of(actual.getEntity()).orElse(null));
+            String actualBody = nonNull(actual.getEntity()) ? EntityUtils.toString(actual.getEntity()) : null;
             setContextBody(actualBody);
             String expectedBody = FileSearcher.searchFileToString(expectedFile, dependencies.getFile());
             result.setActual(StringPrettifier.asJsonResult(actualBody));

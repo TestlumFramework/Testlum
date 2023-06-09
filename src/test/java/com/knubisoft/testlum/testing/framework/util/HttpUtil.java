@@ -29,10 +29,7 @@ import org.springframework.http.MediaType;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -191,7 +188,7 @@ public final class HttpUtil {
         Map<String, String> bodyParamMap = body.getParam().stream()
                 .collect(toMap(Param::getName, Param::getData, (k, v) -> k, LinkedHashMap::new));
 
-        if (ContentType.APPLICATION_JSON == contentType) {
+        if (Objects.equals(ContentType.APPLICATION_JSON.getMimeType(), contentType.getMimeType())) {
             return interpreter.toString(bodyParamMap);
         }
         return bodyParamMap.entrySet().stream()

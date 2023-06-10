@@ -17,12 +17,11 @@
         <x:complexContent>
             <x:extension base="tns:integration">
                 <x:sequence>
-                    <x:element name="connectionUrl" type="tns:nonEmptyString"/>
                     <x:element name="database" type="tns:nonEmptyString"/>
+                    <x:element name="host" type="tns:nonEmptyString"/>
+                    <x:element name="port" type="x:int"/>
                     <x:element name="username" type="tns:nonEmptyString"/>
                     <x:element name="password" type="tns:nonEmptyString"/>
-                    <!--                    <x:element name="host" type="tns:nonEmptyString"/>-->
-                    <!--                    <x:element name="port" type="x:int"/>-->
                 </x:sequence>
             </x:extension>
         </x:complexContent>

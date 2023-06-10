@@ -17,8 +17,9 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/global-config}integration"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="connectionUrl" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="database" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="host" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="port" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *         &lt;element name="username" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="password" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
@@ -31,8 +32,9 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "mongo", propOrder = {
-    "connectionUrl",
     "database",
+    "host",
+    "port",
     "username",
     "password"
 })
@@ -41,37 +43,14 @@ public class Mongo
 {
 
     @XmlElement(required = true)
-    protected String connectionUrl;
-    @XmlElement(required = true)
     protected String database;
+    @XmlElement(required = true)
+    protected String host;
+    protected int port;
     @XmlElement(required = true)
     protected String username;
     @XmlElement(required = true)
     protected String password;
-
-    /**
-     * Gets the value of the connectionUrl property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getConnectionUrl() {
-        return connectionUrl;
-    }
-
-    /**
-     * Sets the value of the connectionUrl property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setConnectionUrl(String value) {
-        this.connectionUrl = value;
-    }
 
     /**
      * Gets the value of the database property.
@@ -95,6 +74,46 @@ public class Mongo
      */
     public void setDatabase(String value) {
         this.database = value;
+    }
+
+    /**
+     * Gets the value of the host property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getHost() {
+        return host;
+    }
+
+    /**
+     * Sets the value of the host property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setHost(String value) {
+        this.host = value;
+    }
+
+    /**
+     * Gets the value of the port property.
+     * 
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * Sets the value of the port property.
+     * 
+     */
+    public void setPort(int value) {
+        this.port = value;
     }
 
     /**

@@ -10,6 +10,7 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,9 +22,9 @@ import java.util.stream.Collectors;
 @Component
 public class MongoOperation implements StorageOperation {
 
-    private final Map<AliasEnv, MongoDatabase> mongoDatabases;
+    private final Map<AliasEnv, MongoTemplate> mongoDatabases;
 
-    public MongoOperation(@Autowired(required = false) final Map<AliasEnv, MongoDatabase> mongoDatabases) {
+    public MongoOperation(@Autowired(required = false) final Map<AliasEnv, MongoTemplate> mongoDatabases) {
         this.mongoDatabases = mongoDatabases;
     }
 
@@ -36,7 +37,7 @@ public class MongoOperation implements StorageOperation {
     public void clearSystem() {
         mongoDatabases.forEach((aliasEnv, database) -> {
             if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
-                for (String collectionName : database.listCollectionNames()) {
+                for (String collectionName : database.getCollectionNames()) {
                     if (database.getCollection(collectionName).countDocuments() > 0) {
                         database.getCollection(collectionName).drop();
                     }
@@ -53,7 +54,7 @@ public class MongoOperation implements StorageOperation {
 
     private String executeQuery(final String query, final String databaseAlias) {
         Document document = Document.parse(query);
-        Document result = mongoDatabases.get(AliasEnv.build(databaseAlias)).runCommand(document);
+        Document result = mongoDatabases.get(AliasEnv.build(databaseAlias)).executeCommand(document);
         return JacksonMapperUtil.writeValueAsString(result);
     }
 }

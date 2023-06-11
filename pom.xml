@@ -64,7 +64,6 @@
         <postgresql.driver.version>42.2.18</postgresql.driver.version>
         <oracle.database.ojdbc8>21.7.0.0</oracle.database.ojdbc8>
         <mongodb-driver-sync.version>4.6.1</mongodb-driver-sync.version>
-        <!--        <mongo-java-driver.version>3.12.13</mongo-java-driver.version>-->
         <mysql-connector-java.version>8.0.25</mysql-connector-java.version>
         <spring-kafka.version>2.7.1</spring-kafka.version>
         <com.amazonaws.version>1.12.129</com.amazonaws.version>
@@ -125,18 +124,6 @@
             <artifactId>stripe-java</artifactId>
             <version>${com.stripe-java.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-sync</artifactId>
-            <version>${mongodb-driver-sync.version}</version>
-        </dependency>
-
-        <!--        <dependency>-->
-        <!--            <groupId>org.mongodb</groupId>-->
-        <!--            <artifactId>mongo-java-driver</artifactId>-->
-        <!--            <version>${mongo-java-driver.version}</version>-->
-        <!--        </dependency>-->
 
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -251,6 +238,12 @@
                     <artifactId>httpclient</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>${mongodb-driver-sync.version}</version>
         </dependency>
 
         <dependency>

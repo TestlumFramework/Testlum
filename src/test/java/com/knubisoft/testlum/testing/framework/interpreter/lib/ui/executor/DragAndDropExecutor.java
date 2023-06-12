@@ -36,7 +36,8 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         ResultUtil.addDragAndDropMetaDada(dragAndDrop, result);
         WebElement target = UiUtil.findWebElement(dependencies, dragAndDrop.getToLocatorId());
         if (StringUtils.isNotBlank(dragAndDrop.getFileName())) {
-            dropFile(target, new File(dragAndDrop.getFileName()));
+            File source = new File(dependencies.getFile().getParent(), dragAndDrop.getFileName());
+            dropFile(target, source);
         } else {
             dropElement(target, UiUtil.findWebElement(dependencies, dragAndDrop.getFromLocatorId()));
         }

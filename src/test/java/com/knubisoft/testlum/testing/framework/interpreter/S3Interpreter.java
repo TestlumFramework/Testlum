@@ -88,7 +88,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         File expectedFile = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
         InputStream expectedStream = FileUtils.openInputStream(expectedFile);
         String expected = IOUtils.toString(expectedStream, StandardCharsets.UTF_8);
-        String actual = String.valueOf(downloadFile(alias, bucket, key));
+        String actual = downloadFile(alias, bucket, key).orElse(null);
         CompareBuilder comparator = newCompare()
                 .withExpected(expected)
                 .withActual(actual);

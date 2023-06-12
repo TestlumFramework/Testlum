@@ -5,20 +5,20 @@
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
-  <x:include schemaLocation="shared.xsd"/>
+    <x:include schemaLocation="shared.xsd"/>
 
-  <x:complexType name="s3">
-    <x:complexContent>
-      <x:extension base="tns:abstractCommand">
-        <x:choice>
-          <x:element name="upload" type="tns:nonEmptyString"/>
-          <x:element name="download" type="tns:nonEmptyString"/>
-        </x:choice>
-        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
-        <x:attribute name="key" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="bucket" type="tns:nonEmptyString" use="required"/>
-      </x:extension>
-    </x:complexContent>
-  </x:complexType>
+    <x:complexType name="s3">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice>
+                    <x:element name="upload" type="tns:nonEmptyString"/>
+                    <x:element name="download" type="tns:nonEmptyString"/>
+                </x:choice>
+                <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+                <x:attribute name="bucket" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="key" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
 
 </x:schema>

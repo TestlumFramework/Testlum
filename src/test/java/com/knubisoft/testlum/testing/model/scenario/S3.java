@@ -1,8 +1,6 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
-import org.springframework.stereotype.Component;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -23,8 +21,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="download" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}aliasPattern" /&gt;
- *       &lt;attribute name="key" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="bucket" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="key" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -45,10 +43,10 @@ public class S3
     protected String download;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
-    @XmlAttribute(name = "key", required = true)
-    protected String key;
     @XmlAttribute(name = "bucket", required = true)
     protected String bucket;
+    @XmlAttribute(name = "key", required = true)
+    protected String key;
 
     /**
      * Gets the value of the upload property.
@@ -123,30 +121,6 @@ public class S3
     }
 
     /**
-     * Gets the value of the key property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /**
-     * Sets the value of the key property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setKey(String value) {
-        this.key = value;
-    }
-
-    /**
      * Gets the value of the bucket property.
      * 
      * @return
@@ -168,6 +142,30 @@ public class S3
      */
     public void setBucket(String value) {
         this.bucket = value;
+    }
+
+    /**
+     * Gets the value of the key property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getKey() {
+        return key;
+    }
+
+    /**
+     * Sets the value of the key property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setKey(String value) {
+        this.key = value;
     }
 
 }

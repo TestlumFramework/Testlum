@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
@@ -29,7 +30,6 @@ import java.util.Optional;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_S3_PROCESSING;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
@@ -57,38 +57,32 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     //CHECKSTYLE:OFF
     @SneakyThrows
     private void exec(final S3 s3, final String bucket, final String key, final CommandResult result) {
-        String uploadFile = s3.getUpload();
-        String downloadFile = s3.getDownload();
-        String alias = s3.getAlias();
-        if (isBlank(uploadFile) && isBlank(downloadFile)) {
-            throw new DefaultFrameworkException(INCORRECT_S3_PROCESSING);
-        }
-        if (isNotBlank(uploadFile)) {
+        AliasEnv aliasEnv = new AliasEnv(s3.getAlias(), dependencies.getEnvironment());
+        if (isNotBlank(s3.getUpload())) {
             ResultUtil.addS3GeneralMetaData(bucket, UPLOAD_ACTION, key, bucket, result);
-            final String fileName = inject(uploadFile);
+            final String fileName = inject(s3.getUpload());
             final File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
             result.put("File name", fileName);
             LogUtil.logS3ActionInfo(UPLOAD_ACTION, bucket, key, fileName);
-
-            AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
             this.amazonS3.get(aliasEnv).putObject(bucket, key, file);
-        }
-        if (isNotBlank(downloadFile)) {
+        } else if (isNotBlank(s3.getDownload())) {
             ResultUtil.addS3GeneralMetaData(bucket, DOWNLOAD_ACTION, key, bucket, result);
-            setContextBody(downloadAndCompareFile(alias, bucket, key, inject(downloadFile), result));
+            setContextBody(downloadAndCompareFile(bucket, key, inject(s3.getDownload()), aliasEnv, result));
+        } else {
+            throw new DefaultFrameworkException(INCORRECT_S3_PROCESSING);
         }
     }
 
-    private String downloadAndCompareFile(final String alias,
-                                          final String bucket,
+    private String downloadAndCompareFile(final String bucket,
                                           final String key,
                                           final String fileName,
+                                          final AliasEnv aliasEnv,
                                           final CommandResult result) throws IOException {
         LogUtil.logS3ActionInfo(DOWNLOAD_ACTION, bucket, key, fileName);
         File expectedFile = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
         InputStream expectedStream = FileUtils.openInputStream(expectedFile);
         String expected = IOUtils.toString(expectedStream, StandardCharsets.UTF_8);
-        String actual = downloadFile(alias, bucket, key).orElse(null);
+        String actual = downloadFile(bucket, key, aliasEnv).orElse(null);
         CompareBuilder comparator = newCompare()
                 .withExpected(expected)
                 .withActual(actual);
@@ -99,13 +93,16 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     }
     //CHECKSTYLE:ON
 
-    private Optional<String> downloadFile(final String alias,
-                                          final String bucket,
-                                          final String key) throws IOException {
-        AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
-        S3Object s3Object = amazonS3.get(aliasEnv).getObject(bucket, key);
-        S3ObjectInputStream s3ObjectInputStream = s3Object.getObjectContent();
-        String actual = IOUtils.toString(s3ObjectInputStream, StandardCharsets.UTF_8);
-        return Optional.of(actual);
+    private Optional<String> downloadFile(final String bucket,
+                                          final String key,
+                                          final AliasEnv aliasEnv) throws IOException {
+        try {
+            S3Object s3Object = amazonS3.get(aliasEnv).getObject(bucket, key);
+            S3ObjectInputStream s3ObjectInputStream = s3Object.getObjectContent();
+            String actual = IOUtils.toString(s3ObjectInputStream, StandardCharsets.UTF_8);
+            return Optional.of(actual);
+        } catch (AmazonS3Exception e) {
+            return Optional.empty();
+        }
     }
 }

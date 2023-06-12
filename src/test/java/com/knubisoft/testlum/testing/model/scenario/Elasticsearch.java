@@ -20,11 +20,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="get" type="{http://www.knubisoft.com/testlum/testing/model/scenario}elasticsearchGetRequest"/&gt;
  *         &lt;element name="post" type="{http://www.knubisoft.com/testlum/testing/model/scenario}elasticsearchPostRequest"/&gt;
  *         &lt;element name="put" type="{http://www.knubisoft.com/testlum/testing/model/scenario}elasticsearchPutRequest"/&gt;
- *         &lt;element name="patch" type="{http://www.knubisoft.com/testlum/testing/model/scenario}elasticsearchPatchRequest"/&gt;
  *         &lt;element name="delete" type="{http://www.knubisoft.com/testlum/testing/model/scenario}elasticsearchDeleteRequest"/&gt;
- *         &lt;element name="options" type="{http://www.knubisoft.com/testlum/testing/model/scenario}elasticsearchOptionsRequest"/&gt;
  *         &lt;element name="head" type="{http://www.knubisoft.com/testlum/testing/model/scenario}elasticsearchHeadRequest"/&gt;
- *         &lt;element name="trace" type="{http://www.knubisoft.com/testlum/testing/model/scenario}elasticsearchTraceRequest"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}aliasPattern" /&gt;
  *     &lt;/extension&gt;
@@ -39,11 +36,8 @@ import javax.xml.bind.annotation.XmlType;
     "get",
     "post",
     "put",
-    "patch",
     "delete",
-    "options",
-    "head",
-    "trace"
+    "head"
 })
 public class Elasticsearch
     extends AbstractCommand
@@ -52,11 +46,8 @@ public class Elasticsearch
     protected ElasticsearchGetRequest get;
     protected ElasticsearchPostRequest post;
     protected ElasticsearchPutRequest put;
-    protected ElasticsearchPatchRequest patch;
     protected ElasticsearchDeleteRequest delete;
-    protected ElasticsearchOptionsRequest options;
     protected ElasticsearchHeadRequest head;
-    protected ElasticsearchTraceRequest trace;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
 
@@ -133,30 +124,6 @@ public class Elasticsearch
     }
 
     /**
-     * Gets the value of the patch property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ElasticsearchPatchRequest }
-     *     
-     */
-    public ElasticsearchPatchRequest getPatch() {
-        return patch;
-    }
-
-    /**
-     * Sets the value of the patch property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ElasticsearchPatchRequest }
-     *     
-     */
-    public void setPatch(ElasticsearchPatchRequest value) {
-        this.patch = value;
-    }
-
-    /**
      * Gets the value of the delete property.
      * 
      * @return
@@ -181,30 +148,6 @@ public class Elasticsearch
     }
 
     /**
-     * Gets the value of the options property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ElasticsearchOptionsRequest }
-     *     
-     */
-    public ElasticsearchOptionsRequest getOptions() {
-        return options;
-    }
-
-    /**
-     * Sets the value of the options property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ElasticsearchOptionsRequest }
-     *     
-     */
-    public void setOptions(ElasticsearchOptionsRequest value) {
-        this.options = value;
-    }
-
-    /**
      * Gets the value of the head property.
      * 
      * @return
@@ -226,30 +169,6 @@ public class Elasticsearch
      */
     public void setHead(ElasticsearchHeadRequest value) {
         this.head = value;
-    }
-
-    /**
-     * Gets the value of the trace property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ElasticsearchTraceRequest }
-     *     
-     */
-    public ElasticsearchTraceRequest getTrace() {
-        return trace;
-    }
-
-    /**
-     * Sets the value of the trace property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ElasticsearchTraceRequest }
-     *     
-     */
-    public void setTrace(ElasticsearchTraceRequest value) {
-        this.trace = value;
     }
 
     /**

@@ -54,6 +54,7 @@ public class MobilebrowserDriverFactory {
             SeleniumDriverUtil.setCommonCapabilities(
                     desiredCapabilities, mobileDevice, mobileDevice.getBrowserStackCapabilities());
             desiredCapabilities.setCapability("browserstack.local", Boolean.TRUE);
+            desiredCapabilities.setCapability("browserstack.use_w3c", Boolean.TRUE);
         }
     }
 

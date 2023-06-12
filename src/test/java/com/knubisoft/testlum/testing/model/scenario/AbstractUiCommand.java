@@ -35,6 +35,8 @@ import javax.xml.bind.annotation.XmlType;
     Attribute.class,
     CloseTab.class,
     HotKey.class,
+    Copy.class,
+    Cut.class,
     Tab.class,
     Enter.class,
     BackSpace.class,
@@ -47,6 +49,7 @@ import javax.xml.bind.annotation.XmlType;
     Refresh.class,
     WebVar.class,
     NativeVar.class,
+    UiCondition.class,
     WebView.class,
     NavigateNative.class,
     CommandWithOptionalLocator.class

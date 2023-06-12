@@ -14,11 +14,8 @@
                     <x:element name="get" type="tns:elasticsearchGetRequest"/>
                     <x:element name="post" type="tns:elasticsearchPostRequest"/>
                     <x:element name="put" type="tns:elasticsearchPutRequest"/>
-                    <x:element name="patch" type="tns:elasticsearchPatchRequest"/>
                     <x:element name="delete" type="tns:elasticsearchDeleteRequest"/>
-                    <x:element name="options" type="tns:elasticsearchOptionsRequest"/>
                     <x:element name="head" type="tns:elasticsearchHeadRequest"/>
-                    <x:element name="trace" type="tns:elasticsearchTraceRequest"/>
                 </x:choice>
                 <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
             </x:extension>
@@ -62,18 +59,6 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="elasticsearchPatchRequest">
-        <x:complexContent>
-            <x:extension base="tns:elasticSearchRequestWithBody"/>
-        </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="elasticsearchTraceRequest">
-        <x:complexContent>
-            <x:extension base="tns:elasticSearchRequestWithBody"/>
-        </x:complexContent>
-    </x:complexType>
-
     <x:complexType name="elasticsearchDeleteRequest">
         <x:complexContent>
             <x:extension base="tns:elasticSearchRequest"/>
@@ -81,12 +66,6 @@
     </x:complexType>
 
     <x:complexType name="elasticsearchHeadRequest">
-        <x:complexContent>
-            <x:extension base="tns:elasticSearchRequest"/>
-        </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="elasticsearchOptionsRequest">
         <x:complexContent>
             <x:extension base="tns:elasticSearchRequest"/>
         </x:complexContent>

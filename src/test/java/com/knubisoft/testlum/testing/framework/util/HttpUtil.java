@@ -67,10 +67,8 @@ public final class HttpUtil {
         ES_HTTP_METHOD_MAP.put(Elasticsearch::getGet, HttpMethod.GET);
         ES_HTTP_METHOD_MAP.put(Elasticsearch::getPost, HttpMethod.POST);
         ES_HTTP_METHOD_MAP.put(Elasticsearch::getPut, HttpMethod.PUT);
-        ES_HTTP_METHOD_MAP.put(Elasticsearch::getPatch, HttpMethod.PATCH);
         ES_HTTP_METHOD_MAP.put(Elasticsearch::getDelete, HttpMethod.DELETE);
         ES_HTTP_METHOD_MAP.put(Elasticsearch::getHead, HttpMethod.HEAD);
-        ES_HTTP_METHOD_MAP.put(Elasticsearch::getTrace, HttpMethod.TRACE);
     }
 
     public HttpMethodMetadata getHttpMethodMetadata(final Http http) {

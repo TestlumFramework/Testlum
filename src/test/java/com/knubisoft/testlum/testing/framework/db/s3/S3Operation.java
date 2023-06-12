@@ -34,9 +34,10 @@ public class S3Operation implements StorageOperation {
     public void clearSystem() {
         this.amazonS3.forEach((aliasEnv, amazonS3) -> {
             if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
-                String bucketName = aliasEnv.getAlias();
-                ListObjectsV2Result objectsInBucket = amazonS3.listObjectsV2(bucketName);
-                this.deleteObjectsInBucket(amazonS3, objectsInBucket, bucketName);
+                amazonS3.listBuckets().forEach(bucket -> {
+                    ListObjectsV2Result objectsInBucket = amazonS3.listObjectsV2(bucket.getName());
+                    this.deleteObjectsInBucket(amazonS3, objectsInBucket, bucket.getName());
+                });
             }
         });
     }

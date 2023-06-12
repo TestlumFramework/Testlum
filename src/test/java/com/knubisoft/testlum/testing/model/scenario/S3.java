@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="download" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}aliasPattern" /&gt;
+ *       &lt;attribute name="bucket" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="key" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -42,6 +43,8 @@ public class S3
     protected String download;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
+    @XmlAttribute(name = "bucket", required = true)
+    protected String bucket;
     @XmlAttribute(name = "key", required = true)
     protected String key;
 
@@ -115,6 +118,30 @@ public class S3
      */
     public void setAlias(String value) {
         this.alias = value;
+    }
+
+    /**
+     * Gets the value of the bucket property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getBucket() {
+        return bucket;
+    }
+
+    /**
+     * Sets the value of the bucket property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setBucket(String value) {
+        this.bucket = value;
     }
 
     /**

@@ -1,7 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
@@ -89,7 +88,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         File expectedFile = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
         InputStream expectedStream = FileUtils.openInputStream(expectedFile);
         String expected = IOUtils.toString(expectedStream, StandardCharsets.UTF_8);
-        String actual = downloadFile(alias, bucket, key).orElse(null);
+        String actual = String.valueOf(downloadFile(alias, bucket, key));
         CompareBuilder comparator = newCompare()
                 .withExpected(expected)
                 .withActual(actual);
@@ -103,14 +102,10 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     private Optional<String> downloadFile(final String alias,
                                           final String bucket,
                                           final String key) throws IOException {
-        try {
-            AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
-            S3Object s3Object = amazonS3.get(aliasEnv).getObject(bucket, key);
-            S3ObjectInputStream s3ObjectInputStream = s3Object.getObjectContent();
-            String actual = IOUtils.toString(s3ObjectInputStream, StandardCharsets.UTF_8);
-            return Optional.of(actual);
-        } catch (AmazonS3Exception e) {
-            return Optional.empty();
-        }
+        AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
+        S3Object s3Object = amazonS3.get(aliasEnv).getObject(bucket, key);
+        S3ObjectInputStream s3ObjectInputStream = s3Object.getObjectContent();
+        String actual = IOUtils.toString(s3ObjectInputStream, StandardCharsets.UTF_8);
+        return Optional.of(actual);
     }
 }

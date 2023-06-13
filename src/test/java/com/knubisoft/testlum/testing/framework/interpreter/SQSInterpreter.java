@@ -25,10 +25,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -97,51 +97,47 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         this.amazonSQS.get(aliasEnv).sendMessage(sendRequest);
     }
 
-    private SendMessageRequest createSendRequest(final SendSqsMessage send, final AliasEnv aliasEnv) {
+    private SendMessageRequest createSendRequest(final SendSqsMessage sendAction, final AliasEnv aliasEnv) {
         SendMessageRequest sendRequest = new SendMessageRequest();
-        sendRequest.setQueueUrl(createQueueIfNotExists(send.getQueue(), aliasEnv));
-        sendRequest.setMessageBody(getMessageToSend(send));
-        sendRequest.setDelaySeconds(send.getDelaySeconds());
-        sendRequest.setMessageDeduplicationId(send.getMessageDeduplicationId());
-        sendRequest.setMessageGroupId(send.getMessageGroupId());
+        sendRequest.setQueueUrl(createQueueIfNotExists(sendAction.getQueue(), aliasEnv));
+        sendRequest.setMessageBody(getMessageToSend(sendAction));
+        sendRequest.setDelaySeconds(sendAction.getDelaySeconds());
+        sendRequest.setMessageDeduplicationId(sendAction.getMessageDeduplicationId());
+        sendRequest.setMessageGroupId(sendAction.getMessageGroupId());
         return sendRequest;
     }
 
     private void receiveMessages(final ReceiveSqsMessage receive,
                                  final AliasEnv aliasEnv,
                                  final CommandResult result) {
-        final String message = receiveMessages(receive, aliasEnv);
-        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), message);
+        final List<String> messages = receiveMessages(receive, aliasEnv);
+        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), messages);
         ResultUtil.addSqsInfoForReceiveAction(receive, aliasEnv.getAlias(), result);
-        compareMessage(getMessageToReceive(receive), message, result);
+        compareMessage(getMessageToReceive(receive), messages, result);
     }
 
     private String receiveMessages(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
         ReceiveMessageRequest receiveMessageRequest = createReceiveRequest(receive, aliasEnv);
         ReceiveMessageResult receiveMessageResult = this.amazonSQS.get(aliasEnv).receiveMessage(receiveMessageRequest);
-        Iterator<Message> messages = receiveMessageResult.getMessages().iterator();
-        return Optional.ofNullable(messages.hasNext() ? messages.next() : null)
-                .map(Message::getBody)
-                .map(String::new)
-                .orElse(null);
+        return receiveMessageResult.getMessages().stream().map(Message::getBody).collect(Collectors.toList());
     }
 
-    private ReceiveMessageRequest createReceiveRequest(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
+    private ReceiveMessageRequest createReceiveRequest(final ReceiveSqsMessage receiveAction, final AliasEnv aliasEnv) {
         ReceiveMessageRequest receiveRequest = new ReceiveMessageRequest();
-        receiveRequest.setQueueUrl(createQueueIfNotExists(receive.getQueue(), aliasEnv));
-        receiveRequest.setMaxNumberOfMessages(receive.getMaxNumberOfMessages());
-        receiveRequest.setVisibilityTimeout(receive.getVisibilityTimeout());
-        receiveRequest.setWaitTimeSeconds(receive.getWaitTimeSeconds());
-        receiveRequest.setReceiveRequestAttemptId(receive.getReceiveRequestAttemptId());
+        receiveRequest.setQueueUrl(createQueueIfNotExists(receiveAction.getQueue(), aliasEnv));
+        receiveRequest.setMaxNumberOfMessages(receiveAction.getMaxNumberOfMessages());
+        receiveRequest.setVisibilityTimeout(receiveAction.getVisibilityTimeout());
+        receiveRequest.setWaitTimeSeconds(receiveAction.getWaitTimeSeconds());
+        receiveRequest.setReceiveRequestAttemptId(receiveAction.getReceiveRequestAttemptId());
         return receiveRequest;
     }
 
-    private void compareMessage(final String expectedContent, final String message, final CommandResult result) {
+    private void compareMessage(final String expectedContent, final List<String> messages, final CommandResult result) {
         final CompareBuilder comparator = newCompare()
                 .withExpected(expectedContent)
-                .withActual(message);
+                .withActual(messages);
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
-        result.setActual(StringPrettifier.asJsonResult(message));
+        result.setActual(StringPrettifier.asJsonResult(toString(messages)));
         comparator.exec();
     }
 

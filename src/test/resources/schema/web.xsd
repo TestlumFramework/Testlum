@@ -28,6 +28,7 @@
                     <x:element name="hotKey" type="tns:hotKey"/>
                     <x:element name="closeTab" type="tns:closeTab"/>
                     <x:element name="var" type="tns:webVar"/>
+                    <x:element name="condition" type="tns:uiCondition"/>
                 </x:choice>
                 <x:attribute name="clearCookiesAfterExecution" type="x:boolean" default="false"/>
                 <x:attribute name="clearLocalStorageByKey" type="tns:nonEmptyString"/>

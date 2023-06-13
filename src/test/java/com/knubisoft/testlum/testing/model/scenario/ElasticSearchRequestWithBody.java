@@ -32,9 +32,7 @@ import javax.xml.bind.annotation.XmlType;
 })
 @XmlSeeAlso({
     ElasticsearchPostRequest.class,
-    ElasticsearchPutRequest.class,
-    ElasticsearchPatchRequest.class,
-    ElasticsearchTraceRequest.class
+    ElasticsearchPutRequest.class
 })
 public abstract class ElasticSearchRequestWithBody
     extends ElasticSearchRequest

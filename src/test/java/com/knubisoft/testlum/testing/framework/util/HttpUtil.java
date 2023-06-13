@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -9,7 +8,6 @@ import com.knubisoft.testlum.testing.model.scenario.ElasticSearchRequest;
 import com.knubisoft.testlum.testing.model.scenario.Elasticsearch;
 import com.knubisoft.testlum.testing.model.scenario.Http;
 import com.knubisoft.testlum.testing.model.scenario.HttpInfo;
-import com.knubisoft.testlum.testing.model.scenario.Param;
 import com.knubisoft.testlum.testing.model.scenario.PartFile;
 import com.knubisoft.testlum.testing.model.scenario.PartParam;
 import lombok.Getter;
@@ -18,9 +16,12 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.message.BasicNameValuePair;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -37,10 +38,8 @@ import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_HTTP_PROCESSING;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_BODY_CONTENT;
-import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
@@ -64,10 +63,8 @@ public final class HttpUtil {
         ES_HTTP_METHOD_MAP.put(Elasticsearch::getGet, HttpMethod.GET);
         ES_HTTP_METHOD_MAP.put(Elasticsearch::getPost, HttpMethod.POST);
         ES_HTTP_METHOD_MAP.put(Elasticsearch::getPut, HttpMethod.PUT);
-        ES_HTTP_METHOD_MAP.put(Elasticsearch::getPatch, HttpMethod.PATCH);
         ES_HTTP_METHOD_MAP.put(Elasticsearch::getDelete, HttpMethod.DELETE);
         ES_HTTP_METHOD_MAP.put(Elasticsearch::getHead, HttpMethod.HEAD);
-        ES_HTTP_METHOD_MAP.put(Elasticsearch::getTrace, HttpMethod.TRACE);
     }
 
     public HttpMethodMetadata getHttpMethodMetadata(final Http http) {
@@ -176,23 +173,18 @@ public final class HttpUtil {
     private HttpEntity getFromParameters(final Body body,
                                          final ContentType contentType,
                                          final AbstractInterpreter<?> interpreter) {
-        String params = getRequestParams(body, contentType, interpreter);
-        String injected = interpreter.inject(params);
-        return newStringEntity(injected, contentType);
-    }
-
-    private String getRequestParams(final Body body,
-                                    final ContentType contentType,
-                                    final AbstractInterpreter<?> interpreter) {
         Map<String, String> bodyParamMap = body.getParam().stream()
-                .collect(toMap(Param::getName, Param::getData, (k, v) -> k, LinkedHashMap::new));
+                .collect(Collectors.toMap(param -> interpreter.inject(param.getName()),
+                        param -> interpreter.inject(param.getData()), (k, v) -> k, LinkedHashMap::new));
 
-        if (ContentType.APPLICATION_JSON == contentType) {
-            return interpreter.toString(bodyParamMap);
+        if (ContentType.APPLICATION_JSON.getMimeType().equalsIgnoreCase(contentType.getMimeType())) {
+            String params = interpreter.toString(bodyParamMap);
+            return newStringEntity(params, contentType);
         }
-        return bodyParamMap.entrySet().stream()
-                .map(e -> format(EQUALS_BETWEEN_VALUES, e.getKey(), e.getValue()))
-                .collect(Collectors.joining(DelimiterConstant.AMPERSAND));
+        List<NameValuePair> paramList = bodyParamMap.entrySet().stream()
+                .map(e -> new BasicNameValuePair(e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
+        return new UrlEncodedFormEntity(paramList, StandardCharsets.UTF_8);
     }
 
     public void fillHeadersMap(final List<com.knubisoft.testlum.testing.model.scenario.Header> headerList,

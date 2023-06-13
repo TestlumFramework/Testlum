@@ -14,9 +14,7 @@ import com.knubisoft.testlum.testing.model.scenario.Kafka;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeader;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -33,14 +31,12 @@ import org.springframework.util.CollectionUtils;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
@@ -154,24 +150,40 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         KafkaConsumer<String, String> consumer = kafkaConsumer.get(aliasEnv);
         consumer.subscribe(Collections.singleton(receive.getTopic()));
         ConsumerRecords<String, String> consumerRecords = consumer.poll(timeout);
-
         Iterable<ConsumerRecord<String, String>> iterable = consumerRecords.records(receive.getTopic());
         Iterator<ConsumerRecord<String, String>> iterator = iterable.iterator();
-        List<KafkaMessage> kafkaMessages = convertRecordsToKafkaMessages(iterator);
+        List<KafkaMessage> kafkaMessages = convertRecordsToKafkaMessages(iterator, receive);
         if (receive.isCommit()) {
             consumer.commitSync();
         }
         return kafkaMessages;
     }
 
-    private List<KafkaMessage> convertRecordsToKafkaMessages(final Iterator<ConsumerRecord<String, String>> iterator) {
+    private List<KafkaMessage> convertRecordsToKafkaMessages(final Iterator<ConsumerRecord<String, String>> iterator,
+                                                             final ReceiveKafkaMessage receive) {
         List<KafkaMessage> kafkaMessages = new ArrayList<>();
         while (iterator.hasNext()) {
             ConsumerRecord<String, String> consumerRecord = iterator.next();
-            KafkaMessage kafkaMessage = new KafkaMessage(consumerRecord);
+            KafkaMessage kafkaMessage = createKafkaMessage(consumerRecord, receive.isHeaders());
             kafkaMessages.add(kafkaMessage);
         }
         return kafkaMessages;
+    }
+
+    private KafkaMessage createKafkaMessage(final ConsumerRecord<String, String> consumerRecord,
+                                            final boolean isHeaders) {
+        Map<String, String> headers = new HashMap<>();
+        consumerRecord.headers().forEach(h -> headers.put(h.key(), new String(h.value(), StandardCharsets.UTF_8)));
+        KafkaMessage kafkaMessage = KafkaMessage.builder()
+                .key(consumerRecord.key())
+                .value(consumerRecord.value())
+                .correlationId(headers.get(CORRELATION_ID))
+                .build();
+        if (isHeaders) {
+            kafkaMessage.setHeaders(headers);
+            kafkaMessage.getHeaders().remove(CORRELATION_ID);
+        }
+        return kafkaMessage;
     }
 
     private ProducerRecord<String, String> buildProducerRecord(final SendKafkaMessage send, final String value) {
@@ -230,21 +242,13 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         return kafkaConsumer.get(aliasEnv).listTopics().keySet().stream().noneMatch(topic::equals);
     }
 
-    @Data
+    @Getter
+    @Setter
+    @Builder
     private static class KafkaMessage {
         private final String key;
         private final String value;
         private final String correlationId;
-        private final Map<String, String> headers;
-
-        KafkaMessage(final ConsumerRecord<String, String> consumerRecord) {
-            this.key = consumerRecord.key();
-            this.value = consumerRecord.value();
-            Header[] headerArray = consumerRecord.headers().toArray();
-            this.headers = Arrays.stream(headerArray).collect(
-                    Collectors.toMap(Header::key, h -> new String(h.value(), StandardCharsets.UTF_8)));
-            this.correlationId = headers.get(CORRELATION_ID);
-            this.headers.remove(CORRELATION_ID);
-        }
+        private Map<String, String> headers;
     }
 }

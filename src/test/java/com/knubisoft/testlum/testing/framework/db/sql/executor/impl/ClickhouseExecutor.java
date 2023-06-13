@@ -11,7 +11,9 @@ import static java.util.Objects.requireNonNull;
 public class ClickhouseExecutor extends AbstractSqlExecutor {
 
     private static final String TRUNCATE_TABLE = "TRUNCATE TABLE %s.%s";
-    private static final String SELECT_TABLE_NAMES = "SHOW TABLES FROM %s WHERE name != 'flyway_schema_history'";
+    private static final String SELECT_TABLE_NAMES = "SHOW TABLES FROM %s WHERE name != 'flyway_schema_history' "
+            + "AND engine != 'MaterializedView' AND name IN (SELECT name FROM system.tables WHERE total_rows > 0 "
+            + "OR total_rows = NULL);";
     private static final String SELECT_DATABASE_NAME = "SELECT currentDatabase()";
 
     public ClickhouseExecutor(final DataSource dataSource) {

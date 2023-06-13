@@ -49,9 +49,9 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     public HotKeyExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         Map<HotKeyCommandPredicate, HotKeyCommandMethod> commands = new HashMap<>();
-        commands.put(key -> key instanceof Copy, (key, result) -> copyCommand((Copy) key, result));
+        commands.put(key -> key instanceof Cut, (key, result) -> cutCommand());
+        commands.put(key -> key instanceof Copy, (key, result) -> copyCommand());
         commands.put(key -> key instanceof Paste, (key, result) -> pasteCommand((Paste) key, result));
-        commands.put(key -> key instanceof Cut, (key, result) -> cutCommand((Cut) key, result));
         commands.put(key -> key instanceof Highlight, (key, result) -> highlightCommand((Highlight) key, result));
         commands.put(key -> key instanceof Tab, (key, result) -> singleKeyCommand(Keys.TAB));
         commands.put(key -> key instanceof Enter, (key, result) -> singleKeyCommand(Keys.ENTER));
@@ -94,19 +94,17 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
                 .sendKeys("a").keyUp(ctrlKey).build().perform();
     }
 
-    private void cutCommand(final Cut cut, final CommandResult result) {
-        action.keyDown(getWebElement(cut.getLocatorId(), result), ctrlKey)
-                .sendKeys("x").keyUp(ctrlKey).build().perform();
-    }
-
     private void pasteCommand(final Paste paste, final CommandResult result) {
         action.keyDown(getWebElement(paste.getLocatorId(), result), ctrlKey)
                 .sendKeys("v").keyUp(ctrlKey).build().perform();
     }
 
-    private void copyCommand(final Copy copy, final CommandResult result) {
-        action.keyDown(getWebElement(copy.getLocatorId(), result), ctrlKey)
-                .sendKeys("c").keyUp(ctrlKey).build().perform();
+    private void cutCommand() {
+        action.keyDown(ctrlKey).sendKeys("x").keyUp(ctrlKey).build().perform();
+    }
+
+    private void copyCommand() {
+        action.keyDown(ctrlKey).sendKeys("c").keyUp(ctrlKey).build().perform();
     }
 
 

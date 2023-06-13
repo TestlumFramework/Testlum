@@ -79,6 +79,7 @@
         <x:restriction base="x:string">
             <x:minLength value="2"/>
             <x:pattern value="(/[^/].+)|(https?://.+)"/>
+            <x:pattern value="\{\{.+\}\}"/>
         </x:restriction>
     </x:simpleType>
 

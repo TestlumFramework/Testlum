@@ -1,29 +1,29 @@
-package com.knubisoft.testlum.testing.framework.interpreter;
+package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
-import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConditionHelper;
-import com.knubisoft.testlum.testing.model.scenario.Condition;
+import com.knubisoft.testlum.testing.model.scenario.UiCondition;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_CONDITION_LOG;
 
 @Slf4j
-@InterpreterForClass(Condition.class)
-public class ConditionInterpreter extends AbstractInterpreter<Condition> {
+@ExecutorForClass(UiCondition.class)
+public class UiConditionExecutor extends AbstractUiExecutor<UiCondition> {
 
     @Autowired
     private ConditionHelper conditionHelper;
 
-    public ConditionInterpreter(final InterpreterDependencies dependencies) {
+    public UiConditionExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
     }
 
     @Override
-    protected void acceptImpl(final Condition condition, final CommandResult result) {
+    protected void execute(final UiCondition condition, final CommandResult result) {
         try {
             String injectedSpel = inject(condition.getSpel());
             boolean conditionResult = conditionHelper.getConditionFromSpel(injectedSpel, condition.getName(), result);

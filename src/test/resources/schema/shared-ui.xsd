@@ -79,6 +79,7 @@
         <x:restriction base="x:string">
             <x:minLength value="2"/>
             <x:pattern value="(/[^/].+)|(https?://.+)"/>
+            <x:pattern value="\{\{.+\}\}"/>
         </x:restriction>
     </x:simpleType>
 
@@ -205,6 +206,7 @@
                     <x:element name="dragAndDrop" type="tns:dragAndDrop"/>
                     <x:element name="hotKey" type="tns:hotKey"/>
                     <x:element name="var" type="tns:webVar"/>
+                    <x:element name="condition" type="tns:uiCondition"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>
@@ -230,7 +232,7 @@
 
     <x:complexType name="copy">
         <x:complexContent>
-            <x:extension base="tns:commandWithOptionalLocator"/>
+            <x:extension base="tns:abstractUiCommand"/>
         </x:complexContent>
     </x:complexType>
 
@@ -242,7 +244,7 @@
 
     <x:complexType name="cut">
         <x:complexContent>
-            <x:extension base="tns:commandWithOptionalLocator"/>
+            <x:extension base="tns:abstractUiCommand"/>
         </x:complexContent>
     </x:complexType>
 
@@ -381,6 +383,15 @@
                     <x:element name="element" type="tns:fromElement"/>
                 </x:choice>
                 <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="uiCondition">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="spel" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

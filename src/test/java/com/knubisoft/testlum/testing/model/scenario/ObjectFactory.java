@@ -766,6 +766,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link UiCondition }
+     * 
+     */
+    public UiCondition createUiCondition() {
+        return new UiCondition();
+    }
+
+    /**
      * Create an instance of {@link NativeVar }
      * 
      */
@@ -910,22 +918,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ElasticsearchPatchRequest }
-     * 
-     */
-    public ElasticsearchPatchRequest createElasticsearchPatchRequest() {
-        return new ElasticsearchPatchRequest();
-    }
-
-    /**
-     * Create an instance of {@link ElasticsearchTraceRequest }
-     * 
-     */
-    public ElasticsearchTraceRequest createElasticsearchTraceRequest() {
-        return new ElasticsearchTraceRequest();
-    }
-
-    /**
      * Create an instance of {@link ElasticsearchDeleteRequest }
      * 
      */
@@ -939,14 +931,6 @@ public class ObjectFactory {
      */
     public ElasticsearchHeadRequest createElasticsearchHeadRequest() {
         return new ElasticsearchHeadRequest();
-    }
-
-    /**
-     * Create an instance of {@link ElasticsearchOptionsRequest }
-     * 
-     */
-    public ElasticsearchOptionsRequest createElasticsearchOptionsRequest() {
-        return new ElasticsearchOptionsRequest();
     }
 
     /**

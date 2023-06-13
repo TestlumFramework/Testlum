@@ -133,7 +133,7 @@ public class RootTest {
 
     @AfterAll
     public void afterAll() {
-        reportGenerator.generateReport(globalScenarioStatCollector);
         connectionManager.closeConnections();
+        reportGenerator.generateReport(globalScenarioStatCollector);
     }
 }

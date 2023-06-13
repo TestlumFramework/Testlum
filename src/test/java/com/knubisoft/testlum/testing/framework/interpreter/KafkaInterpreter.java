@@ -6,7 +6,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
@@ -14,7 +13,11 @@ import com.knubisoft.testlum.testing.model.scenario.Kafka;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeader;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -32,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -106,12 +110,12 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     private void receiveMessages(final ReceiveKafkaMessage receive,
                                  final AliasEnv aliasEnv,
                                  final CommandResult result) {
-        String value = getMessageToReceive(receive);
-        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getTopic(), value);
+        String expectedMessages = getMessageToReceive(receive);
+        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getTopic(), expectedMessages);
         ResultUtil.addKafkaInfoForReceiveAction(receive, aliasEnv.getAlias(), result);
         createTopicIfNotExists(receive.getTopic(), aliasEnv);
         List<KafkaMessage> actualMessages = receiveKafkaMessages(receive, aliasEnv);
-        compareMessages(actualMessages, value, result);
+        compareMessages(actualMessages, expectedMessages, result);
     }
 
     private void compareMessages(final List<KafkaMessage> actualKafkaMessages,
@@ -228,7 +232,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     private String getValue(final String message, final String file) {
         return StringUtils.isNotBlank(message)
                 ? message
-                : FileSearcher.searchFileToString(file, dependencies.getFile());
+                : getContentIfFile(file);
     }
 
     private void createTopicIfNotExists(final String topic, final AliasEnv aliasEnv) {

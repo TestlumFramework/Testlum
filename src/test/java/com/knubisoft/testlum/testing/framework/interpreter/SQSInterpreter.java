@@ -13,7 +13,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
@@ -28,9 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_SQS_PROCESSING;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
@@ -97,38 +95,41 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         this.amazonSQS.get(aliasEnv).sendMessage(sendRequest);
     }
 
-    private SendMessageRequest createSendRequest(final SendSqsMessage sendAction, final AliasEnv aliasEnv) {
+    private SendMessageRequest createSendRequest(final SendSqsMessage send, final AliasEnv aliasEnv) {
         SendMessageRequest sendRequest = new SendMessageRequest();
-        sendRequest.setQueueUrl(createQueueIfNotExists(sendAction.getQueue(), aliasEnv));
-        sendRequest.setMessageBody(getMessageToSend(sendAction));
-        sendRequest.setDelaySeconds(sendAction.getDelaySeconds());
-        sendRequest.setMessageDeduplicationId(sendAction.getMessageDeduplicationId());
-        sendRequest.setMessageGroupId(sendAction.getMessageGroupId());
+        String queue = createQueueIfNotExists(send.getQueue(), aliasEnv);
+        sendRequest.setQueueUrl(queue);
+        sendRequest.setMessageBody(getMessageToSend(send));
+        sendRequest.setDelaySeconds(send.getDelaySeconds());
+        sendRequest.setMessageDeduplicationId(send.getMessageDeduplicationId());
+        sendRequest.setMessageGroupId(send.getMessageGroupId());
         return sendRequest;
     }
 
     private void receiveMessages(final ReceiveSqsMessage receive,
                                  final AliasEnv aliasEnv,
                                  final CommandResult result) {
-        final List<String> messages = receiveMessages(receive, aliasEnv);
-        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), messages);
+        final String expectedMessages = getMessageToReceive(receive);
+        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), expectedMessages);
         ResultUtil.addSqsInfoForReceiveAction(receive, aliasEnv.getAlias(), result);
-        compareMessage(getMessageToReceive(receive), messages, result);
+        final List<String> actualMessages = receiveMessages(receive, aliasEnv);
+        compareMessage(expectedMessages, actualMessages, result);
     }
 
-    private String receiveMessages(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
+    private List<String> receiveMessages(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
         ReceiveMessageRequest receiveMessageRequest = createReceiveRequest(receive, aliasEnv);
         ReceiveMessageResult receiveMessageResult = this.amazonSQS.get(aliasEnv).receiveMessage(receiveMessageRequest);
         return receiveMessageResult.getMessages().stream().map(Message::getBody).collect(Collectors.toList());
     }
 
-    private ReceiveMessageRequest createReceiveRequest(final ReceiveSqsMessage receiveAction, final AliasEnv aliasEnv) {
+    private ReceiveMessageRequest createReceiveRequest(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
         ReceiveMessageRequest receiveRequest = new ReceiveMessageRequest();
-        receiveRequest.setQueueUrl(createQueueIfNotExists(receiveAction.getQueue(), aliasEnv));
-        receiveRequest.setMaxNumberOfMessages(receiveAction.getMaxNumberOfMessages());
-        receiveRequest.setVisibilityTimeout(receiveAction.getVisibilityTimeout());
-        receiveRequest.setWaitTimeSeconds(receiveAction.getWaitTimeSeconds());
-        receiveRequest.setReceiveRequestAttemptId(receiveAction.getReceiveRequestAttemptId());
+        String queue = createQueueIfNotExists(receive.getQueue(), aliasEnv);
+        receiveRequest.setQueueUrl(queue);
+        receiveRequest.setMaxNumberOfMessages(receive.getMaxNumberOfMessages());
+        receiveRequest.setVisibilityTimeout(receive.getVisibilityTimeout());
+        receiveRequest.setWaitTimeSeconds(receive.getWaitTimeSeconds());
+        receiveRequest.setReceiveRequestAttemptId(receive.getReceiveRequestAttemptId());
         return receiveRequest;
     }
 
@@ -160,6 +161,6 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     private String getValue(final String message, final String file) {
         return StringUtils.isNotBlank(message)
                 ? message
-                : FileSearcher.searchFileToString(file, dependencies.getFile());
+                : getContentIfFile(file);
     }
 }

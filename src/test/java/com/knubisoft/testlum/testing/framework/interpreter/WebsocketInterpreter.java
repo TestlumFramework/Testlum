@@ -9,7 +9,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
@@ -225,7 +224,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     private String getValue(final String message, final String file) {
         return isNotBlank(message)
                 ? message
-                : FileSearcher.searchFileToString(file, dependencies.getFile());
+                : getContentIfFile(file);
     }
 
     @SneakyThrows

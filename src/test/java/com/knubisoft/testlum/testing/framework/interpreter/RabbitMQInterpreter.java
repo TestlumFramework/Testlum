@@ -6,7 +6,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
@@ -137,12 +136,12 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     private void receiveMessages(final ReceiveRmqMessage receive,
                                  final AliasEnv aliasEnv,
                                  final CommandResult result) {
-        String message = getMessageToReceive(receive);
-        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), message);
+        String messages = getMessageToReceive(receive);
+        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), messages);
         ResultUtil.addRabbitMQInfoForReceiveAction(receive, aliasEnv.getAlias(), result);
         createQueueIfNotExists(receive.getQueue(), aliasEnv);
         List<RabbitMQMessage> actualRmqMessages = receiveRmqMessages(receive, aliasEnv);
-        compareMessages(actualRmqMessages, message, result);
+        compareMessages(actualRmqMessages, messages, result);
     }
 
     private List<RabbitMQMessage> receiveRmqMessages(final ReceiveRmqMessage receive, final AliasEnv aliasEnv) {
@@ -193,7 +192,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     private String getValue(final String message, final String file) {
         return StringUtils.isNotBlank(message)
                 ? message
-                : FileSearcher.searchFileToString(file, dependencies.getFile());
+                : getContentIfFile(file);
     }
 
     private void createQueueIfNotExists(final String queue, final AliasEnv aliasEnv) {
@@ -214,9 +213,8 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
 
         RabbitMQMessage(final Message message) {
             this.message = new String(message.getBody(), StandardCharsets.UTF_8);
-
-            Map<String, Object> headers = message.getMessageProperties().getHeaders();
-            this.correlationId = String.valueOf(headers.get(CORRELATION_ID));
+            Object header = message.getMessageProperties().getHeader(CORRELATION_ID);
+            this.correlationId = String.valueOf(header);
         }
     }
 }

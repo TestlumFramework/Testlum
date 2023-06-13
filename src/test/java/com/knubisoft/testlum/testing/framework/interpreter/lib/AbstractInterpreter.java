@@ -88,7 +88,8 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
 
     protected String getContentIfFile(final String fileOrContent) {
         if (isNotBlank(fileOrContent) && fileOrContent.endsWith(MigrationConstant.JSON_EXTENSION)) {
-            return FileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
+            String content = FileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
+            return inject(content);
         }
         return fileOrContent;
     }

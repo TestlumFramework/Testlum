@@ -69,7 +69,7 @@ public class ScenarioContext {
         while (m.find()) {
             String firstSubsequence = m.group(1);
             String zeroSubsequence = m.group(0);
-            String value = get(firstSubsequence);
+            String value = get(firstSubsequence).replaceAll("\"", "\\\\\\\\\"");
             formatted = formatted.replace(zeroSubsequence, value);
         }
         return formatted;

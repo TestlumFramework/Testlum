@@ -34,7 +34,7 @@ public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
         String actual = getActual(mysql, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpectedFile(mysql.getFile());
+                .withExpected(getContentIfFile(mysql.getFile()));
 
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
         result.setActual(StringPrettifier.asJsonResult(actual));

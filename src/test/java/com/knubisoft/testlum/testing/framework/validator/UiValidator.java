@@ -209,7 +209,6 @@ public class UiValidator {
                 : ((AbstractBrowser) deviceOrBrowser).isEnabled();
     }
 
-    @SuppressWarnings("unchecked")
     private void devicesAndBrowsersValidation(final String configName,
                                               final List<String> envList,
                                               final List<UiConfig> uiConfigs,
@@ -218,9 +217,10 @@ public class UiValidator {
                 .min(Comparator.comparingInt(List::size)).get();
         checkAliasesDifferAndMatch(configName, envList, defaultDeviceOrBrowserList, deviceOrBrowserList);
         if (configName.equals(NATIVE.name()) || configName.equals(MOBILE_BROWSER.name())) {
-            List<? extends AbstractDevice> defaultDevices = (List<? extends AbstractDevice>) defaultDeviceOrBrowserList;
-            List<List<? extends AbstractDevice>> deviceList =
-                    (List<List<? extends AbstractDevice>>) deviceOrBrowserList;
+            List<? extends AbstractDevice> defaultDevices = filterAbstractDevices(defaultDeviceOrBrowserList);
+            List<List<? extends AbstractDevice>> deviceList = deviceOrBrowserList.stream()
+                    .map(this::filterAbstractDevices)
+                    .collect(Collectors.toList());
             checkPlatformNameMatch(configName, defaultDevices, deviceList);
             validateDeviceCapabilities(configName, envList, uiConfigs, defaultDevices, deviceList);
         }
@@ -269,17 +269,22 @@ public class UiValidator {
                 .replace(TestResourceSettings.getInstance().getTestResourcesFolder().getPath(), StringUtils.EMPTY);
     }
 
+    private List<? extends AbstractDevice> filterAbstractDevices(final List<?> deviceOrBrowserList) {
+        return deviceOrBrowserList.stream()
+                .filter(deviceOrBrowser -> deviceOrBrowser instanceof AbstractDevice)
+                .map(AbstractDevice.class::cast)
+                .collect(Collectors.toList());
+    }
+
     private void checkPlatformNameMatch(final String configName,
                                         final List<? extends AbstractDevice> defaultDevicesList,
                                         final List<List<? extends AbstractDevice>> devicesList) {
-        devicesList.forEach(devices ->
-                devices.forEach(device -> {
-                    if (defaultDevicesList.stream()
-                            .anyMatch(d -> !d.getPlatformName().value().equals(device.getPlatformName().value()))) {
-                        throw new DefaultFrameworkException(DEVICE_PLATFORMS_NOT_MATCH, configName, device.getAlias());
-                    }
-                })
-        );
+        devicesList.forEach(devices -> devices.forEach(device -> {
+            if (defaultDevicesList.stream()
+                    .anyMatch(d -> !d.getPlatformName().value().equals(device.getPlatformName().value()))) {
+                throw new DefaultFrameworkException(DEVICE_PLATFORMS_NOT_MATCH, configName, device.getAlias());
+            }
+        }));
     }
 
     private void validateDeviceCapabilities(final String configName,
@@ -304,6 +309,7 @@ public class UiValidator {
             final List<List<? extends AbstractDevice>> deviceList) {
         return deviceList.stream()
                 .map(devices -> devices.stream()
+                        .filter(device -> device instanceof MobilebrowserDevice)
                         .map(MobilebrowserDevice.class::cast).collect(Collectors.toList()))
                 .collect(Collectors.toList());
     }
@@ -311,6 +317,7 @@ public class UiValidator {
     private Map<String, MobilebrowserDevice> getMobilebrowserDeviceMap(
             final List<? extends AbstractDevice> defaultDevices) {
         return defaultDevices.stream()
+                .filter(device -> device instanceof MobilebrowserDevice)
                 .map(MobilebrowserDevice.class::cast)
                 .collect(Collectors.toMap(AbstractDevice::getAlias, Function.identity()));
     }
@@ -362,15 +369,17 @@ public class UiValidator {
 
     private List<List<NativeDevice>> getAllNativeDevices(final List<List<? extends AbstractDevice>> deviceList) {
         return deviceList.stream()
-                .map(a -> a.stream()
-                        .map(device -> (NativeDevice) device)
+                .map(devices -> devices.stream()
+                        .filter(device -> device instanceof NativeDevice)
+                        .map(NativeDevice.class::cast)
                         .collect(Collectors.toList()))
                 .collect(Collectors.toList());
     }
 
     private Map<String, NativeDevice> getDefaultNativeDeviceMap(final List<? extends AbstractDevice> defaultDevices) {
         return defaultDevices.stream()
-                .map(device -> (NativeDevice) device)
+                .filter(device -> device instanceof NativeDevice)
+                .map(NativeDevice.class::cast)
                 .collect(Collectors.toMap(AbstractDevice::getAlias, nativeDevice -> nativeDevice));
     }
 

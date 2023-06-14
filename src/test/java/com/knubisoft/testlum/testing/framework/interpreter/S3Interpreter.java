@@ -59,7 +59,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         AliasEnv aliasEnv = new AliasEnv(s3.getAlias(), dependencies.getEnvironment());
         if (isNotBlank(s3.getUpload())) {
             ResultUtil.addS3GeneralMetaData(bucket, UPLOAD_ACTION, key, bucket, result);
-            uploadFile(s3, bucket, key, result);
+            uploadFile(s3.getUpload(), bucket, key, aliasEnv, result);
         } else if (isNotBlank(s3.getDownload())) {
             ResultUtil.addS3GeneralMetaData(bucket, DOWNLOAD_ACTION, key, bucket, result);
             String file = downloadFile(bucket, key, s3.getDownload(), aliasEnv, result);
@@ -69,12 +69,14 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         }
     }
 
-    private void uploadFile(final S3 s3, final String bucket, final String key, final CommandResult result) {
-        final String fileName = s3.getUpload();
+    private void uploadFile(final String fileName,
+                            final String bucket,
+                            final String key,
+                            final AliasEnv aliasEnv,
+                            final CommandResult result) {
         final File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
         result.put("File name", fileName);
         LogUtil.logS3ActionInfo(UPLOAD_ACTION, bucket, key, fileName);
-        AliasEnv aliasEnv = new AliasEnv(bucket, dependencies.getEnvironment());
         if (!amazonS3.get(aliasEnv).doesBucketExistV2(bucket)) {
             amazonS3.get(aliasEnv).createBucket(bucket);
         }

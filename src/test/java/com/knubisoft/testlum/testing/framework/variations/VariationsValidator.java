@@ -22,10 +22,10 @@ public class VariationsValidator {
             throw new DefaultFrameworkException(VARIATION_FILE_IS_EMPTY,
                     scenario.getVariations(), filePath.getAbsolutePath());
         }
-        String commands = JacksonMapperUtil.writeValueAsString(scenario.getCommands());
+        String scenarioAsText = JacksonMapperUtil.writeValueAsString(scenario);
         boolean variablesNotUsedInCommands = variationList.get(0).keySet().stream()
                 .map(var -> String.format(VARIABLE_FORMAT, var))
-                .noneMatch(commands::contains);
+                .noneMatch(scenarioAsText::contains);
         if (variablesNotUsedInCommands) {
             throw new DefaultFrameworkException(VARIATIONS_NOT_USED, filePath.getAbsolutePath());
         }

@@ -124,14 +124,6 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         comparator.exec();
     }
 
-    private String createQueueIfNotExists(final String queue, final AliasEnv aliasEnv) {
-        try {
-            return amazonSQS.get(aliasEnv).getQueueUrl(queue).getQueueUrl();
-        } catch (QueueDoesNotExistException e) {
-            return this.amazonSQS.get(aliasEnv).createQueue(queue).getQueueUrl();
-        }
-    }
-
     private SendMessageRequest createSendRequest(final SendSqsMessage sendAction, final AliasEnv aliasEnv) {
         SendMessageRequest sendRequest = new SendMessageRequest();
         String message = getMessageToSend(sendAction);
@@ -151,6 +143,14 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         receiveRequest.setWaitTimeSeconds(receiveAction.getWaitTimeSeconds());
         receiveRequest.setReceiveRequestAttemptId(receiveAction.getReceiveRequestAttemptId());
         return receiveRequest;
+    }
+
+    private String createQueueIfNotExists(final String queue, final AliasEnv aliasEnv) {
+        try {
+            return amazonSQS.get(aliasEnv).getQueueUrl(queue).getQueueUrl();
+        } catch (QueueDoesNotExistException e) {
+            return this.amazonSQS.get(aliasEnv).createQueue(queue).getQueueUrl();
+        }
     }
 
     private String getMessageToSend(final SendSqsMessage send) {

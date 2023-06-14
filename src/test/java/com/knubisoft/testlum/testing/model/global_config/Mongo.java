@@ -17,11 +17,11 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/global-config}integration"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="authenticationDatabase" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
- *         &lt;element name="username" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
- *         &lt;element name="password" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="database" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="host" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="port" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="username" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="password" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -32,48 +32,88 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "mongo", propOrder = {
-    "authenticationDatabase",
-    "username",
-    "password",
+    "database",
     "host",
-    "port"
+    "port",
+    "username",
+    "password"
 })
 public class Mongo
     extends Integration
 {
 
     @XmlElement(required = true)
-    protected String authenticationDatabase;
+    protected String database;
+    @XmlElement(required = true)
+    protected String host;
+    protected int port;
     @XmlElement(required = true)
     protected String username;
     @XmlElement(required = true)
     protected String password;
-    @XmlElement(required = true)
-    protected String host;
-    protected int port;
 
     /**
-     * Gets the value of the authenticationDatabase property.
+     * Gets the value of the database property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getAuthenticationDatabase() {
-        return authenticationDatabase;
+    public String getDatabase() {
+        return database;
     }
 
     /**
-     * Sets the value of the authenticationDatabase property.
+     * Sets the value of the database property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setAuthenticationDatabase(String value) {
-        this.authenticationDatabase = value;
+    public void setDatabase(String value) {
+        this.database = value;
+    }
+
+    /**
+     * Gets the value of the host property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getHost() {
+        return host;
+    }
+
+    /**
+     * Sets the value of the host property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setHost(String value) {
+        this.host = value;
+    }
+
+    /**
+     * Gets the value of the port property.
+     * 
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * Sets the value of the port property.
+     * 
+     */
+    public void setPort(int value) {
+        this.port = value;
     }
 
     /**
@@ -122,46 +162,6 @@ public class Mongo
      */
     public void setPassword(String value) {
         this.password = value;
-    }
-
-    /**
-     * Gets the value of the host property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getHost() {
-        return host;
-    }
-
-    /**
-     * Sets the value of the host property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setHost(String value) {
-        this.host = value;
-    }
-
-    /**
-     * Gets the value of the port property.
-     * 
-     */
-    public int getPort() {
-        return port;
-    }
-
-    /**
-     * Sets the value of the port property.
-     * 
-     */
-    public void setPort(int value) {
-        this.port = value;
     }
 
 }

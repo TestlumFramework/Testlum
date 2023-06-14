@@ -2,7 +2,7 @@ FROM maven:3.8.5-openjdk-8 as maven-build
 
 WORKDIR /testlum/
 COPY . .
-RUN mvn clean install -DskipTests -Pquality-checking
+RUN mvn clean install -DskipTests
 
 FROM openjdk:8-alpine
 

@@ -66,7 +66,6 @@ public class Native
         @XmlElement(name = "swipe", type = SwipeNative.class),
         @XmlElement(name = "webView", type = WebView.class),
         @XmlElement(name = "var", type = NativeVar.class),
-        @XmlElement(name = "webView", type = WebView.class),
         @XmlElement(name = "condition", type = UiCondition.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
@@ -104,7 +103,7 @@ public class Native
      * {@link WebView }
      * {@link NativeVar }
      * {@link UiCondition }
-     *
+     * 
      * 
      */
     public List<AbstractUiCommand> getClickOrInputOrAssert() {

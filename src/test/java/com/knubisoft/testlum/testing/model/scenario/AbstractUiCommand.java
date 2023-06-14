@@ -48,8 +48,8 @@ import javax.xml.bind.annotation.XmlType;
     CommandWithLocator.class,
     Refresh.class,
     WebVar.class,
-    NativeVar.class,
     UiCondition.class,
+    NativeVar.class,
     WebView.class,
     NavigateNative.class,
     CommandWithOptionalLocator.class

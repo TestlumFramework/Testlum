@@ -37,7 +37,7 @@ public class MongoConfiguration {
         for (Mongo mongo : integrations.getMongoIntegration().getMongo()) {
             if (mongo.isEnabled()) {
                 MongoClient mongoClient = createMongoClient(mongo);
-                MongoDatabase mongoDatabase = mongoClient.getDatabase(mongo.getAuthenticationDatabase());
+                MongoDatabase mongoDatabase = mongoClient.getDatabase(mongo.getDatabase());
                 databaseMap.put(new AliasEnv(mongo.getAlias(), env), mongoDatabase);
             }
         }
@@ -45,7 +45,7 @@ public class MongoConfiguration {
 
     private MongoClient createMongoClient(final Mongo mongo) {
         MongoCredential credential = MongoCredential.createCredential(
-                mongo.getUsername(), mongo.getAuthenticationDatabase(), mongo.getPassword().toCharArray());
+                mongo.getUsername(), mongo.getDatabase(), mongo.getPassword().toCharArray());
         ServerAddress mongoAddress = new ServerAddress(mongo.getHost(), mongo.getPort());
 
         MongoClientSettings settings = MongoClientSettings.builder()

@@ -75,9 +75,9 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         result.put("File name", fileName);
         LogUtil.logS3ActionInfo(UPLOAD_ACTION, bucket, key, fileName);
         AliasEnv aliasEnv = new AliasEnv(bucket, dependencies.getEnvironment());
-//        if (!amazonS3.get(aliasEnv).doesBucketExistV2(bucket)) {
+        if (!amazonS3.get(aliasEnv).doesBucketExistV2(bucket)) {
             amazonS3.get(aliasEnv).createBucket(bucket);
-//        }
+        }
         amazonS3.get(aliasEnv).putObject(bucket, key, file);
     }
 

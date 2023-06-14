@@ -53,6 +53,9 @@ public class ExceptionMessage {
     public static final String UNABLE_FIND_FILE_IN_ROOT_FOLDER = "Unable to find file by key [%1$s] "
             + "Initial scan folder [%2$s] with strategy recursive walk to root folder [%3$s]";
 
+    public static final String UNABLE_FIND_FOLDER_IN_ROOT_FOLDER = "Unable to find folder by key [%1$s] "
+            + "Initial scan folder [%2$s] with strategy recursive walk to root folder [%3$s]";
+
     public static final String XSDISSUE_TO_STRING =
             "XSDIssue{message='%s', lineNumber=%d, columnNumber=%d, path=%s}";
 
@@ -65,12 +68,13 @@ public class ExceptionMessage {
     public static final String UNABLE_FIND_VALUE_FOR_KEY = "Unable to find value for key %s. Available keys %s";
 
     public static final String RETHROWN_ERRORS_TEMPLATE = "Errors:%n%s";
+    public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
+    public static final String SCENARIOS_FOLDER_NOT_EXIST = "[scenarios] folder does not exist";
     public static final String PAGES_FOLDER_NOT_EXIST = "[pages] folder does not exist";
     public static final String COMPONENTS_FOLDER_NOT_EXIST = "[components] folder does not exist";
-    public static final String SCENARIOS_FOLDER_NOT_EXIST = "[scenarios] folder does not exist";
-    public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
     public static final String DATA_FOLDER_NOT_EXIST = "[data] folder does not exist";
     public static final String ENV_CONFIG_FOLDER_NOT_EXIST = "[config] folder does not exist";
+    public static final String ENV_FOLDER_NOT_EXIST = "[%s] folder does not exist";
     public static final String DUPLICATE_FILENAME = ANSI_RED + "The [%s] folder and its subfolders contain "
             + "files with duplicate filenames - [%s]. Each file should have a unique name" + ANSI_RESET;
     public static final String DUPLICATE_FOLDER_NAME = ANSI_RED + "The [%s] folder and its subfolders contain "
@@ -187,17 +191,17 @@ public class ExceptionMessage {
             + "enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
     public static final String ENVIRONMENT_MISSING_DEVICES_OR_BROWSERS = ANSI_RED + "One or more of your environments "
             + "does not have enabled <%ss> in <%s> block" + ANSI_RESET;
-    public static final String UI_CONFIG_ALIASES_NOT_DIFFER = ANSI_RED + "More than one enabled <%s> in <%s> "
-            + "block with alias <%s> was found in the config by path: %s" + ANSI_RESET;
+    public static final String UI_CONFIG_ALIASES_NOT_DIFFER = ANSI_RED + "More than one enabled <%s> was found in "
+            + "<%s> settings with alias <%s> in the config by path: %s" + ANSI_RESET;
     public static final String UI_CONFIG_ALIASES_NOT_MATCH = ANSI_RED + "Enabled <%s> in <%s> block with alias <%s> not"
             + " found or not enabled in all environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
     public static final String CONNECTION_TYPE_NOT_MATCH = ANSI_RED + "Connection type in <%s> block must be the same "
             + "in all enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
-    public static final String SAME_APPIUM_SERVER_URLS = ANSI_RED + "Appium <serverUrl> must be different for each <%s>"
-            + " block in all enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
-    public static final String BROWSERSTACK_LOGIN_NOT_CONFIGURED = ANSI_RED + "If you use <browserStack> connection, "
-            + "<browserStackLogin> block must be configured in all enabled environments (" + UI_CONFIG_FILENAME
-            + " files)" + ANSI_RESET;
+    public static final String SAME_APPIUM_SERVER_URLS = ANSI_RED + "<AppiumServer> connection url must be different "
+            +"for each <%s> settings in all enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
+    public static final String BROWSERSTACK_LOGIN_NOT_CONFIGURED = ANSI_RED + "To use the <BrowserStack> connection "
+            + "type requires <browserStackLogin> settings to be configured in all enabled environments "
+            + "(" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
     public static final String DEVICE_PLATFORMS_NOT_MATCH = ANSI_RED + "<device> in <%s> block with alias <%s> must "
             + "have the same <platformName> param in all enabled environments (" + UI_CONFIG_FILENAME + " files)"
             + ANSI_RESET;

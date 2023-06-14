@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DUPLICATE_FILENAME;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DUPLICATE_FOLDER_NAME;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ENV_FOLDER_NOT_EXIST;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -62,14 +63,17 @@ public final class FileSearcher {
                 ? fileName.substring(1) : fileName;
         File file = DATA_FOLDER_FILES.get(targetName);
         if (isNull(file)) {
-            throw new FileLinkingException(DATA_FOLDER, DATA_FOLDER, targetName);
+            throw new FileLinkingException(DATA_FOLDER, TEST_RESOURCES_FOLDER, targetName);
         }
         return file;
     }
 
     public Optional<File> searchFileFromEnvFolder(final String folder, final String fileName) {
         Map<String, File> files = ENV_FOLDERS_FILES.get(folder);
-        return Optional.ofNullable(files).map(fileMap -> fileMap.get(fileName));
+        if (isNull(files)) {
+            throw new FileLinkingException(String.format(ENV_FOLDER_NOT_EXIST, folder), ENV_FOLDER);
+        }
+        return Optional.ofNullable(files.get(fileName));
     }
 
     public Map<String, File> collectFilesFromFolder(final File folder) {

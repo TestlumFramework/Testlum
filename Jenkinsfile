@@ -103,7 +103,7 @@ pipeline {
             }
         }
     }
-    stage('run testlum') {
+    stage('run regression tests') {
         steps {
             dir("tool") {
                 sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -e TZ=Europe/Kiev -v "$(pwd)"/testlum-test-resources:/testlum/testlum-test-resources ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/testlum/testlum-test-resources/REGRESSION_TESTS_resources'

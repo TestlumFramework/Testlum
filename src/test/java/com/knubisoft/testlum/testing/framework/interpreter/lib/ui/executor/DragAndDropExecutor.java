@@ -11,6 +11,7 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -54,11 +55,12 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
                 .perform();
     }
 
+    @SneakyThrows
     public void dropFile(final WebElement target, final File source) {
         if (!source.exists() || !source.isFile()) {
             throw new DefaultFrameworkException(DRAG_AND_DROP_FILE_NOT_FOUND, source.getName());
         }
         WebElement input = (WebElement) JavascriptUtil.executeJsScript(QUERY_FOR_DRAG_AND_DROP, driver, target);
-        input.sendKeys(URI.create(source.getAbsolutePath()).getPath());
+        input.sendKeys(URI.create(source.getCanonicalPath()).getPath());
     }
 }

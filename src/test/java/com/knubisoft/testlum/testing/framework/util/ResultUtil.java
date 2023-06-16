@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.configuration.TestResourceSetting
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.Attribute;
+import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
@@ -657,5 +658,9 @@ public class ResultUtil {
         if (isNotBlank(swipeNative.getLocatorId())) {
             result.put(SWIPE_LOCATOR, swipeNative.getLocatorId());
         }
+    }
+
+    public void addAuthMetaData(final Auth auth, final CommandResult result) {
+        result.put(ENDPOINT, auth.getLoginEndpoint());
     }
 }

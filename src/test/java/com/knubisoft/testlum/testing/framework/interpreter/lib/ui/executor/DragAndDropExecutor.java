@@ -5,7 +5,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
@@ -37,7 +36,7 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         ResultUtil.addDragAndDropMetaDada(dragAndDrop, result);
         WebElement target = UiUtil.findWebElement(dependencies, dragAndDrop.getToLocatorId());
         if (StringUtils.isNotBlank(dragAndDrop.getFileName())) {
-            File source = FileSearcher.searchFileFromDir(dependencies.getFile(), dragAndDrop.getFileName());
+            File source = new File(dependencies.getFile().getParentFile().getPath(), dragAndDrop.getFileName());
             dropFile(target, source);
         } else {
             dropElement(target, UiUtil.findWebElement(dependencies, dragAndDrop.getFromLocatorId()));

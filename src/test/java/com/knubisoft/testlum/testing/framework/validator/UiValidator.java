@@ -234,28 +234,18 @@ public class UiValidator {
                                                 final List<String> envsList,
                                                 final List<?> defaultDevicesOrBrowsersList,
                                                 final List<? extends List<? extends T>> deviceOrBrowserList) {
-        List<String> defaultAliasesList = getDefaultAliasesList(defaultDevicesOrBrowsersList);
         for (int envNum = 0; envNum < envsList.size(); envNum++) {
             Set<String> aliasSet = new HashSet<>();
             for (T deviceOrBrowser : deviceOrBrowserList.get(envNum)) {
                 if (!aliasSet.add(getAlias(deviceOrBrowser))) {
                     throw new DefaultFrameworkException(UI_CONFIG_ALIASES_NOT_DIFFER, getName(deviceOrBrowser),
                             configName, getAlias(deviceOrBrowser), getConfigPath(envsList, envNum));
-                } else if (!defaultAliasesList.contains(getAlias(deviceOrBrowser))) {
+                } else if (!defaultDevicesOrBrowsersList.contains(deviceOrBrowser)) {
                     throw new DefaultFrameworkException(UI_CONFIG_ALIASES_NOT_MATCH, getName(deviceOrBrowser),
                             configName, getAlias(deviceOrBrowser));
                 }
             }
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> List<String> getDefaultAliasesList(final List<T> defaultAliasesList) {
-        return defaultAliasesList.get(0) instanceof AbstractDevice
-                ? ((List<AbstractDevice>) defaultAliasesList).stream()
-                .map(AbstractDevice::getAlias).collect(Collectors.toList())
-                : ((List<AbstractBrowser>) defaultAliasesList).stream()
-                .map(AbstractBrowser::getAlias).collect(Collectors.toList());
     }
 
     private <T> String getAlias(final T deviceOrBrowser) {
@@ -277,8 +267,10 @@ public class UiValidator {
                                         final List<? extends List<? extends AbstractDevice>> devicesList) {
         for (List<? extends AbstractDevice> devices : devicesList) {
             for (AbstractDevice device : devices) {
-                if (defaultDevicesList.stream()
-                        .anyMatch(d -> !d.getPlatformName().value().equals(device.getPlatformName().value()))) {
+                AbstractDevice defaultDevice = defaultDevicesList.stream()
+                        .filter(d -> device.getAlias().equals(d.getAlias()))
+                        .findFirst().get();
+                if (!defaultDevice.getPlatformName().value().equals(device.getPlatformName().value())) {
                     throw new DefaultFrameworkException(DEVICE_PLATFORMS_NOT_MATCH, configName, device.getAlias());
                 }
             }

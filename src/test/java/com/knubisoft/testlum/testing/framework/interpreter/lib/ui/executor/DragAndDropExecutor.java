@@ -58,6 +58,6 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
             throw new DefaultFrameworkException(DRAG_AND_DROP_FILE_NOT_FOUND, source.getName());
         }
         WebElement input = (WebElement) JavascriptUtil.executeJsScript(QUERY_FOR_DRAG_AND_DROP, driver, target);
-        input.sendKeys(source.getAbsolutePath());
+        input.sendKeys(new File(source.getAbsolutePath()).getAbsolutePath());
     }
 }

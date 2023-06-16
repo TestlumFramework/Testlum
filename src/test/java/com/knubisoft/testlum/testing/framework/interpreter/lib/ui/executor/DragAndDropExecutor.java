@@ -17,6 +17,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
 import java.io.File;
+import java.net.URI;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DRAG_AND_DROP_FILE_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.JavascriptConstant.QUERY_FOR_DRAG_AND_DROP;
@@ -58,6 +59,6 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
             throw new DefaultFrameworkException(DRAG_AND_DROP_FILE_NOT_FOUND, source.getName());
         }
         WebElement input = (WebElement) JavascriptUtil.executeJsScript(QUERY_FOR_DRAG_AND_DROP, driver, target);
-        input.sendKeys(new File(source.getAbsolutePath()).getAbsolutePath());
+        input.sendKeys(URI.create(source.getAbsolutePath()).getPath());
     }
 }

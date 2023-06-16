@@ -198,7 +198,7 @@ public class ExceptionMessage {
     public static final String CONNECTION_TYPE_NOT_MATCH = ANSI_RED + "Connection type in <%s> block must be the same "
             + "in all enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
     public static final String SAME_APPIUM_SERVER_URLS = ANSI_RED + "<AppiumServer> connection url must be different "
-            +"for each <%s> settings in all enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
+            + "for each <%s> settings in all enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
     public static final String BROWSERSTACK_LOGIN_NOT_CONFIGURED = ANSI_RED + "To use the <BrowserStack> connection "
             + "type requires <browserStackLogin> settings to be configured in all enabled environments "
             + "(" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;

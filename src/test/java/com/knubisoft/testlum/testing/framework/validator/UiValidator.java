@@ -55,9 +55,9 @@ public class UiValidator {
 
     private static final String DEVICE = "device";
     private static final String BROWSER = "browser";
-    private final Map<String, Map<UiConfigPredicate, UiConfigToUiSettings>> UI_CONFIG_METHOD_MAP;
-    private final Map<String, Map<UiConfigPredicate, UiConfigToBaseurl>> BASE_URL_METHOD_MAP;
-    private final Map<String, Map<UiConfigPredicate, UiConfigToConnectionType>> CONNECTION_METHOD_MAP;
+    private final Map<String, Map<UiConfigPredicate, UiConfigToUiSettings>> uiConfigMethodMap;
+    private final Map<String, Map<UiConfigPredicate, UiConfigToBaseurl>> baseUrlMethodMap;
+    private final Map<String, Map<UiConfigPredicate, UiConfigToConnectionType>> connectionMethodMap;
 
     public UiValidator() {
         final Map<String, Map<UiConfigPredicate, UiConfigToUiSettings>> configMethodMap = new HashMap<>();
@@ -67,21 +67,21 @@ public class UiValidator {
                 && c.getNative().isEnabled(), UiConfig::getNative));
         configMethodMap.put(MOBILE_BROWSER.name(), singletonMap(c -> nonNull(c.getMobilebrowser())
                 && c.getMobilebrowser().isEnabled(), UiConfig::getMobilebrowser));
-        UI_CONFIG_METHOD_MAP = Collections.unmodifiableMap(configMethodMap);
+        uiConfigMethodMap = Collections.unmodifiableMap(configMethodMap);
 
         final Map<String, Map<UiConfigPredicate, UiConfigToBaseurl>> baseUrlMethodMap = new HashMap<>();
         baseUrlMethodMap.put(WEB.name(), singletonMap(c -> nonNull(c.getWeb())
                 && c.getWeb().isEnabled(), c -> c.getWeb().getBaseUrl()));
         baseUrlMethodMap.put(MOBILE_BROWSER.name(), singletonMap(c -> nonNull(c.getMobilebrowser())
                 && c.getMobilebrowser().isEnabled(), c -> c.getMobilebrowser().getBaseUrl()));
-        BASE_URL_METHOD_MAP = Collections.unmodifiableMap(baseUrlMethodMap);
+        this.baseUrlMethodMap = Collections.unmodifiableMap(baseUrlMethodMap);
 
         final Map<String, Map<UiConfigPredicate, UiConfigToConnectionType>> cTypeMethodMap = new HashMap<>();
         cTypeMethodMap.put(NATIVE.name(), singletonMap(c -> nonNull(c.getNative())
                 && c.getNative().isEnabled(), c -> c.getNative().getConnection()));
         cTypeMethodMap.put(MOBILE_BROWSER.name(), singletonMap(c -> nonNull(c.getMobilebrowser())
                 && c.getMobilebrowser().isEnabled(), c -> c.getMobilebrowser().getConnection()));
-        CONNECTION_METHOD_MAP = Collections.unmodifiableMap(cTypeMethodMap);
+        connectionMethodMap = Collections.unmodifiableMap(cTypeMethodMap);
     }
 
     public void validateUiConfig(final Map<String, UiConfig> uiConfigMap) {
@@ -96,7 +96,7 @@ public class UiValidator {
     }
 
     private void validateNativeOrMobileOrWebPresence(final int envNum, final List<UiConfig> uiConfigs) {
-        UI_CONFIG_METHOD_MAP.forEach((nativeOrMobileOrWebName, uiConfigMap) ->
+        uiConfigMethodMap.forEach((nativeOrMobileOrWebName, uiConfigMap) ->
                 uiConfigMap.forEach((nonNullCheck, uiConfigToNativeOrMobileOrWebMethod) -> {
                     List<?> nativeOrMobileOrWebList = uiConfigs.stream()
                             .filter(nonNullCheck)
@@ -110,7 +110,7 @@ public class UiValidator {
     }
 
     private void validateBaseUrl(final int envNum, final List<UiConfig> uiConfig) {
-        BASE_URL_METHOD_MAP.forEach((mobileOrWebConfigName, urlMap) ->
+        baseUrlMethodMap.forEach((mobileOrWebConfigName, urlMap) ->
                 urlMap.forEach((nonNullCheck, baseUrlMethod) -> {
                     List<String> baseUrlList = uiConfig.stream()
                             .filter(nonNullCheck)
@@ -124,7 +124,7 @@ public class UiValidator {
     }
 
     private void validateConnection(final List<UiConfig> uiConfigs) {
-        CONNECTION_METHOD_MAP.forEach((mobileOrNativeConfigName, connectionTypeMap) ->
+        connectionMethodMap.forEach((mobileOrNativeConfigName, connectionTypeMap) ->
                 connectionTypeMap.forEach((nonNullCheck, connectionTypeMethod) -> {
                     List<ConnectionType> cTypeList = uiConfigs.stream()
                             .filter(nonNullCheck)
@@ -169,7 +169,7 @@ public class UiValidator {
     }
 
     private void validateDevicesAndBrowsers(final List<String> envList, final List<UiConfig> uiConfigs) {
-        UI_CONFIG_METHOD_MAP.forEach((nativeOrMobileOrWeb, configMap) ->
+        uiConfigMethodMap.forEach((nativeOrMobileOrWeb, configMap) ->
                 configMap.forEach((nonNullCheck, configMethod) -> {
                     List<List<?>> deviceOrBrowserList = getDevicesOrBrowsers(uiConfigs, nonNullCheck, configMethod);
                     if (!deviceOrBrowserList.isEmpty() && deviceOrBrowserList.size() != envList.size()) {
@@ -231,18 +231,18 @@ public class UiValidator {
                                             final List<?> defaultDeviceOrBrowserList,
                                             final List<List<?>> deviceOrBrowserList) {
         List<String> defaultAliasesList = getDefaultAliasesList(defaultDeviceOrBrowserList);
-        IntStream.range(0, envList.size()).forEach(envNum -> {
-            Set<String> aliasSet = new HashSet<>();
-            deviceOrBrowserList.get(envNum).forEach(deviceOrBrowser -> {
-                if (!aliasSet.add(getAlias(deviceOrBrowser))) {
-                    throw new DefaultFrameworkException(UI_CONFIG_ALIASES_NOT_DIFFER, getName(deviceOrBrowser),
-                            configName, getAlias(deviceOrBrowser), getConfigPath(envList.get(envNum)));
-                } else if (!defaultAliasesList.contains(getAlias(deviceOrBrowser))) {
-                    throw new DefaultFrameworkException(UI_CONFIG_ALIASES_NOT_MATCH, getName(deviceOrBrowser),
-                            configName, getAlias(deviceOrBrowser));
-                }
-            });
-        });
+        Set<String> aliasSet = new HashSet<>();
+        IntStream.range(0, envList.size()).forEach(envNum ->
+                deviceOrBrowserList.get(envNum).forEach(deviceOrBrowser -> {
+                    if (!aliasSet.add(getAlias(deviceOrBrowser))) {
+                        throw new DefaultFrameworkException(UI_CONFIG_ALIASES_NOT_DIFFER, getName(deviceOrBrowser),
+                                configName, getAlias(deviceOrBrowser), getConfigPath(envList.get(envNum)));
+                    } else if (!defaultAliasesList.contains(getAlias(deviceOrBrowser))) {
+                        throw new DefaultFrameworkException(UI_CONFIG_ALIASES_NOT_MATCH, getName(deviceOrBrowser),
+                                configName, getAlias(deviceOrBrowser));
+                    }
+                })
+        );
     }
 
     @SuppressWarnings("unchecked")

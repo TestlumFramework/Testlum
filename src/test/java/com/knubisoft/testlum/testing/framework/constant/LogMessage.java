@@ -36,7 +36,9 @@ public final class LogMessage {
     public static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
     public static final String REPEAT_FINISHED_LOG = ANSI_CYAN + "------- Repeat is finished -------" + ANSI_RESET;
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
-    public static final String CONDITION_LOG = format(TABLE_FORMAT, "Condition", "<{}> : {}");
+    public static final String COMMAND_SKIPPED_ON_CONDITION_LOG = ANSI_ORANGE
+            + "Command was skipped because of the condition" + ANSI_RESET;
+    public static final String CONDITION_LOG = format(TABLE_FORMAT, "Condition", "<{}> = {}");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
     public static final String QUERY = format(TABLE_FORMAT, "Query", "{}");
     public static final String REDIS_QUERY = format(TABLE_FORMAT, "Query", "{} {}");

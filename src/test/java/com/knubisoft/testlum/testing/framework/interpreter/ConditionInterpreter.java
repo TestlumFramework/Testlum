@@ -25,8 +25,7 @@ public class ConditionInterpreter extends AbstractInterpreter<Condition> {
     @Override
     protected void acceptImpl(final Condition condition, final CommandResult result) {
         try {
-            String injectedSpel = inject(condition.getSpel());
-            boolean conditionResult = conditionHelper.getConditionFromSpel(injectedSpel, condition.getName(), result);
+            boolean conditionResult = conditionHelper.parseFromSpel(condition.getSpel(), condition.getName(), result);
             dependencies.getScenarioContext().setCondition(condition.getName(), conditionResult);
         } catch (Exception e) {
             log.info(FAILED_CONDITION_LOG, condition.getName(), condition.getSpel());

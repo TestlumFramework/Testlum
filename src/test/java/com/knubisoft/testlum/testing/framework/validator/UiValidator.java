@@ -41,8 +41,8 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DEVICE_PLATFORMS_NOT_MATCH;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ENVIRONMENT_MISSING_DEVICES_OR_BROWSERS;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SAME_APPIUM_SERVER_URLS;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UI_CONFIG_ALIASES_NOT_DIFFER;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UI_CONFIG_ALIASES_NOT_MATCH;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UI_ALIASES_NOT_DIFFER;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UI_ALIASES_NOT_MATCH;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UI_CONFIG_NOT_PRESENT_IN_ALL_ENVS;
 import static com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType.MOBILE_BROWSER;
 import static com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType.NATIVE;
@@ -95,57 +95,48 @@ public class UiValidator {
     }
 
     private void validateNativeOrMobileOrWebPresence(final int envNum, final List<UiConfig> uiConfigList) {
-        for (Map.Entry<String, Map<UiConfigPredicate, Function<UiConfig, ?>>> entry : UI_CONFIG_METHOD_MAP.entrySet()) {
-            String nativeOrMobileOrWebName = entry.getKey();
-            Map<UiConfigPredicate, Function<UiConfig, ?>> uiConfigsMap = entry.getValue();
-            uiConfigsMap.forEach((nonNullPredicate, uiConfigToNativeOrMobileOrWebMethod) -> {
-                List<?> nativeOrMobileOrWebList = uiConfigList.stream()
-                        .filter(nonNullPredicate)
-                        .map(uiConfigToNativeOrMobileOrWebMethod)
-                        .collect(Collectors.toList());
-                if (!nativeOrMobileOrWebList.isEmpty() && nativeOrMobileOrWebList.size() != envNum) {
-                    throw new DefaultFrameworkException(UI_CONFIG_NOT_PRESENT_IN_ALL_ENVS, nativeOrMobileOrWebName);
-                }
-            });
-        }
+        UI_CONFIG_METHOD_MAP.forEach((nativeOrMobileOrWebName, uiConfigsMap) ->
+                uiConfigsMap.forEach((nonNullPredicate, uiConfigToNativeOrMobileOrWebMethod) -> {
+                    List<?> nativeOrMobileOrWebList = uiConfigList.stream()
+                            .filter(nonNullPredicate)
+                            .map(uiConfigToNativeOrMobileOrWebMethod)
+                            .collect(Collectors.toList());
+                    if (!nativeOrMobileOrWebList.isEmpty() && nativeOrMobileOrWebList.size() != envNum) {
+                        throw new DefaultFrameworkException(UI_CONFIG_NOT_PRESENT_IN_ALL_ENVS, nativeOrMobileOrWebName);
+                    }
+                }));
     }
 
-    private void validateBaseUrl(final int envNum, final List<UiConfig> uiConfig) {
-        for (Map.Entry<String, Map<UiConfigPredicate, UiConfigToBaseurl>> entry : BASE_URL_METHOD_MAP.entrySet()) {
-            String mobileOrWebConfigName = entry.getKey();
-            Map<UiConfigPredicate, UiConfigToBaseurl> urlMap = entry.getValue();
-            urlMap.forEach((nonNullPredicate, baseUrlMethod) -> {
-                List<String> baseUrlList = uiConfig.stream()
-                        .filter(nonNullPredicate)
-                        .map(baseUrlMethod)
-                        .collect(Collectors.toList());
-                if (!baseUrlList.isEmpty() && baseUrlList.stream().distinct().count() != envNum) {
-                    throw new DefaultFrameworkException(BASE_URLS_ARE_SAME, mobileOrWebConfigName);
-                }
-            });
-        }
+    private void validateBaseUrl(final int envNum, final List<UiConfig> uiConfigList) {
+        BASE_URL_METHOD_MAP.forEach((mobileOrWebConfigName, baseUrlMap) ->
+                baseUrlMap.forEach((nonNullPredicate, baseUrlMethod) -> {
+                    List<String> baseUrlList = uiConfigList.stream()
+                            .filter(nonNullPredicate)
+                            .map(baseUrlMethod)
+                            .collect(Collectors.toList());
+                    if (!baseUrlList.isEmpty() && baseUrlList.stream().distinct().count() != envNum) {
+                        throw new DefaultFrameworkException(BASE_URLS_ARE_SAME, mobileOrWebConfigName);
+                    }
+                }));
     }
 
     private void validateConnection(final List<UiConfig> uiConfigList) {
-        for (Map.Entry<String, Map<UiConfigPredicate, UiConfigToConnectionType>> e : CONNECTION_METHOD_MAP.entrySet()) {
-            String mobileOrNativeConfigName = e.getKey();
-            Map<UiConfigPredicate, UiConfigToConnectionType> connectionTypeMap = e.getValue();
-            connectionTypeMap.forEach((nonNullPredicate, connectionTypeMethod) -> {
-                List<ConnectionType> connectionTypeList = uiConfigList.stream()
-                        .filter(nonNullPredicate)
-                        .map(connectionTypeMethod)
-                        .collect(Collectors.toList());
-                checkAppiumAndBrowserStackConnection(mobileOrNativeConfigName, uiConfigList, connectionTypeList);
-            });
-        }
+        CONNECTION_METHOD_MAP.forEach((mobileOrNativeConfigName, connectionTypeMap) ->
+                connectionTypeMap.forEach((nonNullPredicate, connectionTypeMethod) -> {
+                    List<ConnectionType> connectionTypeList = uiConfigList.stream()
+                            .filter(nonNullPredicate)
+                            .map(connectionTypeMethod)
+                            .collect(Collectors.toList());
+                    checkConnectionType(mobileOrNativeConfigName, uiConfigList, connectionTypeList);
+                }));
     }
 
-    private void checkAppiumAndBrowserStackConnection(final String mobileOrNativeConfigName,
-                                                      final List<UiConfig> uiConfigList,
-                                                      final List<ConnectionType> cTList) {
-        if (cTList.stream().allMatch(connectionType -> nonNull(connectionType.getAppiumServer()))) {
-            checkAppiumServerUrl(mobileOrNativeConfigName, cTList);
-        } else if (cTList.stream().allMatch(connectionType -> nonNull(connectionType.getBrowserStack()))) {
+    private void checkConnectionType(final String mobileOrNativeConfigName,
+                                     final List<UiConfig> uiConfigList,
+                                     final List<ConnectionType> connectionTypeList) {
+        if (connectionTypeList.stream().allMatch(connectionType -> nonNull(connectionType.getAppiumServer()))) {
+            checkAppiumServerUrl(mobileOrNativeConfigName, connectionTypeList);
+        } else if (connectionTypeList.stream().allMatch(connectionType -> nonNull(connectionType.getBrowserStack()))) {
             checkBrowserStackLogin(uiConfigList);
         } else {
             throw new DefaultFrameworkException(CONNECTION_TYPE_NOT_MATCH, mobileOrNativeConfigName);
@@ -173,29 +164,29 @@ public class UiValidator {
         }
     }
 
-    private void validateDevicesAndBrowsers(final List<String> envList, final List<UiConfig> uiConfigs) {
+    private void validateDevicesAndBrowsers(final List<String> envList, final List<UiConfig> uiConfigList) {
         for (Map.Entry<String, Map<UiConfigPredicate, Function<UiConfig, ?>>> entry : UI_CONFIG_METHOD_MAP.entrySet()) {
             String nativeOrMobileOrWebName = entry.getKey();
-            Map<UiConfigPredicate, Function<UiConfig, ?>> configMap = entry.getValue();
-            configMap.forEach((nullCheck, configMethod) -> {
-                List<? extends List<?>> deviceOrBrowserList = getDevicesOrBrowsers(uiConfigs, nullCheck, configMethod);
-                if (!deviceOrBrowserList.isEmpty() && deviceOrBrowserList.size() != envList.size()) {
+            entry.getValue().forEach((notNullPredicate, getConfigMethod) -> {
+                List<? extends List<?>> deviceOrBrowserLists =
+                        getDevicesOrBrowsers(uiConfigList, notNullPredicate, getConfigMethod);
+                if (!deviceOrBrowserLists.isEmpty() && deviceOrBrowserLists.size() != envList.size()) {
                     throw new DefaultFrameworkException(ENVIRONMENT_MISSING_DEVICES_OR_BROWSERS,
-                            getName(deviceOrBrowserList.get(0).get(0)), nativeOrMobileOrWebName);
-                } else if (!deviceOrBrowserList.isEmpty()) {
-                    devicesAndBrowsersValidation(nativeOrMobileOrWebName, envList, uiConfigs, deviceOrBrowserList);
+                            deviceOrBrowserLists.get(0).get(0).getClass().getSimpleName(), nativeOrMobileOrWebName);
+                } else if (!deviceOrBrowserLists.isEmpty()) {
+                    devicesAndBrowsersValidation(nativeOrMobileOrWebName, envList, uiConfigList, deviceOrBrowserLists);
                 }
             });
         }
     }
 
-    private List<? extends List<?>> getDevicesOrBrowsers(final List<UiConfig> uiConfigs,
+    private List<? extends List<?>> getDevicesOrBrowsers(final List<UiConfig> uiConfigList,
                                                          final UiConfigPredicate nonNullPredicate,
-                                                         final Function<UiConfig, ?> configMethod) {
-        return uiConfigs.stream()
+                                                         final Function<UiConfig, ?> getConfigMethod) {
+        return uiConfigList.stream()
                 .filter(nonNullPredicate)
-                .map(configMethod)
-                .map(config -> getDeviceOrBrowserList(config).stream()
+                .map(getConfigMethod)
+                .map(webOrNativeOrMobileConfig -> getDeviceOrBrowserList(webOrNativeOrMobileConfig).stream()
                         .filter(this::isDeviceOrBrowserEnabled)
                         .collect(Collectors.toList()))
                 .filter(deviceOrBrowserList -> !deviceOrBrowserList.isEmpty())
@@ -216,69 +207,83 @@ public class UiValidator {
     @SuppressWarnings("unchecked")
     private void devicesAndBrowsersValidation(final String configName,
                                               final List<String> envList,
-                                              final List<UiConfig> uiConfigs,
-                                              final List<? extends List<?>> deviceOrBrowserList) {
-        List<?> defaultDevicesOrBrowsers = deviceOrBrowserList.stream()
+                                              final List<UiConfig> uiConfigList,
+                                              final List<? extends List<?>> deviceOrBrowserLists) {
+        List<?> defaultDeviceOrBrowserList = deviceOrBrowserLists.stream()
                 .min(Comparator.comparingInt((List<?> devicesOrdBrowsers) -> devicesOrdBrowsers.size())).get();
-        checkAliasesDifferAndMatch(configName, envList, defaultDevicesOrBrowsers, deviceOrBrowserList);
-        if (configName.equals(NATIVE.name()) || configName.equals(MOBILE_BROWSER.name())) {
-            List<? extends AbstractDevice> defaultDevices = (List<? extends AbstractDevice>) defaultDevicesOrBrowsers;
-            List<? extends List<? extends AbstractDevice>> deviceList =
-                    (List<? extends List<? extends AbstractDevice>>) deviceOrBrowserList;
-            checkPlatformNameMatch(configName, defaultDevices, deviceList);
-            validateDeviceCapabilities(configName, envList, uiConfigs, defaultDevices, deviceList);
+        if (configName.equals(WEB.name())) {
+            Map<String, String> defaultBrowserMap =
+                    ((List<? extends AbstractBrowser>) defaultDeviceOrBrowserList).stream()
+                            .collect(Collectors.toMap(AbstractBrowser::getAlias, b -> b.getClass().getSimpleName()));
+            checkBrowserAliasesDifferAndMatch(configName, envList, defaultBrowserMap,
+                    (List<? extends List<? extends AbstractBrowser>>) deviceOrBrowserLists);
+        } else {
+            validateDevices(configName, envList, uiConfigList, defaultDeviceOrBrowserList, deviceOrBrowserLists);
         }
     }
 
-    private <T> void checkAliasesDifferAndMatch(final String configName,
-                                                final List<String> envsList,
-                                                final List<?> defaultDevicesOrBrowsersList,
-                                                final List<? extends List<? extends T>> deviceOrBrowserList) {
-        List<String> defaultAliasesList = getDefaultAliasesList(defaultDevicesOrBrowsersList);
-        for (int envNum = 0; envNum < envsList.size(); envNum++) {
+    private void checkBrowserAliasesDifferAndMatch(final String configName,
+                                                   final List<String> envList,
+                                                   final Map<String, String> defaultBrowserMap,
+                                                   final List<? extends List<? extends AbstractBrowser>> browserLists) {
+        for (int envNum = 0; envNum < envList.size(); envNum++) {
             Set<String> aliasSet = new HashSet<>();
-            for (T deviceOrBrowser : deviceOrBrowserList.get(envNum)) {
-                if (!aliasSet.add(getAlias(deviceOrBrowser))) {
-                    throw new DefaultFrameworkException(UI_CONFIG_ALIASES_NOT_DIFFER, getName(deviceOrBrowser),
-                            configName, getAlias(deviceOrBrowser), getConfigPath(envsList, envNum));
-                } else if (!defaultAliasesList.contains(getAlias(deviceOrBrowser))) {
-                    throw new DefaultFrameworkException(UI_CONFIG_ALIASES_NOT_MATCH, getName(deviceOrBrowser),
-                            configName, getAlias(deviceOrBrowser));
+            for (AbstractBrowser browser : browserLists.get(envNum)) {
+                if (!aliasSet.add(browser.getAlias())) {
+                    throw new DefaultFrameworkException(UI_ALIASES_NOT_DIFFER, BROWSER,
+                            configName, browser.getAlias(), getConfigPath(envList, envNum));
+                } else if (!defaultBrowserMap.containsKey(browser.getAlias())
+                        || !defaultBrowserMap.get(browser.getAlias()).equals(browser.getClass().getSimpleName())) {
+                    throw new DefaultFrameworkException(UI_ALIASES_NOT_MATCH,
+                            browser.getClass().getSimpleName(), BROWSER, configName, browser.getAlias());
                 }
             }
         }
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> List<String> getDefaultAliasesList(final List<T> defaultAliasesList) {
-        return defaultAliasesList.get(0) instanceof AbstractDevice
-                ? ((List<AbstractDevice>) defaultAliasesList).stream()
-                .map(AbstractDevice::getAlias).collect(Collectors.toList())
-                : ((List<AbstractBrowser>) defaultAliasesList).stream()
-                .map(AbstractBrowser::getAlias).collect(Collectors.toList());
+    private void validateDevices(final String configName,
+                                 final List<String> envList,
+                                 final List<UiConfig> uiConfigList,
+                                 final List<?> defaultDeviceOrBrowserList,
+                                 final List<? extends List<?>> deviceOrBrowserLists) {
+        List<? extends AbstractDevice> defaultDeviceList = (List<? extends AbstractDevice>) defaultDeviceOrBrowserList;
+        List<? extends List<? extends AbstractDevice>> deviceLists =
+                (List<? extends List<? extends AbstractDevice>>) deviceOrBrowserLists;
+        checkDeviceAliasesDifferAndMatch(configName, envList, defaultDeviceList, deviceLists);
+        checkPlatformNameMatch(configName, defaultDeviceList, deviceLists);
+        validateDeviceCapabilities(configName, envList, uiConfigList, defaultDeviceList, deviceLists);
     }
 
-    private <T> String getAlias(final T deviceOrBrowser) {
-        return deviceOrBrowser instanceof AbstractDevice
-                ? ((AbstractDevice) deviceOrBrowser).getAlias() : ((AbstractBrowser) deviceOrBrowser).getAlias();
-    }
-
-    private <T> String getName(final T deviceOrBrowser) {
-        return deviceOrBrowser instanceof AbstractDevice ? DEVICE : BROWSER;
-    }
-
-    private String getConfigPath(final List<String> envsList, final int envNum) {
-        return FileSearcher.searchFileFromEnvFolder(envsList.get(envNum), UI_CONFIG_FILENAME).get().getPath()
-                .replace(TestResourceSettings.getInstance().getTestResourcesFolder().getPath(), StringUtils.EMPTY);
+    @SuppressWarnings("unchecked")
+    private void checkDeviceAliasesDifferAndMatch(final String configName,
+                                                  final List<String> envList,
+                                                  final List<? extends AbstractDevice> defaultDevicesList,
+                                                  final List<? extends List<? extends AbstractDevice>> deviceLists) {
+        List<String> defaultAliasList = ((List<AbstractDevice>) defaultDevicesList).stream()
+                .map(AbstractDevice::getAlias).collect(Collectors.toList());
+        for (int envNum = 0; envNum < envList.size(); envNum++) {
+            Set<String> aliasSet = new HashSet<>();
+            for (AbstractDevice device : deviceLists.get(envNum)) {
+                if (!aliasSet.add(device.getAlias())) {
+                    throw new DefaultFrameworkException(UI_ALIASES_NOT_DIFFER, DEVICE,
+                            configName, device.getAlias(), getConfigPath(envList, envNum));
+                } else if (!defaultAliasList.contains(device.getAlias())) {
+                    throw new DefaultFrameworkException(UI_ALIASES_NOT_MATCH, DEVICE, configName, device.getAlias());
+                }
+            }
+        }
     }
 
     private void checkPlatformNameMatch(final String configName,
-                                        final List<? extends AbstractDevice> defaultDevicesList,
-                                        final List<? extends List<? extends AbstractDevice>> devicesList) {
-        for (List<? extends AbstractDevice> devices : devicesList) {
+                                        final List<? extends AbstractDevice> defaultDeviceList,
+                                        final List<? extends List<? extends AbstractDevice>> devicesLists) {
+        for (List<? extends AbstractDevice> devices : devicesLists) {
             for (AbstractDevice device : devices) {
-                if (defaultDevicesList.stream()
-                        .anyMatch(d -> !d.getPlatformName().value().equals(device.getPlatformName().value()))) {
+                AbstractDevice defaultDevice = defaultDeviceList.stream()
+                        .filter(d -> device.getAlias().equals(d.getAlias()))
+                        .findFirst().get();
+                if (!defaultDevice.getPlatformName().value().equals(device.getPlatformName().value())) {
                     throw new DefaultFrameworkException(DEVICE_PLATFORMS_NOT_MATCH, configName, device.getAlias());
                 }
             }
@@ -289,22 +294,22 @@ public class UiValidator {
                                             final List<String> envList,
                                             final List<UiConfig> uiConfigs,
                                             final List<? extends AbstractDevice> defaultDeviceList,
-                                            final List<? extends List<? extends AbstractDevice>> deviceList) {
+                                            final List<? extends List<? extends AbstractDevice>> deviceLists) {
         if (configName.equals(MOBILE_BROWSER.name())) {
-            List<List<MobilebrowserDevice>> mobilbrowserDevices = getAllMobilbrowserDevices(deviceList);
+            List<List<MobilebrowserDevice>> mobilbrowserDevices = getAllMobilbrowserDevices(deviceLists);
             Map<String, MobilebrowserDevice> defaultMobileDeviceMap = getMobilebrowserDeviceMap(defaultDeviceList);
             checkMobilebrowserCapabilities(configName, envList, uiConfigs, mobilbrowserDevices, defaultMobileDeviceMap);
         }
         if (configName.equals(NATIVE.name())) {
-            List<List<NativeDevice>> nativeDevices = getAllNativeDevices(deviceList);
+            List<List<NativeDevice>> nativeDevices = getAllNativeDevices(deviceLists);
             Map<String, NativeDevice> defaultNativeDeviceMap = getDefaultNativeDeviceMap(defaultDeviceList);
             checkNativeCapabilities(configName, envList, uiConfigs, nativeDevices, defaultNativeDeviceMap);
         }
     }
 
     private List<List<MobilebrowserDevice>> getAllMobilbrowserDevices(
-            final List<? extends List<? extends AbstractDevice>> deviceList) {
-        return deviceList.stream()
+            final List<? extends List<? extends AbstractDevice>> deviceLists) {
+        return deviceLists.stream()
                 .map(a -> a.stream()
                         .map(device -> (MobilebrowserDevice) device)
                         .collect(Collectors.toList()))
@@ -312,24 +317,24 @@ public class UiValidator {
     }
 
     private Map<String, MobilebrowserDevice> getMobilebrowserDeviceMap(
-            final List<? extends AbstractDevice> defaultDevices) {
-        return defaultDevices.stream()
+            final List<? extends AbstractDevice> defaultDeviceList) {
+        return defaultDeviceList.stream()
                 .map(device -> (MobilebrowserDevice) device)
                 .collect(Collectors.toMap(AbstractDevice::getAlias, mobilebrowserDevice -> mobilebrowserDevice));
     }
 
     private void checkMobilebrowserCapabilities(final String configName,
                                                 final List<String> envList,
-                                                final List<UiConfig> uiConfigs,
-                                                final List<List<MobilebrowserDevice>> mobilebrowserList,
-                                                final Map<String, MobilebrowserDevice> mBDeviceDefaultMap) {
-        for (int envNum = 0; envNum < uiConfigs.size(); envNum++) {
-            for (MobilebrowserDevice mobileDevice : mobilebrowserList.get(envNum)) {
-                ConnectionType connectionType = uiConfigs.get(envNum).getMobilebrowser().getConnection();
-                MobilebrowserDevice defaultDevice = mBDeviceDefaultMap.get(mobileDevice.getAlias());
+                                                final List<UiConfig> uiConfigList,
+                                                final List<List<MobilebrowserDevice>> mobilebrowserDeviceLists,
+                                                final Map<String, MobilebrowserDevice> mobilebrowserDeviceDefaultMap) {
+        for (int envNum = 0; envNum < uiConfigList.size(); envNum++) {
+            for (MobilebrowserDevice mobileDevice : mobilebrowserDeviceLists.get(envNum)) {
+                ConnectionType connectionType = uiConfigList.get(envNum).getMobilebrowser().getConnection();
+                MobilebrowserDevice defaultDevice = mobilebrowserDeviceDefaultMap.get(mobileDevice.getAlias());
                 checkMobilebrowserAppiumCapabilities(envNum, configName, connectionType,
                         envList, mobileDevice, defaultDevice.getAppiumCapabilities());
-                checkMobilebrowserBrowserStackCapapabilities(envNum, configName, connectionType,
+                checkMobilebrowserBrowserStackCapabilities(envNum, configName, connectionType,
                         envList, mobileDevice, defaultDevice.getBrowserStackCapabilities());
             }
         }
@@ -337,45 +342,44 @@ public class UiValidator {
 
     private void checkMobilebrowserAppiumCapabilities(final int envNum,
                                                       final String configName,
-                                                      final ConnectionType cT,
+                                                      final ConnectionType connectionType,
                                                       final List<String> envList,
                                                       final MobilebrowserDevice device,
                                                       final AppiumCapabilities defaultAppiumCapabilities) {
-        if (nonNull(cT.getAppiumServer()) && Objects.isNull(device.getAppiumCapabilities())) {
+        if (nonNull(connectionType.getAppiumServer()) && Objects.isNull(device.getAppiumCapabilities())) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envList, envNum));
-        } else if (nonNull(cT.getAppiumServer())
+        } else if (nonNull(connectionType.getAppiumServer())
                 && (isNull(device.getAppiumCapabilities()) || isNull(defaultAppiumCapabilities))) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_IN_ALL_ENVS, device.getAlias(), configName);
         }
     }
 
-    private void checkMobilebrowserBrowserStackCapapabilities(final int envNum,
-                                                              final String configName,
-                                                              final ConnectionType cT,
-                                                              final List<String> envList,
-                                                              final MobilebrowserDevice device,
-                                                              final BrowserStackCapabilities defaultBSCapabilities) {
-        if (nonNull(cT.getBrowserStack()) && Objects.isNull(device.getBrowserStackCapabilities())) {
+    private void checkMobilebrowserBrowserStackCapabilities(final int envNum,
+                                                            final String configName,
+                                                            final ConnectionType connectionType,
+                                                            final List<String> envList,
+                                                            final MobilebrowserDevice device,
+                                                            final BrowserStackCapabilities defaultBSCapabilities) {
+        if (nonNull(connectionType.getBrowserStack()) && Objects.isNull(device.getBrowserStackCapabilities())) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envList, envNum));
-        } else if (nonNull(cT.getBrowserStack())
+        } else if (nonNull(connectionType.getBrowserStack())
                 && (isNull(device.getBrowserStackCapabilities()) || isNull(defaultBSCapabilities))) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_IN_ALL_ENVS, device.getAlias(), configName);
         }
     }
 
     private List<List<NativeDevice>> getAllNativeDevices(
-            final List<? extends List<? extends AbstractDevice>> deviceList) {
-        return deviceList.stream()
+            final List<? extends List<? extends AbstractDevice>> deviceLists) {
+        return deviceLists.stream()
                 .map(a -> a.stream()
                         .map(device -> (NativeDevice) device)
                         .collect(Collectors.toList()))
                 .collect(Collectors.toList());
     }
 
-    private Map<String, NativeDevice> getDefaultNativeDeviceMap(
-            final List<? extends AbstractDevice> defaultDevices) {
+    private Map<String, NativeDevice> getDefaultNativeDeviceMap(final List<? extends AbstractDevice> defaultDevices) {
         return defaultDevices.stream()
                 .map(device -> (NativeDevice) device)
                 .collect(Collectors.toMap(AbstractDevice::getAlias, nativeDevice -> nativeDevice));
@@ -383,12 +387,12 @@ public class UiValidator {
 
     private void checkNativeCapabilities(final String configName,
                                          final List<String> envList,
-                                         final List<UiConfig> uiConfigs,
-                                         final List<List<NativeDevice>> nativeList,
+                                         final List<UiConfig> uiConfigList,
+                                         final List<List<NativeDevice>> nativeLists,
                                          final Map<String, NativeDevice> nativeDeviceDefaultMap) {
-        for (int envNum = 0; envNum < uiConfigs.size(); envNum++) {
-            for (NativeDevice nativeDevice : nativeList.get(envNum)) {
-                ConnectionType cT = uiConfigs.get(envNum).getNative().getConnection();
+        for (int envNum = 0; envNum < uiConfigList.size(); envNum++) {
+            for (NativeDevice nativeDevice : nativeLists.get(envNum)) {
+                ConnectionType cT = uiConfigList.get(envNum).getNative().getConnection();
                 NativeDevice defaultDevice = nativeDeviceDefaultMap.get(nativeDevice.getAlias());
                 AppiumNativeCapabilities appiumCapabilities = defaultDevice.getAppiumCapabilities();
                 checkNativeAppiumCapabilities(envNum, configName, cT, envList, nativeDevice, appiumCapabilities);
@@ -400,14 +404,14 @@ public class UiValidator {
 
     private void checkNativeAppiumCapabilities(final int envNum,
                                                final String configName,
-                                               final ConnectionType cT,
+                                               final ConnectionType connectionType,
                                                final List<String> envList,
                                                final NativeDevice device,
                                                final AppiumNativeCapabilities defaultAppiumCapabilities) {
-        if (nonNull(cT.getAppiumServer()) && Objects.isNull(device.getAppiumCapabilities())) {
+        if (nonNull(connectionType.getAppiumServer()) && Objects.isNull(device.getAppiumCapabilities())) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envList, envNum));
-        } else if (nonNull(cT.getAppiumServer())
+        } else if (nonNull(connectionType.getAppiumServer())
                 && (isNull(device.getAppiumCapabilities()) || isNull(defaultAppiumCapabilities))) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_IN_ALL_ENVS, device.getAlias(), configName);
         }
@@ -415,17 +419,22 @@ public class UiValidator {
 
     private void checkNativeBrowserStackCapabilities(final int envNum,
                                                      final String configName,
-                                                     final ConnectionType cT,
+                                                     final ConnectionType connectionType,
                                                      final List<String> envList,
                                                      final NativeDevice device,
                                                      final BrowserStackCapabilities defaultBSCapabilities) {
-        if (nonNull(cT.getBrowserStack()) && Objects.isNull(device.getBrowserStackCapabilities())) {
+        if (nonNull(connectionType.getBrowserStack()) && Objects.isNull(device.getBrowserStackCapabilities())) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envList, envNum));
-        } else if (nonNull(cT.getBrowserStack())
+        } else if (nonNull(connectionType.getBrowserStack())
                 && (isNull(device.getBrowserStackCapabilities()) || isNull(defaultBSCapabilities))) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_IN_ALL_ENVS, device.getAlias(), configName);
         }
+    }
+
+    private String getConfigPath(final List<String> envsList, final int envNum) {
+        return FileSearcher.searchFileFromEnvFolder(envsList.get(envNum), UI_CONFIG_FILENAME).get().getPath()
+                .replace(TestResourceSettings.getInstance().getTestResourcesFolder().getPath(), StringUtils.EMPTY);
     }
 
     private interface UiConfigPredicate extends Predicate<UiConfig> { }

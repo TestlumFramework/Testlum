@@ -194,7 +194,7 @@ public class ExceptionMessage {
     public static final String UI_ALIASES_NOT_DIFFER = ANSI_RED + "More than one enabled <%s> was found in "
             + "<%s> settings with alias <%s> in the config by path: %s" + ANSI_RESET;
     public static final String UI_ALIASES_NOT_MATCH = ANSI_RED + "Enabled %s <%s> in <%s> block with alias <%s> not"
-            + " found or not enabled in all environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
+            + " found or not enabled in all enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
     public static final String CONNECTION_TYPE_NOT_MATCH = ANSI_RED + "Connection type in <%s> block must be the same "
             + "in all enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
     public static final String SAME_APPIUM_SERVER_URLS = ANSI_RED + "<AppiumServer> connection url must be different "

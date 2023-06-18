@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
-          xmlns:tns="http://www.knubisoft.com/cott/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-          targetNamespace="http://www.knubisoft.com/cott/testing/model/scenario"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
           elementFormDefault="qualified" jaxb:version="2.1">
 
     <x:include schemaLocation="shared.xsd"/>
-    <x:include schemaLocation="http.xsd"/>
 
     <x:complexType name="elasticsearch">
         <x:complexContent>
@@ -15,13 +14,10 @@
                     <x:element name="get" type="tns:elasticsearchGetRequest"/>
                     <x:element name="post" type="tns:elasticsearchPostRequest"/>
                     <x:element name="put" type="tns:elasticsearchPutRequest"/>
-                    <x:element name="patch" type="tns:elasticsearchPatchRequest"/>
                     <x:element name="delete" type="tns:elasticsearchDeleteRequest"/>
-                    <x:element name="options" type="tns:elasticsearchOptionsRequest"/>
                     <x:element name="head" type="tns:elasticsearchHeadRequest"/>
-                    <x:element name="trace" type="tns:elasticsearchTraceRequest"/>
                 </x:choice>
-                <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -32,8 +28,7 @@
             <x:element name="param" type="tns:param" minOccurs="0" maxOccurs="unbounded"/>
             <x:element name="response" type="tns:elasticSearchResponse" minOccurs="0"/>
         </x:sequence>
-        <x:attribute name="url" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="host" type="tns:nonEmptyString" default="PRIMARY"/>
+        <x:attribute name="endpoint" type="tns:endpointPattern" use="required"/>
     </x:complexType>
 
     <x:complexType name="elasticSearchRequestWithBody" abstract="true">
@@ -64,18 +59,6 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="elasticsearchPatchRequest">
-        <x:complexContent>
-            <x:extension base="tns:elasticSearchRequestWithBody"/>
-        </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="elasticsearchTraceRequest">
-        <x:complexContent>
-            <x:extension base="tns:elasticSearchRequestWithBody"/>
-        </x:complexContent>
-    </x:complexType>
-
     <x:complexType name="elasticsearchDeleteRequest">
         <x:complexContent>
             <x:extension base="tns:elasticSearchRequest"/>
@@ -88,20 +71,13 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="elasticsearchOptionsRequest">
-        <x:complexContent>
-            <x:extension base="tns:elasticSearchRequest"/>
-        </x:complexContent>
-    </x:complexType>
-
     <x:complexType name="elasticSearchResponse">
         <x:sequence>
             <x:element name="header" type="tns:header" minOccurs="0" maxOccurs="unbounded"/>
             <x:element name="warning" type="tns:elasticSearchResponseWarning" minOccurs="0" maxOccurs="unbounded"/>
         </x:sequence>
-
-        <x:attribute name="code" type="tns:code" default="200"/>
-        <x:attribute name="file" type="tns:expected"/>
+        <x:attribute name="code" type="tns:codePattern" default="200"/>
+        <x:attribute name="file" type="tns:expectedPattern"/>
     </x:complexType>
 
     <x:complexType name="elasticSearchResponseWarning">

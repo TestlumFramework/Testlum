@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="ui-commands.xsd"/>
+
+    <x:complexType name="native">
+        <x:complexContent>
+            <x:extension base="tns:ui">
+                <x:choice maxOccurs="unbounded" minOccurs="0">
+                    <x:element name="click" type="tns:click"/>
+                    <x:element name="input" type="tns:input"/>
+                    <x:element name="assert" type="tns:assert"/>
+                    <x:element name="wait" type="tns:wait"/>
+                    <x:element name="clear" type="tns:clear"/>
+                    <x:element name="image" type="tns:image"/>
+                    <x:element name="refresh" type="tns:refresh"/>
+                    <x:element name="navigate" type="tns:navigateNative"/>
+                    <x:element name="dragAndDrop" type="tns:dragAndDropNative"/>
+                    <x:element name="scroll" type="tns:scrollNative"/>
+                    <x:element name="scrollTo" type="tns:scrollToNative"/>
+                    <x:element name="swipe" type="tns:swipeNative"/>
+                    <x:element name="webView" type="tns:webView"/>
+                    <x:element name="var" type="tns:nativeVar"/>
+                    <x:element name="condition" type="tns:uiCondition"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="webView">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice maxOccurs="unbounded" minOccurs="0">
+                    <x:element name="click" type="tns:click"/>
+                    <x:element name="input" type="tns:input"/>
+                    <x:element name="assert" type="tns:assert"/>
+                    <x:element name="dropDown" type="tns:dropDown"/>
+                    <x:element name="wait" type="tns:wait"/>
+                    <x:element name="clear" type="tns:clear"/>
+                    <x:element name="scroll" type="tns:scroll"/>
+                    <x:element name="scrollTo" type="tns:scrollTo"/>
+                    <x:element name="image" type="tns:image"/>
+                    <x:element name="javascript" type="tns:javascript"/>
+                    <x:element name="navigate" type="tns:navigate"/>
+                    <x:element name="hovers" type="tns:hovers"/>
+                    <x:element name="closeTab" type="tns:closeTab"/>
+                    <x:element name="switchToFrame" type="tns:switchToFrame"/>
+                    <x:element name="var" type="tns:nativeVar"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="navigateNative">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="destination" type="tns:navigateNativeDestination" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="navigateNativeDestination">
+        <x:restriction base="x:string">
+            <x:enumeration value="back"/>
+            <x:enumeration value="home"/>
+            <x:enumeration value="overview"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="swipeNative">
+        <x:complexContent>
+            <x:extension base="tns:commandWithOptionalLocator">
+                <x:attribute name="direction" type="tns:swipeDirection" use="required"/>
+                <x:attribute name="type" type="tns:swipeType" use="required"/>
+                <x:attribute name="percent" type="tns:percentsPattern" default="70"/>
+                <x:attribute name="quantity" type="x:int" default="1"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="swipeDirection">
+        <x:restriction base="x:string">
+            <x:enumeration value="right"/>
+            <x:enumeration value="left"/>
+            <x:enumeration value="up"/>
+            <x:enumeration value="down"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="swipeType">
+        <x:restriction base="x:string">
+            <x:enumeration value="element"/>
+            <x:enumeration value="page"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="percentsPattern">
+        <x:restriction base="x:int">
+            <x:pattern value="[1-9][0-9]|100"/>
+        </x:restriction>
+    </x:simpleType>
+
+</x:schema>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
-          targetNamespace="http://www.knubisoft.com/cott/testing/model/scenario"
-          xmlns:tns="http://www.knubisoft.com/cott/testing/model/scenario"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
@@ -10,14 +10,38 @@
   <x:complexType name="sqs">
     <x:complexContent>
       <x:extension base="tns:abstractCommand">
-        <x:choice>
-          <x:element name="send" type="tns:nonEmptyString"/>
-          <x:element name="receive" type="tns:nonEmptyString"/>
-        </x:choice>
-        <x:attribute name="queue" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
+        <x:sequence maxOccurs="unbounded">
+          <x:choice>
+            <x:element name="send" type="tns:sendSqsMessage" maxOccurs="unbounded"/>
+            <x:element name="receive" type="tns:receiveSqsMessage" maxOccurs="unbounded"/>
+          </x:choice>
+        </x:sequence>
+        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
       </x:extension>
     </x:complexContent>
+  </x:complexType>
+
+  <x:complexType name="sendSqsMessage">
+    <x:choice>
+      <x:element name="value" type="tns:nonEmptyString"/>
+      <x:element name="file" type="tns:bodyFile"/>
+    </x:choice>
+    <x:attribute name="queue" type="tns:nonEmptyString" use="required"/>
+    <x:attribute name="delaySeconds" type="tns:positiveIntegerMin1"/>
+    <x:attribute name="messageDeduplicationId" type="tns:nonEmptyString"/>
+    <x:attribute name="messageGroupId" type="tns:nonEmptyString"/>
+  </x:complexType>
+
+  <x:complexType name="receiveSqsMessage">
+    <x:choice>
+      <x:element name="value" type="tns:nonEmptyString"/>
+      <x:element name="file" type="tns:expectedPattern"/>
+    </x:choice>
+    <x:attribute name="queue" type="tns:nonEmptyString" use="required"/>
+    <x:attribute name="maxNumberOfMessages" type="tns:positiveIntegerMin1"/>
+    <x:attribute name="visibilityTimeout" type="tns:positiveIntegerMin1"/>
+    <x:attribute name="waitTimeSeconds" type="tns:positiveIntegerMin1"/>
+    <x:attribute name="receiveRequestAttemptId" type="tns:nonEmptyString"/>
   </x:complexType>
 
 </x:schema>

@@ -1,32 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
-          xmlns:tns="http://www.knubisoft.com/cott/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/global-config"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-          targetNamespace="http://www.knubisoft.com/cott/testing/model/global-config"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/global-config"
           elementFormDefault="qualified" jaxb:version="2.1">
 
-    <x:include schemaLocation="postgres-integration.xsd"/>
-    <x:include schemaLocation="clickhouse-integration.xsd"/>
-    <x:include schemaLocation="mysql-integration.xsd"/>
-    <x:include schemaLocation="oracle-integration.xsd"/>
-    <x:include schemaLocation="redis-integration.xsd"/>
-    <x:include schemaLocation="mongo-integration.xsd"/>
-    <x:include schemaLocation="s3-integration.xsd"/>
-    <x:include schemaLocation="sqs-integration.xsd"/>
-    <x:include schemaLocation="kafka-integration.xsd"/>
-    <x:include schemaLocation="rabbitmq-integration.xsd"/>
-    <x:include schemaLocation="dynamo-integration.xsd"/>
-    <x:include schemaLocation="elasticsearch-integration.xsd"/>
-    <x:include schemaLocation="sendgrid-integration.xsd"/>
-    <x:include schemaLocation="ses-integration.xsd"/>
-    <x:include schemaLocation="ui-config.xsd"/>
     <x:include schemaLocation="report.xsd"/>
-    <x:include schemaLocation="shared-config.xsd"/>
+    <x:include schemaLocation="ui-config.xsd"/>
+    <x:include schemaLocation="integration-config.xsd"/>
 
     <x:annotation>
         <x:appinfo>
             <jaxb:bindings
-                    node="/x:schema/x:element[@name='globalTestConfiguration']//x:complexType//x:sequence">
+                node="/x:schema/x:element[@name='globalTestConfiguration']//x:complexType//x:sequence">
             </jaxb:bindings>
         </x:appinfo>
     </x:annotation>
@@ -34,68 +20,53 @@
     <x:element name="globalTestConfiguration">
         <x:complexType>
             <x:sequence>
+                <x:element name="subscription" type="tns:subscription"/>
+                <x:element name="parallelExecution" type="x:boolean" default="false" minOccurs="0"/>
                 <x:element name="stopScenarioOnFailure" type="x:boolean"/>
+                <x:element name="stopIfInvalidScenario" type="x:boolean"/>
+                <x:element name="delayBetweenScenarioRuns" type="tns:delayBetweenScenarioRuns"/>
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
                 <x:element name="report" type="tns:report"/>
-                <x:element name="ui" type="tns:ui" minOccurs="0"/>
-                <x:element name="auth" type="tns:auth"/>
-                <x:element name="integrations" type="tns:integrations" minOccurs="0"/>
+                <x:element name="environments" type="tns:environments"/>
             </x:sequence>
         </x:complexType>
     </x:element>
 
-    <x:complexType name="integrations">
-        <x:all>
-            <x:element name="apis" type="tns:apis" minOccurs="0"/>
-            <x:element name="postgresIntegration" type="tns:postgresIntegration" minOccurs="0"/>
-            <x:element name="clickhouseIntegration" type="tns:clickhouseIntegration" minOccurs="0"/>
-            <x:element name="mysqlIntegration" type="tns:mysqlIntegration" minOccurs="0"/>
-            <x:element name="oracleIntegration" type="tns:oracleIntegration" minOccurs="0"/>
-            <x:element name="redisIntegration" type="tns:redisIntegration" minOccurs="0"/>
-            <x:element name="mongoIntegration" type="tns:mongoIntegration" minOccurs="0"/>
-            <x:element name="s3Integration" type="tns:s3Integration" minOccurs="0"/>
-            <x:element name="sqsIntegration" type="tns:sqsIntegration" minOccurs="0"/>
-            <x:element name="kafkaIntegration" type="tns:kafkaIntegration" minOccurs="0"/>
-            <x:element name="rabbitmqIntegration" type="tns:rabbitmqIntegration" minOccurs="0"/>
-            <x:element name="dynamoIntegration" type="tns:dynamoIntegration" minOccurs="0"/>
-            <x:element name="elasticsearchIntegration" type="tns:elasticsearchIntegration" minOccurs="0"/>
-            <x:element name="sendgridIntegration" type="tns:sendgridIntegration" minOccurs="0"/>
-            <x:element name="sesIntegration" type="tns:sesIntegration" minOccurs="0"/>
-        </x:all>
-    </x:complexType>
-
-    <x:complexType name="apis">
+    <x:complexType name="subscription">
         <x:choice>
-            <x:element name="api" type="tns:api" maxOccurs="unbounded"/>
+            <x:element name="id" type="tns:nonEmptyString"/>
         </x:choice>
+        <x:attribute name="type" type="tns:subscriptionType" use="required"/>
     </x:complexType>
 
-    <x:complexType name="api">
-        <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="url" type="tns:url" use="required"/>
+    <x:simpleType name="subscriptionType">
+        <x:restriction base="x:string">
+            <x:enumeration value="stripe"/>
+            <x:enumeration value="free"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="delayBetweenScenarioRuns">
+        <x:attribute name="seconds" type="x:int" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
     <x:complexType name="runScenariosByTag">
         <x:choice>
             <x:element name="tag" type="tns:tagValue" maxOccurs="unbounded"/>
         </x:choice>
-        <x:attribute name="enable" type="x:boolean" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
 
-    <x:complexType name="auth">
-        <x:attribute name="autoLogout" type="x:boolean" default="true"/>
-        <x:attribute name="authStrategy" type="tns:authStrategies" default="default"/>
-        <x:attribute name="authCustomClassName" type="tns:nonEmptyString"/>
+    <x:complexType name="environments">
+        <x:sequence>
+            <x:element name="env" type="tns:environment" maxOccurs="unbounded"/>
+        </x:sequence>
     </x:complexType>
 
-    <x:simpleType name="authStrategies">
-        <x:restriction base="x:string">
-            <x:enumeration value="basic"/>
-            <x:enumeration value="jwt"/>
-            <x:enumeration value="oauth2"/>
-            <x:enumeration value="custom"/>
-            <x:enumeration value="default"/>
-        </x:restriction>
-    </x:simpleType>
-
+    <x:complexType name="environment">
+        <x:attribute name="folder" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:attribute name="threads" type="x:int" default="1"/>
+    </x:complexType>
 </x:schema>

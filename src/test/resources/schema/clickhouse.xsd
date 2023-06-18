@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
-          xmlns:tns="http://www.knubisoft.com/cott/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-          targetNamespace="http://www.knubisoft.com/cott/testing/model/scenario"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
           elementFormDefault="qualified" jaxb:version="2.1">
 
     <x:include schemaLocation="shared.xsd"/>
@@ -13,8 +13,8 @@
                 <x:sequence>
                     <x:element name="query" type="tns:nonEmptyString" maxOccurs="unbounded"/>
                 </x:sequence>
-                <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="file" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+                <x:attribute name="file" type="tns:expectedPattern" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

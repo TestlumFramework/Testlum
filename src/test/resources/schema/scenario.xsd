@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
-          targetNamespace="http://www.knubisoft.com/cott/testing/model/scenario"
-          xmlns:tns="http://www.knubisoft.com/cott/testing/model/scenario"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
-    <x:include schemaLocation="shared.xsd"/>
     <x:include schemaLocation="overview.xsd"/>
     <x:include schemaLocation="tags.xsd"/>
-    <x:include schemaLocation="ui.xsd"/>
+    <x:include schemaLocation="mobilebrowser.xsd"/>
+    <x:include schemaLocation="web.xsd"/>
+    <x:include schemaLocation="native.xsd"/>
     <x:include schemaLocation="migrate.xsd"/>
     <x:include schemaLocation="postgres.xsd"/>
     <x:include schemaLocation="mongo.xsd"/>
@@ -20,18 +21,21 @@
     <x:include schemaLocation="oracle.xsd"/>
     <x:include schemaLocation="kafka.xsd"/>
     <x:include schemaLocation="mysql.xsd"/>
-    <x:include schemaLocation="break.xsd"/>
     <x:include schemaLocation="elasticsearch.xsd"/>
     <x:include schemaLocation="ses.xsd"/>
     <x:include schemaLocation="sendgrid.xsd"/>
-    <x:include schemaLocation="when-then.xsd"/>
     <x:include schemaLocation="dynamo.xsd"/>
     <x:include schemaLocation="var.xsd"/>
     <x:include schemaLocation="wait.xsd"/>
-    <x:include schemaLocation="invoke.xsd"/>
     <x:include schemaLocation="http.xsd"/>
     <x:include schemaLocation="logout.xsd"/>
     <x:include schemaLocation="shell.xsd"/>
+    <x:include schemaLocation="smtp.xsd"/>
+    <x:include schemaLocation="twilio.xsd"/>
+    <x:include schemaLocation="websocket.xsd"/>
+    <x:include schemaLocation="graphql.xsd"/>
+    <x:include schemaLocation="lambda.xsd"/>
+    <x:include schemaLocation="condition.xsd"/>
 
     <x:annotation>
         <x:appinfo>
@@ -57,11 +61,13 @@
             <x:sequence>
                 <x:element name="overview" type="tns:overview"/>
                 <x:element name="tags" type="tns:tags"/>
-                <x:choice maxOccurs="unbounded" minOccurs="1">
+                <x:choice maxOccurs="unbounded">
                     <x:element name="include" type="tns:include"/>
                     <x:element name="auth" type="tns:auth"/>
                     <x:element name="repeat" type="tns:repeat"/>
-                    <x:element name="ui" type="tns:ui"/>
+                    <x:element name="mobilebrowser" type="tns:mobilebrowser"/>
+                    <x:element name="web" type="tns:web"/>
+                    <x:element name="native" type="tns:native"/>
 
                     <x:element name="http" type="tns:http"/>
                     <x:element name="migrate" type="tns:migrate"/>
@@ -76,14 +82,19 @@
                     <x:element name="sqs" type="tns:sqs"/>
                     <x:element name="clickhouse" type="tns:clickhouse"/>
                     <x:element name="elasticsearch" type="tns:elasticsearch"/>
+                    <x:element name="lambda" type="tns:lambda"/>
                     <x:element name="sendgrid" type="tns:sendgrid"/>
                     <x:element name="ses" type="tns:ses"/>
                     <x:element name="dynamo" type="tns:dynamo"/>
+                    <x:element name="graphql" type="tns:graphql"/>
+                    <x:element name="websocket" type="tns:websocket"/>
 
                     <x:element name="var" type="tns:var"/>
+                    <x:element name="condition" type="tns:condition"/>
                     <x:element name="wait" type="tns:wait"/>
-                    <x:element name="invoke" type="tns:invoke"/>
                     <x:element name="shell" type="tns:shell"/>
+                    <x:element name="smtp" type="tns:smtp"/>
+                    <x:element name="twilio" type="tns:twilio"/>
                 </x:choice>
             </x:sequence>
             <x:attribute name="onlyThis" type="x:boolean" default="false"/>
@@ -97,9 +108,9 @@
             <x:extension base="tns:abstractCommand">
                 <x:choice maxOccurs="unbounded">
                     <x:element name="include" type="tns:include"/>
-                    <x:element name="auth" type="tns:auth"/>
+<!--                    <x:element name="auth" type="tns:auth"/>-->
                     <x:element name="repeat" type="tns:repeat"/>
-                    <x:element name="ui" type="tns:ui"/>
+                    <x:element name="web" type="tns:web"/>
 
                     <x:element name="http" type="tns:http"/>
                     <x:element name="migrate" type="tns:migrate"/>
@@ -117,14 +128,16 @@
                     <x:element name="sendgrid" type="tns:sendgrid"/>
                     <x:element name="ses" type="tns:ses"/>
                     <x:element name="dynamo" type="tns:dynamo"/>
+                    <x:element name="graphql" type="tns:graphql"/>
+                    <x:element name="smtp" type="tns:smtp"/>
+                    <x:element name="twilio" type="tns:twilio"/>
 
                     <x:element name="var" type="tns:var"/>
                     <x:element name="wait" type="tns:wait"/>
-                    <x:element name="invoke" type="tns:invoke"/>
                 </x:choice>
                 <x:attribute name="apiAlias" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="credentials" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="loginEndpoint" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="credentials" type="tns:jsonFileExtension" use="required"/>
+                <x:attribute name="loginEndpoint" type="tns:endpointPattern" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -136,7 +149,7 @@
                     <x:element name="include" type="tns:include"/>
 <!--                    <x:element name="auth" type="tns:auth"/>-->
                     <x:element name="repeat" type="tns:repeat"/>
-                    <x:element name="ui" type="tns:ui"/>
+                    <x:element name="web" type="tns:web"/>
                     <x:element name="http" type="tns:http"/>
                     <x:element name="migrate" type="tns:migrate"/>
                     <x:element name="postgres" type="tns:postgres"/>
@@ -150,13 +163,16 @@
                     <x:element name="sqs" type="tns:sqs"/>
                     <x:element name="clickhouse" type="tns:clickhouse"/>
                     <x:element name="elasticsearch" type="tns:elasticsearch"/>
+                    <x:element name="lambda" type="tns:lambda"/>
                     <x:element name="sendgrid" type="tns:sendgrid"/>
                     <x:element name="ses" type="tns:ses"/>
                     <x:element name="dynamo" type="tns:dynamo"/>
+                    <x:element name="graphql" type="tns:graphql"/>
                     <x:element name="var" type="tns:var"/>
                     <x:element name="wait" type="tns:wait"/>
-                    <x:element name="invoke" type="tns:invoke"/>
                     <x:element name="shell" type="tns:shell"/>
+                    <x:element name="smtp" type="tns:smtp"/>
+                    <x:element name="twilio" type="tns:twilio"/>
                 </x:choice>
                 <x:attribute name="times" type="x:positiveInteger" use="required"/>
             </x:extension>
@@ -166,7 +182,7 @@
     <x:complexType name="include">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
-                <x:attribute name="scenario" type="tns:nonEmptyString"/>
+                <x:attribute name="scenario" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:complexType name="lambdaIntegration">
+        <x:choice maxOccurs="unbounded">
+            <x:element name="lambda" type="tns:lambda"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="lambda">
+        <x:complexContent>
+            <x:extension base="tns:integration">
+                <x:sequence>
+                    <x:element name="region" type="tns:nonEmptyString"/>
+                    <x:element name="endpoint" type="tns:nonEmptyString"/>
+                    <x:element name="accessKeyId" type="tns:nonEmptyString"/>
+                    <x:element name="secretAccessKey" type="tns:nonEmptyString"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+</x:schema>

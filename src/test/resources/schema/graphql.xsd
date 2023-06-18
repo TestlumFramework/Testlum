@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared.xsd"/>
+    <x:include schemaLocation="http.xsd"/>
+
+    <x:complexType name="graphql">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice>
+                    <x:element name="post" type="tns:graphqlPost"/>
+                    <x:element name="get" type="tns:graphqlGet"/>
+                </x:choice>
+                <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="graphqlPost">
+        <x:complexContent>
+            <x:extension base="tns:httpInfo">
+                <x:sequence>
+                    <x:element name="body" type="tns:graphqlBody" maxOccurs="1"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+    
+    <x:complexType name="graphqlGet">
+        <x:complexContent>
+            <x:extension base="tns:httpInfo">
+                <x:sequence>
+                    <x:element name="param" type="tns:param" minOccurs="1" maxOccurs="3"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+    
+    <x:complexType name="graphqlBody">
+        <x:choice>
+            <x:element name="from" type="tns:file"/>
+            <x:element name="raw" type="tns:nonEmptyString"/>
+        </x:choice>
+    </x:complexType>
+
+</x:schema>

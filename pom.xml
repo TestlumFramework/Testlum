@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.knubisoft</groupId>
-    <artifactId>cost-optimization-testing-tool</artifactId>
+    <artifactId>testlum</artifactId>
     <version>1.0</version>
-    <name>cost-optimization-testing-tool</name>
+    <name>TESTLUM</name>
 
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -15,37 +15,40 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <start-class>com.knubisoft.cott.runner.TestRunner</start-class>
+        <start-class>com.knubisoft.testlum.starter.TESTLUMStarter</start-class>
 
-        <selenium-java.version>4.0.0</selenium-java.version>
+        <selenium-java.version>4.1.4</selenium-java.version>
+        <appium-client.version>8.1.1</appium-client.version>
         <webdrivermanager.version>5.2.0</webdrivermanager.version>
         <org.spring.boot.version>2.4.3</org.spring.boot.version>
         <org.spring.version>5.3.4</org.spring.version>
         <io.jsonwebtoken.version>0.11.2</io.jsonwebtoken.version>
+        <com.stripe-java.version>22.3.0</com.stripe-java.version>
 
-        <jackson.version>2.13.3</jackson.version>
+        <jackson.version>2.15.0</jackson.version>
         <javax.xml.jaxp-api.version>1.4.2</javax.xml.jaxp-api.version>
-        <javax.xml.version>2.3.0</javax.xml.version>
+        <javax.xml.version>2.3.1</javax.xml.version>
+        <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
+        <xerces.version>2.12.2</xerces.version>
         <scala.version>2.13.5</scala.version>
-        <commons-io.version>2.6</commons-io.version>
-        <org.json.version>20190722</org.json.version>
+        <commons-io.version>2.7</commons-io.version>
+        <org.json.version>20220320</org.json.version>
         <com.jayway.json-path.version>2.5.0</com.jayway.json-path.version>
         <org.apache.commons.version>3.12.0</org.apache.commons.version>
         <org.apache.httpcomponents.client.version>4.5.13</org.apache.httpcomponents.client.version>
         <org.apache.httpcomponents.client5.version>5.1.3</org.apache.httpcomponents.client5.version>
         <org.apache.poi.version>4.0.0</org.apache.poi.version>
-        <com.google.guava>30.1-jre</com.google.guava>
+        <com.google.guava>31.1-jre</com.google.guava>
         <com.google.code.gson.version>2.9.0</com.google.code.gson.version>
         <commons-codec.version>1.15</commons-codec.version>
         <commons-dbutils.version>1.7</commons-dbutils.version>
         <org.junit.jupiter.version>5.8.0</org.junit.jupiter.version>
         <org.junit.version>4.13.2</org.junit.version>
         <lombok.version>1.18.24</lombok.version>
-        <imagination.comparator.version>1.4</imagination.comparator.version>
+        <imagination.comparator.version>2.0</imagination.comparator.version>
         <org.slf4j.api.version>1.7.30</org.slf4j.api.version>
         <com.opencsv.version>5.5.1</com.opencsv.version>
         <io.micrometer.version>1.6.6</io.micrometer.version>
-        <org.spring.boot.version>2.4.3</org.spring.boot.version>
 
         <pl.project13.maven.plugin.version>4.0.0</pl.project13.maven.plugin.version>
         <org.spring.version>5.3.4</org.spring.version>
@@ -59,7 +62,8 @@
         <maven.surefire.failsafe.version>3.0.0-M5</maven.surefire.failsafe.version>
         <tomcat.jdbc.version>10.1.0-M2</tomcat.jdbc.version>
         <postgresql.driver.version>42.2.18</postgresql.driver.version>
-        <mongo-java-driver.version>3.12.8</mongo-java-driver.version>
+        <oracle.database.ojdbc8>21.7.0.0</oracle.database.ojdbc8>
+        <mongodb-driver-sync.version>4.6.1</mongodb-driver-sync.version>
         <mysql-connector-java.version>8.0.25</mysql-connector-java.version>
         <spring-kafka.version>2.7.1</spring-kafka.version>
         <com.amazonaws.version>1.12.129</com.amazonaws.version>
@@ -69,7 +73,7 @@
         <kafka-clients.version>2.7.1</kafka-clients.version>
         <jedis.version>3.3.0</jedis.version>
         <HikariCP.version>4.0.2</HikariCP.version>
-        <software.amazon.awssdk.dynamodb.version>2.16.74</software.amazon.awssdk.dynamodb.version>
+        <software.amazon.awssdk.version>2.18.35</software.amazon.awssdk.version>
         <elasticsearch-rest-client.version>7.13.1</elasticsearch-rest-client.version>
         <elasticsearch-rest-high-level-client.version>7.13.1</elasticsearch-rest-high-level-client.version>
         <ru.yandex.clickhouse.version>0.3.1</ru.yandex.clickhouse.version>
@@ -87,7 +91,11 @@
         <netty-codec-http.version>4.1.77.Final</netty-codec-http.version>
         <netty-reactive-streams.version>2.0.6</netty-reactive-streams.version>
         <extent-reports.version>5.0.9</extent-reports.version>
-        <skipXjc>true</skipXjc>
+        <jakarta.activation.version>1.2.2</jakarta.activation.version>
+        <com.twilio.sdk.version>9.0.0-rc.3</com.twilio.sdk.version>
+        <image-comparison.version>4.4.0</image-comparison.version>
+        <com.github.curious-odd-man.rgxgen.version>1.4</com.github.curious-odd-man.rgxgen.version>
+        <skipGenerateModels>true</skipGenerateModels>
     </properties>
 
     <repositories>
@@ -112,15 +120,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.tika</groupId>
-            <artifactId>tika-core</artifactId>
-            <version>1.18</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>${mongo-java-driver.version}</version>
+            <groupId>com.stripe</groupId>
+            <artifactId>stripe-java</artifactId>
+            <version>${com.stripe-java.version}</version>
         </dependency>
 
         <dependency>
@@ -210,7 +212,6 @@
             <groupId>com.sendgrid</groupId>
             <artifactId>sendgrid-java</artifactId>
             <version>${sendgrid-java.version}</version>
-            <scope>test</scope>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
@@ -240,18 +241,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.awslabs</groupId>
-            <artifactId>aws-request-signing-apache-interceptor</artifactId>
-            <version>b3772780da</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.amazonaws</groupId>
-                    <artifactId>aws-java-sdk-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>joda-time</groupId>
-                    <artifactId>joda-time</artifactId>
-                </exclusion></exclusions>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>${mongodb-driver-sync.version}</version>
         </dependency>
 
         <dependency>
@@ -282,8 +274,14 @@
 
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
+            <artifactId>lambda</artifactId>
+            <version>${software.amazon.awssdk.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
             <artifactId>dynamodb</artifactId>
-            <version>${software.amazon.awssdk.dynamodb.version}</version>
+            <version>${software.amazon.awssdk.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
@@ -344,7 +342,8 @@
                 <exclusion>
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
-                </exclusion></exclusions>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -382,12 +381,35 @@
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-core</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context-support</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
             <version>${spring-kafka.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-messaging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -428,6 +450,45 @@
                     <artifactId>spring-core</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+            <version>${org.spring.boot.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+            <version>${org.spring.boot.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-aop</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-tx</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+            </exclusions>
+
         </dependency>
 
         <dependency>
@@ -492,6 +553,11 @@
 
                 <exclusion>
                     <groupId>org.junit.platform</groupId>
+                    <artifactId>junit-platform-engine</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.junit.platform</groupId>
                     <artifactId>junit-platform-commons</artifactId>
                 </exclusion>
 
@@ -521,7 +587,8 @@
                 <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-core</artifactId>
-                </exclusion></exclusions>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -564,11 +631,15 @@
             <exclusions>
                 <exclusion>
                     <groupId>io.netty</groupId>
+                    <artifactId>netty-transport-classes-epoll</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.netty</groupId>
                     <artifactId>netty-transport-native-unix-common</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>io.netty</groupId>
-                    <artifactId>netty-handler</artifactId>
+                    <artifactId>netty-transport-classes-kqueue</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -622,15 +693,15 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.xml</groupId>
-            <artifactId>jaxp-api</artifactId>
-            <version>${javax.xml.jaxp-api.version}</version>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>${xerces.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>${javax.xml.version}</version>
+            <groupId>javax.xml</groupId>
+            <artifactId>jaxp-api</artifactId>
+            <version>${javax.xml.jaxp-api.version}</version>
         </dependency>
 
         <dependency>
@@ -644,18 +715,6 @@
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
             <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>${org.json.version}</version>
         </dependency>
 
         <dependency>
@@ -719,6 +778,12 @@
             <artifactId>junit-jupiter-api</artifactId>
             <version>${org.junit.jupiter.version}</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.platform</groupId>
+                    <artifactId>junit-platform-commons</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -729,7 +794,6 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>tree-comparator</artifactId>
-            <version>${imagination.comparator.version}</version>
         </dependency>
 
         <dependency>
@@ -751,6 +815,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>${oracle.database.ojdbc8}</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
             <version>${com.opencsv.version}</version>
@@ -766,7 +836,6 @@
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
             <version>${junit-platform-launcher.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -795,16 +864,76 @@
             <groupId>com.aventstack</groupId>
             <artifactId>klov-reporter</artifactId>
             <version>${extent-reports.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mongodb</groupId>
+                    <artifactId>mongodb-driver-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mongodb</groupId>
+                    <artifactId>bson</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.twilio.sdk</groupId>
+            <artifactId>twilio</artifactId>
+            <version>${com.twilio.sdk.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.datatype</groupId>
+                    <artifactId>jackson-datatype-jsr310</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.romankh3</groupId>
+            <artifactId>image-comparison</artifactId>
+            <version>${image-comparison.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.appium</groupId>
+            <artifactId>java-client</artifactId>
+            <version>${appium-client.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>selenium-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>selenium-remote-driver</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.curious-odd-man</groupId>
+            <artifactId>rgxgen</artifactId>
+            <version>${com.github.curious-odd-man.rgxgen.version}</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>tree-comparator</artifactId>
+                <version>${imagination.comparator.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.asynchttpclient</groupId>
                 <artifactId>async-http-client</artifactId>
@@ -910,11 +1039,41 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.sun.activation</groupId>
+                <artifactId>jakarta.activation</artifactId>
+                <version>${jakarta.activation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.activation</groupId>
+                <artifactId>jakarta.activation-api</artifactId>
+                <version>${jakarta.activation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${javax.xml.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+                <version>${org.json.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>${jakarta.xml.bind-api.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
-        <finalName>cott</finalName>
+        <finalName>testlum</finalName>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -930,8 +1089,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <skipXjc>${skipXjc}</skipXjc>
-                    <skipTestXjc>${skipXjc}</skipTestXjc>
+                    <skipXjc>${skipGenerateModels}</skipXjc>
+                    <skipTestXjc>${skipGenerateModels}</skipTestXjc>
                     <outputDirectory>src/test/java</outputDirectory>
                     <clearOutputDir>false</clearOutputDir>
                     <sources>
@@ -939,6 +1098,7 @@
                         <source>${project.basedir}/src/test/resources/schema/global-config.xsd</source>
                         <source>${project.basedir}/src/test/resources/schema/pages.xsd</source>
                     </sources>
+                    <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
                 </configuration>
             </plugin>
 
@@ -947,7 +1107,7 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>${exec.maven.plugin.version}</version>
                 <configuration>
-                    <skip>${skipXjc}</skip>
+                    <skip>${skipGenerateModels}</skip>
                 </configuration>
                 <executions>
                     <execution>
@@ -960,27 +1120,6 @@
                                 <delete dir="${basedir}/src/test/java/META-INF"/>
                             </target>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>${maven.surefire.failsafe.version}</version>
-                <configuration>
-                    <testFailureIgnore>false</testFailureIgnore>
-                    <includes>
-                        <include>**/UIRootTest*.java</include>
-                    </includes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>ui-test</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -1078,7 +1217,7 @@
                             <logViolationsToConsole>true</logViolationsToConsole>
                             <failsOnError>true</failsOnError>
                             <linkXRef>false</linkXRef>
-                            <excludes>**/com/knubisoft/cott/testing/model/**/*</excludes>
+                            <excludes>**/com/knubisoft/testlum/testing/model/**/*</excludes>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
                         </configuration>
                         <executions>
@@ -1126,7 +1265,7 @@
                             <minimumTokens>50</minimumTokens>
                             <targetJdk>${java.version}</targetJdk>
                             <excludes>
-                                <exclude>**/com/knubisoft/cott/testing/model/**/*.java
+                                <exclude>**/com/knubisoft/testlum/testing/model/**/*.java
                                 </exclude>
                             </excludes>
                         </configuration>

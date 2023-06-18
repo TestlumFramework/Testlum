@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
-          targetNamespace="http://www.knubisoft.com/cott/testing/model/scenario"
-          xmlns:tns="http://www.knubisoft.com/cott/testing/model/scenario"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
@@ -9,18 +9,23 @@
 
     <x:complexType name="wait">
         <x:complexContent>
-            <x:extension base="tns:abstractCommand">
-                <x:attribute name="time" type="x:positiveInteger" use="required"/>
-                <x:attribute name="unit" type="tns:unit" default="millis"/>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="time" type="tns:timePattern" use="required"/>
+                <x:attribute name="unit" type="tns:timeunit" default="seconds"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
-    <x:simpleType name="unit" final="restriction" >
+    <x:simpleType name="timePattern">
         <x:restriction base="x:string">
-            <x:enumeration value="millis" />
-            <x:enumeration value="seconds" />
+            <x:pattern value="\d+|\{{2}([a-zA-Z\d_\-]+)\}{2}"/>
         </x:restriction>
     </x:simpleType>
 
+    <x:simpleType name="timeunit" final="restriction">
+        <x:restriction base="x:string">
+            <x:enumeration value="millis"/>
+            <x:enumeration value="seconds"/>
+        </x:restriction>
+    </x:simpleType>
 </x:schema>

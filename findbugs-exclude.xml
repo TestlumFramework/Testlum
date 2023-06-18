@@ -5,111 +5,48 @@
     </Match>
 
     <Match>
-        <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.ui.testing.framework.util.FileRemover$FileVisitor"/>
-        <Method name="visitFile"/>
-        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.cott.testing.framework.interpreter.VariableInterpreter"/>
-        <Method name="getExpressionResult"/>
-        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.cott.testing.framework.locator.LocatorCollector"/>
-        <Method name="collectFileToPageMap"/>
-        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.cott.testing.framework.scenario.ScenarioRunner"/>
+        <Class name="com.knubisoft.testlum.testing.framework.scenario.ScenarioRunner"/>
         <Method name="createInterpreterInstance"/>
         <Bug pattern="REC_CATCH_EXCEPTION"/>
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.ui.testing.framework.locator.LocatorCollector"/>
-        <Method name="collectFileToPageMap"/>
-        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.ui.testing.framework.scenario.ScenarioRunner"/>
-        <Method name="matchInterpreterCommand"/>
-        <Bug pattern="REC_CATCH_EXCEPTION"/>  <!--ignore catch exception-->
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.ui.testing.framework.db.sql.SqlExecutor"/>
-        <Bug pattern="SQL_PREPARED_STATEMENT_GENERATED_FROM_NONCONSTANT_STRING"/>  <!--ignore insert error-->
-    </Match>
-    <Match>
-        <Class name="com.knubisoft.ui.testing.framework.db.s3.S3Operation"/>
-        <Bug pattern="URF_UNREAD_FIELD"/>
-    </Match>
-    <Match>
-        <Class name="com.knubisoft.cott.testing.framework.util.FileSearcher"/>
-        <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME"/>
-    </Match>
-    <Match>
-        <Class name="com.knubisoft.cott.testing.framework.scenario.ScenarioValidator"/>
-        <Bug pattern="UC_USELESS_OBJECT"/>
-    </Match>
-    <Match>
-        <Class name="com.knubisoft.ui.testing.framework.interpreter.AuthInterpreter"/>
-        <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
-    </Match>
-    <Match>
-        <Class name="com.knubisoft.ui.testing.framework.interpreter.VariableInterpreter"/>
-        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.ui.testing.framework.parser.XMLParser"/>
-        <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
-    </Match>
-    <Match>
-        <Class name="com.knubisoft.ui.testing.framework.scenario.ScenarioValidator"/>
-        <Bug pattern="URF_UNREAD_FIELD"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.ui.testing.framework.scenario.ScenarioRunner"/>
-        <Bug pattern="REC_CATCH_EXCEPTION"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.ui.testing.framework.util.FileSearcher"/>
-        <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.cott.testing.framework.util.ArgumentsUtils"/>
+        <Class name="com.knubisoft.testlum.testing.framework.util.ArgumentsUtils"/>
         <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.db.sql.executor.impl.PostgresExecutor"/>
+        <Class name="com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor"/>
         <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.db.sql.executor.impl.PostgresExecutor"/>
-        <Bug pattern="ODR_OPEN_DATABASE_RESOURCE"/>
+        <Class name="com.knubisoft.testlum.testing.framework.interpreter.SmtpInterpreter"/>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.interpreter.ShellInterpreter$StreamHelper"/>
+        <Class name="com.knubisoft.testlum.testing.framework.configuration.websocket.WebsocketStompMessageHandler"/>
         <Bug pattern="DM_DEFAULT_ENCODING"/>
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.cott.testing.framework.interpreter.ShellInterpreter"/>
-        <Bug pattern="RV_RETURN_VALUE_IGNORED_BAD_PRACTICE"/>
+        <Class name="com.knubisoft.testlum.testing.framework.util.JavascriptUtil"/>
+        <Bug pattern="BC_UNCONFIRMED_CAST"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractUiInterpreter"/>
+        <Bug pattern="BC_UNCONFIRMED_CAST"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.testlum.testing.framework.util.UiUtil"/>
+        <Bug pattern="BC_UNCONFIRMED_CAST"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.testlum.testing.framework.interpreter.lib.http.ApiClient"/>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
 </FindBugsFilter>

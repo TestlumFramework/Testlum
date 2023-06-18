@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:complexType name="graphqlIntegration">
+        <x:choice>
+            <x:element name="api" type="tns:graphqlApi" maxOccurs="unbounded"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="graphqlApi">
+        <x:complexContent>
+            <x:extension base="tns:integration">
+                <x:attribute name="url" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+</x:schema>

@@ -1,0 +1,38 @@
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:complexType name="mobilebrowser">
+        <x:complexContent>
+            <x:extension base="tns:settings">
+                <x:sequence>
+                    <x:element name="baseUrl" type="tns:url"/>
+                    <x:element name="connection" type="tns:connectionType"/>
+                    <x:element name="devices" type="tns:mobilebrowserDevices"/>
+                </x:sequence>
+                <x:attribute name="enabled" type="x:boolean" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="mobilebrowserDevices">
+        <x:sequence>
+            <x:element name="device" type="tns:mobilebrowserDevice" maxOccurs="unbounded"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="mobilebrowserDevice">
+        <x:complexContent>
+            <x:extension base="tns:abstractDevice">
+                <x:choice>
+                    <x:element name="appiumCapabilities" type="tns:appiumCapabilities"/>
+                    <x:element name="browserStackCapabilities" type="tns:browserStackCapabilities"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+</x:schema>

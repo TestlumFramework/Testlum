@@ -1,0 +1,15 @@
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:complexType name="browserStackLogin">
+        <x:sequence>
+            <x:element name="username" type="tns:nonEmptyString"/>
+            <x:element name="accessKey" type="tns:nonEmptyString"/>
+        </x:sequence>
+    </x:complexType>
+</x:schema>

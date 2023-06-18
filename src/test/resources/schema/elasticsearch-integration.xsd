@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
-          targetNamespace="http://www.knubisoft.com/cott/testing/model/global-config"
-          xmlns:tns="http://www.knubisoft.com/cott/testing/model/global-config"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/global-config"
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
@@ -14,20 +14,22 @@
     </x:complexType>
 
     <x:complexType name="elasticsearch">
-        <x:sequence>
-            <x:element name="host" type="tns:nonEmptyString"/>
-            <x:element name="port" type="x:int"/>
-            <x:element name="scheme" type="tns:nonEmptyString"/>
-            <x:element name="connectionTimeout" type="x:int"/>
-            <x:element name="socketTimeout" type="x:int"/>
-            <x:element name="signer" type="x:boolean"/>
-            <x:element name="serviceName" type="tns:nonEmptyString"/>
-            <x:element name="region" type="tns:nonEmptyString"/>
-            <x:element name="username" type="tns:nonEmptyString"/>
-            <x:element name="password" type="tns:nonEmptyString"/>
-        </x:sequence>
-        <x:attribute name="alias" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:complexContent>
+            <x:extension base="tns:integration">
+                <x:sequence>
+                    <x:element name="host" type="tns:nonEmptyString"/>
+                    <x:element name="port" type="x:int"/>
+                    <x:element name="scheme" type="tns:nonEmptyString"/>
+                    <x:element name="connectionTimeout" type="x:int"/>
+                    <x:element name="socketTimeout" type="x:int"/>
+                    <x:element name="signer" type="x:boolean"/>
+                    <x:element name="serviceName" type="tns:nonEmptyString"/>
+                    <x:element name="region" type="tns:nonEmptyString"/>
+                    <x:element name="username" type="tns:nonEmptyString"/>
+                    <x:element name="password" type="tns:nonEmptyString"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
     </x:complexType>
 </x:schema>
 

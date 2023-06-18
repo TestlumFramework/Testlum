@@ -366,7 +366,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                                                       final ConnectionType cType,
                                                       final MobilebrowserDevice device,
                                                       final AppiumCapabilities defaultAppiumCapabilities) {
-        if (nonNull(cType.getAppiumServer()) && Objects.isNull(device.getAppiumCapabilities())) {
+        if (nonNull(cType.getAppiumServer()) && isNull(device.getAppiumCapabilities())) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envName));
         } else if (nonNull(cType.getAppiumServer())
@@ -380,7 +380,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                                                               final ConnectionType cType,
                                                               final MobilebrowserDevice device,
                                                               final BrowserStackCapabilities defaultBSCapabilities) {
-        if (nonNull(cType.getBrowserStack()) && Objects.isNull(device.getBrowserStackCapabilities())) {
+        if (nonNull(cType.getBrowserStack()) && isNull(device.getBrowserStackCapabilities())) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envName));
         } else if (nonNull(cType.getBrowserStack())
@@ -427,7 +427,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                                                final ConnectionType cType,
                                                final NativeDevice device,
                                                final AppiumNativeCapabilities defaultAppiumCapabilities) {
-        if (nonNull(cType.getAppiumServer()) && Objects.isNull(device.getAppiumCapabilities())) {
+        if (nonNull(cType.getAppiumServer()) && isNull(device.getAppiumCapabilities())) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envName));
         } else if (nonNull(cType.getAppiumServer())
@@ -441,7 +441,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                                                      final ConnectionType cType,
                                                      final NativeDevice device,
                                                      final BrowserStackCapabilities defaultBSCapabilities) {
-        if (nonNull(cType.getBrowserStack()) && Objects.isNull(device.getBrowserStackCapabilities())) {
+        if (nonNull(cType.getBrowserStack()) && isNull(device.getBrowserStackCapabilities())) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envName));
         } else if (nonNull(cType.getBrowserStack())

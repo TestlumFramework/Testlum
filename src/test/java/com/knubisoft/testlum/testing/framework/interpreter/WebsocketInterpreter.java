@@ -70,13 +70,13 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
     private void processWebsockets(final Websocket websocket, final List<CommandResult> subCommandsResult) {
         AliasEnv aliasEnv = new AliasEnv(websocket.getAlias(), dependencies.getEnvironment());
+        LogUtil.logAlias(websocket.getAlias());
         openConnection(aliasEnv);
         runActions(websocket, subCommandsResult);
         disconnectIfEnabled(websocket.isDisconnect(), aliasEnv);
     }
 
     private void openConnection(final AliasEnv aliasEnv) {
-        LogUtil.logAlias(aliasEnv.getAlias());
         try {
             WebsocketConnectionManager wsConnectionManager = wsConnectionSupplier.get(aliasEnv);
             if (!wsConnectionManager.isConnected()) {

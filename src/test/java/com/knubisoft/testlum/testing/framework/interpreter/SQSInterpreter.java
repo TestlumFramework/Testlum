@@ -49,7 +49,6 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     @Override
     protected void acceptImpl(final Sqs o, final CommandResult result) {
         Sqs sqs = injectCommand(o);
-        LogUtil.logAlias(sqs.getAlias());
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         final AtomicInteger commandId = new AtomicInteger();
@@ -64,6 +63,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
 
     private void processEachAction(final Object action, final String alias, final CommandResult result) {
         StopWatch stopWatch = StopWatch.createStarted();
+        LogUtil.logAlias(alias);
         try {
             processSqsAction(action, alias, result);
         } catch (Exception e) {

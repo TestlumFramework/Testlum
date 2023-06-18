@@ -27,12 +27,15 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "abstractUiCommand")
 @XmlSeeAlso({
     Wait.class,
+    WebVar.class,
+    NativeVar.class,
+    UiCondition.class,
     Javascript.class,
     Hovers.class,
     Navigate.class,
     Assert.class,
-    Title.class,
     Attribute.class,
+    Title.class,
     CloseTab.class,
     HotKey.class,
     Copy.class,
@@ -47,9 +50,6 @@ import javax.xml.bind.annotation.XmlType;
     DragAndDropNative.class,
     CommandWithLocator.class,
     Refresh.class,
-    WebVar.class,
-    UiCondition.class,
-    NativeVar.class,
     WebView.class,
     NavigateNative.class,
     CommandWithOptionalLocator.class

@@ -310,6 +310,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Header }
+     * 
+     */
+    public Header createHeader() {
+        return new Header();
+    }
+
+    /**
      * Create an instance of {@link Body }
      * 
      */
@@ -350,14 +358,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Header }
-     * 
-     */
-    public Header createHeader() {
-        return new Header();
-    }
-
-    /**
      * Create an instance of {@link File }
      * 
      */
@@ -366,35 +366,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link RandomNumeric }
+     * Create an instance of {@link WebVar }
      * 
      */
-    public RandomNumeric createRandomNumeric() {
-        return new RandomNumeric();
+    public WebVar createWebVar() {
+        return new WebVar();
     }
 
     /**
-     * Create an instance of {@link RandomAlphabetic }
+     * Create an instance of {@link NativeVar }
      * 
      */
-    public RandomAlphabetic createRandomAlphabetic() {
-        return new RandomAlphabetic();
-    }
-
-    /**
-     * Create an instance of {@link RandomAlphanumeric }
-     * 
-     */
-    public RandomAlphanumeric createRandomAlphanumeric() {
-        return new RandomAlphanumeric();
-    }
-
-    /**
-     * Create an instance of {@link RandomRegexp }
-     * 
-     */
-    public RandomRegexp createRandomRegexp() {
-        return new RandomRegexp();
+    public NativeVar createNativeVar() {
+        return new NativeVar();
     }
 
     /**
@@ -446,6 +430,38 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link RandomNumeric }
+     * 
+     */
+    public RandomNumeric createRandomNumeric() {
+        return new RandomNumeric();
+    }
+
+    /**
+     * Create an instance of {@link RandomAlphabetic }
+     * 
+     */
+    public RandomAlphabetic createRandomAlphabetic() {
+        return new RandomAlphabetic();
+    }
+
+    /**
+     * Create an instance of {@link RandomAlphanumeric }
+     * 
+     */
+    public RandomAlphanumeric createRandomAlphanumeric() {
+        return new RandomAlphanumeric();
+    }
+
+    /**
+     * Create an instance of {@link RandomRegexp }
+     * 
+     */
+    public RandomRegexp createRandomRegexp() {
+        return new RandomRegexp();
+    }
+
+    /**
      * Create an instance of {@link FromCookie }
      * 
      */
@@ -454,19 +470,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FromUrl }
-     * 
-     */
-    public FromUrl createFromUrl() {
-        return new FromUrl();
-    }
-
-    /**
      * Create an instance of {@link FromDom }
      * 
      */
     public FromDom createFromDom() {
         return new FromDom();
+    }
+
+    /**
+     * Create an instance of {@link FromUrl }
+     * 
+     */
+    public FromUrl createFromUrl() {
+        return new FromUrl();
     }
 
     /**
@@ -483,6 +499,14 @@ public class ObjectFactory {
      */
     public ElementPresent createElementPresent() {
         return new ElementPresent();
+    }
+
+    /**
+     * Create an instance of {@link UiCondition }
+     * 
+     */
+    public UiCondition createUiCondition() {
+        return new UiCondition();
     }
 
     /**
@@ -566,19 +590,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Title }
-     * 
-     */
-    public Title createTitle() {
-        return new Title();
-    }
-
-    /**
      * Create an instance of {@link Attribute }
      * 
      */
     public Attribute createAttribute() {
         return new Attribute();
+    }
+
+    /**
+     * Create an instance of {@link Title }
+     * 
+     */
+    public Title createTitle() {
+        return new Title();
     }
 
     /**
@@ -763,30 +787,6 @@ public class ObjectFactory {
      */
     public Refresh createRefresh() {
         return new Refresh();
-    }
-
-    /**
-     * Create an instance of {@link WebVar }
-     * 
-     */
-    public WebVar createWebVar() {
-        return new WebVar();
-    }
-
-    /**
-     * Create an instance of {@link UiCondition }
-     * 
-     */
-    public UiCondition createUiCondition() {
-        return new UiCondition();
-    }
-
-    /**
-     * Create an instance of {@link NativeVar }
-     * 
-     */
-    public NativeVar createNativeVar() {
-        return new NativeVar();
     }
 
     /**

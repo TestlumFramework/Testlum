@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.model.scenario.Unit;
+import com.knubisoft.testlum.testing.model.scenario.Timeunit;
 import lombok.experimental.UtilityClass;
 
 import java.util.concurrent.TimeUnit;
@@ -12,7 +12,7 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 @UtilityClass
 public class WaitUtil {
 
-    public TimeUnit getTimeUnit(final Unit unit) {
+    public TimeUnit getTimeUnit(final Timeunit unit) {
         switch (unit) {
             case MILLIS:
                 return TimeUnit.MILLISECONDS;

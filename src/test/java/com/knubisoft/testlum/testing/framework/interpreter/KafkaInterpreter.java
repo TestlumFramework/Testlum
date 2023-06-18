@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
@@ -66,7 +67,6 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     @Override
     protected void acceptImpl(final Kafka o, final CommandResult result) {
         Kafka kafka = injectCommand(o);
-        LogUtil.logAlias(kafka.getAlias());
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         final AtomicInteger commandId = new AtomicInteger();
@@ -83,6 +83,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                                    final String alias,
                                    final CommandResult result) {
         StopWatch stopWatch = StopWatch.createStarted();
+        LogUtil.logAlias(alias);
         try {
             processKafkaAction(action, alias, result);
         } catch (Exception e) {
@@ -250,7 +251,8 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         KafkaMessage(final ConsumerRecord<String, String> consumerRecord) {
             this.key = consumerRecord.key();
             this.value = consumerRecord.value();
-            this.correlationId = headers.get(CORRELATION_ID);
+            this.correlationId = Optional.ofNullable(consumerRecord.headers().lastHeader(CORRELATION_ID))
+                    .map(h -> new String(h.value(), StandardCharsets.UTF_8)).orElse(null);
         }
     }
 }

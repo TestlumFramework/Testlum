@@ -262,7 +262,9 @@ public class UiValidator {
         List<List<? extends AbstractDevice>> deviceLists = deviceOrBrowserLists.stream()
                 .map(this::filterAbstractDevices)
                 .collect(Collectors.toList());
-        checkDeviceAliasesDifferAndMatch(configName, envList, defaultDevices, deviceLists);
+        List<String> defaultAliasList = defaultDevices.stream()
+                .map(AbstractDevice::getAlias).collect(Collectors.toList());
+        checkDeviceAliasesDifferAndMatch(configName, envList, defaultAliasList, deviceLists);
         checkPlatformNameMatch(configName, defaultDevices, deviceLists);
         validateDeviceCapabilities(configName, envList, uiConfigList, defaultDevices, deviceLists);
     }
@@ -276,10 +278,8 @@ public class UiValidator {
 
     private void checkDeviceAliasesDifferAndMatch(final String configName,
                                                   final List<String> envList,
-                                                  final List<? extends AbstractDevice> defaultDevices,
+                                                  final List<String> defaultAliasList,
                                                   final List<List<? extends AbstractDevice>> deviceLists) {
-        List<String> defaultAliasList = defaultDevices.stream()
-                .map(AbstractDevice::getAlias).collect(Collectors.toList());
         IntStream.range(0, envList.size()).forEach(envNum -> {
             Set<String> aliasSet = new HashSet<>();
             deviceLists.get(envNum).forEach(device -> {

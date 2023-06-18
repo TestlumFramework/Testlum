@@ -5,12 +5,7 @@
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
-    <x:simpleType name="timeUnit" final="restriction">
-        <x:restriction base="x:string">
-            <x:enumeration value="millis"/>
-            <x:enumeration value="seconds"/>
-        </x:restriction>
-    </x:simpleType>
+    <x:include schemaLocation="shared-restrictions.xsd"/>
 
     <x:simpleType name="url" final="restriction">
         <x:restriction base="x:string">
@@ -27,12 +22,6 @@
     <x:simpleType name="urlWebsocket" final="restriction">
         <x:restriction base="x:string">
             <x:pattern value="((wss?|https?)://.+)"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="nonEmptyString">
-        <x:restriction base="x:string">
-            <x:minLength value="1"/>
         </x:restriction>
     </x:simpleType>
 
@@ -67,17 +56,10 @@
         </x:sequence>
     </x:complexType>
 
-
     <x:complexType name="integration" abstract="true">
         <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
     </x:complexType>
-
-    <x:simpleType name="aliasPattern">
-        <x:restriction base="x:string">
-            <x:pattern value="[a-zA-Z_\-/\d]+"/>
-        </x:restriction>
-    </x:simpleType>
 
     <x:complexType name="databaseConfig" abstract="true">
         <x:complexContent>
@@ -93,7 +75,6 @@
             </x:extension>
         </x:complexContent>
     </x:complexType>
-
 
     <x:complexType name="settings">
         <x:sequence>
@@ -174,11 +155,5 @@
         <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
-
-    <x:simpleType name="positiveIntegerMin1">
-        <x:restriction base="x:int">
-            <x:minInclusive value="1"/>
-        </x:restriction>
-    </x:simpleType>
 
 </x:schema>

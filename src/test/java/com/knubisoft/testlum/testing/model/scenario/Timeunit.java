@@ -7,12 +7,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for unit.
+ * <p>Java class for timeunit.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="unit"&gt;
+ * &lt;simpleType name="timeunit"&gt;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
  *     &lt;enumeration value="millis"/&gt;
  *     &lt;enumeration value="seconds"/&gt;
@@ -21,9 +21,9 @@ import javax.xml.bind.annotation.XmlType;
  * </pre>
  * 
  */
-@XmlType(name = "unit")
+@XmlType(name = "timeunit")
 @XmlEnum
-public enum Unit {
+public enum Timeunit {
 
     @XmlEnumValue("millis")
     MILLIS("millis"),
@@ -31,7 +31,7 @@ public enum Unit {
     SECONDS("seconds");
     private final String value;
 
-    Unit(String v) {
+    Timeunit(String v) {
         value = v;
     }
 
@@ -39,8 +39,8 @@ public enum Unit {
         return value;
     }
 
-    public static Unit fromValue(String v) {
-        for (Unit c: Unit.values()) {
+    public static Timeunit fromValue(String v) {
+        for (Timeunit c: Timeunit.values()) {
             if (c.value.equals(v)) {
                 return c;
             }

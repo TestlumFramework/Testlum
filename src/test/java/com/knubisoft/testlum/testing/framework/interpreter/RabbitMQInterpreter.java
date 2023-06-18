@@ -57,7 +57,6 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     @Override
     protected void acceptImpl(final Rabbit o, final CommandResult result) {
         Rabbit rabbit = injectCommand(o);
-        LogUtil.logAlias(rabbit.getAlias());
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         final AtomicInteger commandId = new AtomicInteger();
@@ -74,6 +73,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                                    final String alias,
                                    final CommandResult result) {
         StopWatch stopWatch = StopWatch.createStarted();
+        LogUtil.logAlias(alias);
         try {
             runRabbitMqOperation(action, alias, result);
         } catch (Exception e) {

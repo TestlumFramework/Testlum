@@ -47,7 +47,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @UtilityClass
 public final class HttpUtil {
 
-    private static final String EQUALS_BETWEEN_VALUES = "%s=%s";
     private static final Map<Function<Http, HttpInfo>, HttpMethod> HTTP_METHOD_MAP = new HashMap<>(8, 1F);
     private static final Map<Function<Elasticsearch, ElasticSearchRequest>, HttpMethod> ES_HTTP_METHOD_MAP =
             new HashMap<>(8);

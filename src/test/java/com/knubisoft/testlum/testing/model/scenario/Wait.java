@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;attribute name="time" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}timePattern" /&gt;
- *       &lt;attribute name="unit" type="{http://www.knubisoft.com/testlum/testing/model/scenario}unit" default="seconds" /&gt;
+ *       &lt;attribute name="unit" type="{http://www.knubisoft.com/testlum/testing/model/scenario}timeunit" default="seconds" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -34,7 +34,7 @@ public class Wait
     @XmlAttribute(name = "time", required = true)
     protected String time;
     @XmlAttribute(name = "unit")
-    protected Unit unit;
+    protected Timeunit unit;
 
     /**
      * Gets the value of the time property.
@@ -65,12 +65,12 @@ public class Wait
      * 
      * @return
      *     possible object is
-     *     {@link Unit }
+     *     {@link Timeunit }
      *     
      */
-    public Unit getUnit() {
+    public Timeunit getUnit() {
         if (unit == null) {
-            return Unit.SECONDS;
+            return Timeunit.SECONDS;
         } else {
             return unit;
         }
@@ -81,10 +81,10 @@ public class Wait
      * 
      * @param value
      *     allowed object is
-     *     {@link Unit }
+     *     {@link Timeunit }
      *     
      */
-    public void setUnit(Unit value) {
+    public void setUnit(Timeunit value) {
         this.unit = value;
     }
 

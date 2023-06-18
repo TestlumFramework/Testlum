@@ -1,4 +1,4 @@
-package com.knubisoft.testlum.testing.framework.util;
+package com.knubisoft.testlum.testing.framework;
 
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import lombok.SneakyThrows;

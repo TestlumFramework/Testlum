@@ -1,30 +1,21 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib;
 
-import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorProvider;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
-import com.knubisoft.testlum.testing.model.scenario.SwitchToFrame;
 import com.knubisoft.testlum.testing.model.scenario.Ui;
-import com.knubisoft.testlum.testing.model.scenario.WebView;
-import io.appium.java_client.remote.SupportsContextSwitching;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.html5.WebStorage;
-
-import java.util.LinkedList;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CLEAR_COOKIES_AFTER_EXECUTION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CLEAR_LOCAL_STORAGE_BY_KEY;
 
 public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterpreter<T> {
+
+    @Autowired
+    protected SubCommandRunner subCommandRunner;
 
     protected AbstractUiInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -32,6 +23,7 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
 
     public ExecutorDependencies createExecutorDependencies(final UiType uiType) {
         return ExecutorDependencies.builder()
+                .context(dependencies.getContext())
                 .file(dependencies.getFile())
                 .driver(uiType.getAppropriateDriver(dependencies))
                 .scenarioContext(dependencies.getScenarioContext())
@@ -39,73 +31,6 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
                 .uiType(uiType)
                 .environment(dependencies.getEnvironment())
                 .build();
-    }
-
-    public void runCommands(final List<AbstractUiCommand> commandList,
-                            final CommandResult result,
-                            final ExecutorDependencies dependencies) {
-        List<CommandResult> subCommandsResult = new LinkedList<>();
-        result.setSubCommandsResult(subCommandsResult);
-        commandList.forEach(command -> processEachCommand(command, subCommandsResult, dependencies));
-        ResultUtil.setExecutionResultIfSubCommandsFailed(result);
-    }
-
-    private void processEachCommand(final AbstractUiCommand command,
-                                    final List<CommandResult> subCommandsResult,
-                                    final ExecutorDependencies dependencies) {
-        CommandResult commandResult = ResultUtil.newUiCommandResultInstance(dependencies.getPosition().get(), command);
-        subCommandsResult.add(commandResult);
-        executeUiCommand(command, commandResult, dependencies);
-        processIfSwitchToFrame(command, commandResult, dependencies);
-        processIfWebView(command, commandResult, dependencies);
-    }
-
-    private void executeUiCommand(final AbstractUiCommand command,
-                                  final CommandResult result,
-                                  final ExecutorDependencies dependencies) {
-        StopWatch stopWatch = StopWatch.createStarted();
-        try {
-            getAppropriateExecutor(command, dependencies).apply(command, result);
-        } catch (Exception e) {
-            ResultUtil.setExceptionResult(result, e);
-            LogUtil.logException(e);
-            ConfigUtil.checkIfStopScenarioOnFailure(e);
-        } finally {
-            long execTime = stopWatch.getTime();
-            stopWatch.stop();
-            result.setExecutionTime(execTime);
-            LogUtil.logExecutionTime(execTime, command);
-        }
-    }
-
-    private AbstractUiExecutor<AbstractUiCommand> getAppropriateExecutor(final AbstractUiCommand command,
-                                                                         final ExecutorDependencies dependencies) {
-        AbstractUiExecutor<AbstractUiCommand> executor =
-                ExecutorProvider.getAppropriateExecutor(command, dependencies);
-        this.dependencies.getContext().getAutowireCapableBeanFactory().autowireBean(executor);
-        return executor;
-    }
-
-    private void processIfSwitchToFrame(final AbstractUiCommand command,
-                                        final CommandResult result,
-                                        final ExecutorDependencies dependencies) {
-        if (command instanceof SwitchToFrame) {
-            LogUtil.startUiCommandsInFrame();
-            runCommands(((SwitchToFrame) command).getClickOrInputOrAssert(), result, dependencies);
-            LogUtil.endUiCommandsInFrame();
-            dependencies.getDriver().switchTo().defaultContent();
-        }
-    }
-
-    private void processIfWebView(final AbstractUiCommand command,
-                                  final CommandResult result,
-                                  final ExecutorDependencies dependencies) {
-        if (command instanceof WebView) {
-            LogUtil.startUiCommandsInWebView();
-            runCommands(((WebView) command).getClickOrInputOrAssert(), result, dependencies);
-            ((SupportsContextSwitching) dependencies.getDriver()).context("NATIVE_APP");
-            LogUtil.endUiCommandsInWebView();
-        }
     }
 
     public void clearLocalStorage(final WebDriver driver, final String key, final CommandResult result) {

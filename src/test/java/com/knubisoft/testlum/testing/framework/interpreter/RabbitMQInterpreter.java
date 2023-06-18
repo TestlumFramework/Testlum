@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
@@ -79,6 +80,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         } catch (Exception e) {
             ResultUtil.setExceptionResult(result, e);
             LogUtil.logException(e);
+            ConfigUtil.checkIfStopScenarioOnFailure(e);
         } finally {
             result.setExecutionTime(stopWatch.getTime());
             stopWatch.stop();

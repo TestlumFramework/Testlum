@@ -50,7 +50,7 @@ public class SeleniumDriverUtil {
 
     public void setDefaultCapabilities(final AbstractDevice abstractDevice,
                                        final DesiredCapabilities desiredCapabilities) {
-        desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "5000");
+        desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "500");
         Capabilities capabilities = abstractDevice.getCapabilities();
         if (nonNull(capabilities)) {
             capabilities.getCapability()

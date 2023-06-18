@@ -47,7 +47,9 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BODY_L
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CLEAR_COOKIES_AFTER;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_SKIPPED_ON_CONDITION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMENT_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONDITION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_FORMAT;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
@@ -200,6 +202,13 @@ public class LogUtil {
     /* general log */
     public void logAlias(final String alias) {
         log.info(ALIAS_LOG, alias);
+    }
+
+    public void logCondition(final String name, final boolean condition) {
+        if (!condition) {
+            log.info(COMMAND_SKIPPED_ON_CONDITION_LOG);
+        }
+        log.info(CONDITION_LOG, name, condition);
     }
 
     public void logConditionInfo(final String name,

@@ -6,7 +6,6 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONDITION_LOG;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONDITION;
 
 @Slf4j
@@ -16,8 +15,8 @@ public class ConditionUtil {
     public boolean isTrue(final String conditionName, final ScenarioContext context, final CommandResult result) {
         if (StringUtils.isNotBlank(conditionName)) {
             boolean conditionResult = context.getCondition(conditionName);
-            log.info(CONDITION_LOG, conditionName, conditionResult);
-            result.put(CONDITION, conditionName + " : " + conditionResult);
+            LogUtil.logCondition(conditionName, conditionResult);
+            result.put(CONDITION, conditionName + " = " + conditionResult);
             return conditionResult;
         }
         return true;

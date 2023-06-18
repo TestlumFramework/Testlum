@@ -49,14 +49,14 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     protected void acceptImpl(final S3 o, final CommandResult result) {
         S3 s3 = injectCommand(o);
         LogUtil.logAlias(s3.getAlias());
-        String bucket = s3.getBucket();
-        String key = s3.getKey();
-        execute(s3, bucket, key, result);
+        execute(s3, result);
     }
 
     @SneakyThrows
-    private void execute(final S3 s3, final String bucket, final String key, final CommandResult result) {
+    private void execute(final S3 s3, final CommandResult result) {
         AliasEnv aliasEnv = new AliasEnv(s3.getAlias(), dependencies.getEnvironment());
+        String bucket = s3.getBucket();
+        String key = s3.getKey();
         if (isNotBlank(s3.getUpload())) {
             ResultUtil.addS3GeneralMetaData(bucket, UPLOAD_ACTION, key, bucket, result);
             uploadFile(s3.getUpload(), bucket, key, aliasEnv, result);

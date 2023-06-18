@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.model.scenario.Body;
 import com.knubisoft.testlum.testing.model.scenario.Param;
 import com.knubisoft.testlum.testing.model.scenario.Sendgrid;
@@ -44,21 +44,21 @@ public final class SendGridUtil {
                 .orElseThrow(() -> new DefaultFrameworkException(INCORRECT_HTTP_PROCESSING));
     }
 
-    public String extractBody(final Body body, final InterpreterDependencies dependencies) {
+    public String extractBody(final Body body, final AbstractInterpreter<?> interpreter) {
         try {
-            return getAppropriateBody(body, dependencies);
+            return getAppropriateBody(body, interpreter);
         } catch (Exception e) {
             throw new DefaultFrameworkException(e);
         }
     }
 
-    private String getAppropriateBody(final Body body, final InterpreterDependencies dependencies) {
+    private String getAppropriateBody(final Body body, final AbstractInterpreter<?> interpreter) {
         if (isNull(body)) {
             return StringUtils.EMPTY;
         } else if (nonNull(body.getRaw())) {
             return getFromRaw(body);
         } else if (nonNull(body.getFrom())) {
-            return getFromFile(body, dependencies);
+            return getFromFile(body, interpreter);
         }
         return getFromParam(body);
     }
@@ -67,8 +67,8 @@ public final class SendGridUtil {
         return body.getRaw();
     }
 
-    private String getFromFile(final Body body, final InterpreterDependencies dependencies) {
-        return FileSearcher.searchFileToString(body.getFrom().getFile(), dependencies.getFile());
+    private String getFromFile(final Body body, final AbstractInterpreter<?> interpreter) {
+        return interpreter.getContentIfFile(body.getFrom().getFile());
     }
 
     private String getFromParam(final Body body) {

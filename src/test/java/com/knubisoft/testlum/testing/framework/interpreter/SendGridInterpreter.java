@@ -7,7 +7,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.ApiResponse;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.util.HttpValidator;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
@@ -64,7 +63,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         com.knubisoft.testlum.testing.model.scenario.Response response = sendgridInfo.getResponse();
         String body = StringUtils.isBlank(response.getFile())
                 ? DelimiterConstant.EMPTY
-                : FileSearcher.searchFileToString(response.getFile(), dependencies.getFile());
+                : getContentIfFile(response.getFile());
         return new ApiResponse(response.getCode(), headers, body);
     }
 
@@ -110,6 +109,6 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         }
         SendgridWithBody commandWithBody = (SendgridWithBody) sendgridInfo;
         Body body = commandWithBody.getBody();
-        return SendGridUtil.extractBody(body, dependencies);
+        return SendGridUtil.extractBody(body, this);
     }
 }

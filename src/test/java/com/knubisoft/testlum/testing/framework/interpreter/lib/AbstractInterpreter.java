@@ -82,16 +82,16 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         return dependencies.getScenarioContext().inject(original);
     }
 
-    protected void setContextBody(final String o) {
-        dependencies.getScenarioContext().setBody(o);
-    }
-
-    protected String getContentIfFile(final String fileOrContent) {
+    public String getContentIfFile(final String fileOrContent) {
         if (isNotBlank(fileOrContent) && fileOrContent.endsWith(MigrationConstant.JSON_EXTENSION)) {
             String content = FileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
             return inject(content);
         }
         return fileOrContent;
+    }
+
+    protected void setContextBody(final String o) {
+        dependencies.getScenarioContext().setBody(o);
     }
 
     protected <Y> Y injectCommand(final Y o) {

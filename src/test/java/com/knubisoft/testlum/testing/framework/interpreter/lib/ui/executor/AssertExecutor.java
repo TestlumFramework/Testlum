@@ -49,6 +49,7 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
         aAssert.getAttributeOrTitle().forEach(command -> {
             CommandResult commandResult = ResultUtil.newUiCommandResultInstance(commandId.incrementAndGet(), command);
             subCommandsResult.add(commandResult);
+            LogUtil.logAssertCommand(command, commandId.get());
             if (ConditionUtil.isTrue(command.getCondition(), dependencies.getScenarioContext(), commandResult)) {
                 executeSubCommand(command, commandResult);
             }
@@ -66,7 +67,7 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
     }
 
     private void executeAttributeCommand(final Attribute attribute, final CommandResult result) {
-        LogUtil.logAssertAttributeInfo(attribute, commandId.get());
+        LogUtil.logAssertAttributeInfo(attribute);
         ResultUtil.addAssertAttributeMetaData(attribute, result);
         String actual = getActualValue(attribute);
         String expected = attribute.getContent();
@@ -81,7 +82,7 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
     }
 
     private void executeTitleCommand(final Title title, final CommandResult result) {
-        LogUtil.logAssertTitleCommand(title, commandId.get());
+        LogUtil.logAssertTitleCommand(title);
         String actual = dependencies.getDriver().getTitle();
         ResultUtil.setExpectedActual(title.getContent(), actual, result);
         executeComparison(actual, title.getContent(), result);

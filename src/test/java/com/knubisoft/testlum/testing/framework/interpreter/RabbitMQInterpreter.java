@@ -156,18 +156,16 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         if (isNull(actualMessage)) {
             return null;
         }
-        RabbitMQMessage actualRmqMessage = new RabbitMQMessage(actualMessage);
-        setHeadersToActual(receive, actualMessage, actualRmqMessage);
-        return actualRmqMessage;
+        return convertToRMQMessage(actualMessage, receive);
     }
 
-    private void setHeadersToActual(final ReceiveRmqMessage receive,
-                                    final Message actualMessage,
-                                    final RabbitMQMessage actualRmqMessage) {
+    private RabbitMQMessage convertToRMQMessage(final Message actualMessage, final ReceiveRmqMessage receive) {
+        RabbitMQMessage actualRmqMessage = new RabbitMQMessage(actualMessage);
         if (receive.isHeaders()) {
             actualRmqMessage.setHeaders(actualMessage.getMessageProperties().getHeaders());
             actualRmqMessage.getHeaders().remove(CORRELATION_ID);
         }
+        return actualRmqMessage;
     }
 
     private void compareMessages(final List<RabbitMQMessage> actualRmqMessages,

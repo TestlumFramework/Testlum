@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_VARIABLE_LOG;
@@ -133,7 +134,8 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     private String getFileResult(final WebVar var, final CommandResult result) {
-        return variableHelper.getFileResult(var.getFile(), dependencies.getFile(), var.getName(), result);
+        Function<String, String> fileToString = this::getContentIfFile;
+        return variableHelper.getFileResult(var.getFile(), var.getName(), fileToString, result);
     }
 
     private String getSQLResult(final WebVar var, final CommandResult result) {

@@ -65,7 +65,7 @@ public class ExceptionMessage {
     public static final String UNABLE_TO_FIND_LOCATOR_BY_PATH = "Unable to find locator [%s] by path";
     public static final String UNABLE_PARSE_FILE_WITH_LOCATORS = "Unable to parse file %s with locators. Error: %s";
     public static final String MISSING_CONSTRUCTOR = "Missing constructor for class %s";
-    public static final String UNABLE_FIND_VALUE_FOR_KEY = "Unable to find value for key %s. Available keys %s";
+    public static final String UNABLE_FIND_VALUE_FOR_KEY = "Unable to find value for key <%s>. Available keys: %s";
 
     public static final String RETHROWN_ERRORS_TEMPLATE = "Errors:%n%s";
     public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";

@@ -34,7 +34,7 @@ public class MongoDBInterpreter extends AbstractInterpreter<Mongo> {
         String actual = getActual(mongo, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpectedFile(mongo.getFile());
+                .withExpected(getContentIfFile(mongo.getFile()));
 
         result.setActual(StringPrettifier.asJsonResult(actual));
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));

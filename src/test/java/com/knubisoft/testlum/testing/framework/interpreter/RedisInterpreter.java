@@ -36,7 +36,7 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
         String actual = getActual(redis, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpectedFile(redis.getFile());
+                .withExpected(getContentIfFile(redis.getFile()));
 
         result.setActual(StringPrettifier.asJsonResult(actual));
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));

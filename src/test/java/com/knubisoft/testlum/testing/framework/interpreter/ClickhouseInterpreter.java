@@ -34,7 +34,7 @@ public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
         String actual = getActual(clickhouse, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpectedFile(clickhouse.getFile());
+                .withExpected(getContentIfFile(clickhouse.getFile()));
 
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
         result.setActual(StringPrettifier.asJsonResult(actual));

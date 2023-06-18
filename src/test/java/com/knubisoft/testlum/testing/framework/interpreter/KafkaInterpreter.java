@@ -13,9 +13,7 @@ import com.knubisoft.testlum.testing.model.scenario.Kafka;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeader;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -176,16 +174,12 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
     private KafkaMessage createKafkaMessage(final ConsumerRecord<String, String> consumerRecord,
                                             final boolean isHeaders) {
-        Map<String, String> headers = new HashMap<>();
-        consumerRecord.headers().forEach(h -> headers.put(h.key(), new String(h.value(), StandardCharsets.UTF_8)));
-        KafkaMessage kafkaMessage = KafkaMessage.builder()
-                .key(consumerRecord.key())
-                .value(consumerRecord.value())
-                .correlationId(headers.get(CORRELATION_ID))
-                .build();
+        KafkaMessage kafkaMessage = new KafkaMessage(consumerRecord);
         if (isHeaders) {
+            Map<String, String> headers = new HashMap<>();
+            consumerRecord.headers().forEach(h -> headers.put(h.key(), new String(h.value(), StandardCharsets.UTF_8)));
+            headers.remove(CORRELATION_ID);
             kafkaMessage.setHeaders(headers);
-            kafkaMessage.getHeaders().remove(CORRELATION_ID);
         }
         return kafkaMessage;
     }
@@ -246,13 +240,17 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         return kafkaConsumer.get(aliasEnv).listTopics().keySet().stream().noneMatch(topic::equals);
     }
 
-    @Getter
-    @Setter
-    @Builder
+    @Data
     private static class KafkaMessage {
         private final String key;
         private final String value;
         private final String correlationId;
         private Map<String, String> headers;
+
+        KafkaMessage(final ConsumerRecord<String, String> consumerRecord) {
+            this.key = consumerRecord.key();
+            this.value = consumerRecord.value();
+            this.correlationId = headers.get(CORRELATION_ID);
+        }
     }
 }

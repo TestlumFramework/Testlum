@@ -6,7 +6,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpret
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.HttpValidator;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
@@ -54,7 +53,7 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
     private String getPayload(final LambdaBody body) {
         return StringUtils.isNotBlank(body.getRaw())
                 ? body.getRaw()
-                : FileSearcher.searchFileToString(body.getFrom().getFile(), dependencies.getFile());
+                : getContentIfFile(body.getFrom().getFile());
     }
 
     private InvokeResponse getLambdaFunctionResponse(final Lambda lambda, final String payload) {
@@ -89,7 +88,7 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
                               final CommandResult result) {
         String body = StringUtils.isBlank(expected.getFile())
                 ? DelimiterConstant.EMPTY
-                : FileSearcher.searchFileToString(expected.getFile(), dependencies.getFile());
+                : getContentIfFile(expected.getFile());
         result.setActual(StringPrettifier.asJsonResult(actualBody));
         result.setExpected(StringPrettifier.asJsonResult(body));
         httpValidator.validateBody(body, actualBody);

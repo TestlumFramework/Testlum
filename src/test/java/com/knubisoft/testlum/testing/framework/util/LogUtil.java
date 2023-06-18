@@ -459,17 +459,18 @@ public class LogUtil {
         log.info(COMMENT_LOG, command.getComment());
     }
 
-    public void logAssertAttributeInfo(final Attribute attribute, final int position) {
-        log.info(COMMAND_LOG, position, attribute.getClass().getSimpleName());
-        log.info(COMMENT_LOG, attribute.getComment());
+    public void logAssertCommand(final AbstractUiCommand command, final int position) {
+        log.info(COMMAND_LOG, position, command.getClass().getSimpleName());
+        log.info(COMMENT_LOG, command.getComment());
+    }
+
+    public void logAssertAttributeInfo(final Attribute attribute) {
         log.info(LOCATOR_LOG, attribute.getLocatorId());
         log.info(ATTRIBUTE_LOG, attribute.getName());
         log.info(CONTENT_LOG, StringPrettifier.cut(attribute.getContent()));
     }
 
-    public void logAssertTitleCommand(final Title title, final int position) {
-        log.info(COMMAND_LOG, position, title.getClass().getSimpleName());
-        log.info(COMMENT_LOG, title.getComment());
+    public void logAssertTitleCommand(final Title title) {
         log.info(CONTENT_LOG, title.getContent());
     }
 

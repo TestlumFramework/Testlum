@@ -34,7 +34,7 @@ public class OracleInterpreter extends AbstractInterpreter<Oracle> {
         String actual = getActual(oracle, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpectedFile(oracle.getFile());
+                .withExpected(getContentIfFile(oracle.getFile()));
 
         result.setActual(StringPrettifier.asJsonResult(actual));
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));

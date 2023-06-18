@@ -34,7 +34,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
-import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -118,10 +117,10 @@ public class VariableHelper {
     }
 
     public String getFileResult(final FromFile fromFile,
-                                final File file,
                                 final String varName,
+                                final Function<String, String> fileToString,
                                 final CommandResult result) {
-        String valueResult = FileSearcher.searchFileToString(fromFile.getFileName(), file);
+        String valueResult = fileToString.apply(fromFile.getFileName());
         ResultUtil.addVariableMetaData(FILE, varName, NO_EXPRESSION, valueResult, result);
         return valueResult;
     }

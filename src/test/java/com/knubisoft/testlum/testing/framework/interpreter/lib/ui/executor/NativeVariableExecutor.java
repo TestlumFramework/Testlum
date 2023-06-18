@@ -92,7 +92,7 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
     }
 
     private String getFileResult(final NativeVar var, final CommandResult result) {
-        return variableHelper.getFileResult(var.getFile(), dependencies.getFile(), var.getName(), result);
+        return variableHelper.getFileResult(var.getFile(), var.getName(), this::getContentIfFile, result);
     }
 
     private String getSQLResult(final NativeVar var, final CommandResult result) {

@@ -35,7 +35,7 @@ public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
         String actualPostgres = getActual(postgres, result);
         CompareBuilder compare = newCompare()
                 .withActual(actualPostgres)
-                .withExpectedFile(postgres.getFile());
+                .withExpected(getContentIfFile(postgres.getFile()));
 
         result.setExpected(StringPrettifier.asJsonResult(compare.getExpected()));
         result.setActual(StringPrettifier.asJsonResult(actualPostgres));

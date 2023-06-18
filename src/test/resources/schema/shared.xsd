@@ -140,6 +140,7 @@
     <x:simpleType name="headerName" final="restriction">
         <x:restriction base="x:string">
             <x:pattern value="[a-zA-Z\-]+"/>
+            <x:pattern value="\{\{.+\}\}"/>
         </x:restriction>
     </x:simpleType>
 

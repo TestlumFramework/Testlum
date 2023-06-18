@@ -35,7 +35,7 @@ public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
         String actual = getActual(ddb, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpectedFile(ddb.getFile());
+                .withExpected(getContentIfFile(ddb.getFile()));
 
         result.setActual(StringPrettifier.asJsonResult(actual));
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));

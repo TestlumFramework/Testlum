@@ -18,6 +18,7 @@ import com.knubisoft.testlum.testing.model.global_config.UiConfig;
 import com.knubisoft.testlum.testing.model.global_config.Web;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -51,7 +52,7 @@ import static java.util.Collections.singletonMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-public class UiValidator {
+public class UiConfigValidator implements ConfigurationValidator<Map<String, UiConfig>> {
 
     private static final String DEVICE = "device";
     private static final String BROWSER = "browser";
@@ -59,7 +60,7 @@ public class UiValidator {
     private final Map<String, Map<UiConfigPredicate, UiConfigToBaseurl>> baseUrlMethodMap;
     private final Map<String, Map<UiConfigPredicate, UiConfigToConnectionType>> connectionMethodMap;
 
-    public UiValidator() {
+    public UiConfigValidator() {
         final Map<String, Map<UiConfigPredicate, UiConfigToUiSettings>> configMethodMap = new HashMap<>();
         configMethodMap.put(WEB.name(), singletonMap(c -> nonNull(c.getWeb())
                 && c.getWeb().isEnabled(), UiConfig::getWeb));
@@ -84,7 +85,8 @@ public class UiValidator {
         connectionMethodMap = Collections.unmodifiableMap(cTypeMethodMap);
     }
 
-    public void validateUiConfig(final Map<String, UiConfig> uiConfigMap) {
+    @Override
+    public void validate(final Map<String, UiConfig> uiConfigMap) {
         List<String> envList = new ArrayList<>(uiConfigMap.keySet());
         List<UiConfig> uiConfigs = new ArrayList<>(uiConfigMap.values());
         if (!uiConfigs.isEmpty()) {
@@ -214,7 +216,7 @@ public class UiValidator {
                                               final List<UiConfig> uiConfigs,
                                               final List<List<?>> deviceOrBrowserLists) {
         List<?> defaultDeviceOrBrowserList = deviceOrBrowserLists.stream()
-                .min(Comparator.comparingInt(List::size)).get();
+                .min(Comparator.comparingInt(List::size)).orElse(Collections.emptyList());
         if (configName.equals(WEB.name())) {
             Map<String, String> defaultBrowserMap = filterAbstractBrowser(defaultDeviceOrBrowserList).stream()
                     .collect(Collectors.toMap(AbstractBrowser::getAlias, b -> b.getClass().getSimpleName()));
@@ -364,7 +366,7 @@ public class UiValidator {
                                                       final ConnectionType cType,
                                                       final MobilebrowserDevice device,
                                                       final AppiumCapabilities defaultAppiumCapabilities) {
-        if (nonNull(cType.getAppiumServer()) && Objects.isNull(device.getAppiumCapabilities())) {
+        if (nonNull(cType.getAppiumServer()) && isNull(device.getAppiumCapabilities())) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envName));
         } else if (nonNull(cType.getAppiumServer())
@@ -378,7 +380,7 @@ public class UiValidator {
                                                               final ConnectionType cType,
                                                               final MobilebrowserDevice device,
                                                               final BrowserStackCapabilities defaultBSCapabilities) {
-        if (nonNull(cType.getBrowserStack()) && Objects.isNull(device.getBrowserStackCapabilities())) {
+        if (nonNull(cType.getBrowserStack()) && isNull(device.getBrowserStackCapabilities())) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envName));
         } else if (nonNull(cType.getBrowserStack())
@@ -425,7 +427,7 @@ public class UiValidator {
                                                final ConnectionType cType,
                                                final NativeDevice device,
                                                final AppiumNativeCapabilities defaultAppiumCapabilities) {
-        if (nonNull(cType.getAppiumServer()) && Objects.isNull(device.getAppiumCapabilities())) {
+        if (nonNull(cType.getAppiumServer()) && isNull(device.getAppiumCapabilities())) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envName));
         } else if (nonNull(cType.getAppiumServer())
@@ -439,7 +441,7 @@ public class UiValidator {
                                                      final ConnectionType cType,
                                                      final NativeDevice device,
                                                      final BrowserStackCapabilities defaultBSCapabilities) {
-        if (nonNull(cType.getBrowserStack()) && Objects.isNull(device.getBrowserStackCapabilities())) {
+        if (nonNull(cType.getBrowserStack()) && isNull(device.getBrowserStackCapabilities())) {
             throw new DefaultFrameworkException(CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE,
                     device.getAlias(), configName, getConfigPath(envName));
         } else if (nonNull(cType.getBrowserStack())
@@ -449,7 +451,8 @@ public class UiValidator {
     }
 
     private String getConfigPath(final String envName) {
-        return FileSearcher.searchFileFromEnvFolder(envName, UI_CONFIG_FILENAME).get().getPath()
+        return FileSearcher.searchFileFromEnvFolder(envName, UI_CONFIG_FILENAME)
+                .map(File::getPath).orElse(TestResourceSettings.getInstance().getEnvConfigFolder().getPath())
                 .replace(TestResourceSettings.getInstance().getTestResourcesFolder().getPath(), StringUtils.EMPTY);
     }
 

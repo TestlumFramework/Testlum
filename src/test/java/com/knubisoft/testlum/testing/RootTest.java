@@ -12,7 +12,7 @@ import com.knubisoft.testlum.testing.framework.report.GlobalScenarioStatCollecto
 import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioRunner;
-import com.knubisoft.testlum.testing.framework.util.ConnectionManager;
+import com.knubisoft.testlum.testing.framework.ConnectionManager;
 import com.knubisoft.testlum.testing.framework.util.FileRemover;
 import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.global_config.DelayBetweenScenarioRuns;

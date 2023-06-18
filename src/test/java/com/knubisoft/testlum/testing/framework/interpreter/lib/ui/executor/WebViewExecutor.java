@@ -1,12 +1,15 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.SubCommandRunner;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.model.scenario.WebView;
 import io.appium.java_client.remote.SupportsContextSwitching;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Locale;
 import java.util.Set;
@@ -15,6 +18,9 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 
 @ExecutorForClass(WebView.class)
 public class WebViewExecutor extends AbstractUiExecutor<WebView> {
+
+    @Autowired
+    private SubCommandRunner subCommandRunner;
 
     public WebViewExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -29,5 +35,10 @@ public class WebViewExecutor extends AbstractUiExecutor<WebView> {
                 .findFirst()
                 .orElseThrow(() -> new DefaultFrameworkException(CANNOT_SWITCH_TO_WEBVIEW));
         driver.context(contextName);
+
+        LogUtil.startUiCommandsInWebView();
+        this.subCommandRunner.runCommands(webView.getClickOrInputOrAssert(), result, dependencies);
+        ((SupportsContextSwitching) dependencies.getDriver()).context("NATIVE_APP");
+        LogUtil.endUiCommandsInWebView();
     }
 }

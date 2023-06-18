@@ -7,7 +7,7 @@ import lombok.experimental.UtilityClass;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_TYPE;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.TIME_UNIT_UNKNOWN_TYPE;
 
 @UtilityClass
 public class WaitUtil {
@@ -19,7 +19,7 @@ public class WaitUtil {
             case SECONDS:
                 return TimeUnit.SECONDS;
             default:
-                throw new DefaultFrameworkException(UNKNOWN_TYPE, unit.value());
+                throw new DefaultFrameworkException(TIME_UNIT_UNKNOWN_TYPE, unit.value());
         }
     }
 

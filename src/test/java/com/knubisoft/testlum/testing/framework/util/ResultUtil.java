@@ -188,12 +188,12 @@ public class ResultUtil {
     private static final String IMAGE_LOCATOR = "Locator to element with image";
     private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
 
-    public CommandResult newCommandResultInstance(final int number, final Object... name) {
+    public CommandResult newCommandResultInstance(final int number, final AbstractCommand... name) {
         CommandResult commandResult = new CommandResult();
         commandResult.setId(number);
         commandResult.setSuccess(true);
         if (nonNull(name)) {
-            commandResult.setCommandKey(name.getClass().getSimpleName());
+            commandResult.setCommandKey(name[0].getClass().getSimpleName());
         }
         return commandResult;
     }

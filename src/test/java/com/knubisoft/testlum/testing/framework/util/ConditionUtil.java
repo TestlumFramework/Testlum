@@ -5,6 +5,8 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.expression.Expression;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONDITION;
 
@@ -20,5 +22,13 @@ public class ConditionUtil {
             return conditionResult;
         }
         return true;
+    }
+
+    public boolean parseFromSpel(final String expression, final String name, final CommandResult result) {
+        Expression exp = new SpelExpressionParser().parseExpression(expression);
+        boolean conditionResult = Boolean.TRUE.equals(exp.getValue(Boolean.class));
+        LogUtil.logConditionInfo(name, expression, conditionResult);
+        ResultUtil.addConditionMetaData(name, expression, conditionResult, result);
+        return conditionResult;
     }
 }

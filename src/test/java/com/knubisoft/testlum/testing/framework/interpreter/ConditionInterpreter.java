@@ -23,7 +23,8 @@ public class ConditionInterpreter extends AbstractInterpreter<Condition> {
     }
 
     @Override
-    protected void acceptImpl(final Condition condition, final CommandResult result) {
+    protected void acceptImpl(final Condition o, final CommandResult result) {
+        Condition condition = injectCommand(o);
         try {
             boolean conditionResult = conditionHelper.parseFromSpel(condition.getSpel(), condition.getName(), result);
             dependencies.getScenarioContext().setCondition(condition.getName(), conditionResult);

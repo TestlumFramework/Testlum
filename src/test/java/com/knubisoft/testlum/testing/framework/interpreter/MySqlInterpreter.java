@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @InterpreterForClass(Mysql.class)
@@ -30,12 +29,12 @@ public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
     }
 
     @Override
-    protected void acceptImpl(final Mysql mySql, final CommandResult result) {
-        String expected = inject(getContentIfFile(mySql.getFile()));
-        String actual = getActual(mySql, result);
+    protected void acceptImpl(final Mysql o, final CommandResult result) {
+        Mysql mysql = injectCommand(o);
+        String actual = getActual(mysql, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpected(expected);
+                .withExpected(getContentIfFile(mysql.getFile()));
 
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
         result.setActual(StringPrettifier.asJsonResult(actual));
@@ -44,19 +43,12 @@ public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
         setContextBody(actual);
     }
 
-    protected String getActual(final Mysql mySql, final CommandResult result) {
-        String alias = mySql.getAlias();
-        List<String> queries = getSqlList(mySql);
+    protected String getActual(final Mysql mysql, final CommandResult result) {
+        String alias = mysql.getAlias();
+        List<String> queries = mysql.getQuery();
         LogUtil.logAllQueries(queries, alias);
         ResultUtil.addDatabaseMetaData(alias, queries, result);
-        StorageOperation.StorageOperationResult applyMySql = mySqlOperation.apply(new ListSource(queries),
-                inject(alias));
+        StorageOperation.StorageOperationResult applyMySql = mySqlOperation.apply(new ListSource(queries), alias);
         return toString(applyMySql.getRaw());
-    }
-
-    private List<String> getSqlList(final Mysql mySql) {
-        return mySql.getQuery().stream()
-                .map(this::inject)
-                .collect(Collectors.toList());
     }
 }

@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
+import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
@@ -16,13 +17,13 @@ import org.apache.commons.lang3.time.StopWatch;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SLOW_COMMAND_PROCESSING;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMENT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.POSITION_COMMAND_LOG;
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
@@ -35,11 +36,13 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     }
 
     public final void apply(final T o, final CommandResult result) {
-        log.info(format(POSITION_COMMAND_LOG, dependencies.getPosition().get(), o.getClass().getSimpleName()));
+        log.info(POSITION_COMMAND_LOG, dependencies.getPosition().get(), o.getClass().getSimpleName());
         if (isNotBlank(o.getComment())) {
-            log.info(COMMENT_LOG, o.getComment());
+            String comment = inject(o.getComment());
+            log.info(COMMENT_LOG, comment);
+            result.setComment(comment);
         }
-        if (ConditionUtil.isTrue(o.getCondition(), dependencies.getScenarioContext(), result)) {
+        if (ConditionUtil.isTrue(inject(o.getCondition()), dependencies.getScenarioContext(), result)) {
             checkExecutionTime(o, () -> acceptImpl(o, result));
         }
     }
@@ -49,12 +52,16 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         r.run();
         long ms = sw.getTime(TimeUnit.MILLISECONDS);
         Integer threshold = o.getThreshold();
-        if (Objects.nonNull(threshold) && ms > threshold) {
+        if (nonNull(threshold) && ms > threshold) {
             throw new DefaultFrameworkException(SLOW_COMMAND_PROCESSING, ms, threshold);
         }
     }
 
     protected abstract void acceptImpl(T o, CommandResult result);
+
+    public CompareBuilder newCompare() {
+        return new CompareBuilder(dependencies.getFile(), dependencies.getPosition().get());
+    }
 
     public void save(final String actual) {
         try {
@@ -75,18 +82,22 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         return dependencies.getScenarioContext().inject(original);
     }
 
-    protected void setContextBody(final String o) {
-        dependencies.getScenarioContext().setBody(o);
-    }
-
-    protected String getContentIfFile(final String fileOrContent) {
+    public String getContentIfFile(final String fileOrContent) {
         if (isNotBlank(fileOrContent) && fileOrContent.endsWith(MigrationConstant.JSON_EXTENSION)) {
-            return FileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
+            String content = FileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
+            return inject(content);
         }
         return fileOrContent;
     }
 
-    public CompareBuilder newCompare() {
-        return new CompareBuilder(dependencies.getFile(), dependencies.getPosition());
+    protected void setContextBody(final String o) {
+        dependencies.getScenarioContext().setBody(o);
+    }
+
+    protected <Y> Y injectCommand(final Y o) {
+        if (nonNull(o)) {
+            return InjectionUtil.injectObject(o, dependencies.getScenarioContext());
+        }
+        return null;
     }
 }

@@ -61,10 +61,10 @@ public class UiUtil {
         return WebElementFinder.find(locator, dependencies.getDriver());
     }
 
-    public void highlightElementIfRequired(final Boolean isHighlight,
+    public void highlightElementIfRequired(final boolean isHighlight,
                                            final WebElement element,
                                            final WebDriver driver) {
-        if ((Objects.isNull(isHighlight) || isHighlight) && !(driver instanceof AppiumDriver)) {
+        if (isHighlight && !(driver instanceof AppiumDriver)) {
             JavascriptUtil.executeJsScript(HIGHLIGHT_SCRIPT, driver, element);
         }
     }

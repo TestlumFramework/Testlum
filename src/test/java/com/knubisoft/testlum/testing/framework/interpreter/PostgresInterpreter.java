@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @InterpreterForClass(Postgres.class)
@@ -31,12 +30,12 @@ public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
     }
 
     @Override
-    protected void acceptImpl(final Postgres postgres, final CommandResult result) {
-        String expected = inject(getContentIfFile(postgres.getFile()));
+    protected void acceptImpl(final Postgres o, final CommandResult result) {
+        Postgres postgres = injectCommand(o);
         String actualPostgres = getActual(postgres, result);
         CompareBuilder compare = newCompare()
                 .withActual(actualPostgres)
-                .withExpected(expected);
+                .withExpected(getContentIfFile(postgres.getFile()));
 
         result.setExpected(StringPrettifier.asJsonResult(compare.getExpected()));
         result.setActual(StringPrettifier.asJsonResult(actualPostgres));
@@ -46,17 +45,11 @@ public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
 
     protected String getActual(final Postgres postgres, final CommandResult result) {
         String alias = postgres.getAlias();
-        List<String> queries = getSqlList(postgres);
+        List<String> queries = postgres.getQuery();
         LogUtil.logAllQueries(queries, alias);
         ResultUtil.addDatabaseMetaData(alias, queries, result);
         StorageOperation.StorageOperationResult applyPostgres =
-                postgresSqlOperation.apply(new ListSource(queries), inject(alias));
+                postgresSqlOperation.apply(new ListSource(queries), alias);
         return toString(applyPostgres.getRaw());
-    }
-
-    private List<String> getSqlList(final Postgres postgres) {
-        return postgres.getQuery().stream()
-                .map(this::inject)
-                .collect(Collectors.toList());
     }
 }

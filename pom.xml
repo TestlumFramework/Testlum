@@ -864,6 +864,16 @@
             <groupId>com.aventstack</groupId>
             <artifactId>klov-reporter</artifactId>
             <version>${extent-reports.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mongodb</groupId>
+                    <artifactId>mongodb-driver-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mongodb</groupId>
+                    <artifactId>bson</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

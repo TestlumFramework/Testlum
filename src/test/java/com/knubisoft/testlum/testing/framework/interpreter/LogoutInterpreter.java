@@ -19,7 +19,8 @@ public class LogoutInterpreter extends AbstractInterpreter<Logout> {
 
     @Override
     protected void acceptImpl(final Logout o, final CommandResult result) {
-        AuthStrategy authStrategy = AuthFactory.create(dependencies, o.getAlias());
+        Logout logout = injectCommand(o);
+        AuthStrategy authStrategy = AuthFactory.create(dependencies, logout.getAlias());
         authStrategy.logout();
     }
 }

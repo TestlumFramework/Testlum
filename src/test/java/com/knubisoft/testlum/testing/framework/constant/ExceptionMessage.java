@@ -42,6 +42,7 @@ public class ExceptionMessage {
 
     public static final String WEBSOCKET_CONNECTION_FAILURE =
             "Something went wrong while connecting to websocket with name <%s>";
+    public static final String UNKNOWN_WEBSOCKET_COMMAND = "Unknown websocket command: %s";
     public static final String UNEXPECTED_WEBSOCKET_MESSAGE_TYPE = "Unexpected websocket message type: %s";
 
     public static final String FUNCTION_FOR_COMMAND_NOT_FOUND = "Function for class %s not found. "
@@ -50,6 +51,9 @@ public class ExceptionMessage {
     public static final String EXECUTOR_FOR_UI_COMMAND_NOT_FOUND = "Executor for class %s not found.";
 
     public static final String UNABLE_FIND_FILE_IN_ROOT_FOLDER = "Unable to find file by key [%1$s] "
+            + "Initial scan folder [%2$s] with strategy recursive walk to root folder [%3$s]";
+
+    public static final String UNABLE_FIND_FOLDER_IN_ROOT_FOLDER = "Unable to find folder by key [%1$s] "
             + "Initial scan folder [%2$s] with strategy recursive walk to root folder [%3$s]";
 
     public static final String XSDISSUE_TO_STRING =
@@ -61,15 +65,16 @@ public class ExceptionMessage {
     public static final String UNABLE_TO_FIND_LOCATOR_BY_PATH = "Unable to find locator [%s] by path";
     public static final String UNABLE_PARSE_FILE_WITH_LOCATORS = "Unable to parse file %s with locators. Error: %s";
     public static final String MISSING_CONSTRUCTOR = "Missing constructor for class %s";
-    public static final String UNABLE_FIND_VALUE_FOR_KEY = "Unable to find value for key %s. Available keys %s";
+    public static final String UNABLE_FIND_VALUE_FOR_KEY = "Unable to find value for key <%s>. Available keys: %s";
 
     public static final String RETHROWN_ERRORS_TEMPLATE = "Errors:%n%s";
+    public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
+    public static final String SCENARIOS_FOLDER_NOT_EXIST = "[scenarios] folder does not exist";
     public static final String PAGES_FOLDER_NOT_EXIST = "[pages] folder does not exist";
     public static final String COMPONENTS_FOLDER_NOT_EXIST = "[components] folder does not exist";
-    public static final String SCENARIOS_FOLDER_NOT_EXIST = "[scenarios] folder does not exist";
-    public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
     public static final String DATA_FOLDER_NOT_EXIST = "[data] folder does not exist";
     public static final String ENV_CONFIG_FOLDER_NOT_EXIST = "[config] folder does not exist";
+    public static final String ENV_FOLDER_NOT_EXIST = "[%s] folder does not exist";
     public static final String DUPLICATE_FILENAME = ANSI_RED + "The [%s] folder and its subfolders contain "
             + "files with duplicate filenames - [%s]. Each file should have a unique name" + ANSI_RESET;
     public static final String DUPLICATE_FOLDER_NAME = ANSI_RED + "The [%s] folder and its subfolders contain "
@@ -113,12 +118,16 @@ public class ExceptionMessage {
     public static final String VAR_TYPE_NOT_SUPPORTED = "Type of <%s> command is not supported";
     public static final String GENERATION_METHOD_NOT_SUPPORTED = "Random string generation method is not supported";
     public static final String ASSERT_TYPE_NOT_SUPPORTED = "Assert command %s not supported";
+    public static final String HOT_KEY_NOT_SUPPORTED = "Hotkey command %s not supported";
     public static final String NAVIGATE_NOT_SUPPORTED = "Navigate command %s not supported";
     public static final String DROP_DOWN_NOT_SUPPORTED = "Drop down by method by %s not supported";
     public static final String SCROLL_TO_ELEMENT_NOT_SUPPORTED = "Scroll to the element by %s percents not supported";
     public static final String JS_FILE_UNREADABLE = "The .js file by path ./javascript/%s unreadable";
 
     public static final String DRIVER_INITIALIZER_NOT_FOUND = "Driver initializer not found";
+    public static final String UNKNOWN_MOBILE_PLATFORM_NAME = "Unknown mobile platform name: %s";
+    public static final String UNKNOWN_CONNECTION_TYPE = "Unknown connection type: %s";
+    public static final String BROWSER_STACK_CONFIGURATION_NOT_FOUND = "Cannot find <BrowserStackLogin> configuration";
 
     public static final String STOP_IF_NON_PARSED_SCENARIO = ANSI_YELLOW
             + "The execution has been stopped because of the enabled <StopIfInvalidScenario>" + ANSI_RESET;
@@ -182,17 +191,17 @@ public class ExceptionMessage {
             + "enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
     public static final String ENVIRONMENT_MISSING_DEVICES_OR_BROWSERS = ANSI_RED + "One or more of your environments "
             + "does not have enabled <%ss> in <%s> block" + ANSI_RESET;
-    public static final String UI_ALIASES_NOT_DIFFER = ANSI_RED + "More than one enabled <%s> in <%s> "
-            + "block with alias <%s> was found in the config by path: %s" + ANSI_RESET;
+    public static final String UI_ALIASES_NOT_DIFFER = ANSI_RED + "More than one enabled <%s> was found in "
+            + "<%s> settings with alias <%s> in the config by path: %s" + ANSI_RESET;
     public static final String UI_ALIASES_NOT_MATCH = ANSI_RED + "Enabled %s <%s> in <%s> block with alias <%s> not"
             + " found or not enabled in all enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
     public static final String CONNECTION_TYPE_NOT_MATCH = ANSI_RED + "Connection type in <%s> block must be the same "
             + "in all enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
-    public static final String SAME_APPIUM_SERVER_URLS = ANSI_RED + "Appium <serverUrl> must be different for each <%s>"
-            + " block in all enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
-    public static final String BROWSERSTACK_LOGIN_NOT_CONFIGURED = ANSI_RED + "If you use <browserStack> connection, "
-            + "<browserStackLogin> block must be configured in all enabled environments (" + UI_CONFIG_FILENAME
-            + " files)" + ANSI_RESET;
+    public static final String SAME_APPIUM_SERVER_URLS = ANSI_RED + "<AppiumServer> connection url must be different "
+            + "for each <%s> settings in all enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
+    public static final String BROWSERSTACK_LOGIN_NOT_CONFIGURED = ANSI_RED + "To use the <BrowserStack> connection "
+            + "type requires <browserStackLogin> settings to be configured in all enabled environments "
+            + "(" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
     public static final String DEVICE_PLATFORMS_NOT_MATCH = ANSI_RED + "<device> in <%s> block with alias <%s> must "
             + "have the same <platformName> param in all enabled environments (" + UI_CONFIG_FILENAME + " files)"
             + ANSI_RESET;

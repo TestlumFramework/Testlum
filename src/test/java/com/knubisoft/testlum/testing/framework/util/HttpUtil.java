@@ -8,12 +8,12 @@ import com.knubisoft.testlum.testing.model.scenario.ElasticSearchRequest;
 import com.knubisoft.testlum.testing.model.scenario.Elasticsearch;
 import com.knubisoft.testlum.testing.model.scenario.Http;
 import com.knubisoft.testlum.testing.model.scenario.HttpInfo;
+import com.knubisoft.testlum.testing.model.scenario.Param;
 import com.knubisoft.testlum.testing.model.scenario.PartFile;
 import com.knubisoft.testlum.testing.model.scenario.PartParam;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -28,7 +28,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -48,7 +47,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @UtilityClass
 public final class HttpUtil {
 
-    private static final String EQUALS_BETWEEN_VALUES = "%s=%s";
     private static final Map<Function<Http, HttpInfo>, HttpMethod> HTTP_METHOD_MAP = new HashMap<>(8, 1F);
     private static final Map<Function<Elasticsearch, ElasticSearchRequest>, HttpMethod> ES_HTTP_METHOD_MAP =
             new HashMap<>(8);
@@ -92,7 +90,7 @@ public final class HttpUtil {
                                   final InterpreterDependencies dependencies) {
         try {
             return getAppropriateEntity(body, contentType, interpreter, dependencies);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new DefaultFrameworkException(e);
         }
     }
@@ -100,17 +98,17 @@ public final class HttpUtil {
     private HttpEntity getAppropriateEntity(final Body body,
                                             final ContentType contentType,
                                             final AbstractInterpreter<?> interpreter,
-                                            final InterpreterDependencies dependencies) throws IOException {
+                                            final InterpreterDependencies dependencies) {
         if (isNull(body)) {
             return newStringEntity(StringUtils.EMPTY, null);
         } else if (nonNull(body.getRaw())) {
-            return getFromRaw(body, contentType, interpreter);
+            return getFromRaw(body, contentType);
         } else if (nonNull(body.getFrom())) {
-            return getFromFile(body, contentType, interpreter, dependencies);
+            return getFromFile(body, contentType, interpreter);
         } else if (nonNull(body.getMultipart())) {
-            return getFromMultipart(body, dependencies, contentType);
+            return getFromMultipart(body, contentType, dependencies);
         } else if (!body.getParam().isEmpty()) {
-            return getFromParameters(body, contentType, interpreter);
+            return getFromParameters(body, contentType);
         }
         throw new DefaultFrameworkException(UNKNOWN_BODY_CONTENT);
     }
@@ -119,33 +117,22 @@ public final class HttpUtil {
         return new StringEntity(body, contentType);
     }
 
-    private HttpEntity getFromRaw(final Body body,
-                                  final ContentType contentType,
-                                  final AbstractInterpreter<?> interpreter) {
-        String injectedContent = interpreter.inject(body.getRaw().replaceAll(REGEX_MANY_SPACES, SPACE).trim());
-        return newStringEntity(injectedContent, contentType);
+    private HttpEntity getFromRaw(final Body body, final ContentType contentType) {
+        String content = body.getRaw().replaceAll(REGEX_MANY_SPACES, SPACE).trim();
+        return newStringEntity(content, contentType);
     }
 
     private HttpEntity getFromFile(final Body body,
                                    final ContentType contentType,
-                                   final AbstractInterpreter<?> interpreter,
-                                   final InterpreterDependencies dependencies) throws IOException {
-        String injectedContent = injectFromFile(body, interpreter, dependencies.getFile());
-        return newStringEntity(injectedContent, contentType);
-    }
-
-    public String injectFromFile(final Body body,
-                                 final AbstractInterpreter<?> interpreter,
-                                 final File fromDir) throws IOException {
+                                   final AbstractInterpreter<?> interpreter) {
         String fileName = body.getFrom().getFile();
-        File from = FileSearcher.searchFileFromDir(fromDir, fileName);
-        String content = FileUtils.readFileToString(from, StandardCharsets.UTF_8);
-        return interpreter.inject(content);
+        String content = interpreter.getContentIfFile(fileName);
+        return newStringEntity(content, contentType);
     }
 
     private HttpEntity getFromMultipart(final Body body,
-                                        final InterpreterDependencies dependencies,
-                                        final ContentType contentType) {
+                                        final ContentType contentType,
+                                        final InterpreterDependencies dependencies) {
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         if (ContentType.MULTIPART_FORM_DATA.getMimeType().equalsIgnoreCase(contentType.getMimeType())) {
             builder.setContentType(contentType);
@@ -154,35 +141,31 @@ public final class HttpUtil {
             if (part instanceof PartParam) {
                 addTextBody(builder, (PartParam) part);
             } else if (part instanceof PartFile) {
-                addFileBody(builder, (PartFile) part, dependencies);
+                addFileBody(builder, (PartFile) part, dependencies.getFile());
             }
         }
         return builder.build();
     }
 
-    private void addTextBody(final MultipartEntityBuilder builder,
-                             final PartParam param) {
+    private void addTextBody(final MultipartEntityBuilder builder, final PartParam param) {
         builder.addTextBody(param.getName(), param.getData(), isNotBlank(param.getContentType())
                 ? ContentType.parse(param.getContentType()) : ContentType.DEFAULT_TEXT);
     }
 
     private void addFileBody(final MultipartEntityBuilder builder,
                              final PartFile file,
-                             final InterpreterDependencies dependencies) {
-        File from = FileSearcher.searchFileFromDir(dependencies.getFile(), file.getFileName());
+                             final File fromDir) {
+        File from = FileSearcher.searchFileFromDir(fromDir, file.getFileName());
         builder.addBinaryBody(file.getName(), from, isNotBlank(file.getContentType())
                 ? ContentType.parse(file.getContentType()) : ContentType.DEFAULT_BINARY, file.getFileName());
     }
 
-    private HttpEntity getFromParameters(final Body body,
-                                         final ContentType contentType,
-                                         final AbstractInterpreter<?> interpreter) {
+    private HttpEntity getFromParameters(final Body body, final ContentType contentType) {
         Map<String, String> bodyParamMap = body.getParam().stream()
-                .collect(Collectors.toMap(param -> interpreter.inject(param.getName()),
-                        param -> interpreter.inject(param.getData()), (k, v) -> k, LinkedHashMap::new));
+                .collect(Collectors.toMap(Param::getName, Param::getData, (k, v) -> k, LinkedHashMap::new));
 
         if (ContentType.APPLICATION_JSON.getMimeType().equalsIgnoreCase(contentType.getMimeType())) {
-            String params = interpreter.toString(bodyParamMap);
+            String params = JacksonMapperUtil.writeValueAsString(bodyParamMap);
             return newStringEntity(params, contentType);
         }
         List<NameValuePair> paramList = bodyParamMap.entrySet().stream()

@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}commandWithLocator"&gt;
  *       &lt;attribute name="method" type="{http://www.knubisoft.com/testlum/testing/model/scenario}clickMethod" /&gt;
- *       &lt;attribute name="highlight" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="highlight" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -68,8 +68,12 @@ public class Click
      *     {@link Boolean }
      *     
      */
-    public Boolean isHighlight() {
-        return highlight;
+    public boolean isHighlight() {
+        if (highlight == null) {
+            return true;
+        } else {
+            return highlight;
+        }
     }
 
     /**

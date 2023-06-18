@@ -49,7 +49,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
     private void processOneValueFromDropDown(final OneValue oneValue, final Select select, final CommandResult result) {
         TypeForOneValue type = oneValue.getType();
         SelectOrDeselectBy method = oneValue.getBy();
-        String value = inject(oneValue.getValue());
+        String value = oneValue.getValue();
         ResultUtil.addDropDownForOneValueMetaData(type.value(), method.value(), value, result);
         log.info(COMMAND_TYPE_LOG, type.value());
         log.info(VALUE_LOG, value);

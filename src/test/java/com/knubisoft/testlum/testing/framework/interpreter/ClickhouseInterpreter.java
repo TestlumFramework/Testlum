@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @InterpreterForClass(Clickhouse.class)
@@ -30,12 +29,12 @@ public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
     }
 
     @Override
-    protected void acceptImpl(final Clickhouse clickhouse, final CommandResult result) {
-        String expected = inject(getContentIfFile(clickhouse.getFile()));
+    protected void acceptImpl(final Clickhouse o, final CommandResult result) {
+        Clickhouse clickhouse = injectCommand(o);
         String actual = getActual(clickhouse, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpected(expected);
+                .withExpected(getContentIfFile(clickhouse.getFile()));
 
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
         result.setActual(StringPrettifier.asJsonResult(actual));
@@ -46,17 +45,11 @@ public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
 
     protected String getActual(final Clickhouse clickhouse, final CommandResult result) {
         String alias = clickhouse.getAlias();
-        List<String> queries = getSqlList(clickhouse);
+        List<String> queries = clickhouse.getQuery();
         LogUtil.logAllQueries(queries, alias);
         ResultUtil.addDatabaseMetaData(alias, queries, result);
-        StorageOperation.StorageOperationResult applyClickhouse = clickhouseOperation.apply(new ListSource(queries),
-                alias);
+        StorageOperation.StorageOperationResult applyClickhouse = clickhouseOperation.apply(
+                new ListSource(queries), alias);
         return toString(applyClickhouse.getRaw());
-    }
-
-    private List<String> getSqlList(final Clickhouse clickhouse) {
-        return clickhouse.getQuery().stream()
-                .map(this::inject)
-                .collect(Collectors.toList());
     }
 }

@@ -5,7 +5,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpret
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.util.HttpValidator;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
@@ -53,7 +52,8 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     }
 
     @Override
-    protected void acceptImpl(final Elasticsearch elasticsearch, final CommandResult result) {
+    protected void acceptImpl(final Elasticsearch o, final CommandResult result) {
+        Elasticsearch elasticsearch = injectCommand(o);
         HttpUtil.ESHttpMethodMetadata esHttpMethodMetadata = HttpUtil.getESHttpMethodMetadata(elasticsearch);
         ElasticSearchRequest elasticSearchRequest = esHttpMethodMetadata.getElasticSearchRequest();
         HttpMethod httpMethod = esHttpMethodMetadata.getHttpMethod();
@@ -75,11 +75,10 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
                                     final Response actual,
                                     final HttpValidator httpValidator,
                                     final CommandResult result) {
-        String expectedFile = expectedResponse.getFile();
-        if (StringUtils.isNotBlank(expectedFile)) {
+        String expectedBody = getContentIfFile(expectedResponse.getFile());
+        if (StringUtils.isNotBlank(expectedBody)) {
             String actualBody = nonNull(actual.getEntity()) ? EntityUtils.toString(actual.getEntity()) : null;
             setContextBody(actualBody);
-            String expectedBody = FileSearcher.searchFileToString(expectedFile, dependencies.getFile());
             result.setActual(StringPrettifier.asJsonResult(actualBody));
             result.setExpected(StringPrettifier.asJsonResult(expectedBody));
             httpValidator.validateBody(expectedBody, actualBody);
@@ -105,7 +104,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
                                final HttpMethod httpMethod,
                                final String alias,
                                final CommandResult result) {
-        String endpoint = inject(elasticSearchRequest.getEndpoint());
+        String endpoint = elasticSearchRequest.getEndpoint();
         Map<String, String> headers = getHeaders(elasticSearchRequest);
         LogUtil.logHttpInfo(alias, httpMethod.name(), endpoint);
         ResultUtil.addElasticsearchMetaData(alias, httpMethod.name(), headers, endpoint, result);
@@ -148,7 +147,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         for (Header header : elasticSearchRequest.getHeader()) {
             headers.put(header.getName(), header.getData());
         }
-        return HttpUtil.injectAndGetHeaders(headers, this);
+        return headers;
     }
 
     private Map<String, String> getParams(final ElasticSearchRequest request) {

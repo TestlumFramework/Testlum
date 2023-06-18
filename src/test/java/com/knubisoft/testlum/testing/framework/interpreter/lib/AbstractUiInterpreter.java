@@ -46,69 +46,63 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
                             final ExecutorDependencies dependencies) {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
-        for (AbstractUiCommand uiCommand : commandList) {
-            LogUtil.logUICommand(dependencies.getPosition().incrementAndGet(), uiCommand);
-            processEachCommand(uiCommand, result, dependencies);
-        }
+        commandList.forEach(command -> processEachCommand(command, subCommandsResult, dependencies));
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
-    private void processEachCommand(final AbstractUiCommand uiCommand,
-                                    final CommandResult result,
+    private void processEachCommand(final AbstractUiCommand command,
+                                    final List<CommandResult> subCommandsResult,
                                     final ExecutorDependencies dependencies) {
-        CommandResult subCommandResult = ResultUtil.createCommandResultForUiSubCommand(
-                dependencies.getPosition().intValue(),
-                uiCommand.getClass().getSimpleName(),
-                uiCommand.getComment());
-        executeUiCommand(uiCommand, subCommandResult, dependencies);
-        result.getSubCommandsResult().add(subCommandResult);
-        processIfSwitchToFrame(uiCommand, subCommandResult, dependencies);
-        processIfWebView(uiCommand, subCommandResult, dependencies);
+        CommandResult commandResult = ResultUtil.newUiCommandResultInstance(dependencies.getPosition().get(), command);
+        subCommandsResult.add(commandResult);
+        executeUiCommand(command, commandResult, dependencies);
+        processIfSwitchToFrame(command, commandResult, dependencies);
+        processIfWebView(command, commandResult, dependencies);
     }
 
-    private void executeUiCommand(final AbstractUiCommand uiCommand,
-                                  final CommandResult subCommandResult,
+    private void executeUiCommand(final AbstractUiCommand command,
+                                  final CommandResult result,
                                   final ExecutorDependencies dependencies) {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
-            getAppropriateExecutor(uiCommand, dependencies).apply(uiCommand, subCommandResult);
+            getAppropriateExecutor(command, dependencies).apply(command, result);
         } catch (Exception e) {
-            ResultUtil.setExceptionResult(subCommandResult, e);
+            ResultUtil.setExceptionResult(result, e);
             LogUtil.logException(e);
             ConfigUtil.checkIfStopScenarioOnFailure(e);
         } finally {
             long execTime = stopWatch.getTime();
             stopWatch.stop();
-            subCommandResult.setExecutionTime(execTime);
-            LogUtil.logExecutionTime(execTime, uiCommand);
+            result.setExecutionTime(execTime);
+            LogUtil.logExecutionTime(execTime, command);
         }
     }
 
-    private AbstractUiExecutor<AbstractUiCommand> getAppropriateExecutor(final AbstractUiCommand uiCommand,
+    private AbstractUiExecutor<AbstractUiCommand> getAppropriateExecutor(final AbstractUiCommand command,
                                                                          final ExecutorDependencies dependencies) {
         AbstractUiExecutor<AbstractUiCommand> executor =
-                ExecutorProvider.getAppropriateExecutor(uiCommand, dependencies);
+                ExecutorProvider.getAppropriateExecutor(command, dependencies);
         this.dependencies.getContext().getAutowireCapableBeanFactory().autowireBean(executor);
         return executor;
     }
 
-    private void processIfSwitchToFrame(final AbstractUiCommand uiCommand,
+    private void processIfSwitchToFrame(final AbstractUiCommand command,
                                         final CommandResult result,
                                         final ExecutorDependencies dependencies) {
-        if (uiCommand instanceof SwitchToFrame) {
+        if (command instanceof SwitchToFrame) {
             LogUtil.startUiCommandsInFrame();
-            runCommands(((SwitchToFrame) uiCommand).getClickOrInputOrAssert(), result, dependencies);
+            runCommands(((SwitchToFrame) command).getClickOrInputOrAssert(), result, dependencies);
             LogUtil.endUiCommandsInFrame();
             dependencies.getDriver().switchTo().defaultContent();
         }
     }
 
-    private void processIfWebView(final AbstractUiCommand uiCommand,
+    private void processIfWebView(final AbstractUiCommand command,
                                   final CommandResult result,
                                   final ExecutorDependencies dependencies) {
-        if (uiCommand instanceof WebView) {
+        if (command instanceof WebView) {
             LogUtil.startUiCommandsInWebView();
-            runCommands(((WebView) uiCommand).getClickOrInputOrAssert(), result, dependencies);
+            runCommands(((WebView) command).getClickOrInputOrAssert(), result, dependencies);
             ((SupportsContextSwitching) dependencies.getDriver()).context("NATIVE_APP");
             LogUtil.endUiCommandsInWebView();
         }

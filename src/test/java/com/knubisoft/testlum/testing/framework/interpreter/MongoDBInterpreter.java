@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @InterpreterForClass(Mongo.class)
@@ -30,12 +29,12 @@ public class MongoDBInterpreter extends AbstractInterpreter<Mongo> {
     }
 
     @Override
-    protected void acceptImpl(final Mongo mongo, final CommandResult result) {
-        String expected = inject(getContentIfFile(mongo.getFile()));
+    protected void acceptImpl(final Mongo o, final CommandResult result) {
+        Mongo mongo = injectCommand(o);
         String actual = getActual(mongo, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpected(expected);
+                .withExpected(getContentIfFile(mongo.getFile()));
 
         result.setActual(StringPrettifier.asJsonResult(actual));
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
@@ -46,15 +45,11 @@ public class MongoDBInterpreter extends AbstractInterpreter<Mongo> {
 
     private String getActual(final Mongo mongo, final CommandResult result) {
         String alias = mongo.getAlias();
-        List<String> queries = getMongoQueryList(mongo);
+        List<String> queries = mongo.getQuery();
         LogUtil.logAllQueries(queries, mongo.getAlias());
         ResultUtil.addDatabaseMetaData(alias, queries, result);
         ListSource listSource = new ListSource(queries);
         StorageOperation.StorageOperationResult apply = mongoOperation.apply(listSource, alias);
         return toString(apply.getRaw());
-    }
-
-    private List<String> getMongoQueryList(final Mongo mongo) {
-        return mongo.getQuery().stream().map(this::inject).collect(Collectors.toList());
     }
 }

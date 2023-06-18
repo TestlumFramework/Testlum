@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="content" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webAttributeNamePattern" /&gt;
- *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}injectableScenarioLocator" /&gt;
+ *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scenarioLocator" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;

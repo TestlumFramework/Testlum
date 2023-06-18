@@ -11,6 +11,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
+import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.Migrate;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NAME_FOR_MIGRATION_MUST_PRESENT;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DATASET_PATH_LOG;
 
 @Slf4j
@@ -37,15 +37,16 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     }
 
     @Override
-    protected void acceptImpl(final Migrate migrate, final CommandResult result) {
+    protected void acceptImpl(final Migrate o, final CommandResult result) {
+        Migrate migrate = injectCommand(o);
         String storageName = migrate.getName().name();
         String databaseAlias = migrate.getAlias();
         List<String> datasets = migrate.getDataset();
-        ResultUtil.addMigrateMetaData(storageName, databaseAlias, datasets, result);
         if (StringUtils.isBlank(storageName)) {
             throw new DefaultFrameworkException(NAME_FOR_MIGRATION_MUST_PRESENT);
         }
-        log.info(ALIAS_LOG, databaseAlias);
+        ResultUtil.addMigrateMetaData(storageName, databaseAlias, datasets, result);
+        LogUtil.logAlias(databaseAlias);
         migrate(datasets, storageName, databaseAlias);
     }
 

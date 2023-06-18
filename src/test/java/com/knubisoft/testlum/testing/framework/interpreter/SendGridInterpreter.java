@@ -7,7 +7,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.ApiResponse;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
+import com.knubisoft.testlum.testing.framework.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.util.HttpValidator;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
@@ -46,27 +46,24 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     }
 
     @Override
-    protected void acceptImpl(final Sendgrid sendgrid, final CommandResult result) {
-        String alias = sendgrid.getAlias();
+    protected void acceptImpl(final Sendgrid o, final CommandResult result) {
+        Sendgrid sendgrid = injectCommand(o);
         SendGridUtil.SendGridMethodMetadata metadata = SendGridUtil.getSendgridMethodMetadata(sendgrid);
         SendgridInfo sendgridInfo = metadata.getHttpInfo();
         Method method = metadata.getHttpMethod();
-        String endpoint = inject(sendgridInfo.getEndpoint());
         Map<String, String> headers = getHeaders(sendgridInfo);
-        ResultUtil.addSendGridMetaData(alias, method.name(), headers, endpoint, result);
-        ApiResponse expected = getExpected(sendgridInfo);
-        Response actual = getActual(sendgridInfo, method, alias, endpoint, result);
-        result.setExpected(StringPrettifier.asJsonResult(toString(expected.getBody())));
-        result.setActual(StringPrettifier.asJsonResult(toString(actual.getBody())));
+        ResultUtil.addSendGridMetaData(sendgrid.getAlias(), method.name(), headers, sendgridInfo.getEndpoint(), result);
+        ApiResponse expected = getExpected(sendgridInfo, headers);
+        Response actual = getActual(sendgridInfo, method, sendgrid.getAlias(), result);
         compare(expected, actual, result);
         setContextBody(actual.getBody());
     }
 
-    private ApiResponse getExpected(final SendgridInfo sendgridInfo) {
+    private ApiResponse getExpected(final SendgridInfo sendgridInfo, final Map<String, String> headers) {
         com.knubisoft.testlum.testing.model.scenario.Response response = sendgridInfo.getResponse();
-        Map<String, String> headers = getHeaders(sendgridInfo);
         String body = StringUtils.isBlank(response.getFile())
-                ? DelimiterConstant.EMPTY : FileSearcher.searchFileToString(response.getFile(), dependencies.getFile());
+                ? DelimiterConstant.EMPTY
+                : getContentIfFile(response.getFile());
         return new ApiResponse(response.getCode(), headers, body);
     }
 
@@ -74,36 +71,36 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     private Response getActual(final SendgridInfo sendgridInfo,
                                final Method method,
                                final String alias,
-                               final String endpoint,
                                final CommandResult result) {
         String body = getBody(sendgridInfo);
         Request request = new Request();
         request.setMethod(method);
-        request.setEndpoint(endpoint);
+        request.setEndpoint(sendgridInfo.getEndpoint());
         request.setBody(body);
         result.put(CONTENT_TO_SEND, StringPrettifier.asJsonResult(body));
-        LogUtil.logHttpInfo(alias, method.name(), endpoint);
+        LogUtil.logHttpInfo(alias, method.name(), sendgridInfo.getEndpoint());
         LogUtil.logBody(request.getBody());
         return sendGrid.get(new AliasEnv(alias, dependencies.getEnvironment())).api(request);
     }
 
     private void compare(final ApiResponse expected, final Response actual, final CommandResult result) {
-        int expectedCode = expected.getCode();
-        int actualCode = actual.getStatusCode();
-        result.put(EXPECTED_CODE, expectedCode);
-        result.put(ACTUAL_CODE, actualCode);
+        String expectedBody = toString(expected.getBody());
+        result.setExpected(StringPrettifier.asJsonResult(expectedBody));
+        result.setActual(StringPrettifier.asJsonResult(actual.getBody()));
+        result.put(EXPECTED_CODE, expected.getCode());
+        result.put(ACTUAL_CODE, actual.getStatusCode());
+
         HttpValidator httpValidator = new HttpValidator(this);
         httpValidator.validateCode(expected.getCode(), actual.getStatusCode());
-        httpValidator.validateBody(expected.getBody().toString(), actual.getBody());
+        httpValidator.validateBody(expectedBody, actual.getBody());
         httpValidator.validateHeaders(expected.getHeaders(), actual.getHeaders());
         httpValidator.rethrowOnErrors();
     }
 
     private Map<String, String> getHeaders(final SendgridInfo sendgridInfo) {
         Map<String, String> headers = new LinkedHashMap<>();
-        InterpreterDependencies.Authorization authorization = dependencies.getAuthorization();
-        SendGridUtil.fillHeadersMap(sendgridInfo.getHeader(), headers, authorization);
-        return SendGridUtil.injectAndGetHeaders(headers, this);
+        HttpUtil.fillHeadersMap(sendgridInfo.getHeader(), headers, dependencies.getAuthorization());
+        return headers;
     }
 
     private String getBody(final SendgridInfo sendgridInfo) {
@@ -112,6 +109,6 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         }
         SendgridWithBody commandWithBody = (SendgridWithBody) sendgridInfo;
         Body body = commandWithBody.getBody();
-        return SendGridUtil.extractBody(body, this, dependencies);
+        return SendGridUtil.extractBody(body, this);
     }
 }

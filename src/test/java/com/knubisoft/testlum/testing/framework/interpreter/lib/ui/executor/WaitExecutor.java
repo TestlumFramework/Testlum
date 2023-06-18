@@ -23,7 +23,7 @@ public class WaitExecutor extends AbstractUiExecutor<Wait> {
 
     @Override
     public void execute(final Wait wait, final CommandResult result) {
-        String time = inject(wait.getTime());
+        String time = wait.getTime();
         log.info(WAIT_INFO_LOG, time, wait.getUnit());
         TimeUnit timeUnit = WaitUtil.getTimeUnit(wait.getUnit());
         ResultUtil.addWaitMetaData(time, timeUnit, result);

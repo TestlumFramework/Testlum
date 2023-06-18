@@ -5,21 +5,7 @@
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
-    <x:complexType name="commandWithLocator" abstract="true">
-        <x:complexContent>
-            <x:extension base="tns:abstractUiCommand">
-                <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="commandWithOptionalLocator" abstract="true">
-        <x:complexContent>
-            <x:extension base="tns:abstractUiCommand">
-                <x:attribute name="locatorId" type="tns:scenarioLocator"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
+    <x:include schemaLocation="shared-restrictions.xsd"/>
 
     <x:complexType name="abstractCommand" abstract="true">
         <x:attribute name="comment" type="tns:stringMin10" use="required"/>
@@ -39,55 +25,26 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:simpleType name="nonEmptyString">
-        <x:restriction base="x:string">
-            <x:minLength value="1"/>
-            <x:pattern value="(\s*[\S*]\s*)*"/>
-        </x:restriction>
-    </x:simpleType>
+    <x:complexType name="commandWithLocator" abstract="true">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
 
-    <x:simpleType name="stringWithoutSpacesPattern">
-        <x:restriction base="x:string">
-            <x:pattern value="(\s*[\S*]\s*)*"/>
-        </x:restriction>
-    </x:simpleType>
+    <x:complexType name="commandWithOptionalLocator" abstract="true">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="locatorId" type="tns:scenarioLocator"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
 
-    <x:simpleType name="webAttributeNamePattern">
+    <x:simpleType name="scenarioLocator">
         <x:restriction base="x:string">
-            <x:pattern value="([a-zA-Z]+-?)+"/>
+            <x:pattern value="([a-z0-9]+[A-Z]?[a-z0-9]?)*\.([a-z0-9]+[A-Z]?[a-z0-9]?)*"/>
             <x:pattern value="\{\{.+\}\}"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="expectedPattern">
-        <x:restriction base="x:string">
-            <x:pattern value="expected_\d+.json"/>
-            <x:pattern value="\{\{expected_\d+\}\}.json"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="bodyFile">
-        <x:restriction base="x:string">
-            <x:pattern value="body_\d+.json"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="stringMin10">
-        <x:restriction base="x:string">
-            <x:minLength value="10"/>
-            <x:pattern value="(\s*[\S*]\s*)*"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="stringMin1">
-        <x:restriction base="x:string">
-            <x:minLength value="1"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="stringMin30">
-        <x:restriction base="x:string">
-            <x:minLength value="30"/>
         </x:restriction>
     </x:simpleType>
 
@@ -98,6 +55,31 @@
         <x:attribute name="code" type="tns:codePattern" default="200"/>
         <x:attribute name="file" type="tns:expectedPattern"/>
     </x:complexType>
+
+    <x:complexType name="header">
+        <x:attribute name="name" type="tns:headerName" use="required"/>
+        <x:attribute name="data" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="headerName" final="restriction">
+        <x:restriction base="x:string">
+            <x:pattern value="[a-zA-Z\-]+"/>
+            <x:pattern value="\{\{.+\}\}"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="codePattern" final="restriction">
+        <x:restriction base="x:int">
+            <x:pattern value="[2-5]\d{2}"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="expectedPattern">
+        <x:restriction base="x:string">
+            <x:pattern value="expected_\d+.json"/>
+            <x:pattern value="\{\{.+\}\}.json"/>
+        </x:restriction>
+    </x:simpleType>
 
     <x:complexType name="body">
         <x:choice>
@@ -132,66 +114,13 @@
         <x:attribute name="fileName" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
-    <x:complexType name="header">
-        <x:attribute name="name" type="tns:headerName" use="required"/>
-        <x:attribute name="data" type="tns:nonEmptyString" use="required"/>
-    </x:complexType>
-
-    <x:simpleType name="headerName" final="restriction">
-        <x:restriction base="x:string">
-            <x:pattern value="[a-zA-Z\-]+"/>
-        </x:restriction>
-    </x:simpleType>
-
     <x:complexType name="file">
         <x:attribute name="file" type="tns:httpRequestFileExtension" use="required"/>
     </x:complexType>
 
-    <x:simpleType name="codePattern" final="restriction">
-        <x:restriction base="x:int">
-            <x:pattern value="[2-5]\d{2}"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="jsFileExtension">
-        <x:restriction base="x:string">
-            <x:pattern value=".+(\.js)"/>
-        </x:restriction>
-    </x:simpleType>
-    <x:simpleType name="jsonFileExtension">
-        <x:restriction base="x:string">
-            <x:pattern value=".+(\.json)"/>
-        </x:restriction>
-    </x:simpleType>
-
     <x:simpleType name="httpRequestFileExtension">
         <x:restriction base="x:string">
             <x:pattern value=".+(\.(json|graphql|gql))"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="imageExtension">
-        <x:restriction base="x:string">
-            <x:pattern value=".+(\.(jpg|jpeg|png|JPG|JPEG|PNG|))"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="scenarioLocator">
-        <x:restriction base="x:string">
-            <x:pattern value="([a-z0-9]+[A-Z]?[a-z0-9]?)*\.([a-z0-9]+[A-Z]?[a-z0-9]?)*"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="injectableScenarioLocator">
-        <x:restriction base="x:string">
-            <x:pattern value="([a-z0-9]+[A-Z]?[a-z0-9]?)*\.([a-z0-9]+[A-Z]?[a-z0-9]?)*|\{\{.*\}\}"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="aliasPattern">
-        <x:restriction base="x:string">
-            <x:pattern value="[a-zA-Z_\-/\d]+"/>
-            <x:pattern value="\{\{.+\}\}"/>
         </x:restriction>
     </x:simpleType>
 
@@ -202,134 +131,9 @@
         </x:restriction>
     </x:simpleType>
 
-    <x:simpleType name="sqlFileExtension">
+    <x:simpleType name="bodyFile">
         <x:restriction base="x:string">
-            <x:pattern value="[a-zA-Z\d_]+\.sql"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="timePattern">
-        <x:restriction base="x:string">
-            <x:pattern value="\d+|\{{2}([a-zA-Z\d_\-]+)\}{2}"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="tabPattern">
-        <x:restriction base="x:int">
-            <x:pattern value="[2-9]|[1-9][0-9]"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:group name="generalVarType">
-        <x:choice>
-            <x:element name="file" type="tns:fromFile"/>
-            <x:element name="path" type="tns:fromPath"/>
-            <x:element name="constant" type="tns:fromConstant"/>
-            <x:element name="expression" type="tns:fromExpression"/>
-            <x:element name="sql" type="tns:fromSQL"/>
-            <x:element name="generate" type="tns:fromRandomGenerate"/>
-        </x:choice>
-    </x:group>
-
-    <x:complexType name="randomNumeric"/>
-
-    <x:complexType name="randomAlphabetic"/>
-
-    <x:complexType name="randomAlphanumeric"/>
-
-    <x:complexType name="randomRegexp">
-        <x:attribute name="pattern" type="tns:nonEmptyString" use="required"/>
-    </x:complexType>
-
-    <x:complexType name="fromFile">
-        <x:attribute name="fileName" type="tns:nonEmptyString" use="required"/>
-    </x:complexType>
-
-    <x:complexType name="fromPath">
-        <x:attribute name="value" type="tns:xjpathPattern" use="required"/>
-    </x:complexType>
-
-    <x:simpleType name="xjpathPattern">
-        <x:restriction base="x:string">
-            <x:pattern value="/.*|\$.+"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:complexType name="fromConstant">
-        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
-    </x:complexType>
-
-    <x:complexType name="fromExpression">
-        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
-    </x:complexType>
-
-    <x:complexType name="fromSQL">
-        <x:sequence>
-            <x:element name="query" type="tns:variableQuery"/>
-        </x:sequence>
-        <x:attribute name="dbType" type="tns:relationalDB" use="required"/>
-        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
-    </x:complexType>
-
-    <x:simpleType name="variableQuery">
-        <x:restriction base="x:string">
-            <x:pattern value="(\s|\n)*SELECT([^\*,]|\n)+FROM(.|\n)+WHERE(.|\n)+"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="relationalDB">
-        <x:restriction base="x:string">
-            <x:enumeration value="POSTGRES"/>
-            <x:enumeration value="MYSQL"/>
-            <x:enumeration value="ORACLE"/>
-            <x:enumeration value="CLICKHOUSE"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:complexType name="fromRandomGenerate">
-        <x:choice>
-            <x:element name="numeric" type="tns:randomNumeric"/>
-            <x:element name="alphabetic" type="tns:randomAlphabetic"/>
-            <x:element name="alphanumeric" type="tns:randomAlphanumeric"/>
-            <x:element name="randomRegexp" type="tns:randomRegexp"/>
-        </x:choice>
-        <x:attribute name="length" type="tns:generateStringLengthPattern" use="required"/>
-    </x:complexType>
-
-    <x:simpleType name="generateStringLengthPattern">
-        <x:restriction base="x:int">
-            <x:minExclusive value="1"/>
-            <x:maxExclusive value="100000001"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:complexType name="fromCookie"/>
-
-    <x:complexType name="fromUrl"/>
-
-    <x:complexType name="fromDom">
-        <x:attribute name="locatorId" type="tns:injectableScenarioLocator"/>
-    </x:complexType>
-
-    <x:complexType name="fromElement">
-        <x:choice>
-            <x:element name="present" type="tns:elementPresent"/>
-        </x:choice>
-    </x:complexType>
-
-    <x:complexType name="elementPresent">
-        <x:attribute name="locatorId" type="tns:injectableScenarioLocator" use="required"/>
-    </x:complexType>
-
-    <x:simpleType name="xpathPattern">
-        <x:restriction base="x:string">
-            <x:pattern value="/.+"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="positiveIntegerMin1">
-        <x:restriction base="x:int">
-            <x:minInclusive value="1"/>
+            <x:pattern value="body_\d+.json"/>
         </x:restriction>
     </x:simpleType>
 

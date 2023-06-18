@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpret
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.VariableHelper;
 import com.knubisoft.testlum.testing.framework.util.VariableHelper.VarMethod;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_VARIABLE_LOG;
 import static java.util.Objects.nonNull;
@@ -40,7 +42,8 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     @Override
-    protected void acceptImpl(final Var var, final CommandResult result) {
+    protected void acceptImpl(final Var o, final CommandResult result) {
+        Var var = injectCommand(o);
         try {
             setContextVariable(var, result);
         } catch (Exception e) {
@@ -61,21 +64,23 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     private String getSQLResult(final Var var, final CommandResult result) {
-        return variableHelper.getSQLResult(var.getSql(), var.getName(), dependencies.getScenarioContext(), result);
+        return variableHelper.getSQLResult(var.getSql(), var.getName(), result);
     }
 
     private String getFileResult(final Var var, final CommandResult result) {
-        return variableHelper.getFileResult(var.getFile(), dependencies.getFile(), var.getName(), result);
+        Function<String, String> fileToString = fileName -> {
+            String content = FileSearcher.searchFileToString(fileName, dependencies.getFile());
+            return inject(content);
+        };
+        return variableHelper.getFileResult(var.getFile(), var.getName(), fileToString, result);
     }
 
     private String getConstantResult(final Var var, final CommandResult result) {
-        return variableHelper.getConstantResult(
-                var.getConstant(), var.getName(), dependencies.getScenarioContext(), result);
+        return variableHelper.getConstantResult(var.getConstant(), var.getName(), result);
     }
 
     private String getExpressionResult(final Var var, final CommandResult result) {
-        return variableHelper.getExpressionResult(
-                var.getExpression(), var.getName(), dependencies.getScenarioContext(), result);
+        return variableHelper.getExpressionResult(var.getExpression(), var.getName(), result);
     }
 
     private String getPathResult(final Var var, final CommandResult result) {

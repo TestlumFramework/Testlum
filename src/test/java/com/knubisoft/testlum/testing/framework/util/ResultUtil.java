@@ -3,6 +3,7 @@ package com.knubisoft.testlum.testing.framework.util;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Attribute;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
@@ -187,19 +188,20 @@ public class ResultUtil {
     private static final String IMAGE_LOCATOR = "Locator to element with image";
     private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
 
-
-    public CommandResult createCommandResultForUiSubCommand(final int number, final String name, final String comment) {
-        CommandResult subCommandResult = createNewCommandResultInstance(number);
-        subCommandResult.setCommandKey(name);
-        subCommandResult.setComment(comment);
-        return subCommandResult;
+    public CommandResult newCommandResultInstance(final int number, final Object... name) {
+        CommandResult commandResult = new CommandResult();
+        commandResult.setId(number);
+        commandResult.setSuccess(true);
+        if (nonNull(name)) {
+            commandResult.setCommandKey(name.getClass().getSimpleName());
+        }
+        return commandResult;
     }
 
-    public CommandResult createNewCommandResultInstance(final int number) {
-        CommandResult subCommandResult = new CommandResult();
-        subCommandResult.setId(number);
-        subCommandResult.setSuccess(true);
-        return subCommandResult;
+    public CommandResult newUiCommandResultInstance(final int number, final AbstractCommand command) {
+        CommandResult commandResult = newCommandResultInstance(number, command);
+        commandResult.setComment(command.getComment());
+        return commandResult;
     }
 
     public void setExecutionResultIfSubCommandsFailed(final CommandResult result) {
@@ -549,10 +551,7 @@ public class ResultUtil {
     }
 
     public void addHoversMetaData(final Hovers hovers, final CommandResult result) {
-        boolean isMoveToEmptySpace = hovers.isMoveToEmptySpace();
-        if (isMoveToEmptySpace) {
-            result.put(MOVE_TO_EMPTY_SPACE, true);
-        }
+        result.put(MOVE_TO_EMPTY_SPACE, hovers.isMoveToEmptySpace());
         AtomicInteger number = new AtomicInteger(1);
         hovers.getHover().forEach(hover -> {
             String hoverNumber = format(HOVER_NUMBER_TEMPLATE, number.getAndIncrement());

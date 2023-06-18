@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="clear"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}commandWithLocator"&gt;
- *       &lt;attribute name="highlight" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="highlight" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -30,22 +30,34 @@ public class Clear
     extends CommandWithLocator
 {
 
-    @XmlAttribute(name = "highlight", required = true)
-    protected boolean highlight;
+    @XmlAttribute(name = "highlight")
+    protected Boolean highlight;
 
     /**
      * Gets the value of the highlight property.
      * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
      */
     public boolean isHighlight() {
-        return highlight;
+        if (highlight == null) {
+            return true;
+        } else {
+            return highlight;
+        }
     }
 
     /**
      * Sets the value of the highlight property.
      * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
      */
-    public void setHighlight(boolean value) {
+    public void setHighlight(Boolean value) {
         this.highlight = value;
     }
 

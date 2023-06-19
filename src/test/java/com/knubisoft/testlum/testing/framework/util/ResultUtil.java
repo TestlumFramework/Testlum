@@ -660,6 +660,8 @@ public class ResultUtil {
     }
 
     public void addAuthMetaData(final Auth auth, final CommandResult result) {
+        result.put(API_ALIAS, auth.getApiAlias());
         result.put(ENDPOINT, auth.getLoginEndpoint());
+        result.put(CREDENTIALS_FILE, auth.getCredentials());
     }
 }

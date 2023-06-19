@@ -10,9 +10,6 @@ import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.API_ALIAS;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CREDENTIALS_FILE;
-
 @Slf4j
 @InterpreterForClass(Auth.class)
 public class AuthInterpreter extends AbstractInterpreter<Auth> {
@@ -25,9 +22,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
     protected void acceptImpl(final Auth o, final CommandResult result) {
         Auth auth = injectCommand(o);
         AuthStrategy authStrategy = AuthFactory.create(dependencies, auth.getApiAlias());
-        result.put(API_ALIAS, auth.getApiAlias());
         ResultUtil.addAuthMetaData(auth, result);
-        result.put(CREDENTIALS_FILE, auth.getCredentials());
         authStrategy.authenticate(auth, result);
     }
 

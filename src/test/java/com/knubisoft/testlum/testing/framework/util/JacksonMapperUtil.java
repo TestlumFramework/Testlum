@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -18,6 +20,7 @@ public final class JacksonMapperUtil {
 
     private static final ObjectMapper MAPPER = buildObjectMapper();
     private static final ObjectMapper DYNAMODB_MAPPER = createObjectMapperWithFieldVisibility();
+    private static final ObjectMapper COPY_MAPPER = createObjectMapperForDeepCopy();
 
     @SneakyThrows
     public <T> T readValue(final String content, final Class<T> valueType) {
@@ -27,11 +30,6 @@ public final class JacksonMapperUtil {
     @SneakyThrows
     public <T> T readValue(final File content, final Class<T> valueType) {
         return MAPPER.readValue(content, valueType);
-    }
-
-    @SneakyThrows
-    public <T> T readValue(final String content, final JavaType javaType) {
-        return MAPPER.readValue(content, javaType);
     }
 
     @SneakyThrows
@@ -45,11 +43,22 @@ public final class JacksonMapperUtil {
     }
 
     @SneakyThrows
-    public static String writeAsStringForDynamoDbOnly(final Object value) {
+    public String writeAsStringForDynamoDbOnly(final Object value) {
         return DYNAMODB_MAPPER.writeValueAsString(value);
     }
 
-    private static ObjectMapper buildObjectMapper() {
+    @SneakyThrows
+    public <T> T readCopiedValue(final String content, final Class<T> valueType) {
+        JavaType javaType = COPY_MAPPER.getTypeFactory().constructType(valueType);
+        return COPY_MAPPER.readValue(content, javaType);
+    }
+
+    @SneakyThrows
+    public String writeValueToCopiedString(final Object value) {
+        return COPY_MAPPER.writeValueAsString(value);
+    }
+
+    private ObjectMapper buildObjectMapper() {
         return JsonMapper.builder()
                 .findAndAddModules()
                 .addModule(new JavaTimeModule())
@@ -57,7 +66,7 @@ public final class JacksonMapperUtil {
                 .build();
     }
 
-    private static ObjectMapper createObjectMapperWithFieldVisibility() {
+    private ObjectMapper createObjectMapperWithFieldVisibility() {
         ObjectMapper mapper = new ObjectMapper();
         VisibilityChecker<?> config = configMapper(mapper);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
@@ -65,7 +74,7 @@ public final class JacksonMapperUtil {
         return mapper;
     }
 
-    private static VisibilityChecker<?> configMapper(final ObjectMapper mapper) {
+    private VisibilityChecker<?> configMapper(final ObjectMapper mapper) {
         return mapper.getSerializationConfig().getDefaultVisibilityChecker()
                 .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
                 .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
@@ -73,4 +82,16 @@ public final class JacksonMapperUtil {
                 .withCreatorVisibility(JsonAutoDetect.Visibility.NONE);
     }
 
+    private ObjectMapper createObjectMapperForDeepCopy() {
+        PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
+                .allowIfSubType("java.util.")
+                .allowIfSubType("com.knubisoft.testlum.testing.model.scenario.")
+                .build();
+
+        return JsonMapper.builder()
+                .activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT)
+                .activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE)
+                .activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_CONCRETE_AND_ARRAYS)
+                .build();
+    }
 }

@@ -19,6 +19,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import java.net.URL;
 import java.time.Duration;
 
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_MOBILE_PLATFORM_NAME;
 import static java.util.Objects.nonNull;
 
 @UtilityClass
@@ -67,7 +68,7 @@ public class MobilebrowserDriverFactory {
             desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, "XCUITest");
             desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Safari");
         } else {
-            throw new DefaultFrameworkException("Unknown mobile platform name: ", mobileDevice.getPlatformName());
+            throw new DefaultFrameworkException(UNKNOWN_MOBILE_PLATFORM_NAME, mobileDevice.getPlatformName().value());
         }
     }
 }

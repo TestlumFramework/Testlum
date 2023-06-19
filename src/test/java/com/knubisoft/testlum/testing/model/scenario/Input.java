@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="input"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}commandWithLocator"&gt;
- *       &lt;attribute name="highlight" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="highlight" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
  *       &lt;attribute name="value" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -44,8 +44,12 @@ public class Input
      *     {@link Boolean }
      *     
      */
-    public Boolean isHighlight() {
-        return highlight;
+    public boolean isHighlight() {
+        if (highlight == null) {
+            return true;
+        } else {
+            return highlight;
+        }
     }
 
     /**

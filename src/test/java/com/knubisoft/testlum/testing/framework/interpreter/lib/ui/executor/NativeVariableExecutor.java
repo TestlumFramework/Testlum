@@ -63,13 +63,12 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
     }
 
     private String getValueForContext(final NativeVar var, final CommandResult result) {
-        return variableHelper.lookupVarMethod(varToMethodMap, var)
-                .apply(var, result);
+        return variableHelper.lookupVarMethod(varToMethodMap, var).apply(var, result);
     }
 
     private String getElementResult(final NativeVar var, final CommandResult result) {
         String valueResult;
-        String locatorId = inject(var.getElement().getPresent().getLocatorId());
+        String locatorId = var.getElement().getPresent().getLocatorId();
         try {
             UiUtil.findWebElement(dependencies, locatorId);
             valueResult = String.valueOf(true);
@@ -85,21 +84,19 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
     }
 
     private String getConstantResult(final NativeVar var, final CommandResult result) {
-        return variableHelper.getConstantResult(
-                var.getConstant(), var.getName(), dependencies.getScenarioContext(), result);
+        return variableHelper.getConstantResult(var.getConstant(), var.getName(), result);
     }
 
     private String getExpressionResult(final NativeVar var, final CommandResult result) {
-        return variableHelper.getExpressionResult(
-                var.getExpression(), var.getName(), dependencies.getScenarioContext(), result);
+        return variableHelper.getExpressionResult(var.getExpression(), var.getName(), result);
     }
 
     private String getFileResult(final NativeVar var, final CommandResult result) {
-        return variableHelper.getFileResult(var.getFile(), dependencies.getFile(), var.getName(), result);
+        return variableHelper.getFileResult(var.getFile(), var.getName(), this::getContentIfFile, result);
     }
 
     private String getSQLResult(final NativeVar var, final CommandResult result) {
-        return variableHelper.getSQLResult(var.getSql(), var.getName(), dependencies.getScenarioContext(), result);
+        return variableHelper.getSQLResult(var.getSql(), var.getName(), result);
     }
 
     private String getRandomGenerateResult(final NativeVar var, final CommandResult result) {

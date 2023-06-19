@@ -5,14 +5,17 @@
           elementFormDefault="qualified"
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
+    <x:include schemaLocation="shared-restrictions.xsd"/>
     <x:include schemaLocation="shared.xsd"/>
     <x:include schemaLocation="wait.xsd"/>
+    <x:include schemaLocation="var.xsd"/>
+    <x:include schemaLocation="condition.xsd"/>
 
     <x:complexType name="click">
         <x:complexContent>
             <x:extension base="tns:commandWithLocator">
                 <x:attribute name="method" type="tns:clickMethod"/>
-                <x:attribute name="highlight" type="x:boolean"/>
+                <x:attribute name="highlight" type="x:boolean" default="true"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -52,7 +55,7 @@
     <x:complexType name="input">
         <x:complexContent>
             <x:extension base="tns:commandWithLocator">
-                <x:attribute name="highlight" type="x:boolean"/>
+                <x:attribute name="highlight" type="x:boolean" default="true"/>
                 <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
@@ -100,19 +103,9 @@
         <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
-    <x:complexType name="allValues">
-        <x:attribute name="type" type="tns:typeForAllValues" use="required"/>
-    </x:complexType>
-
     <x:simpleType name="typeForOneValue">
         <x:restriction base="x:string">
             <x:enumeration value="select"/>
-            <x:enumeration value="deselect"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="typeForAllValues">
-        <x:restriction base="x:string">
             <x:enumeration value="deselect"/>
         </x:restriction>
     </x:simpleType>
@@ -122,6 +115,16 @@
             <x:enumeration value="text"/>
             <x:enumeration value="value"/>
             <x:enumeration value="index"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="allValues">
+        <x:attribute name="type" type="tns:typeForAllValues" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="typeForAllValues">
+        <x:restriction base="x:string">
+            <x:enumeration value="deselect"/>
         </x:restriction>
     </x:simpleType>
 
@@ -136,6 +139,25 @@
         </x:complexContent>
     </x:complexType>
 
+    <x:complexType name="attribute">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:sequence>
+                    <x:element name="content" type="tns:nonEmptyString"/>
+                </x:sequence>
+                <x:attribute name="name" type="tns:webAttributeNamePattern" use="required"/>
+                <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="webAttributeNamePattern">
+        <x:restriction base="x:string">
+            <x:pattern value="([a-zA-Z]+-?)+"/>
+            <x:pattern value="\{\{.+\}\}"/>
+        </x:restriction>
+    </x:simpleType>
+
     <x:complexType name="title">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
@@ -146,22 +168,10 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="attribute">
-        <x:complexContent>
-            <x:extension base="tns:abstractUiCommand">
-                <x:sequence>
-                    <x:element name="content" type="tns:nonEmptyString"/>
-                </x:sequence>
-                <x:attribute name="name" type="tns:webAttributeNamePattern" use="required"/>
-                <x:attribute name="locatorId" type="tns:injectableScenarioLocator" use="required"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
     <x:complexType name="clear">
         <x:complexContent>
             <x:extension base="tns:commandWithLocator">
-                <x:attribute name="highlight" type="x:boolean" use="required"/>
+                <x:attribute name="highlight" type="x:boolean" default="true"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -173,6 +183,12 @@
             </x:extension>
         </x:complexContent>
     </x:complexType>
+
+    <x:simpleType name="tabPattern">
+        <x:restriction base="x:int">
+            <x:pattern value="[2-9]|[1-9][0-9]"/>
+        </x:restriction>
+    </x:simpleType>
 
     <x:complexType name="scroll">
         <x:complexContent>
@@ -315,7 +331,7 @@
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:choice>
-                    <x:element name="compareWithFullScreen"/>
+                    <x:element name="compareWithFullScreen" type="tns:compareWithFullScreen"/>
                     <x:element name="compareWith" type="tns:compareWith"/>
                 </x:choice>
                 <x:attribute name="file" type="tns:imageExtension" use="required"/>
@@ -323,6 +339,8 @@
             </x:extension>
         </x:complexContent>
     </x:complexType>
+
+    <x:complexType name="compareWithFullScreen"/>
 
     <x:complexType name="compareWith">
         <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
@@ -369,42 +387,6 @@
     <x:complexType name="refresh">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand"/>
-        </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="webVar">
-        <x:complexContent>
-            <x:extension base="tns:abstractUiCommand">
-                <x:choice>
-                    <x:group ref="tns:generalVarType"/>
-                    <x:element name="cookie" type="tns:fromCookie"/>
-                    <x:element name="dom" type="tns:fromDom"/>
-                    <x:element name="url" type="tns:fromUrl"/>
-                    <x:element name="element" type="tns:fromElement"/>
-                </x:choice>
-                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="uiCondition">
-        <x:complexContent>
-            <x:extension base="tns:abstractUiCommand">
-                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="spel" type="tns:nonEmptyString" use="required"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="nativeVar">
-        <x:complexContent>
-            <x:extension base="tns:abstractUiCommand">
-                <x:choice>
-                    <x:group ref="tns:generalVarType"/>
-                    <x:element name="element" type="tns:fromElement"/>
-                </x:choice>
-                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
-            </x:extension>
         </x:complexContent>
     </x:complexType>
 

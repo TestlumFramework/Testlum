@@ -9,7 +9,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.ApiClient;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.ApiResponse;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.util.HttpValidator;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
@@ -35,9 +34,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -68,7 +65,8 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     }
 
     @Override
-    public void acceptImpl(final Graphql graphql, final CommandResult result) {
+    public void acceptImpl(final Graphql o, final CommandResult result) {
+        Graphql graphql = injectCommand(o);
         GraphqlMetadata graphqlMetadata = getGraphqlMetaData(graphql);
         HttpInfo httpInfo = graphqlMetadata.httpInfo;
         HttpMethod httpMethod = graphqlMetadata.getHttpMethod();
@@ -88,12 +86,12 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
                                           final HttpMethod httpMethod,
                                           final String alias,
                                           final CommandResult result) {
-        String endpoint = inject(httpInfo.getEndpoint());
+        String endpoint = httpInfo.getEndpoint();
         Map<String, String> headers = getHeaders(httpInfo);
         LogUtil.logHttpInfo(alias, httpMethod.name(), endpoint);
         ResultUtil.addGraphQlMetaData(alias, httpMethod, headers, endpoint, result);
-        String typeValue = headers.getOrDefault(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        HttpEntity body = getBody(httpInfo, ContentType.create(typeValue));
+        ContentType contentType = HttpUtil.computeContentType(headers);
+        HttpEntity body = getBody(httpInfo, contentType);
         LogUtil.logBodyContent(body);
         String url = getFullUrl(httpInfo, endpoint, alias);
         return getApiResponse(httpMethod, url, headers, body);
@@ -130,8 +128,8 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     private String getRawBody(final GraphqlBody body) {
         String rawBody = StringUtils.isNotBlank(body.getRaw())
                 ? body.getRaw()
-                : FileSearcher.searchFileToString(body.getFrom().getFile(), dependencies.getFile());
-        return prettifyString(inject(rawBody));
+                : getContentIfFile(body.getFrom().getFile());
+        return prettifyString(rawBody);
     }
 
     private String getFullUrl(final HttpInfo httpInfo, final String endpoint, final String alias) {
@@ -171,7 +169,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
                               final CommandResult result) {
         String body = StringUtils.isBlank(expected.getFile())
                 ? DelimiterConstant.EMPTY
-                : FileSearcher.searchFileToString(expected.getFile(), dependencies.getFile());
+                : getContentIfFile(expected.getFile());
         result.setActual(StringPrettifier.asJsonResult(actualBody));
         result.setExpected(StringPrettifier.asJsonResult(body));
         httpValidator.validateBody(body, actualBody);
@@ -186,13 +184,12 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     }
 
     private Map<String, String> getExpectedHeaders(final Response expected) {
-        Map<String, String> expectedHeaders
-                = expected.getHeader().stream().collect(Collectors.toMap(Header::getName, Header::getData));
-        return HttpUtil.injectAndGetHeaders(expectedHeaders, this);
+        return expected.getHeader().stream()
+                .collect(Collectors.toMap(Header::getName, Header::getData));
     }
 
-    public String prettifyString(final String str) {
-        return str.replaceAll(DelimiterConstant.REGEX_MANY_SPACES, DelimiterConstant.SPACE);
+    public String prettifyString(final String string) {
+        return string.replaceAll(DelimiterConstant.REGEX_MANY_SPACES, DelimiterConstant.SPACE);
     }
 
     @RequiredArgsConstructor

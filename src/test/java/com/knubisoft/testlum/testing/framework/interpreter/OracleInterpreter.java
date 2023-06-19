@@ -16,16 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.lang.String.format;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Slf4j
 @InterpreterForClass(Oracle.class)
 public class OracleInterpreter extends AbstractInterpreter<Oracle> {
-
-    private static final String SQL_LOG_TEMPLATE = "%10s %-100s";
 
     @Autowired(required = false)
     private OracleOperation oracleOperation;
@@ -35,12 +29,12 @@ public class OracleInterpreter extends AbstractInterpreter<Oracle> {
     }
 
     @Override
-    protected void acceptImpl(final Oracle oracle, final CommandResult result) {
-        String expected = inject(getContentIfFile(oracle.getFile()));
+    protected void acceptImpl(final Oracle o, final CommandResult result) {
+        Oracle oracle = injectCommand(o);
         String actual = getActual(oracle, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
-                .withExpected(expected);
+                .withExpected(getContentIfFile(oracle.getFile()));
 
         result.setActual(StringPrettifier.asJsonResult(actual));
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
@@ -51,20 +45,11 @@ public class OracleInterpreter extends AbstractInterpreter<Oracle> {
 
     protected String getActual(final Oracle oracle, final CommandResult result) {
         String alias = oracle.getAlias();
-        List<String> queries = getSqlList(oracle);
+        List<String> queries = oracle.getQuery();
         LogUtil.logAllQueries(queries, oracle.getAlias());
         ResultUtil.addDatabaseMetaData(alias, queries, result);
-        StorageOperation.StorageOperationResult applyOracle = oracleOperation.apply(new ListSource(queries),
-                inject(alias));
+        StorageOperation.StorageOperationResult applyOracle = oracleOperation.apply(new ListSource(queries), alias);
         return toString(applyOracle.getRaw());
     }
 
-    private List<String> getSqlList(final Oracle oracle) {
-        List<String> queriesOracle = oracle.getQuery().stream()
-                .map(this::inject)
-                .collect(Collectors.toList());
-
-        queriesOracle.forEach(it -> log.info(format(SQL_LOG_TEMPLATE, EMPTY, it)));
-        return queriesOracle;
-    }
 }

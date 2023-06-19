@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.pages.Locator;
 import lombok.experimental.UtilityClass;
@@ -37,7 +38,8 @@ public final class WebElementFinder {
                 .findFirst()
                 .map(l -> l.getValue().apply(locator))
                 .map(driver::findElement)
-                .orElseThrow(() -> new DefaultFrameworkException("Web element for locator <%s> not found", locator));
+                .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.WEB_ELEMENT_BY_LOCATOR_NOT_FOUND,
+                        locator.getLocatorId()));
     }
 
     private interface LocatorType extends Predicate<Locator> { }

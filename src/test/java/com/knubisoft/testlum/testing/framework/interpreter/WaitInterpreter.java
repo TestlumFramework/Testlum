@@ -22,8 +22,9 @@ public class WaitInterpreter extends AbstractInterpreter<Wait> {
     }
 
     @Override
-    protected void acceptImpl(final Wait wait, final CommandResult result) {
-        String time = inject(wait.getTime());
+    protected void acceptImpl(final Wait o, final CommandResult result) {
+        Wait wait = injectCommand(o);
+        String time = wait.getTime();
         log.info(WAIT_INFO_LOG, time, wait.getUnit());
         TimeUnit timeUnit = WaitUtil.getTimeUnit(wait.getUnit());
         ResultUtil.addWaitMetaData(time, timeUnit, result);

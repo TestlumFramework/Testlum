@@ -136,12 +136,7 @@ public class ScenarioRunner {
     }
 
     private CommandResult prepareCommandResult(final AbstractCommand command) {
-        CommandResult result = new CommandResult();
-        result.setId(idGenerator.incrementAndGet());
-        result.setCommandKey(command.getClass().getSimpleName());
-        result.setComment(command.getComment());
-        result.setSuccess(true);
-        return result;
+        return ResultUtil.newCommandResultInstance(idGenerator.incrementAndGet(), command);
     }
 
     @SuppressWarnings("unchecked")

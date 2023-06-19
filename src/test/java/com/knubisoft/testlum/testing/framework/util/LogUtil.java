@@ -47,7 +47,9 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BODY_L
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CLEAR_COOKIES_AFTER;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_SKIPPED_ON_CONDITION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMENT_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONDITION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_FORMAT;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
@@ -200,6 +202,13 @@ public class LogUtil {
     /* general log */
     public void logAlias(final String alias) {
         log.info(ALIAS_LOG, alias);
+    }
+
+    public void logCondition(final String name, final boolean condition) {
+        if (!condition) {
+            log.info(COMMAND_SKIPPED_ON_CONDITION_LOG);
+        }
+        log.info(CONDITION_LOG, name, condition);
     }
 
     public void logConditionInfo(final String name,
@@ -381,7 +390,9 @@ public class LogUtil {
     /* ui log */
     public void logUICommand(final int position, final AbstractCommand action) {
         log.info(UI_COMMAND_LOG, position, action.getClass().getSimpleName());
-        log.info(COMMENT_LOG, action.getComment());
+        if (isNotBlank(action.getComment())) {
+            log.info(COMMENT_LOG, action.getComment());
+        }
         if (action instanceof CommandWithLocator) {
             log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());
         }
@@ -445,19 +456,21 @@ public class LogUtil {
 
     public void logHotKeyInfo(final AbstractUiCommand command) {
         log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
+        log.info(COMMENT_LOG, command.getComment());
     }
 
-    public void logAssertAttributeInfo(final Attribute attribute, final int position) {
-        log.info(COMMAND_LOG, position, attribute.getClass().getSimpleName());
-        log.info(COMMENT_LOG, attribute.getComment());
+    public void logAssertCommand(final AbstractUiCommand command, final int position) {
+        log.info(COMMAND_LOG, position, command.getClass().getSimpleName());
+        log.info(COMMENT_LOG, command.getComment());
+    }
+
+    public void logAssertAttributeInfo(final Attribute attribute) {
         log.info(LOCATOR_LOG, attribute.getLocatorId());
         log.info(ATTRIBUTE_LOG, attribute.getName());
         log.info(CONTENT_LOG, StringPrettifier.cut(attribute.getContent()));
     }
 
-    public void logAssertTitleCommand(final Title title, final int position) {
-        log.info(COMMAND_LOG, position, title.getClass().getSimpleName());
-        log.info(COMMENT_LOG, title.getComment());
+    public void logAssertTitleCommand(final Title title) {
         log.info(CONTENT_LOG, title.getContent());
     }
 

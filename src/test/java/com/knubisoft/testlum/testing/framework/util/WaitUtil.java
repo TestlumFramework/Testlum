@@ -1,25 +1,25 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.model.scenario.Unit;
+import com.knubisoft.testlum.testing.model.scenario.Timeunit;
 import lombok.experimental.UtilityClass;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_TYPE;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.TIME_UNIT_UNKNOWN_TYPE;
 
 @UtilityClass
 public class WaitUtil {
 
-    public TimeUnit getTimeUnit(final Unit unit) {
+    public TimeUnit getTimeUnit(final Timeunit unit) {
         switch (unit) {
             case MILLIS:
                 return TimeUnit.MILLISECONDS;
             case SECONDS:
                 return TimeUnit.SECONDS;
             default:
-                throw new DefaultFrameworkException(UNKNOWN_TYPE, unit.value());
+                throw new DefaultFrameworkException(TIME_UNIT_UNKNOWN_TYPE, unit.value());
         }
     }
 

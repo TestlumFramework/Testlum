@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import lombok.Builder;
 import lombok.Getter;
 import org.openqa.selenium.WebDriver;
+import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -12,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 public class ExecutorDependencies {
 
+    private final ApplicationContext context;
     private final File file;
     private final ScenarioContext scenarioContext;
     private final AtomicInteger position;

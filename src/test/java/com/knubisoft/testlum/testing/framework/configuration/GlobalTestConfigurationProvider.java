@@ -7,7 +7,7 @@ import com.knubisoft.testlum.testing.framework.parser.XMLParsers;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.validator.GlobalTestConfigValidator;
 import com.knubisoft.testlum.testing.framework.validator.IntegrationsValidator;
-import com.knubisoft.testlum.testing.framework.validator.UiValidator;
+import com.knubisoft.testlum.testing.framework.validator.UiConfigValidator;
 import com.knubisoft.testlum.testing.model.global_config.Environment;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -28,9 +28,8 @@ import java.util.stream.Collectors;
 public class GlobalTestConfigurationProvider {
 
     private static final GlobalTestConfiguration GLOBAL_TEST_CONFIGURATION = init();
+
     private static final List<Environment> ENVIRONMENTS = filterEnabledEnvironments();
-    private static final IntegrationsValidator INTEGRATIONS_VALIDATOR = new IntegrationsValidator();
-    private static final UiValidator UI_VALIDATOR = new UiValidator();
     private static final Map<String, Integrations> INTEGRATIONS = collectIntegrations();
     private static final Map<String, UiConfig> UI_CONFIGS = collectUiConfigs();
     private static final Integrations DEFAULT_INTEGRATIONS = defaultIntegrations();
@@ -85,7 +84,7 @@ public class GlobalTestConfigurationProvider {
     private static Map<String, Integrations> collectIntegrations() {
         Map<String, Integrations> integrationsMap = getEnabledEnvironments().stream()
                 .collect(Collectors.toMap(Environment::getFolder, GlobalTestConfigurationProvider::initIntegration));
-        INTEGRATIONS_VALIDATOR.validateIntegrations(integrationsMap);
+        new IntegrationsValidator().validate(integrationsMap);
         return integrationsMap;
     }
 
@@ -101,7 +100,7 @@ public class GlobalTestConfigurationProvider {
     private static Map<String, UiConfig> collectUiConfigs() {
         Map<String, UiConfig> uiConfigMap = getEnabledEnvironments().stream()
                 .collect(Collectors.toMap(Environment::getFolder, GlobalTestConfigurationProvider::initUiConfig));
-        UI_VALIDATOR.validateUiConfig(uiConfigMap);
+        new UiConfigValidator().validate(uiConfigMap);
         return uiConfigMap;
     }
 

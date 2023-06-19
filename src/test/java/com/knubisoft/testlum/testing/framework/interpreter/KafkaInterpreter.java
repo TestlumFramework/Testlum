@@ -6,7 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
+import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
@@ -14,10 +14,9 @@ import com.knubisoft.testlum.testing.model.scenario.Kafka;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeader;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -25,7 +24,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,13 +39,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -69,59 +66,57 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     }
 
     @Override
-    protected void acceptImpl(final Kafka kafka, final CommandResult commandResult) {
-        List<CommandResult> subCommandsResultList = new LinkedList<>();
-        int actionNumber = 1;
+    protected void acceptImpl(final Kafka o, final CommandResult result) {
+        Kafka kafka = injectCommand(o);
+        List<CommandResult> subCommandsResult = new LinkedList<>();
+        result.setSubCommandsResult(subCommandsResult);
+        final AtomicInteger commandId = new AtomicInteger();
         for (Object action : kafka.getSendOrReceive()) {
-            log.info(COMMAND_LOG, dependencies.getPosition().incrementAndGet(), action.getClass().getSimpleName());
-            CommandResult result = ResultUtil.createNewCommandResultInstance(actionNumber);
-            processEachAction(action, kafka.getAlias(), result);
-            subCommandsResultList.add(result);
-            actionNumber++;
+            LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action.getClass().getSimpleName());
+            CommandResult commandResult = ResultUtil.newCommandResultInstance(commandId.incrementAndGet());
+            subCommandsResult.add(commandResult);
+            processEachAction(action, kafka.getAlias(), commandResult);
         }
-        commandResult.setSubCommandsResult(subCommandsResultList);
-        ResultUtil.setExecutionResultIfSubCommandsFailed(commandResult);
+        ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
     private void processEachAction(final Object action,
                                    final String alias,
-                                   final CommandResult subCommandResult) {
+                                   final CommandResult result) {
         StopWatch stopWatch = StopWatch.createStarted();
+        LogUtil.logAlias(alias);
         try {
-            processKafkaAction(subCommandResult, action, alias);
+            processKafkaAction(action, alias, result);
         } catch (Exception e) {
             LogUtil.logException(e);
-            ResultUtil.setExceptionResult(subCommandResult, e);
+            ResultUtil.setExceptionResult(result, e);
+            ConfigUtil.checkIfStopScenarioOnFailure(e);
         } finally {
-            subCommandResult.setExecutionTime(stopWatch.getTime());
+            result.setExecutionTime(stopWatch.getTime());
             stopWatch.stop();
         }
     }
 
-    private void processKafkaAction(final CommandResult subCommandResult,
-                                    final Object action,
-                                    final String alias) {
-        log.info(ALIAS_LOG, alias);
+    private void processKafkaAction(final Object action,
+                                    final String alias,
+                                    final CommandResult result) {
         AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
         if (action instanceof SendKafkaMessage) {
-            SendKafkaMessage sendAction = (SendKafkaMessage) action;
-            ResultUtil.addKafkaInfoForSendAction(sendAction, alias, subCommandResult);
-            sendMessage(sendAction, subCommandResult, aliasEnv);
+            sendMessage((SendKafkaMessage) action, aliasEnv, result);
         } else {
-            ReceiveKafkaMessage receiveAction = (ReceiveKafkaMessage) action;
-            ResultUtil.addKafkaInfoForReceiveAction(receiveAction, alias, subCommandResult);
-            receiveMessages(receiveAction, subCommandResult, aliasEnv);
+            receiveMessages((ReceiveKafkaMessage) action, aliasEnv, result);
         }
     }
 
     private void receiveMessages(final ReceiveKafkaMessage receive,
-                                 final CommandResult result,
-                                 final AliasEnv aliasEnv) {
-        String value = getValue(receive);
-        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getTopic(), value);
+                                 final AliasEnv aliasEnv,
+                                 final CommandResult result) {
+        String expectedMessages = getMessageToReceive(receive);
+        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getTopic(), expectedMessages);
+        ResultUtil.addKafkaInfoForReceiveAction(receive, aliasEnv.getAlias(), result);
         createTopicIfNotExists(receive.getTopic(), aliasEnv);
         List<KafkaMessage> actualMessages = receiveKafkaMessages(receive, aliasEnv);
-        compareMessages(actualMessages, value, result);
+        compareMessages(actualMessages, expectedMessages, result);
     }
 
     private void compareMessages(final List<KafkaMessage> actualKafkaMessages,
@@ -135,16 +130,21 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         comparator.exec();
     }
 
-    private void sendMessage(final SendKafkaMessage send, final CommandResult result, final AliasEnv aliasEnv) {
-        String message = getValue(send);
+    private void sendMessage(final SendKafkaMessage send,
+                             final AliasEnv aliasEnv,
+                             final CommandResult result) {
+        String message = getMessageToSend(send);
         LogUtil.logBrokerActionInfo(SEND_ACTION, send.getTopic(), message);
+        ResultUtil.addKafkaInfoForSendAction(send, aliasEnv.getAlias(), result);
         result.put(MESSAGE_TO_SEND, message);
 
         createTopicIfNotExists(send.getTopic(), aliasEnv);
         sendMessage(send, message, aliasEnv);
     }
 
-    private void sendMessage(final SendKafkaMessage send, final String value, final AliasEnv aliasEnv) {
+    private void sendMessage(final SendKafkaMessage send,
+                             final String value,
+                             final AliasEnv aliasEnv) {
         ProducerRecord<String, String> producerRecord = buildProducerRecord(send, value);
         kafkaProducer.get(aliasEnv).send(producerRecord);
         kafkaProducer.get(aliasEnv).flush();
@@ -157,16 +157,15 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         ConsumerRecords<String, String> consumerRecords = consumer.poll(timeout);
         Iterable<ConsumerRecord<String, String>> iterable = consumerRecords.records(receive.getTopic());
         Iterator<ConsumerRecord<String, String>> iterator = iterable.iterator();
-        List<KafkaMessage> kafkaMessages = convertConsumerRecordsToKafkaMessages(iterator, receive);
+        List<KafkaMessage> kafkaMessages = convertRecordsToKafkaMessages(iterator, receive);
         if (receive.isCommit()) {
             consumer.commitSync();
         }
         return kafkaMessages;
     }
 
-    private List<KafkaMessage> convertConsumerRecordsToKafkaMessages(
-            final Iterator<ConsumerRecord<String, String>> iterator,
-            final ReceiveKafkaMessage receive) {
+    private List<KafkaMessage> convertRecordsToKafkaMessages(final Iterator<ConsumerRecord<String, String>> iterator,
+                                                             final ReceiveKafkaMessage receive) {
         List<KafkaMessage> kafkaMessages = new ArrayList<>();
         while (iterator.hasNext()) {
             ConsumerRecord<String, String> consumerRecord = iterator.next();
@@ -178,16 +177,12 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
     private KafkaMessage createKafkaMessage(final ConsumerRecord<String, String> consumerRecord,
                                             final boolean isHeaders) {
-        Map<String, String> headers = new HashMap<>();
-        consumerRecord.headers().forEach(h -> headers.put(h.key(), new String(h.value(), StandardCharsets.UTF_8)));
-        KafkaMessage kafkaMessage = KafkaMessage.builder()
-                .key(consumerRecord.key())
-                .value(consumerRecord.value())
-                .correlationId(headers.get(CORRELATION_ID))
-                .build();
+        KafkaMessage kafkaMessage = new KafkaMessage(consumerRecord);
         if (isHeaders) {
+            Map<String, String> headers = new HashMap<>();
+            consumerRecord.headers().forEach(h -> headers.put(h.key(), new String(h.value(), StandardCharsets.UTF_8)));
+            headers.remove(CORRELATION_ID);
             kafkaMessage.setHeaders(headers);
-            kafkaMessage.getHeaders().remove(CORRELATION_ID);
         }
         return kafkaMessage;
     }
@@ -223,38 +218,43 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         return new RecordHeader(headerName, headerValue);
     }
 
-    private String getValue(final SendKafkaMessage send) {
-        return isNull(send.getFile())
-                ? send.getValue()
-                : FileSearcher.searchFileToString(send.getFile(), dependencies.getFile());
+    private String getMessageToSend(final SendKafkaMessage send) {
+        return getValue(send.getValue(), send.getFile());
     }
 
-    private String getValue(final ReceiveKafkaMessage receive) {
-        return isNull(receive.getFile())
-                ? receive.getValue()
-                : FileSearcher.searchFileToString(receive.getFile(), dependencies.getFile());
+    private String getMessageToReceive(final ReceiveKafkaMessage receive) {
+        return getValue(receive.getValue(), receive.getFile());
+    }
+
+    private String getValue(final String message, final String file) {
+        return StringUtils.isNotBlank(message)
+                ? message
+                : getContentIfFile(file);
     }
 
     private void createTopicIfNotExists(final String topic, final AliasEnv aliasEnv) {
-        if (!checkIfTopicExists(topic, aliasEnv)) {
+        if (checkIsTopicNotExists(topic, aliasEnv)) {
             NewTopic newTopic = new NewTopic(topic, NUM_PARTITIONS, (short) 1);
             kafkaAdmin.get(aliasEnv).createOrModifyTopics(newTopic);
         }
     }
 
-    private boolean checkIfTopicExists(final String topic, final AliasEnv aliasEnv) {
-        Map<String, List<PartitionInfo>> topics = kafkaConsumer.get(aliasEnv).listTopics();
-        return topics.keySet().stream()
-                .anyMatch(topic::equals);
+    private boolean checkIsTopicNotExists(final String topic, final AliasEnv aliasEnv) {
+        return kafkaConsumer.get(aliasEnv).listTopics().keySet().stream().noneMatch(topic::equals);
     }
 
-    @Getter
-    @Setter
-    @Builder
+    @Data
     private static class KafkaMessage {
         private final String key;
         private final String value;
         private final String correlationId;
         private Map<String, String> headers;
+
+        KafkaMessage(final ConsumerRecord<String, String> consumerRecord) {
+            this.key = consumerRecord.key();
+            this.value = consumerRecord.value();
+            this.correlationId = Optional.ofNullable(consumerRecord.headers().lastHeader(CORRELATION_ID))
+                    .map(h -> new String(h.value(), StandardCharsets.UTF_8)).orElse(null);
+        }
     }
 }

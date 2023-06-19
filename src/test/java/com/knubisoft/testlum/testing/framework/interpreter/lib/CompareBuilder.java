@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMPARISON_FOR_STEP_WAS_SKIPPED;
@@ -27,12 +26,11 @@ import static java.util.Objects.nonNull;
 public class CompareBuilder {
 
     private final File scenarioFile;
-    private final AtomicInteger position;
+    private final int position;
     private String expected;
     private Supplier<String> supplierActual;
 
-    public CompareBuilder(final File scenarioFile,
-                          final AtomicInteger position) {
+    public CompareBuilder(final File scenarioFile, final int position) {
         this.scenarioFile = scenarioFile;
         this.position = position;
     }
@@ -74,7 +72,7 @@ public class CompareBuilder {
             String actual = supplierActual.get();
             tryToCompare(actual);
         } else {
-            log.info(format(COMPARISON_FOR_STEP_WAS_SKIPPED, position));
+            log.info(COMPARISON_FOR_STEP_WAS_SKIPPED, position);
         }
     }
 
@@ -91,8 +89,7 @@ public class CompareBuilder {
 
     private void save(final String actual) {
         try {
-            File target = new File(scenarioFile.getParent(),
-                    String.format(TestResourceSettings.FILENAME_TO_SAVE, position.get()));
+            File target = new File(scenarioFile.getParent(), format(TestResourceSettings.FILENAME_TO_SAVE, position));
             FileUtils.writeStringToFile(target, StringPrettifier.prettifyToSave(actual), StandardCharsets.UTF_8);
         } catch (IOException e) {
             log.error(e.getMessage());

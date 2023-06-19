@@ -15,4 +15,14 @@
             </x:extension>
         </x:complexContent>
     </x:complexType>
+
+    <x:complexType name="uiCondition">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="spel" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
 </x:schema>

@@ -38,7 +38,8 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
 
     @Override
     @SneakyThrows
-    protected void acceptImpl(final Shell shell, final CommandResult result) {
+    protected void acceptImpl(final Shell o, final CommandResult result) {
+        Shell shell = injectCommand(o);
         List<String> shellCommands = shell.getShellCommand();
         List<String> shellFiles = shell.getShellFile();
 
@@ -87,13 +88,13 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
 
     private void processExpectedAndActual(final int expectedCode, final Shell shell, final CommandResult result) {
         String actual = String.format(EXPECTED_RESULT, expectedCode);
-        String expectedContent = inject(getContentIfFile(shell.getFile()));
-        result.setActual(StringPrettifier.asJsonResult(actual));
-        result.setExpected(StringPrettifier.asJsonResult(expectedContent));
 
         CompareBuilder compare = newCompare()
                 .withActual(actual)
-                .withExpected(expectedContent);
+                .withExpectedFile(shell.getFile());
+
+        result.setActual(StringPrettifier.asJsonResult(actual));
+        result.setExpected(StringPrettifier.asJsonResult(compare.getExpected()));
         compare.exec();
     }
 }

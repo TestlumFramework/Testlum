@@ -48,7 +48,7 @@ public class NavigateExecutor extends AbstractUiExecutor<Navigate> {
     }
 
     private void navigateTo(final String path, final CommandResult result) {
-        String url = inject(getUrl(path));
+        String url = getUrl(path);
         result.put(NAVIGATE_URL, url);
         log.info(BY_URL_LOG, url);
         dependencies.getDriver().navigate().to(url);

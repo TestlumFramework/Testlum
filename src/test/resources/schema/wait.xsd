@@ -11,15 +11,21 @@
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:attribute name="time" type="tns:timePattern" use="required"/>
-                <x:attribute name="unit" type="tns:unit" default="seconds"/>
+                <x:attribute name="unit" type="tns:timeunit" default="seconds"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
-    <x:simpleType name="unit" final="restriction" >
+    <x:simpleType name="timePattern">
         <x:restriction base="x:string">
-            <x:enumeration value="millis" />
-            <x:enumeration value="seconds" />
+            <x:pattern value="\d+|\{{2}([a-zA-Z\d_\-]+)\}{2}"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="timeunit" final="restriction">
+        <x:restriction base="x:string">
+            <x:enumeration value="millis"/>
+            <x:enumeration value="seconds"/>
         </x:restriction>
     </x:simpleType>
 </x:schema>

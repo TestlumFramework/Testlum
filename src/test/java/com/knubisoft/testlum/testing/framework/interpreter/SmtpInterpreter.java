@@ -14,7 +14,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.util.Map;
-import java.util.Objects;
 
 @InterpreterForClass(Smtp.class)
 public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
@@ -27,7 +26,8 @@ public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
     }
 
     @Override
-    protected void acceptImpl(final Smtp smtp, final CommandResult result) {
+    protected void acceptImpl(final Smtp o, final CommandResult result) {
+        Smtp smtp = injectCommand(o);
         AliasEnv aliasEnv = new AliasEnv(smtp.getAlias(), dependencies.getEnvironment());
         JavaMailSenderImpl javaMailSender = javaMailSenderMap.get(aliasEnv);
         LogUtil.logSmtpInfo(smtp, javaMailSender);
@@ -36,9 +36,9 @@ public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
     }
 
     private void sendEmail(final Smtp smtp, final JavaMailSenderImpl javaMailSender) {
-        String username = Objects.requireNonNull(javaMailSender.getUsername());
-        SimpleMailMessage simpleMailMessage = getSimpleMailMessage(smtp, username);
         try {
+            String username = javaMailSender.getUsername();
+            SimpleMailMessage simpleMailMessage = getSimpleMailMessage(smtp, username);
             javaMailSender.send(simpleMailMessage);
         } catch (Exception exception) {
             throw new DefaultFrameworkException(exception.getMessage());

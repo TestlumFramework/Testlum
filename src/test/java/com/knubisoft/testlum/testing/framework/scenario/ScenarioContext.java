@@ -53,7 +53,7 @@ public class ScenarioContext {
         String injectedCondition = conditionSpel;
         for (Map.Entry<String, Boolean> entry : conditionMap.entrySet()) {
             if (injectedCondition.contains(entry.getKey())) {
-                injectedCondition = StringUtils.replace(injectedCondition, entry.getKey(), String.valueOf(entry.getValue()));
+                injectedCondition = injectedCondition.replace(entry.getKey(), String.valueOf(entry.getValue()));
             }
         }
         return injectedCondition;

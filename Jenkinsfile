@@ -126,6 +126,7 @@ pipeline {
             sh "docker rmi -f ${TEST_API} || true"
             sh "docker rmi -f ${TEST_SITE} || true"
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+            sh 'docker volume ls -qf "dangling=true" | xargs docker volume rm || true'
         }
     }
     success {

@@ -14,11 +14,11 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONDITION;
 @UtilityClass
 public class ConditionUtil {
 
-    public boolean isTrue(final String conditionName, final ScenarioContext context, final CommandResult result) {
-        if (StringUtils.isNotBlank(conditionName)) {
-            boolean conditionResult = context.getCondition(conditionName);
-            LogUtil.logCondition(conditionName, conditionResult);
-            result.put(CONDITION, conditionName + " = " + conditionResult);
+    public boolean isTrue(final String conditionSpel, final ScenarioContext context, final CommandResult result) {
+        if (StringUtils.isNotBlank(conditionSpel)) {
+            boolean conditionResult = parseFromSpel(context.getCondition(conditionSpel), conditionSpel, result);
+            LogUtil.logCondition(conditionSpel, conditionResult);
+            result.put(CONDITION, conditionSpel + " = " + conditionResult);
             return conditionResult;
         }
         return true;

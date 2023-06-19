@@ -492,6 +492,9 @@ public class ResultUtil {
                                      final String expression,
                                      final Boolean value,
                                      final CommandResult result) {
+        if (!value) {
+            result.setSkipped(true);
+        }
         result.put(NAME, key);
         result.put(EXPRESSION, expression);
         result.put(VALUE, value);

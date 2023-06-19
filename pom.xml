@@ -243,7 +243,6 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-sync</artifactId>
-            <version>${mongodb-driver-sync.version}</version>
         </dependency>
 
         <dependency>
@@ -933,6 +932,11 @@
                 <groupId>com.knubisoft</groupId>
                 <artifactId>tree-comparator</artifactId>
                 <version>${imagination.comparator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongodb-driver-sync</artifactId>
+                <version>${mongodb-driver-sync.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.asynchttpclient</groupId>

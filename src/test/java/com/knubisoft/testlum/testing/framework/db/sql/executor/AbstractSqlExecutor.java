@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.sql.executor;
 
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.zaxxer.hikari.HikariDataSource;
@@ -24,7 +25,6 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
 
 public abstract class AbstractSqlExecutor {
 
-    private static final String SPACE_PLUS = " +";
     private static final String INSERT = "INSERT";
     private static final String ALTER = "ALTER";
     private static final String UPDATE = "UPDATE";
@@ -61,7 +61,7 @@ public abstract class AbstractSqlExecutor {
     private StorageOperation.QueryResult<Object> executeQuery(final String query) {
         StorageOperation.QueryResult<Object> queryResult =
                 new StorageOperation.QueryResult<>(query.replaceAll(LF, EMPTY)
-                        .replaceAll(SPACE_PLUS, SPACE)
+                        .replaceAll(DelimiterConstant.SPACE_WITH_PLUS, SPACE)
                         .trim());
 
         try {

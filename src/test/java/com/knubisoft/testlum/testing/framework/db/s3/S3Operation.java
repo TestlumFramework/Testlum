@@ -3,15 +3,19 @@ package com.knubisoft.testlum.testing.framework.db.s3;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnS3EnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.S3;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -33,7 +37,10 @@ public class S3Operation implements StorageOperation {
     @Override
     public void clearSystem() {
         this.amazonS3.forEach((aliasEnv, amazonS3) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            List<S3> s3List = GlobalTestConfigurationProvider
+                    .getIntegrations().get(aliasEnv.getEnvironment()).getS3Integration().getS3();
+            S3 s3 = IntegrationsUtil.findForAlias(s3List, aliasEnv.getAlias());
+            if (s3.isTruncate() && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 amazonS3.listBuckets().forEach(bucket -> {
                     ListObjectsV2Result objectsInBucket = amazonS3.listObjectsV2(bucket.getName());
                     this.deleteObjectsInBucket(amazonS3, objectsInBucket, bucket.getName());

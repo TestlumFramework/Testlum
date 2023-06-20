@@ -1,10 +1,13 @@
 package com.knubisoft.testlum.testing.framework.db.elasticsearch;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnElasticEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Elasticsearch;
 import lombok.SneakyThrows;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.client.RequestOptions;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -32,12 +36,16 @@ public class ElasticsearchOperation implements StorageOperation {
         return null;
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public void clearSystem() {
         DeleteIndexRequest request = new DeleteIndexRequest("*");
         for (Map.Entry<AliasEnv, RestHighLevelClient> entry : restHighLevelClient.entrySet()) {
-            if (Objects.equals(entry.getKey().getEnvironment(), EnvManager.currentEnv())) {
+            String env = entry.getKey().getEnvironment();
+            List<Elasticsearch> elasticsearchList = GlobalTestConfigurationProvider
+                    .getIntegrations().get(env).getElasticsearchIntegration().getElasticsearch();
+            Elasticsearch elasticsearch = IntegrationsUtil.findForAlias(elasticsearchList, entry.getKey().getAlias());
+            if (elasticsearch.isTruncate() && Objects.equals(env, EnvManager.currentEnv())) {
                 entry.getValue().indices().delete(request, RequestOptions.DEFAULT);
             }
         }

@@ -31,6 +31,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import software.amazon.awssdk.http.HttpStatusCode;
 
@@ -107,6 +108,9 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_QUANTITY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_TYPE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_VALUE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_COMMAND;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_INDEX;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_URL;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
@@ -114,6 +118,9 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COM
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VALUE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VARIATION_LOG;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CLOSE_TAB;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.LAST_TAB;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.SWITCH_TAB;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -457,6 +464,15 @@ public class LogUtil {
     public void logHotKeyInfo(final AbstractUiCommand command) {
         log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
         log.info(COMMENT_LOG, command.getComment());
+    }
+
+    public void logWebTabCommand(final String command, final Integer tabNumber, final String url) {
+        log.info(TAB_COMMAND, command);
+        if (CLOSE_TAB.equals(command) || SWITCH_TAB.equals(command)) {
+            log.info(TAB_INDEX, nonNull(tabNumber) ? tabNumber : LAST_TAB);
+        } else if (!StringUtils.hasText(url)){
+            log.info(TAB_URL, url);
+        }
     }
 
     public void logAssertCommand(final AbstractUiCommand command, final int position) {

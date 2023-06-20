@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/testlum/testing/model/scenario}switchToFrame"/&gt;
  *         &lt;element name="dragAndDrop" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dragAndDrop"/&gt;
  *         &lt;element name="hotKey" type="{http://www.knubisoft.com/testlum/testing/model/scenario}hotKey"/&gt;
- *         &lt;element name="closeTab" type="{http://www.knubisoft.com/testlum/testing/model/scenario}closeTab"/&gt;
+ *         &lt;element name="webTab" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webTab"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webVar"/&gt;
  *         &lt;element name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiCondition"/&gt;
  *       &lt;/choice&gt;
@@ -73,7 +73,7 @@ public class Web
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
         @XmlElement(name = "dragAndDrop", type = DragAndDrop.class),
         @XmlElement(name = "hotKey", type = HotKey.class),
-        @XmlElement(name = "closeTab", type = CloseTab.class),
+        @XmlElement(name = "webTab", type = WebTab.class),
         @XmlElement(name = "var", type = WebVar.class),
         @XmlElement(name = "condition", type = UiCondition.class)
     })
@@ -116,7 +116,7 @@ public class Web
      * {@link SwitchToFrame }
      * {@link DragAndDrop }
      * {@link HotKey }
-     * {@link CloseTab }
+     * {@link WebTab }
      * {@link WebVar }
      * {@link UiCondition }
      * 

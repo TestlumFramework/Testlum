@@ -614,11 +614,35 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link WebTab }
+     * 
+     */
+    public WebTab createWebTab() {
+        return new WebTab();
+    }
+
+    /**
      * Create an instance of {@link CloseTab }
      * 
      */
     public CloseTab createCloseTab() {
         return new CloseTab();
+    }
+
+    /**
+     * Create an instance of {@link OpenTab }
+     * 
+     */
+    public OpenTab createOpenTab() {
+        return new OpenTab();
+    }
+
+    /**
+     * Create an instance of {@link SwitchTab }
+     * 
+     */
+    public SwitchTab createSwitchTab() {
+        return new SwitchTab();
     }
 
     /**

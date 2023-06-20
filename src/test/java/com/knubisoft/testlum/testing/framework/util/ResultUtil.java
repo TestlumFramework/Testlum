@@ -90,8 +90,15 @@ public class ResultUtil {
     public static final String HOTKEY_LOCATOR = "Locator for hotkey command";
     public static final String INPUT_VALUE = "Value for input";
     public static final String CLICK_METHOD = "Click method";
+    public static final String CLOSE_TAB = "Close";
+    public static final String SWITCH_TAB = "Switch";
+    public static final String OPEN_TAB = "Open";
     public static final String CLOSE_COMMAND = "Close command for";
+    public static final String SWITCH_COMMAND = "Switch command for";
+    public static final String OPEN_COMMAND = "Open command for";
     public static final String LAST_TAB = "Last recently opened tab";
+    public static final String NEW_TAB = "Newly created tab";
+    public static final String NEW_TAB_WITH_URL = "Newly created tab with url: %s";
     public static final String TAB_NUMBER = "Tab with number '%s'";
     public static final String JS_FILE = "JS file to execute";
     public static final String NAVIGATE_TYPE = "Navigate command type";

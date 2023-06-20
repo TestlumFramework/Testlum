@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnClickhouseEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -7,6 +8,8 @@ import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecut
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.ClickhouseExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Clickhouse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,7 +46,10 @@ public class ClickhouseOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         clickhouseExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            List<Clickhouse> clickhouseList = GlobalTestConfigurationProvider
+                    .getIntegrations().get(aliasEnv.getEnvironment()).getClickhouseIntegration().getClickhouse();
+            Clickhouse clickhouse = IntegrationsUtil.findForAlias(clickhouseList, aliasEnv.getAlias());
+            if (clickhouse.isTruncate() && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

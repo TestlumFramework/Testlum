@@ -59,6 +59,7 @@
     <x:complexType name="integration" abstract="true">
         <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:attribute name="truncate" type="x:boolean" default="true"/>
     </x:complexType>
 
     <x:complexType name="databaseConfig" abstract="true">

@@ -1,10 +1,13 @@
 package com.knubisoft.testlum.testing.framework.db.kafka;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Kafka;
 import lombok.SneakyThrows;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.DeleteTopicsResult;
@@ -44,7 +47,12 @@ public class KafkaOperation implements StorageOperation {
     public void clearSystem() {
         kafkaConsumer.forEach((aliasEnv, kafkaConsumer) -> {
             if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
-                clearKafka(kafkaConsumer, aliasEnv);
+                List<Kafka> kafkaList = GlobalTestConfigurationProvider
+                        .getIntegrations().get(aliasEnv.getEnvironment()).getKafkaIntegration().getKafka();
+                Kafka kafka = IntegrationsUtil.findForAlias(kafkaList, aliasEnv.getAlias());
+                if (kafka.isTruncate()) {
+                    clearKafka(kafkaConsumer, aliasEnv);
+                }
             }
         });
     }

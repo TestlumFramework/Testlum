@@ -40,7 +40,10 @@ public class RabbitMQOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         rabbitMqClient.forEach((aliasEnv, client) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            List<Rabbitmq> rabbitmqList = GlobalTestConfigurationProvider
+                    .getIntegrations().get(aliasEnv.getEnvironment()).getRabbitmqIntegration().getRabbitmq();
+            Rabbitmq rabbitmq = IntegrationsUtil.findForAlias(rabbitmqList, aliasEnv.getAlias());
+            if (rabbitmq.isTruncate() && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 String virtualHost = this.findByName(aliasEnv).getVirtualHost();
                 client.getQueues().forEach(queueInfo -> client.purgeQueue(virtualHost, queueInfo.getName()));
             }

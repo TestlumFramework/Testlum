@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnPostgresEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -7,6 +8,8 @@ import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecut
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.PostgresExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Postgres;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,7 +46,10 @@ public class PostgresSqlOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         postgresExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            List<Postgres> postgresList = GlobalTestConfigurationProvider
+                    .getIntegrations().get(aliasEnv.getEnvironment()).getPostgresIntegration().getPostgres();
+            Postgres postgres = IntegrationsUtil.findForAlias(postgresList, aliasEnv.getAlias());
+            if (postgres.isTruncate() && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

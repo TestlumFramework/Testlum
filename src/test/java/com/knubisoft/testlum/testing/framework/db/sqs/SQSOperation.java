@@ -3,11 +3,14 @@ package com.knubisoft.testlum.testing.framework.db.sqs;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.ListQueuesResult;
 import com.amazonaws.services.sqs.model.PurgeQueueRequest;
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSQSEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Sqs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
@@ -34,7 +37,10 @@ public class SQSOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         amazonSQS.forEach((aliasEnv, amazonSQS) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            List<Sqs> sqsList = GlobalTestConfigurationProvider
+                    .getIntegrations().get(aliasEnv.getEnvironment()).getSqsIntegration().getSqs();
+            Sqs sqs = IntegrationsUtil.findForAlias(sqsList, aliasEnv.getAlias());
+            if (sqs.isTruncate() && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 ListQueuesResult listQueuesResult = amazonSQS.listQueues();
                 List<String> queueUrls = listQueuesResult.getQueueUrls();
                 queueUrls.forEach(queueUrl -> amazonSQS.purgeQueue(new PurgeQueueRequest(queueUrl)));

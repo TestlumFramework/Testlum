@@ -498,6 +498,12 @@ public class ResultUtil {
         result.put(VALUE, value);
     }
 
+    public void addAuthMetaData(final Auth auth, final CommandResult result) {
+        result.put(API_ALIAS, auth.getApiAlias());
+        result.put(ENDPOINT, auth.getLoginEndpoint());
+        result.put(CREDENTIALS_FILE, auth.getCredentials());
+    }
+
     public void addWaitMetaData(final String time,
                                 final TimeUnit unit,
                                 final CommandResult result) {
@@ -657,11 +663,5 @@ public class ResultUtil {
         if (isNotBlank(swipeNative.getLocatorId())) {
             result.put(SWIPE_LOCATOR, swipeNative.getLocatorId());
         }
-    }
-
-    public void addAuthMetaData(final Auth auth, final CommandResult result) {
-        result.put(API_ALIAS, auth.getApiAlias());
-        result.put(ENDPOINT, auth.getLoginEndpoint());
-        result.put(CREDENTIALS_FILE, auth.getCredentials());
     }
 }

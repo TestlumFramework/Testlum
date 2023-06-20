@@ -21,8 +21,8 @@ public class UiConditionExecutor extends AbstractUiExecutor<UiCondition> {
     @Override
     protected void execute(final UiCondition condition, final CommandResult result) {
         try {
-            boolean conditionResult = ConditionUtil.parseFromSpel(condition.getSpel(), condition.getName(), result);
-            dependencies.getScenarioContext().setCondition(condition.getName(), conditionResult);
+            ConditionUtil.processCondition(condition.getName(), condition.getSpel(),
+                    result, dependencies.getScenarioContext());
         } catch (Exception e) {
             log.info(FAILED_CONDITION_LOG, condition.getName(), condition.getSpel());
             throw e;

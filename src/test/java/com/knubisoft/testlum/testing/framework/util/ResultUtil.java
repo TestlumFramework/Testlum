@@ -492,12 +492,18 @@ public class ResultUtil {
                                      final String expression,
                                      final Boolean value,
                                      final CommandResult result) {
-        if (!value) {
-            result.setSkipped(true);
-        }
         result.put(NAME, key);
         result.put(EXPRESSION, expression);
         result.put(VALUE, value);
+    }
+
+    public void addCommandOnConditionMetaData(final String conditionName,
+                                              final Boolean conditionResult,
+                                              final CommandResult result) {
+        if (!conditionResult) {
+            result.setSkipped(true);
+        }
+        result.put(CONDITION, conditionName + " = " + conditionResult);
     }
 
     public void addWaitMetaData(final String time,

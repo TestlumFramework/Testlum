@@ -46,13 +46,11 @@ public class KafkaOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         kafkaConsumer.forEach((aliasEnv, kafkaConsumer) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
-                List<Kafka> kafkaList = GlobalTestConfigurationProvider
-                        .getIntegrations().get(aliasEnv.getEnvironment()).getKafkaIntegration().getKafka();
-                Kafka kafka = IntegrationsUtil.findForAlias(kafkaList, aliasEnv.getAlias());
-                if (kafka.isTruncate()) {
-                    clearKafka(kafkaConsumer, aliasEnv);
-                }
+            List<Kafka> kafkaList = GlobalTestConfigurationProvider
+                    .getIntegrations().get(aliasEnv.getEnvironment()).getKafkaIntegration().getKafka();
+            Kafka kafka = IntegrationsUtil.findForAlias(kafkaList, aliasEnv.getAlias());
+            if (kafka.isTruncate() && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+                clearKafka(kafkaConsumer, aliasEnv);
             }
         });
     }

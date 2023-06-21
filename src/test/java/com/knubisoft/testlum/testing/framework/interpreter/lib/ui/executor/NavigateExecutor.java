@@ -35,12 +35,16 @@ public class NavigateExecutor extends AbstractUiExecutor<Navigate> {
                 break;
             case RELOAD: dependencies.getDriver().navigate().refresh();
                 break;
-            case TO: NavigateUtil.navigateTo(navigate.getPath(), dependencies);
-                result.put(NAVIGATE_URL, navigate.getPath());
-                log.info(BY_URL_LOG, navigate.getPath());
+            case TO: navigateTo(navigate, result);
                 break;
             default: throw new DefaultFrameworkException(NAVIGATE_NOT_SUPPORTED, navigateCommand.value());
         }
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+    }
+
+    private void navigateTo(final Navigate navigate, final CommandResult result) {
+        NavigateUtil.navigateTo(navigate.getPath(), dependencies);
+        result.put(NAVIGATE_URL, navigate.getPath());
+        log.info(BY_URL_LOG, navigate.getPath());
     }
 }

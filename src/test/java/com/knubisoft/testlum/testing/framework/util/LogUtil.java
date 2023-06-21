@@ -470,7 +470,7 @@ public class LogUtil {
         log.info(TAB_COMMAND, command);
         if (CLOSE_TAB.equals(command) || SWITCH_TAB.equals(command)) {
             log.info(TAB_INDEX, nonNull(tabNumber) ? tabNumber : LAST_TAB);
-        } else if (!StringUtils.hasText(url)) {
+        } else if (StringUtils.hasText(url)) {
             log.info(TAB_URL, url);
         }
     }

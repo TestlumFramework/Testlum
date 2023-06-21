@@ -85,7 +85,8 @@ public final class LogMessage {
 
     public static final String FAILED_VARIABLE_LOG = "Failed variable <{}> comment <{}>";
     public static final String FAILED_CONDITION_LOG = ANSI_RED
-            + "Condition with name <{}> failed. Expression: {}" + ANSI_RESET;
+            + "Condition with name <{}> has been converted to expression <{}> which is not a boolean expression"
+            + ANSI_RESET;
 
     public static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
     public static final String BY_URL_LOG = format(TABLE_FORMAT, "URL", "{}");

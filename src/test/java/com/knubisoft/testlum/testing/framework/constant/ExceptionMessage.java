@@ -227,8 +227,7 @@ public class ExceptionMessage {
     public static final String TAB_NOT_FOUND = "Available tab that can be closed not found";
     public static final String TAB_OUT_OF_BOUNDS = "Cannot close the tab №<%s> because there are only %s tabs";
     public static final String CANNOT_SWITCH_TO_WEBVIEW = "Cannot switch to the web view. Web context was not found";
-    public static final String FAILED_CONDITION_LOG = ANSI_RED
-            + "Condition '%s' is not a valid boolean expression\n"
-            + "Converted value: %s\n"
+    public static final String FAILED_CONDITION_LOG = ANSI_RED + "Condition '%s' is not a valid boolean expression\n"
+            + "Converted condition: %s\n"
             + "Parsing exception: %s" + ANSI_RESET;
 }

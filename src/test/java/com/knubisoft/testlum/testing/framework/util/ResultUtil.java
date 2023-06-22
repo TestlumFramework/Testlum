@@ -501,6 +501,7 @@ public class ResultUtil {
     public void addCommandOnConditionMetaData(final String conditionName,
                                               final Boolean conditionResult,
                                               final CommandResult result) {
+        result.setSkipped(conditionResult);
         result.put(CONDITION, conditionName + " = " + conditionResult);
     }
 

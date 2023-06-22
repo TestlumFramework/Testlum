@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Attribute;
+import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
@@ -495,6 +496,12 @@ public class ResultUtil {
         result.put(NAME, key);
         result.put(EXPRESSION, expression);
         result.put(VALUE, value);
+    }
+
+    public void addAuthMetaData(final Auth auth, final CommandResult result) {
+        result.put(API_ALIAS, auth.getApiAlias());
+        result.put(ENDPOINT, auth.getLoginEndpoint());
+        result.put(CREDENTIALS_FILE, auth.getCredentials());
     }
 
     public void addCommandOnConditionMetaData(final String conditionName,

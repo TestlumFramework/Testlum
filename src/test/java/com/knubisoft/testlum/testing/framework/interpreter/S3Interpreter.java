@@ -35,8 +35,11 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @InterpreterForClass(S3.class)
 public class S3Interpreter extends AbstractInterpreter<S3> {
 
-    private static final String UPLOAD_ACTION = "upload";
-    private static final String DOWNLOAD_ACTION = "download";
+    private static final String CREATE_BUCKET = "upload bucket";
+    private static final String REMOVE_BUCKET = "remove bucket";
+    private static final String UPLOAD_FILE = "upload file";
+    private static final String DOWNLOAD_FILE = "download file";
+    private static final String REMOVE_FILE = "remove file";
 
     @Autowired(required = false)
     private Map<AliasEnv, AmazonS3> amazonS3;
@@ -57,12 +60,12 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         AliasEnv aliasEnv = new AliasEnv(s3.getAlias(), dependencies.getEnvironment());
         String bucket = s3.getBucket();
         String key = s3.getKey();
-        if (isNotBlank(s3.getUpload())) {
-            ResultUtil.addS3GeneralMetaData(bucket, UPLOAD_ACTION, key, bucket, result);
-            uploadFile(s3.getUpload(), bucket, key, aliasEnv, result);
-        } else if (isNotBlank(s3.getDownload())) {
-            ResultUtil.addS3GeneralMetaData(bucket, DOWNLOAD_ACTION, key, bucket, result);
-            String file = downloadFile(bucket, key, s3.getDownload(), aliasEnv, result);
+        if (isNotBlank(s3.getUploadFile())) {
+            ResultUtil.addS3GeneralMetaData(bucket, UPLOAD_FILE, key, bucket, result);
+            uploadFile(s3.getUploadFile(), bucket, key, aliasEnv, result);
+        } else if (isNotBlank(s3.getDownloadFile())) {
+            ResultUtil.addS3GeneralMetaData(bucket, DOWNLOAD_FILE, key, bucket, result);
+            String file = downloadFile(bucket, key, s3.getDownloadFile(), aliasEnv, result);
             setContextBody(file);
         } else {
             throw new DefaultFrameworkException(INCORRECT_S3_PROCESSING);
@@ -76,7 +79,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                             final CommandResult result) {
         final File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
         result.put("File name", fileName);
-        LogUtil.logS3ActionInfo(UPLOAD_ACTION, bucket, key, fileName);
+        LogUtil.logS3ActionInfo(UPLOAD_FILE, bucket, key, fileName);
         if (!amazonS3.get(aliasEnv).doesBucketExistV2(bucket)) {
             amazonS3.get(aliasEnv).createBucket(bucket);
         }
@@ -88,7 +91,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                                 final String fileName,
                                 final AliasEnv aliasEnv,
                                 final CommandResult result) throws IOException {
-        LogUtil.logS3ActionInfo(DOWNLOAD_ACTION, bucket, key, fileName);
+        LogUtil.logS3ActionInfo(DOWNLOAD_FILE, bucket, key, fileName);
         File expectedFile = FileSearcher.searchFileFromDir(dependencies.getFile(), fileName);
         InputStream expectedStream = FileUtils.openInputStream(expectedFile);
         String expected = IOUtils.toString(expectedStream, StandardCharsets.UTF_8);

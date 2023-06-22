@@ -17,12 +17,15 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
  *       &lt;choice&gt;
- *         &lt;element name="upload" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
- *         &lt;element name="download" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="createBucket" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="removeBucket" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="uploadFile" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="downloadFile" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="removeFile" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}aliasPattern" /&gt;
  *       &lt;attribute name="bucket" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="key" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="key" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -32,68 +35,146 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "s3", propOrder = {
-    "upload",
-    "download"
+    "createBucket",
+    "removeBucket",
+    "uploadFile",
+    "downloadFile",
+    "removeFile"
 })
 public class S3
     extends AbstractCommand
 {
 
-    protected String upload;
-    protected String download;
+    protected String createBucket;
+    protected String removeBucket;
+    protected String uploadFile;
+    protected String downloadFile;
+    protected String removeFile;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
     @XmlAttribute(name = "bucket", required = true)
     protected String bucket;
-    @XmlAttribute(name = "key", required = true)
+    @XmlAttribute(name = "key")
     protected String key;
 
     /**
-     * Gets the value of the upload property.
+     * Gets the value of the createBucket property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getUpload() {
-        return upload;
+    public String getCreateBucket() {
+        return createBucket;
     }
 
     /**
-     * Sets the value of the upload property.
+     * Sets the value of the createBucket property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setUpload(String value) {
-        this.upload = value;
+    public void setCreateBucket(String value) {
+        this.createBucket = value;
     }
 
     /**
-     * Gets the value of the download property.
+     * Gets the value of the removeBucket property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getDownload() {
-        return download;
+    public String getRemoveBucket() {
+        return removeBucket;
     }
 
     /**
-     * Sets the value of the download property.
+     * Sets the value of the removeBucket property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setDownload(String value) {
-        this.download = value;
+    public void setRemoveBucket(String value) {
+        this.removeBucket = value;
+    }
+
+    /**
+     * Gets the value of the uploadFile property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getUploadFile() {
+        return uploadFile;
+    }
+
+    /**
+     * Sets the value of the uploadFile property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setUploadFile(String value) {
+        this.uploadFile = value;
+    }
+
+    /**
+     * Gets the value of the downloadFile property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDownloadFile() {
+        return downloadFile;
+    }
+
+    /**
+     * Sets the value of the downloadFile property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDownloadFile(String value) {
+        this.downloadFile = value;
+    }
+
+    /**
+     * Gets the value of the removeFile property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getRemoveFile() {
+        return removeFile;
+    }
+
+    /**
+     * Sets the value of the removeFile property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setRemoveFile(String value) {
+        this.removeFile = value;
     }
 
     /**

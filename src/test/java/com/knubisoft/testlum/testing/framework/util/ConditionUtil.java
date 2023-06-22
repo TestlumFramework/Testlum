@@ -15,6 +15,7 @@ public class ConditionUtil {
     public boolean isTrue(final String conditionName, final ScenarioContext context, final CommandResult result) {
         if (StringUtils.isNotBlank(conditionName)) {
             boolean conditionResult = context.getCondition(conditionName);
+            result.setSkipped(conditionResult);
             LogUtil.logCondition(conditionName, conditionResult);
             ResultUtil.addCommandOnConditionMetaData(conditionName, conditionResult, result);
             return conditionResult;

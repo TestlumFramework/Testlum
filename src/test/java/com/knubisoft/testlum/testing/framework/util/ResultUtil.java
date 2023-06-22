@@ -498,19 +498,16 @@ public class ResultUtil {
         result.put(VALUE, value);
     }
 
+    public void addCommandOnConditionMetaData(final String conditionName,
+                                              final Boolean conditionResult,
+                                              final CommandResult result) {
+        result.put(CONDITION, conditionName + " = " + conditionResult);
+    }
+
     public void addAuthMetaData(final Auth auth, final CommandResult result) {
         result.put(API_ALIAS, auth.getApiAlias());
         result.put(ENDPOINT, auth.getLoginEndpoint());
         result.put(CREDENTIALS_FILE, auth.getCredentials());
-    }
-
-    public void addCommandOnConditionMetaData(final String conditionName,
-                                              final Boolean conditionResult,
-                                              final CommandResult result) {
-        if (!conditionResult) {
-            result.setSkipped(true);
-        }
-        result.put(CONDITION, conditionName + " = " + conditionResult);
     }
 
     public void addWaitMetaData(final String time,

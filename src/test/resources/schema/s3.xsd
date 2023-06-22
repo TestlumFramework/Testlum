@@ -11,15 +11,12 @@
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:choice>
-                    <x:element name="createBucket" type="tns:nonEmptyString"/>
-                    <x:element name="removeBucket" type="tns:nonEmptyString"/>
-                    <x:element name="uploadFile" type="tns:nonEmptyString"/>
-                    <x:element name="downloadFile" type="tns:nonEmptyString"/>
-                    <x:element name="removeFile" type="tns:nonEmptyString"/>
+                    <x:element name="upload" type="tns:nonEmptyString"/>
+                    <x:element name="download" type="tns:nonEmptyString"/>
                 </x:choice>
                 <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
                 <x:attribute name="bucket" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="key" type="tns:nonEmptyString"/>
+                <x:attribute name="key" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

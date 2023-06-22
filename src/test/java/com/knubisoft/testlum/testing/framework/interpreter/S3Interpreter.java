@@ -57,12 +57,12 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         AliasEnv aliasEnv = new AliasEnv(s3.getAlias(), dependencies.getEnvironment());
         String bucket = s3.getBucket();
         String key = s3.getKey();
-        if (isNotBlank(s3.getUploadFile())) {
+        if (isNotBlank(s3.getUpload())) {
             ResultUtil.addS3GeneralMetaData(bucket, UPLOAD_ACTION, key, bucket, result);
-            uploadFile(s3.getUploadFile(), bucket, key, aliasEnv, result);
-        } else if (isNotBlank(s3.getDownloadFile())) {
+            uploadFile(s3.getUpload(), bucket, key, aliasEnv, result);
+        } else if (isNotBlank(s3.getDownload())) {
             ResultUtil.addS3GeneralMetaData(bucket, DOWNLOAD_ACTION, key, bucket, result);
-            String file = downloadFile(bucket, key, s3.getDownloadFile(), aliasEnv, result);
+            String file = downloadFile(bucket, key, s3.getDownload(), aliasEnv, result);
             setContextBody(file);
         } else {
             throw new DefaultFrameworkException(INCORRECT_S3_PROCESSING);

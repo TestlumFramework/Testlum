@@ -620,11 +620,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateS3Command(final File xmlFile, final S3 s3) {
-        Stream.of(s3.getCreateBucket(),
-                        s3.getRemoveBucket(),
-                        s3.getUploadFile(),
-                        s3.getDownloadFile(),
-                        s3.getRemoveFile())
+        Stream.of(s3.getDownload(), s3.getUpload())
                 .filter(StringUtils::isNotBlank)
                 .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
     }

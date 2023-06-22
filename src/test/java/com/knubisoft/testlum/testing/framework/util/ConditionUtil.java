@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import lombok.experimental.UtilityClass;
@@ -8,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_CONDITION_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FAILED_CONDITION_LOG;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONDITION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.NAME_VALUE;
 import static java.lang.String.format;
@@ -43,8 +44,7 @@ public class ConditionUtil {
             Expression exp = new SpelExpressionParser().parseExpression(expression);
             return Boolean.TRUE.equals(exp.getValue(Boolean.class));
         } catch (Exception e) {
-            log.info(FAILED_CONDITION_LOG, condition, expression);
-            throw e;
+            throw new DefaultFrameworkException(FAILED_CONDITION_LOG, condition, expression, e.getMessage());
         }
     }
 }

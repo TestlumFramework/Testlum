@@ -8,7 +8,8 @@ import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.model.scenario.Condition;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_CONDITION_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FAILED_CONDITION_LOG;
+import static java.lang.String.format;
 
 @Slf4j
 @InterpreterForClass(Condition.class)
@@ -25,7 +26,7 @@ public class ConditionInterpreter extends AbstractInterpreter<Condition> {
             ConditionUtil.processCondition(condition.getName(), condition.getSpel(),
                     result, dependencies.getScenarioContext());
         } catch (Exception e) {
-            log.info(FAILED_CONDITION_LOG, condition.getName(), condition.getSpel());
+            log.info(format(FAILED_CONDITION_LOG, condition.getName(), condition.getSpel(), e.getMessage()));
             throw e;
         }
     }

@@ -167,6 +167,8 @@ public class ResultUtil {
     private static final String SHELL_FILES = "Shell files";
     private static final String SHELL_COMMANDS = "Shell commands";
     private static final String TYPE = "Type";
+    private static final String QUERY_TYPE = "Query type";
+    private static final String DB_TYPE = "DB type";
     private static final String NAME = "Name";
     private static final String VALUE = "Value";
     private static final String TIME = "Time";
@@ -469,6 +471,21 @@ public class ResultUtil {
         }
     }
 
+    public static void addVariableFromSQLMetaData(String queryType,
+                                                  String dbType,
+                                                  String alias,
+                                                  String key,
+                                                  String expression,
+                                                  String value,
+                                                  CommandResult result) {
+        result.put(QUERY_TYPE, queryType);
+        result.put(DB_TYPE, dbType);
+        result.put(ALIAS, alias);
+        result.put(NAME, key);
+        result.put(EXPRESSION, expression);
+        result.put(VALUE, value);
+    }
+
     public void addVariableMetaData(final String type,
                                     final String key,
                                     final String expression,
@@ -664,4 +681,5 @@ public class ResultUtil {
             result.put(SWIPE_LOCATOR, swipeNative.getLocatorId());
         }
     }
+
 }

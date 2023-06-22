@@ -53,6 +53,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONDIT
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_FORMAT;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DB_TYPE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DRAGGING_FILE_PATH;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DRAGGING_FROM;
@@ -265,6 +266,12 @@ public class LogUtil {
     }
 
     public void logAllQueries(final List<String> queries, final String alias) {
+        log.info(ALIAS_LOG, alias);
+        queries.forEach(query -> log.info(QUERY, query.replaceAll(REGEX_MANY_SPACES, SPACE)));
+    }
+
+    public void logAllQueries(final List<String> queries, final String dbType, final String alias) {
+        log.info(DB_TYPE_LOG, dbType);
         log.info(ALIAS_LOG, alias);
         queries.forEach(query -> log.info(QUERY, query.replaceAll(REGEX_MANY_SPACES, SPACE)));
     }

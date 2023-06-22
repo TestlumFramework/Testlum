@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.db.dynamodb;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnDynamoEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -51,9 +50,7 @@ public class DynamoDBOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         dynamoDbClient.forEach((aliasEnv, dbClient) -> {
-            List<Dynamo> dynamoList = GlobalTestConfigurationProvider
-                    .getIntegrations().get(aliasEnv.getEnvironment()).getDynamoIntegration().getDynamo();
-            Dynamo dynamo = IntegrationsUtil.findForAlias(dynamoList, aliasEnv.getAlias());
+            Dynamo dynamo = IntegrationsUtil.getIntegrationByClassAndAlias(Dynamo.class, aliasEnv);
             if (dynamo.isTruncate() && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 dbClient.listTables().tableNames().forEach(tableName -> truncate(tableName, dbClient));
             }

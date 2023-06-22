@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -148,8 +147,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     }
 
     private String createFullUrl(final String endpoint, final String alias) {
-        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().get(dependencies.getEnvironment())
-                .getApis().getApi();
+        List<Api> apiList = IntegrationsUtil.getIntegrationsListByEnv(Api.class, dependencies.getEnvironment());
         Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, alias);
         return apiIntegration.getUrl() + endpoint;
     }

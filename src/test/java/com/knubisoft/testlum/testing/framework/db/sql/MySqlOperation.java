@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnMysqlEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -46,9 +45,7 @@ public class MySqlOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         mySqlExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            List<Mysql> mysqlList = GlobalTestConfigurationProvider
-                    .getIntegrations().get(aliasEnv.getEnvironment()).getMysqlIntegration().getMysql();
-            Mysql mysql = IntegrationsUtil.findForAlias(mysqlList, aliasEnv.getAlias());
+            Mysql mysql = IntegrationsUtil.getIntegrationByClassAndAlias(Mysql.class, aliasEnv);
             if (mysql.isTruncate() && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 sqlExecutor.truncate();
             }

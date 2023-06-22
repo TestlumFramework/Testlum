@@ -59,12 +59,19 @@
     <x:complexType name="integration" abstract="true">
         <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
         <x:attribute name="enabled" type="x:boolean" use="required"/>
-        <x:attribute name="truncate" type="x:boolean" default="true"/>
+    </x:complexType>
+
+    <x:complexType name="storageIntegration">
+        <x:complexContent>
+            <x:extension base="tns:integration">
+                <x:attribute name="truncate" type="x:boolean" default="true"/>
+            </x:extension>
+        </x:complexContent>
     </x:complexType>
 
     <x:complexType name="databaseConfig" abstract="true">
         <x:complexContent>
-            <x:extension base="tns:integration">
+            <x:extension base="tns:storageIntegration">
                 <x:sequence>
                     <x:element name="jdbcDriver" type="tns:nonEmptyString"/>
                     <x:element name="username" type="tns:nonEmptyString"/>

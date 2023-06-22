@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.db.kafka;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -46,9 +45,7 @@ public class KafkaOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         kafkaConsumer.forEach((aliasEnv, kafkaConsumer) -> {
-            List<Kafka> kafkaList = GlobalTestConfigurationProvider
-                    .getIntegrations().get(aliasEnv.getEnvironment()).getKafkaIntegration().getKafka();
-            Kafka kafka = IntegrationsUtil.findForAlias(kafkaList, aliasEnv.getAlias());
+            Kafka kafka = IntegrationsUtil.getIntegrationByClassAndAlias(Kafka.class, aliasEnv);
             if (kafka.isTruncate() && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 clearKafka(kafkaConsumer, aliasEnv);
             }

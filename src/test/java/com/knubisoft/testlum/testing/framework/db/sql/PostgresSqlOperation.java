@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnPostgresEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -46,9 +45,7 @@ public class PostgresSqlOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         postgresExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            List<Postgres> postgresList = GlobalTestConfigurationProvider
-                    .getIntegrations().get(aliasEnv.getEnvironment()).getPostgresIntegration().getPostgres();
-            Postgres postgres = IntegrationsUtil.findForAlias(postgresList, aliasEnv.getAlias());
+            Postgres postgres = IntegrationsUtil.getIntegrationByClassAndAlias(Postgres.class, aliasEnv);
             if (postgres.isTruncate() && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 sqlExecutor.truncate();
             }

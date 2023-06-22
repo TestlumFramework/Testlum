@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.db.mongodb;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnMongoEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -38,9 +37,7 @@ public class MongoOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         mongoDatabases.forEach((aliasEnv, database) -> {
-            List<Mongo> mongoList = GlobalTestConfigurationProvider
-                    .getIntegrations().get(aliasEnv.getEnvironment()).getMongoIntegration().getMongo();
-            Mongo mongo = IntegrationsUtil.findForAlias(mongoList, aliasEnv.getAlias());
+            Mongo mongo = IntegrationsUtil.getIntegrationByClassAndAlias(Mongo.class, aliasEnv);
             if (mongo.isTruncate() && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 for (String collectionName : database.listCollectionNames()) {
                     if (database.getCollection(collectionName).countDocuments() > 0) {

@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnClickhouseEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -46,9 +45,7 @@ public class ClickhouseOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         clickhouseExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            List<Clickhouse> clickhouseList = GlobalTestConfigurationProvider
-                    .getIntegrations().get(aliasEnv.getEnvironment()).getClickhouseIntegration().getClickhouse();
-            Clickhouse clickhouse = IntegrationsUtil.findForAlias(clickhouseList, aliasEnv.getAlias());
+            Clickhouse clickhouse = IntegrationsUtil.getIntegrationByClassAndAlias(Clickhouse.class, aliasEnv);
             if (clickhouse.isTruncate() && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 sqlExecutor.truncate();
             }

@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.db.redis;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRedisEnabledCondition;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
@@ -48,9 +47,7 @@ public class RedisOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         stringRedisConnection.forEach((aliasEnv, redisConnection) -> {
-            List<Redis> redisList = GlobalTestConfigurationProvider
-                    .getIntegrations().get(aliasEnv.getEnvironment()).getRedisIntegration().getRedis();
-            Redis redis = IntegrationsUtil.findForAlias(redisList, aliasEnv.getAlias());
+            Redis redis = IntegrationsUtil.getIntegrationByClassAndAlias(Redis.class, aliasEnv);
             if (redis.isTruncate() && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 redisConnection.execute(CLEAR_DATABASE);
             }

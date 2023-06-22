@@ -19,7 +19,6 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/testlum/testing/model/global-config}aliasPattern" /&gt;
  *       &lt;attribute name="enabled" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *       &lt;attribute name="truncate" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -33,16 +32,7 @@ import javax.xml.bind.annotation.XmlType;
     Api.class,
     GraphqlApi.class,
     WebsocketApi.class,
-    Clickhouse.class,
-    DatabaseConfig.class,
-    Redis.class,
-    Mongo.class,
-    S3 .class,
-    Sqs.class,
-    Kafka.class,
-    Rabbitmq.class,
-    Dynamo.class,
-    Elasticsearch.class,
+    StorageIntegration.class,
     Lambda.class,
     Sendgrid.class,
     Ses.class,
@@ -55,8 +45,6 @@ public abstract class Integration {
     protected String alias;
     @XmlAttribute(name = "enabled", required = true)
     protected boolean enabled;
-    @XmlAttribute(name = "truncate")
-    protected Boolean truncate;
 
     /**
      * Gets the value of the alias property.
@@ -96,34 +84,6 @@ public abstract class Integration {
      */
     public void setEnabled(boolean value) {
         this.enabled = value;
-    }
-
-    /**
-     * Gets the value of the truncate property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public boolean isTruncate() {
-        if (truncate == null) {
-            return true;
-        } else {
-            return truncate;
-        }
-    }
-
-    /**
-     * Sets the value of the truncate property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setTruncate(Boolean value) {
-        this.truncate = value;
     }
 
 }

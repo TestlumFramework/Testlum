@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnOracleEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -46,9 +45,7 @@ public class OracleOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         oracleExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            List<Oracle> oracleList = GlobalTestConfigurationProvider
-                    .getIntegrations().get(aliasEnv.getEnvironment()).getOracleIntegration().getOracle();
-            Oracle oracle = IntegrationsUtil.findForAlias(oracleList, aliasEnv.getAlias());
+            Oracle oracle = IntegrationsUtil.getIntegrationByClassAndAlias(Oracle.class, aliasEnv);
             if (oracle.isTruncate() && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 sqlExecutor.truncate();
             }

@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
@@ -9,7 +10,6 @@ import com.knubisoft.testlum.testing.model.scenario.Condition;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FAILED_CONDITION_LOG;
-import static java.lang.String.format;
 
 @Slf4j
 @InterpreterForClass(Condition.class)
@@ -26,8 +26,8 @@ public class ConditionInterpreter extends AbstractInterpreter<Condition> {
             ConditionUtil.processCondition(condition.getName(), condition.getSpel(),
                     result, dependencies.getScenarioContext());
         } catch (Exception e) {
-            log.info(format(FAILED_CONDITION_LOG, condition.getName(), condition.getSpel(), e.getMessage()));
-            throw e;
+            throw new DefaultFrameworkException(FAILED_CONDITION_LOG,
+                    condition.getName(), condition.getSpel(), e.getMessage());
         }
     }
 }

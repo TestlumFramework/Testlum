@@ -6,7 +6,7 @@
     <x:simpleType name="aliasPattern">
         <x:restriction base="x:string">
             <x:pattern value="[a-zA-Z_\-/\d]+"/>
-            <x:pattern value="\{\{.+\}\}"/>
+<!--            <x:pattern value="\{\{.+\}\}"/>-->
         </x:restriction>
     </x:simpleType>
 

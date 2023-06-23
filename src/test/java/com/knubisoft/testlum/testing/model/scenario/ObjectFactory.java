@@ -590,6 +590,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link NativeAssert }
+     * 
+     */
+    public NativeAssert createNativeAssert() {
+        return new NativeAssert();
+    }
+
+    /**
      * Create an instance of {@link Attribute }
      * 
      */

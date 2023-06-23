@@ -114,7 +114,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOUBLE_CLOSE_BRACE;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOUBLE_OPEN_BRACE;
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_ALIASES_DOESNT_MATCH;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
@@ -134,9 +136,11 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
+    private static final String BRACES_REGEX = "[{}]";
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> uiCommandValidatorsMap;
     private final Integrations integrations = GlobalTestConfigurationProvider.getDefaultIntegrations();
+    private String variationsFileName;
 
     public ScenarioValidator() {
         Map<AbstractCommandPredicate, AbstractCommandValidator> validatorMap = new HashMap<>();
@@ -145,7 +149,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             checkIntegrationExistence(integrations.getApis(), Apis.class);
             Auth auth = (Auth) command;
             validateFileExistenceInDataFolder(auth.getCredentials());
-            validateAuthCommand(auth);
+            validateAuthCommand(xmlFile, auth);
         });
 
         validatorMap.put(o -> o instanceof Http, (xmlFile, command) -> {
@@ -376,12 +380,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateVariationsIfExist(scenario, xmlFile);
             validateIfContainsNativeAndMobileCommands(scenario.getCommands());
             scenario.getCommands().forEach(command -> validateCommand(command, xmlFile));
+            variationsFileName = EMPTY;
         }
     }
 
     private void validateVariationsIfExist(final Scenario scenario, final File xmlFile) {
         if (isNotBlank(scenario.getVariations())) {
             GlobalVariations.process(scenario, xmlFile);
+            variationsFileName = scenario.getVariations();
         }
     }
 
@@ -434,17 +440,36 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateFileExistenceInDataFolder(final String fileName) {
-        //todo: add file existence validation if variations
+        if (isNotBlank(fileName) && fileName.trim().startsWith(DOUBLE_OPEN_BRACE) && isNotBlank(variationsFileName)) {
+            validateFileNamesIfVariations(null, fileName);
+        }
         if (isNotBlank(fileName) && !fileName.trim().startsWith(DOUBLE_OPEN_BRACE)) {
             FileSearcher.searchFileFromDataFolder(fileName);
         }
     }
 
     private void validateFileIfExist(final File xmlFile, final String fileName) {
-        //todo: add file existence validation if variations
+        if (isNotBlank(fileName) && fileName.trim().startsWith(DOUBLE_OPEN_BRACE) && isNotBlank(variationsFileName)) {
+            validateFileNamesIfVariations(xmlFile, fileName);
+        }
         if (isNotBlank(fileName) && !fileName.trim().startsWith(DOUBLE_OPEN_BRACE)) {
             FileSearcher.searchFileFromDir(xmlFile, fileName);
         }
+    }
+
+    private void validateFileNamesIfVariations(final File xmlFile, final String fileName) {
+        List<Map<String, String>> variationsList = GlobalVariations.getVariations(variationsFileName);
+        variationsList.forEach(variationsMap -> {
+            String fileNameFromVariations = variationsMap.get(fileName.replaceAll(BRACES_REGEX, EMPTY));
+            if (isNotBlank(fileNameFromVariations)) {
+                String file = fileNameFromVariations + fileName.substring(fileName.indexOf(DOUBLE_CLOSE_BRACE));
+                if (nonNull(xmlFile)) {
+                    FileSearcher.searchFileFromDir(xmlFile, file);
+                } else {
+                    FileSearcher.searchFileFromDataFolder(file);
+                }
+            }
+        });
     }
 
     private void checkIntegrationExistence(final Object integration, final Class<?> name) {
@@ -489,7 +514,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
     //CHECKSTYLE:ON
 
-    private void validateAuthCommand(final Auth auth) {
+    private void validateAuthCommand(final File xmlFile, final Auth auth) {
         Api apiIntegration = IntegrationsUtil.findApiForAlias(integrations.getApis().getApi(), auth.getApiAlias());
         if (isNull(apiIntegration.getAuth())) {
             throw new DefaultFrameworkException(AUTH_NOT_FOUND, apiIntegration.getAlias());
@@ -500,6 +525,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         if (authCmdAliasNotMatch) {
             throw new DefaultFrameworkException(AUTH_ALIASES_DOESNT_MATCH);
         }
+        auth.getCommands().stream()
+                .filter(command -> command instanceof Http)
+                .forEach(command -> validateHttpCommand(xmlFile, (Http) command));
     }
 
     private void validateHttpCommand(final File xmlFile, final Http http) {
@@ -508,7 +536,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         HttpInfo httpInfo = HttpUtil.getHttpMethodMetadata(http).getHttpInfo();
         Response response = httpInfo.getResponse();
         if (nonNull(response) && isNotBlank(response.getFile())) {
-            FileSearcher.searchFileFromDir(xmlFile, response.getFile());
+            validateFileIfExist(xmlFile, response.getFile());
         }
     }
 
@@ -516,7 +544,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         Stream.of(graphql.getPost(), graphql.getGet())
                 .filter(Objects::nonNull)
                 .filter(v -> isNotBlank(v.getResponse().getFile()))
-                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v.getResponse().getFile()));
+                .forEach(v -> validateFileIfExist(xmlFile, v.getResponse().getFile()));
     }
 
     private void validateWebsocketCommand(final File xmlFile, final Websocket websocket) {
@@ -529,7 +557,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         commands.stream()
                 .map(this::getWebsocketFilename)
                 .filter(StringUtils::isNotBlank)
-                .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
+                .forEach(filename -> validateFileIfExist(xmlFile, filename));
     }
 
     private void addWebsocketCommandsToCheck(final List<Object> commandList, final List<Object> commands) {
@@ -552,11 +580,11 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateLambdaCommand(final File xmlFile, final Lambda lambda) {
         Response response = lambda.getResponse();
         if (nonNull(response) && isNotBlank(response.getFile())) {
-            FileSearcher.searchFileFromDir(xmlFile, response.getFile());
+            validateFileIfExist(xmlFile, response.getFile());
         }
         LambdaBody body = lambda.getBody();
         if (nonNull(body) && nonNull(body.getFrom())) {
-            FileSearcher.searchFileFromDir(xmlFile, body.getFrom().getFile());
+            validateFileIfExist(xmlFile, body.getFrom().getFile());
         }
     }
 
@@ -570,7 +598,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         ElasticSearchResponse elasticSearchResponse = HttpUtil.getESHttpMethodMetadata(elasticsearch)
                 .getElasticSearchRequest().getResponse();
         if (nonNull(elasticSearchResponse) && isNotBlank(elasticSearchResponse.getFile())) {
-            FileSearcher.searchFileFromDir(xmlFile, elasticSearchResponse.getFile());
+            validateFileIfExist(xmlFile, elasticSearchResponse.getFile());
         }
     }
 
@@ -578,7 +606,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         rabbit.getSendOrReceive().stream()
                 .map(this::getRabbitFilename)
                 .filter(StringUtils::isNotBlank)
-                .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
+                .forEach(filename -> validateFileIfExist(xmlFile, filename));
     }
 
     private String getRabbitFilename(final Object rabbitCommand) {
@@ -593,7 +621,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         kafka.getSendOrReceive().stream()
                 .map(this::getKafkaFilename)
                 .filter(StringUtils::isNotBlank)
-                .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
+                .forEach(filename -> validateFileIfExist(xmlFile, filename));
     }
 
     private String getKafkaFilename(final Object kafkaCommand) {
@@ -608,7 +636,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         sqs.getSendOrReceive().stream()
                 .map(this::getSqsFilename)
                 .filter(StringUtils::isNotBlank)
-                .forEach(filename -> FileSearcher.searchFileFromDir(xmlFile, filename));
+                .forEach(filename -> validateFileIfExist(xmlFile, filename));
     }
 
     private String getSqsFilename(final Object sqsCommand) {
@@ -622,20 +650,20 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateS3Command(final File xmlFile, final S3 s3) {
         Stream.of(s3.getDownload(), s3.getUpload())
                 .filter(StringUtils::isNotBlank)
-                .forEach(v -> FileSearcher.searchFileFromDir(xmlFile, v));
+                .forEach(v -> validateFileIfExist(xmlFile, v));
     }
 
     private void validateSendgridCommand(final File xmlFile, final Sendgrid sendgrid) {
         SendgridInfo sendgridInfo = SendGridUtil.getSendgridMethodMetadata(sendgrid).getHttpInfo();
         Response response = sendgridInfo.getResponse();
         if (nonNull(response) && isNotBlank(response.getFile())) {
-            FileSearcher.searchFileFromDir(xmlFile, response.getFile());
+            validateFileIfExist(xmlFile, response.getFile());
         }
 
         SendgridWithBody commandWithBody = (SendgridWithBody) sendgridInfo;
         Body body = commandWithBody.getBody();
         if (nonNull(body) && nonNull(body.getFrom())) {
-            FileSearcher.searchFileFromDir(xmlFile, body.getFrom().getFile());
+            validateFileIfExist(xmlFile, body.getFrom().getFile());
         }
     }
 

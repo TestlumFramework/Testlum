@@ -1,13 +1,13 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
  *         &lt;element name="click" type="{http://www.knubisoft.com/testlum/testing/model/scenario}click"/&gt;
  *         &lt;element name="input" type="{http://www.knubisoft.com/testlum/testing/model/scenario}input"/&gt;
- *         &lt;element name="assert" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assert"/&gt;
+ *         &lt;element name="assert" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeAssert"/&gt;
  *         &lt;element name="wait" type="{http://www.knubisoft.com/testlum/testing/model/scenario}wait"/&gt;
  *         &lt;element name="clear" type="{http://www.knubisoft.com/testlum/testing/model/scenario}clear"/&gt;
  *         &lt;element name="image" type="{http://www.knubisoft.com/testlum/testing/model/scenario}image"/&gt;
@@ -54,7 +54,7 @@ public class Native
     @XmlElements({
         @XmlElement(name = "click", type = Click.class),
         @XmlElement(name = "input", type = Input.class),
-        @XmlElement(name = "assert", type = Assert.class),
+        @XmlElement(name = "assert", type = NativeAssert.class),
         @XmlElement(name = "wait", type = Wait.class),
         @XmlElement(name = "clear", type = Clear.class),
         @XmlElement(name = "image", type = Image.class),
@@ -90,7 +90,7 @@ public class Native
      * Objects of the following type(s) are allowed in the list
      * {@link Click }
      * {@link Input }
-     * {@link Assert }
+     * {@link NativeAssert }
      * {@link Wait }
      * {@link Clear }
      * {@link Image }

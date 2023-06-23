@@ -23,7 +23,7 @@ public class ConditionUtil {
             String injectedCondition = context.getCondition(condition);
             boolean conditionResult = parseFromSpel(condition, injectedCondition);
             LogUtil.logCondition(condition, conditionResult);
-            result.put(CONDITION, format(NAME_VALUE, condition, conditionResult));
+            ResultUtil.addCommandOnConditionMetaData(condition, conditionResult, result);
             return conditionResult;
         }
         return true;

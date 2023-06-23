@@ -15,6 +15,7 @@ public class CommandResult {
     private String actual;
 
     private boolean success;
+    private boolean skipped;
     private Exception exception;
     private long executionTime;
 

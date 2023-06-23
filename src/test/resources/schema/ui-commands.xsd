@@ -139,6 +139,16 @@
         </x:complexContent>
     </x:complexType>
 
+    <x:complexType name="nativeAssert">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="attribute" type="tns:attribute"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
     <x:complexType name="attribute">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">

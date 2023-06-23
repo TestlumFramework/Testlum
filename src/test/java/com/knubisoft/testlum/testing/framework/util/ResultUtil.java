@@ -502,9 +502,7 @@ public class ResultUtil {
                                               final Boolean conditionResult,
                                               final CommandResult result) {
         result.setSkipped(!conditionResult);
-        if(result.isSkipped()) {
-            result.setSuccess(false);
-        }
+        result.setSuccess(conditionResult);
         result.put(CONDITION, conditionName + " = " + conditionResult);
     }
 

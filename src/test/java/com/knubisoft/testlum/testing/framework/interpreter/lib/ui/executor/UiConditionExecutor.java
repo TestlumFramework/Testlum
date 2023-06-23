@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -8,8 +7,6 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.model.scenario.UiCondition;
 import lombok.extern.slf4j.Slf4j;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FAILED_CONDITION_LOG;
 
 @Slf4j
 @ExecutorForClass(UiCondition.class)
@@ -21,12 +18,7 @@ public class UiConditionExecutor extends AbstractUiExecutor<UiCondition> {
 
     @Override
     protected void execute(final UiCondition condition, final CommandResult result) {
-        try {
-            ConditionUtil.processCondition(condition.getName(), condition.getSpel(),
-                    result, dependencies.getScenarioContext());
-        } catch (Exception e) {
-            throw new DefaultFrameworkException(FAILED_CONDITION_LOG,
-                    condition.getName(), condition.getSpel(), e.getMessage());
-        }
+        ConditionUtil.processCondition(condition.getName(), condition.getSpel(),
+                dependencies.getScenarioContext(), result);
     }
 }

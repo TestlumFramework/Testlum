@@ -78,7 +78,6 @@ public class ResultUtil {
     public static final String HTML_DOM = "HTML Dom";
     public static final String FULL_DOM = "Full Dom";
     public static final String LOCATOR_ID = "Locator ID = %s";
-    public static final String NAME_VALUE = "Name: %s; Value: %s;";
     public static final String ELEMENT_PRESENT = "Is the web element present";
     public static final String CONDITION = "Condition";
     public static final String GENERATED_STRING = "Randomly generated string";

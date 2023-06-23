@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FAILED_CONDITION_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FAILED_CONDITION_EXPRESSION;
 
 @Slf4j
 @UtilityClass
@@ -28,8 +28,8 @@ public class ConditionUtil {
 
     public void processCondition(final String condition,
                                  final String expression,
-                                 final CommandResult result,
-                                 final ScenarioContext scenarioContext) {
+                                 final ScenarioContext scenarioContext,
+                                 final CommandResult result) {
         boolean conditionResult = parseFromSpel(condition, expression);
         scenarioContext.setCondition(condition, conditionResult);
         LogUtil.logConditionInfo(condition, expression, conditionResult);
@@ -41,7 +41,7 @@ public class ConditionUtil {
             Expression exp = new SpelExpressionParser().parseExpression(expression);
             return Boolean.TRUE.equals(exp.getValue(Boolean.class));
         } catch (Exception e) {
-            throw new DefaultFrameworkException(FAILED_CONDITION_LOG, condition, expression, e.getMessage());
+            throw new DefaultFrameworkException(FAILED_CONDITION_EXPRESSION, condition, expression, e.getMessage());
         }
     }
 }

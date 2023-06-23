@@ -10,9 +10,6 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FAILED_CONDITION_LOG;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONDITION;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.NAME_VALUE;
-import static java.lang.String.format;
 
 @Slf4j
 @UtilityClass

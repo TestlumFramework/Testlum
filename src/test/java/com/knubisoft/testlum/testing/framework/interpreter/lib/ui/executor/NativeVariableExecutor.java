@@ -21,7 +21,7 @@ import java.util.Map;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_VARIABLE_LOG;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ELEMENT_PRESENT;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.LOCATOR_ID;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.LOCATOR_ID_FORMAT;
 import static java.util.Objects.nonNull;
 
 
@@ -75,7 +75,7 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
         } catch (NoSuchElementException e) {
             valueResult = String.valueOf(false);
         }
-        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, var.getName(), LOCATOR_ID, locatorId, valueResult, result);
+        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, var.getName(), LOCATOR_ID_FORMAT, locatorId, valueResult, result);
         return valueResult;
     }
 

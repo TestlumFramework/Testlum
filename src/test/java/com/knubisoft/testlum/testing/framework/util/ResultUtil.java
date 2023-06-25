@@ -41,11 +41,9 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
@@ -77,7 +75,8 @@ public class ResultUtil {
     public static final String URL = "Url";
     public static final String HTML_DOM = "HTML Dom";
     public static final String FULL_DOM = "Full Dom";
-    public static final String LOCATOR_ID = "Locator ID = %s";
+    public static final String LOCATOR_ID = "Locator ID";
+    public static final String LOCATOR_ID_FORMAT = "Locator ID = %s";
     public static final String ELEMENT_PRESENT = "Is the web element present";
     public static final String CONDITION = "Condition";
     public static final String GENERATED_STRING = "Randomly generated string";
@@ -188,6 +187,7 @@ public class ResultUtil {
     private static final String IMAGE_COMPARISON_TYPE = "Image comparison type";
     private static final String IMAGE_LOCATOR = "Locator to element with image";
     private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
+    private static final String COMMENT = "Comment";
 
     public CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
         CommandResult commandResult = new CommandResult();
@@ -567,11 +567,13 @@ public class ResultUtil {
 
     public void addHoversMetaData(final Hovers hovers, final CommandResult result) {
         result.put(MOVE_TO_EMPTY_SPACE, hovers.isMoveToEmptySpace());
-        AtomicInteger number = new AtomicInteger(1);
-        hovers.getHover().forEach(hover -> {
-            String hoverNumber = format(HOVER_NUMBER_TEMPLATE, number.getAndIncrement());
-            result.put(hoverNumber, Arrays.asList(hover.getLocatorId(), hovers.getComment()));
-        });
+    }
+
+    public void addHoverMetaData(final String comment,
+                                 final String locatorId,
+                                 final CommandResult result) {
+        result.put(COMMENT, comment);
+        result.put(LOCATOR_ID, locatorId);
     }
 
     private void addKafkaAdditionalMetaDataForSendAction(final SendKafkaMessage sendAction,

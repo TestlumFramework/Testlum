@@ -166,6 +166,10 @@ public class ExceptionMessage {
                     + "Use one of the options: -g={path-to-initial-structure) or --generate={path-to-initial-structure)"
                     + "\nExample: -g=/user/folder/resources or --generate=/user/folder/resources\n"
                     + "\nYou entered ---> %s\n";
+    public static final String FAILED_CONDITION_EXPRESSION = ANSI_RED
+            + "Condition '%s' is not a valid boolean expression\n"
+            + "Converted condition: %s\n"
+            + "Parsing exception: %s" + ANSI_RESET;
 
     public static final String VARIATIONS_NOT_FOUND = "Variations for %s not found";
     public static final String VARIATION_FILE_IS_EMPTY = "Variation %s file in the %s is empty";

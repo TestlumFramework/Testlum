@@ -8,8 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONDITION;
-
 @Slf4j
 @UtilityClass
 public class ConditionUtil {
@@ -18,7 +16,7 @@ public class ConditionUtil {
         if (StringUtils.isNotBlank(conditionName)) {
             boolean conditionResult = context.getCondition(conditionName);
             LogUtil.logCondition(conditionName, conditionResult);
-            result.put(CONDITION, conditionName + " = " + conditionResult);
+            ResultUtil.addCommandOnConditionMetaData(conditionName, conditionResult, result);
             return conditionResult;
         }
         return true;

@@ -85,7 +85,7 @@ public class IntegrationsUtil {
                 .findFirst()
                 .map(Map.Entry::getValue)
                 .orElseThrow(() -> new DefaultFrameworkException(
-                        String.format(ExceptionMessage.NO_INTEGRATIONS_FOR_ENV, clazz.getSimpleName())));
+                        String.format(ExceptionMessage.INTEGRATION_NOT_FOUND, clazz.getSimpleName())));
         return (List<T>) integrationListMethod.apply(env);
     }
 

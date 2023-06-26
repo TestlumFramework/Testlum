@@ -50,7 +50,6 @@ public class ExceptionMessage {
             + "There are no active scenarios by enabled tags" + ANSI_RESET;
     public static final String NO_ENABLED_TAGS_CONFIG = ANSI_RED
             + "No enabled tags in runScenariosByTag configuration" + ANSI_RESET;
-    public static final String NO_INTEGRATIONS_FOR_ENV = "Cannot find <%s> integration configuration";
 
     // scenario validation
     public static final String INTEGRATION_NOT_FOUND = "Cannot find integration configuration for <%s>";

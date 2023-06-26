@@ -207,7 +207,7 @@ public class ResultUtil {
 
     public void setExecutionResultIfSubCommandsFailed(final CommandResult result) {
         List<CommandResult> subCommandsResult = result.getSubCommandsResult();
-        if (subCommandsResult.stream().anyMatch(step -> !step.isSuccess())) {
+        if (subCommandsResult.stream().anyMatch(step -> !step.isSkipped() && !step.isSuccess())) {
             Exception exception = subCommandsResult
                     .stream()
                     .filter(subCommand -> !subCommand.isSuccess())
@@ -502,7 +502,6 @@ public class ResultUtil {
                                               final Boolean conditionResult,
                                               final CommandResult result) {
         result.setSkipped(!conditionResult);
-        result.setSuccess(conditionResult);
         result.put(CONDITION, conditionName + " = " + conditionResult);
     }
 

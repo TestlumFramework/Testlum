@@ -90,7 +90,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         } catch (NoSuchElementException e) {
             valueResult = String.valueOf(false);
         }
-        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), LOCATOR_ID_FORMAT, locatorId, valueResult, result);
+        ResultUtil.addVarMetaData(ELEMENT_PRESENT, webVar.getName(), LOCATOR_ID_FORMAT, locatorId, valueResult, result);
         return valueResult;
     }
 
@@ -98,7 +98,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         String locatorId = webVar.getDom().getLocatorId();
         if (StringUtils.isNotBlank(locatorId)) {
             String valueResult = UiUtil.findWebElement(dependencies, locatorId).getAttribute("outerHTML");
-            ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), LOCATOR_ID_FORMAT, locatorId, valueResult, result);
+            ResultUtil.addVarMetaData(HTML_DOM, webVar.getName(), LOCATOR_ID_FORMAT, locatorId, valueResult, result);
             return valueResult;
         }
         String valueResult = dependencies.getDriver().getPageSource();

@@ -75,7 +75,7 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
         } catch (NoSuchElementException e) {
             valueResult = String.valueOf(false);
         }
-        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, var.getName(), LOCATOR_ID_FORMAT, locatorId, valueResult, result);
+        ResultUtil.addVarMetaData(ELEMENT_PRESENT, var.getName(), LOCATOR_ID_FORMAT, locatorId, valueResult, result);
         return valueResult;
     }
 

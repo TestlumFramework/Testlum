@@ -480,12 +480,12 @@ public class ResultUtil {
         result.put(VALUE, value);
     }
 
-    public void addVariableMetaData(final String type,
-                                    final String key,
-                                    final String format,
-                                    final String expression,
-                                    final String value,
-                                    final CommandResult result) {
+    public void addVarMetaData(final String type,
+                               final String key,
+                               final String format,
+                               final String expression,
+                               final String value,
+                               final CommandResult result) {
         addVariableMetaData(type, key, format(format, expression), value, result);
     }
 

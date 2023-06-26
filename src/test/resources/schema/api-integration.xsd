@@ -27,6 +27,7 @@
     <x:complexType name="auth">
         <x:attribute name="autoLogout" type="x:boolean" default="true"/>
         <x:attribute name="authStrategy" type="tns:authStrategies" default="default"/>
+        <x:attribute name="jwtTokenName" type="tns:nonEmptyString" default="token"/>
         <x:attribute name="authCustomClassName" type="tns:nonEmptyString"/>
     </x:complexType>
 

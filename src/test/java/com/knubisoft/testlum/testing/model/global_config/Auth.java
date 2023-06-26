@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="autoLogout" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
  *       &lt;attribute name="authStrategy" type="{http://www.knubisoft.com/testlum/testing/model/global-config}authStrategies" default="default" /&gt;
+ *       &lt;attribute name="jwtTokenName" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" default="token" /&gt;
  *       &lt;attribute name="authCustomClassName" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -34,6 +35,8 @@ public class Auth {
     protected Boolean autoLogout;
     @XmlAttribute(name = "authStrategy")
     protected AuthStrategies authStrategy;
+    @XmlAttribute(name = "jwtTokenName")
+    protected String jwtTokenName;
     @XmlAttribute(name = "authCustomClassName")
     protected String authCustomClassName;
 
@@ -91,6 +94,34 @@ public class Auth {
      */
     public void setAuthStrategy(AuthStrategies value) {
         this.authStrategy = value;
+    }
+
+    /**
+     * Gets the value of the jwtTokenName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getJwtTokenName() {
+        if (jwtTokenName == null) {
+            return "token";
+        } else {
+            return jwtTokenName;
+        }
+    }
+
+    /**
+     * Sets the value of the jwtTokenName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setJwtTokenName(String value) {
+        this.jwtTokenName = value;
     }
 
     /**

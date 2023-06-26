@@ -19,7 +19,7 @@ public class StringPrettifier {
 
     public String prettify(final String string) {
         if (StringUtils.isNotBlank(string)) {
-            return string.replaceAll("\\s+", DelimiterConstant.EMPTY);
+            return string.replaceAll(DelimiterConstant.REGEX_MANY_SPACES, DelimiterConstant.EMPTY);
         }
         return string;
     }

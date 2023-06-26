@@ -212,7 +212,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         private Map<String, Object> headers;
 
         RabbitMQMessage(final Message message) {
-            this.message = new String(message.getBody(), StandardCharsets.UTF_8);
+            this.message = new String(message.getBody(), StandardCharsets.UTF_8).replaceAll("\\n\\s+", "");
             Object header = message.getMessageProperties().getHeader(CORRELATION_ID);
             this.correlationId = String.valueOf(header);
         }

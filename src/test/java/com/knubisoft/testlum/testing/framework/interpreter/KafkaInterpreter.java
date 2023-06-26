@@ -252,7 +252,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
         KafkaMessage(final ConsumerRecord<String, String> consumerRecord) {
             this.key = consumerRecord.key();
-            this.value = consumerRecord.value();
+            this.value = consumerRecord.value().replaceAll("\\n\\s+", "");
             this.correlationId = Optional.ofNullable(consumerRecord.headers().lastHeader(CORRELATION_ID))
                     .map(h -> new String(h.value(), StandardCharsets.UTF_8)).orElse(null);
         }

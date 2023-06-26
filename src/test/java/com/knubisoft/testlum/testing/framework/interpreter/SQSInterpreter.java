@@ -14,6 +14,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
+import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
@@ -31,10 +32,15 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.CLOSE_BRACE;
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.CLOSE_SQUARE_BRACKET;
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_SQS_PROCESSING;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 @InterpreterForClass(Sqs.class)
@@ -114,14 +120,18 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         final String expectedMessages = getMessageToReceive(receive);
         LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), expectedMessages);
         ResultUtil.addSqsInfoForReceiveAction(receive, aliasEnv.getAlias(), result);
-        final List<String> actualMessages = receiveMessages(receive, aliasEnv);
+        final List<Object> actualMessages = receiveMessages(receive, aliasEnv);
         compareMessage(expectedMessages, actualMessages, result);
     }
 
-    private List<String> receiveMessages(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
+    private List<Object> receiveMessages(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
         ReceiveMessageRequest receiveMessageRequest = createReceiveRequest(receive, aliasEnv);
         ReceiveMessageResult receiveMessageResult = this.amazonSQS.get(aliasEnv).receiveMessage(receiveMessageRequest);
-        return receiveMessageResult.getMessages().stream().map(Message::getBody).collect(Collectors.toList());
+        List<String> messages = receiveMessageResult.getMessages()
+                .stream()
+                .map(Message::getBody)
+                .collect(Collectors.toList());
+        return messages.stream().map(this::toJsonObject).collect(Collectors.toList());
     }
 
     private ReceiveMessageRequest createReceiveRequest(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
@@ -135,7 +145,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         return receiveRequest;
     }
 
-    private void compareMessage(final String expectedContent, final List<String> messages, final CommandResult result) {
+    private void compareMessage(final String expectedContent, final List<Object> messages, final CommandResult result) {
         final CompareBuilder comparator = newCompare()
                 .withExpected(expectedContent)
                 .withActual(messages);
@@ -164,5 +174,14 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         return StringUtils.isNotBlank(message)
                 ? message
                 : getContentIfFile(file);
+    }
+
+    private Object toJsonObject(final String content) {
+        if (isNotBlank(content)
+                && ((content.startsWith(OPEN_BRACE) && content.endsWith(CLOSE_BRACE))
+                || (content.startsWith(OPEN_SQUARE_BRACKET) && content.endsWith(CLOSE_SQUARE_BRACKET)))) {
+            return JacksonMapperUtil.readValue(content, Object.class);
+        }
+        return content;
     }
 }

@@ -29,7 +29,8 @@ public class SubCommandRunner {
     private void processEachCommand(final AbstractUiCommand command,
                                     final List<CommandResult> subCommandsResult,
                                     final ExecutorDependencies dependencies) {
-        CommandResult commandResult = ResultUtil.newUiCommandResultInstance(dependencies.getPosition().get(), command);
+        CommandResult commandResult =
+                ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
         subCommandsResult.add(commandResult);
         executeUiCommand(command, commandResult, dependencies);
     }

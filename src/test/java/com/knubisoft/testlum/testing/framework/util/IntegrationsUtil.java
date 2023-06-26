@@ -8,7 +8,7 @@ import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.global_config.Clickhouse;
 import com.knubisoft.testlum.testing.model.global_config.Dynamo;
 import com.knubisoft.testlum.testing.model.global_config.Elasticsearch;
-import com.knubisoft.testlum.testing.model.global_config.GraphqlIntegration;
+import com.knubisoft.testlum.testing.model.global_config.GraphqlApi;
 import com.knubisoft.testlum.testing.model.global_config.Integration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Kafka;
@@ -25,7 +25,7 @@ import com.knubisoft.testlum.testing.model.global_config.Ses;
 import com.knubisoft.testlum.testing.model.global_config.Smtp;
 import com.knubisoft.testlum.testing.model.global_config.Sqs;
 import com.knubisoft.testlum.testing.model.global_config.Twilio;
-import com.knubisoft.testlum.testing.model.global_config.Websockets;
+import com.knubisoft.testlum.testing.model.global_config.WebsocketApi;
 import lombok.experimental.UtilityClass;
 
 import java.util.Collections;
@@ -48,7 +48,7 @@ public class IntegrationsUtil {
     static {
         final Map<IntegrationsPredicate, IntegrationListMethod> map = new HashMap<>(20);
         map.put(c -> c.equals(Api.class), i -> TO_INTEGRATIONS.apply(i).getApis().getApi());
-        map.put(c -> c.equals(Websockets.class), i -> TO_INTEGRATIONS.apply(i).getWebsockets().getApi());
+        map.put(c -> c.equals(WebsocketApi.class), i -> TO_INTEGRATIONS.apply(i).getWebsockets().getApi());
         map.put(c -> c.equals(S3.class), i -> TO_INTEGRATIONS.apply(i).getS3Integration().getS3());
         map.put(c -> c.equals(Ses.class), i -> TO_INTEGRATIONS.apply(i).getSesIntegration().getSes());
         map.put(c -> c.equals(Sqs.class), i -> TO_INTEGRATIONS.apply(i).getSqsIntegration().getSqs());
@@ -57,7 +57,7 @@ public class IntegrationsUtil {
         map.put(c -> c.equals(Mongo.class), i -> TO_INTEGRATIONS.apply(i).getMongoIntegration().getMongo());
         map.put(c -> c.equals(Mysql.class), i -> TO_INTEGRATIONS.apply(i).getMysqlIntegration().getMysql());
         map.put(c -> c.equals(Kafka.class), i -> TO_INTEGRATIONS.apply(i).getKafkaIntegration().getKafka());
-        map.put(c -> c.equals(GraphqlIntegration.class),
+        map.put(c -> c.equals(GraphqlApi.class),
                 i -> TO_INTEGRATIONS.apply(i).getGraphqlIntegration().getApi());
         map.put(c -> c.equals(Twilio.class), i -> TO_INTEGRATIONS.apply(i).getTwilioIntegration().getTwilio());
         map.put(c -> c.equals(Oracle.class), i -> TO_INTEGRATIONS.apply(i).getOracleIntegration().getOracle());

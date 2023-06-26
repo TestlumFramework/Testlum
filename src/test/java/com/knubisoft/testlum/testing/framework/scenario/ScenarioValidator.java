@@ -457,7 +457,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateFileNamesIfVariations(final File xmlFile, final String fileName) {
         List<Map<String, String>> variationsList = GlobalVariations.getVariations(variationsFileName);
-        for (Map<String, String> variationsMap : variationsList) {
+        variationsList.forEach(variationsMap -> {
             String fileNameFromVariations = variationsMap.get(fileName.replaceAll(BRACES_REGEX, EMPTY));
             if (isNotBlank(fileNameFromVariations)) {
                 String file = fileNameFromVariations + fileName.substring(fileName.indexOf(DOUBLE_CLOSE_BRACE) + 2);
@@ -467,7 +467,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                     FileSearcher.searchFileFromDataFolder(file);
                 }
             }
-        }
+        });
     }
 
     private void checkIntegrationExistence(final Object integration, final Class<?> name) {

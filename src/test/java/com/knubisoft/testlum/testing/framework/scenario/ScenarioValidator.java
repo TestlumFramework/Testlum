@@ -136,7 +136,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
-    private static final String BRACES_REGEX = "[{}]";
+    private static final String BRACES_REGEX = "(\\{\\{)|(}}.*)";
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> uiCommandValidatorsMap;
     private final Integrations integrations = GlobalTestConfigurationProvider.getDefaultIntegrations();
@@ -442,8 +442,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateFileExistenceInDataFolder(final String fileName) {
         if (isNotBlank(fileName) && fileName.trim().startsWith(DOUBLE_OPEN_BRACE) && isNotBlank(variationsFileName)) {
             validateFileNamesIfVariations(null, fileName);
-        }
-        if (isNotBlank(fileName) && !fileName.trim().startsWith(DOUBLE_OPEN_BRACE)) {
+        } else if (isNotBlank(fileName) && !fileName.trim().startsWith(DOUBLE_OPEN_BRACE)) {
             FileSearcher.searchFileFromDataFolder(fileName);
         }
     }
@@ -451,25 +450,24 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateFileIfExist(final File xmlFile, final String fileName) {
         if (isNotBlank(fileName) && fileName.trim().startsWith(DOUBLE_OPEN_BRACE) && isNotBlank(variationsFileName)) {
             validateFileNamesIfVariations(xmlFile, fileName);
-        }
-        if (isNotBlank(fileName) && !fileName.trim().startsWith(DOUBLE_OPEN_BRACE)) {
+        } else if (isNotBlank(fileName) && !fileName.trim().startsWith(DOUBLE_OPEN_BRACE)) {
             FileSearcher.searchFileFromDir(xmlFile, fileName);
         }
     }
 
     private void validateFileNamesIfVariations(final File xmlFile, final String fileName) {
         List<Map<String, String>> variationsList = GlobalVariations.getVariations(variationsFileName);
-        variationsList.forEach(variationsMap -> {
+        for (Map<String, String> variationsMap : variationsList) {
             String fileNameFromVariations = variationsMap.get(fileName.replaceAll(BRACES_REGEX, EMPTY));
             if (isNotBlank(fileNameFromVariations)) {
-                String file = fileNameFromVariations + fileName.substring(fileName.indexOf(DOUBLE_CLOSE_BRACE));
+                String file = fileNameFromVariations + fileName.substring(fileName.indexOf(DOUBLE_CLOSE_BRACE) + 2);
                 if (nonNull(xmlFile)) {
                     FileSearcher.searchFileFromDir(xmlFile, file);
                 } else {
                     FileSearcher.searchFileFromDataFolder(file);
                 }
             }
-        });
+        }
     }
 
     private void checkIntegrationExistence(final Object integration, final Class<?> name) {

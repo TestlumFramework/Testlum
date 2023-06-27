@@ -80,7 +80,7 @@ public class ScenarioRunner {
         scenarioResult.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
         scenarioResult.setOverview(scenario.getOverview());
         scenarioResult.setName(scenario.getOverview().getName());
-        scenarioResult.setTags(scenario.getTags());
+        scenarioResult.setTags(scenario.getSettings().getTag());
         scenarioResult.setPath(scenarioArguments.getFile().getPath());
         scenarioResult.setBrowser(scenarioArguments.getBrowser());
         scenarioResult.setMobilebrowserDevice(scenarioArguments.getMobilebrowserDevice());

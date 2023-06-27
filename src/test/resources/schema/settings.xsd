@@ -7,11 +7,19 @@
 
     <x:include schemaLocation="shared.xsd"/>
 
-    <x:complexType name="tags">
+    <x:complexType name="settings">
         <x:sequence>
             <x:element name="tag" type="tns:nonEmptyString" maxOccurs="unbounded"/>
         </x:sequence>
+        <x:attribute name="onlyThis" type="x:boolean" default="false"/>
+        <x:attribute name="active" type="x:boolean" default="true"/>
         <x:attribute name="readonly" type="x:boolean" default="false"/>
+        <x:attribute name="variations" type="tns:csv"/>
     </x:complexType>
 
+    <x:simpleType name="csv">
+        <x:restriction base="x:string">
+            <x:pattern value="[a-zA-Z\d_]+\.csv"/>
+        </x:restriction>
+    </x:simpleType>
 </x:schema>

@@ -20,7 +20,7 @@ public class VariationsValidator {
                                    final File filePath) {
         if (variationList.isEmpty()) {
             throw new DefaultFrameworkException(VARIATION_FILE_IS_EMPTY,
-                    scenario.getVariations(), filePath.getAbsolutePath());
+                    scenario.getSettings().getVariations(), filePath.getAbsolutePath());
         }
         String scenarioAsText = JacksonMapperUtil.writeValueAsString(scenario);
         boolean variablesNotUsedInCommands = variationList.get(0).keySet().stream()

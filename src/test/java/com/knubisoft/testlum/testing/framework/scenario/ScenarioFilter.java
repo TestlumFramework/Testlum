@@ -40,11 +40,11 @@ public class ScenarioFilter {
     }
 
     private Set<MappingResult> filterIsActive(final Set<MappingResult> original) {
-        return filterBy(original, e -> e.scenario.isActive());
+        return filterBy(original, e -> e.scenario.getSettings().isActive());
     }
 
     private Set<MappingResult> filterScenariosIfOnlyThis(final Set<MappingResult> original) {
-        return filterBy(original, e -> e.scenario.isOnlyThis());
+        return filterBy(original, e -> e.scenario.getSettings().isOnlyThis());
     }
 
     private Set<MappingResult> filterScenariosByTags(final Set<MappingResult> activeScenarios) {
@@ -63,7 +63,7 @@ public class ScenarioFilter {
     }
 
     private boolean isMatchesTags(final MappingResult entry, final List<String> enabledTags) {
-        List<String> scenarioTags = entry.scenario.getTags().getTag();
+        List<String> scenarioTags = entry.scenario.getSettings().getTag();
         return scenarioTags.stream().anyMatch(enabledTags::contains);
     }
 

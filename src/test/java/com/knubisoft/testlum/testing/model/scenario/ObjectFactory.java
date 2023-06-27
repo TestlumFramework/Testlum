@@ -46,11 +46,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Tags }
+     * Create an instance of {@link Settings }
      * 
      */
-    public Tags createTags() {
-        return new Tags();
+    public Settings createSettings() {
+        return new Settings();
     }
 
     /**

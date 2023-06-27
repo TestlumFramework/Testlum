@@ -109,7 +109,7 @@ public class RootTest {
     }
 
     private void clearDataStorages(final Scenario scenario) {
-        if (!scenario.getTags().isReadonly()) {
+        if (!scenario.getSettings().isReadonly()) {
             systemDataStoreCleaner.clearAll(this.nameToAdapterAlias);
         }
     }

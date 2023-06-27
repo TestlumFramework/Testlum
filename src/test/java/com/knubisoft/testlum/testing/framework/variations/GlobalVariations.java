@@ -22,7 +22,7 @@ public class GlobalVariations {
     private static final VariationsValidator VARIATIONS_VALIDATOR = new VariationsValidator();
 
     public void process(final Scenario scenario, final File filePath) {
-        String fileName = scenario.getVariations();
+        String fileName = scenario.getSettings().getVariations();
         List<Map<String, String>> variationList = VARIATIONS.get(fileName);
 
         if (isNull(variationList)) {

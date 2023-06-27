@@ -45,7 +45,7 @@ public class JwtAuth extends AbstractAuthStrategy {
         if (StringUtils.isNotBlank(response)) {
             DocumentContext context = JsonPath.parse(response);
             Api apiIntegration = AuthUtil.getApiIntegration(auth.getApiAlias(), dependencies.getEnvironment());
-            return context.read(apiIntegration.getAuth().getJwtTokenName());
+            return context.read(apiIntegration.getAuth().getTokenName());
         }
         return DelimiterConstant.EMPTY;
     }

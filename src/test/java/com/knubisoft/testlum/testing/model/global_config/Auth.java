@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="autoLogout" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
  *       &lt;attribute name="authStrategy" type="{http://www.knubisoft.com/testlum/testing/model/global-config}authStrategies" default="default" /&gt;
- *       &lt;attribute name="jwtTokenName" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" default="token" /&gt;
+ *       &lt;attribute name="tokenName" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" default="token" /&gt;
  *       &lt;attribute name="authCustomClassName" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -35,8 +35,8 @@ public class Auth {
     protected Boolean autoLogout;
     @XmlAttribute(name = "authStrategy")
     protected AuthStrategies authStrategy;
-    @XmlAttribute(name = "jwtTokenName")
-    protected String jwtTokenName;
+    @XmlAttribute(name = "tokenName")
+    protected String tokenName;
     @XmlAttribute(name = "authCustomClassName")
     protected String authCustomClassName;
 
@@ -97,31 +97,31 @@ public class Auth {
     }
 
     /**
-     * Gets the value of the jwtTokenName property.
+     * Gets the value of the tokenName property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getJwtTokenName() {
-        if (jwtTokenName == null) {
+    public String getTokenName() {
+        if (tokenName == null) {
             return "token";
         } else {
-            return jwtTokenName;
+            return tokenName;
         }
     }
 
     /**
-     * Sets the value of the jwtTokenName property.
+     * Sets the value of the tokenName property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setJwtTokenName(String value) {
-        this.jwtTokenName = value;
+    public void setTokenName(String value) {
+        this.tokenName = value;
     }
 
     /**

@@ -14,31 +14,36 @@
                     <x:element name="file" type="tns:s3File"/>
                     <x:element name="bucket" type="tns:s3Bucket"/>
                 </x:sequence>
-                <x:attribute name="comment" type="tns:nonEmptyString" use="required"/>
                 <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
     <x:complexType name="s3File">
-        <x:sequence>
-            <x:element name="upload" type="tns:nonEmptyString"/>
-            <x:element name="download" type="tns:nonEmptyString"/>
-            <x:element name="remove" type="tns:nonEmptyString"/>
-        </x:sequence>
-        <x:attribute name="comment" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="bucket" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="key" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="expected" type="tns:nonEmptyString" use="required"/>
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:sequence>
+                    <x:element name="upload" type="tns:nonEmptyString"/>
+                    <x:element name="download" type="tns:nonEmptyString"/>
+                    <x:element name="remove" type="tns:nonEmptyString"/>
+                </x:sequence>
+                <x:attribute name="bucket" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="key" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="expected" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
     </x:complexType>
 
     <x:complexType name="s3Bucket">
-        <x:sequence>
-            <x:element name="create" type="tns:nonEmptyString"/>
-            <x:element name="remove" type="tns:nonEmptyString"/>
-        </x:sequence>
-        <x:attribute name="comment" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="expected" type="tns:nonEmptyString" use="required"/>
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:sequence>
+                    <x:element name="create" type="tns:nonEmptyString"/>
+                    <x:element name="remove" type="tns:nonEmptyString"/>
+                </x:sequence>
+                <x:attribute name="expected" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
     </x:complexType>
 
 </x:schema>

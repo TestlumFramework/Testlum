@@ -4,6 +4,7 @@ package com.knubisoft.testlum.testing.model.scenario;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -16,16 +17,11 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="s3"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
- *       &lt;choice&gt;
- *         &lt;element name="createBucket" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
- *         &lt;element name="removeBucket" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
- *         &lt;element name="uploadFile" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
- *         &lt;element name="downloadFile" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
- *         &lt;element name="removeFile" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
- *       &lt;/choice&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="file" type="{http://www.knubisoft.com/testlum/testing/model/scenario}s3File"/&gt;
+ *         &lt;element name="bucket" type="{http://www.knubisoft.com/testlum/testing/model/scenario}s3Bucket"/&gt;
+ *       &lt;/sequence&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}aliasPattern" /&gt;
- *       &lt;attribute name="bucket" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="key" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -35,146 +31,66 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "s3", propOrder = {
-    "createBucket",
-    "removeBucket",
-    "uploadFile",
-    "downloadFile",
-    "removeFile"
+    "file",
+    "bucket"
 })
 public class S3
     extends AbstractCommand
 {
 
-    protected String createBucket;
-    protected String removeBucket;
-    protected String uploadFile;
-    protected String downloadFile;
-    protected String removeFile;
+    @XmlElement(required = true)
+    protected S3File file;
+    @XmlElement(required = true)
+    protected S3Bucket bucket;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
-    @XmlAttribute(name = "bucket", required = true)
-    protected String bucket;
-    @XmlAttribute(name = "key")
-    protected String key;
 
     /**
-     * Gets the value of the createBucket property.
+     * Gets the value of the file property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link S3File }
      *     
      */
-    public String getCreateBucket() {
-        return createBucket;
+    public S3File getFile() {
+        return file;
     }
 
     /**
-     * Sets the value of the createBucket property.
+     * Sets the value of the file property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link S3File }
      *     
      */
-    public void setCreateBucket(String value) {
-        this.createBucket = value;
+    public void setFile(S3File value) {
+        this.file = value;
     }
 
     /**
-     * Gets the value of the removeBucket property.
+     * Gets the value of the bucket property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link S3Bucket }
      *     
      */
-    public String getRemoveBucket() {
-        return removeBucket;
+    public S3Bucket getBucket() {
+        return bucket;
     }
 
     /**
-     * Sets the value of the removeBucket property.
+     * Sets the value of the bucket property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link S3Bucket }
      *     
      */
-    public void setRemoveBucket(String value) {
-        this.removeBucket = value;
-    }
-
-    /**
-     * Gets the value of the uploadFile property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getUploadFile() {
-        return uploadFile;
-    }
-
-    /**
-     * Sets the value of the uploadFile property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setUploadFile(String value) {
-        this.uploadFile = value;
-    }
-
-    /**
-     * Gets the value of the downloadFile property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDownloadFile() {
-        return downloadFile;
-    }
-
-    /**
-     * Sets the value of the downloadFile property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDownloadFile(String value) {
-        this.downloadFile = value;
-    }
-
-    /**
-     * Gets the value of the removeFile property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getRemoveFile() {
-        return removeFile;
-    }
-
-    /**
-     * Sets the value of the removeFile property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setRemoveFile(String value) {
-        this.removeFile = value;
+    public void setBucket(S3Bucket value) {
+        this.bucket = value;
     }
 
     /**
@@ -199,54 +115,6 @@ public class S3
      */
     public void setAlias(String value) {
         this.alias = value;
-    }
-
-    /**
-     * Gets the value of the bucket property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getBucket() {
-        return bucket;
-    }
-
-    /**
-     * Sets the value of the bucket property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setBucket(String value) {
-        this.bucket = value;
-    }
-
-    /**
-     * Gets the value of the key property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /**
-     * Sets the value of the key property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setKey(String value) {
-        this.key = value;
     }
 
 }

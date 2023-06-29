@@ -149,7 +149,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             checkIntegrationExistence(integrations.getApis(), Apis.class);
             Auth auth = (Auth) command;
             validateFileExistenceInDataFolder(auth.getCredentials());
-            validateAuthCommand(xmlFile, auth);
+            validateAuthCommand(auth);
         });
 
         validatorMap.put(o -> o instanceof Http, (xmlFile, command) -> {
@@ -440,17 +440,21 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateFileExistenceInDataFolder(final String fileName) {
-        if (isNotBlank(fileName) && fileName.trim().startsWith(DOUBLE_OPEN_BRACE) && isNotBlank(variationsFileName)) {
+        if (isNotBlank(fileName) && fileName.trim().contains(DOUBLE_OPEN_BRACE)
+                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && isNotBlank(variationsFileName)) {
             validateFileNamesIfVariations(null, fileName);
-        } else if (isNotBlank(fileName) && !fileName.trim().startsWith(DOUBLE_OPEN_BRACE)) {
+        } else if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
+                && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {
             FileSearcher.searchFileFromDataFolder(fileName);
         }
     }
 
     private void validateFileIfExist(final File xmlFile, final String fileName) {
-        if (isNotBlank(fileName) && fileName.trim().startsWith(DOUBLE_OPEN_BRACE) && isNotBlank(variationsFileName)) {
+        if (isNotBlank(fileName) && fileName.trim().contains(DOUBLE_OPEN_BRACE)
+                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && isNotBlank(variationsFileName)) {
             validateFileNamesIfVariations(xmlFile, fileName);
-        } else if (isNotBlank(fileName) && !fileName.trim().startsWith(DOUBLE_OPEN_BRACE)) {
+        } else if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
+                && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {
             FileSearcher.searchFileFromDir(xmlFile, fileName);
         }
     }
@@ -458,13 +462,12 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateFileNamesIfVariations(final File xmlFile, final String fileName) {
         List<Map<String, String>> variationsList = GlobalVariations.getVariations(variationsFileName);
         variationsList.forEach(variationsMap -> {
-            String fileNameFromVariations = variationsMap.get(fileName.replaceAll(BRACES_REGEX, EMPTY));
-            if (isNotBlank(fileNameFromVariations)) {
-                String file = fileNameFromVariations + fileName.substring(fileName.indexOf(DOUBLE_CLOSE_BRACE) + 2);
+            String variationValue = GlobalVariations.getVariationValue(fileName, variationsMap);
+            if (isNotBlank(variationValue)) {
                 if (nonNull(xmlFile)) {
-                    FileSearcher.searchFileFromDir(xmlFile, file);
+                    FileSearcher.searchFileFromDir(xmlFile, variationValue);
                 } else {
-                    FileSearcher.searchFileFromDataFolder(file);
+                    FileSearcher.searchFileFromDataFolder(variationValue);
                 }
             }
         });
@@ -512,7 +515,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
     //CHECKSTYLE:ON
 
-    private void validateAuthCommand(final File xmlFile, final Auth auth) {
+    private void validateAuthCommand(final Auth auth) {
         Api apiIntegration = IntegrationsUtil.findApiForAlias(integrations.getApis().getApi(), auth.getApiAlias());
         if (isNull(apiIntegration.getAuth())) {
             throw new DefaultFrameworkException(AUTH_NOT_FOUND, apiIntegration.getAlias());
@@ -523,9 +526,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         if (authCmdAliasNotMatch) {
             throw new DefaultFrameworkException(AUTH_ALIASES_DOESNT_MATCH);
         }
-        auth.getCommands().stream()
-                .filter(command -> command instanceof Http)
-                .forEach(command -> validateHttpCommand(xmlFile, (Http) command));
     }
 
     private void validateHttpCommand(final File xmlFile, final Http http) {

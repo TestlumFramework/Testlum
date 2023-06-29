@@ -614,11 +614,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WebTab }
+     * Create an instance of {@link BrowserTab }
      * 
      */
-    public WebTab createWebTab() {
-        return new WebTab();
+    public BrowserTab createBrowserTab() {
+        return new BrowserTab();
     }
 
     /**

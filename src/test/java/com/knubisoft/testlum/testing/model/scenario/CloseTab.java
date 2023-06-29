@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="closeTab"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="tabIndex" type="{http://www.knubisoft.com/testlum/testing/model/scenario}tabPattern" /&gt;
+ *       &lt;attribute name="index" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveIntegerMin1" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -28,31 +28,31 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "closeTab")
 public class CloseTab {
 
-    @XmlAttribute(name = "tabIndex")
-    protected Integer tabIndex;
+    @XmlAttribute(name = "index")
+    protected Integer index;
 
     /**
-     * Gets the value of the tabIndex property.
+     * Gets the value of the index property.
      * 
      * @return
      *     possible object is
      *     {@link Integer }
      *     
      */
-    public Integer getTabIndex() {
-        return tabIndex;
+    public Integer getIndex() {
+        return index;
     }
 
     /**
-     * Sets the value of the tabIndex property.
+     * Sets the value of the index property.
      * 
      * @param value
      *     allowed object is
      *     {@link Integer }
      *     
      */
-    public void setTabIndex(Integer value) {
-        this.tabIndex = value;
+    public void setIndex(Integer value) {
+        this.index = value;
     }
 
 }

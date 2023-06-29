@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="javascript" type="{http://www.knubisoft.com/testlum/testing/model/scenario}javascript"/&gt;
  *         &lt;element name="navigate" type="{http://www.knubisoft.com/testlum/testing/model/scenario}navigate"/&gt;
  *         &lt;element name="hovers" type="{http://www.knubisoft.com/testlum/testing/model/scenario}hovers"/&gt;
- *         &lt;element name="webTab" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webTab"/&gt;
+ *         &lt;element name="tab" type="{http://www.knubisoft.com/testlum/testing/model/scenario}browserTab"/&gt;
  *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/testlum/testing/model/scenario}switchToFrame"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeVar"/&gt;
  *       &lt;/choice&gt;
@@ -64,7 +64,7 @@ public class WebView
         @XmlElement(name = "javascript", type = Javascript.class),
         @XmlElement(name = "navigate", type = Navigate.class),
         @XmlElement(name = "hovers", type = Hovers.class),
-        @XmlElement(name = "webTab", type = WebTab.class),
+        @XmlElement(name = "tab", type = BrowserTab.class),
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
         @XmlElement(name = "var", type = NativeVar.class)
     })
@@ -100,7 +100,7 @@ public class WebView
      * {@link Javascript }
      * {@link Navigate }
      * {@link Hovers }
-     * {@link WebTab }
+     * {@link BrowserTab }
      * {@link SwitchToFrame }
      * {@link NativeVar }
      * 

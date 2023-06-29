@@ -26,7 +26,7 @@
                     <x:element name="switchToFrame" type="tns:switchToFrame"/>
                     <x:element name="dragAndDrop" type="tns:dragAndDrop"/>
                     <x:element name="hotKey" type="tns:hotKey"/>
-                    <x:element name="webTab" type="tns:webTab"/>
+                    <x:element name="tab" type="tns:browserTab"/>
                     <x:element name="var" type="tns:webVar"/>
                     <x:element name="condition" type="tns:uiCondition"/>
                 </x:choice>

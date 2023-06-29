@@ -31,7 +31,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import software.amazon.awssdk.http.HttpStatusCode;
 
@@ -118,9 +117,9 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COM
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VALUE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VARIATION_LOG;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CLOSE_TAB;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.LAST_TAB;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.SWITCH_TAB;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.OPEN_TAB;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.WITHOUT_URL;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -466,13 +465,14 @@ public class LogUtil {
         log.info(COMMENT_LOG, command.getComment());
     }
 
-    public void logWebTabCommand(final String command, final Integer tabNumber, final String url) {
+    public void logCloseOrSwitchTabCommand(final String command, final Integer tabNumber) {
         log.info(TAB_COMMAND, command);
-        if (CLOSE_TAB.equals(command) || SWITCH_TAB.equals(command)) {
-            log.info(TAB_INDEX, nonNull(tabNumber) ? tabNumber : LAST_TAB);
-        } else if (StringUtils.hasText(url)) {
-            log.info(TAB_URL, url);
-        }
+        log.info(TAB_INDEX, nonNull(tabNumber) ? tabNumber : LAST_TAB);
+    }
+
+    public void logOpenTabCommand(final String url) {
+        log.info(TAB_COMMAND, OPEN_TAB);
+        log.info(TAB_URL, isNotBlank(url) ? url : WITHOUT_URL);
     }
 
     public void logAssertCommand(final AbstractUiCommand command, final int position) {

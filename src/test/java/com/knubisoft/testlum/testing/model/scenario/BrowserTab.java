@@ -8,12 +8,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for webTab complex type.
+ * <p>Java class for browserTab complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="webTab"&gt;
+ * &lt;complexType name="browserTab"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice&gt;
@@ -29,12 +29,12 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "webTab", propOrder = {
+@XmlType(name = "browserTab", propOrder = {
     "close",
     "open",
     "_switch"
 })
-public class WebTab
+public class BrowserTab
     extends AbstractUiCommand
 {
 

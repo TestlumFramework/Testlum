@@ -109,6 +109,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -139,7 +140,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> uiCommandValidatorsMap;
     private final Integrations integrations = GlobalTestConfigurationProvider.getDefaultIntegrations();
-    private String variationsFileName;
+    private AtomicReference<String> variationsFileName;
 
     public ScenarioValidator() {
         Map<AbstractCommandPredicate, AbstractCommandValidator> validatorMap = new HashMap<>();
@@ -379,14 +380,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateVariationsIfExist(scenario, xmlFile);
             validateIfContainsNativeAndMobileCommands(scenario.getCommands());
             scenario.getCommands().forEach(command -> validateCommand(command, xmlFile));
-            variationsFileName = EMPTY;
+            variationsFileName.set(EMPTY);
         }
     }
 
     private void validateVariationsIfExist(final Scenario scenario, final File xmlFile) {
         if (isNotBlank(scenario.getVariations())) {
             GlobalVariations.process(scenario, xmlFile);
-            variationsFileName = scenario.getVariations();
+            variationsFileName = new AtomicReference<>(scenario.getVariations());
         }
     }
 
@@ -440,7 +441,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateFileExistenceInDataFolder(final String fileName) {
         if (isNotBlank(fileName) && fileName.trim().contains(DOUBLE_OPEN_BRACE)
-                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && isNotBlank(variationsFileName)) {
+                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && isNotBlank(variationsFileName.get())) {
             validateFileNamesIfVariations(null, fileName);
         } else if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
                 && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {
@@ -450,7 +451,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateFileIfExist(final File xmlFile, final String fileName) {
         if (isNotBlank(fileName) && fileName.trim().contains(DOUBLE_OPEN_BRACE)
-                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && isNotBlank(variationsFileName)) {
+                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && isNotBlank(variationsFileName.get())) {
             validateFileNamesIfVariations(xmlFile, fileName);
         } else if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
                 && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {
@@ -459,7 +460,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateFileNamesIfVariations(final File xmlFile, final String fileName) {
-        List<Map<String, String>> variationsList = GlobalVariations.getVariations(variationsFileName);
+        List<Map<String, String>> variationsList = GlobalVariations.getVariations(variationsFileName.get());
         variationsList.forEach(variationsMap -> {
             String variationValue = GlobalVariations.getVariationValue(fileName, variationsMap);
             if (isNotBlank(variationValue)) {

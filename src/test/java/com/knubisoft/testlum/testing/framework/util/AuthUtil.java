@@ -12,5 +12,4 @@ public class AuthUtil {
     public String getCredentialsFromFile(final String fileName) {
         return FileUtils.readFileToString(FileSearcher.searchFileFromDataFolder(fileName), StandardCharsets.UTF_8);
     }
-
 }

@@ -136,7 +136,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
-    private static final String BRACES_REGEX = "(\\{\\{)|(}}.*)";
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> uiCommandValidatorsMap;
     private final Integrations integrations = GlobalTestConfigurationProvider.getDefaultIntegrations();

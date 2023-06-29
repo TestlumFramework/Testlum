@@ -270,10 +270,9 @@ public class LogUtil {
         queries.forEach(query -> log.info(QUERY, query.replaceAll(REGEX_MANY_SPACES, SPACE)));
     }
 
-    public void logAllQueries(final List<String> queries, final String dbType, final String alias) {
+    public void logAllQueries(final String dbType, final List<String> queries, final String alias) {
         log.info(DB_TYPE_LOG, dbType);
-        log.info(ALIAS_LOG, alias);
-        queries.forEach(query -> log.info(QUERY, query.replaceAll(REGEX_MANY_SPACES, SPACE)));
+        logAllQueries(queries, alias);
     }
 
     public void logAllRedisQueries(final List<RedisQuery> redisQueries, final String alias) {

@@ -490,13 +490,13 @@ public class ResultUtil {
         addVariableMetaData(type, key, format(format, expression), value, result);
     }
 
-    public static void addVariableFromSQLMetaData(String queryType,
-                                                  String dbType,
-                                                  String alias,
-                                                  String key,
-                                                  String expression,
-                                                  String value,
-                                                  CommandResult result) {
+    public static void addVariableMetaData(String queryType,
+                                           String dbType,
+                                           String alias,
+                                           String key,
+                                           String expression,
+                                           String value,
+                                           CommandResult result) {
         result.put(DB_TYPE, dbType);
         result.put(ALIAS, alias);
         addVariableMetaData(queryType, key, expression, value, result);

@@ -186,20 +186,18 @@ public class VariableHelper {
     public String getSQLResult(final FromSQL fromSQL,
                                final String varName,
                                final CommandResult result) {
-        String alias = fromSQL.getAlias();
-        String dbType = fromSQL.getDbType().name();
-        String metadataKey = dbType + DelimiterConstant.UNDERSCORE + alias;
+        String metadataKey = fromSQL.getDbType().name() + DelimiterConstant.UNDERSCORE + fromSQL.getAlias();
         StorageOperation storageOperation = nameToAdapterAlias.getByNameOrThrow(metadataKey).getStorageOperation();
         String valueResult = getActualQueryResult(fromSQL, storageOperation);
-        ResultUtil.addVariableFromSQLMetaData(RELATIONAL_DB_QUERY, dbType, alias, varName, fromSQL.getQuery(), valueResult, result);
+        ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, fromSQL.getDbType().name(), fromSQL.getAlias(),
+                varName, fromSQL.getQuery(), valueResult, result);
         return valueResult;
     }
 
     private String getActualQueryResult(final FromSQL fromSQL, final StorageOperation storageOperation) {
         String alias = fromSQL.getAlias();
-        String dbType = fromSQL.getDbType().name();
         List<String> singleQuery = new ArrayList<>(Collections.singletonList(fromSQL.getQuery()));
-        LogUtil.logAllQueries(singleQuery, dbType, alias);
+        LogUtil.logAllQueries(fromSQL.getDbType().name(), singleQuery, alias);
         StorageOperation.StorageOperationResult queryResult = storageOperation.apply(
                 new ListSource(singleQuery), alias);
         return getResultValue(queryResult, getKeyOfQueryResultValue(queryResult));

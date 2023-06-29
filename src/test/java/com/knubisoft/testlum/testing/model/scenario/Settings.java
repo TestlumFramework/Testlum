@@ -1,8 +1,6 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -20,12 +18,12 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="tag" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="variations" type="{http://www.knubisoft.com/testlum/testing/model/scenario}csv" minOccurs="0"/&gt;
+ *         &lt;element name="tags" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="onlyThis" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *       &lt;attribute name="active" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
- *       &lt;attribute name="readonly" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
- *       &lt;attribute name="variations" type="{http://www.knubisoft.com/testlum/testing/model/scenario}csv" /&gt;
+ *       &lt;attribute name="onlyThis" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *       &lt;attribute name="readOnly" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -35,76 +33,67 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "settings", propOrder = {
-    "tag"
+    "variations",
+    "tags"
 })
 public class Settings {
 
+    protected String variations;
     @XmlElement(required = true)
-    protected List<String> tag;
-    @XmlAttribute(name = "onlyThis")
-    protected Boolean onlyThis;
+    protected String tags;
     @XmlAttribute(name = "active")
     protected Boolean active;
-    @XmlAttribute(name = "readonly")
-    protected Boolean readonly;
-    @XmlAttribute(name = "variations")
-    protected String variations;
+    @XmlAttribute(name = "onlyThis")
+    protected Boolean onlyThis;
+    @XmlAttribute(name = "readOnly")
+    protected Boolean readOnly;
 
     /**
-     * Gets the value of the tag property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the tag property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getTag().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
-     */
-    public List<String> getTag() {
-        if (tag == null) {
-            tag = new ArrayList<String>();
-        }
-        return this.tag;
-    }
-
-    /**
-     * Gets the value of the onlyThis property.
+     * Gets the value of the variations property.
      * 
      * @return
      *     possible object is
-     *     {@link Boolean }
+     *     {@link String }
      *     
      */
-    public boolean isOnlyThis() {
-        if (onlyThis == null) {
-            return false;
-        } else {
-            return onlyThis;
-        }
+    public String getVariations() {
+        return variations;
     }
 
     /**
-     * Sets the value of the onlyThis property.
+     * Sets the value of the variations property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Boolean }
+     *     {@link String }
      *     
      */
-    public void setOnlyThis(Boolean value) {
-        this.onlyThis = value;
+    public void setVariations(String value) {
+        this.variations = value;
+    }
+
+    /**
+     * Gets the value of the tags property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getTags() {
+        return tags;
+    }
+
+    /**
+     * Sets the value of the tags property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setTags(String value) {
+        this.tags = value;
     }
 
     /**
@@ -136,55 +125,59 @@ public class Settings {
     }
 
     /**
-     * Gets the value of the readonly property.
+     * Gets the value of the onlyThis property.
      * 
      * @return
      *     possible object is
      *     {@link Boolean }
      *     
      */
-    public boolean isReadonly() {
-        if (readonly == null) {
+    public boolean isOnlyThis() {
+        if (onlyThis == null) {
             return false;
         } else {
-            return readonly;
+            return onlyThis;
         }
     }
 
     /**
-     * Sets the value of the readonly property.
+     * Sets the value of the onlyThis property.
      * 
      * @param value
      *     allowed object is
      *     {@link Boolean }
      *     
      */
-    public void setReadonly(Boolean value) {
-        this.readonly = value;
+    public void setOnlyThis(Boolean value) {
+        this.onlyThis = value;
     }
 
     /**
-     * Gets the value of the variations property.
+     * Gets the value of the readOnly property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Boolean }
      *     
      */
-    public String getVariations() {
-        return variations;
+    public boolean isReadOnly() {
+        if (readOnly == null) {
+            return false;
+        } else {
+            return readOnly;
+        }
     }
 
     /**
-     * Sets the value of the variations property.
+     * Sets the value of the readOnly property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Boolean }
      *     
      */
-    public void setVariations(String value) {
-        this.variations = value;
+    public void setReadOnly(Boolean value) {
+        this.readOnly = value;
     }
 
 }

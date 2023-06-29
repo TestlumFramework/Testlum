@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.testlum.testing.model.global_config.TagValue;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -18,6 +19,7 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_SCENARIOS_FILTERED_BY_TAGS;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.STOP_IF_NON_PARSED_SCENARIO;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VALID_SCENARIOS_NOT_FOUND;
+import static org.apache.commons.lang3.StringUtils.deleteWhitespace;
 
 public class ScenarioFilter {
 
@@ -63,7 +65,8 @@ public class ScenarioFilter {
     }
 
     private boolean isMatchesTags(final MappingResult entry, final List<String> enabledTags) {
-        List<String> scenarioTags = entry.scenario.getSettings().getTag();
+        List<String> scenarioTags =
+                Arrays.asList(deleteWhitespace(entry.scenario.getSettings().getTags()).split(","));
         return scenarioTags.stream().anyMatch(enabledTags::contains);
     }
 

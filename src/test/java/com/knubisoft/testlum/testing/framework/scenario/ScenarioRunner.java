@@ -27,6 +27,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.openqa.selenium.WebDriver;
 import org.springframework.context.ApplicationContext;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -38,6 +39,7 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUTION_STOP_SIGNAL_LOG;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.deleteWhitespace;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 
@@ -80,7 +82,7 @@ public class ScenarioRunner {
         scenarioResult.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
         scenarioResult.setOverview(scenario.getOverview());
         scenarioResult.setName(scenario.getOverview().getName());
-        scenarioResult.setTags(scenario.getSettings().getTag());
+        scenarioResult.setTags(Arrays.asList(deleteWhitespace(scenario.getSettings().getTags()).split(",")));
         scenarioResult.setPath(scenarioArguments.getFile().getPath());
         scenarioResult.setBrowser(scenarioArguments.getBrowser());
         scenarioResult.setMobilebrowserDevice(scenarioArguments.getMobilebrowserDevice());

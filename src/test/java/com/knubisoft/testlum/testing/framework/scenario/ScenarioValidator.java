@@ -380,7 +380,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateVariationsIfExist(scenario, xmlFile);
             validateIfContainsNativeAndMobileCommands(scenario.getCommands());
             scenario.getCommands().forEach(command -> validateCommand(command, xmlFile));
-            variationsFileName.set(EMPTY);
+            variationsFileName = new AtomicReference<>(EMPTY);
         }
     }
 
@@ -441,7 +441,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateFileExistenceInDataFolder(final String fileName) {
         if (isNotBlank(fileName) && fileName.trim().contains(DOUBLE_OPEN_BRACE)
-                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && nonNull(variationsFileName)) {
+                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && isNotBlank(variationsFileName.get())) {
             validateFileNamesIfVariations(null, fileName);
         } else if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
                 && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {
@@ -451,7 +451,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateFileIfExist(final File xmlFile, final String fileName) {
         if (isNotBlank(fileName) && fileName.trim().contains(DOUBLE_OPEN_BRACE)
-                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && nonNull(variationsFileName)) {
+                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && isNotBlank(variationsFileName.get())) {
             validateFileNamesIfVariations(xmlFile, fileName);
         } else if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
                 && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {

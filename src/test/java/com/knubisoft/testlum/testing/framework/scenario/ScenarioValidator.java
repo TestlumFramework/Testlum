@@ -441,7 +441,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateFileExistenceInDataFolder(final String fileName) {
         if (isNotBlank(fileName) && fileName.trim().contains(DOUBLE_OPEN_BRACE)
-                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && isNotBlank(variationsFileName.get())) {
+                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && nonNull(variationsFileName)) {
             validateFileNamesIfVariations(null, fileName);
         } else if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
                 && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {
@@ -451,7 +451,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateFileIfExist(final File xmlFile, final String fileName) {
         if (isNotBlank(fileName) && fileName.trim().contains(DOUBLE_OPEN_BRACE)
-                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && isNotBlank(variationsFileName.get())) {
+                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && nonNull(variationsFileName)) {
             validateFileNamesIfVariations(xmlFile, fileName);
         } else if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
                 && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {

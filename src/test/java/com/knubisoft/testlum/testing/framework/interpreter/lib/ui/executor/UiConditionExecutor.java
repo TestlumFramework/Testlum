@@ -8,8 +8,6 @@ import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.model.scenario.UiCondition;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_CONDITION_LOG;
-
 @Slf4j
 @ExecutorForClass(UiCondition.class)
 public class UiConditionExecutor extends AbstractUiExecutor<UiCondition> {
@@ -20,12 +18,7 @@ public class UiConditionExecutor extends AbstractUiExecutor<UiCondition> {
 
     @Override
     protected void execute(final UiCondition condition, final CommandResult result) {
-        try {
-            boolean conditionResult = ConditionUtil.parseFromSpel(condition.getSpel(), condition.getName(), result);
-            dependencies.getScenarioContext().setCondition(condition.getName(), conditionResult);
-        } catch (Exception e) {
-            log.info(FAILED_CONDITION_LOG, condition.getName(), condition.getSpel());
-            throw e;
-        }
+        ConditionUtil.processCondition(condition.getName(), condition.getSpel(),
+                dependencies.getScenarioContext(), result);
     }
 }

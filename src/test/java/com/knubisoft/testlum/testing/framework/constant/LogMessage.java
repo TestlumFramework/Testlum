@@ -38,7 +38,7 @@ public final class LogMessage {
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
     public static final String COMMAND_SKIPPED_ON_CONDITION_LOG = ANSI_ORANGE
             + "Command was skipped because of the condition" + ANSI_RESET;
-    public static final String CONDITION_LOG = format(TABLE_FORMAT, "Condition", "<{}> = {}");
+    public static final String CONDITION_LOG = format(TABLE_FORMAT, "Condition", "'{}' = {};");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
     public static final String QUERY = format(TABLE_FORMAT, "Query", "{}");
     public static final String REDIS_QUERY = format(TABLE_FORMAT, "Query", "{} {}");
@@ -84,7 +84,6 @@ public final class LogMessage {
             + "Failed to generate initial structure by path " + ANSI_BLUE_UNDERLINED + "{}" + ANSI_RESET;
 
     public static final String FAILED_VARIABLE_LOG = "Failed variable <{}> comment <{}>";
-    public static final String FAILED_CONDITION_LOG = "Condition <{}> failed. Expression: {}";
 
     public static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
     public static final String BY_URL_LOG = format(TABLE_FORMAT, "URL", "{}");

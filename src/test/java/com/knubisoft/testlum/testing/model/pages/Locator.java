@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="text" type="{http://www.knubisoft.com/testlum/testing/model/pages}text"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/testlum/testing/model/pages}pagesLocator" /&gt;
- *       &lt;attribute name="description" type="{http://www.knubisoft.com/testlum/testing/model/pages}nonEmptyString" /&gt;
+ *       &lt;attribute name="comment" type="{http://www.knubisoft.com/testlum/testing/model/pages}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -53,8 +53,8 @@ public class Locator {
     protected Text text;
     @XmlAttribute(name = "locatorId", required = true)
     protected String locatorId;
-    @XmlAttribute(name = "description")
-    protected String description;
+    @XmlAttribute(name = "comment")
+    protected String comment;
 
     /**
      * Gets the value of the xpath property.
@@ -201,27 +201,27 @@ public class Locator {
     }
 
     /**
-     * Gets the value of the description property.
+     * Gets the value of the comment property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getDescription() {
-        return description;
+    public String getComment() {
+        return comment;
     }
 
     /**
-     * Sets the value of the description property.
+     * Sets the value of the comment property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setDescription(String value) {
-        this.description = value;
+    public void setComment(String value) {
+        this.comment = value;
     }
 
 }

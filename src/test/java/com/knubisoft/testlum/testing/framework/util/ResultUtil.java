@@ -172,7 +172,6 @@ public class ResultUtil {
     private static final String TIME_UNITE = "Time unit";
     private static final String HEADER_TEMPLATE = "%s: %s";
     private static final String MOVE_TO_EMPTY_SPACE = "Move to empty space after execution";
-    private static final String HOVER_NUMBER_TEMPLATE = "Hover #%d";
     private static final String STEP_FAILED = "Step failed";
     private static final String FAILED = "failed";
     private static final String SUCCESSFULLY = "successfully";
@@ -187,7 +186,6 @@ public class ResultUtil {
     private static final String IMAGE_COMPARISON_TYPE = "Image comparison type";
     private static final String IMAGE_LOCATOR = "Locator to element with image";
     private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
-    private static final String COMMENT = "Comment";
 
     public CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
         CommandResult commandResult = new CommandResult();
@@ -568,10 +566,8 @@ public class ResultUtil {
         result.put(MOVE_TO_EMPTY_SPACE, hovers.isMoveToEmptySpace());
     }
 
-    public void addHoverMetaData(final String comment,
-                                 final String locatorId,
+    public void addHoverMetaData(final String locatorId,
                                  final CommandResult result) {
-        result.put(COMMENT, comment);
         result.put(LOCATOR_ID, locatorId);
     }
 

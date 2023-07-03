@@ -1,8 +1,10 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.locator.GlobalLocators;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.pages.Locator;
@@ -29,6 +31,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SCROLL_TO_ELEMENT_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.WEB_ELEMENT_ATTRIBUTE_NOT_EXIST;
@@ -46,6 +49,7 @@ public class UiUtil {
     private static final String APPIUM_LOCALHOST_ALIAS = "10.0.2.2";
     private static final String LOCALHOST = "localhost";
     private static final int MAX_PERCENTS_VALUE = 100;
+    private static final Pattern HTTP_PATTERN = Pattern.compile("https?://.+");
 
     public String resolveSendKeysType(final String value, final WebElement element, final File fromDir) {
         if (value.startsWith(FILE_PATH_PREFIX)) {
@@ -189,5 +193,16 @@ public class UiUtil {
     public Point getCenterPoint(final WebDriver driver) {
         Dimension dimension = driver.manage().window().getSize();
         return new Point(dimension.width / 2, dimension.height / 2);
+    }
+
+    public String getUrl(final String path, final String env, final UiType uiType) {
+        if (HTTP_PATTERN.matcher(path).matches()) {
+            return path;
+        }
+        if (UiType.MOBILE_BROWSER == uiType) {
+            return GlobalTestConfigurationProvider.getMobilebrowserSettings(env)
+                    .getBaseUrl() + path;
+        }
+        return GlobalTestConfigurationProvider.getWebSettings(env).getBaseUrl() + path;
     }
 }

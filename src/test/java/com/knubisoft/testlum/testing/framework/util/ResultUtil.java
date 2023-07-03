@@ -91,9 +91,17 @@ public class ResultUtil {
     public static final String HOTKEY_LOCATOR = "Locator for hotkey command";
     public static final String INPUT_VALUE = "Value for input";
     public static final String CLICK_METHOD = "Click method";
+    public static final String CLOSE_TAB = "Close";
+    public static final String SWITCH_TAB = "Switch";
+    public static final String OPEN_TAB = "Open";
     public static final String CLOSE_COMMAND = "Close command for";
-    public static final String LAST_TAB = "Last recently opened tab";
-    public static final String TAB_NUMBER = "Tab with number '%s'";
+    public static final String SWITCH_COMMAND = "Switch command for";
+    public static final String OPEN_COMMAND = "Open command for";
+    public static final String LAST_TAB = "Last opened tab";
+    public static final String NEW_TAB = "Newly created tab";
+    public static final String NEW_TAB_WITH_URL = "Newly created tab with url: %s";
+    public static final String WITHOUT_URL = "Without url";
+    public static final String TAB_WITH_INDEX = "Tab with index '%s'";
     public static final String JS_FILE = "JS file to execute";
     public static final String NAVIGATE_TYPE = "Navigate command type";
     public static final String NAVIGATE_URL = "URL for navigate";
@@ -584,6 +592,17 @@ public class ResultUtil {
             String hoverNumber = format(HOVER_NUMBER_TEMPLATE, number.getAndIncrement());
             result.put(hoverNumber, Arrays.asList(hover.getLocatorId(), hovers.getComment()));
         });
+    }
+
+    public void addCloseOrSwitchTabMetadata(final String commandName,
+                                            final Integer tabIndex,
+                                            final CommandResult result) {
+        result.put(commandName, nonNull(tabIndex) ? String.format(TAB_WITH_INDEX, tabIndex) : LAST_TAB);
+    }
+
+    public void addOpenTabMetadata(final String url,
+                                   final CommandResult result) {
+        result.put(OPEN_COMMAND, isNotBlank(url) ? String.format(NEW_TAB_WITH_URL, url) : NEW_TAB);
     }
 
     private void addKafkaAdditionalMetaDataForSendAction(final SendKafkaMessage sendAction,

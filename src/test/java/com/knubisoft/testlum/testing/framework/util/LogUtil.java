@@ -108,6 +108,9 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_QUANTITY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_TYPE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_VALUE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_COMMAND;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_INDEX;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_URL;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
@@ -115,6 +118,9 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COM
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VALUE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VARIATION_LOG;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.LAST_TAB;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.OPEN_TAB;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.WITHOUT_URL;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -463,6 +469,16 @@ public class LogUtil {
     public void logHotKeyInfo(final AbstractUiCommand command) {
         log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
         log.info(COMMENT_LOG, command.getComment());
+    }
+
+    public void logCloseOrSwitchTabCommand(final String command, final Integer tabNumber) {
+        log.info(TAB_COMMAND, command);
+        log.info(TAB_INDEX, nonNull(tabNumber) ? tabNumber : LAST_TAB);
+    }
+
+    public void logOpenTabCommand(final String url) {
+        log.info(TAB_COMMAND, OPEN_TAB);
+        log.info(TAB_URL, isNotBlank(url) ? url : WITHOUT_URL);
     }
 
     public void logAssertCommand(final AbstractUiCommand command, final int position) {

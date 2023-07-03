@@ -496,16 +496,11 @@ public class ResultUtil {
         addVariableMetaData(type, key, format(format, expression), value, result);
     }
 
-    public static void addVariableMetaData(String queryType,
-                                           String dbType,
-                                           String alias,
-                                           String key,
-                                           String expression,
-                                           String value,
-                                           CommandResult result) {
+    public void addVariableMetaData(final String dbType,
+                                    final String alias,
+                                    final CommandResult result) {
         result.put(DB_TYPE, dbType);
         result.put(ALIAS, alias);
-        addVariableMetaData(queryType, key, expression, value, result);
     }
 
     public void addConditionMetaData(final String key,

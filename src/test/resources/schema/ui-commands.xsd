@@ -177,19 +177,29 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="closeTab">
+    <x:complexType name="browserTab">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
-                <x:attribute name="tabIndex" type="tns:tabPattern"/>
+                <x:choice>
+                    <x:element name="close" type="tns:closeTab"/>
+                    <x:element name="open" type="tns:openTab"/>
+                    <x:element name="switch" type="tns:switchTab"/>
+                </x:choice>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
-    <x:simpleType name="tabPattern">
-        <x:restriction base="x:int">
-            <x:pattern value="[2-9]|[1-9][0-9]"/>
-        </x:restriction>
-    </x:simpleType>
+    <x:complexType name="closeTab">
+        <x:attribute name="index" type="tns:positiveIntegerMin1"/>
+    </x:complexType>
+
+    <x:complexType name="openTab">
+        <x:attribute name="url" type="tns:slashStartedOrUrlString"/>
+    </x:complexType>
+
+    <x:complexType name="switchTab">
+        <x:attribute name="index" type="tns:positiveIntegerMin1"/>
+    </x:complexType>
 
     <x:complexType name="scroll">
         <x:complexContent>
@@ -218,7 +228,7 @@
                     <x:element name="javascript" type="tns:javascript"/>
                     <x:element name="navigate" type="tns:navigate"/>
                     <x:element name="hover" type="tns:hover"/>
-                    <x:element name="closeTab" type="tns:closeTab"/>
+                    <x:element name="tab" type="tns:browserTab"/>
                     <x:element name="switchToFrame" type="tns:switchToFrame"/>
                     <x:element name="dragAndDrop" type="tns:dragAndDrop"/>
                     <x:element name="hotKey" type="tns:hotKey"/>

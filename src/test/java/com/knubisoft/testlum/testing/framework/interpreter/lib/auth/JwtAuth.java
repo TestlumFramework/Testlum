@@ -13,7 +13,6 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -24,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.AUTHENTICATION_TYPE;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 public class JwtAuth extends AbstractAuthStrategy {
@@ -45,11 +45,19 @@ public class JwtAuth extends AbstractAuthStrategy {
         HttpHeaders headers = getHeaders();
         HttpEntity<String> request = new HttpEntity<>(body, headers);
         String response = doRequest(auth, request);
-        if (StringUtils.isNotBlank(response)) {
-            DocumentContext context = JsonPath.parse(response);
-            return context.read(AuthorizationConstant.CONTENT_KEY_TOKEN);
+        if (isNotBlank(response)) {
+            return getTokenFromResponse(auth, response);
         }
         return DelimiterConstant.EMPTY;
+    }
+
+    private String getTokenFromResponse(final Auth auth, final String response) {
+        DocumentContext context = JsonPath.parse(response);
+        List<Api> apiList = GlobalTestConfigurationProvider
+                .getIntegrations().get(dependencies.getEnvironment()).getApis().getApi();
+        Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, auth.getApiAlias());
+        return context.read(isNotBlank(apiIntegration.getAuth().getTokenName())
+                ? apiIntegration.getAuth().getTokenName() : AuthorizationConstant.CONTENT_KEY_TOKEN);
     }
 
     private String prepareBody(final Auth auth) {

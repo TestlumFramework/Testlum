@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlType;
     NativeAssert.class,
     Attribute.class,
     Title.class,
-    CloseTab.class,
+    BrowserTab.class,
     HotKey.class,
     Copy.class,
     Cut.class,

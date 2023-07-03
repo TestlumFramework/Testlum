@@ -1,7 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.amazonaws.services.sqs.model.ReceiveMessageResult;
@@ -127,11 +126,11 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     private List<Object> receiveMessages(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
         ReceiveMessageRequest receiveMessageRequest = createReceiveRequest(receive, aliasEnv);
         ReceiveMessageResult receiveMessageResult = this.amazonSQS.get(aliasEnv).receiveMessage(receiveMessageRequest);
-        List<String> messages = receiveMessageResult.getMessages()
+        return receiveMessageResult.getMessages()
                 .stream()
-                .map(Message::getBody)
+                .map(message -> message.getBody().replaceAll("\\n\\s+", ""))
+                .map(this::toJsonObject)
                 .collect(Collectors.toList());
-        return messages.stream().map(this::toJsonObject).collect(Collectors.toList());
     }
 
     private ReceiveMessageRequest createReceiveRequest(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {

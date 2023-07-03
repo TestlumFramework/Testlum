@@ -9,16 +9,12 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
-import com.knubisoft.testlum.testing.model.scenario.Hovers;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@ExecutorForClass(Hovers.class)
-public class HoverExecutor extends AbstractUiExecutor<Hovers> {
+@ExecutorForClass(Hover.class)
+public class HoverExecutor extends AbstractUiExecutor<Hover> {
 
     private static final String MOVE_TO_EMPTY_SPACE = "//html";
 
@@ -27,34 +23,18 @@ public class HoverExecutor extends AbstractUiExecutor<Hovers> {
     }
 
     @Override
-    public void execute(final Hovers hovers, final CommandResult result) {
-        ResultUtil.addHoversMetaData(hovers, result);
+    public void execute(final Hover hover, final CommandResult result) {
+        ResultUtil.addHoverMetaData(hover, result);
+        LogUtil.logHover(hover);
         Actions actions = new Actions(dependencies.getDriver());
-        executeSubCommands(hovers, result, actions);
+        if (ConditionUtil.isTrue(hover.getCondition(), dependencies.getScenarioContext(), result)) {
+            executeHoverCommand(actions, hover);
+        }
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
-        moveToEmptySpace(hovers.isMoveToEmptySpace(), actions);
+        moveToEmptySpace(hover.isMoveToEmptySpace(), actions);
     }
 
-    private void executeSubCommands(final Hovers hovers,
-                                    final CommandResult result,
-                                    final Actions actions) {
-        List<CommandResult> subCommandsResult = new ArrayList<>();
-        result.setSubCommandsResult(subCommandsResult);
-        hovers.getHover().forEach(hover -> {
-            CommandResult commandResult =
-                    ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), hover);
-            subCommandsResult.add(commandResult);
-            if (ConditionUtil.isTrue(hover.getCondition(), dependencies.getScenarioContext(), commandResult)) {
-                executeHoverCommand(actions, hover, commandResult);
-            }
-        });
-    }
-
-    private void executeHoverCommand(final Actions actions,
-                                     final Hover hover,
-                                     final CommandResult commandResult) {
-        LogUtil.logHover(dependencies.getPosition().get(), hover);
-        ResultUtil.addHoverMetaData(hover.getLocatorId(), commandResult);
+    private void executeHoverCommand(final Actions actions, final Hover hover) {
         WebElement webElement = UiUtil.findWebElement(dependencies, hover.getLocatorId());
         performMovement(actions, webElement);
     }

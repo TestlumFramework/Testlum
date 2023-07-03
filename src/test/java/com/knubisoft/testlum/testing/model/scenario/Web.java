@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="image" type="{http://www.knubisoft.com/testlum/testing/model/scenario}image"/&gt;
  *         &lt;element name="javascript" type="{http://www.knubisoft.com/testlum/testing/model/scenario}javascript"/&gt;
  *         &lt;element name="navigate" type="{http://www.knubisoft.com/testlum/testing/model/scenario}navigate"/&gt;
- *         &lt;element name="hovers" type="{http://www.knubisoft.com/testlum/testing/model/scenario}hovers"/&gt;
+ *         &lt;element name="hover" type="{http://www.knubisoft.com/testlum/testing/model/scenario}hover"/&gt;
  *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/testlum/testing/model/scenario}switchToFrame"/&gt;
  *         &lt;element name="dragAndDrop" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dragAndDrop"/&gt;
  *         &lt;element name="hotKey" type="{http://www.knubisoft.com/testlum/testing/model/scenario}hotKey"/&gt;
@@ -69,7 +69,7 @@ public class Web
         @XmlElement(name = "image", type = Image.class),
         @XmlElement(name = "javascript", type = Javascript.class),
         @XmlElement(name = "navigate", type = Navigate.class),
-        @XmlElement(name = "hovers", type = Hovers.class),
+        @XmlElement(name = "hover", type = Hover.class),
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
         @XmlElement(name = "dragAndDrop", type = DragAndDrop.class),
         @XmlElement(name = "hotKey", type = HotKey.class),
@@ -112,7 +112,7 @@ public class Web
      * {@link Image }
      * {@link Javascript }
      * {@link Navigate }
-     * {@link Hovers }
+     * {@link Hover }
      * {@link SwitchToFrame }
      * {@link DragAndDrop }
      * {@link HotKey }

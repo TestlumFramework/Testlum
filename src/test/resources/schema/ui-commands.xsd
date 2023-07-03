@@ -35,20 +35,11 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="hovers">
-        <x:complexContent>
-            <x:extension base="tns:abstractUiCommand">
-                <x:choice>
-                    <x:element name="hover" type="tns:hover" maxOccurs="unbounded"/>
-                </x:choice>
-                <x:attribute name="moveToEmptySpace" type="x:boolean" default="false"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
     <x:complexType name="hover">
         <x:complexContent>
-            <x:extension base="tns:commandWithLocator"/>
+            <x:extension base="tns:commandWithLocator">
+                <x:attribute name="moveToEmptySpace" type="x:boolean" default="false"/>
+            </x:extension>
         </x:complexContent>
     </x:complexType>
 
@@ -226,7 +217,7 @@
                     <x:element name="image" type="tns:image"/>
                     <x:element name="javascript" type="tns:javascript"/>
                     <x:element name="navigate" type="tns:navigate"/>
-                    <x:element name="hovers" type="tns:hovers"/>
+                    <x:element name="hover" type="tns:hover"/>
                     <x:element name="closeTab" type="tns:closeTab"/>
                     <x:element name="switchToFrame" type="tns:switchToFrame"/>
                     <x:element name="dragAndDrop" type="tns:dragAndDrop"/>

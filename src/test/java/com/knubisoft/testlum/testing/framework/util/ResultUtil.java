@@ -9,7 +9,7 @@ import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
-import com.knubisoft.testlum.testing.model.scenario.Hovers;
+import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
@@ -76,7 +76,7 @@ public class ResultUtil {
     public static final String HTML_DOM = "HTML Dom";
     public static final String FULL_DOM = "Full Dom";
     public static final String LOCATOR_ID = "Locator ID";
-    public static final String LOCATOR_ID_FORMAT = "Locator ID = %s";
+    public static final String LOCATOR_FORM = "Locator ID = %s";
     public static final String ELEMENT_PRESENT = "Is the web element present";
     public static final String CONDITION = "Condition";
     public static final String GENERATED_STRING = "Randomly generated string";
@@ -478,12 +478,12 @@ public class ResultUtil {
         result.put(VALUE, value);
     }
 
-    public void addVarMetaData(final String type,
-                               final String key,
-                               final String format,
-                               final String expression,
-                               final String value,
-                               final CommandResult result) {
+    public void addVariableMetaData(final String type,
+                                    final String key,
+                                    final String format,
+                                    final String expression,
+                                    final String value,
+                                    final CommandResult result) {
         addVariableMetaData(type, key, format(format, expression), value, result);
     }
 
@@ -562,13 +562,10 @@ public class ResultUtil {
         result.put(TO_LOCATOR, dragAndDropNative.getToLocatorId());
     }
 
-    public void addHoversMetaData(final Hovers hovers, final CommandResult result) {
-        result.put(MOVE_TO_EMPTY_SPACE, hovers.isMoveToEmptySpace());
-    }
-
-    public void addHoverMetaData(final String locatorId,
-                                 final CommandResult result) {
-        result.put(LOCATOR_ID, locatorId);
+    public void addHoverMetaData(final Hover hover, final CommandResult result) {
+        result.setComment(hover.getComment());
+        result.put(LOCATOR_ID, hover.getLocatorId());
+        result.put(MOVE_TO_EMPTY_SPACE, hover.isMoveToEmptySpace());
     }
 
     private void addKafkaAdditionalMetaDataForSendAction(final SendKafkaMessage sendAction,

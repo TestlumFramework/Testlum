@@ -4,7 +4,6 @@ package com.knubisoft.testlum.testing.model.scenario;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -19,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="variations" type="{http://www.knubisoft.com/testlum/testing/model/scenario}csv" minOccurs="0"/&gt;
- *         &lt;element name="tags" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="tags" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="active" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
  *       &lt;attribute name="onlyThis" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
@@ -39,7 +38,6 @@ import javax.xml.bind.annotation.XmlType;
 public class Settings {
 
     protected String variations;
-    @XmlElement(required = true)
     protected String tags;
     @XmlAttribute(name = "active")
     protected Boolean active;

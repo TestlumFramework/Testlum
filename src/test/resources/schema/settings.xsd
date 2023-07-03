@@ -10,7 +10,7 @@
     <x:complexType name="settings">
         <x:sequence>
             <x:element name="variations" type="tns:csv" minOccurs="0"/>
-            <x:element name="tags" type="tns:nonEmptyString"/>
+            <x:element name="tags" type="tns:nonEmptyString" minOccurs="0"/>
         </x:sequence>
         <x:attribute name="active" type="x:boolean" default="true"/>
         <x:attribute name="onlyThis" type="x:boolean" default="false"/>

@@ -12,7 +12,7 @@ public class ScenarioResult {
     private int id;
     private Overview overview;
     private String name;
-    private List<String> tags;
+    private String tags;
     private String path;
     private String browser;
     private String mobilebrowserDevice;

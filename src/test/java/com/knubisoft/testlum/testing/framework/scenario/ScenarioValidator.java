@@ -140,7 +140,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> uiCommandValidatorsMap;
     private final Integrations integrations = GlobalTestConfigurationProvider.getDefaultIntegrations();
-    private AtomicReference<String> variationsFileName;
+    private final AtomicReference<String> variationsFileName = new AtomicReference<>(EMPTY);
 
     public ScenarioValidator() {
         Map<AbstractCommandPredicate, AbstractCommandValidator> validatorMap = new HashMap<>();
@@ -380,14 +380,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateVariationsIfExist(scenario, xmlFile);
             validateIfContainsNativeAndMobileCommands(scenario.getCommands());
             scenario.getCommands().forEach(command -> validateCommand(command, xmlFile));
-            variationsFileName = new AtomicReference<>(EMPTY);
+            variationsFileName.set(EMPTY);
         }
     }
 
     private void validateVariationsIfExist(final Scenario scenario, final File xmlFile) {
         if (isNotBlank(scenario.getVariations())) {
             GlobalVariations.process(scenario, xmlFile);
-            variationsFileName = new AtomicReference<>(scenario.getVariations());
+            variationsFileName.set(scenario.getVariations());
         }
     }
 
@@ -463,13 +463,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         List<Map<String, String>> variationsList = GlobalVariations.getVariations(variationsFileName.get());
         variationsList.forEach(variationsMap -> {
             String variationValue = GlobalVariations.getVariationValue(fileName, variationsMap);
-            if (isNotBlank(variationValue)) {
-                if (nonNull(xmlFile)) {
-                    FileSearcher.searchFileFromDir(xmlFile, variationValue);
-                } else {
-                    FileSearcher.searchFileFromDataFolder(variationValue);
-                }
-            }
+            File file = nonNull(xmlFile) ? FileSearcher.searchFileFromDir(xmlFile, variationValue)
+                    : FileSearcher.searchFileFromDataFolder(variationValue);
         });
     }
 

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNABLE_FIND_VALUE_FOR_KEY;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VARIATIONS_NOT_FOUND;
 import static java.util.Objects.isNull;
 
@@ -49,22 +50,25 @@ public class GlobalVariations {
         private static final long serialVersionUID = 1;
     }
 
-    public String getVariationValue(final String original, final Map<String, String> variationsMap) {
-        if (StringUtils.isBlank(original)) {
-            return original;
+    public String getVariationValue(final String variationKey, final Map<String, String> variationMap) {
+        if (StringUtils.isBlank(variationKey)) {
+            return variationKey;
         }
-        Matcher m = ROUTE_PATTERN.matcher(original);
-        return getFormattedInject(original, m, variationsMap);
+        Matcher m = ROUTE_PATTERN.matcher(variationKey);
+        return getVariationFromMap(variationKey, m, variationMap);
     }
 
-    private String getFormattedInject(final String original,
-                                      final Matcher m,
-                                      final Map<String, String> variationsMap) {
-        String formatted = original;
+    private String getVariationFromMap(final String key,
+                                       final Matcher m,
+                                       final Map<String, String> variationMap) {
+        String formatted = key;
         while (m.find()) {
             String firstSubsequence = m.group(1);
             String zeroSubsequence = m.group(0);
-            String value = variationsMap.get(firstSubsequence);
+            String value = variationMap.get(firstSubsequence);
+            if (isNull(value)) {
+                throw new IllegalArgumentException(String.format(UNABLE_FIND_VALUE_FOR_KEY, key, variationMap));
+            }
             formatted = formatted.replace(zeroSubsequence, value);
         }
         return formatted;

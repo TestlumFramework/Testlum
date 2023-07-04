@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
+import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
@@ -25,7 +26,6 @@ import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -207,12 +207,12 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
 
     @Data
     private static class RabbitMQMessage {
-        private final String message;
+        private final Object message;
         private final String correlationId;
         private Map<String, Object> headers;
 
         RabbitMQMessage(final Message message) {
-            this.message = new String(message.getBody(), StandardCharsets.UTF_8).replaceAll("\\n\\s+", "");
+            this.message = JacksonMapperUtil.readValue(message.getBody(), Object.class);
             Object header = message.getMessageProperties().getHeader(CORRELATION_ID);
             this.correlationId = String.valueOf(header);
         }

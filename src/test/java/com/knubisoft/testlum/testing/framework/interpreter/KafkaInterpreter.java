@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
+import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
@@ -246,13 +247,13 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     @Data
     private static class KafkaMessage {
         private final String key;
-        private final String value;
+        private final Object value;
         private final String correlationId;
         private Map<String, String> headers;
 
         KafkaMessage(final ConsumerRecord<String, String> consumerRecord) {
             this.key = consumerRecord.key();
-            this.value = consumerRecord.value().replaceAll("\\n\\s+", "");
+            this.value = JacksonMapperUtil.readValue(consumerRecord.value(), Object.class);
             this.correlationId = Optional.ofNullable(consumerRecord.headers().lastHeader(CORRELATION_ID))
                     .map(h -> new String(h.value(), StandardCharsets.UTF_8)).orElse(null);
         }

@@ -28,6 +28,11 @@ public final class JacksonMapperUtil {
     }
 
     @SneakyThrows
+    public <T> T readValue(final byte[] content, final Class<T> valueType) {
+        return MAPPER.readValue(content, valueType);
+    }
+
+    @SneakyThrows
     public <T> T readValue(final File content, final Class<T> valueType) {
         return MAPPER.readValue(content, valueType);
     }

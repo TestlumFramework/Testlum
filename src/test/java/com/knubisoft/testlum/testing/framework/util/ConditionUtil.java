@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import lombok.experimental.UtilityClass;
@@ -8,27 +9,39 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONDITION;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FAILED_CONDITION_EXPRESSION;
 
 @Slf4j
 @UtilityClass
 public class ConditionUtil {
 
-    public boolean isTrue(final String conditionName, final ScenarioContext context, final CommandResult result) {
-        if (StringUtils.isNotBlank(conditionName)) {
-            boolean conditionResult = context.getCondition(conditionName);
-            LogUtil.logCondition(conditionName, conditionResult);
-            result.put(CONDITION, conditionName + " = " + conditionResult);
+    public boolean isTrue(final String condition, final ScenarioContext context, final CommandResult result) {
+        if (StringUtils.isNotBlank(condition)) {
+            String injectedCondition = context.getCondition(condition);
+            boolean conditionResult = parseFromSpel(condition, injectedCondition);
+            LogUtil.logCondition(condition, conditionResult);
+            ResultUtil.addCommandOnConditionMetaData(condition, conditionResult, result);
             return conditionResult;
         }
         return true;
     }
 
-    public boolean parseFromSpel(final String expression, final String name, final CommandResult result) {
-        Expression exp = new SpelExpressionParser().parseExpression(expression);
-        boolean conditionResult = Boolean.TRUE.equals(exp.getValue(Boolean.class));
-        LogUtil.logConditionInfo(name, expression, conditionResult);
-        ResultUtil.addConditionMetaData(name, expression, conditionResult, result);
-        return conditionResult;
+    public void processCondition(final String condition,
+                                 final String expression,
+                                 final ScenarioContext scenarioContext,
+                                 final CommandResult result) {
+        boolean conditionResult = parseFromSpel(condition, expression);
+        scenarioContext.setCondition(condition, conditionResult);
+        LogUtil.logConditionInfo(condition, expression, conditionResult);
+        ResultUtil.addConditionMetaData(condition, expression, conditionResult, result);
+    }
+
+    private boolean parseFromSpel(final String condition, final String expression) {
+        try {
+            Expression exp = new SpelExpressionParser().parseExpression(expression);
+            return Boolean.TRUE.equals(exp.getValue(Boolean.class));
+        } catch (Exception e) {
+            throw new DefaultFrameworkException(FAILED_CONDITION_EXPRESSION, condition, expression, e.getMessage());
+        }
     }
 }

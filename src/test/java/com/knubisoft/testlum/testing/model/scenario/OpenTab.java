@@ -8,15 +8,15 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for closeTab complex type.
+ * <p>Java class for openTab complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="closeTab"&gt;
+ * &lt;complexType name="openTab"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="index" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveIntegerMin1" /&gt;
+ *       &lt;attribute name="url" type="{http://www.knubisoft.com/testlum/testing/model/scenario}slashStartedOrUrlString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -25,34 +25,34 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "closeTab")
-public class CloseTab {
+@XmlType(name = "openTab")
+public class OpenTab {
 
-    @XmlAttribute(name = "index")
-    protected Integer index;
+    @XmlAttribute(name = "url")
+    protected String url;
 
     /**
-     * Gets the value of the index property.
+     * Gets the value of the url property.
      * 
      * @return
      *     possible object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
-    public Integer getIndex() {
-        return index;
+    public String getUrl() {
+        return url;
     }
 
     /**
-     * Sets the value of the index property.
+     * Sets the value of the url property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
-    public void setIndex(Integer value) {
-        this.index = value;
+    public void setUrl(String value) {
+        this.url = value;
     }
 
 }

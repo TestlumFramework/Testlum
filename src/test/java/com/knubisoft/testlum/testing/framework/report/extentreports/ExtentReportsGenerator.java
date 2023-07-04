@@ -60,6 +60,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private static final String UNSORTED_LIST_ITEM_TEMPLATE = "<li>%s</li>";
     private static final String SCENARIO_NAME_TEMPLATE = "Scenario #%d - %s";
     private static final String SCENARIO_STEP_NAME_TEMPLATE = "Scenario step #%d - %s";
+    private static final String STEP_SKIPPED = "Command was skipped because of the condition";
     private static final String STEP_SUCCESS = "Scenario step executed successfully";
     private static final String SCREENSHOT = "Step screenshot";
     private static final String SCENARIO_SUCCESS = "Test scenario passed successfully";
@@ -260,7 +261,9 @@ public class ExtentReportsGenerator implements ReportGenerator {
     }
 
     private void setStepExecutionResult(final ExtentTest extentTest, final CommandResult stepExecutionInfo) {
-        if (stepExecutionInfo.isSuccess()) {
+        if (stepExecutionInfo.isSkipped()) {
+            extentTest.skip(MarkupHelper.createLabel(STEP_SKIPPED, ExtentColor.ORANGE));
+        } else if (stepExecutionInfo.isSuccess()) {
             extentTest.pass(MarkupHelper.createLabel(STEP_SUCCESS, ExtentColor.GREEN));
         } else {
             extentTest.fail(stepExecutionInfo.getException());

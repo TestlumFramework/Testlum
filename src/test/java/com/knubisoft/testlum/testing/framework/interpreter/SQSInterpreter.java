@@ -5,6 +5,7 @@ import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.amazonaws.services.sqs.model.ReceiveMessageResult;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -31,15 +32,10 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.CLOSE_BRACE;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.CLOSE_SQUARE_BRACKET;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_SQS_PROCESSING;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 @InterpreterForClass(Sqs.class)
@@ -128,8 +124,9 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         ReceiveMessageResult receiveMessageResult = this.amazonSQS.get(aliasEnv).receiveMessage(receiveMessageRequest);
         return receiveMessageResult.getMessages()
                 .stream()
-                .map(message -> message.getBody().replaceAll("\\n\\s+", ""))
-                .map(this::toJsonObject)
+                .map(message ->
+                        message.getBody().replaceAll(DelimiterConstant.REGEX_MANY_SPACES, DelimiterConstant.EMPTY))
+                .map(JacksonMapperUtil::toJsonObject)
                 .collect(Collectors.toList());
     }
 
@@ -173,14 +170,5 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         return StringUtils.isNotBlank(message)
                 ? message
                 : getContentIfFile(file);
-    }
-
-    private Object toJsonObject(final String content) {
-        if (isNotBlank(content)
-                && ((content.startsWith(OPEN_BRACE) && content.endsWith(CLOSE_BRACE))
-                || (content.startsWith(OPEN_SQUARE_BRACKET) && content.endsWith(CLOSE_SQUARE_BRACKET)))) {
-            return JacksonMapperUtil.readValue(content, Object.class);
-        }
-        return content;
     }
 }

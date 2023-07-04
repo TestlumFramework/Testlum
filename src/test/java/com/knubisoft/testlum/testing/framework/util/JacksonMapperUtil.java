@@ -15,6 +15,12 @@ import lombok.experimental.UtilityClass;
 
 import java.io.File;
 
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.CLOSE_BRACE;
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.CLOSE_SQUARE_BRACKET;
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 @UtilityClass
 public final class JacksonMapperUtil {
 
@@ -61,6 +67,15 @@ public final class JacksonMapperUtil {
     @SneakyThrows
     public String writeValueToCopiedString(final Object value) {
         return COPY_MAPPER.writeValueAsString(value);
+    }
+
+    public Object toJsonObject(final String content) {
+        if (isNotBlank(content)
+                && ((content.startsWith(OPEN_BRACE) && content.endsWith(CLOSE_BRACE))
+                || (content.startsWith(OPEN_SQUARE_BRACKET) && content.endsWith(CLOSE_SQUARE_BRACKET)))) {
+            return JacksonMapperUtil.readValue(content, Object.class);
+        }
+        return content;
     }
 
     private ObjectMapper buildObjectMapper() {

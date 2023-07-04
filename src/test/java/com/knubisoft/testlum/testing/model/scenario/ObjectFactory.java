@@ -822,6 +822,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Exclude }
+     * 
+     */
+    public Exclude createExclude() {
+        return new Exclude();
+    }
+
+    /**
      * Create an instance of {@link WebView }
      * 
      */

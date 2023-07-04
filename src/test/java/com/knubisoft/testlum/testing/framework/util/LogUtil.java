@@ -71,7 +71,9 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HIGHLI
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_COMPARISON_TYPE_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_EXCLUDED_ELEMENT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_FOR_COMPARISON_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_MISMATCH_PERCENT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_SOURCE_ATT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INITIAL_STRUCTURE_GENERATION_ERROR;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INITIAL_STRUCTURE_GENERATION_SUCCESS;
@@ -446,7 +448,18 @@ public class LogUtil {
             log.info(LOCATOR_LOG, compareWith.getLocatorId());
             log.info(IMAGE_SOURCE_ATT_LOG, compareWith.getAttribute());
         } else {
-            log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_COMPARE);
+            logCompareWithFullscreen(image);
+        }
+    }
+
+    private void logCompareWithFullscreen(final Image image) {
+        log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_COMPARE);
+        if (nonNull(image.getCompareWithFullScreen().getMismatch())) {
+            log.info(IMAGE_MISMATCH_PERCENT_LOG, image.getCompareWithFullScreen().getMismatch());
+        }
+        if (!image.getCompareWithFullScreen().getExclude().isEmpty()) {
+            image.getCompareWithFullScreen().getExclude().forEach(element ->
+                    log.info(IMAGE_EXCLUDED_ELEMENT_LOG, element.getLocatorId()));
         }
     }
 

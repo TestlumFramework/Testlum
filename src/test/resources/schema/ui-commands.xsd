@@ -360,7 +360,12 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="compareWithFullScreen"/>
+    <x:complexType name="compareWithFullScreen">
+        <x:choice minOccurs="0" maxOccurs="unbounded">
+            <x:element name="exclude" type="tns:exclude"/>
+        </x:choice>
+        <x:attribute name="mismatch" type="tns:positiveDoubleMin0Max100"/>
+    </x:complexType>
 
     <x:complexType name="compareWith">
         <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
@@ -410,4 +415,14 @@
         </x:complexContent>
     </x:complexType>
 
+    <x:complexType name="exclude">
+        <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="positiveDoubleMin0Max100">
+        <x:restriction base="x:double">
+            <x:minInclusive value="0.0"/>
+            <x:maxInclusive value="100"/>
+        </x:restriction>
+    </x:simpleType>
 </x:schema>

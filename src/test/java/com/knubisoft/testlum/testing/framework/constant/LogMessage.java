@@ -168,6 +168,8 @@ public final class LogMessage {
     public static final String HIGHLIGHT_DIFFERENCE_LOG = format(TABLE_FORMAT, "Highlight difference", "{}");
     public static final String IMAGE_FOR_COMPARISON_LOG = format(TABLE_FORMAT, "Image for comparison", "{}");
     public static final String IMAGE_SOURCE_ATT_LOG = format(TABLE_FORMAT, "Image source attribute", "{}");
+    public static final String IMAGE_EXCLUDED_ELEMENT_LOG = format(TABLE_FORMAT, "Excluded element", "{}");
+    public static final String IMAGE_MISMATCH_PERCENT_LOG = format(TABLE_FORMAT, "Allowed mismatch", "{}");
     public static final String URL_TO_IMAGE_LOG = format(TABLE_FORMAT, "URL to actual image", "{}");
     public static final String OVERVIEW_INFO_LOG = "{}: {}";
 

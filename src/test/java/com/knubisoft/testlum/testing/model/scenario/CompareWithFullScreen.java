@@ -1,8 +1,11 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -15,6 +18,10 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="compareWithFullScreen"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
+ *         &lt;element name="exclude" type="{http://www.knubisoft.com/testlum/testing/model/scenario}exclude"/&gt;
+ *       &lt;/choice&gt;
+ *       &lt;attribute name="mismatch" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveDoubleMin0Max100" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -23,8 +30,66 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "compareWithFullScreen")
+@XmlType(name = "compareWithFullScreen", propOrder = {
+    "exclude"
+})
 public class CompareWithFullScreen {
 
+    protected List<Exclude> exclude;
+    @XmlAttribute(name = "mismatch")
+    protected Double mismatch;
+
+    /**
+     * Gets the value of the exclude property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the exclude property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getExclude().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Exclude }
+     * 
+     * 
+     */
+    public List<Exclude> getExclude() {
+        if (exclude == null) {
+            exclude = new ArrayList<Exclude>();
+        }
+        return this.exclude;
+    }
+
+    /**
+     * Gets the value of the mismatch property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Double }
+     *     
+     */
+    public Double getMismatch() {
+        return mismatch;
+    }
+
+    /**
+     * Sets the value of the mismatch property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Double }
+     *     
+     */
+    public void setMismatch(Double value) {
+        this.mismatch = value;
+    }
 
 }

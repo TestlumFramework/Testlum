@@ -9,6 +9,7 @@ import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
+import com.knubisoft.testlum.testing.model.scenario.Exclude;
 import com.knubisoft.testlum.testing.model.scenario.Hovers;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
@@ -197,6 +198,8 @@ public class ResultUtil {
     private static final String IMAGE_COMPARISON_TYPE = "Image comparison type";
     private static final String IMAGE_LOCATOR = "Locator to element with image";
     private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
+    private static final String IMAGE_MISMATCH_PERCENT = "Allowed mismatch percent";
+    private static final String IMAGE_EXCLUDED_ELEMENT = "Excluded element locator #%s";
 
     public CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
         CommandResult commandResult = new CommandResult();
@@ -685,7 +688,20 @@ public class ResultUtil {
             result.put(IMAGE_LOCATOR, compareWith.getLocatorId());
             result.put(IMAGE_SOURCE_ATT, compareWith.getAttribute());
         } else {
-            result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
+            addCompareWithFullScreenMetaData(image, result);
+        }
+    }
+
+    private void addCompareWithFullScreenMetaData(final Image image, final CommandResult result) {
+        result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
+        if (nonNull(image.getCompareWithFullScreen().getMismatch())) {
+            result.put(IMAGE_MISMATCH_PERCENT, image.getCompareWithFullScreen().getMismatch());
+        }
+        if (!image.getCompareWithFullScreen().getExclude().isEmpty()) {
+            for (int element = 0; element < image.getCompareWithFullScreen().getExclude().size(); element++) {
+                Exclude exclude = image.getCompareWithFullScreen().getExclude().get(element);
+                result.put(format(IMAGE_EXCLUDED_ELEMENT, element + 1), exclude.getLocatorId());
+            }
         }
     }
 

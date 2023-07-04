@@ -89,6 +89,7 @@ public class ResultUtil {
     public static final String SCROLL_LOCATOR = "Locator for scroll-to command";
     public static final String SWITCH_LOCATOR = "Locator for switch command";
     public static final String HOTKEY_LOCATOR = "Locator for hotkey command";
+    public static final String HOTKEY_REPEAT = "Times to repeat hotkey command";
     public static final String INPUT_VALUE = "Value for input";
     public static final String CLICK_METHOD = "Click method";
     public static final String CLOSE_TAB = "Close";

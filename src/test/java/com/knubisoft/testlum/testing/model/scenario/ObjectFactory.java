@@ -750,6 +750,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link SingleKeyCommand }
+     * 
+     */
+    public SingleKeyCommand createSingleKeyCommand() {
+        return new SingleKeyCommand();
+    }
+
+    /**
      * Create an instance of {@link ScrollTo }
      * 
      */

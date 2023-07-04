@@ -292,31 +292,39 @@
 
     <x:complexType name="tab">
         <x:complexContent>
-            <x:extension base="tns:abstractUiCommand"/>
+            <x:extension base="tns:singleKeyCommand"/>
         </x:complexContent>
     </x:complexType>
 
     <x:complexType name="enter">
         <x:complexContent>
-            <x:extension base="tns:abstractUiCommand"/>
+            <x:extension base="tns:singleKeyCommand"/>
         </x:complexContent>
     </x:complexType>
 
     <x:complexType name="backSpace">
         <x:complexContent>
-            <x:extension base="tns:abstractUiCommand"/>
+            <x:extension base="tns:singleKeyCommand"/>
         </x:complexContent>
     </x:complexType>
 
     <x:complexType name="escape">
         <x:complexContent>
-            <x:extension base="tns:abstractUiCommand"/>
+            <x:extension base="tns:singleKeyCommand"/>
         </x:complexContent>
     </x:complexType>
 
     <x:complexType name="space">
         <x:complexContent>
-            <x:extension base="tns:abstractUiCommand"/>
+            <x:extension base="tns:singleKeyCommand"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="singleKeyCommand">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="repeat" type="tns:positiveIntegerMin1" default="1"/>
+            </x:extension>
         </x:complexContent>
     </x:complexType>
 

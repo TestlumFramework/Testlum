@@ -36,7 +36,9 @@ import java.util.function.Predicate;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.HOT_KEY_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND_LOCATOR;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND_REPEAT;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.HOTKEY_LOCATOR;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.HOTKEY_REPEAT;
 
 @Slf4j
 @ExecutorForClass(HotKey.class)
@@ -53,11 +55,16 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
         commands.put(key -> key instanceof Copy, (key, result) -> copyCommand());
         commands.put(key -> key instanceof Paste, (key, result) -> pasteCommand((Paste) key, result));
         commands.put(key -> key instanceof Highlight, (key, result) -> highlightCommand((Highlight) key, result));
-        commands.put(key -> key instanceof Tab, (key, result) -> singleKeyCommand(Keys.TAB));
-        commands.put(key -> key instanceof Enter, (key, result) -> singleKeyCommand(Keys.ENTER));
-        commands.put(key -> key instanceof BackSpace, (key, result) -> singleKeyCommand(Keys.BACK_SPACE));
-        commands.put(key -> key instanceof Escape, (key, result) -> singleKeyCommand(Keys.ESCAPE));
-        commands.put(key -> key instanceof Space, (key, result) -> singleKeyCommand(Keys.SPACE));
+        commands.put(key -> key instanceof Tab,
+                (key, result) -> singleKeyCommand(Keys.TAB, ((Tab) key).getRepeat(), result));
+        commands.put(key -> key instanceof Enter,
+                (key, result) -> singleKeyCommand(Keys.ENTER, ((Enter) key).getRepeat(), result));
+        commands.put(key -> key instanceof BackSpace,
+                (key, result) -> singleKeyCommand(Keys.BACK_SPACE, ((BackSpace) key).getRepeat(), result));
+        commands.put(key -> key instanceof Escape,
+                (key, result) -> singleKeyCommand(Keys.ESCAPE, ((Escape) key).getRepeat(), result));
+        commands.put(key -> key instanceof Space,
+                (key, result) -> singleKeyCommand(Keys.SPACE, ((Space) key).getRepeat(), result));
         hotKeyCmdMethods = Collections.unmodifiableMap(commands);
         action = new Actions(dependencies.getDriver());
         ctrlKey = chooseKeyForOperatingSystem();
@@ -85,8 +92,14 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
                 .getValue().accept(command, result);
     }
 
-    private void singleKeyCommand(final Keys key) {
-        action.sendKeys(key).perform();
+    private void singleKeyCommand(final Keys key, final int repeat, final CommandResult result) {
+        for (int step = 0; step < repeat; step++) {
+            action.sendKeys(key).perform();
+        }
+        if (repeat > 1) {
+            result.put(HOTKEY_REPEAT, repeat);
+            log.info(HOTKEY_COMMAND_REPEAT, repeat);
+        }
     }
 
     private void highlightCommand(final Highlight highlight, final CommandResult result) {

@@ -125,6 +125,7 @@ public final class LogMessage {
     public static final String SUCCESS_QUERY = "Query completed successfully";
 
     public static final String DATASET_PATH_LOG = format(TABLE_FORMAT, "Migration dataset", "{}");
+    public static final String DB_TYPE_LOG = format(TABLE_FORMAT, "DB Type", "{}");
     public static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
     public static final String EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Execution time ", "{} ms");
     public static final String WAIT_INFO_LOG = format(TABLE_FORMAT, "Wait time & unit", "{} {}");
@@ -187,6 +188,9 @@ public final class LogMessage {
     public static final String SERVER_ERROR_RESPONSE_LOG = format(TABLE_FORMAT, "Request failed", "{}");
     public static final String LOCAL_STORAGE_KEY = format(TABLE_FORMAT, "Local storage key", "{}");
     public static final String CLEAR_COOKIES_AFTER = format(TABLE_FORMAT, "Clear cookies after", "{}");
+    public static final String TAB_COMMAND = format(TABLE_FORMAT, "Command", "{}");
+    public static final String TAB_INDEX = format(TABLE_FORMAT, "Tab Index", "{}");
+    public static final String TAB_URL = format(TABLE_FORMAT, "Tab Url", "{}");
 
     public static final String BROWSER_INFO = "%s | type = %s | version = %s";
     public static final String MOBILEBROWSER_INFO = "Device name = %s | platform = %s | version = %s";

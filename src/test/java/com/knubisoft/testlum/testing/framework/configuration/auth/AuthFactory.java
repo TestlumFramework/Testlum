@@ -36,7 +36,7 @@ public class AuthFactory {
     }
 
     private Auth getAuthConfig(final String env, final String alias) {
-        List<Api> apiList = IntegrationsUtil.getIntegrationsListByEnv(Api.class, env);
+        List<Api> apiList = IntegrationsUtil.findListByEnv(Api.class, env);
         Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, alias);
         if (Objects.nonNull(apiIntegration.getAuth())) {
             return apiIntegration.getAuth();

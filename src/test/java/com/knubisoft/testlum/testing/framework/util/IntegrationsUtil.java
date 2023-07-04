@@ -47,46 +47,43 @@ public class IntegrationsUtil {
 
     static {
         final Map<IntegrationsPredicate, IntegrationListMethod> map = new HashMap<>(20);
-        map.put(c -> c.equals(Api.class), i -> TO_INTEGRATIONS.apply(i).getApis().getApi());
-        map.put(c -> c.equals(WebsocketApi.class), i -> TO_INTEGRATIONS.apply(i).getWebsockets().getApi());
-        map.put(c -> c.equals(S3.class), i -> TO_INTEGRATIONS.apply(i).getS3Integration().getS3());
-        map.put(c -> c.equals(Ses.class), i -> TO_INTEGRATIONS.apply(i).getSesIntegration().getSes());
-        map.put(c -> c.equals(Sqs.class), i -> TO_INTEGRATIONS.apply(i).getSqsIntegration().getSqs());
-        map.put(c -> c.equals(Smtp.class), i -> TO_INTEGRATIONS.apply(i).getSmtpIntegration().getSmtp());
-        map.put(c -> c.equals(Redis.class), i -> TO_INTEGRATIONS.apply(i).getRedisIntegration().getRedis());
-        map.put(c -> c.equals(Mongo.class), i -> TO_INTEGRATIONS.apply(i).getMongoIntegration().getMongo());
-        map.put(c -> c.equals(Mysql.class), i -> TO_INTEGRATIONS.apply(i).getMysqlIntegration().getMysql());
-        map.put(c -> c.equals(Kafka.class), i -> TO_INTEGRATIONS.apply(i).getKafkaIntegration().getKafka());
-        map.put(c -> c.equals(GraphqlApi.class),
-                i -> TO_INTEGRATIONS.apply(i).getGraphqlIntegration().getApi());
-        map.put(c -> c.equals(Twilio.class), i -> TO_INTEGRATIONS.apply(i).getTwilioIntegration().getTwilio());
-        map.put(c -> c.equals(Oracle.class), i -> TO_INTEGRATIONS.apply(i).getOracleIntegration().getOracle());
-        map.put(c -> c.equals(Dynamo.class), i -> TO_INTEGRATIONS.apply(i).getDynamoIntegration().getDynamo());
-        map.put(c -> c.equals(Lambda.class), i -> TO_INTEGRATIONS.apply(i).getLambdaIntegration().getLambda());
-        map.put(c -> c.equals(Sendgrid.class), i -> TO_INTEGRATIONS.apply(i).getSendgridIntegration().getSendgrid());
-        map.put(c -> c.equals(Postgres.class), i -> TO_INTEGRATIONS.apply(i).getPostgresIntegration().getPostgres());
-        map.put(c -> c.equals(Rabbitmq.class), i -> TO_INTEGRATIONS.apply(i).getRabbitmqIntegration().getRabbitmq());
-        map.put(c -> c.equals(Clickhouse.class),
-                i -> TO_INTEGRATIONS.apply(i).getClickhouseIntegration().getClickhouse());
-        map.put(c -> c.equals(Elasticsearch.class),
-                i -> TO_INTEGRATIONS.apply(i).getElasticsearchIntegration().getElasticsearch());
+        map.put(c -> c.equals(Api.class), i -> i.getApis().getApi());
+        map.put(c -> c.equals(WebsocketApi.class), i -> i.getWebsockets().getApi());
+        map.put(c -> c.equals(S3.class), i -> i.getS3Integration().getS3());
+        map.put(c -> c.equals(Ses.class), i -> i.getSesIntegration().getSes());
+        map.put(c -> c.equals(Sqs.class), i -> i.getSqsIntegration().getSqs());
+        map.put(c -> c.equals(Smtp.class), i -> i.getSmtpIntegration().getSmtp());
+        map.put(c -> c.equals(Redis.class), i -> i.getRedisIntegration().getRedis());
+        map.put(c -> c.equals(Mongo.class), i -> i.getMongoIntegration().getMongo());
+        map.put(c -> c.equals(Mysql.class), i -> i.getMysqlIntegration().getMysql());
+        map.put(c -> c.equals(Kafka.class), i -> i.getKafkaIntegration().getKafka());
+        map.put(c -> c.equals(GraphqlApi.class), i -> i.getGraphqlIntegration().getApi());
+        map.put(c -> c.equals(Twilio.class), i -> i.getTwilioIntegration().getTwilio());
+        map.put(c -> c.equals(Oracle.class), i -> i.getOracleIntegration().getOracle());
+        map.put(c -> c.equals(Dynamo.class), i -> i.getDynamoIntegration().getDynamo());
+        map.put(c -> c.equals(Lambda.class), i -> i.getLambdaIntegration().getLambda());
+        map.put(c -> c.equals(Sendgrid.class), i -> i.getSendgridIntegration().getSendgrid());
+        map.put(c -> c.equals(Postgres.class), i -> i.getPostgresIntegration().getPostgres());
+        map.put(c -> c.equals(Rabbitmq.class), i -> i.getRabbitmqIntegration().getRabbitmq());
+        map.put(c -> c.equals(Clickhouse.class), i -> i.getClickhouseIntegration().getClickhouse());
+        map.put(c -> c.equals(Elasticsearch.class), i -> i.getElasticsearchIntegration().getElasticsearch());
         configToIntegrationListMap = Collections.unmodifiableMap(map);
     }
 
-    public <T extends Integration> T getIntegrationByClassAndAlias(final Class<T> clazz, final AliasEnv aliasEnv) {
-        List<T> intList = getIntegrationsListByEnv(clazz, aliasEnv.getEnvironment());
+    public <T extends Integration> T findForAliasEnv(final Class<T> clazz, final AliasEnv aliasEnv) {
+        List<T> intList = findListByEnv(clazz, aliasEnv.getEnvironment());
         return findForAlias(intList, aliasEnv.getAlias());
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Integration> List<T> getIntegrationsListByEnv(final Class<T> clazz, final String env) {
+    public <T extends Integration> List<T> findListByEnv(final Class<T> clazz, final String env) {
         IntegrationListMethod integrationListMethod = configToIntegrationListMap.entrySet().stream()
                 .filter(e -> e.getKey().test(clazz))
                 .findFirst()
                 .map(Map.Entry::getValue)
                 .orElseThrow(() -> new DefaultFrameworkException(
                         String.format(ExceptionMessage.INTEGRATION_NOT_FOUND, clazz.getSimpleName())));
-        return (List<T>) integrationListMethod.apply(env);
+        return (List<T>) integrationListMethod.apply(TO_INTEGRATIONS.apply(env));
     }
 
     public <T extends Integration> T findApiForAlias(final List<T> apiIntegrations, final String alias) {
@@ -112,5 +109,5 @@ public class IntegrationsUtil {
     }
 
     private interface IntegrationsPredicate extends Predicate<Class<? extends Integration>> { }
-    private interface IntegrationListMethod extends Function<String, List<? extends Integration>> { }
+    private interface IntegrationListMethod extends Function<Integrations, List<? extends Integration>> { }
 }

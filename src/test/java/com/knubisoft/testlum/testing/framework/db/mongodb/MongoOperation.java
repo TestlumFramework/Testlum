@@ -5,7 +5,6 @@ import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.model.global_config.Mongo;
 import com.mongodb.client.MongoDatabase;
@@ -37,8 +36,8 @@ public class MongoOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         mongoDatabases.forEach((aliasEnv, database) -> {
-            Mongo mongo = IntegrationsUtil.getIntegrationByClassAndAlias(Mongo.class, aliasEnv);
-            if (mongo.isTruncate() && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (isTruncate(Mongo.class, aliasEnv)
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 for (String collectionName : database.listCollectionNames()) {
                     if (database.getCollection(collectionName).countDocuments() > 0) {
                         database.getCollection(collectionName).drop();

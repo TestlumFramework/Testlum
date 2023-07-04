@@ -133,7 +133,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
 
     private String getFullUrl(final HttpInfo httpInfo, final String endpoint, final String alias) {
         List<GraphqlApi> apiList =
-                IntegrationsUtil.getIntegrationsListByEnv(GraphqlApi.class, dependencies.getEnvironment());
+                IntegrationsUtil.findListByEnv(GraphqlApi.class, dependencies.getEnvironment());
         GraphqlApi graphqlApi = IntegrationsUtil.findApiForAlias(apiList, alias);
         String url = graphqlApi.getUrl() + endpoint;
         if (httpInfo instanceof GraphqlGet) {

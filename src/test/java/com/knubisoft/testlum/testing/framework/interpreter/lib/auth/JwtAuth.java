@@ -73,7 +73,7 @@ public class JwtAuth extends AbstractAuthStrategy {
     }
 
     private String getFullApiUrl(final Auth auth) {
-        List<Api> apiList = IntegrationsUtil.getIntegrationsListByEnv(Api.class, dependencies.getEnvironment());
+        List<Api> apiList = IntegrationsUtil.findListByEnv(Api.class, dependencies.getEnvironment());
         Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, auth.getApiAlias());
         return apiIntegration.getUrl() + auth.getLoginEndpoint();
     }

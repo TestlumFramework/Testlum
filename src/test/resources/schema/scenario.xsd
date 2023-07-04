@@ -25,6 +25,7 @@
     <x:include schemaLocation="ses.xsd"/>
     <x:include schemaLocation="sendgrid.xsd"/>
     <x:include schemaLocation="dynamo.xsd"/>
+    <x:include schemaLocation="assert.xsd"/>
     <x:include schemaLocation="var.xsd"/>
     <x:include schemaLocation="wait.xsd"/>
     <x:include schemaLocation="http.xsd"/>
@@ -89,6 +90,7 @@
                     <x:element name="graphql" type="tns:graphql"/>
                     <x:element name="websocket" type="tns:websocket"/>
 
+                    <x:element name="assert" type="tns:assert"/>
                     <x:element name="var" type="tns:var"/>
                     <x:element name="condition" type="tns:condition"/>
                     <x:element name="wait" type="tns:wait"/>

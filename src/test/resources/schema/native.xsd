@@ -37,7 +37,7 @@
                 <x:choice maxOccurs="unbounded" minOccurs="0">
                     <x:element name="click" type="tns:click"/>
                     <x:element name="input" type="tns:input"/>
-                    <x:element name="assert" type="tns:assert"/>
+                    <x:element name="assert" type="tns:webAssert"/> <!-- check what type will be better -->
                     <x:element name="dropDown" type="tns:dropDown"/>
                     <x:element name="wait" type="tns:wait"/>
                     <x:element name="clear" type="tns:clear"/>

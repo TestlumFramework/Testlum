@@ -231,4 +231,6 @@ public class ExceptionMessage {
     public static final String TAB_NOT_FOUND = "Available tab that can be closed not found";
     public static final String TAB_OUT_OF_BOUNDS = "Cannot close the tab №<%s> because there are only %s tabs";
     public static final String CANNOT_SWITCH_TO_WEBVIEW = "Cannot switch to the web view. Web context was not found";
+    public static final String ASSERT_CONTENT_NOT_EQUAL = "Assert equality content is not equal.";
+    public static final String ASSERT_CONTENT_IS_EQUAL = "Assert inequality content is equal.";
 }

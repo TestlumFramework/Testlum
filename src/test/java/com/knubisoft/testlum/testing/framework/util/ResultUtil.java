@@ -9,9 +9,11 @@ import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
+import com.knubisoft.testlum.testing.model.scenario.Equal;
 import com.knubisoft.testlum.testing.model.scenario.Hovers;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
+import com.knubisoft.testlum.testing.model.scenario.NotEqual;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
@@ -80,6 +82,8 @@ public class ResultUtil {
     public static final String LOCATOR_ID = "Locator ID = %s";
     public static final String ELEMENT_PRESENT = "Is the web element present";
     public static final String CONDITION = "Condition";
+    public static final String COMMENT = "Comment";
+    public static final String CONTENT = "Content";
     public static final String GENERATED_STRING = "Randomly generated string";
     public static final String ASSERT_LOCATOR = "Locator for assert command";
     public static final String ASSERT_ATTRIBUTE = "Assert command attribute";
@@ -188,6 +192,7 @@ public class ResultUtil {
     private static final String IMAGE_COMPARISON_TYPE = "Image comparison type";
     private static final String IMAGE_LOCATOR = "Locator to element with image";
     private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
+    private static final String EQUALITY_TYPE = "Equality type";
 
     public CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
         CommandResult commandResult = new CommandResult();
@@ -670,5 +675,16 @@ public class ResultUtil {
         if (isNotBlank(swipeNative.getLocatorId())) {
             result.put(SWIPE_LOCATOR, swipeNative.getLocatorId());
         }
+    }
+
+    public static void addAssertEqualResult(final Equal equal, final CommandResult result) {
+        result.put(COMMENT, equal.getComment());
+        result.put(EQUALITY_TYPE, equal.getClass().getSimpleName());
+        result.put(CONTENT, equal.getContent());
+    }
+    public static void addAssertNotEqualResult(final NotEqual notEqual, final CommandResult result) {
+        result.put(COMMENT, notEqual.getComment());
+        result.put(EQUALITY_TYPE, notEqual.getClass().getSimpleName());
+        result.put(CONTENT, notEqual.getContent());
     }
 }

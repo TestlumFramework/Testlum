@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="assert">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="equal" type="tns:equal"/>
+                    <x:element name="notEqual" type="tns:notEqual"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="equal">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice minOccurs="2" maxOccurs="unbounded">
+                    <x:element name="content" type="tns:nonEmptyString"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="notEqual">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice minOccurs="2" maxOccurs="unbounded">
+                    <x:element name="content" type="tns:nonEmptyString"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="webAssert">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="attribute" type="tns:attribute"/>
+                    <x:element name="title" type="tns:title"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="nativeAssert">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="attribute" type="tns:attribute"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="attribute">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:sequence>
+                    <x:element name="content" type="tns:nonEmptyString"/>
+                </x:sequence>
+                <x:attribute name="name" type="tns:webAttributeNamePattern" use="required"/>
+                <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="webAttributeNamePattern">
+        <x:restriction base="x:string">
+            <x:pattern value="([a-zA-Z]+-?)+"/>
+            <x:pattern value="\{\{.+\}\}"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="title">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:sequence>
+                    <x:element name="content" type="tns:nonEmptyString"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+</x:schema>

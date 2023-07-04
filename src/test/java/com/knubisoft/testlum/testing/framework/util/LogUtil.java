@@ -11,7 +11,9 @@ import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
+import com.knubisoft.testlum.testing.model.scenario.Equal;
 import com.knubisoft.testlum.testing.model.scenario.Image;
+import com.knubisoft.testlum.testing.model.scenario.NotEqual;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
 import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
@@ -60,6 +62,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DROPPI
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_FRAME;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_WEBVIEW;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EQUALITY_TYPE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
@@ -462,6 +465,16 @@ public class LogUtil {
     public void logAssertCommand(final AbstractUiCommand command, final int position) {
         log.info(COMMAND_LOG, position, command.getClass().getSimpleName());
         log.info(COMMENT_LOG, command.getComment());
+    }
+    public void logAssertEqualCommand(final Equal equal) {
+        log.info(COMMENT_LOG, equal.getComment());
+        log.info(EQUALITY_TYPE, equal.getClass().getSimpleName());
+        log.info(CONTENT_LOG, equal.getContent());
+    }
+    public void logAssertNotEqualCommand(final NotEqual notEqual) {
+        log.info(COMMENT_LOG, notEqual.getComment());
+        log.info(EQUALITY_TYPE, notEqual.getClass().getSimpleName());
+        log.info(CONTENT_LOG, notEqual.getContent());
     }
 
     public void logAssertAttributeInfo(final Attribute attribute) {

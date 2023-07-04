@@ -11,17 +11,17 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for assert complex type.
+ * <p>Java class for webAssert complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="assert"&gt;
+ * &lt;complexType name="webAssert"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice maxOccurs="unbounded"&gt;
- *         &lt;element name="equal" type="{http://www.knubisoft.com/testlum/testing/model/scenario}equal"/&gt;
- *         &lt;element name="notEqual" type="{http://www.knubisoft.com/testlum/testing/model/scenario}notEqual"/&gt;
+ *         &lt;element name="attribute" type="{http://www.knubisoft.com/testlum/testing/model/scenario}attribute"/&gt;
+ *         &lt;element name="title" type="{http://www.knubisoft.com/testlum/testing/model/scenario}title"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -31,47 +31,47 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "assert", propOrder = {
-    "equalOrNotEqual"
+@XmlType(name = "webAssert", propOrder = {
+    "attributeOrTitle"
 })
-public class Assert
-    extends AbstractCommand
+public class WebAssert
+    extends AbstractUiCommand
 {
 
     @XmlElements({
-        @XmlElement(name = "equal", type = Equal.class),
-        @XmlElement(name = "notEqual", type = NotEqual.class)
+        @XmlElement(name = "attribute", type = Attribute.class),
+        @XmlElement(name = "title", type = Title.class)
     })
-    protected List<AbstractCommand> equalOrNotEqual;
+    protected List<AbstractUiCommand> attributeOrTitle;
 
     /**
-     * Gets the value of the equalOrNotEqual property.
+     * Gets the value of the attributeOrTitle property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the equalOrNotEqual property.
+     * This is why there is not a <CODE>set</CODE> method for the attributeOrTitle property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getEqualOrNotEqual().add(newItem);
+     *    getAttributeOrTitle().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Equal }
-     * {@link NotEqual }
+     * {@link Attribute }
+     * {@link Title }
      * 
      * 
      */
-    public List<AbstractCommand> getEqualOrNotEqual() {
-        if (equalOrNotEqual == null) {
-            equalOrNotEqual = new ArrayList<AbstractCommand>();
+    public List<AbstractUiCommand> getAttributeOrTitle() {
+        if (attributeOrTitle == null) {
+            attributeOrTitle = new ArrayList<AbstractUiCommand>();
         }
-        return this.equalOrNotEqual;
+        return this.attributeOrTitle;
     }
 
 }

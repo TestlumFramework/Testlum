@@ -50,6 +50,7 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;element name="dynamo" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dynamo"/&gt;
  *           &lt;element name="graphql" type="{http://www.knubisoft.com/testlum/testing/model/scenario}graphql"/&gt;
  *           &lt;element name="websocket" type="{http://www.knubisoft.com/testlum/testing/model/scenario}websocket"/&gt;
+ *           &lt;element name="assert" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assert"/&gt;
  *           &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}var"/&gt;
  *           &lt;element name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}condition"/&gt;
  *           &lt;element name="wait" type="{http://www.knubisoft.com/testlum/testing/model/scenario}wait"/&gt;
@@ -107,6 +108,7 @@ public class Scenario {
         @XmlElement(name = "dynamo", type = Dynamo.class),
         @XmlElement(name = "graphql", type = Graphql.class),
         @XmlElement(name = "websocket", type = Websocket.class),
+        @XmlElement(name = "assert", type = Assert.class),
         @XmlElement(name = "var", type = Var.class),
         @XmlElement(name = "condition", type = Condition.class),
         @XmlElement(name = "wait", type = Wait.class),
@@ -213,6 +215,7 @@ public class Scenario {
      * {@link Dynamo }
      * {@link Graphql }
      * {@link Websocket }
+     * {@link Assert }
      * {@link Var }
      * {@link Condition }
      * {@link Wait }

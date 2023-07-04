@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
  *         &lt;element name="click" type="{http://www.knubisoft.com/testlum/testing/model/scenario}click"/&gt;
  *         &lt;element name="input" type="{http://www.knubisoft.com/testlum/testing/model/scenario}input"/&gt;
- *         &lt;element name="assert" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assert"/&gt;
+ *         &lt;element name="assert" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webAssert"/&gt;
  *         &lt;element name="dropDown" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dropDown"/&gt;
  *         &lt;element name="wait" type="{http://www.knubisoft.com/testlum/testing/model/scenario}wait"/&gt;
  *         &lt;element name="clear" type="{http://www.knubisoft.com/testlum/testing/model/scenario}clear"/&gt;
@@ -57,7 +57,7 @@ public class SwitchToFrame
     @XmlElements({
         @XmlElement(name = "click", type = Click.class),
         @XmlElement(name = "input", type = Input.class),
-        @XmlElement(name = "assert", type = Assert.class),
+        @XmlElement(name = "assert", type = WebAssert.class),
         @XmlElement(name = "dropDown", type = DropDown.class),
         @XmlElement(name = "wait", type = Wait.class),
         @XmlElement(name = "clear", type = Clear.class),
@@ -96,7 +96,7 @@ public class SwitchToFrame
      * Objects of the following type(s) are allowed in the list
      * {@link Click }
      * {@link Input }
-     * {@link Assert }
+     * {@link WebAssert }
      * {@link DropDown }
      * {@link Wait }
      * {@link Clear }

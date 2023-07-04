@@ -254,6 +254,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Assert }
+     * 
+     */
+    public Assert createAssert() {
+        return new Assert();
+    }
+
+    /**
      * Create an instance of {@link Var }
      * 
      */
@@ -510,6 +518,54 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Equal }
+     * 
+     */
+    public Equal createEqual() {
+        return new Equal();
+    }
+
+    /**
+     * Create an instance of {@link NotEqual }
+     * 
+     */
+    public NotEqual createNotEqual() {
+        return new NotEqual();
+    }
+
+    /**
+     * Create an instance of {@link WebAssert }
+     * 
+     */
+    public WebAssert createWebAssert() {
+        return new WebAssert();
+    }
+
+    /**
+     * Create an instance of {@link NativeAssert }
+     * 
+     */
+    public NativeAssert createNativeAssert() {
+        return new NativeAssert();
+    }
+
+    /**
+     * Create an instance of {@link Attribute }
+     * 
+     */
+    public Attribute createAttribute() {
+        return new Attribute();
+    }
+
+    /**
+     * Create an instance of {@link Title }
+     * 
+     */
+    public Title createTitle() {
+        return new Title();
+    }
+
+    /**
      * Create an instance of {@link Click }
      * 
      */
@@ -579,38 +635,6 @@ public class ObjectFactory {
      */
     public AllValues createAllValues() {
         return new AllValues();
-    }
-
-    /**
-     * Create an instance of {@link Assert }
-     * 
-     */
-    public Assert createAssert() {
-        return new Assert();
-    }
-
-    /**
-     * Create an instance of {@link NativeAssert }
-     * 
-     */
-    public NativeAssert createNativeAssert() {
-        return new NativeAssert();
-    }
-
-    /**
-     * Create an instance of {@link Attribute }
-     * 
-     */
-    public Attribute createAttribute() {
-        return new Attribute();
-    }
-
-    /**
-     * Create an instance of {@link Title }
-     * 
-     */
-    public Title createTitle() {
-        return new Title();
     }
 
     /**

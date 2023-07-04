@@ -52,12 +52,15 @@ import javax.xml.bind.annotation.XmlType;
     Dynamo.class,
     Graphql.class,
     Websocket.class,
+    Assert.class,
     Var.class,
     Condition.class,
     Shell.class,
     Smtp.class,
     Twilio.class,
     Ui.class,
+    Equal.class,
+    NotEqual.class,
     AbstractUiCommand.class,
     Logout.class
 })

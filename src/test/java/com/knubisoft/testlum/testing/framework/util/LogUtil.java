@@ -115,6 +115,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_S
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COMMAND_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COMMAND_LOG_WITHOUT_POSITION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VALUE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VARIATION_LOG;
@@ -400,8 +401,12 @@ public class LogUtil {
     }
 
     /* ui log */
-    public void logUICommand(final int position, final AbstractCommand action) {
-        log.info(UI_COMMAND_LOG, position, action.getClass().getSimpleName());
+    public void logUICommand(final long position, final AbstractCommand action) {
+        if (position != 0) {
+            log.info(UI_COMMAND_LOG, position, action.getClass().getSimpleName());
+        } else {
+            log.info(UI_COMMAND_LOG_WITHOUT_POSITION, action.getClass().getSimpleName());
+        }
         if (isNotBlank(action.getComment())) {
             log.info(COMMENT_LOG, action.getComment());
         }

@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -16,13 +15,9 @@ import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @ExecutorForClass(NativeAssert.class)
 public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
-
-    private final List<String> exceptionResult = new ArrayList<>();
-    private final AtomicInteger commandId = new AtomicInteger();
 
     public NativeAssertExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -33,14 +28,14 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
         List<CommandResult> subCommandsResult = new ArrayList<>();
         result.setSubCommandsResult(subCommandsResult);
         aAssert.getAttribute().forEach(attribute -> {
-            CommandResult commandResult = ResultUtil.newUiCommandResultInstance(commandId.incrementAndGet(), attribute);
+            CommandResult commandResult =
+                    ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), attribute);
             subCommandsResult.add(commandResult);
-            LogUtil.logAssertCommand(attribute, commandId.get());
+            LogUtil.logAssertCommand(attribute, dependencies.getPosition().get());
             if (ConditionUtil.isTrue(attribute.getCondition(), dependencies.getScenarioContext(), commandResult)) {
                 executeAttributeCommand(attribute, commandResult);
             }
         });
-        rethrowOnErrors();
     }
 
     private void executeAttributeCommand(final Attribute attribute, final CommandResult result) {
@@ -65,19 +60,9 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
                     .withExpected(expected)
                     .exec();
         } catch (Exception e) {
-            handleException(e, result);
+            LogUtil.logException(e);
+            ResultUtil.setExceptionResult(result, e);
         }
     }
 
-    private void handleException(final Exception e, final CommandResult result) {
-        LogUtil.logException(e);
-        ResultUtil.setExceptionResult(result, e);
-        exceptionResult.add(e.getMessage());
-    }
-
-    private void rethrowOnErrors() {
-        if (!exceptionResult.isEmpty()) {
-            throw new DefaultFrameworkException(exceptionResult);
-        }
-    }
 }

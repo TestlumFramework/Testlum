@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
+import com.knubisoft.testlum.testing.model.scenario.Assert;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.stereotype.Component;
 
@@ -29,10 +30,15 @@ public class SubCommandRunner {
     private void processEachCommand(final AbstractUiCommand command,
                                     final List<CommandResult> subCommandsResult,
                                     final ExecutorDependencies dependencies) {
-        CommandResult commandResult =
-                ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
+        CommandResult commandResult = createCommandResult(command, dependencies);
         subCommandsResult.add(commandResult);
         executeUiCommand(command, commandResult, dependencies);
+    }
+
+    private CommandResult createCommandResult(final AbstractUiCommand command,
+                                              final ExecutorDependencies dependencies) {
+        return command instanceof Assert ? ResultUtil.newUiCommandResultInstance(0, command)
+                : ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
     }
 
     private void executeUiCommand(final AbstractUiCommand command,

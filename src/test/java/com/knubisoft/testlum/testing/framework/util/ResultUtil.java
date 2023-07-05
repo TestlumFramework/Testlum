@@ -504,7 +504,7 @@ public class ResultUtil {
         addVariableMetaData(type, key, format(format, expression), value, result);
     }
 
-    public static void addVariableMetaData(final String queryType,
+    public void addVariableMetaData(final String queryType,
                                            final FromSQL fromSQL,
                                            final String key,
                                            final String value,
@@ -708,12 +708,13 @@ public class ResultUtil {
         }
     }
 
-    public static void addAssertEqualResult(final Equal equal, final CommandResult result) {
+    public void addAssertEqualResult(final Equal equal, final CommandResult result) {
         result.put(COMMENT, equal.getComment());
         result.put(EQUALITY_TYPE, equal.getClass().getSimpleName());
         result.put(CONTENT, equal.getContent());
     }
-    public static void addAssertNotEqualResult(final NotEqual notEqual, final CommandResult result) {
+
+    public void addAssertNotEqualResult(final NotEqual notEqual, final CommandResult result) {
         result.put(COMMENT, notEqual.getComment());
         result.put(EQUALITY_TYPE, notEqual.getClass().getSimpleName());
         result.put(CONTENT, notEqual.getContent());

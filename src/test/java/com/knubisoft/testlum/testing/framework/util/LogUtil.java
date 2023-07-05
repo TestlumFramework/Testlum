@@ -488,11 +488,13 @@ public class LogUtil {
         log.info(COMMAND_LOG, position, command.getClass().getSimpleName());
         log.info(COMMENT_LOG, command.getComment());
     }
+
     public void logAssertEqualCommand(final Equal equal) {
         log.info(COMMENT_LOG, equal.getComment());
         log.info(EQUALITY_TYPE, equal.getClass().getSimpleName());
         log.info(CONTENT_LOG, equal.getContent());
     }
+
     public void logAssertNotEqualCommand(final NotEqual notEqual) {
         log.info(COMMENT_LOG, notEqual.getComment());
         log.info(EQUALITY_TYPE, notEqual.getClass().getSimpleName());

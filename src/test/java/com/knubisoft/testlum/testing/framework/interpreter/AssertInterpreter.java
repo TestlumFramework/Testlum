@@ -17,7 +17,6 @@ import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ASSERT_CONTENT_IS_EQUAL;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ASSERT_CONTENT_NOT_EQUAL;
@@ -36,11 +35,11 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
         Assert anAssert = injectCommand(o);
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
-        final AtomicInteger commandId = new AtomicInteger();
         anAssert.getEqualOrNotEqual().forEach(action -> {
-            LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action);
-            CommandResult commandResult = ResultUtil.newCommandResultInstance(commandId.incrementAndGet());
+            int commandId = dependencies.getPosition().incrementAndGet();
+            CommandResult commandResult = ResultUtil.newCommandResultInstance(commandId, action);
             subCommandsResult.add(commandResult);
+            LogUtil.logSubCommand(commandId, action);
             processEachAction(action, commandResult);
         });
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
@@ -68,7 +67,7 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
         }
     }
 
-    private static void checkContentIsEqual(final Equal equal, final CommandResult result) {
+    private void checkContentIsEqual(final Equal equal, final CommandResult result) {
         if (equal.getContent().stream().distinct().count() != 1) {
             throw new DefaultFrameworkException(ASSERT_CONTENT_NOT_EQUAL);
         }
@@ -76,7 +75,7 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
         ResultUtil.addAssertEqualResult(equal, result);
     }
 
-    private static void checkContentNotEqual(final NotEqual notEqual, final CommandResult result) {
+    private void checkContentNotEqual(final NotEqual notEqual, final CommandResult result) {
         List<String> content = notEqual.getContent();
         if (content.stream().distinct().count() != content.size()) {
             throw new DefaultFrameworkException(ASSERT_CONTENT_IS_EQUAL);

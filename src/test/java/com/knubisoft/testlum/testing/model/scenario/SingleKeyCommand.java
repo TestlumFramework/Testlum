@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="singleKeyCommand"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
- *       &lt;attribute name="repeat" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveIntegerMin1" default="1" /&gt;
+ *       &lt;attribute name="times" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveIntegerMin1" default="1" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -38,35 +38,35 @@ public class SingleKeyCommand
     extends AbstractUiCommand
 {
 
-    @XmlAttribute(name = "repeat")
-    protected Integer repeat;
+    @XmlAttribute(name = "times")
+    protected Integer times;
 
     /**
-     * Gets the value of the repeat property.
+     * Gets the value of the times property.
      * 
      * @return
      *     possible object is
      *     {@link Integer }
      *     
      */
-    public int getRepeat() {
-        if (repeat == null) {
+    public int getTimes() {
+        if (times == null) {
             return  1;
         } else {
-            return repeat;
+            return times;
         }
     }
 
     /**
-     * Sets the value of the repeat property.
+     * Sets the value of the times property.
      * 
      * @param value
      *     allowed object is
      *     {@link Integer }
      *     
      */
-    public void setRepeat(Integer value) {
-        this.repeat = value;
+    public void setTimes(Integer value) {
+        this.times = value;
     }
 
 }

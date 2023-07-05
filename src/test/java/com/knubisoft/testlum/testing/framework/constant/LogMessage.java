@@ -148,7 +148,7 @@ public final class LogMessage {
     public static final String DRAGGING_FILE_PATH = format(TABLE_FORMAT, "Dragging file path", "{}");
     public static final String HOTKEY_COMMAND = format(TABLE_FORMAT, "Hotkey command", "{}");
     public static final String HOTKEY_COMMAND_LOCATOR = format(TABLE_FORMAT, "Hotkey command locator", "{}");
-    public static final String HOTKEY_COMMAND_REPEAT = format(TABLE_FORMAT, "Times to repeat", "{}");
+    public static final String HOTKEY_COMMAND_TIMES = format(TABLE_FORMAT, "Times to repeat", "{}");
     public static final String HTTP_STATUS_CODE = format(TABLE_FORMAT, "Status code", "{} {}");
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "HTTP method", "{}");
     public static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");

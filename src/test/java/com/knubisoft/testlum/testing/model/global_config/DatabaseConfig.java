@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="databaseConfig"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/global-config}integration"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/global-config}storageIntegration"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="jdbcDriver" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="username" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
@@ -47,7 +47,7 @@ import javax.xml.bind.annotation.XmlType;
     Oracle.class
 })
 public abstract class DatabaseConfig
-    extends Integration
+    extends StorageIntegration
 {
 
     @XmlElement(required = true)

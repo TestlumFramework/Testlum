@@ -40,7 +40,8 @@ public class RabbitMQOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         rabbitMqClient.forEach((aliasEnv, client) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (isTruncate(Rabbitmq.class, aliasEnv)
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 String virtualHost = this.findByName(aliasEnv).getVirtualHost();
                 client.getQueues().forEach(queueInfo -> client.purgeQueue(virtualHost, queueInfo.getName()));
             }

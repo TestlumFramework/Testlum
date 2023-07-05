@@ -15,7 +15,7 @@
 
     <x:complexType name="mongo">
         <x:complexContent>
-            <x:extension base="tns:integration">
+            <x:extension base="tns:storageIntegration">
                 <x:sequence>
                     <x:element name="database" type="tns:nonEmptyString"/>
                     <x:element name="host" type="tns:nonEmptyString"/>

@@ -31,7 +31,6 @@ import javax.xml.bind.annotation.XmlType;
     NativeVar.class,
     UiCondition.class,
     Javascript.class,
-    Hovers.class,
     Navigate.class,
     Assert.class,
     NativeAssert.class,

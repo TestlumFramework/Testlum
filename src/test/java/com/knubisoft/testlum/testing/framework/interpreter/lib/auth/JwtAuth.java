@@ -2,7 +2,6 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.auth;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.constant.AuthorizationConstant;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -82,8 +81,7 @@ public class JwtAuth extends AbstractAuthStrategy {
     }
 
     private String getFullApiUrl(final Auth auth) {
-        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().get(dependencies.getEnvironment())
-                .getApis().getApi();
+        List<Api> apiList = IntegrationsUtil.findListByEnv(Api.class, dependencies.getEnvironment());
         Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, auth.getApiAlias());
         return apiIntegration.getUrl() + auth.getLoginEndpoint();
     }

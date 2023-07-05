@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.auth;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.constant.AuthorizationConstant;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;

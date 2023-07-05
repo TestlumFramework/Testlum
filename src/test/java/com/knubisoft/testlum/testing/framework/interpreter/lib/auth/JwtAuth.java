@@ -52,8 +52,7 @@ public class JwtAuth extends AbstractAuthStrategy {
 
     private String getTokenFromResponse(final Auth auth, final String response) {
         DocumentContext context = JsonPath.parse(response);
-        List<Api> apiList = GlobalTestConfigurationProvider
-                .getIntegrations().get(dependencies.getEnvironment()).getApis().getApi();
+        List<Api> apiList = IntegrationsUtil.findListByEnv(Api.class, dependencies.getEnvironment());
         Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, auth.getApiAlias());
         return context.read(isNotBlank(apiIntegration.getAuth().getTokenName())
                 ? apiIntegration.getAuth().getTokenName() : AuthorizationConstant.CONTENT_KEY_TOKEN);

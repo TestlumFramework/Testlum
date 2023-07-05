@@ -4,16 +4,17 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
-import com.knubisoft.testlum.testing.model.scenario.Hovers;
+import com.knubisoft.testlum.testing.model.scenario.Hover;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
-@ExecutorForClass(Hovers.class)
-public class HoverExecutor extends AbstractUiExecutor<Hovers> {
+@ExecutorForClass(Hover.class)
+public class HoverExecutor extends AbstractUiExecutor<Hover> {
 
     private static final String MOVE_TO_EMPTY_SPACE = "//html";
 
@@ -22,15 +23,20 @@ public class HoverExecutor extends AbstractUiExecutor<Hovers> {
     }
 
     @Override
-    public void execute(final Hovers hovers, final CommandResult result) {
-        ResultUtil.addHoversMetaData(hovers, result);
+    public void execute(final Hover hover, final CommandResult result) {
+        ResultUtil.addHoverMetaData(hover, result);
+        LogUtil.logHover(hover);
         Actions actions = new Actions(dependencies.getDriver());
-        hovers.getHover().stream()
-                .peek(hover -> LogUtil.logHover(dependencies.getPosition().incrementAndGet(), hover))
-                .map(hover -> UiUtil.findWebElement(dependencies, hover.getLocatorId()))
-                .forEach(webElement -> performMovement(actions, webElement));
+        if (ConditionUtil.isTrue(hover.getCondition(), dependencies.getScenarioContext(), result)) {
+            executeHoverCommand(actions, hover);
+        }
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
-        moveToEmptySpace(hovers.isMoveToEmptySpace(), actions);
+        moveToEmptySpace(hover.isMoveToEmptySpace(), actions);
+    }
+
+    private void executeHoverCommand(final Actions actions, final Hover hover) {
+        WebElement webElement = UiUtil.findWebElement(dependencies, hover.getLocatorId());
+        performMovement(actions, webElement);
     }
 
     private void moveToEmptySpace(final boolean isMoveToEmptySpace, final Actions actions) {

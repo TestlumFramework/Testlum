@@ -15,7 +15,7 @@
 
     <x:complexType name="rabbitmq">
         <x:complexContent>
-            <x:extension base="tns:integration">
+            <x:extension base="tns:storageIntegration">
                 <x:sequence>
                     <x:element name="host" type="tns:nonEmptyString"/>
                     <x:element name="port" type="x:int"/>

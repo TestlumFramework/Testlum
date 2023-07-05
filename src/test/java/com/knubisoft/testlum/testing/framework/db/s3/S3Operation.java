@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.model.global_config.S3;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
@@ -33,7 +34,7 @@ public class S3Operation implements StorageOperation {
     @Override
     public void clearSystem() {
         this.amazonS3.forEach((aliasEnv, amazonS3) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (isTruncate(S3.class, aliasEnv) && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 amazonS3.listBuckets().forEach(bucket -> {
                     ListObjectsV2Result objectsInBucket = amazonS3.listObjectsV2(bucket.getName());
                     this.deleteObjectsInBucket(amazonS3, objectsInBucket, bucket.getName());

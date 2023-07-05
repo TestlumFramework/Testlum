@@ -15,7 +15,7 @@
 
     <x:complexType name="sqs">
         <x:complexContent>
-            <x:extension base="tns:integration">
+            <x:extension base="tns:storageIntegration">
                 <x:sequence>
                     <x:element name="region" type="tns:nonEmptyString"/>
                     <x:element name="endpoint" type="tns:nonEmptyString"/>

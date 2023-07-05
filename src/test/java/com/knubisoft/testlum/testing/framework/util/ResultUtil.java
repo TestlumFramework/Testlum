@@ -9,8 +9,8 @@ import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
+import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
-import com.knubisoft.testlum.testing.model.scenario.Hovers;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
@@ -42,11 +42,9 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
@@ -78,7 +76,8 @@ public class ResultUtil {
     public static final String URL = "Url";
     public static final String HTML_DOM = "HTML Dom";
     public static final String FULL_DOM = "Full Dom";
-    public static final String LOCATOR_ID = "Locator ID = %s";
+    public static final String LOCATOR_ID = "Locator ID";
+    public static final String LOCATOR_FORM = "Locator ID = %s";
     public static final String ELEMENT_PRESENT = "Is the web element present";
     public static final String CONDITION = "Condition";
     public static final String GENERATED_STRING = "Randomly generated string";
@@ -183,7 +182,6 @@ public class ResultUtil {
     private static final String TIME_UNITE = "Time unit";
     private static final String HEADER_TEMPLATE = "%s: %s";
     private static final String MOVE_TO_EMPTY_SPACE = "Move to empty space after execution";
-    private static final String HOVER_NUMBER_TEMPLATE = "Hover #%d";
     private static final String STEP_FAILED = "Step failed";
     private static final String FAILED = "failed";
     private static final String SUCCESSFULLY = "successfully";
@@ -584,13 +582,10 @@ public class ResultUtil {
         result.put(TO_LOCATOR, dragAndDropNative.getToLocatorId());
     }
 
-    public void addHoversMetaData(final Hovers hovers, final CommandResult result) {
-        result.put(MOVE_TO_EMPTY_SPACE, hovers.isMoveToEmptySpace());
-        AtomicInteger number = new AtomicInteger(1);
-        hovers.getHover().forEach(hover -> {
-            String hoverNumber = format(HOVER_NUMBER_TEMPLATE, number.getAndIncrement());
-            result.put(hoverNumber, Arrays.asList(hover.getLocatorId(), hovers.getComment()));
-        });
+    public void addHoverMetaData(final Hover hover, final CommandResult result) {
+        result.setComment(hover.getComment());
+        result.put(LOCATOR_ID, hover.getLocatorId());
+        result.put(MOVE_TO_EMPTY_SPACE, hover.isMoveToEmptySpace());
     }
 
     public void addCloseOrSwitchTabMetadata(final String commandName,

@@ -10,6 +10,7 @@ import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
+import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
@@ -496,11 +497,14 @@ public class ResultUtil {
         addVariableMetaData(type, key, format(format, expression), value, result);
     }
 
-    public void addVariableMetaData(final String dbType,
-                                    final String alias,
-                                    final CommandResult result) {
-        result.put(DB_TYPE, dbType);
-        result.put(ALIAS, alias);
+    public static void addVariableMetaData(final String queryType,
+                                           final FromSQL fromSQL,
+                                           final String key,
+                                           final String value,
+                                           final CommandResult result) {
+        result.put(DB_TYPE, fromSQL.getDbType().name());
+        result.put(ALIAS, fromSQL.getAlias());
+        addVariableMetaData(queryType, key, fromSQL.getQuery(), value, result);
     }
 
     public void addConditionMetaData(final String key,

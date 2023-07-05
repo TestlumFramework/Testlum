@@ -189,8 +189,7 @@ public class VariableHelper {
         String metadataKey = fromSQL.getDbType().name() + DelimiterConstant.UNDERSCORE + fromSQL.getAlias();
         StorageOperation storageOperation = nameToAdapterAlias.getByNameOrThrow(metadataKey).getStorageOperation();
         String valueResult = getActualQueryResult(fromSQL, storageOperation);
-        ResultUtil.addVariableMetaData(fromSQL.getDbType().name(), fromSQL.getAlias(), result);
-        ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, varName, fromSQL.getQuery(), valueResult, result);
+        ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, fromSQL, varName, valueResult, result);
         return valueResult;
     }
 

@@ -1,11 +1,11 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.Message;
 import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
 import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
 import com.amazonaws.services.sqs.model.ReceiveMessageResult;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -14,6 +14,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
+import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
@@ -114,14 +115,19 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         final String expectedMessages = getMessageToReceive(receive);
         LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), expectedMessages);
         ResultUtil.addSqsInfoForReceiveAction(receive, aliasEnv.getAlias(), result);
-        final List<String> actualMessages = receiveMessages(receive, aliasEnv);
+        final List<Object> actualMessages = receiveMessages(receive, aliasEnv);
         compareMessage(expectedMessages, actualMessages, result);
     }
 
-    private List<String> receiveMessages(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
+    private List<Object> receiveMessages(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
         ReceiveMessageRequest receiveMessageRequest = createReceiveRequest(receive, aliasEnv);
         ReceiveMessageResult receiveMessageResult = this.amazonSQS.get(aliasEnv).receiveMessage(receiveMessageRequest);
-        return receiveMessageResult.getMessages().stream().map(Message::getBody).collect(Collectors.toList());
+        return receiveMessageResult.getMessages()
+                .stream()
+                .map(message ->
+                        message.getBody().replaceAll(DelimiterConstant.REGEX_MANY_SPACES, DelimiterConstant.EMPTY))
+                .map(JacksonMapperUtil::toJsonObject)
+                .collect(Collectors.toList());
     }
 
     private ReceiveMessageRequest createReceiveRequest(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
@@ -135,7 +141,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         return receiveRequest;
     }
 
-    private void compareMessage(final String expectedContent, final List<String> messages, final CommandResult result) {
+    private void compareMessage(final String expectedContent, final List<Object> messages, final CommandResult result) {
         final CompareBuilder comparator = newCompare()
                 .withExpected(expectedContent)
                 .withActual(messages);

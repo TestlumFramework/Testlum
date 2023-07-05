@@ -300,7 +300,8 @@ public class LogUtil {
 
     public void logBrokerActionInfo(final String action, final String destination, final String content) {
         log.info(LogMessage.BROKER_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), destination,
-                StringPrettifier.asJsonResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+                StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
+                        .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
     public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {

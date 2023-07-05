@@ -138,6 +138,5 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     }
 
     private interface HotKeyCommandPredicate extends Predicate<AbstractUiCommand> { }
-
     private interface HotKeyCommandMethod extends BiConsumer<AbstractUiCommand, CommandResult> { }
 }

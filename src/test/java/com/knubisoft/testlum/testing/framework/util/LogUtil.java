@@ -11,6 +11,7 @@ import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
+import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
@@ -85,6 +86,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCAL_
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MESSAGE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILEBROWSER_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOVE_TO_EMPTY_SPACE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NAME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NEW_LOG_LINE;
@@ -473,10 +475,10 @@ public class LogUtil {
         }
     }
 
-    public void logHover(final int position, final CommandWithLocator action) {
-        log.info(COMMAND_LOG, position, action.getClass().getSimpleName());
-        log.info(COMMENT_LOG, action.getComment());
-        log.info(LOCATOR_LOG, action.getLocatorId());
+    public void logHover(final Hover hover) {
+        if (hover.isMoveToEmptySpace()) {
+            log.info(MOVE_TO_EMPTY_SPACE, hover.isMoveToEmptySpace());
+        }
     }
 
     public void logHotKeyInfo(final AbstractUiCommand command) {

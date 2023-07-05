@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.configuration.auth;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.auth.AuthStrategy;
@@ -37,7 +36,7 @@ public class AuthFactory {
     }
 
     private Auth getAuthConfig(final String env, final String alias) {
-        List<Api> apiList = GlobalTestConfigurationProvider.getIntegrations().get(env).getApis().getApi();
+        List<Api> apiList = IntegrationsUtil.findListByEnv(Api.class, env);
         Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, alias);
         if (Objects.nonNull(apiIntegration.getAuth())) {
             return apiIntegration.getAuth();

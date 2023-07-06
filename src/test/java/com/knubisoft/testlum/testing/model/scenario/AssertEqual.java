@@ -7,14 +7,14 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for equal complex type.
+ * <p>Java class for assertEqual complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="equal"&gt;
+ * &lt;complexType name="assertEqual"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}equality"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}assertEquality"&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -23,9 +23,9 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "equal")
-public class Equal
-    extends Equality
+@XmlType(name = "assertEqual")
+public class AssertEqual
+    extends AssertEquality
 {
 
 

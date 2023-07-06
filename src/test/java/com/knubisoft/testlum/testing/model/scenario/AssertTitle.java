@@ -8,12 +8,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for title complex type.
+ * <p>Java class for assertTitle complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="title"&gt;
+ * &lt;complexType name="assertTitle"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;sequence&gt;
@@ -27,10 +27,10 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "title", propOrder = {
+@XmlType(name = "assertTitle", propOrder = {
     "content"
 })
-public class Title
+public class AssertTitle
     extends AbstractUiCommand
 {
 

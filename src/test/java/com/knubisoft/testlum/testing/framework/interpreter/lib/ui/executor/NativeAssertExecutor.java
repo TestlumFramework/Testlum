@@ -10,7 +10,7 @@ import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
-import com.knubisoft.testlum.testing.model.scenario.Attribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
 import com.knubisoft.testlum.testing.model.scenario.NativeAssert;
 import org.openqa.selenium.WebElement;
 
@@ -43,7 +43,7 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
         rethrowOnErrors();
     }
 
-    private void executeAttributeCommand(final Attribute attribute, final CommandResult result) {
+    private void executeAttributeCommand(final AssertAttribute attribute, final CommandResult result) {
         LogUtil.logAssertAttributeInfo(attribute);
         ResultUtil.addAssertAttributeMetaData(attribute, result);
         String actual = getActualValue(attribute);
@@ -53,7 +53,7 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
-    private String getActualValue(final Attribute attribute) {
+    private String getActualValue(final AssertAttribute attribute) {
         WebElement webElement = UiUtil.findWebElement(dependencies, attribute.getLocatorId());
         return webElement.getAttribute(attribute.getName());
     }

@@ -39,8 +39,8 @@ public class MobilebrowserAssert
 {
 
     @XmlElements({
-        @XmlElement(name = "attribute", type = Attribute.class),
-        @XmlElement(name = "title", type = Title.class)
+        @XmlElement(name = "attribute", type = AssertAttribute.class),
+        @XmlElement(name = "title", type = AssertTitle.class)
     })
     protected List<AbstractUiCommand> attributeOrTitle;
 
@@ -62,8 +62,8 @@ public class MobilebrowserAssert
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Attribute }
-     * {@link Title }
+     * {@link AssertAttribute }
+     * {@link AssertTitle }
      * 
      * 
      */

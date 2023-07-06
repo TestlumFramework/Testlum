@@ -9,9 +9,9 @@ import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.Assert;
-import com.knubisoft.testlum.testing.model.scenario.Equal;
-import com.knubisoft.testlum.testing.model.scenario.Equality;
-import com.knubisoft.testlum.testing.model.scenario.NotEqual;
+import com.knubisoft.testlum.testing.model.scenario.AssertEqual;
+import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
+import com.knubisoft.testlum.testing.model.scenario.AssertNotEqual;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 
@@ -45,7 +45,7 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
-    private void processEachAction(final Equality action, final CommandResult result) {
+    private void processEachAction(final AssertEquality action, final CommandResult result) {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
             processEqualityAction(action, result);
@@ -59,29 +59,29 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
         }
     }
 
-    private void processEqualityAction(final Equality action, final CommandResult result) {
-        if (action instanceof Equal) {
-            checkContentIsEqual((Equal) action, result);
+    private void processEqualityAction(final AssertEquality action, final CommandResult result) {
+        if (action instanceof AssertEqual) {
+            checkContentIsEqual((AssertEqual) action, result);
         } else {
-            checkContentNotEqual((NotEqual) action, result);
+            checkContentNotEqual((AssertNotEqual) action, result);
         }
     }
 
-    private void checkContentIsEqual(final Equal equal, final CommandResult result) {
+    private void checkContentIsEqual(final AssertEqual equal, final CommandResult result) {
         if (equal.getContent().stream().distinct().count() != 1) {
             throw new DefaultFrameworkException(ASSERT_CONTENT_NOT_EQUAL);
         }
-        LogUtil.logAssertEqualCommand(equal);
-        ResultUtil.addAssertEqualResult(equal, result);
+        LogUtil.logAssertEqualityCommand(equal);
+        ResultUtil.addAssertEqualityMetaData(equal, result);
     }
 
-    private void checkContentNotEqual(final NotEqual notEqual, final CommandResult result) {
+    private void checkContentNotEqual(final AssertNotEqual notEqual, final CommandResult result) {
         List<String> content = notEqual.getContent();
         if (content.stream().distinct().count() != content.size()) {
             throw new DefaultFrameworkException(ASSERT_CONTENT_IS_EQUAL);
         }
-        LogUtil.logAssertNotEqualCommand(notEqual);
-        ResultUtil.addAssertNotEqualResult(notEqual, result);
+        LogUtil.logAssertEqualityCommand(notEqual);
+        ResultUtil.addAssertEqualityMetaData(notEqual, result);
     }
 
 }

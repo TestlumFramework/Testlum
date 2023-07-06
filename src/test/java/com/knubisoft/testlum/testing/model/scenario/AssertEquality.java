@@ -10,12 +10,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for equality complex type.
+ * <p>Java class for assertEquality complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="equality"&gt;
+ * &lt;complexType name="assertEquality"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
  *       &lt;choice maxOccurs="unbounded" minOccurs="2"&gt;
@@ -29,14 +29,14 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "equality", propOrder = {
+@XmlType(name = "assertEquality", propOrder = {
     "content"
 })
 @XmlSeeAlso({
-    Equal.class,
-    NotEqual.class
+    AssertEqual.class,
+    AssertNotEqual.class
 })
-public abstract class Equality
+public abstract class AssertEquality
     extends AbstractCommand
 {
 

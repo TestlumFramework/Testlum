@@ -4,17 +4,16 @@ import com.knubisoft.testlum.testing.framework.configuration.TestResourceSetting
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.Attribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
-import com.knubisoft.testlum.testing.model.scenario.Equal;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
-import com.knubisoft.testlum.testing.model.scenario.NotEqual;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
@@ -528,6 +527,12 @@ public class ResultUtil {
         result.put(CONDITION, conditionName + " = " + conditionResult);
     }
 
+    public <T extends AssertEquality> void addAssertEqualityMetaData(final T equality,
+                                                                     final CommandResult result) {
+        result.put(EQUALITY_TYPE, equality.getClass().getSimpleName());
+        result.put(CONTENT, equality.getContent());
+    }
+
     public void addAuthMetaData(final Auth auth, final CommandResult result) {
         result.put(API_ALIAS, auth.getApiAlias());
         result.put(ENDPOINT, auth.getLoginEndpoint());
@@ -688,7 +693,7 @@ public class ResultUtil {
         }
     }
 
-    public void addAssertAttributeMetaData(final Attribute attribute, final CommandResult result) {
+    public void addAssertAttributeMetaData(final AssertAttribute attribute, final CommandResult result) {
         result.put(ASSERT_LOCATOR, attribute.getLocatorId());
         result.put(ASSERT_ATTRIBUTE, attribute.getName());
     }
@@ -701,18 +706,6 @@ public class ResultUtil {
         if (isNotBlank(swipeNative.getLocatorId())) {
             result.put(SWIPE_LOCATOR, swipeNative.getLocatorId());
         }
-    }
-
-    public void addAssertEqualResult(final Equal equal, final CommandResult result) {
-        result.put(COMMENT, equal.getComment());
-        result.put(EQUALITY_TYPE, equal.getClass().getSimpleName());
-        result.put(CONTENT, equal.getContent());
-    }
-
-    public void addAssertNotEqualResult(final NotEqual notEqual, final CommandResult result) {
-        result.put(COMMENT, notEqual.getComment());
-        result.put(EQUALITY_TYPE, notEqual.getClass().getSimpleName());
-        result.put(CONTENT, notEqual.getContent());
     }
 
 }

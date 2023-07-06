@@ -20,8 +20,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
  *       &lt;choice maxOccurs="unbounded"&gt;
- *         &lt;element name="equal" type="{http://www.knubisoft.com/testlum/testing/model/scenario}equal"/&gt;
- *         &lt;element name="notEqual" type="{http://www.knubisoft.com/testlum/testing/model/scenario}notEqual"/&gt;
+ *         &lt;element name="equal" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertEqual"/&gt;
+ *         &lt;element name="notEqual" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertNotEqual"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -39,10 +39,10 @@ public class Assert
 {
 
     @XmlElements({
-        @XmlElement(name = "equal", type = Equal.class),
-        @XmlElement(name = "notEqual", type = NotEqual.class)
+        @XmlElement(name = "equal", type = AssertEqual.class),
+        @XmlElement(name = "notEqual", type = AssertNotEqual.class)
     })
-    protected List<Equality> equalOrNotEqual;
+    protected List<AssertEquality> equalOrNotEqual;
 
     /**
      * Gets the value of the equalOrNotEqual property.
@@ -62,14 +62,14 @@ public class Assert
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Equal }
-     * {@link NotEqual }
+     * {@link AssertEqual }
+     * {@link AssertNotEqual }
      * 
      * 
      */
-    public List<Equality> getEqualOrNotEqual() {
+    public List<AssertEquality> getEqualOrNotEqual() {
         if (equalOrNotEqual == null) {
-            equalOrNotEqual = new ArrayList<Equality>();
+            equalOrNotEqual = new ArrayList<AssertEquality>();
         }
         return this.equalOrNotEqual;
     }

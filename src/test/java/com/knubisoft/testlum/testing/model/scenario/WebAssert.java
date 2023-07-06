@@ -20,8 +20,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice maxOccurs="unbounded"&gt;
- *         &lt;element name="attribute" type="{http://www.knubisoft.com/testlum/testing/model/scenario}attribute"/&gt;
- *         &lt;element name="title" type="{http://www.knubisoft.com/testlum/testing/model/scenario}title"/&gt;
+ *         &lt;element name="attribute" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertAttribute"/&gt;
+ *         &lt;element name="title" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertTitle"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -39,8 +39,8 @@ public class WebAssert
 {
 
     @XmlElements({
-        @XmlElement(name = "attribute", type = Attribute.class),
-        @XmlElement(name = "title", type = Title.class)
+        @XmlElement(name = "attribute", type = AssertAttribute.class),
+        @XmlElement(name = "title", type = AssertTitle.class)
     })
     protected List<AbstractUiCommand> attributeOrTitle;
 
@@ -62,8 +62,8 @@ public class WebAssert
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Attribute }
-     * {@link Title }
+     * {@link AssertAttribute }
+     * {@link AssertTitle }
      * 
      * 
      */

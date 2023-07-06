@@ -11,26 +11,26 @@
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:choice maxOccurs="unbounded">
-                    <x:element name="equal" type="tns:equal"/>
-                    <x:element name="notEqual" type="tns:notEqual"/>
+                    <x:element name="equal" type="tns:assertEqual"/>
+                    <x:element name="notEqual" type="tns:assertNotEqual"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="equal">
+    <x:complexType name="assertEqual">
         <x:complexContent>
-            <x:extension base="tns:equality" />
+            <x:extension base="tns:assertEquality" />
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="notEqual">
+    <x:complexType name="assertNotEqual">
         <x:complexContent>
-            <x:extension base="tns:equality" />
+            <x:extension base="tns:assertEquality" />
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="equality" abstract="true">
+    <x:complexType name="assertEquality" abstract="true">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:choice minOccurs="2" maxOccurs="unbounded">
@@ -44,8 +44,8 @@
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:choice maxOccurs="unbounded">
-                    <x:element name="attribute" type="tns:attribute"/>
-                    <x:element name="title" type="tns:title"/>
+                    <x:element name="attribute" type="tns:assertAttribute"/>
+                    <x:element name="title" type="tns:assertTitle"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>
@@ -55,13 +55,13 @@
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:choice maxOccurs="unbounded">
-                    <x:element name="attribute" type="tns:attribute"/>
+                    <x:element name="attribute" type="tns:assertAttribute"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="attribute">
+    <x:complexType name="assertAttribute">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:sequence>
@@ -80,7 +80,7 @@
         </x:restriction>
     </x:simpleType>
 
-    <x:complexType name="title">
+    <x:complexType name="assertTitle">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:sequence>

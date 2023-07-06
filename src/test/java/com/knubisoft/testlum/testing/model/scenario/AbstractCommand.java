@@ -59,7 +59,7 @@ import javax.xml.bind.annotation.XmlType;
     Smtp.class,
     Twilio.class,
     Ui.class,
-    Equality.class,
+    AssertEquality.class,
     AbstractUiCommand.class,
     Logout.class
 })

@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice maxOccurs="unbounded"&gt;
- *         &lt;element name="attribute" type="{http://www.knubisoft.com/testlum/testing/model/scenario}attribute"/&gt;
+ *         &lt;element name="attribute" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertAttribute"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -35,7 +35,7 @@ public class NativeAssert
     extends AbstractUiCommand
 {
 
-    protected List<Attribute> attribute;
+    protected List<AssertAttribute> attribute;
 
     /**
      * Gets the value of the attribute property.
@@ -55,13 +55,13 @@ public class NativeAssert
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Attribute }
+     * {@link AssertAttribute }
      * 
      * 
      */
-    public List<Attribute> getAttribute() {
+    public List<AssertAttribute> getAttribute() {
         if (attribute == null) {
-            attribute = new ArrayList<Attribute>();
+            attribute = new ArrayList<AssertAttribute>();
         }
         return this.attribute;
     }

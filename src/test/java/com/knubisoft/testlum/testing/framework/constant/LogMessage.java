@@ -36,7 +36,6 @@ public final class LogMessage {
     public static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
     public static final String REPEAT_FINISHED_LOG = ANSI_CYAN + "------- Repeat is finished -------" + ANSI_RESET;
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
-    public static final String EQUALITY_TYPE = format(TABLE_FORMAT, "Equality type", "{}");
     public static final String COMMAND_SKIPPED_ON_CONDITION_LOG = ANSI_ORANGE
             + "Command was skipped because of the condition" + ANSI_RESET;
     public static final String CONDITION_LOG = format(TABLE_FORMAT, "Condition", "'{}' = {};");
@@ -104,6 +103,8 @@ public final class LogMessage {
             "Bucket", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Key", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "File for action", "{}");
+
+    public static final String EQUALITY_TYPE = format(TABLE_FORMAT, "Equality type", "{}");
 
     public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
 

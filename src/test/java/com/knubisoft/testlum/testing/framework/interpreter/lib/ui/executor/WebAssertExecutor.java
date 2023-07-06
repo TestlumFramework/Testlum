@@ -11,8 +11,8 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
-import com.knubisoft.testlum.testing.model.scenario.Attribute;
-import com.knubisoft.testlum.testing.model.scenario.Title;
+import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
 import com.knubisoft.testlum.testing.model.scenario.WebAssert;
 import org.openqa.selenium.WebElement;
 
@@ -37,8 +37,9 @@ public class WebAssertExecutor extends AbstractUiExecutor<WebAssert> {
     public WebAssertExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         Map<AssertCmdPredicate, AssertMethod> assertCommands = new HashMap<>();
-        assertCommands.put(a -> a instanceof Attribute, (a, result) -> executeAttributeCommand((Attribute) a, result));
-        assertCommands.put(a -> a instanceof Title, (a, result) -> executeTitleCommand((Title) a, result));
+        assertCommands.put(a -> a instanceof AssertAttribute,
+                (a, result) -> executeAttributeCommand((AssertAttribute) a, result));
+        assertCommands.put(a -> a instanceof AssertTitle, (a, result) -> executeTitleCommand((AssertTitle) a, result));
         assertCommandMap = Collections.unmodifiableMap(assertCommands);
     }
 
@@ -66,7 +67,7 @@ public class WebAssertExecutor extends AbstractUiExecutor<WebAssert> {
                 .getValue().accept(command, result);
     }
 
-    private void executeAttributeCommand(final Attribute attribute, final CommandResult result) {
+    private void executeAttributeCommand(final AssertAttribute attribute, final CommandResult result) {
         LogUtil.logAssertAttributeInfo(attribute);
         ResultUtil.addAssertAttributeMetaData(attribute, result);
         String actual = getActualValue(attribute);
@@ -76,12 +77,12 @@ public class WebAssertExecutor extends AbstractUiExecutor<WebAssert> {
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
-    private String getActualValue(final Attribute attribute) {
+    private String getActualValue(final AssertAttribute attribute) {
         WebElement webElement = UiUtil.findWebElement(dependencies, attribute.getLocatorId());
         return UiUtil.getElementAttribute(webElement, attribute.getName(), dependencies.getDriver());
     }
 
-    private void executeTitleCommand(final Title title, final CommandResult result) {
+    private void executeTitleCommand(final AssertTitle title, final CommandResult result) {
         LogUtil.logAssertTitleCommand(title);
         String actual = dependencies.getDriver().getTitle();
         ResultUtil.setExpectedActual(title.getContent(), actual, result);

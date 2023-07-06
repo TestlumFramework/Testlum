@@ -5,16 +5,16 @@ import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
-import com.knubisoft.testlum.testing.model.scenario.Attribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
+import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
-import com.knubisoft.testlum.testing.model.scenario.Equal;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
-import com.knubisoft.testlum.testing.model.scenario.NotEqual;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
 import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
@@ -24,7 +24,6 @@ import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.Ses;
 import com.knubisoft.testlum.testing.model.scenario.Smtp;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
-import com.knubisoft.testlum.testing.model.scenario.Title;
 import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.knubisoft.testlum.testing.model.scenario.Ui;
 import lombok.SneakyThrows;
@@ -492,25 +491,18 @@ public class LogUtil {
         log.info(COMMENT_LOG, command.getComment());
     }
 
-    public void logAssertEqualCommand(final Equal equal) {
-        log.info(COMMENT_LOG, equal.getComment());
-        log.info(EQUALITY_TYPE, equal.getClass().getSimpleName());
-        log.info(CONTENT_LOG, equal.getContent());
+    public <T extends AssertEquality> void logAssertEqualityCommand(final T equality) {
+        log.info(EQUALITY_TYPE, equality.getClass().getSimpleName());
+        log.info(CONTENT_LOG, equality.getContent());
     }
 
-    public void logAssertNotEqualCommand(final NotEqual notEqual) {
-        log.info(COMMENT_LOG, notEqual.getComment());
-        log.info(EQUALITY_TYPE, notEqual.getClass().getSimpleName());
-        log.info(CONTENT_LOG, notEqual.getContent());
-    }
-
-    public void logAssertAttributeInfo(final Attribute attribute) {
+    public void logAssertAttributeInfo(final AssertAttribute attribute) {
         log.info(LOCATOR_LOG, attribute.getLocatorId());
         log.info(ATTRIBUTE_LOG, attribute.getName());
         log.info(CONTENT_LOG, StringPrettifier.cut(attribute.getContent()));
     }
 
-    public void logAssertTitleCommand(final Title title) {
+    public void logAssertTitleCommand(final AssertTitle title) {
         log.info(CONTENT_LOG, title.getContent());
     }
 

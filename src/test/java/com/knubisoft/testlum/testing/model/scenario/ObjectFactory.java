@@ -518,19 +518,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Equal }
+     * Create an instance of {@link AssertEqual }
      * 
      */
-    public Equal createEqual() {
-        return new Equal();
+    public AssertEqual createAssertEqual() {
+        return new AssertEqual();
     }
 
     /**
-     * Create an instance of {@link NotEqual }
+     * Create an instance of {@link AssertNotEqual }
      * 
      */
-    public NotEqual createNotEqual() {
-        return new NotEqual();
+    public AssertNotEqual createAssertNotEqual() {
+        return new AssertNotEqual();
     }
 
     /**
@@ -550,19 +550,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Attribute }
+     * Create an instance of {@link AssertAttribute }
      * 
      */
-    public Attribute createAttribute() {
-        return new Attribute();
+    public AssertAttribute createAssertAttribute() {
+        return new AssertAttribute();
     }
 
     /**
-     * Create an instance of {@link Title }
+     * Create an instance of {@link AssertTitle }
      * 
      */
-    public Title createTitle() {
-        return new Title();
+    public AssertTitle createAssertTitle() {
+        return new AssertTitle();
     }
 
     /**

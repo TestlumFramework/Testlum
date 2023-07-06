@@ -168,10 +168,10 @@ public class TestSetCollector {
     }
 
     private boolean variationsExist(final MappingResult entry) {
-        return nonNull(entry.scenario) && StringUtils.isNotBlank(entry.scenario.getVariations());
+        return nonNull(entry.scenario) && StringUtils.isNotBlank(entry.scenario.getSettings().getVariations());
     }
 
     private List<Map<String, String>> getVariationList(final MappingResult entry) {
-        return GlobalVariations.getVariations(entry.scenario.getVariations());
+        return GlobalVariations.getVariations(entry.scenario.getSettings().getVariations());
     }
 }

@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.testlum.testing.model.global_config.TagValue;
 
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_ENABLED_TAGS_CONFIG;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_SCENARIOS_FILTERED_BY_TAGS;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.STOP_IF_NON_PARSED_SCENARIO;
@@ -40,11 +42,11 @@ public class ScenarioFilter {
     }
 
     private Set<MappingResult> filterIsActive(final Set<MappingResult> original) {
-        return filterBy(original, e -> e.scenario.isActive());
+        return filterBy(original, e -> e.scenario.getSettings().isActive());
     }
 
     private Set<MappingResult> filterScenariosIfOnlyThis(final Set<MappingResult> original) {
-        return filterBy(original, e -> e.scenario.isOnlyThis());
+        return filterBy(original, e -> e.scenario.getSettings().isOnlyThis());
     }
 
     private Set<MappingResult> filterScenariosByTags(final Set<MappingResult> activeScenarios) {
@@ -63,7 +65,7 @@ public class ScenarioFilter {
     }
 
     private boolean isMatchesTags(final MappingResult entry, final List<String> enabledTags) {
-        List<String> scenarioTags = entry.scenario.getTags().getTag();
+        List<String> scenarioTags = Arrays.asList((entry.scenario.getSettings().getTags()).split(COMMA));
         return scenarioTags.stream().anyMatch(enabledTags::contains);
     }
 

@@ -70,6 +70,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRAC
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND_TIMES;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_COMPARISON_TYPE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_EXCLUDED_ELEMENT_LOG;
@@ -142,7 +143,7 @@ public class LogUtil {
         Overview overview = scenarioArguments.getScenario().getOverview();
         logOverview(overview);
         if (scenarioArguments.isContainsUiSteps()) {
-            logUiInfo(scenarioArguments.getScenario().getVariations(),
+            logUiInfo(scenarioArguments.getScenario().getSettings().getVariations(),
                     scenarioArguments.getEnvironment(),
                     scenarioArguments.getBrowser(),
                     scenarioArguments.getMobilebrowserDevice(),
@@ -485,6 +486,12 @@ public class LogUtil {
     public void logHotKeyInfo(final AbstractUiCommand command) {
         log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
         log.info(COMMENT_LOG, command.getComment());
+    }
+
+    public void logSingleKeyCommandTimes(final int times) {
+        if (times > 1) {
+            log.info(HOTKEY_COMMAND_TIMES, times);
+        }
     }
 
     public void logCloseOrSwitchTabCommand(final String command, final Integer tabNumber) {

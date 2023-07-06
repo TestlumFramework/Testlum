@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
+import com.knubisoft.testlum.testing.model.global_config.Redis;
 import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
@@ -45,7 +46,8 @@ public class RedisOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         stringRedisConnection.forEach((aliasEnv, redisConnection) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (isTruncate(Redis.class, aliasEnv)
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 redisConnection.execute(CLEAR_DATABASE);
             }
         });

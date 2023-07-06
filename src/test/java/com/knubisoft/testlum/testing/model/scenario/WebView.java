@@ -31,8 +31,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="image" type="{http://www.knubisoft.com/testlum/testing/model/scenario}image"/&gt;
  *         &lt;element name="javascript" type="{http://www.knubisoft.com/testlum/testing/model/scenario}javascript"/&gt;
  *         &lt;element name="navigate" type="{http://www.knubisoft.com/testlum/testing/model/scenario}navigate"/&gt;
- *         &lt;element name="hovers" type="{http://www.knubisoft.com/testlum/testing/model/scenario}hovers"/&gt;
- *         &lt;element name="closeTab" type="{http://www.knubisoft.com/testlum/testing/model/scenario}closeTab"/&gt;
+ *         &lt;element name="hover" type="{http://www.knubisoft.com/testlum/testing/model/scenario}hover"/&gt;
+ *         &lt;element name="tab" type="{http://www.knubisoft.com/testlum/testing/model/scenario}browserTab"/&gt;
  *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/testlum/testing/model/scenario}switchToFrame"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeVar"/&gt;
  *       &lt;/choice&gt;
@@ -63,8 +63,8 @@ public class WebView
         @XmlElement(name = "image", type = Image.class),
         @XmlElement(name = "javascript", type = Javascript.class),
         @XmlElement(name = "navigate", type = Navigate.class),
-        @XmlElement(name = "hovers", type = Hovers.class),
-        @XmlElement(name = "closeTab", type = CloseTab.class),
+        @XmlElement(name = "hover", type = Hover.class),
+        @XmlElement(name = "tab", type = BrowserTab.class),
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
         @XmlElement(name = "var", type = NativeVar.class)
     })
@@ -99,8 +99,8 @@ public class WebView
      * {@link Image }
      * {@link Javascript }
      * {@link Navigate }
-     * {@link Hovers }
-     * {@link CloseTab }
+     * {@link Hover }
+     * {@link BrowserTab }
      * {@link SwitchToFrame }
      * {@link NativeVar }
      * 

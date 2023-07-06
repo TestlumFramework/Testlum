@@ -15,7 +15,7 @@
 
     <x:complexType name="kafka">
         <x:complexContent>
-            <x:extension base="tns:integration">
+            <x:extension base="tns:storageIntegration">
                 <x:sequence>
                     <x:element name="bootstrapAddress" type="tns:nonEmptyString"/>
                     <x:element name="autoOffsetReset" type="tns:nonEmptyString"/>

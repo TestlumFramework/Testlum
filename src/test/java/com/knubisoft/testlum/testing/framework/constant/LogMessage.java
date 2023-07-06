@@ -124,6 +124,7 @@ public final class LogMessage {
     public static final String SUCCESS_QUERY = "Query completed successfully";
 
     public static final String DATASET_PATH_LOG = format(TABLE_FORMAT, "Migration dataset", "{}");
+    public static final String DB_TYPE_LOG = format(TABLE_FORMAT, "DB Type", "{}");
     public static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
     public static final String EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Execution time ", "{} ms");
     public static final String WAIT_INFO_LOG = format(TABLE_FORMAT, "Wait time & unit", "{} {}");
@@ -147,6 +148,7 @@ public final class LogMessage {
     public static final String DRAGGING_FILE_PATH = format(TABLE_FORMAT, "Dragging file path", "{}");
     public static final String HOTKEY_COMMAND = format(TABLE_FORMAT, "Hotkey command", "{}");
     public static final String HOTKEY_COMMAND_LOCATOR = format(TABLE_FORMAT, "Hotkey command locator", "{}");
+    public static final String HOTKEY_COMMAND_TIMES = format(TABLE_FORMAT, "Times to repeat", "{}");
     public static final String HTTP_STATUS_CODE = format(TABLE_FORMAT, "Status code", "{} {}");
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "HTTP method", "{}");
     public static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
@@ -169,6 +171,7 @@ public final class LogMessage {
     public static final String IMAGE_SOURCE_ATT_LOG = format(TABLE_FORMAT, "Image source attribute", "{}");
     public static final String URL_TO_IMAGE_LOG = format(TABLE_FORMAT, "URL to actual image", "{}");
     public static final String OVERVIEW_INFO_LOG = "{}: {}";
+    public static final String MOVE_TO_EMPTY_SPACE = format(TABLE_FORMAT, "Move to empty space", "{}");
 
     public static final String LAMBDA_FUNCTION_LOG = format(TABLE_FORMAT, "Function name", "{}");
     public static final String LAMBDA_PAYLOAD_LOG = format(TABLE_FORMAT, "Payload", "{}");
@@ -186,6 +189,9 @@ public final class LogMessage {
     public static final String SERVER_ERROR_RESPONSE_LOG = format(TABLE_FORMAT, "Request failed", "{}");
     public static final String LOCAL_STORAGE_KEY = format(TABLE_FORMAT, "Local storage key", "{}");
     public static final String CLEAR_COOKIES_AFTER = format(TABLE_FORMAT, "Clear cookies after", "{}");
+    public static final String TAB_COMMAND = format(TABLE_FORMAT, "Command", "{}");
+    public static final String TAB_INDEX = format(TABLE_FORMAT, "Tab Index", "{}");
+    public static final String TAB_URL = format(TABLE_FORMAT, "Tab Url", "{}");
 
     public static final String BROWSER_INFO = "%s | type = %s | version = %s";
     public static final String MOBILEBROWSER_INFO = "Device name = %s | platform = %s | version = %s";

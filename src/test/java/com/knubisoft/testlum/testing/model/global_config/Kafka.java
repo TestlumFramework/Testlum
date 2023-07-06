@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="kafka"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/global-config}integration"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/global-config}storageIntegration"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="bootstrapAddress" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="autoOffsetReset" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlType;
     "autoCommitTimeout"
 })
 public class Kafka
-    extends Integration
+    extends StorageIntegration
 {
 
     @XmlElement(required = true)

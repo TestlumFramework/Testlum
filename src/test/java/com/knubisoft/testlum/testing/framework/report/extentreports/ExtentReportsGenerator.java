@@ -262,10 +262,10 @@ public class ExtentReportsGenerator implements ReportGenerator {
     }
 
     private void setStepExecutionResult(final ExtentTest extentTest, final CommandResult stepExecutionInfo) {
-        if (stepExecutionInfo.isSuccess()) {
-            extentTest.pass(MarkupHelper.createLabel(STEP_SUCCESS, ExtentColor.GREEN));
-        } else if (stepExecutionInfo.isSkipped()) {
+        if (stepExecutionInfo.isSkipped()) {
             extentTest.skip(MarkupHelper.createLabel(STEP_SKIPPED, ExtentColor.ORANGE));
+        } else if (stepExecutionInfo.isSuccess()) {
+            extentTest.pass(MarkupHelper.createLabel(STEP_SUCCESS, ExtentColor.GREEN));
         } else {
             extentTest.fail(stepExecutionInfo.getException());
         }

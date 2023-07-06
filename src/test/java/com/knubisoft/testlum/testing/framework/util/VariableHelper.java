@@ -189,14 +189,14 @@ public class VariableHelper {
         String metadataKey = fromSQL.getDbType().name() + DelimiterConstant.UNDERSCORE + fromSQL.getAlias();
         StorageOperation storageOperation = nameToAdapterAlias.getByNameOrThrow(metadataKey).getStorageOperation();
         String valueResult = getActualQueryResult(fromSQL, storageOperation);
-        ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, varName, fromSQL.getQuery(), valueResult, result);
+        ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, fromSQL, varName, valueResult, result);
         return valueResult;
     }
 
     private String getActualQueryResult(final FromSQL fromSQL, final StorageOperation storageOperation) {
         String alias = fromSQL.getAlias();
         List<String> singleQuery = new ArrayList<>(Collections.singletonList(fromSQL.getQuery()));
-        LogUtil.logAllQueries(singleQuery, alias);
+        LogUtil.logAllQueries(fromSQL.getDbType().name(), singleQuery, alias);
         StorageOperation.StorageOperationResult queryResult = storageOperation.apply(
                 new ListSource(singleQuery), alias);
         return getResultValue(queryResult, getKeyOfQueryResultValue(queryResult));

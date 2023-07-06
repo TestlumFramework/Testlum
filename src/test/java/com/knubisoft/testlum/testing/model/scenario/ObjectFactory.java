@@ -526,14 +526,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Hovers }
-     * 
-     */
-    public Hovers createHovers() {
-        return new Hovers();
-    }
-
-    /**
      * Create an instance of {@link Hover }
      * 
      */
@@ -622,11 +614,35 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link BrowserTab }
+     * 
+     */
+    public BrowserTab createBrowserTab() {
+        return new BrowserTab();
+    }
+
+    /**
      * Create an instance of {@link CloseTab }
      * 
      */
     public CloseTab createCloseTab() {
         return new CloseTab();
+    }
+
+    /**
+     * Create an instance of {@link OpenTab }
+     * 
+     */
+    public OpenTab createOpenTab() {
+        return new OpenTab();
+    }
+
+    /**
+     * Create an instance of {@link SwitchTab }
+     * 
+     */
+    public SwitchTab createSwitchTab() {
+        return new SwitchTab();
     }
 
     /**
@@ -723,6 +739,14 @@ public class ObjectFactory {
      */
     public Space createSpace() {
         return new Space();
+    }
+
+    /**
+     * Create an instance of {@link SingleKeyCommand }
+     * 
+     */
+    public SingleKeyCommand createSingleKeyCommand() {
+        return new SingleKeyCommand();
     }
 
     /**

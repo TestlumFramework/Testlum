@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNABLE_FIND_VALUE_FOR_KEY;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_VALUE_FOUND_FOR_KEY;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VARIATIONS_NOT_FOUND;
 import static java.util.Objects.isNull;
 
@@ -58,19 +58,19 @@ public class GlobalVariations {
         return getVariationFromMap(variationKey, m, variationMap);
     }
 
-    private String getVariationFromMap(final String key,
+    private String getVariationFromMap(final String variationKey,
                                        final Matcher m,
                                        final Map<String, String> variationMap) {
-        String formatted = key;
+        String finalValue = variationKey;
         while (m.find()) {
-            String firstSubsequence = m.group(1);
-            String zeroSubsequence = m.group(0);
-            String value = variationMap.get(firstSubsequence);
-            if (isNull(value)) {
-                throw new IllegalArgumentException(String.format(UNABLE_FIND_VALUE_FOR_KEY, key, variationMap));
+            String variationName = m.group(1);
+            String variationNameInBraces = m.group(0);
+            String variationValue = variationMap.get(variationName);
+            if (isNull(variationValue)) {
+                throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, variationKey, variationMap));
             }
-            formatted = formatted.replace(zeroSubsequence, value);
+            finalValue = finalValue.replace(variationNameInBraces, variationValue);
         }
-        return formatted;
+        return finalValue;
     }
 }

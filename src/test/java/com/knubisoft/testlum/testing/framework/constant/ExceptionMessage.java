@@ -23,7 +23,7 @@ public class ExceptionMessage {
 
     public static final String ALIAS_BY_STORAGE_NAME_NOT_FOUND = "Alias for data storage [%s] not found. "
             + "Available aliases are %s";
-    public static final String UNABLE_FIND_VALUE_FOR_KEY = "Unable to find value for key <%s>. Available keys: %s";
+    public static final String NO_VALUE_FOUND_FOR_KEY = "Unable to find value for key <%s>. Available keys: %s";
 
     public static final String XSDISSUE_TO_STRING =
             "XSDIssue{message='%s', lineNumber=%d, columnNumber=%d, path=%s}";

@@ -10,7 +10,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNABLE_FIND_VALUE_FOR_KEY;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_VALUE_FOUND_FOR_KEY;
 import static java.util.Objects.isNull;
 
 @RequiredArgsConstructor
@@ -40,7 +40,7 @@ public class ScenarioContext {
         String result = contextMap.get(key);
         //must be isNull
         if (isNull(result)) {
-            throw new IllegalArgumentException(String.format(UNABLE_FIND_VALUE_FOR_KEY, key, contextMap));
+            throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, key, contextMap));
         }
         return result;
     }
@@ -52,7 +52,7 @@ public class ScenarioContext {
     public Boolean getCondition(final String key) {
         Boolean result = conditionMap.get(key);
         if (isNull(result)) {
-            throw new IllegalArgumentException(String.format(UNABLE_FIND_VALUE_FOR_KEY, key, conditionMap));
+            throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, key, conditionMap));
         }
         return result;
     }

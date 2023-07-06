@@ -50,26 +50,26 @@ public class GlobalVariations {
         private static final long serialVersionUID = 1;
     }
 
-    public String getVariationValue(final String variationKey, final Map<String, String> variationMap) {
-        if (StringUtils.isBlank(variationKey)) {
-            return variationKey;
+    public String getVariationValue(final String variation, final Map<String, String> variationMap) {
+        if (StringUtils.isBlank(variation)) {
+            return variation;
         }
-        Matcher m = ROUTE_PATTERN.matcher(variationKey);
-        return getVariationFromMap(variationKey, m, variationMap);
+        Matcher m = ROUTE_PATTERN.matcher(variation);
+        return getVariationFromMap(variation, m, variationMap);
     }
 
-    private String getVariationFromMap(final String variationKey,
+    private String getVariationFromMap(final String variation,
                                        final Matcher m,
                                        final Map<String, String> variationMap) {
-        String finalValue = variationKey;
+        String finalValue = variation;
         while (m.find()) {
-            String variationName = m.group(1);
-            String variationNameInBraces = m.group(0);
-            String variationValue = variationMap.get(variationName);
+            String variationKey = m.group(1);
+            String variationKeyInBraces = m.group(0);
+            String variationValue = variationMap.get(variationKey);
             if (isNull(variationValue)) {
                 throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, variationKey, variationMap));
             }
-            finalValue = finalValue.replace(variationNameInBraces, variationValue);
+            finalValue = finalValue.replace(variationKeyInBraces, variationValue);
         }
         return finalValue;
     }

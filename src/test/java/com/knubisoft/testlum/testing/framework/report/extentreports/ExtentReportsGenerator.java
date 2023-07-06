@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -82,7 +83,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private void addScenarioExecutionResult(final ExtentReports extentReports, final ScenarioResult scenarioResult) {
         ExtentTest extentTest = extentReports
                 .createTest(format(SCENARIO_NAME_TEMPLATE, scenarioResult.getId(), scenarioResult.getName()));
-        extentTest.assignCategory(scenarioResult.getTags().getTag().toArray(new String[0]));
+        extentTest.assignCategory(scenarioResult.getTags().split(COMMA));
         addOverviewInfo(extentTest, scenarioResult.getOverview(), scenarioResult.getPath());
         addBrowserInfo(extentTest, scenarioResult);
         addMobilebrowserDeviceInfo(extentTest, scenarioResult);

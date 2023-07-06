@@ -372,7 +372,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     @Override
     public void validate(final Scenario scenario, final File xmlFile) {
-        if (scenario.isActive()) {
+        if (scenario.getSettings().isActive()) {
             validateVariationsIfExist(scenario, xmlFile);
             validateIfContainsNativeAndMobileCommands(scenario.getCommands());
             scenario.getCommands().forEach(command -> validateCommand(command, xmlFile));
@@ -380,7 +380,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateVariationsIfExist(final Scenario scenario, final File xmlFile) {
-        if (isNotBlank(scenario.getVariations())) {
+        if (isNotBlank(scenario.getSettings().getVariations())) {
             GlobalVariations.process(scenario, xmlFile);
         }
     }

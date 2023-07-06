@@ -141,7 +141,7 @@ public class LogUtil {
         Overview overview = scenarioArguments.getScenario().getOverview();
         logOverview(overview);
         if (scenarioArguments.isContainsUiSteps()) {
-            logUiInfo(scenarioArguments.getScenario().getVariations(),
+            logUiInfo(scenarioArguments.getScenario().getSettings().getVariations(),
                     scenarioArguments.getEnvironment(),
                     scenarioArguments.getBrowser(),
                     scenarioArguments.getMobilebrowserDevice(),

@@ -4,7 +4,6 @@ package com.knubisoft.testlum.testing.model.scenario;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -17,11 +16,11 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="s3File"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
- *       &lt;sequence&gt;
+ *       &lt;choice&gt;
  *         &lt;element name="upload" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *         &lt;element name="download" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *         &lt;element name="remove" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
- *       &lt;/sequence&gt;
+ *       &lt;/choice&gt;
  *       &lt;attribute name="bucket" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="key" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="expected" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
@@ -42,11 +41,8 @@ public class S3File
     extends AbstractCommand
 {
 
-    @XmlElement(required = true)
     protected String upload;
-    @XmlElement(required = true)
     protected String download;
-    @XmlElement(required = true)
     protected String remove;
     @XmlAttribute(name = "bucket", required = true)
     protected String bucket;

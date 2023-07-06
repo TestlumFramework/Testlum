@@ -9,6 +9,7 @@ import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
+import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import com.knubisoft.testlum.testing.model.scenario.Hovers;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
@@ -237,6 +238,10 @@ public class ResultUtil {
         result.setActual(actual);
     }
 
+    public void addAliasData(final String alias, final CommandResult result) {
+        result.put(ALIAS, alias);
+    }
+
     public void addDatabaseMetaData(final String databaseAlias,
                                     final List<String> queries,
                                     final CommandResult result) {
@@ -456,14 +461,18 @@ public class ResultUtil {
         result.put(LAMBDA_PAYLOAD, StringPrettifier.asJsonResult(payload));
     }
 
-    public void addS3GeneralMetaData(final String alias,
-                                     final String action,
-                                     final String key,
-                                     final String bucket,
-                                     final CommandResult result) {
-        result.put(ALIAS, alias);
+    public void addS3BucketMetaData(final String action,
+                                    final String bucket,
+                                    final CommandResult result) {
         result.put(ACTION, action);
         result.put(BUCKET, bucket);
+    }
+
+    public void addS3FileMetaData(final String action,
+                                  final String bucket,
+                                  final String key,
+                                  final CommandResult result) {
+        addS3BucketMetaData(action, bucket, result);
         result.put(KEY, key);
     }
 
@@ -498,16 +507,14 @@ public class ResultUtil {
         addVariableMetaData(type, key, format(format, expression), value, result);
     }
 
-    public static void addVariableMetaData(String queryType,
-                                           String dbType,
-                                           String alias,
-                                           String key,
-                                           String expression,
-                                           String value,
-                                           CommandResult result) {
-        result.put(DB_TYPE, dbType);
-        result.put(ALIAS, alias);
-        addVariableMetaData(queryType, key, expression, value, result);
+    public static void addVariableMetaData(final String queryType,
+                                           final FromSQL fromSQL,
+                                           final String key,
+                                           final String value,
+                                           final CommandResult result) {
+        result.put(DB_TYPE, fromSQL.getDbType().name());
+        result.put(ALIAS, fromSQL.getAlias());
+        addVariableMetaData(queryType, key, fromSQL.getQuery(), value, result);
     }
 
     public void addConditionMetaData(final String key,
@@ -703,5 +710,4 @@ public class ResultUtil {
             result.put(SWIPE_LOCATOR, swipeNative.getLocatorId());
         }
     }
-
 }

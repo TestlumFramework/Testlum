@@ -4,7 +4,6 @@ package com.knubisoft.testlum.testing.model.scenario;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -17,10 +16,10 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="s3Bucket"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
- *       &lt;sequence&gt;
+ *       &lt;choice&gt;
  *         &lt;element name="create" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *         &lt;element name="remove" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
- *       &lt;/sequence&gt;
+ *       &lt;/choice&gt;
  *       &lt;attribute name="expected" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -38,9 +37,7 @@ public class S3Bucket
     extends AbstractCommand
 {
 
-    @XmlElement(required = true)
     protected String create;
-    @XmlElement(required = true)
     protected String remove;
     @XmlAttribute(name = "expected", required = true)
     protected String expected;

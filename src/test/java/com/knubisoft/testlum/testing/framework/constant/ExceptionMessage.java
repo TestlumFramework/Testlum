@@ -194,6 +194,10 @@ public class ExceptionMessage {
     public static final String UNKNOWN_BODY_CONTENT = "Unknown body content provided";
     public static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";
     public static final String INCORRECT_S3_PROCESSING = "Incorrect S3 processing";
+    public static final String BUCKET_EXISTS = "Bucket with name \"%s\" already exists";
+    public static final String BUCKET_ABSENT = "Bucket with name \"%s\" is absent";
+    public static final String FILE_EXISTS = "File with key \"%s\" in bucket \"%s\" already exists";
+    public static final String FILE_ABSENT = "File with key \"%s\" in bucket \"%s\" is absent";
     public static final String INCORRECT_SQS_PROCESSING = "Incorrect SQS processing";
     public static final String REDIS_COMMAND_NOT_FOUND = "Redis command was not provided";
     public static final String NAME_FOR_MIGRATION_MUST_PRESENT = "Data storage name for migration must present";

@@ -1,10 +1,13 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -17,10 +20,10 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="s3"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
- *       &lt;sequence&gt;
+ *       &lt;choice maxOccurs="unbounded"&gt;
  *         &lt;element name="file" type="{http://www.knubisoft.com/testlum/testing/model/scenario}s3File"/&gt;
  *         &lt;element name="bucket" type="{http://www.knubisoft.com/testlum/testing/model/scenario}s3Bucket"/&gt;
- *       &lt;/sequence&gt;
+ *       &lt;/choice&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}aliasPattern" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -31,66 +34,48 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "s3", propOrder = {
-    "file",
-    "bucket"
+    "fileOrBucket"
 })
 public class S3
     extends AbstractCommand
 {
 
-    @XmlElement(required = true)
-    protected S3File file;
-    @XmlElement(required = true)
-    protected S3Bucket bucket;
+    @XmlElements({
+        @XmlElement(name = "file", type = S3File.class),
+        @XmlElement(name = "bucket", type = S3Bucket.class)
+    })
+    protected List<AbstractCommand> fileOrBucket;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
 
     /**
-     * Gets the value of the file property.
+     * Gets the value of the fileOrBucket property.
      * 
-     * @return
-     *     possible object is
-     *     {@link S3File }
-     *     
-     */
-    public S3File getFile() {
-        return file;
-    }
-
-    /**
-     * Sets the value of the file property.
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the fileOrBucket property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link S3File }
-     *     
-     */
-    public void setFile(S3File value) {
-        this.file = value;
-    }
-
-    /**
-     * Gets the value of the bucket property.
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getFileOrBucket().add(newItem);
+     * </pre>
      * 
-     * @return
-     *     possible object is
-     *     {@link S3Bucket }
-     *     
-     */
-    public S3Bucket getBucket() {
-        return bucket;
-    }
-
-    /**
-     * Sets the value of the bucket property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link S3Bucket }
-     *     
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link S3File }
+     * {@link S3Bucket }
+     * 
+     * 
      */
-    public void setBucket(S3Bucket value) {
-        this.bucket = value;
+    public List<AbstractCommand> getFileOrBucket() {
+        if (fileOrBucket == null) {
+            fileOrBucket = new ArrayList<AbstractCommand>();
+        }
+        return this.fileOrBucket;
     }
 
     /**

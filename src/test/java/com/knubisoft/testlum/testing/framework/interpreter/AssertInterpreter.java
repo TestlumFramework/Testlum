@@ -8,9 +8,9 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Assert;
 import com.knubisoft.testlum.testing.model.scenario.Equal;
+import com.knubisoft.testlum.testing.model.scenario.Equality;
 import com.knubisoft.testlum.testing.model.scenario.NotEqual;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
@@ -45,7 +45,7 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
-    private void processEachAction(final AbstractCommand action, final CommandResult result) {
+    private void processEachAction(final Equality action, final CommandResult result) {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
             processEqualityAction(action, result);
@@ -59,7 +59,7 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
         }
     }
 
-    private void processEqualityAction(final AbstractCommand action, final CommandResult result) {
+    private void processEqualityAction(final Equality action, final CommandResult result) {
         if (action instanceof Equal) {
             checkContentIsEqual((Equal) action, result);
         } else {

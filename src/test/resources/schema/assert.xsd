@@ -20,15 +20,17 @@
 
     <x:complexType name="equal">
         <x:complexContent>
-            <x:extension base="tns:abstractCommand">
-                <x:choice minOccurs="2" maxOccurs="unbounded">
-                    <x:element name="content" type="tns:nonEmptyString"/>
-                </x:choice>
-            </x:extension>
+            <x:extension base="tns:equality" />
         </x:complexContent>
     </x:complexType>
 
     <x:complexType name="notEqual">
+        <x:complexContent>
+            <x:extension base="tns:equality" />
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="equality" abstract="true">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:choice minOccurs="2" maxOccurs="unbounded">

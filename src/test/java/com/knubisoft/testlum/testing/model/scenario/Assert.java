@@ -42,7 +42,7 @@ public class Assert
         @XmlElement(name = "equal", type = Equal.class),
         @XmlElement(name = "notEqual", type = NotEqual.class)
     })
-    protected List<AbstractCommand> equalOrNotEqual;
+    protected List<Equality> equalOrNotEqual;
 
     /**
      * Gets the value of the equalOrNotEqual property.
@@ -67,9 +67,9 @@ public class Assert
      * 
      * 
      */
-    public List<AbstractCommand> getEqualOrNotEqual() {
+    public List<Equality> getEqualOrNotEqual() {
         if (equalOrNotEqual == null) {
-            equalOrNotEqual = new ArrayList<AbstractCommand>();
+            equalOrNotEqual = new ArrayList<Equality>();
         }
         return this.equalOrNotEqual;
     }

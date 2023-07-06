@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlType;
     Equal.class,
     NotEqual.class
 })
-public class Equality
+public abstract class Equality
     extends AbstractCommand
 {
 

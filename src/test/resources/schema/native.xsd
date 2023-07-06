@@ -46,7 +46,7 @@
                     <x:element name="image" type="tns:image"/>
                     <x:element name="javascript" type="tns:javascript"/>
                     <x:element name="navigate" type="tns:navigate"/>
-                    <x:element name="hovers" type="tns:hovers"/>
+                    <x:element name="hover" type="tns:hover"/>
                     <x:element name="tab" type="tns:browserTab"/>
                     <x:element name="switchToFrame" type="tns:switchToFrame"/>
                     <x:element name="var" type="tns:nativeVar"/>

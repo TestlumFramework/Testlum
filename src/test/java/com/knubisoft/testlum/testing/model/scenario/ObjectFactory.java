@@ -582,14 +582,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Hovers }
-     * 
-     */
-    public Hovers createHovers() {
-        return new Hovers();
-    }
-
-    /**
      * Create an instance of {@link Hover }
      * 
      */

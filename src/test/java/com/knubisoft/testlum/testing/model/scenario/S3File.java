@@ -18,7 +18,14 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
  *       &lt;choice&gt;
  *         &lt;element name="upload" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
- *         &lt;element name="download" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="download"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
  *         &lt;element name="remove" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="bucket" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
@@ -42,7 +49,7 @@ public class S3File
 {
 
     protected String upload;
-    protected String download;
+    protected S3File.Download download;
     protected String remove;
     @XmlAttribute(name = "bucket", required = true)
     protected String bucket;
@@ -80,10 +87,10 @@ public class S3File
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link S3File.Download }
      *     
      */
-    public String getDownload() {
+    public S3File.Download getDownload() {
         return download;
     }
 
@@ -92,10 +99,10 @@ public class S3File
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link S3File.Download }
      *     
      */
-    public void setDownload(String value) {
+    public void setDownload(S3File.Download value) {
         this.download = value;
     }
 
@@ -193,6 +200,30 @@ public class S3File
      */
     public void setExpected(String value) {
         this.expected = value;
+    }
+
+
+    /**
+     * <p>Java class for anonymous complex type.
+     * 
+     * <p>The following schema fragment specifies the expected content contained within this class.
+     * 
+     * <pre>
+     * &lt;complexType&gt;
+     *   &lt;complexContent&gt;
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+     *     &lt;/restriction&gt;
+     *   &lt;/complexContent&gt;
+     * &lt;/complexType&gt;
+     * </pre>
+     * 
+     * 
+     */
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "")
+    public static class Download {
+
+
     }
 
 }

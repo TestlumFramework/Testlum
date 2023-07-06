@@ -36,7 +36,9 @@
             <x:extension base="tns:abstractCommand">
                 <x:choice>
                     <x:element name="upload" type="tns:nonEmptyString"/>
-                    <x:element name="download" type="tns:nonEmptyString"/>
+                    <x:element name="download">
+                        <x:complexType/>
+                    </x:element>
                     <x:element name="remove" type="tns:nonEmptyString"/>
                 </x:choice>
                 <x:attribute name="bucket" type="tns:nonEmptyString" use="required"/>

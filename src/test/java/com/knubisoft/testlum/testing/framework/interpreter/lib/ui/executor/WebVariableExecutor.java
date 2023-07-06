@@ -30,7 +30,7 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.COOKIES;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ELEMENT_PRESENT;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.FULL_DOM;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.HTML_DOM;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.LOCATOR_ID;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.LOCATOR_FORM;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.NO_EXPRESSION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.URL;
 import static java.util.Objects.nonNull;
@@ -90,7 +90,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         } catch (NoSuchElementException e) {
             valueResult = String.valueOf(false);
         }
-        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), LOCATOR_ID, locatorId, valueResult, result);
+        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), LOCATOR_FORM, locatorId, valueResult, result);
         return valueResult;
     }
 
@@ -98,7 +98,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         String locatorId = webVar.getDom().getLocatorId();
         if (StringUtils.isNotBlank(locatorId)) {
             String valueResult = UiUtil.findWebElement(dependencies, locatorId).getAttribute("outerHTML");
-            ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), LOCATOR_ID, locatorId, valueResult, result);
+            ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), LOCATOR_FORM, locatorId, valueResult, result);
             return valueResult;
         }
         String valueResult = dependencies.getDriver().getPageSource();

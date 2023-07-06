@@ -22,11 +22,11 @@
                     <x:element name="image" type="tns:image"/>
                     <x:element name="javascript" type="tns:javascript"/>
                     <x:element name="navigate" type="tns:navigate"/>
-                    <x:element name="hovers" type="tns:hovers"/>
+                    <x:element name="hover" type="tns:hover"/>
                     <x:element name="switchToFrame" type="tns:switchToFrame"/>
                     <x:element name="dragAndDrop" type="tns:dragAndDrop"/>
                     <x:element name="hotKey" type="tns:hotKey"/>
-                    <x:element name="closeTab" type="tns:closeTab"/>
+                    <x:element name="tab" type="tns:browserTab"/>
                     <x:element name="var" type="tns:webVar"/>
                     <x:element name="condition" type="tns:uiCondition"/>
                 </x:choice>

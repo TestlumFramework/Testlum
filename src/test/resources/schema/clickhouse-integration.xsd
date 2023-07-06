@@ -16,7 +16,7 @@
 
     <x:complexType name="clickhouse">
         <x:complexContent>
-            <x:extension base="tns:integration">
+            <x:extension base="tns:storageIntegration">
                 <x:sequence>
                     <x:element name="jdbcDriver" type="tns:nonEmptyString"/>
                     <x:element name="username" type="tns:nonEmptyString"/>

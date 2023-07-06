@@ -49,12 +49,14 @@ public class ScenarioContext {
         conditionMap.put(key, value);
     }
 
-    public Boolean getCondition(final String key) {
-        Boolean result = conditionMap.get(key);
-        if (isNull(result)) {
-            throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, key, conditionMap));
+    public String getCondition(final String condition) {
+        String injectedCondition = condition;
+        for (Map.Entry<String, Boolean> entry : conditionMap.entrySet()) {
+            if (injectedCondition.contains(entry.getKey())) {
+                injectedCondition = injectedCondition.replace(entry.getKey(), String.valueOf(entry.getValue()));
+            }
         }
-        return result;
+        return injectedCondition;
     }
 
     public String inject(final String original) {

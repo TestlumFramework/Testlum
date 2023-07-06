@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="redis"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/global-config}integration"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/global-config}storageIntegration"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="host" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="port" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
     "port"
 })
 public class Redis
-    extends Integration
+    extends StorageIntegration
 {
 
     @XmlElement(required = true)

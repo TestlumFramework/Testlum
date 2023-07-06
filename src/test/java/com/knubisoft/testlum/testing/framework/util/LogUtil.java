@@ -11,6 +11,7 @@ import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
+import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
@@ -53,6 +54,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONDIT
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_FORMAT;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DB_TYPE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DRAGGING_FILE_PATH;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DRAGGING_FROM;
@@ -68,6 +70,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRAC
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND_TIMES;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_COMPARISON_TYPE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_FOR_COMPARISON_LOG;
@@ -82,6 +85,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCAL_
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MESSAGE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILEBROWSER_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOVE_TO_EMPTY_SPACE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NAME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NEW_LOG_LINE;
@@ -107,6 +111,9 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_QUANTITY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_TYPE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_VALUE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_COMMAND;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_INDEX;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_URL;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
@@ -114,6 +121,9 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COM
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VALUE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VARIATION_LOG;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.LAST_TAB;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.OPEN_TAB;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.WITHOUT_URL;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -269,6 +279,11 @@ public class LogUtil {
         queries.forEach(query -> log.info(QUERY, query.replaceAll(REGEX_MANY_SPACES, SPACE)));
     }
 
+    public void logAllQueries(final String dbType, final List<String> queries, final String alias) {
+        log.info(DB_TYPE_LOG, dbType);
+        logAllQueries(queries, alias);
+    }
+
     public void logAllRedisQueries(final List<RedisQuery> redisQueries, final String alias) {
         log.info(ALIAS_LOG, alias);
         redisQueries.forEach(query ->
@@ -286,7 +301,8 @@ public class LogUtil {
 
     public void logBrokerActionInfo(final String action, final String destination, final String content) {
         log.info(LogMessage.BROKER_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), destination,
-                StringPrettifier.asJsonResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+                StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
+                        .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
     public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {
@@ -448,15 +464,31 @@ public class LogUtil {
         }
     }
 
-    public void logHover(final int position, final CommandWithLocator action) {
-        log.info(COMMAND_LOG, position, action.getClass().getSimpleName());
-        log.info(COMMENT_LOG, action.getComment());
-        log.info(LOCATOR_LOG, action.getLocatorId());
+    public void logHover(final Hover hover) {
+        if (hover.isMoveToEmptySpace()) {
+            log.info(MOVE_TO_EMPTY_SPACE, hover.isMoveToEmptySpace());
+        }
     }
 
     public void logHotKeyInfo(final AbstractUiCommand command) {
         log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
         log.info(COMMENT_LOG, command.getComment());
+    }
+
+    public void logSingleKeyCommandTimes(final int times) {
+        if (times > 1) {
+            log.info(HOTKEY_COMMAND_TIMES, times);
+        }
+    }
+
+    public void logCloseOrSwitchTabCommand(final String command, final Integer tabNumber) {
+        log.info(TAB_COMMAND, command);
+        log.info(TAB_INDEX, nonNull(tabNumber) ? tabNumber : LAST_TAB);
+    }
+
+    public void logOpenTabCommand(final String url) {
+        log.info(TAB_COMMAND, OPEN_TAB);
+        log.info(TAB_URL, isNotBlank(url) ? url : WITHOUT_URL);
     }
 
     public void logAssertCommand(final AbstractUiCommand command, final int position) {

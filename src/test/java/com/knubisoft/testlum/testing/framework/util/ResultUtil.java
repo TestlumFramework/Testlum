@@ -89,6 +89,7 @@ public class ResultUtil {
     public static final String SCROLL_LOCATOR = "Locator for scroll-to command";
     public static final String SWITCH_LOCATOR = "Locator for switch command";
     public static final String HOTKEY_LOCATOR = "Locator for hotkey command";
+    public static final String HOTKEY_TIMES = "Times to repeat hotkey command";
     public static final String INPUT_VALUE = "Value for input";
     public static final String CLICK_METHOD = "Click method";
     public static final String CLOSE_TAB = "Close";
@@ -586,6 +587,12 @@ public class ResultUtil {
         result.setComment(hover.getComment());
         result.put(LOCATOR_ID, hover.getLocatorId());
         result.put(MOVE_TO_EMPTY_SPACE, hover.isMoveToEmptySpace());
+    }
+
+    public void addSingleKeyCommandMetaData(final int times, final CommandResult result) {
+        if (times > 1) {
+            result.put(HOTKEY_TIMES, times);
+        }
     }
 
     public void addCloseOrSwitchTabMetadata(final String commandName,

@@ -387,7 +387,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateVariationsIfExist(final Scenario scenario, final File xmlFile) {
         if (isNotBlank(scenario.getSettings().getVariations())) {
             GlobalVariations.process(scenario, xmlFile);
-            variationsFileName.set(scenario.getVariations());
+            variationsFileName.set(scenario.getSettings().getVariations());
         }
     }
 

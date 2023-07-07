@@ -6,7 +6,7 @@
           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
 
     <x:include schemaLocation="overview.xsd"/>
-    <x:include schemaLocation="tags.xsd"/>
+    <x:include schemaLocation="settings.xsd"/>
     <x:include schemaLocation="mobilebrowser.xsd"/>
     <x:include schemaLocation="web.xsd"/>
     <x:include schemaLocation="native.xsd"/>
@@ -61,7 +61,7 @@
         <x:complexType>
             <x:sequence>
                 <x:element name="overview" type="tns:overview"/>
-                <x:element name="tags" type="tns:tags"/>
+                <x:element name="settings" type="tns:settings"/>
                 <x:choice maxOccurs="unbounded">
                     <x:element name="include" type="tns:include"/>
                     <x:element name="auth" type="tns:auth"/>
@@ -99,9 +99,6 @@
                     <x:element name="twilio" type="tns:twilio"/>
                 </x:choice>
             </x:sequence>
-            <x:attribute name="onlyThis" type="x:boolean" default="false"/>
-            <x:attribute name="active" type="x:boolean" default="true"/>
-            <x:attribute name="variations" type="tns:csv"/>
         </x:complexType>
     </x:element>
 
@@ -188,10 +185,4 @@
             </x:extension>
         </x:complexContent>
     </x:complexType>
-
-    <x:simpleType name="csv">
-        <x:restriction base="x:string">
-            <x:pattern value="[a-zA-Z\d_]+\.csv"/>
-        </x:restriction>
-    </x:simpleType>
 </x:schema>

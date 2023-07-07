@@ -1,7 +1,6 @@
 package com.knubisoft.testlum.testing.framework.report;
 
 import com.knubisoft.testlum.testing.model.scenario.Overview;
-import com.knubisoft.testlum.testing.model.scenario.Tags;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ public class ScenarioResult {
     private int id;
     private Overview overview;
     private String name;
-    private Tags tags;
+    private String tags;
     private String path;
     private String browser;
     private String mobilebrowserDevice;

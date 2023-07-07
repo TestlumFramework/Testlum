@@ -214,7 +214,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                                      final S3File fileCommand,
                                      final String key,
                                      final String bucketName) throws IOException {
-        logAndReportFileInfo(DOWNLOAD_FILE, fileCommand, fileCommand.getDownload().toString(), result);
+        logAndReportFileInfo(DOWNLOAD_FILE, fileCommand, fileCommand.getExpected(), result);
         setContextBody(downloadFile(fileCommand, bucketName, key, result));
     }
 

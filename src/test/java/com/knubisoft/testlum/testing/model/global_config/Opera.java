@@ -1,8 +1,10 @@
 
 package com.knubisoft.testlum.testing.model.global_config;
 
+import java.math.BigDecimal;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -18,6 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence&gt;
  *         &lt;element name="operaOptionsArguments" type="{http://www.knubisoft.com/testlum/testing/model/global-config}browserOptionsArguments" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
+ *       &lt;attribute name="scaleFactor" type="{http://www.knubisoft.com/testlum/testing/model/global-config}scaleFactor" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -34,6 +37,8 @@ public class Opera
 {
 
     protected BrowserOptionsArguments operaOptionsArguments;
+    @XmlAttribute(name = "scaleFactor")
+    protected BigDecimal scaleFactor;
 
     /**
      * Gets the value of the operaOptionsArguments property.
@@ -57,6 +62,30 @@ public class Opera
      */
     public void setOperaOptionsArguments(BrowserOptionsArguments value) {
         this.operaOptionsArguments = value;
+    }
+
+    /**
+     * Gets the value of the scaleFactor property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link BigDecimal }
+     *     
+     */
+    public BigDecimal getScaleFactor() {
+        return scaleFactor;
+    }
+
+    /**
+     * Sets the value of the scaleFactor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link BigDecimal }
+     *     
+     */
+    public void setScaleFactor(BigDecimal value) {
+        this.scaleFactor = value;
     }
 
 }

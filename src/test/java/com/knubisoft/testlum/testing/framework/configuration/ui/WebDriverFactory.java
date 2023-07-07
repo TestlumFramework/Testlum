@@ -52,6 +52,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class WebDriverFactory {
     private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;
+    private static final String CHROME_AND_EDGE_SCALE_FACTOR_ARG = "--force-device-scale-factor=";
 
     static {
         final Map<BrowserPredicate, WebDriverFunction> map = new HashMap<>(5);
@@ -83,7 +84,7 @@ public class WebDriverFactory {
         setCapabilities(browser, browserOptions);
         switch (BrowserUtil.getBrowserType(browser)) {
             case BROWSER_STACK:
-                return getBrowserStackDriver(browser.getBrowserType().getBrowserStack(), browserOptions);
+                return getBrowserStackDriver(browser, browserOptions);
             case REMOTE:
                 return getRemoteDriver(browser.getBrowserType().getRemoteBrowser(), browserOptions);
             case IN_DOCKER:
@@ -96,10 +97,15 @@ public class WebDriverFactory {
     }
 
     @SneakyThrows
-    private WebDriver getBrowserStackDriver(final BrowserStackWeb browserStack,
+    private WebDriver getBrowserStackDriver(final AbstractBrowser browser,
                                             final MutableCapabilities browserOptions) {
+        BrowserStackWeb browserStack = browser.getBrowserType().getBrowserStack();
         browserOptions.setCapability("browserstack.local", Boolean.TRUE);
+        browserOptions.setCapability("browserstack.use_w3c", Boolean.TRUE);
+        browserOptions.setCapability(CapabilityType.BROWSER_NAME, browser.getClass().getSimpleName());
         browserOptions.setCapability(CapabilityType.BROWSER_VERSION, browserStack.getBrowserVersion());
+        browserOptions.setCapability("os", browserStack.getOs());
+        browserOptions.setCapability("osVersion", browserStack.getOsVersion());
         String browserStackUrl = SeleniumDriverUtil.getBrowserStackUrl(
                 GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.currentEnv()));
         return new RemoteWebDriver(new URL(browserStackUrl), browserOptions);
@@ -169,11 +175,16 @@ public class WebDriverFactory {
             if (nonNull(browserOptionsArguments)) {
                 chromeOptions.addArguments(browserOptionsArguments.getArgument());
             }
+            if (nonNull(browser.getScaleFactor())) {
+                chromeOptions.addArguments(CHROME_AND_EDGE_SCALE_FACTOR_ARG + browser.getScaleFactor());
+            }
             return chromeOptions;
         }
     }
 
     private class FirefoxDriverInitializer implements WebDriverInitializer<Firefox> {
+
+        private static final String PIXELS_PER_PX = "layout.css.devPixelsPerPx";
 
         @Override
         public WebDriver init(final Firefox browser) {
@@ -186,6 +197,9 @@ public class WebDriverFactory {
             BrowserOptionsArguments browserOptionsArguments = browser.getFirefoxOptionsArguments();
             if (nonNull(browserOptionsArguments)) {
                 firefoxOptions.addArguments(browserOptionsArguments.getArgument());
+            }
+            if (nonNull(browser.getScaleFactor())) {
+                firefoxOptions.addPreference(PIXELS_PER_PX, browser.getScaleFactor());
             }
             return firefoxOptions;
         }
@@ -205,6 +219,9 @@ public class WebDriverFactory {
             if (nonNull(browserOptionsArguments)) {
                 edgeOptions.addArguments(browserOptionsArguments.getArgument());
             }
+            if (nonNull(browser.getScaleFactor())) {
+                edgeOptions.addArguments(CHROME_AND_EDGE_SCALE_FACTOR_ARG + browser.getScaleFactor());
+            }
             return edgeOptions;
         }
     }
@@ -219,6 +236,8 @@ public class WebDriverFactory {
 
     private class OperaDriverInitializer implements WebDriverInitializer<Opera> {
 
+        private static final String OPERA_SCALE_FACTOR_ARG = "--device-scale-factor=";
+
         @Override
         public WebDriver init(final Opera browser) {
             return getWebDriver(browser, getOperaOptions(browser), new OperaDriverManager());
@@ -229,6 +248,9 @@ public class WebDriverFactory {
             BrowserOptionsArguments browserOptionsArguments = browser.getOperaOptionsArguments();
             if (nonNull(browserOptionsArguments)) {
                 operaOptions.addArguments(browserOptionsArguments.getArgument());
+            }
+            if (nonNull(browser.getScaleFactor())) {
+                operaOptions.addArguments(OPERA_SCALE_FACTOR_ARG + browser.getScaleFactor());
             }
             return operaOptions;
         }

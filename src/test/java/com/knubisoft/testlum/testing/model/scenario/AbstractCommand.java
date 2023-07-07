@@ -59,6 +59,8 @@ import javax.xml.bind.annotation.XmlType;
     Twilio.class,
     Ui.class,
     AbstractUiCommand.class,
+    S3Bucket.class,
+    S3File.class,
     Logout.class
 })
 public abstract class AbstractCommand {

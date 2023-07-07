@@ -53,11 +53,16 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
         commands.put(key -> key instanceof Copy, (key, result) -> copyCommand());
         commands.put(key -> key instanceof Paste, (key, result) -> pasteCommand((Paste) key, result));
         commands.put(key -> key instanceof Highlight, (key, result) -> highlightCommand((Highlight) key, result));
-        commands.put(key -> key instanceof Tab, (key, result) -> singleKeyCommand(Keys.TAB));
-        commands.put(key -> key instanceof Enter, (key, result) -> singleKeyCommand(Keys.ENTER));
-        commands.put(key -> key instanceof BackSpace, (key, result) -> singleKeyCommand(Keys.BACK_SPACE));
-        commands.put(key -> key instanceof Escape, (key, result) -> singleKeyCommand(Keys.ESCAPE));
-        commands.put(key -> key instanceof Space, (key, result) -> singleKeyCommand(Keys.SPACE));
+        commands.put(key -> key instanceof Tab,
+                (key, result) -> singleKeyCommand(Keys.TAB, ((Tab) key).getTimes(), result));
+        commands.put(key -> key instanceof Enter,
+                (key, result) -> singleKeyCommand(Keys.ENTER, ((Enter) key).getTimes(), result));
+        commands.put(key -> key instanceof BackSpace,
+                (key, result) -> singleKeyCommand(Keys.BACK_SPACE, ((BackSpace) key).getTimes(), result));
+        commands.put(key -> key instanceof Escape,
+                (key, result) -> singleKeyCommand(Keys.ESCAPE, ((Escape) key).getTimes(), result));
+        commands.put(key -> key instanceof Space,
+                (key, result) -> singleKeyCommand(Keys.SPACE, ((Space) key).getTimes(), result));
         hotKeyCmdMethods = Collections.unmodifiableMap(commands);
         action = new Actions(dependencies.getDriver());
         ctrlKey = chooseKeyForOperatingSystem();
@@ -85,8 +90,12 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
                 .getValue().accept(command, result);
     }
 
-    private void singleKeyCommand(final Keys key) {
-        action.sendKeys(key).perform();
+    private void singleKeyCommand(final Keys key, final int times, final CommandResult result) {
+        for (int step = 0; step < times; step++) {
+            action.sendKeys(key).perform();
+        }
+        ResultUtil.addSingleKeyCommandMetaData(times, result);
+        LogUtil.logSingleKeyCommandTimes(times);
     }
 
     private void highlightCommand(final Highlight highlight, final CommandResult result) {

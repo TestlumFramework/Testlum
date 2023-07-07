@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecut
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.MySqlExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.model.global_config.Mysql;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,7 +44,8 @@ public class MySqlOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         mySqlExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (isTruncate(Mysql.class, aliasEnv)
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

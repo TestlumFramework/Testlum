@@ -150,6 +150,7 @@ public final class LogMessage {
     public static final String DRAGGING_FILE_PATH = format(TABLE_FORMAT, "Dragging file path", "{}");
     public static final String HOTKEY_COMMAND = format(TABLE_FORMAT, "Hotkey command", "{}");
     public static final String HOTKEY_COMMAND_LOCATOR = format(TABLE_FORMAT, "Hotkey command locator", "{}");
+    public static final String HOTKEY_COMMAND_TIMES = format(TABLE_FORMAT, "Times to repeat", "{}");
     public static final String HTTP_STATUS_CODE = format(TABLE_FORMAT, "Status code", "{} {}");
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "HTTP method", "{}");
     public static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
@@ -172,6 +173,7 @@ public final class LogMessage {
     public static final String IMAGE_SOURCE_ATT_LOG = format(TABLE_FORMAT, "Image source attribute", "{}");
     public static final String URL_TO_IMAGE_LOG = format(TABLE_FORMAT, "URL to actual image", "{}");
     public static final String OVERVIEW_INFO_LOG = "{}: {}";
+    public static final String MOVE_TO_EMPTY_SPACE = format(TABLE_FORMAT, "Move to empty space", "{}");
 
     public static final String LAMBDA_FUNCTION_LOG = format(TABLE_FORMAT, "Function name", "{}");
     public static final String LAMBDA_PAYLOAD_LOG = format(TABLE_FORMAT, "Payload", "{}");

@@ -302,6 +302,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link StorageIntegration }
+     * 
+     */
+    public StorageIntegration createStorageIntegration() {
+        return new StorageIntegration();
+    }
+
+    /**
      * Create an instance of {@link Settings }
      * 
      */

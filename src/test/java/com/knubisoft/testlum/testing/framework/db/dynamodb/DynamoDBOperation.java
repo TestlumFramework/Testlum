@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.model.global_config.Dynamo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
@@ -48,7 +49,8 @@ public class DynamoDBOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         dynamoDbClient.forEach((aliasEnv, dbClient) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (isTruncate(Dynamo.class, aliasEnv)
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 dbClient.listTables().tableNames().forEach(tableName -> truncate(tableName, dbClient));
             }
         });

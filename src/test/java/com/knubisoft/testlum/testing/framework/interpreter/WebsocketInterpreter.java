@@ -31,11 +31,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.CLOSE_BRACE;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.CLOSE_SQUARE_BRACKET;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_WEBSOCKET_COMMAND;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.WEBSOCKET_CONNECTION_FAILURE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
@@ -173,7 +169,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         return IntStream.range(0, limit)
                 .mapToObj(id -> receivedMessages.pollFirst())
                 .filter(Objects::nonNull)
-                .map(this::toJsonObject)
+                .map(JacksonMapperUtil::toJsonObject)
                 .collect(Collectors.toList());
     }
 
@@ -187,15 +183,6 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
             WaitUtil.waitUntil(() -> receivedMessages.size() >= requiredMessageCount,
                     timeoutMillis, TimeUnit.MILLISECONDS, CHECK_PERIOD_MS);
         }
-    }
-
-    private Object toJsonObject(final String content) {
-        if (isNotBlank(content)
-                && ((content.startsWith(OPEN_BRACE) && content.endsWith(CLOSE_BRACE))
-                || (content.startsWith(OPEN_SQUARE_BRACKET) && content.endsWith(CLOSE_SQUARE_BRACKET)))) {
-            return JacksonMapperUtil.readValue(content, Object.class);
-        }
-        return content;
     }
 
     private void executeComparison(final List<Object> actualContent, final String expectedContent) {

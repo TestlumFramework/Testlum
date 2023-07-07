@@ -457,14 +457,18 @@ public class ResultUtil {
         result.put(LAMBDA_PAYLOAD, StringPrettifier.asJsonResult(payload));
     }
 
-    public void addS3GeneralMetaData(final String alias,
-                                     final String action,
-                                     final String key,
-                                     final String bucket,
-                                     final CommandResult result) {
-        result.put(ALIAS, alias);
+    public void addS3BucketMetaData(final String action,
+                                    final String bucket,
+                                    final CommandResult result) {
         result.put(ACTION, action);
         result.put(BUCKET, bucket);
+    }
+
+    public void addS3FileMetaData(final String action,
+                                  final String bucket,
+                                  final String key,
+                                  final CommandResult result) {
+        addS3BucketMetaData(action, bucket, result);
         result.put(KEY, key);
     }
 

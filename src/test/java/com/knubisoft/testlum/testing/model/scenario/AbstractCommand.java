@@ -61,6 +61,8 @@ import javax.xml.bind.annotation.XmlType;
     Ui.class,
     AssertEquality.class,
     AbstractUiCommand.class,
+    S3Bucket.class,
+    S3File.class,
     Logout.class
 })
 public abstract class AbstractCommand {

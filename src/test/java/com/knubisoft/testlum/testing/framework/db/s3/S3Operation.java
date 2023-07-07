@@ -38,6 +38,7 @@ public class S3Operation implements StorageOperation {
                 amazonS3.listBuckets().forEach(bucket -> {
                     ListObjectsV2Result objectsInBucket = amazonS3.listObjectsV2(bucket.getName());
                     this.deleteObjectsInBucket(amazonS3, objectsInBucket, bucket.getName());
+                    amazonS3.deleteBucket(bucket.getName());
                 });
             }
         });

@@ -237,10 +237,6 @@ public class ResultUtil {
         result.setActual(actual);
     }
 
-    public void addAliasData(final String alias, final CommandResult result) {
-        result.put(ALIAS, alias);
-    }
-
     public void addDatabaseMetaData(final String databaseAlias,
                                     final List<String> queries,
                                     final CommandResult result) {

@@ -1,7 +1,6 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.model.scenario.S3;
 import com.knubisoft.testlum.testing.model.scenario.S3File;
 
 public class S3Util {
@@ -10,11 +9,7 @@ public class S3Util {
     public static final String UPLOAD_FILE = "upload file";
     public static final String DOWNLOAD_FILE = "download file";
     public static final String REMOVE_FILE = "remove file";
-
-    public static void logAndReportAlias(final S3 s3, final CommandResult result) {
-        LogUtil.logAlias(s3.getAlias());
-        ResultUtil.addAliasData(s3.getAlias(), result);
-    }
+    public static final String FILE_NAME = "File name";
 
     public static void logAndReportBucketInfo(final String bucketAcion,
                                               final String bucketName,

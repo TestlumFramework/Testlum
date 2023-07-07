@@ -45,12 +45,13 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FILE_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FILE_PROCESSING_ERROR;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_S3_PROCESSING;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALIAS;
 import static com.knubisoft.testlum.testing.framework.util.S3Util.CREATE_BUCKET;
 import static com.knubisoft.testlum.testing.framework.util.S3Util.DOWNLOAD_FILE;
+import static com.knubisoft.testlum.testing.framework.util.S3Util.FILE_NAME;
 import static com.knubisoft.testlum.testing.framework.util.S3Util.REMOVE_BUCKET;
 import static com.knubisoft.testlum.testing.framework.util.S3Util.REMOVE_FILE;
 import static com.knubisoft.testlum.testing.framework.util.S3Util.UPLOAD_FILE;
-import static com.knubisoft.testlum.testing.framework.util.S3Util.logAndReportAlias;
 import static com.knubisoft.testlum.testing.framework.util.S3Util.logAndReportBucketInfo;
 import static com.knubisoft.testlum.testing.framework.util.S3Util.logAndReportFileInfo;
 import static java.util.Objects.nonNull;
@@ -59,8 +60,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Slf4j
 @InterpreterForClass(S3.class)
 public class S3Interpreter extends AbstractInterpreter<S3> {
-
-    public static final String FILE_NAME = "File name";
     @Autowired(required = false)
     private Map<AliasEnv, AmazonS3> amazonS3;
 
@@ -71,8 +70,8 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     @Override
     protected void acceptImpl(final S3 o, final CommandResult result) {
         S3 s3 = injectCommand(o);
-        logAndReportAlias(s3, result);
-        AliasEnv aliasEnv = new AliasEnv(s3.getAlias(), dependencies.getEnvironment());
+        log.info(s3.getAlias());
+        result.put(ALIAS, s3.getAlias());
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         for (AbstractCommand action : s3.getFileOrBucket()) {
@@ -80,7 +79,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
             LogUtil.logSubCommand(commandId, action);
             CommandResult commandResult = ResultUtil.newCommandResultInstance(commandId, action);
             subCommandsResult.add(commandResult);
-            processEachAction(action, aliasEnv, commandResult);
+            processEachAction(action, new AliasEnv(s3.getAlias(), dependencies.getEnvironment()), commandResult);
         }
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }

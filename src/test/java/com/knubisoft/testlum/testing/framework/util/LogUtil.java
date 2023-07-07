@@ -6,7 +6,6 @@ import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
-import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
@@ -43,7 +42,6 @@ import java.util.Locale;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ATTRIBUTE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BODY_LOG;
@@ -64,7 +62,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DROPPI
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_FRAME;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_WEBVIEW;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EQUALITY_TYPE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
@@ -497,11 +494,6 @@ public class LogUtil {
     public void logAssertCommand(final AbstractUiCommand command, final int position) {
         log.info(COMMAND_LOG, position, command.getClass().getSimpleName());
         log.info(COMMENT_LOG, command.getComment());
-    }
-
-    public <T extends AssertEquality> void logAssertEqualityCommand(final T equality) {
-        log.info(EQUALITY_TYPE, equality.getClass().getSimpleName());
-        log.info(CONTENT_LOG, String.join(COMMA, equality.getContent()));
     }
 
     public void logAssertAttributeInfo(final AssertAttribute attribute) {

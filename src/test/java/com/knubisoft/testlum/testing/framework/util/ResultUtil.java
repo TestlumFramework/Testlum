@@ -5,7 +5,6 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
-import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
@@ -48,7 +47,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static java.lang.String.format;
@@ -200,7 +198,6 @@ public class ResultUtil {
     private static final String IMAGE_COMPARISON_TYPE = "Image comparison type";
     private static final String IMAGE_LOCATOR = "Locator to element with image";
     private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
-    private static final String EQUALITY_TYPE = "Equality type";
 
     public CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
         CommandResult commandResult = new CommandResult();
@@ -526,12 +523,6 @@ public class ResultUtil {
                                               final CommandResult result) {
         result.setSkipped(!conditionResult);
         result.put(CONDITION, conditionName + " = " + conditionResult);
-    }
-
-    public <T extends AssertEquality> void addAssertEqualityMetaData(final T equality,
-                                                                     final CommandResult result) {
-        result.put(EQUALITY_TYPE, equality.getClass().getSimpleName());
-        result.put(CONTENT, String.join(COMMA, equality.getContent()));
     }
 
     public void addAuthMetaData(final Auth auth, final CommandResult result) {

@@ -104,8 +104,6 @@ public final class LogMessage {
             "Key", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "File for action", "{}");
 
-    public static final String EQUALITY_TYPE = format(TABLE_FORMAT, "Equality type", "{}");
-
     public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
 
     public static final String WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND = ANSI_ORANGE

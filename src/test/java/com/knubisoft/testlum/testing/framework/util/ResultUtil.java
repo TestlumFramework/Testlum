@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static java.lang.String.format;
@@ -81,7 +82,6 @@ public class ResultUtil {
     public static final String LOCATOR_FORM = "Locator ID = %s";
     public static final String ELEMENT_PRESENT = "Is the web element present";
     public static final String CONDITION = "Condition";
-    public static final String COMMENT = "Comment";
     public static final String CONTENT = "Content";
     public static final String GENERATED_STRING = "Randomly generated string";
     public static final String ASSERT_LOCATOR = "Locator for assert command";
@@ -531,7 +531,7 @@ public class ResultUtil {
     public <T extends AssertEquality> void addAssertEqualityMetaData(final T equality,
                                                                      final CommandResult result) {
         result.put(EQUALITY_TYPE, equality.getClass().getSimpleName());
-        result.put(CONTENT, equality.getContent());
+        result.put(CONTENT, String.join(COMMA, equality.getContent()));
     }
 
     public void addAuthMetaData(final Auth auth, final CommandResult result) {

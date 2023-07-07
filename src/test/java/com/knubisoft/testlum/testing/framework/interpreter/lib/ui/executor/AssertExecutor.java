@@ -28,13 +28,13 @@ import java.util.function.Predicate;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ASSERT_TYPE_NOT_SUPPORTED;
 
 @ExecutorForClass(WebAssert.class)
-public class WebAssertExecutor extends AbstractUiExecutor<WebAssert> {
+public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
 
     private final Map<AssertCmdPredicate, AssertMethod> assertCommandMap;
     private final List<String> exceptionResult = new ArrayList<>();
     private final AtomicInteger commandId = new AtomicInteger();
 
-    public WebAssertExecutor(final ExecutorDependencies dependencies) {
+    public AssertExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         Map<AssertCmdPredicate, AssertMethod> assertCommands = new HashMap<>();
         assertCommands.put(a -> a instanceof AssertAttribute,

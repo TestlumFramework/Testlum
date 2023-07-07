@@ -43,6 +43,7 @@ import java.util.Locale;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ATTRIBUTE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BODY_LOG;
@@ -500,7 +501,7 @@ public class LogUtil {
 
     public <T extends AssertEquality> void logAssertEqualityCommand(final T equality) {
         log.info(EQUALITY_TYPE, equality.getClass().getSimpleName());
-        log.info(CONTENT_LOG, equality.getContent());
+        log.info(CONTENT_LOG, String.join(COMMA, equality.getContent()));
     }
 
     public void logAssertAttributeInfo(final AssertAttribute attribute) {

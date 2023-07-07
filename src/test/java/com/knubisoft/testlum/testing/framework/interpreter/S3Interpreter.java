@@ -85,7 +85,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
-    private static void logAndReport(final CommandResult result, final S3 s3) {
+    private void logAndReport(final CommandResult result, final S3 s3) {
         LogUtil.logAlias(s3.getAlias());
         result.put(ALIAS, s3.getAlias());
     }

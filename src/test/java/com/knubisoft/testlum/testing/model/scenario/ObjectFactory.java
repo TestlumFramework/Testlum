@@ -774,6 +774,46 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FindIn }
+     * 
+     */
+    public FindIn createFindIn() {
+        return new FindIn();
+    }
+
+    /**
+     * Create an instance of {@link FindInFullScreen }
+     * 
+     */
+    public FindInFullScreen createFindInFullScreen() {
+        return new FindInFullScreen();
+    }
+
+    /**
+     * Create an instance of {@link FindInElement }
+     * 
+     */
+    public FindInElement createFindInElement() {
+        return new FindInElement();
+    }
+
+    /**
+     * Create an instance of {@link CompareWith }
+     * 
+     */
+    public CompareWith createCompareWith() {
+        return new CompareWith();
+    }
+
+    /**
+     * Create an instance of {@link ComparisonConditions }
+     * 
+     */
+    public ComparisonConditions createComparisonConditions() {
+        return new ComparisonConditions();
+    }
+
+    /**
      * Create an instance of {@link CompareWithFullScreen }
      * 
      */

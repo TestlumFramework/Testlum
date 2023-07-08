@@ -13,7 +13,10 @@ import com.knubisoft.testlum.testing.framework.util.ImageComparisonUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
+import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.CompareWithImage;
+import com.knubisoft.testlum.testing.model.scenario.Exclude;
+import com.knubisoft.testlum.testing.model.scenario.FindIn;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -49,42 +52,53 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         BufferedImage expectedImage = ImageIO.read(FileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
         BufferedImage actualImage = getActualImage(dependencies.getDriver(), image, result);
         List<Rectangle> excludedElements = getExcludedElements(image);
-        ImageComparisonResult comparisonResult =
-                ImageComparator.compare(expectedImage, actualImage, excludedElements, image.getCompareWithFullScreen());
-        ImageComparisonUtil
-                .processImageComparisonResult(comparisonResult, image, scenarioFile.getParentFile(), result);
+        if (nonNull(image.getCompareWith())) {
+            processCompareWith(image, expectedImage, actualImage, scenarioFile, excludedElements, result);
+        } else {
+            ImageComparisonUtil.findExpectedInActual(image, expectedImage,
+                    actualImage, scenarioFile.getParentFile(), excludedElements, result);
+        }
     }
 
-    private List<Rectangle> getExcludedElements(final Image image) {
-        List<Rectangle> excludedElements = new ArrayList<>();
-        if (nonNull(image.getCompareWithFullScreen()) && !image.getCompareWithFullScreen().getExclude().isEmpty()) {
-            image.getCompareWithFullScreen().getExclude().forEach(element -> {
-                WebElement webElement = UiUtil.findWebElement(dependencies, element.getLocatorId());
-                org.openqa.selenium.Rectangle seleniumRectangle = webElement.getRect();
-                Rectangle rectangle = new Rectangle(seleniumRectangle.getX(), seleniumRectangle.getY(),
-                        seleniumRectangle.getX() + seleniumRectangle.getWidth(),
-                        seleniumRectangle.getY() + seleniumRectangle.getHeight());
-                excludedElements.add(rectangle);
-            });
-        }
-        return excludedElements;
+    private void processCompareWith(final Image image,
+                                    final BufferedImage expectedImage,
+                                    final BufferedImage actualImage,
+                                    final File scenarioFile,
+                                    final List<Rectangle> excludedElements,
+                                    final CommandResult result) {
+        ImageComparisonResult comparisonResult =
+                ImageComparator.compare(image, expectedImage, actualImage, excludedElements);
+        ImageComparisonUtil.processImageComparisonResult(comparisonResult, image, scenarioFile.getParentFile(), result);
     }
 
     private BufferedImage getActualImage(final WebDriver webDriver,
                                          final Image image,
                                          final CommandResult result) throws IOException {
-        CompareWithImage compareWithImage = image.getCompareWithImage();
+        if (nonNull(image.getCompareWith())) {
+            return getCompareWithActualImage(webDriver, image.getCompareWith(), result);
+        }
+        if (nonNull(image.getFindIn().getFullScreen())) {
+            return ImageIO.read(UiUtil.takeScreenshot(webDriver));
+        } else {
+            return getElementAsImage(webDriver, image.getFindIn().getElement().getLocatorId());
+        }
+    }
+
+    private BufferedImage getCompareWithActualImage(final WebDriver webDriver,
+                                                    final CompareWith compareWith,
+                                                    final CommandResult result) throws IOException {
+        CompareWithImage compareWithImage = compareWith.getImage();
         if (nonNull(compareWithImage)) {
             WebElement webElement = UiUtil.findWebElement(dependencies, compareWithImage.getLocatorId());
             if (UiType.NATIVE == dependencies.getUiType()) {
                 return ImageIO.read(UiUtil.takeScreenshot(webElement));
             }
             return extractImageFromElement(webElement, compareWithImage.getAttribute(), result);
-        } else if (nonNull(image.getCompareWithElement())) {
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getCompareWithElement().getLocatorId());
-            return getElementAsImage(webDriver, webElement);
+        } else if (nonNull(compareWith.getElement())) {
+            return getElementAsImage(webDriver, compareWith.getElement().getLocatorId());
+        } else {
+            return ImageIO.read(UiUtil.takeScreenshot(webDriver));
         }
-        return ImageIO.read(UiUtil.takeScreenshot(webDriver));
     }
 
     private BufferedImage extractImageFromElement(final WebElement webElement,
@@ -99,9 +113,35 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         return ImageIO.read(new URL(urlToImage));
     }
 
-    private BufferedImage getElementAsImage(final WebDriver webDriver, final WebElement webElement) throws IOException {
+    private BufferedImage getElementAsImage(final WebDriver webDriver, final String locatorId) throws IOException {
+        WebElement webElement = UiUtil.findWebElement(dependencies, locatorId);
         org.openqa.selenium.Rectangle rectangle = webElement.getRect();
         BufferedImage fullScreen = ImageIO.read(UiUtil.takeScreenshot(webDriver));
         return fullScreen.getSubimage(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
+    }
+
+    public List<Rectangle> getExcludedElements(final Image image) {
+        List<Rectangle> excludedElements = new ArrayList<>();
+        CompareWith compareWith = image.getCompareWith();
+        FindIn findIn = image.getFindIn();
+        if (nonNull(compareWith) && nonNull(compareWith.getFullScreen())) {
+            compareWith.getFullScreen().getExclude().forEach(element -> addElementToExclude(excludedElements, element));
+        } else if (nonNull(compareWith) && nonNull(compareWith.getElement())) {
+            compareWith.getElement().getExclude().forEach(element -> addElementToExclude(excludedElements, element));
+        } else if (nonNull(findIn) && nonNull(findIn.getFullScreen())) {
+            findIn.getFullScreen().getExclude().forEach(element -> addElementToExclude(excludedElements, element));
+        } else if (nonNull(findIn) && nonNull(findIn.getElement())) {
+            findIn.getElement().getExclude().forEach(element -> addElementToExclude(excludedElements, element));
+        }
+        return excludedElements;
+    }
+
+    private void addElementToExclude(final List<Rectangle> excludedElements, final Exclude element) {
+        WebElement webElement = UiUtil.findWebElement(dependencies, element.getLocatorId());
+        org.openqa.selenium.Rectangle seleniumRectangle = webElement.getRect();
+        Rectangle rectangle = new Rectangle(seleniumRectangle.getX(), seleniumRectangle.getY(),
+                seleniumRectangle.getX() + seleniumRectangle.getWidth(),
+                seleniumRectangle.getY() + seleniumRectangle.getHeight());
+        excludedElements.add(rectangle);
     }
 }

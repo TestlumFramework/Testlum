@@ -12,6 +12,9 @@ import com.knubisoft.testlum.testing.model.scenario.CompareWithImage;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Exclude;
+import com.knubisoft.testlum.testing.model.scenario.FindIn;
+import com.knubisoft.testlum.testing.model.scenario.FindInElement;
+import com.knubisoft.testlum.testing.model.scenario.FindInFullScreen;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import com.knubisoft.testlum.testing.model.scenario.Image;
@@ -51,8 +54,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.GET_ELEMENT_AS_SCREENSHOT;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.GET_ELEMENT_AS_SCREENSHOT_THEN_FIND;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_FIND;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -202,7 +207,7 @@ public class ResultUtil {
     private static final String IMAGE_LOCATOR = "Locator to element with image";
     private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
     private static final String IMAGE_MISMATCH_PERCENT = "Allowed mismatch percent";
-    private static final String IMAGE_EXCLUDED_ELEMENT = "Excluded element locator #%s";
+    private static final String EXCLUDED_ELEMENT = "Excluded element locator #%s";
 
     public CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
         CommandResult commandResult = new CommandResult();
@@ -690,16 +695,23 @@ public class ResultUtil {
     public void addImageComparisonMetaData(final Image image, final CommandResult result) {
         result.put(IMAGE_FOR_COMPARISON, image.getFile());
         result.put(HIGHLIGHT_DIFFERENCE, image.isHighlightDifference());
-        CompareWithImage compareWithImage = image.getCompareWithImage();
-        if (nonNull(compareWithImage)) {
-            result.put(IMAGE_COMPARISON_TYPE, EXTRACT_THEN_COMPARE);
-            result.put(IMAGE_LOCATOR, compareWithImage.getLocatorId());
-            result.put(IMAGE_SOURCE_ATT, compareWithImage.getAttribute());
-        } else if (nonNull(image.getCompareWithFullScreen())) {
-            addCompareWithFullScreenMetaData(image.getCompareWithFullScreen(), result);
+        if (nonNull(image.getCompareWith())) {
+            if (nonNull(image.getCompareWith().getImage())) {
+                addCompareWithImageMetaData(result, image.getCompareWith().getImage());
+            } else if (nonNull(image.getCompareWith().getFullScreen())) {
+                addCompareWithFullScreenMetaData(image.getCompareWith().getFullScreen(), result);
+            } else {
+                addCompareWithElementMetaData(image.getCompareWith().getElement(), result);
+            }
         } else {
-            addCompareWithElementMetaData(image.getCompareWithElement(), result);
+            addFindInMetaData(image.getFindIn(), result);
         }
+    }
+
+    private void addCompareWithImageMetaData(final CommandResult result, final CompareWithImage compareWithImage) {
+        result.put(IMAGE_COMPARISON_TYPE, EXTRACT_THEN_COMPARE);
+        result.put(IMAGE_LOCATOR, compareWithImage.getLocatorId());
+        result.put(IMAGE_SOURCE_ATT, compareWithImage.getAttribute());
     }
 
     private void addCompareWithFullScreenMetaData(final CompareWithFullScreen compareWithFullScreen,
@@ -711,15 +723,49 @@ public class ResultUtil {
         if (!compareWithFullScreen.getExclude().isEmpty()) {
             for (int element = 0; element < compareWithFullScreen.getExclude().size(); element++) {
                 Exclude exclude = compareWithFullScreen.getExclude().get(element);
-                result.put(format(IMAGE_EXCLUDED_ELEMENT, element + 1), exclude.getLocatorId());
+                result.put(format(EXCLUDED_ELEMENT, element + 1), exclude.getLocatorId());
             }
         }
     }
 
     private void addCompareWithElementMetaData(final CompareWithElement compareWithElement,
                                                final CommandResult result) {
-        result.put(IMAGE_COMPARISON_TYPE, GET_ELEMENT_AS_SCREENSHOT);
+        result.put(IMAGE_COMPARISON_TYPE, GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
         result.put(IMAGE_LOCATOR, compareWithElement.getLocatorId());
+    }
+
+    private void addFindInMetaData(final FindIn findIn, final CommandResult result) {
+        if (nonNull(findIn.getFullScreen())) {
+            addFindInFullScreenMetaData(findIn.getFullScreen(), result);
+        } else {
+            addFindInElementMetaData(findIn.getElement(), result);
+        }
+    }
+
+    private void addFindInFullScreenMetaData(final FindInFullScreen findInFullScreen, final CommandResult result) {
+        result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_FIND);
+        if (nonNull(findInFullScreen.getMismatch())) {
+            result.put(IMAGE_MISMATCH_PERCENT, findInFullScreen.getMismatch());
+        }
+        if (!findInFullScreen.getExclude().isEmpty()) {
+            for (int element = 0; element < findInFullScreen.getExclude().size(); element++) {
+                Exclude exclude = findInFullScreen.getExclude().get(element);
+                result.put(format(EXCLUDED_ELEMENT, element + 1), exclude.getLocatorId());
+            }
+        }
+    }
+
+    private void addFindInElementMetaData(final FindInElement findInElement, final CommandResult result) {
+        result.put(IMAGE_COMPARISON_TYPE, GET_ELEMENT_AS_SCREENSHOT_THEN_FIND);
+        if (nonNull(findInElement.getMismatch())) {
+            result.put(IMAGE_MISMATCH_PERCENT, findInElement.getMismatch());
+        }
+        if (!findInElement.getExclude().isEmpty()) {
+            for (int element = 0; element < findInElement.getExclude().size(); element++) {
+                Exclude exclude = findInElement.getExclude().get(element);
+                result.put(format(EXCLUDED_ELEMENT, element + 1), exclude.getLocatorId());
+            }
+        }
     }
 
     public void addAssertAttributeMetaData(final Attribute attribute, final CommandResult result) {

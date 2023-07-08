@@ -8,9 +8,14 @@ import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.Attribute;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
+import com.knubisoft.testlum.testing.model.scenario.CompareWithElement;
+import com.knubisoft.testlum.testing.model.scenario.CompareWithFullScreen;
 import com.knubisoft.testlum.testing.model.scenario.CompareWithImage;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
+import com.knubisoft.testlum.testing.model.scenario.FindIn;
+import com.knubisoft.testlum.testing.model.scenario.FindInElement;
+import com.knubisoft.testlum.testing.model.scenario.FindInFullScreen;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
@@ -68,7 +73,8 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUT
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXPRESSION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.GET_ELEMENT_AS_SCREENSHOT;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.GET_ELEMENT_AS_SCREENSHOT_THEN_FIND;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND_TIMES;
@@ -118,6 +124,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_CO
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_INDEX;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_URL;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_FIND;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COMMAND_LOG;
@@ -451,32 +458,68 @@ public class LogUtil {
     public void logImageComparisonInfo(final Image image) {
         log.info(IMAGE_FOR_COMPARISON_LOG, image.getFile());
         log.info(HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
-        CompareWithImage compareWithImage = image.getCompareWithImage();
-        if (nonNull(compareWithImage)) {
-            log.info(IMAGE_COMPARISON_TYPE_LOG, EXTRACT_THEN_COMPARE);
-            log.info(LOCATOR_LOG, compareWithImage.getLocatorId());
-            log.info(IMAGE_SOURCE_ATT_LOG, compareWithImage.getAttribute());
-        } else if (nonNull(image.getCompareWithFullScreen())) {
-            logCompareWithFullscreen(image);
+        if (nonNull(image.getCompareWith())) {
+            if (nonNull(image.getCompareWith().getImage())) {
+                logCompareWithImageInfo(image.getCompareWith().getImage());
+            } else if (nonNull(image.getCompareWith().getFullScreen())) {
+                logCompareWithFullscreen(image.getCompareWith().getFullScreen());
+            } else {
+                logCompareWithElement(image.getCompareWith().getElement());
+            }
         } else {
-            logCompareWithElement(image);
+            logFindInInfo(image.getFindIn());
         }
     }
 
-    private void logCompareWithFullscreen(final Image image) {
-        log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_COMPARE);
-        if (nonNull(image.getCompareWithFullScreen().getMismatch())) {
-            log.info(IMAGE_MISMATCH_PERCENT_LOG, image.getCompareWithFullScreen().getMismatch());
+    private void logFindInInfo(final FindIn findIn) {
+        if (nonNull(findIn.getFullScreen())) {
+            logFindInFullScreenInfo(findIn.getFullScreen());
+        } else {
+            addFindInElementMetaData(findIn.getElement());
         }
-        if (!image.getCompareWithFullScreen().getExclude().isEmpty()) {
-            image.getCompareWithFullScreen().getExclude().forEach(element ->
+    }
+
+    private void logFindInFullScreenInfo(final FindInFullScreen findInFullScreen) {
+        log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_FIND);
+        if (nonNull(findInFullScreen.getMismatch())) {
+            log.info(IMAGE_MISMATCH_PERCENT_LOG, findInFullScreen.getMismatch());
+        }
+        if (!findInFullScreen.getExclude().isEmpty()) {
+            findInFullScreen.getExclude().forEach(element ->
                     log.info(IMAGE_EXCLUDED_ELEMENT_LOG, element.getLocatorId()));
         }
     }
 
-    private void logCompareWithElement(final Image image) {
-        log.info(IMAGE_COMPARISON_TYPE_LOG, GET_ELEMENT_AS_SCREENSHOT);
-        log.info(LOCATOR_LOG, image.getCompareWithElement().getLocatorId());
+    private void addFindInElementMetaData(final FindInElement findInElement) {
+        log.info(IMAGE_COMPARISON_TYPE_LOG, GET_ELEMENT_AS_SCREENSHOT_THEN_FIND);
+        if (nonNull(findInElement.getMismatch())) {
+            log.info(IMAGE_MISMATCH_PERCENT_LOG, findInElement.getMismatch());
+        }
+        if (!findInElement.getExclude().isEmpty()) {
+            findInElement.getExclude().forEach(element -> log.info(IMAGE_EXCLUDED_ELEMENT_LOG, element.getLocatorId()));
+        }
+    }
+
+    private static void logCompareWithImageInfo(final CompareWithImage compareWithImage) {
+        log.info(IMAGE_COMPARISON_TYPE_LOG, EXTRACT_THEN_COMPARE);
+        log.info(LOCATOR_LOG, compareWithImage.getLocatorId());
+        log.info(IMAGE_SOURCE_ATT_LOG, compareWithImage.getAttribute());
+    }
+
+    private void logCompareWithFullscreen(final CompareWithFullScreen compareWithFullScreen) {
+        log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_COMPARE);
+        if (nonNull(compareWithFullScreen.getMismatch())) {
+            log.info(IMAGE_MISMATCH_PERCENT_LOG, compareWithFullScreen.getMismatch());
+        }
+        if (!compareWithFullScreen.getExclude().isEmpty()) {
+            compareWithFullScreen.getExclude().forEach(element ->
+                    log.info(IMAGE_EXCLUDED_ELEMENT_LOG, element.getLocatorId()));
+        }
+    }
+
+    private void logCompareWithElement(final CompareWithElement compareWithElement) {
+        log.info(IMAGE_COMPARISON_TYPE_LOG, GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
+        log.info(LOCATOR_LOG, compareWithElement.getLocatorId());
     }
 
     public void logScrollInfo(final Scroll scroll) {

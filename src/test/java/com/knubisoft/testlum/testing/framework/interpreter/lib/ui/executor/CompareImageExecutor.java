@@ -100,9 +100,8 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
     }
 
     private BufferedImage getElementAsImage(final WebDriver webDriver, final WebElement webElement) throws IOException {
-        org.openqa.selenium.Rectangle seleniumRectangle = webElement.getRect();
+        org.openqa.selenium.Rectangle rectangle = webElement.getRect();
         BufferedImage fullScreen = ImageIO.read(UiUtil.takeScreenshot(webDriver));
-        return fullScreen.getSubimage(seleniumRectangle.getX(), seleniumRectangle.getY(),
-                seleniumRectangle.getWidth(), seleniumRectangle.getHeight());
+        return fullScreen.getSubimage(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
     }
 }

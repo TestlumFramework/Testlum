@@ -52,7 +52,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class WebDriverFactory {
     private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;
-    private static final String CHROME_DRIVER_SCALE_FACTOR_ARG = "--force-device-scale-factor=";
+    private static final String CHROMIUM_SCALE_FACTOR_ARG = "--force-device-scale-factor=";
 
     static {
         final Map<BrowserPredicate, WebDriverFunction> map = new HashMap<>(5);
@@ -176,7 +176,7 @@ public class WebDriverFactory {
                 chromeOptions.addArguments(browserOptionsArguments.getArgument());
             }
             if (nonNull(browser.getScaleFactor())) {
-                chromeOptions.addArguments(CHROME_DRIVER_SCALE_FACTOR_ARG + browser.getScaleFactor());
+                chromeOptions.addArguments(CHROMIUM_SCALE_FACTOR_ARG + browser.getScaleFactor());
             }
             return chromeOptions;
         }
@@ -184,7 +184,7 @@ public class WebDriverFactory {
 
     private class FirefoxDriverInitializer implements WebDriverInitializer<Firefox> {
 
-        private static final String PIXELS_PER_PX = "layout.css.devPixelsPerPx";
+        private static final String FIREFOX_SCALE_FACTOR = "layout.css.devPixelsPerPx";
 
         @Override
         public WebDriver init(final Firefox browser) {
@@ -199,7 +199,7 @@ public class WebDriverFactory {
                 firefoxOptions.addArguments(browserOptionsArguments.getArgument());
             }
             if (nonNull(browser.getScaleFactor())) {
-                firefoxOptions.addPreference(PIXELS_PER_PX, browser.getScaleFactor());
+                firefoxOptions.addPreference(FIREFOX_SCALE_FACTOR, browser.getScaleFactor());
             }
             return firefoxOptions;
         }
@@ -220,7 +220,7 @@ public class WebDriverFactory {
                 edgeOptions.addArguments(browserOptionsArguments.getArgument());
             }
             if (nonNull(browser.getScaleFactor())) {
-                edgeOptions.addArguments(CHROME_DRIVER_SCALE_FACTOR_ARG + browser.getScaleFactor());
+                edgeOptions.addArguments(CHROMIUM_SCALE_FACTOR_ARG + browser.getScaleFactor());
             }
             return edgeOptions;
         }
@@ -248,7 +248,7 @@ public class WebDriverFactory {
                 operaOptions.addArguments(browserOptionsArguments.getArgument());
             }
             if (nonNull(browser.getScaleFactor())) {
-                operaOptions.addArguments(CHROME_DRIVER_SCALE_FACTOR_ARG + browser.getScaleFactor());
+                operaOptions.addArguments(CHROMIUM_SCALE_FACTOR_ARG + browser.getScaleFactor());
             }
             return operaOptions;
         }

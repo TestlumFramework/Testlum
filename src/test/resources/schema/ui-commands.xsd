@@ -425,7 +425,7 @@
 
     <x:simpleType name="positiveDoubleMin0Max100">
         <x:restriction base="x:double">
-            <x:minInclusive value="0.0"/>
+            <x:minInclusive value="0"/>
             <x:maxInclusive value="100"/>
         </x:restriction>
     </x:simpleType>

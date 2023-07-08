@@ -76,6 +76,8 @@ import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.Redis;
 import com.knubisoft.testlum.testing.model.scenario.Response;
 import com.knubisoft.testlum.testing.model.scenario.S3;
+import com.knubisoft.testlum.testing.model.scenario.S3Bucket;
+import com.knubisoft.testlum.testing.model.scenario.S3File;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
@@ -641,9 +643,38 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateS3Command(final File xmlFile, final S3 s3) {
-        Stream.of(s3.getDownload(), s3.getUpload())
-                .filter(StringUtils::isNotBlank)
-                .forEach(v -> validateFileIfExist(xmlFile, v));
+        s3.getFileOrBucket().stream()
+                .map(this::getS3CommandFilename)
+                .filter(Objects::nonNull)
+                .forEach(filename -> validateFileIfExist(xmlFile, filename));
+    }
+
+    private String getS3CommandFilename(final Object s3Command) {
+        if (s3Command instanceof S3Bucket) {
+            S3Bucket bucketCommand = (S3Bucket) s3Command;
+            return getS3BucketCommandFilename(bucketCommand);
+        } else {
+            S3File fileCommand = (S3File) s3Command;
+            return getS3FileCommandFilename(fileCommand);
+        }
+    }
+
+    private String getS3BucketCommandFilename(final S3Bucket s3Bucket) {
+        if (isNotBlank(s3Bucket.getCreate())) {
+            return s3Bucket.getExpected();
+        } else {
+            return s3Bucket.getExpected();
+        }
+    }
+
+    private String getS3FileCommandFilename(final S3File s3File) {
+        if (isNotBlank(s3File.getUpload())) {
+            return s3File.getUpload();
+        } else if (nonNull(s3File.getDownload())) {
+            return s3File.getExpected();
+        } else {
+            return s3File.getRemove();
+        }
     }
 
     private void validateSendgridCommand(final File xmlFile, final Sendgrid sendgrid) {

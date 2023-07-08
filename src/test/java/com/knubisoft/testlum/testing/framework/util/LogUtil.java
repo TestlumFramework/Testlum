@@ -308,8 +308,12 @@ public class LogUtil {
                         .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
-    public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {
-        log.info(LogMessage.S3_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket, key, fileName);
+    public void logS3BucketActionInfo(final String action, final String bucket) {
+        log.info(LogMessage.S3_BUCKET_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket);
+    }
+
+    public void logS3FileActionInfo(final String action, final String bucket, final String key, final String fileName) {
+        log.info(LogMessage.S3_FILE_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket, key, fileName);
     }
 
     public void logSESMessage(final Message sesMessage) {

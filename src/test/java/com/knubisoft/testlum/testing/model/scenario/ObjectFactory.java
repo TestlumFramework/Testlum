@@ -774,11 +774,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CompareWith }
+     * Create an instance of {@link CompareWithImage }
      * 
      */
-    public CompareWith createCompareWith() {
-        return new CompareWith();
+    public CompareWithImage createCompareWithImage() {
+        return new CompareWithImage();
+    }
+
+    /**
+     * Create an instance of {@link CompareWithElement }
+     * 
+     */
+    public CompareWithElement createCompareWithElement() {
+        return new CompareWithElement();
     }
 
     /**

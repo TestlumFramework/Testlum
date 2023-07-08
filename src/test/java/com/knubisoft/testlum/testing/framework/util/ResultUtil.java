@@ -6,7 +6,9 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Attribute;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
-import com.knubisoft.testlum.testing.model.scenario.CompareWith;
+import com.knubisoft.testlum.testing.model.scenario.CompareWithElement;
+import com.knubisoft.testlum.testing.model.scenario.CompareWithFullScreen;
+import com.knubisoft.testlum.testing.model.scenario.CompareWithImage;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Exclude;
@@ -49,6 +51,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.GET_ELEMENT_AS_SCREENSHOT;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
@@ -683,27 +686,36 @@ public class ResultUtil {
     public void addImageComparisonMetaData(final Image image, final CommandResult result) {
         result.put(IMAGE_FOR_COMPARISON, image.getFile());
         result.put(HIGHLIGHT_DIFFERENCE, image.isHighlightDifference());
-        CompareWith compareWith = image.getCompareWith();
-        if (nonNull(compareWith)) {
+        CompareWithImage compareWithImage = image.getCompareWithImage();
+        if (nonNull(compareWithImage)) {
             result.put(IMAGE_COMPARISON_TYPE, EXTRACT_THEN_COMPARE);
-            result.put(IMAGE_LOCATOR, compareWith.getLocatorId());
-            result.put(IMAGE_SOURCE_ATT, compareWith.getAttribute());
+            result.put(IMAGE_LOCATOR, compareWithImage.getLocatorId());
+            result.put(IMAGE_SOURCE_ATT, compareWithImage.getAttribute());
+        } else if (nonNull(image.getCompareWithFullScreen())) {
+            addCompareWithFullScreenMetaData(image.getCompareWithFullScreen(), result);
         } else {
-            addCompareWithFullScreenMetaData(image, result);
+            addCompareWithElementMetaData(image.getCompareWithElement(), result);
         }
     }
 
-    private void addCompareWithFullScreenMetaData(final Image image, final CommandResult result) {
+    private void addCompareWithFullScreenMetaData(final CompareWithFullScreen compareWithFullScreen,
+                                                  final CommandResult result) {
         result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
-        if (nonNull(image.getCompareWithFullScreen().getMismatch())) {
-            result.put(IMAGE_MISMATCH_PERCENT, image.getCompareWithFullScreen().getMismatch());
+        if (nonNull(compareWithFullScreen.getMismatch())) {
+            result.put(IMAGE_MISMATCH_PERCENT, compareWithFullScreen.getMismatch());
         }
-        if (!image.getCompareWithFullScreen().getExclude().isEmpty()) {
-            for (int element = 0; element < image.getCompareWithFullScreen().getExclude().size(); element++) {
-                Exclude exclude = image.getCompareWithFullScreen().getExclude().get(element);
+        if (!compareWithFullScreen.getExclude().isEmpty()) {
+            for (int element = 0; element < compareWithFullScreen.getExclude().size(); element++) {
+                Exclude exclude = compareWithFullScreen.getExclude().get(element);
                 result.put(format(IMAGE_EXCLUDED_ELEMENT, element + 1), exclude.getLocatorId());
             }
         }
+    }
+
+    private void addCompareWithElementMetaData(final CompareWithElement compareWithElement,
+                                               final CommandResult result) {
+        result.put(IMAGE_COMPARISON_TYPE, GET_ELEMENT_AS_SCREENSHOT);
+        result.put(IMAGE_LOCATOR, compareWithElement.getLocatorId());
     }
 
     public void addAssertAttributeMetaData(final Attribute attribute, final CommandResult result) {

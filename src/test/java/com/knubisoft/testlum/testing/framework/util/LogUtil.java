@@ -8,7 +8,7 @@ import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.Attribute;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
-import com.knubisoft.testlum.testing.model.scenario.CompareWith;
+import com.knubisoft.testlum.testing.model.scenario.CompareWithImage;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
@@ -68,6 +68,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUT
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXPRESSION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.GET_ELEMENT_AS_SCREENSHOT;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND_TIMES;
@@ -446,13 +447,15 @@ public class LogUtil {
     public void logImageComparisonInfo(final Image image) {
         log.info(IMAGE_FOR_COMPARISON_LOG, image.getFile());
         log.info(HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
-        CompareWith compareWith = image.getCompareWith();
-        if (nonNull(compareWith)) {
+        CompareWithImage compareWithImage = image.getCompareWithImage();
+        if (nonNull(compareWithImage)) {
             log.info(IMAGE_COMPARISON_TYPE_LOG, EXTRACT_THEN_COMPARE);
-            log.info(LOCATOR_LOG, compareWith.getLocatorId());
-            log.info(IMAGE_SOURCE_ATT_LOG, compareWith.getAttribute());
-        } else {
+            log.info(LOCATOR_LOG, compareWithImage.getLocatorId());
+            log.info(IMAGE_SOURCE_ATT_LOG, compareWithImage.getAttribute());
+        } else if (nonNull(image.getCompareWithFullScreen())) {
             logCompareWithFullscreen(image);
+        } else {
+            logCompareWithElement(image);
         }
     }
 
@@ -465,6 +468,11 @@ public class LogUtil {
             image.getCompareWithFullScreen().getExclude().forEach(element ->
                     log.info(IMAGE_EXCLUDED_ELEMENT_LOG, element.getLocatorId()));
         }
+    }
+
+    private void logCompareWithElement(final Image image) {
+        log.info(IMAGE_COMPARISON_TYPE_LOG, GET_ELEMENT_AS_SCREENSHOT);
+        log.info(LOCATOR_LOG, image.getCompareWithElement().getLocatorId());
     }
 
     public void logScrollInfo(final Scroll scroll) {

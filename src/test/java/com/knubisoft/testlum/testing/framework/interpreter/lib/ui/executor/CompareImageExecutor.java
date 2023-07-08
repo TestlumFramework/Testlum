@@ -13,7 +13,7 @@ import com.knubisoft.testlum.testing.framework.util.ImageComparisonUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
-import com.knubisoft.testlum.testing.model.scenario.CompareWith;
+import com.knubisoft.testlum.testing.model.scenario.CompareWithImage;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +50,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         BufferedImage actualImage = getActualImage(dependencies.getDriver(), image, result);
         List<Rectangle> excludedElements = getExcludedElements(image);
         ImageComparisonResult comparisonResult =
-                ImageComparator.compare(expectedImage, actualImage, excludedElements, image);
+                ImageComparator.compare(expectedImage, actualImage, excludedElements, image.getCompareWithFullScreen());
         ImageComparisonUtil
                 .processImageComparisonResult(comparisonResult, image, scenarioFile.getParentFile(), result);
     }
@@ -73,13 +73,16 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
     private BufferedImage getActualImage(final WebDriver webDriver,
                                          final Image image,
                                          final CommandResult result) throws IOException {
-        CompareWith compareWith = image.getCompareWith();
-        if (nonNull(compareWith)) {
-            WebElement webElement = UiUtil.findWebElement(dependencies, compareWith.getLocatorId());
+        CompareWithImage compareWithImage = image.getCompareWithImage();
+        if (nonNull(compareWithImage)) {
+            WebElement webElement = UiUtil.findWebElement(dependencies, compareWithImage.getLocatorId());
             if (UiType.NATIVE == dependencies.getUiType()) {
                 return ImageIO.read(UiUtil.takeScreenshot(webElement));
             }
-            return extractImageFromElement(webElement, compareWith.getAttribute(), result);
+            return extractImageFromElement(webElement, compareWithImage.getAttribute(), result);
+        } else if (nonNull(image.getCompareWithElement())) {
+            WebElement webElement = UiUtil.findWebElement(dependencies, image.getCompareWithElement().getLocatorId());
+            return getElementAsImage(webDriver, webElement);
         }
         return ImageIO.read(UiUtil.takeScreenshot(webDriver));
     }
@@ -94,5 +97,12 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         log.info(URL_TO_IMAGE_LOG, urlToImage);
         result.put(URL_TO_ACTUAL_IMAGE, urlToImage);
         return ImageIO.read(new URL(urlToImage));
+    }
+
+    private BufferedImage getElementAsImage(final WebDriver webDriver, final WebElement webElement) throws IOException {
+        org.openqa.selenium.Rectangle seleniumRectangle = webElement.getRect();
+        BufferedImage fullScreen = ImageIO.read(UiUtil.takeScreenshot(webDriver));
+        return fullScreen.getSubimage(seleniumRectangle.getX(), seleniumRectangle.getY(),
+                seleniumRectangle.getWidth(), seleniumRectangle.getHeight());
     }
 }

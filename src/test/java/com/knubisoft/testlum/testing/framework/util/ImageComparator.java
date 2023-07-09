@@ -26,7 +26,7 @@ public class ImageComparator {
         }
         if (nonNull(image.getCompareWith())) {
             setCompareWithMismatch(image.getCompareWith(), imageComparison);
-        } else if (nonNull(image.getFindIn())) {
+        } else {
             setFindInMismatch(image.getFindIn(), imageComparison);
         }
         return imageComparison.compareImages();

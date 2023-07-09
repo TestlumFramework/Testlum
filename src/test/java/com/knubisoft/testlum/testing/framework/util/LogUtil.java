@@ -471,35 +471,6 @@ public class LogUtil {
         }
     }
 
-    private void logFindInInfo(final FindIn findIn) {
-        if (nonNull(findIn.getFullScreen())) {
-            logFindInFullScreenInfo(findIn.getFullScreen());
-        } else {
-            addFindInElementMetaData(findIn.getElement());
-        }
-    }
-
-    private void logFindInFullScreenInfo(final FindInFullScreen findInFullScreen) {
-        log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_FIND);
-        if (nonNull(findInFullScreen.getMismatch())) {
-            log.info(IMAGE_MISMATCH_PERCENT_LOG, findInFullScreen.getMismatch());
-        }
-        if (!findInFullScreen.getExclude().isEmpty()) {
-            findInFullScreen.getExclude().forEach(element ->
-                    log.info(IMAGE_EXCLUDED_ELEMENT_LOG, element.getLocatorId()));
-        }
-    }
-
-    private void addFindInElementMetaData(final FindInElement findInElement) {
-        log.info(IMAGE_COMPARISON_TYPE_LOG, GET_ELEMENT_AS_SCREENSHOT_THEN_FIND);
-        if (nonNull(findInElement.getMismatch())) {
-            log.info(IMAGE_MISMATCH_PERCENT_LOG, findInElement.getMismatch());
-        }
-        if (!findInElement.getExclude().isEmpty()) {
-            findInElement.getExclude().forEach(element -> log.info(IMAGE_EXCLUDED_ELEMENT_LOG, element.getLocatorId()));
-        }
-    }
-
     private static void logCompareWithImageInfo(final CompareWithImage compareWithImage) {
         log.info(IMAGE_COMPARISON_TYPE_LOG, EXTRACT_THEN_COMPARE);
         log.info(LOCATOR_LOG, compareWithImage.getLocatorId());
@@ -520,6 +491,35 @@ public class LogUtil {
     private void logCompareWithElement(final CompareWithElement compareWithElement) {
         log.info(IMAGE_COMPARISON_TYPE_LOG, GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
         log.info(LOCATOR_LOG, compareWithElement.getLocatorId());
+    }
+
+    private void logFindInInfo(final FindIn findIn) {
+        if (nonNull(findIn.getFullScreen())) {
+            logFindInFullScreenInfo(findIn.getFullScreen());
+        } else {
+            logFindInElementInfo(findIn.getElement());
+        }
+    }
+
+    private void logFindInFullScreenInfo(final FindInFullScreen findInFullScreen) {
+        log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_FIND);
+        if (nonNull(findInFullScreen.getMismatch())) {
+            log.info(IMAGE_MISMATCH_PERCENT_LOG, findInFullScreen.getMismatch());
+        }
+        if (!findInFullScreen.getExclude().isEmpty()) {
+            findInFullScreen.getExclude().forEach(element ->
+                    log.info(IMAGE_EXCLUDED_ELEMENT_LOG, element.getLocatorId()));
+        }
+    }
+
+    private void logFindInElementInfo(final FindInElement findInElement) {
+        log.info(IMAGE_COMPARISON_TYPE_LOG, GET_ELEMENT_AS_SCREENSHOT_THEN_FIND);
+        if (nonNull(findInElement.getMismatch())) {
+            log.info(IMAGE_MISMATCH_PERCENT_LOG, findInElement.getMismatch());
+        }
+        if (!findInElement.getExclude().isEmpty()) {
+            findInElement.getExclude().forEach(element -> log.info(IMAGE_EXCLUDED_ELEMENT_LOG, element.getLocatorId()));
+        }
     }
 
     public void logScrollInfo(final Scroll scroll) {

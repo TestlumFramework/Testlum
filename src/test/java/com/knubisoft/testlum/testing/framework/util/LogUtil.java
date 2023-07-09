@@ -471,7 +471,7 @@ public class LogUtil {
         }
     }
 
-    private static void logCompareWithImageInfo(final CompareWithImage compareWithImage) {
+    private void logCompareWithImageInfo(final CompareWithImage compareWithImage) {
         log.info(IMAGE_COMPARISON_TYPE_LOG, EXTRACT_THEN_COMPARE);
         log.info(LOCATOR_LOG, compareWithImage.getLocatorId());
         log.info(IMAGE_SOURCE_ATT_LOG, compareWithImage.getAttribute());

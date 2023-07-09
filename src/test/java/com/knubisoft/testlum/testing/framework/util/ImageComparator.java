@@ -26,14 +26,13 @@ public class ImageComparator {
         }
         if (nonNull(image.getCompareWith())) {
             setCompareWithMismatch(image.getCompareWith(), imageComparison);
-        } else {
+        } else if (nonNull(image.getFindIn())) {
             setFindInMismatch(image.getFindIn(), imageComparison);
         }
         return imageComparison.compareImages();
     }
 
-    private void setCompareWithMismatch(final CompareWith compareWith,
-                                        final ImageComparison imageComparison) {
+    private void setCompareWithMismatch(final CompareWith compareWith, final ImageComparison imageComparison) {
         if (nonNull(compareWith.getFullScreen()) && nonNull(compareWith.getFullScreen().getMismatch())) {
             imageComparison.setAllowingPercentOfDifferentPixels(compareWith.getFullScreen().getMismatch());
         } else if (nonNull(compareWith.getElement()) && nonNull(compareWith.getElement().getMismatch())) {

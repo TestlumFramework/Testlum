@@ -120,7 +120,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         return fullScreen.getSubimage(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
     }
 
-    public List<Rectangle> getExcludedElements(final Image image) {
+    private List<Rectangle> getExcludedElements(final Image image) {
         List<Rectangle> excludedElements = new ArrayList<>();
         CompareWith compareWith = image.getCompareWith();
         FindIn findIn = image.getFindIn();

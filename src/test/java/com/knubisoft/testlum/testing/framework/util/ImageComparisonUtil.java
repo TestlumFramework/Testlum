@@ -147,19 +147,20 @@ public class ImageComparisonUtil {
         verifyDirectoryToSave(parentFile);
         if (comparisonState.equals(ImageComparisonState.MATCH)) {
             Imgproc.rectangle(actualMat, matchRect.tl(), matchRect.br(), new Scalar(0, RGB_255, 0), 1);
-            File resultFile = new File(parentFile.getAbsolutePath(),
-                    getImageNameToSave(image.getFile(), TestResourceSettings.RESULT_IMAGE_PREFIX));
-            saveActualAndAddToReports(actualMat, resultFile, result);
+            saveImage(image, parentFile, actualMat, TestResourceSettings.RESULT_IMAGE_PREFIX, result);
         } else {
             Imgproc.rectangle(actualMat, matchRect.tl(), matchRect.br(), new Scalar(0, 0, RGB_255), 1);
-            File resultFile = new File(parentFile.getAbsolutePath(),
-                    getImageNameToSave(image.getFile(), TestResourceSettings.ACTUAL_IMAGE_PREFIX));
-            saveActualAndAddToReports(actualMat, resultFile, result);
+            saveImage(image, parentFile, actualMat, TestResourceSettings.ACTUAL_IMAGE_PREFIX, result);
             throw new ImageComparisonException(format(IMAGES_DONT_MATCH, comparisonState.name()));
         }
     }
 
-    private void saveActualAndAddToReports(final Mat actualMat, final File resultFile, final CommandResult result) {
+    private void saveImage(final Image image,
+                           final File parentFile,
+                           final Mat actualMat,
+                           final String imagePrefix,
+                           final CommandResult result) {
+        File resultFile = new File(parentFile.getAbsolutePath(), getImageNameToSave(image.getFile(), imagePrefix));
         Imgcodecs.imwrite(resultFile.getAbsolutePath(), actualMat);
         UiUtil.putScreenshotToResult(result, resultFile);
         result.put(ADDITIONAL_INFO, IMAGE_ATTACHED_TO_STEP);

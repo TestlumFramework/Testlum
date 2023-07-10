@@ -82,6 +82,10 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:complexType name="graphQlFile">
+        <x:attribute name="file" type="tns:graphQlPattern" use="required"/>
+    </x:complexType>
+
     <x:simpleType name="graphQlPattern">
         <x:restriction base="x:string">
             <x:pattern value=".+(\.(json|graphql|gql))"/>

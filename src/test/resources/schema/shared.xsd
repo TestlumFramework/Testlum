@@ -82,6 +82,21 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:simpleType name="graphqlPattern">
+        <x:restriction base="x:string">
+            <x:pattern value="expected_\d+.json"/>
+            <x:pattern value="expected_\{\{.+\}\}.json"/>
+            <x:pattern value="\{\{.+\}\}.json"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="graphQlPattern">
+        <x:restriction base="x:string">
+            <x:pattern value=".+\.graphql"/>
+            <x:pattern value=".+\.gql"/>
+        </x:restriction>
+    </x:simpleType>
+
     <x:complexType name="body">
         <x:choice>
             <x:element name="param" type="tns:param" minOccurs="0" maxOccurs="unbounded"/>

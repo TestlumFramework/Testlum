@@ -100,7 +100,11 @@ public final class LogMessage {
             "Queue", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Content", "{}");
 
-    public static final String S3_ACTION_INFO_LOG = format(TABLE_FORMAT,
+    public static final String S3_BUCKET_ACTION_INFO_LOG = format(TABLE_FORMAT,
+            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Bucket for action", "{}");
+
+    public static final String S3_FILE_ACTION_INFO_LOG = format(TABLE_FORMAT,
             "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Bucket", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Key", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,

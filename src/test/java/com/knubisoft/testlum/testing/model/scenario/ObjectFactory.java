@@ -30,6 +30,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link S3File }
+     * 
+     */
+    public S3File createS3File() {
+        return new S3File();
+    }
+
+    /**
      * Create an instance of {@link Scenario }
      * 
      */
@@ -251,6 +259,14 @@ public class ObjectFactory {
      */
     public Websocket createWebsocket() {
         return new Websocket();
+    }
+
+    /**
+     * Create an instance of {@link Assert }
+     * 
+     */
+    public Assert createAssert() {
+        return new Assert();
     }
 
     /**
@@ -510,6 +526,54 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AssertEqual }
+     * 
+     */
+    public AssertEqual createAssertEqual() {
+        return new AssertEqual();
+    }
+
+    /**
+     * Create an instance of {@link AssertNotEqual }
+     * 
+     */
+    public AssertNotEqual createAssertNotEqual() {
+        return new AssertNotEqual();
+    }
+
+    /**
+     * Create an instance of {@link WebAssert }
+     * 
+     */
+    public WebAssert createWebAssert() {
+        return new WebAssert();
+    }
+
+    /**
+     * Create an instance of {@link NativeAssert }
+     * 
+     */
+    public NativeAssert createNativeAssert() {
+        return new NativeAssert();
+    }
+
+    /**
+     * Create an instance of {@link AssertAttribute }
+     * 
+     */
+    public AssertAttribute createAssertAttribute() {
+        return new AssertAttribute();
+    }
+
+    /**
+     * Create an instance of {@link AssertTitle }
+     * 
+     */
+    public AssertTitle createAssertTitle() {
+        return new AssertTitle();
+    }
+
+    /**
      * Create an instance of {@link Click }
      * 
      */
@@ -571,38 +635,6 @@ public class ObjectFactory {
      */
     public AllValues createAllValues() {
         return new AllValues();
-    }
-
-    /**
-     * Create an instance of {@link Assert }
-     * 
-     */
-    public Assert createAssert() {
-        return new Assert();
-    }
-
-    /**
-     * Create an instance of {@link NativeAssert }
-     * 
-     */
-    public NativeAssert createNativeAssert() {
-        return new NativeAssert();
-    }
-
-    /**
-     * Create an instance of {@link Attribute }
-     * 
-     */
-    public Attribute createAttribute() {
-        return new Attribute();
-    }
-
-    /**
-     * Create an instance of {@link Title }
-     * 
-     */
-    public Title createTitle() {
-        return new Title();
     }
 
     /**
@@ -883,6 +915,14 @@ public class ObjectFactory {
      */
     public RedisQuery createRedisQuery() {
         return new RedisQuery();
+    }
+
+    /**
+     * Create an instance of {@link S3Bucket }
+     * 
+     */
+    public S3Bucket createS3Bucket() {
+        return new S3Bucket();
     }
 
     /**
@@ -1187,6 +1227,14 @@ public class ObjectFactory {
      */
     public LambdaBody createLambdaBody() {
         return new LambdaBody();
+    }
+
+    /**
+     * Create an instance of {@link S3File.Download }
+     * 
+     */
+    public S3File.Download createS3FileDownload() {
+        return new S3File.Download();
     }
 
 }

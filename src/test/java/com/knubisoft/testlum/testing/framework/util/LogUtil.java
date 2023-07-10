@@ -5,7 +5,8 @@ import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
-import com.knubisoft.testlum.testing.model.scenario.Attribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
@@ -22,7 +23,6 @@ import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.Ses;
 import com.knubisoft.testlum.testing.model.scenario.Smtp;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
-import com.knubisoft.testlum.testing.model.scenario.Title;
 import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.knubisoft.testlum.testing.model.scenario.Ui;
 import lombok.SneakyThrows;
@@ -306,8 +306,12 @@ public class LogUtil {
                         .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
-    public void logS3ActionInfo(final String action, final String bucket, final String key, final String fileName) {
-        log.info(LogMessage.S3_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket, key, fileName);
+    public void logS3BucketActionInfo(final String action, final String bucket) {
+        log.info(LogMessage.S3_BUCKET_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket);
+    }
+
+    public void logS3FileActionInfo(final String action, final String bucket, final String key, final String fileName) {
+        log.info(LogMessage.S3_FILE_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket, key, fileName);
     }
 
     public void logSESMessage(final Message sesMessage) {
@@ -501,13 +505,13 @@ public class LogUtil {
         log.info(COMMENT_LOG, command.getComment());
     }
 
-    public void logAssertAttributeInfo(final Attribute attribute) {
+    public void logAssertAttributeInfo(final AssertAttribute attribute) {
         log.info(LOCATOR_LOG, attribute.getLocatorId());
         log.info(ATTRIBUTE_LOG, attribute.getName());
         log.info(CONTENT_LOG, StringPrettifier.cut(attribute.getContent()));
     }
 
-    public void logAssertTitleCommand(final Title title) {
+    public void logAssertTitleCommand(final AssertTitle title) {
         log.info(CONTENT_LOG, title.getContent());
     }
 

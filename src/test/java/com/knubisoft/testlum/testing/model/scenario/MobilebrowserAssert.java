@@ -5,20 +5,23 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for nativeAssert complex type.
+ * <p>Java class for mobilebrowserAssert complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="nativeAssert"&gt;
+ * &lt;complexType name="mobilebrowserAssert"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice maxOccurs="unbounded"&gt;
- *         &lt;element name="attribute" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertAttribute"/&gt;
+ *         &lt;element name="attribute" type="{http://www.knubisoft.com/testlum/testing/model/scenario}attribute"/&gt;
+ *         &lt;element name="title" type="{http://www.knubisoft.com/testlum/testing/model/scenario}title"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -28,42 +31,47 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "nativeAssert", propOrder = {
-    "attribute"
+@XmlType(name = "mobilebrowserAssert", propOrder = {
+    "attributeOrTitle"
 })
-public class NativeAssert
+public class MobilebrowserAssert
     extends AbstractUiCommand
 {
 
-    protected List<AssertAttribute> attribute;
+    @XmlElements({
+        @XmlElement(name = "attribute", type = AssertAttribute.class),
+        @XmlElement(name = "title", type = AssertTitle.class)
+    })
+    protected List<AbstractUiCommand> attributeOrTitle;
 
     /**
-     * Gets the value of the attribute property.
+     * Gets the value of the attributeOrTitle property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the attribute property.
+     * This is why there is not a <CODE>set</CODE> method for the attributeOrTitle property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getAttribute().add(newItem);
+     *    getAttributeOrTitle().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link AssertAttribute }
+     * {@link AssertTitle }
      * 
      * 
      */
-    public List<AssertAttribute> getAttribute() {
-        if (attribute == null) {
-            attribute = new ArrayList<AssertAttribute>();
+    public List<AbstractUiCommand> getAttributeOrTitle() {
+        if (attributeOrTitle == null) {
+            attributeOrTitle = new ArrayList<AbstractUiCommand>();
         }
-        return this.attribute;
+        return this.attributeOrTitle;
     }
 
 }

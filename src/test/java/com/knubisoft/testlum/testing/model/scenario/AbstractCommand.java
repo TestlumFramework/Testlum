@@ -52,13 +52,17 @@ import javax.xml.bind.annotation.XmlType;
     Dynamo.class,
     Graphql.class,
     Websocket.class,
+    Assert.class,
     Var.class,
     Condition.class,
     Shell.class,
     Smtp.class,
     Twilio.class,
     Ui.class,
+    AssertEquality.class,
     AbstractUiCommand.class,
+    S3Bucket.class,
+    S3File.class,
     Logout.class
 })
 public abstract class AbstractCommand {

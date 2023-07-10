@@ -64,10 +64,6 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
         }
     }
 
-    private String formatContent(final AssertEquality action) {
-        return String.join(COMMA, action.getContent());
-    }
-
     private void executeEqualityAction(final AssertEquality action) {
         if (action instanceof AssertEqual) {
             checkContentIsEqual((AssertEqual) action);
@@ -84,9 +80,13 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
 
     private void checkContentNotEqual(final AssertNotEqual notEqual) {
         List<String> content = notEqual.getContent();
-        if (content.stream().distinct().count() != content.size()) {
+        if (content.stream().distinct().count() == 1) {
             throw new DefaultFrameworkException(String.format(ASSERT_CONTENT_IS_EQUAL, formatContent(notEqual)));
         }
+    }
+
+    private String formatContent(final AssertEquality action) {
+        return String.join(COMMA, action.getContent());
     }
 
 }

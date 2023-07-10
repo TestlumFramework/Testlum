@@ -127,7 +127,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     private String getRawBody(final GraphqlBody body) {
         String rawBody = StringUtils.isNotBlank(body.getRaw())
                 ? body.getRaw()
-                : getContentIfFile(body.getFrom().getFile());
+                : getContentIfFile(body.getFrom());
         return prettifyString(rawBody);
     }
 

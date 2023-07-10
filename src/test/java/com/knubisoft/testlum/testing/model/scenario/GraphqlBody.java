@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;choice&gt;
- *         &lt;element name="from" type="{http://www.knubisoft.com/testlum/testing/model/scenario}file"/&gt;
+ *         &lt;element name="from" type="{http://www.knubisoft.com/testlum/testing/model/scenario}graphQlPattern"/&gt;
  *         &lt;element name="raw" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/restriction&gt;
@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class GraphqlBody {
 
-    protected File from;
+    protected String from;
     protected String raw;
 
     /**
@@ -41,10 +41,10 @@ public class GraphqlBody {
      * 
      * @return
      *     possible object is
-     *     {@link File }
+     *     {@link String }
      *     
      */
-    public File getFrom() {
+    public String getFrom() {
         return from;
     }
 
@@ -53,10 +53,10 @@ public class GraphqlBody {
      * 
      * @param value
      *     allowed object is
-     *     {@link File }
+     *     {@link String }
      *     
      */
-    public void setFrom(File value) {
+    public void setFrom(String value) {
         this.from = value;
     }
 

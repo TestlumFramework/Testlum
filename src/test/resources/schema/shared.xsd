@@ -82,18 +82,9 @@
         </x:restriction>
     </x:simpleType>
 
-    <x:simpleType name="graphqlPattern">
-        <x:restriction base="x:string">
-            <x:pattern value="expected_\d+.json"/>
-            <x:pattern value="expected_\{\{.+\}\}.json"/>
-            <x:pattern value="\{\{.+\}\}.json"/>
-        </x:restriction>
-    </x:simpleType>
-
     <x:simpleType name="graphQlPattern">
         <x:restriction base="x:string">
-            <x:pattern value=".+\.graphql"/>
-            <x:pattern value=".+\.gql"/>
+            <x:pattern value=".+(\.(json|graphql|gql))"/>
         </x:restriction>
     </x:simpleType>
 
@@ -136,7 +127,7 @@
 
     <x:simpleType name="httpRequestFileExtension">
         <x:restriction base="x:string">
-            <x:pattern value=".+(\.(json|graphql|gql))"/>
+            <x:pattern value=".+\.json"/>
         </x:restriction>
     </x:simpleType>
 

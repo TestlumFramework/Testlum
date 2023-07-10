@@ -42,7 +42,7 @@
     
     <x:complexType name="graphqlBody">
         <x:choice>
-            <x:element name="from" type="tns:file"/>
+            <x:element name="from" type="tns:graphQlPattern"/>
             <x:element name="raw" type="tns:nonEmptyString"/>
         </x:choice>
     </x:complexType>

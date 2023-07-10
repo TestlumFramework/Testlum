@@ -8,7 +8,7 @@ import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
-import com.knubisoft.testlum.testing.model.scenario.Assert;
+import com.knubisoft.testlum.testing.model.scenario.WebAssert;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +37,7 @@ public class SubCommandRunner {
 
     private CommandResult createCommandResult(final AbstractUiCommand command,
                                               final ExecutorDependencies dependencies) {
-        return command instanceof Assert ? ResultUtil.newUiCommandResultInstance(0, command)
+        return command instanceof WebAssert ? ResultUtil.newUiCommandResultInstance(0, command)
                 : ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
     }
 

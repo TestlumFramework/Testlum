@@ -18,10 +18,10 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="assert"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
  *       &lt;choice maxOccurs="unbounded"&gt;
- *         &lt;element name="attribute" type="{http://www.knubisoft.com/testlum/testing/model/scenario}attribute"/&gt;
- *         &lt;element name="title" type="{http://www.knubisoft.com/testlum/testing/model/scenario}title"/&gt;
+ *         &lt;element name="equal" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertEqual"/&gt;
+ *         &lt;element name="notEqual" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertNotEqual"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -32,46 +32,46 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "assert", propOrder = {
-    "attributeOrTitle"
+    "equalOrNotEqual"
 })
 public class Assert
-    extends AbstractUiCommand
+    extends AbstractCommand
 {
 
     @XmlElements({
-        @XmlElement(name = "attribute", type = Attribute.class),
-        @XmlElement(name = "title", type = Title.class)
+        @XmlElement(name = "equal", type = AssertEqual.class),
+        @XmlElement(name = "notEqual", type = AssertNotEqual.class)
     })
-    protected List<AbstractUiCommand> attributeOrTitle;
+    protected List<AssertEquality> equalOrNotEqual;
 
     /**
-     * Gets the value of the attributeOrTitle property.
+     * Gets the value of the equalOrNotEqual property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the attributeOrTitle property.
+     * This is why there is not a <CODE>set</CODE> method for the equalOrNotEqual property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getAttributeOrTitle().add(newItem);
+     *    getEqualOrNotEqual().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Attribute }
-     * {@link Title }
+     * {@link AssertEqual }
+     * {@link AssertNotEqual }
      * 
      * 
      */
-    public List<AbstractUiCommand> getAttributeOrTitle() {
-        if (attributeOrTitle == null) {
-            attributeOrTitle = new ArrayList<AbstractUiCommand>();
+    public List<AssertEquality> getEqualOrNotEqual() {
+        if (equalOrNotEqual == null) {
+            equalOrNotEqual = new ArrayList<AssertEquality>();
         }
-        return this.attributeOrTitle;
+        return this.equalOrNotEqual;
     }
 
 }

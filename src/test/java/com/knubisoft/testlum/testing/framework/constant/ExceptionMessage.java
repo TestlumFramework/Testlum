@@ -211,6 +211,8 @@ public class ExceptionMessage {
             "Something went wrong while connecting to websocket with name <%s>";
     public static final String UNKNOWN_WEBSOCKET_COMMAND = "Unknown websocket command: %s";
     public static final String UNEXPECTED_WEBSOCKET_MESSAGE_TYPE = "Unexpected websocket message type: %s";
+    public static final String ASSERT_CONTENT_NOT_EQUAL = "Equality content <%s> is not equal.";
+    public static final String ASSERT_CONTENT_IS_EQUAL = "Inequality content <%s> is equal.";
 
 
     // executors

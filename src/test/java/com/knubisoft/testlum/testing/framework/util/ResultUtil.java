@@ -4,7 +4,7 @@ import com.knubisoft.testlum.testing.framework.configuration.TestResourceSetting
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.Attribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
@@ -80,6 +80,7 @@ public class ResultUtil {
     public static final String LOCATOR_FORM = "Locator ID = %s";
     public static final String ELEMENT_PRESENT = "Is the web element present";
     public static final String CONDITION = "Condition";
+    public static final String CONTENT = "Content";
     public static final String GENERATED_STRING = "Randomly generated string";
     public static final String ASSERT_LOCATOR = "Locator for assert command";
     public static final String ASSERT_ATTRIBUTE = "Assert command attribute";
@@ -502,11 +503,11 @@ public class ResultUtil {
         addVariableMetaData(type, key, format(format, expression), value, result);
     }
 
-    public static void addVariableMetaData(final String queryType,
-                                           final FromSQL fromSQL,
-                                           final String key,
-                                           final String value,
-                                           final CommandResult result) {
+    public void addVariableMetaData(final String queryType,
+                                    final FromSQL fromSQL,
+                                    final String key,
+                                    final String value,
+                                    final CommandResult result) {
         result.put(DB_TYPE, fromSQL.getDbType().name());
         result.put(ALIAS, fromSQL.getAlias());
         addVariableMetaData(queryType, key, fromSQL.getQuery(), value, result);
@@ -694,7 +695,7 @@ public class ResultUtil {
         }
     }
 
-    public void addAssertAttributeMetaData(final Attribute attribute, final CommandResult result) {
+    public void addAssertAttributeMetaData(final AssertAttribute attribute, final CommandResult result) {
         result.put(ASSERT_LOCATOR, attribute.getLocatorId());
         result.put(ASSERT_ATTRIBUTE, attribute.getName());
     }

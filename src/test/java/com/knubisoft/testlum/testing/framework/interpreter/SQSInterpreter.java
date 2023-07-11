@@ -92,7 +92,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     private void sendMessage(final SendSqsMessage send, final AliasEnv aliasEnv, final CommandResult result) {
         SendMessageRequest sendRequest = createSendRequest(send, aliasEnv);
         String message = sendRequest.getMessageBody();
-        LogUtil.logBrokerActionInfo(SEND_ACTION, sendRequest.getQueueUrl(), message);
+        LogUtil.logSQSSendInfo(SEND_ACTION, sendRequest.getQueueUrl(), send, message);
         ResultUtil.addSqsInfoForSendAction(send, aliasEnv.getAlias(), result);
         result.put(MESSAGE_TO_SEND, StringPrettifier.asJsonResult(message));
         this.amazonSQS.get(aliasEnv).sendMessage(sendRequest);
@@ -113,7 +113,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                                  final AliasEnv aliasEnv,
                                  final CommandResult result) {
         final String expectedMessages = getMessageToReceive(receive);
-        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), expectedMessages);
+        LogUtil.logSQSReceiveInfo(RECEIVE_ACTION, receive, expectedMessages);
         ResultUtil.addSqsInfoForReceiveAction(receive, aliasEnv.getAlias(), result);
         final List<Object> actualMessages = receiveMessages(receive, aliasEnv);
         compareMessage(expectedMessages, actualMessages, result);

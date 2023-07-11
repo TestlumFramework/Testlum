@@ -93,9 +93,50 @@ public final class LogMessage {
             "Comment", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Action", "{}");
 
-    public static final String BROKER_ACTION_INFO_LOG = format(TABLE_FORMAT,
+    public static final String RABBIT_SEND_INFO_LOG = format(TABLE_FORMAT,
+            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Routing Key", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Correlation Id", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Exchange", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Headers", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Content", "{}");
+
+    public static final String RABBIT_RECEIVE_INFO_LOG = format(TABLE_FORMAT,
             "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Queue", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Timeout Millis", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Prefetch Count", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Content", "{}");
+
+    public static final String KAFKA_SEND_INFO_LOG = format(TABLE_FORMAT,
+            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Topic", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Correlation Id", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Headers", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Content", "{}");
+
+    public static final String KAFKA_RECEIVE_INFO_LOG = format(TABLE_FORMAT,
+            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Topic", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Timeout Millis", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Commit", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Content", "{}");
+
+
+    public static final String SQS_SEND_INFO_LOG = format(TABLE_FORMAT,
+            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Queue Url", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Delay Seconds", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Message Deduplication Id", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Message Group Id", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Content", "{}");
+
+    public static final String SQS_RECEIVE_INFO_LOG = format(TABLE_FORMAT,
+            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Max Number Of Messages", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Wait Time Seconds", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Receive Request Attempt Id", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
+            "Visibility Timeout", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Content", "{}");
 
     public static final String S3_BUCKET_ACTION_INFO_LOG = format(TABLE_FORMAT,

@@ -102,7 +102,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                              final AliasEnv aliasEnv,
                              final CommandResult result) {
         String message = getMessageToSend(send);
-        LogUtil.logBrokerActionInfo(SEND_ACTION, send.getRoutingKey(), message);
+        LogUtil.logRabbitSendInfo(SEND_ACTION, send, message);
         ResultUtil.addRabbitMQInfoForSendAction(send, aliasEnv.getAlias(), result);
         result.put(MESSAGE_TO_SEND, message);
         createQueueIfNotExists(send.getRoutingKey(), aliasEnv);
@@ -139,7 +139,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                                  final AliasEnv aliasEnv,
                                  final CommandResult result) {
         String messages = getMessageToReceive(receive);
-        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), messages);
+        LogUtil.logRabbitReceiveInfo(RECEIVE_ACTION, receive, messages);
         ResultUtil.addRabbitMQInfoForReceiveAction(receive, aliasEnv.getAlias(), result);
         createQueueIfNotExists(receive.getQueue(), aliasEnv);
         List<RabbitMQMessage> actualRmqMessages = receiveRmqMessages(receive, aliasEnv);

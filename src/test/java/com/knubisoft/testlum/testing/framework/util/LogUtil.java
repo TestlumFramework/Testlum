@@ -16,10 +16,16 @@ import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
+import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
+import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
+import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
+import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
+import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
+import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.Ses;
 import com.knubisoft.testlum.testing.model.scenario.Smtp;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
@@ -299,8 +305,68 @@ public class LogUtil {
         }
     }
 
-    public void logBrokerActionInfo(final String action, final String destination, final String content) {
-        log.info(LogMessage.BROKER_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), destination,
+    public void logRabbitSendInfo(final String action, final SendRmqMessage send, final String content) {
+        log.info(LogMessage.RABBIT_SEND_INFO_LOG,
+                action.toUpperCase(Locale.ROOT),
+                send.getRoutingKey(),
+                send.getCorrelationId(),
+                send.getExchange(),
+                send.getHeaders().toString(),
+                StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
+                        .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+    }
+
+    public void logRabbitReceiveInfo(final String action, final ReceiveRmqMessage receive, final String content) {
+        log.info(LogMessage.RABBIT_RECEIVE_INFO_LOG,
+                action.toUpperCase(Locale.ROOT),
+                receive.getQueue(),
+                receive.getTimeoutMillis(),
+                receive.getPrefetchCount(),
+                StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
+                        .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+    }
+
+    public void logKafkaSendInfo(final String action, final SendKafkaMessage send, final String content) {
+        log.info(LogMessage.KAFKA_SEND_INFO_LOG,
+                action.toUpperCase(Locale.ROOT),
+                send.getTopic(),
+                send.getCorrelationId(),
+                send.getHeaders().toString(),
+                StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
+                        .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+    }
+
+    public void logKafkaReceiveInfo(final String action, final ReceiveKafkaMessage receive, final String content) {
+        log.info(LogMessage.KAFKA_RECEIVE_INFO_LOG,
+                action.toUpperCase(Locale.ROOT),
+                receive.getTopic(),
+                receive.getTimeoutMillis(),
+                receive.isCommit(),
+                StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
+                        .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+    }
+
+    public void logSQSSendInfo(final String action,
+                               final String queueUrl,
+                               final SendSqsMessage send,
+                               final String content) {
+        log.info(LogMessage.SQS_SEND_INFO_LOG,
+                action.toUpperCase(Locale.ROOT),
+                queueUrl,
+                send.getDelaySeconds(),
+                send.getMessageDeduplicationId(),
+                send.getMessageGroupId(),
+                StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
+                        .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+    }
+
+    public void logSQSReceiveInfo(final String action, final ReceiveSqsMessage receive, final String content) {
+        log.info(LogMessage.SQS_RECEIVE_INFO_LOG,
+                action.toUpperCase(Locale.ROOT),
+                receive.getMaxNumberOfMessages(),
+                receive.getWaitTimeSeconds(),
+                receive.getReceiveRequestAttemptId(),
+                receive.getVisibilityTimeout(),
                 StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
                         .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }

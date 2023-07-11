@@ -113,7 +113,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                                  final AliasEnv aliasEnv,
                                  final CommandResult result) {
         String expectedMessages = getMessageToReceive(receive);
-        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getTopic(), expectedMessages);
+        LogUtil.logKafkaReceiveInfo(RECEIVE_ACTION, receive, expectedMessages);
         ResultUtil.addKafkaInfoForReceiveAction(receive, aliasEnv.getAlias(), result);
         createTopicIfNotExists(receive.getTopic(), aliasEnv);
         List<KafkaMessage> actualMessages = receiveKafkaMessages(receive, aliasEnv);
@@ -135,7 +135,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                              final AliasEnv aliasEnv,
                              final CommandResult result) {
         String message = getMessageToSend(send);
-        LogUtil.logBrokerActionInfo(SEND_ACTION, send.getTopic(), message);
+        LogUtil.logKafkaSendInfo(SEND_ACTION, send, message);
         ResultUtil.addKafkaInfoForSendAction(send, aliasEnv.getAlias(), result);
         result.put(MESSAGE_TO_SEND, message);
 

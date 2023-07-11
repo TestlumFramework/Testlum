@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.parser.XMLParsers;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
+import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
@@ -20,6 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -150,9 +152,15 @@ public class ScenarioCollector {
     }
 
     private void addRepeatCommands(final List<AbstractCommand> updatedCommand, final Repeat repeatCommand) {
-        int times = repeatCommand.getTimes().intValue();
-        for (int i = 0; i < times; i++) {
-            repeatCommand.getCommands().forEach(command -> addAbstractCommand(updatedCommand, command));
+        if (Objects.nonNull(repeatCommand.getTimes())) {
+            for (int i = 0; i < repeatCommand.getTimes().intValue(); i++) {
+                repeatCommand.getCommands().forEach(command -> addAbstractCommand(updatedCommand, command));
+            }
+        } else {
+            int variationsCount = GlobalVariations.getVariations(repeatCommand.getVariations()).size();
+            for (int i = 0; i < variationsCount; i++) {
+                repeatCommand.getCommands().forEach(command -> addAbstractCommand(updatedCommand, command));
+            }
         }
     }
 

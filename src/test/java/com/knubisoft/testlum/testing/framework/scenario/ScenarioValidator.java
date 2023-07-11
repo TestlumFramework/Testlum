@@ -643,8 +643,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateS3Command(final File xmlFile, final S3 s3) {
         s3.getFileOrBucket().stream()
-                .filter(x -> x instanceof S3File)
-                .map(x -> getS3FileCommandFilename((S3File) x))
+                .filter(command -> command instanceof S3File)
+                .map(command -> getS3FileCommandFilename((S3File) command))
                 .filter(StringUtils::isNotBlank)
                 .forEach(filename -> validateFileIfExist(xmlFile, filename));
     }

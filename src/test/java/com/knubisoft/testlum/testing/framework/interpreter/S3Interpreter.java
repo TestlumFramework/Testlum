@@ -135,12 +135,6 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         amazonS3.get(aliasEnv).deleteBucket(bucketName);
     }
 
-    private void checkBucketExist(final AliasEnv aliasEnv, final String bucketName) {
-        if (!amazonS3.get(aliasEnv).doesBucketExistV2(bucketName)) {
-            throw new DefaultFrameworkException(String.format(BUCKET_NOT_FOUND, bucketName));
-        }
-    }
-
     private void processFileAction(final AliasEnv aliasEnv,
                                    final S3File fileCommand, final
                                    CommandResult result) throws IOException {
@@ -151,7 +145,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         } else if (nonNull(fileCommand.getDownload())) {
             executeDownloadFile(aliasEnv, fileCommand, bucketName, key, result);
         } else if (isNotBlank(fileCommand.getRemove())) {
-            executeRemoveFile(aliasEnv, fileCommand, bucketName, key, result);
+            removeFile(aliasEnv, fileCommand, bucketName, key, result);
         }
     }
 
@@ -227,22 +221,22 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         }
     }
 
-    private void executeRemoveFile(final AliasEnv aliasEnv,
-                                   final S3File fileCommand,
-                                   final String bucketName,
-                                   final String key,
-                                   final CommandResult result) {
-        LogUtil.logS3FileActionInfo(
-                REMOVE_FILE, fileCommand.getBucket(), fileCommand.getKey(), fileCommand.getRemove());
-        ResultUtil.addS3FileMetaData(REMOVE_FILE, fileCommand.getBucket(), fileCommand.getKey(), result);
-        removeFile(aliasEnv, fileCommand, bucketName, key);
+    private void checkBucketExist(final AliasEnv aliasEnv, final String bucketName) {
+        if (!amazonS3.get(aliasEnv).doesBucketExistV2(bucketName)) {
+            throw new DefaultFrameworkException(String.format(BUCKET_NOT_FOUND, bucketName));
+        }
     }
 
     private void removeFile(final AliasEnv aliasEnv,
                             final S3File fileCommand,
                             final String bucketName,
-                            final String key) {
+                            final String key,
+                            final CommandResult result) {
+        LogUtil.logS3FileActionInfo(
+                REMOVE_FILE, fileCommand.getBucket(), fileCommand.getKey(), fileCommand.getRemove());
+        ResultUtil.addS3FileMetaData(REMOVE_FILE, fileCommand.getBucket(), fileCommand.getKey(), result);
         checkBucketFileExists(aliasEnv, bucketName, key);
         amazonS3.get(aliasEnv).deleteObject(bucketName, fileCommand.getRemove());
     }
+
 }

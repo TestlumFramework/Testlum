@@ -18,19 +18,11 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
  *       &lt;choice&gt;
  *         &lt;element name="upload" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
- *         &lt;element name="download"&gt;
- *           &lt;complexType&gt;
- *             &lt;complexContent&gt;
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *               &lt;/restriction&gt;
- *             &lt;/complexContent&gt;
- *           &lt;/complexType&gt;
- *         &lt;/element&gt;
+ *         &lt;element name="download" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *         &lt;element name="remove" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="bucket" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="key" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="expected" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -49,14 +41,12 @@ public class S3File
 {
 
     protected String upload;
-    protected S3File.Download download;
+    protected String download;
     protected String remove;
     @XmlAttribute(name = "bucket", required = true)
     protected String bucket;
     @XmlAttribute(name = "key", required = true)
     protected String key;
-    @XmlAttribute(name = "expected", required = true)
-    protected String expected;
 
     /**
      * Gets the value of the upload property.
@@ -87,10 +77,10 @@ public class S3File
      * 
      * @return
      *     possible object is
-     *     {@link S3File.Download }
+     *     {@link String }
      *     
      */
-    public S3File.Download getDownload() {
+    public String getDownload() {
         return download;
     }
 
@@ -99,10 +89,10 @@ public class S3File
      * 
      * @param value
      *     allowed object is
-     *     {@link S3File.Download }
+     *     {@link String }
      *     
      */
-    public void setDownload(S3File.Download value) {
+    public void setDownload(String value) {
         this.download = value;
     }
 
@@ -176,54 +166,6 @@ public class S3File
      */
     public void setKey(String value) {
         this.key = value;
-    }
-
-    /**
-     * Gets the value of the expected property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getExpected() {
-        return expected;
-    }
-
-    /**
-     * Sets the value of the expected property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setExpected(String value) {
-        this.expected = value;
-    }
-
-
-    /**
-     * <p>Java class for anonymous complex type.
-     * 
-     * <p>The following schema fragment specifies the expected content contained within this class.
-     * 
-     * <pre>
-     * &lt;complexType&gt;
-     *   &lt;complexContent&gt;
-     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
-     *     &lt;/restriction&gt;
-     *   &lt;/complexContent&gt;
-     * &lt;/complexType&gt;
-     * </pre>
-     * 
-     * 
-     */
-    @XmlAccessorType(XmlAccessType.FIELD)
-    @XmlType(name = "")
-    public static class Download {
-
-
     }
 
 }

@@ -26,7 +26,6 @@
                     <x:element name="create" type="tns:nonEmptyString"/>
                     <x:element name="remove" type="tns:nonEmptyString"/>
                 </x:choice>
-                <x:attribute name="expected" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -36,14 +35,11 @@
             <x:extension base="tns:abstractCommand">
                 <x:choice>
                     <x:element name="upload" type="tns:nonEmptyString"/>
-                    <x:element name="download">
-                        <x:complexType/>
-                    </x:element>
+                    <x:element name="download" type="tns:nonEmptyString"/>
                     <x:element name="remove" type="tns:nonEmptyString"/>
                 </x:choice>
                 <x:attribute name="bucket" type="tns:nonEmptyString" use="required"/>
                 <x:attribute name="key" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="expected" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

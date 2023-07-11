@@ -173,7 +173,7 @@
                     <x:element name="smtp" type="tns:smtp"/>
                     <x:element name="twilio" type="tns:twilio"/>
                 </x:choice>
-                <x:attribute name="times" type="x:positiveInteger" use="required"/>
+                <x:attribute name="times" type="tns:positiveIntegerMin1"/>
                 <x:attribute name="variations" type="tns:csv"/>
             </x:extension>
         </x:complexContent>

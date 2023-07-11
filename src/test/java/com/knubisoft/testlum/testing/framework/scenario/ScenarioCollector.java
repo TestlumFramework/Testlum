@@ -21,6 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -153,12 +154,12 @@ public class ScenarioCollector {
 
     private void addRepeatCommands(final List<AbstractCommand> updatedCommand, final Repeat repeatCommand) {
         if (Objects.nonNull(repeatCommand.getTimes())) {
-            for (int i = 0; i < repeatCommand.getTimes().intValue(); i++) {
+            for (int i = 0; i < repeatCommand.getTimes(); i++) {
                 repeatCommand.getCommands().forEach(command -> addAbstractCommand(updatedCommand, command));
             }
         } else {
-            int variationsCount = GlobalVariations.getVariations(repeatCommand.getVariations()).size();
-            for (int i = 0; i < variationsCount; i++) {
+            List<Map<String, String>> variationsList = GlobalVariations.getVariations(repeatCommand.getVariations());
+            for (int i = 0; i < variationsList.size(); i++) {
                 repeatCommand.getCommands().forEach(command -> addAbstractCommand(updatedCommand, command));
             }
         }

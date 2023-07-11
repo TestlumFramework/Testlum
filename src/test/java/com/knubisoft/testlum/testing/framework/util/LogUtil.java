@@ -44,6 +44,7 @@ import software.amazon.awssdk.http.HttpStatusCode;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
@@ -331,7 +332,7 @@ public class LogUtil {
                 action.toUpperCase(Locale.ROOT),
                 send.getTopic(),
                 send.getCorrelationId(),
-                send.getHeaders().toString(),
+                Objects.nonNull(send.getHeaders()) ? send.getHeaders().getHeader().toString() : null,
                 StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
                         .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }

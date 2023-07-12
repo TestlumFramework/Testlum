@@ -262,6 +262,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Assert }
+     * 
+     */
+    public Assert createAssert() {
+        return new Assert();
+    }
+
+    /**
      * Create an instance of {@link Var }
      * 
      */
@@ -518,6 +526,54 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AssertEqual }
+     * 
+     */
+    public AssertEqual createAssertEqual() {
+        return new AssertEqual();
+    }
+
+    /**
+     * Create an instance of {@link AssertNotEqual }
+     * 
+     */
+    public AssertNotEqual createAssertNotEqual() {
+        return new AssertNotEqual();
+    }
+
+    /**
+     * Create an instance of {@link WebAssert }
+     * 
+     */
+    public WebAssert createWebAssert() {
+        return new WebAssert();
+    }
+
+    /**
+     * Create an instance of {@link NativeAssert }
+     * 
+     */
+    public NativeAssert createNativeAssert() {
+        return new NativeAssert();
+    }
+
+    /**
+     * Create an instance of {@link AssertAttribute }
+     * 
+     */
+    public AssertAttribute createAssertAttribute() {
+        return new AssertAttribute();
+    }
+
+    /**
+     * Create an instance of {@link AssertTitle }
+     * 
+     */
+    public AssertTitle createAssertTitle() {
+        return new AssertTitle();
+    }
+
+    /**
      * Create an instance of {@link Click }
      * 
      */
@@ -579,38 +635,6 @@ public class ObjectFactory {
      */
     public AllValues createAllValues() {
         return new AllValues();
-    }
-
-    /**
-     * Create an instance of {@link Assert }
-     * 
-     */
-    public Assert createAssert() {
-        return new Assert();
-    }
-
-    /**
-     * Create an instance of {@link NativeAssert }
-     * 
-     */
-    public NativeAssert createNativeAssert() {
-        return new NativeAssert();
-    }
-
-    /**
-     * Create an instance of {@link Attribute }
-     * 
-     */
-    public Attribute createAttribute() {
-        return new Attribute();
-    }
-
-    /**
-     * Create an instance of {@link Title }
-     * 
-     */
-    public Title createTitle() {
-        return new Title();
     }
 
     /**

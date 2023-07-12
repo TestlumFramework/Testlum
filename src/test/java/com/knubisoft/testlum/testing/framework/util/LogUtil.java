@@ -5,7 +5,8 @@ import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
-import com.knubisoft.testlum.testing.model.scenario.Attribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.CompareWithElement;
@@ -27,7 +28,6 @@ import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.Ses;
 import com.knubisoft.testlum.testing.model.scenario.Smtp;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
-import com.knubisoft.testlum.testing.model.scenario.Title;
 import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.knubisoft.testlum.testing.model.scenario.Ui;
 import lombok.SneakyThrows;
@@ -564,13 +564,13 @@ public class LogUtil {
         log.info(COMMENT_LOG, command.getComment());
     }
 
-    public void logAssertAttributeInfo(final Attribute attribute) {
+    public void logAssertAttributeInfo(final AssertAttribute attribute) {
         log.info(LOCATOR_LOG, attribute.getLocatorId());
         log.info(ATTRIBUTE_LOG, attribute.getName());
         log.info(CONTENT_LOG, StringPrettifier.cut(attribute.getContent()));
     }
 
-    public void logAssertTitleCommand(final Title title) {
+    public void logAssertTitleCommand(final AssertTitle title) {
         log.info(CONTENT_LOG, title.getContent());
     }
 

@@ -11,9 +11,9 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
-import com.knubisoft.testlum.testing.model.scenario.Assert;
-import com.knubisoft.testlum.testing.model.scenario.Attribute;
-import com.knubisoft.testlum.testing.model.scenario.Title;
+import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
+import com.knubisoft.testlum.testing.model.scenario.WebAssert;
 import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
@@ -27,8 +27,8 @@ import java.util.function.Predicate;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ASSERT_TYPE_NOT_SUPPORTED;
 
-@ExecutorForClass(Assert.class)
-public class AssertExecutor extends AbstractUiExecutor<Assert> {
+@ExecutorForClass(WebAssert.class)
+public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
 
     private final Map<AssertCmdPredicate, AssertMethod> assertCommandMap;
     private final List<String> exceptionResult = new ArrayList<>();
@@ -37,16 +37,17 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
     public AssertExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         Map<AssertCmdPredicate, AssertMethod> assertCommands = new HashMap<>();
-        assertCommands.put(a -> a instanceof Attribute, (a, result) -> executeAttributeCommand((Attribute) a, result));
-        assertCommands.put(a -> a instanceof Title, (a, result) -> executeTitleCommand((Title) a, result));
+        assertCommands.put(a -> a instanceof AssertAttribute,
+                (a, result) -> executeAttributeCommand((AssertAttribute) a, result));
+        assertCommands.put(a -> a instanceof AssertTitle, (a, result) -> executeTitleCommand((AssertTitle) a, result));
         assertCommandMap = Collections.unmodifiableMap(assertCommands);
     }
 
     @Override
-    public void execute(final Assert aAssert, final CommandResult result) {
+    public void execute(final WebAssert webAssert, final CommandResult result) {
         List<CommandResult> subCommandsResult = new ArrayList<>();
         result.setSubCommandsResult(subCommandsResult);
-        aAssert.getAttributeOrTitle().forEach(command -> {
+        webAssert.getAttributeOrTitle().forEach(command -> {
             CommandResult commandResult = ResultUtil.newUiCommandResultInstance(commandId.incrementAndGet(), command);
             subCommandsResult.add(commandResult);
             LogUtil.logAssertCommand(command, commandId.get());
@@ -66,7 +67,7 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
                 .getValue().accept(command, result);
     }
 
-    private void executeAttributeCommand(final Attribute attribute, final CommandResult result) {
+    private void executeAttributeCommand(final AssertAttribute attribute, final CommandResult result) {
         LogUtil.logAssertAttributeInfo(attribute);
         ResultUtil.addAssertAttributeMetaData(attribute, result);
         String actual = getActualValue(attribute);
@@ -76,12 +77,12 @@ public class AssertExecutor extends AbstractUiExecutor<Assert> {
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
-    private String getActualValue(final Attribute attribute) {
+    private String getActualValue(final AssertAttribute attribute) {
         WebElement webElement = UiUtil.findWebElement(dependencies, attribute.getLocatorId());
         return UiUtil.getElementAttribute(webElement, attribute.getName(), dependencies.getDriver());
     }
 
-    private void executeTitleCommand(final Title title, final CommandResult result) {
+    private void executeTitleCommand(final AssertTitle title, final CommandResult result) {
         LogUtil.logAssertTitleCommand(title);
         String actual = dependencies.getDriver().getTitle();
         ResultUtil.setExpectedActual(title.getContent(), actual, result);

@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
@@ -11,6 +12,7 @@ import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.BrowserTab;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WindowType;
 
@@ -75,7 +77,13 @@ public class BrowserTabExecutor extends AbstractUiExecutor<BrowserTab> {
     }
 
     private void openTab(final String url, final CommandResult result) {
-        driver.switchTo().newWindow(WindowType.TAB);
+        if (dependencies.getUiType() == UiType.MOBILE_BROWSER) {
+            ((JavascriptExecutor) driver).executeScript("window.open()");
+            LinkedList<String> currentTabs = new LinkedList<>(driver.getWindowHandles());
+            driver.switchTo().window(currentTabs.pollLast());
+        } else {
+            driver.switchTo().newWindow(WindowType.TAB);
+        }
         if (StringUtils.isNotBlank(url)) {
             driver.navigate().to(UiUtil.getUrl(url, dependencies.getEnvironment(), dependencies.getUiType()));
         }

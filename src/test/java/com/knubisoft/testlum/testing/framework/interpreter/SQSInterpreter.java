@@ -33,8 +33,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_SQS_PROCESSING;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
 
 @Slf4j
@@ -55,7 +53,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         result.setSubCommandsResult(subCommandsResult);
         final AtomicInteger commandId = new AtomicInteger();
         for (Object action : sqs.getSendOrReceive()) {
-            LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action.getClass().getSimpleName());
+            LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action);
             CommandResult commandResult = ResultUtil.newCommandResultInstance(commandId.incrementAndGet());
             subCommandsResult.add(commandResult);
             processEachAction(action, sqs.getAlias(), commandResult);
@@ -92,8 +90,8 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     private void sendMessage(final SendSqsMessage send, final AliasEnv aliasEnv, final CommandResult result) {
         SendMessageRequest sendRequest = createSendRequest(send, aliasEnv);
         String message = sendRequest.getMessageBody();
-        LogUtil.logSQSSendInfo(SEND_ACTION, sendRequest.getQueueUrl(), send, message);
-        ResultUtil.addSqsInfoForSendAction(send, aliasEnv.getAlias(), result);
+        LogUtil.logSQSSendInfo(send, message);
+        ResultUtil.addSqsSendInfo(send, aliasEnv.getAlias(), result);
         result.put(MESSAGE_TO_SEND, StringPrettifier.asJsonResult(message));
         this.amazonSQS.get(aliasEnv).sendMessage(sendRequest);
     }
@@ -113,8 +111,8 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                                  final AliasEnv aliasEnv,
                                  final CommandResult result) {
         final String expectedMessages = getMessageToReceive(receive);
-        LogUtil.logSQSReceiveInfo(RECEIVE_ACTION, receive, expectedMessages);
-        ResultUtil.addSqsInfoForReceiveAction(receive, aliasEnv.getAlias(), result);
+        LogUtil.logSQSReceiveInfo(receive, expectedMessages);
+        ResultUtil.addSqsReceiveInfo(receive, aliasEnv.getAlias(), result);
         final List<Object> actualMessages = receiveMessages(receive, aliasEnv);
         compareMessage(expectedMessages, actualMessages, result);
     }

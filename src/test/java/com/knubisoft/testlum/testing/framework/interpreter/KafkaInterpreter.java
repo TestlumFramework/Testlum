@@ -43,8 +43,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
 import static java.util.Objects.nonNull;
 
@@ -73,7 +71,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         result.setSubCommandsResult(subCommandsResult);
         final AtomicInteger commandId = new AtomicInteger();
         for (Object action : kafka.getSendOrReceive()) {
-            LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action.getClass().getSimpleName());
+            LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action);
             CommandResult commandResult = ResultUtil.newCommandResultInstance(commandId.incrementAndGet());
             subCommandsResult.add(commandResult);
             processEachAction(action, kafka.getAlias(), commandResult);
@@ -113,8 +111,8 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                                  final AliasEnv aliasEnv,
                                  final CommandResult result) {
         String expectedMessages = getMessageToReceive(receive);
-        LogUtil.logKafkaReceiveInfo(RECEIVE_ACTION, receive, expectedMessages);
-        ResultUtil.addKafkaInfoForReceiveAction(receive, aliasEnv.getAlias(), result);
+        LogUtil.logKafkaReceiveInfo(receive, expectedMessages);
+        ResultUtil.addKafkaReceiveInfo(receive, aliasEnv.getAlias(), result);
         createTopicIfNotExists(receive.getTopic(), aliasEnv);
         List<KafkaMessage> actualMessages = receiveKafkaMessages(receive, aliasEnv);
         compareMessages(actualMessages, expectedMessages, result);
@@ -135,8 +133,8 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                              final AliasEnv aliasEnv,
                              final CommandResult result) {
         String message = getMessageToSend(send);
-        LogUtil.logKafkaSendInfo(SEND_ACTION, send, message);
-        ResultUtil.addKafkaInfoForSendAction(send, aliasEnv.getAlias(), result);
+        LogUtil.logKafkaSendInfo(send, message);
+        ResultUtil.addKafkaSendInfo(send, aliasEnv.getAlias(), result);
         result.put(MESSAGE_TO_SEND, message);
 
         createTopicIfNotExists(send.getTopic(), aliasEnv);

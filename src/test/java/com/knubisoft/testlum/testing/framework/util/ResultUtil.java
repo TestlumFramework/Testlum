@@ -353,18 +353,18 @@ public class ResultUtil {
         result.put(MESSAGE, twilio.getMessage());
     }
 
-    public void addRabbitMQInfoForSendAction(final SendRmqMessage sendAction,
-                                             final String alias,
-                                             final CommandResult result) {
+    public void addRabbitMQSendInfo(final SendRmqMessage sendAction,
+                                    final String alias,
+                                    final CommandResult result) {
         result.setCommandKey(SEND);
         result.setComment(COMMENT_FOR_RABBIT_SEND_ACTION);
         addMessageBrokerGeneralMetaData(alias, SEND, ROUTING_KEY, sendAction.getRoutingKey(), result);
         addRabbitMQAdditionalMetaDataForSendAction(sendAction, result);
     }
 
-    public void addRabbitMQInfoForReceiveAction(final ReceiveRmqMessage receiveAction,
-                                                final String alias,
-                                                final CommandResult result) {
+    public void addRabbitMQReceiveInfo(final ReceiveRmqMessage receiveAction,
+                                       final String alias,
+                                       final CommandResult result) {
 
         result.setCommandKey(RECEIVE);
         result.setComment(COMMENT_FOR_RABBIT_RECEIVE_ACTION);
@@ -373,18 +373,18 @@ public class ResultUtil {
         result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
     }
 
-    public void addKafkaInfoForSendAction(final SendKafkaMessage sendAction,
-                                          final String alias,
-                                          final CommandResult result) {
+    public void addKafkaSendInfo(final SendKafkaMessage sendAction,
+                                 final String alias,
+                                 final CommandResult result) {
         result.setCommandKey(SEND);
         result.setComment(COMMENT_FOR_KAFKA_SEND_ACTION);
         addMessageBrokerGeneralMetaData(alias, SEND, TOPIC, sendAction.getTopic(), result);
         addKafkaAdditionalMetaDataForSendAction(sendAction, result);
     }
 
-    public void addKafkaInfoForReceiveAction(final ReceiveKafkaMessage receiveAction,
-                                             final String alias,
-                                             final CommandResult result) {
+    public void addKafkaReceiveInfo(final ReceiveKafkaMessage receiveAction,
+                                    final String alias,
+                                    final CommandResult result) {
         result.setCommandKey(RECEIVE);
         result.setComment(COMMENT_FOR_KAFKA_RECEIVE_ACTION);
         addMessageBrokerGeneralMetaData(alias, RECEIVE, TOPIC, receiveAction.getTopic(), result);
@@ -392,18 +392,18 @@ public class ResultUtil {
         result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
     }
 
-    public void addSqsInfoForSendAction(final SendSqsMessage sendAction,
-                                        final String alias,
-                                        final CommandResult result) {
+    public void addSqsSendInfo(final SendSqsMessage sendAction,
+                               final String alias,
+                               final CommandResult result) {
         result.setCommandKey(SEND);
         result.setComment(COMMENT_FOR_SQS_SEND_ACTION);
         addMessageBrokerGeneralMetaData(alias, SEND, QUEUE, sendAction.getQueue(), result);
         addSqsAdditionalMetaDataForSendAction(sendAction, result);
     }
 
-    public void addSqsInfoForReceiveAction(final ReceiveSqsMessage receiveAction,
-                                           final String alias,
-                                           final CommandResult result) {
+    public void addSqsReceiveInfo(final ReceiveSqsMessage receiveAction,
+                                  final String alias,
+                                  final CommandResult result) {
         result.setCommandKey(RECEIVE);
         result.setComment(COMMENT_FOR_SQS_RECEIVE_ACTION);
         addMessageBrokerGeneralMetaData(alias, RECEIVE, QUEUE, receiveAction.getQueue(), result);

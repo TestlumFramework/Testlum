@@ -28,9 +28,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.IMAGES_DONT_MATCH;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.IMAGES_MISMATCH;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.IMAGES_SIZE_MISMATCH;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.IMAGE_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ADDITIONAL_INFO;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.IMAGE_ATTACHED_TO_STEP;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.IMAGE_MISMATCH_PERCENT;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static java.lang.String.format;
@@ -53,11 +56,24 @@ public class ImageComparisonUtil {
                                              final CommandResult result) {
         ImageComparisonState imageComparisonState = comparisonResult.getImageComparisonState();
         if (imageComparisonState != ImageComparisonState.MATCH) {
-            File actualImage = saveActualImage(comparisonResult, image, directoryToSave);
-            UiUtil.putScreenshotToResult(result, actualImage);
+            File actualImageFile = saveActualImage(comparisonResult, image, directoryToSave);
+            UiUtil.putScreenshotToResult(result, actualImageFile);
             result.put(ADDITIONAL_INFO, IMAGE_ATTACHED_TO_STEP);
-            throw new ImageComparisonException(format(IMAGES_DONT_MATCH, imageComparisonState.name()));
+            if (imageComparisonState.equals(ImageComparisonState.SIZE_MISMATCH)) {
+                processSizeMismatchException(comparisonResult, result);
+            } else {
+                result.put(IMAGE_MISMATCH_PERCENT, comparisonResult.getDifferencePercent());
+                throw new ImageComparisonException(format(IMAGES_MISMATCH, comparisonResult.getDifferencePercent()));
+            }
         }
+    }
+
+    private void processSizeMismatchException(final ImageComparisonResult comparisonResult,
+                                              final CommandResult result) {
+        ResultUtil.addImagesSizeMetaData(comparisonResult, result);
+        throw new ImageComparisonException(format(IMAGES_SIZE_MISMATCH,
+                comparisonResult.getExpected().getWidth(), comparisonResult.getExpected().getHeight(),
+                comparisonResult.getActual().getWidth(), comparisonResult.getActual().getHeight()));
     }
 
     private File saveActualImage(final ImageComparisonResult comparisonResult,
@@ -111,18 +127,18 @@ public class ImageComparisonUtil {
         saveResultImage(image, comparisonResult.getImageComparisonState(), parentFile, actualMat, matchRect, result);
     }
 
-    private Mat bufferedImageToMat(final BufferedImage bufferedImage) {
-        if (bufferedImage.getType() == TYPE_INT_RGB || bufferedImage.getType() == TYPE_INT_ARGB) {
-            int[] data = ((DataBufferInt) bufferedImage.getRaster().getDataBuffer()).getData();
-            Mat matImage = new Mat(bufferedImage.getHeight(), bufferedImage.getWidth(), CvType.CV_8UC3);
+    private Mat bufferedImageToMat(final BufferedImage imageToConvert) {
+        if (imageToConvert.getType() == TYPE_INT_RGB || imageToConvert.getType() == TYPE_INT_ARGB) {
+            int[] data = ((DataBufferInt) imageToConvert.getRaster().getDataBuffer()).getData();
+            Mat matImage = new Mat(imageToConvert.getHeight(), imageToConvert.getWidth(), CvType.CV_8UC3);
             matImage.put(0, 0, intArrayToByteArray(data));
             Mat matImageRGB = new Mat();
             Imgproc.cvtColor(matImage, matImageRGB, Imgproc.COLOR_BGR2RGB);
             return matImageRGB;
         } else {
             BufferedImage convertedImage =
-                    new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), TYPE_INT_RGB);
-            convertedImage.getGraphics().drawImage(bufferedImage, 0, 0, null);
+                    new BufferedImage(imageToConvert.getWidth(), imageToConvert.getHeight(), TYPE_INT_RGB);
+            convertedImage.getGraphics().drawImage(imageToConvert, 0, 0, null);
             return bufferedImageToMat(convertedImage);
         }
     }
@@ -147,20 +163,20 @@ public class ImageComparisonUtil {
         verifyDirectoryToSave(parentFile);
         if (comparisonState.equals(ImageComparisonState.MATCH)) {
             Imgproc.rectangle(actualMat, matchRect.tl(), matchRect.br(), new Scalar(0, RGB_255, 0), 1);
-            saveImage(image, parentFile, actualMat, TestResourceSettings.RESULT_IMAGE_PREFIX, result);
+            saveImage(image.getFile(), parentFile, actualMat, TestResourceSettings.RESULT_IMAGE_PREFIX, result);
         } else {
             Imgproc.rectangle(actualMat, matchRect.tl(), matchRect.br(), new Scalar(0, 0, RGB_255), 1);
-            saveImage(image, parentFile, actualMat, TestResourceSettings.ACTUAL_IMAGE_PREFIX, result);
-            throw new ImageComparisonException(format(IMAGES_DONT_MATCH, comparisonState.name()));
+            saveImage(image.getFile(), parentFile, actualMat, TestResourceSettings.ACTUAL_IMAGE_PREFIX, result);
+            throw new ImageComparisonException(IMAGE_NOT_FOUND);
         }
     }
 
-    private void saveImage(final Image image,
+    private void saveImage(final String expectedImageName,
                            final File parentFile,
                            final Mat actualMat,
                            final String imagePrefix,
                            final CommandResult result) {
-        File resultFile = new File(parentFile.getAbsolutePath(), getImageNameToSave(image.getFile(), imagePrefix));
+        File resultFile = new File(parentFile.getAbsolutePath(), getImageNameToSave(expectedImageName, imagePrefix));
         Imgcodecs.imwrite(resultFile.getAbsolutePath(), actualMat);
         UiUtil.putScreenshotToResult(result, resultFile);
         result.put(ADDITIONAL_INFO, IMAGE_ATTACHED_TO_STEP);

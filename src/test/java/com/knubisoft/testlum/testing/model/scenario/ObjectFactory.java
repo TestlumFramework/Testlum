@@ -798,46 +798,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link FindIn }
-     * 
-     */
-    public FindIn createFindIn() {
-        return new FindIn();
-    }
-
-    /**
-     * Create an instance of {@link FindInFullScreen }
-     * 
-     */
-    public FindInFullScreen createFindInFullScreen() {
-        return new FindInFullScreen();
-    }
-
-    /**
-     * Create an instance of {@link FindInElement }
-     * 
-     */
-    public FindInElement createFindInElement() {
-        return new FindInElement();
-    }
-
-    /**
-     * Create an instance of {@link CompareWith }
-     * 
-     */
-    public CompareWith createCompareWith() {
-        return new CompareWith();
-    }
-
-    /**
-     * Create an instance of {@link ComparisonConditions }
-     * 
-     */
-    public ComparisonConditions createComparisonConditions() {
-        return new ComparisonConditions();
-    }
-
-    /**
      * Create an instance of {@link CompareWithFullScreen }
      * 
      */
@@ -846,19 +806,35 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CompareWithImage }
-     * 
-     */
-    public CompareWithImage createCompareWithImage() {
-        return new CompareWithImage();
-    }
-
-    /**
      * Create an instance of {@link CompareWithElement }
      * 
      */
     public CompareWithElement createCompareWithElement() {
         return new CompareWithElement();
+    }
+
+    /**
+     * Create an instance of {@link CompareWithPart }
+     * 
+     */
+    public CompareWithPart createCompareWithPart() {
+        return new CompareWithPart();
+    }
+
+    /**
+     * Create an instance of {@link FindPart }
+     * 
+     */
+    public FindPart createFindPart() {
+        return new FindPart();
+    }
+
+    /**
+     * Create an instance of {@link ComparisonConditions }
+     * 
+     */
+    public ComparisonConditions createComparisonConditions() {
+        return new ComparisonConditions();
     }
 
     /**

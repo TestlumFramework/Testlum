@@ -15,9 +15,10 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="compareWithElement"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}comparisonConditions"&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scenarioLocator" /&gt;
- *     &lt;/extension&gt;
+ *       &lt;attribute name="attribute" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" default="src" /&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -26,12 +27,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "compareWithElement")
-public class CompareWithElement
-    extends ComparisonConditions
-{
+public class CompareWithElement {
 
     @XmlAttribute(name = "locatorId", required = true)
     protected String locatorId;
+    @XmlAttribute(name = "attribute")
+    protected String attribute;
 
     /**
      * Gets the value of the locatorId property.
@@ -55,6 +56,34 @@ public class CompareWithElement
      */
     public void setLocatorId(String value) {
         this.locatorId = value;
+    }
+
+    /**
+     * Gets the value of the attribute property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getAttribute() {
+        if (attribute == null) {
+            return "src";
+        } else {
+            return attribute;
+        }
+    }
+
+    /**
+     * Sets the value of the attribute property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setAttribute(String value) {
+        this.attribute = value;
     }
 
 }

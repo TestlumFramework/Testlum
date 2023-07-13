@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
  *         &lt;element name="exclude" type="{http://www.knubisoft.com/testlum/testing/model/scenario}exclude"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="mismatch" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveDoubleMin0Max100" /&gt;
+ *       &lt;attribute name="percentage" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveDoubleMin0Max100" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -35,16 +35,15 @@ import javax.xml.bind.annotation.XmlType;
     "exclude"
 })
 @XmlSeeAlso({
-    FindInFullScreen.class,
-    FindInElement.class,
     CompareWithFullScreen.class,
-    CompareWithElement.class
+    CompareWithPart.class,
+    FindPart.class
 })
 public class ComparisonConditions {
 
     protected List<Exclude> exclude;
-    @XmlAttribute(name = "mismatch")
-    protected Double mismatch;
+    @XmlAttribute(name = "percentage")
+    protected Double percentage;
 
     /**
      * Gets the value of the exclude property.
@@ -76,27 +75,27 @@ public class ComparisonConditions {
     }
 
     /**
-     * Gets the value of the mismatch property.
+     * Gets the value of the percentage property.
      * 
      * @return
      *     possible object is
      *     {@link Double }
      *     
      */
-    public Double getMismatch() {
-        return mismatch;
+    public Double getPercentage() {
+        return percentage;
     }
 
     /**
-     * Sets the value of the mismatch property.
+     * Sets the value of the percentage property.
      * 
      * @param value
      *     allowed object is
      *     {@link Double }
      *     
      */
-    public void setMismatch(Double value) {
-        this.mismatch = value;
+    public void setPercentage(Double value) {
+        this.percentage = value;
     }
 
 }

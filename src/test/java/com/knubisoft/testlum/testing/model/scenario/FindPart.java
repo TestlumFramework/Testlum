@@ -7,12 +7,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for findInFullScreen complex type.
+ * <p>Java class for findPart complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="findInFullScreen"&gt;
+ * &lt;complexType name="findPart"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}comparisonConditions"&gt;
  *     &lt;/extension&gt;
@@ -23,8 +23,8 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "findInFullScreen")
-public class FindInFullScreen
+@XmlType(name = "findPart")
+public class FindPart
     extends ComparisonConditions
 {
 

@@ -173,8 +173,8 @@ public final class LogMessage {
     public static final String HIGHLIGHT_DIFFERENCE_LOG = format(TABLE_FORMAT, "Highlight difference", "{}");
     public static final String IMAGE_FOR_COMPARISON_LOG = format(TABLE_FORMAT, "Image for comparison", "{}");
     public static final String IMAGE_SOURCE_ATT_LOG = format(TABLE_FORMAT, "Image source attribute", "{}");
-    public static final String IMAGE_EXCLUDED_ELEMENT_LOG = format(TABLE_FORMAT, "Excluded element", "{}");
-    public static final String IMAGE_MISMATCH_PERCENT_LOG = format(TABLE_FORMAT, "Allowed mismatch", "{}");
+    public static final String IMAGE_EXCLUDED_ELEMENT_LOG = format(TABLE_FORMAT, "Excluded elements", "{}");
+    public static final String IMAGE_MATCH_PERCENTAGE_LOG = format(TABLE_FORMAT, "Match percentage", "{}");
     public static final String URL_TO_IMAGE_LOG = format(TABLE_FORMAT, "URL to actual image", "{}");
     public static final String OVERVIEW_INFO_LOG = "{}: {}";
     public static final String MOVE_TO_EMPTY_SPACE = format(TABLE_FORMAT, "Move to empty space", "{}");
@@ -208,5 +208,4 @@ public final class LogMessage {
     public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a full screenshot then compare";
     public static final String TAKE_SCREENSHOT_THEN_FIND = "Take a full screenshot then find";
     public static final String GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE = "Get element as screenshot then compare";
-    public static final String GET_ELEMENT_AS_SCREENSHOT_THEN_FIND = "Get element as screenshot then find";
 }

@@ -17,8 +17,10 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice&gt;
- *         &lt;element name="findIn" type="{http://www.knubisoft.com/testlum/testing/model/scenario}findIn"/&gt;
- *         &lt;element name="compareWith" type="{http://www.knubisoft.com/testlum/testing/model/scenario}compareWith"/&gt;
+ *         &lt;element name="fullScreen" type="{http://www.knubisoft.com/testlum/testing/model/scenario}compareWithFullScreen"/&gt;
+ *         &lt;element name="element" type="{http://www.knubisoft.com/testlum/testing/model/scenario}compareWithElement"/&gt;
+ *         &lt;element name="part" type="{http://www.knubisoft.com/testlum/testing/model/scenario}compareWithPart"/&gt;
+ *         &lt;element name="findPart" type="{http://www.knubisoft.com/testlum/testing/model/scenario}findPart"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="file" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}imageExtension" /&gt;
  *       &lt;attribute name="highlightDifference" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
@@ -31,66 +33,118 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "image", propOrder = {
-    "findIn",
-    "compareWith"
+    "fullScreen",
+    "element",
+    "part",
+    "findPart"
 })
 public class Image
     extends AbstractUiCommand
 {
 
-    protected FindIn findIn;
-    protected CompareWith compareWith;
+    protected CompareWithFullScreen fullScreen;
+    protected CompareWithElement element;
+    protected CompareWithPart part;
+    protected FindPart findPart;
     @XmlAttribute(name = "file", required = true)
     protected String file;
     @XmlAttribute(name = "highlightDifference")
     protected Boolean highlightDifference;
 
     /**
-     * Gets the value of the findIn property.
+     * Gets the value of the fullScreen property.
      * 
      * @return
      *     possible object is
-     *     {@link FindIn }
+     *     {@link CompareWithFullScreen }
      *     
      */
-    public FindIn getFindIn() {
-        return findIn;
+    public CompareWithFullScreen getFullScreen() {
+        return fullScreen;
     }
 
     /**
-     * Sets the value of the findIn property.
+     * Sets the value of the fullScreen property.
      * 
      * @param value
      *     allowed object is
-     *     {@link FindIn }
+     *     {@link CompareWithFullScreen }
      *     
      */
-    public void setFindIn(FindIn value) {
-        this.findIn = value;
+    public void setFullScreen(CompareWithFullScreen value) {
+        this.fullScreen = value;
     }
 
     /**
-     * Gets the value of the compareWith property.
+     * Gets the value of the element property.
      * 
      * @return
      *     possible object is
-     *     {@link CompareWith }
+     *     {@link CompareWithElement }
      *     
      */
-    public CompareWith getCompareWith() {
-        return compareWith;
+    public CompareWithElement getElement() {
+        return element;
     }
 
     /**
-     * Sets the value of the compareWith property.
+     * Sets the value of the element property.
      * 
      * @param value
      *     allowed object is
-     *     {@link CompareWith }
+     *     {@link CompareWithElement }
      *     
      */
-    public void setCompareWith(CompareWith value) {
-        this.compareWith = value;
+    public void setElement(CompareWithElement value) {
+        this.element = value;
+    }
+
+    /**
+     * Gets the value of the part property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CompareWithPart }
+     *     
+     */
+    public CompareWithPart getPart() {
+        return part;
+    }
+
+    /**
+     * Sets the value of the part property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CompareWithPart }
+     *     
+     */
+    public void setPart(CompareWithPart value) {
+        this.part = value;
+    }
+
+    /**
+     * Gets the value of the findPart property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FindPart }
+     *     
+     */
+    public FindPart getFindPart() {
+        return findPart;
+    }
+
+    /**
+     * Sets the value of the findPart property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FindPart }
+     *     
+     */
+    public void setFindPart(FindPart value) {
+        this.findPart = value;
     }
 
     /**

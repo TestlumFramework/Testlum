@@ -14,6 +14,8 @@ import static java.util.Objects.nonNull;
 @UtilityClass
 public class ImageComparator {
 
+    private static final double MAX_PERCENTS = 100;
+
     public ImageComparisonResult compare(final Image image,
                                          final BufferedImage expectedImage,
                                          final BufferedImage actualImage,
@@ -23,11 +25,11 @@ public class ImageComparator {
             imageComparison.setExcludedAreas(excludedElements);
         }
         if (nonNull(image.getFullScreen()) && nonNull(image.getFullScreen().getPercentage())) {
-            imageComparison.setAllowingPercentOfDifferentPixels(image.getFullScreen().getPercentage());
+            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENTS - image.getFullScreen().getPercentage());
         } else if (nonNull(image.getPart()) && nonNull(image.getPart().getPercentage())) {
-            imageComparison.setAllowingPercentOfDifferentPixels(image.getPart().getPercentage());
+            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENTS - image.getPart().getPercentage());
         } else if (nonNull(image.getFindPart()) && nonNull(image.getFindPart().getPercentage())) {
-            imageComparison.setAllowingPercentOfDifferentPixels(image.getFindPart().getPercentage());
+            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENTS - image.getFindPart().getPercentage());
         }
         return imageComparison.compareImages();
     }

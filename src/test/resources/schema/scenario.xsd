@@ -94,6 +94,7 @@
                     <x:element name="var" type="tns:var"/>
                     <x:element name="condition" type="tns:condition"/>
                     <x:element name="wait" type="tns:wait"/>
+                    <x:element name="waitFor" type="tns:waitFor"/>
                     <x:element name="shell" type="tns:shell"/>
                     <x:element name="smtp" type="tns:smtp"/>
                     <x:element name="twilio" type="tns:twilio"/>
@@ -169,6 +170,7 @@
                     <x:element name="graphql" type="tns:graphql"/>
                     <x:element name="var" type="tns:var"/>
                     <x:element name="wait" type="tns:wait"/>
+                    <x:element name="waitFor" type="tns:waitFor"/>
                     <x:element name="shell" type="tns:shell"/>
                     <x:element name="smtp" type="tns:smtp"/>
                     <x:element name="twilio" type="tns:twilio"/>

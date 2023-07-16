@@ -46,6 +46,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="graphql" type="{http://www.knubisoft.com/testlum/testing/model/scenario}graphql"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}var"/&gt;
  *         &lt;element name="wait" type="{http://www.knubisoft.com/testlum/testing/model/scenario}wait"/&gt;
+ *         &lt;element name="waitFor" type="{http://www.knubisoft.com/testlum/testing/model/scenario}waitFor"/&gt;
  *         &lt;element name="shell" type="{http://www.knubisoft.com/testlum/testing/model/scenario}shell"/&gt;
  *         &lt;element name="smtp" type="{http://www.knubisoft.com/testlum/testing/model/scenario}smtp"/&gt;
  *         &lt;element name="twilio" type="{http://www.knubisoft.com/testlum/testing/model/scenario}twilio"/&gt;
@@ -90,6 +91,7 @@ public class Repeat
         @XmlElement(name = "graphql", type = Graphql.class),
         @XmlElement(name = "var", type = Var.class),
         @XmlElement(name = "wait", type = Wait.class),
+        @XmlElement(name = "waitFor", type = WaitFor.class),
         @XmlElement(name = "shell", type = Shell.class),
         @XmlElement(name = "smtp", type = Smtp.class),
         @XmlElement(name = "twilio", type = Twilio.class)
@@ -140,6 +142,7 @@ public class Repeat
      * {@link Graphql }
      * {@link Var }
      * {@link Wait }
+     * {@link WaitFor }
      * {@link Shell }
      * {@link Smtp }
      * {@link Twilio }

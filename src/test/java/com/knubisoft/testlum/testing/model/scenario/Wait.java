@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="wait"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
  *       &lt;attribute name="time" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}timePattern" /&gt;
  *       &lt;attribute name="unit" type="{http://www.knubisoft.com/testlum/testing/model/scenario}timeunit" default="seconds" /&gt;
  *     &lt;/extension&gt;
@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "wait")
 public class Wait
-    extends AbstractUiCommand
+    extends AbstractCommand
 {
 
     @XmlAttribute(name = "time", required = true)

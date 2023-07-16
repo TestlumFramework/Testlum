@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "abstractUiCommand")
 @XmlSeeAlso({
-    Wait.class,
+    WaitFor.class,
     WebVar.class,
     NativeVar.class,
     UiCondition.class,

@@ -7,9 +7,32 @@
 
     <x:include schemaLocation="shared.xsd"/>
 
-    <x:complexType name="wait">
+    <x:complexType name="waitFor">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="clickable" type="tns:clickable"/>
+                    <x:element name="visible" type="tns:visible"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="clickable">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator" />
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="visible">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator" />
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="wait">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
                 <x:attribute name="time" type="tns:timePattern" use="required"/>
                 <x:attribute name="unit" type="tns:timeunit" default="seconds"/>
             </x:extension>

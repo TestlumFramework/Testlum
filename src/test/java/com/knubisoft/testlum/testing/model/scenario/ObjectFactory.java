@@ -294,6 +294,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link WaitFor }
+     * 
+     */
+    public WaitFor createWaitFor() {
+        return new WaitFor();
+    }
+
+    /**
      * Create an instance of {@link Shell }
      * 
      */
@@ -379,6 +387,22 @@ public class ObjectFactory {
      */
     public File createFile() {
         return new File();
+    }
+
+    /**
+     * Create an instance of {@link Clickable }
+     * 
+     */
+    public Clickable createClickable() {
+        return new Clickable();
+    }
+
+    /**
+     * Create an instance of {@link Visible }
+     * 
+     */
+    public Visible createVisible() {
+        return new Visible();
     }
 
     /**

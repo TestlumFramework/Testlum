@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
@@ -39,6 +40,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
@@ -48,6 +50,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BODY_L
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CLEAR_COOKIES_AFTER;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_LOG_WITHOUT_POSITION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_SKIPPED_ON_CONDITION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMENT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONDITION_LOG;
@@ -89,6 +92,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOVE_T
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NAME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NEW_LOG_LINE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.POSITION_COMMAND_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REDIS_QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
@@ -211,6 +215,14 @@ public class LogUtil {
     }
 
     /* general log */
+    public void logCommand(final long position, final AbstractCommand command) {
+        if (position != 0) {
+            log.info(POSITION_COMMAND_LOG, position, command.getClass().getSimpleName());
+        } else {
+            log.info(COMMAND_LOG_WITHOUT_POSITION, command.getClass().getSimpleName());
+        }
+    }
+
     public void logAlias(final String alias) {
         log.info(ALIAS_LOG, alias);
     }
@@ -500,7 +512,7 @@ public class LogUtil {
         log.info(TAB_URL, isNotBlank(url) ? url : WITHOUT_URL);
     }
 
-    public void logAssertCommand(final AbstractUiCommand command, final int position) {
+    public void logAssertCommand(final AbstractCommand command, final int position) {
         log.info(COMMAND_LOG, position, command.getClass().getSimpleName());
         log.info(COMMENT_LOG, command.getComment());
     }
@@ -513,6 +525,12 @@ public class LogUtil {
 
     public void logAssertTitleCommand(final AssertTitle title) {
         log.info(CONTENT_LOG, title.getContent());
+    }
+
+    public void logAssertEqualityCommand(final AssertEquality command, final int position) {
+        log.info(COMMAND_LOG, position, command.getClass().getSimpleName());
+        log.info(COMMENT_LOG, command.getComment());
+        log.info(CONTENT_LOG, String.join(COMMA, command.getContent()));
     }
 
     public void logDragAndDropInfo(final DragAndDrop dragAndDrop) {

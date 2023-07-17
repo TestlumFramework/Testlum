@@ -74,6 +74,7 @@ import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.Redis;
+import com.knubisoft.testlum.testing.model.scenario.Repeat;
 import com.knubisoft.testlum.testing.model.scenario.Response;
 import com.knubisoft.testlum.testing.model.scenario.S3;
 import com.knubisoft.testlum.testing.model.scenario.S3Bucket;
@@ -390,6 +391,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         if (isNotBlank(scenario.getSettings().getVariations())) {
             GlobalVariations.process(scenario, xmlFile);
             variationsFileName.set(scenario.getSettings().getVariations());
+        }
+        if (scenario.getCommands().stream().anyMatch(command -> command instanceof Repeat)) {
+            Repeat repeat = (Repeat) scenario.getCommands().stream()
+                    .filter(command -> command instanceof Repeat)
+                    .findFirst().get();
+            GlobalVariations.process(repeat);
+            variationsFileName.set(repeat.getVariations());
         }
     }
 

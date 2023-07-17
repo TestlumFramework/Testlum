@@ -6,13 +6,11 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.parser.XMLParsers;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
-import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.Include;
 import com.knubisoft.testlum.testing.model.scenario.Logout;
-import com.knubisoft.testlum.testing.model.scenario.Repeat;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +19,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -105,8 +101,6 @@ public class ScenarioCollector {
             addAuthCommands(updatedCommand, (Auth) command);
         } else if (command instanceof Include) {
             addIncludeCommands(updatedCommand, command);
-        } else if (command instanceof Repeat) {
-            addRepeatCommands(updatedCommand, (Repeat) command);
         } else {
             updatedCommand.add(command);
         }
@@ -150,19 +144,6 @@ public class ScenarioCollector {
                 include.getScenario());
         File file = FileSearcher.searchFileFromDir(includedScenarioFolder, TestResourceSettings.SCENARIO_FILENAME);
         return XMLParsers.forScenario().process(file, scenarioValidator);
-    }
-
-    private void addRepeatCommands(final List<AbstractCommand> updatedCommand, final Repeat repeatCommand) {
-        if (Objects.nonNull(repeatCommand.getTimes())) {
-            for (int i = 0; i < repeatCommand.getTimes(); i++) {
-                repeatCommand.getCommands().forEach(command -> addAbstractCommand(updatedCommand, command));
-            }
-        } else {
-            List<Map<String, String>> variationsList = GlobalVariations.getVariations(repeatCommand.getVariations());
-            for (int i = 0; i < variationsList.size(); i++) {
-                repeatCommand.getCommands().forEach(command -> addAbstractCommand(updatedCommand, command));
-            }
-        }
     }
 
     public static class Result {

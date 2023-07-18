@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
  *       &lt;choice&gt;
  *         &lt;element name="upload" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
- *         &lt;element name="download" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="download" type="{http://www.knubisoft.com/testlum/testing/model/scenario}s3FileDownload"/&gt;
  *         &lt;element name="remove" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="bucket" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
@@ -41,7 +41,7 @@ public class S3File
 {
 
     protected String upload;
-    protected String download;
+    protected S3FileDownload download;
     protected String remove;
     @XmlAttribute(name = "bucket", required = true)
     protected String bucket;
@@ -77,10 +77,10 @@ public class S3File
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link S3FileDownload }
      *     
      */
-    public String getDownload() {
+    public S3FileDownload getDownload() {
         return download;
     }
 
@@ -89,10 +89,10 @@ public class S3File
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link S3FileDownload }
      *     
      */
-    public void setDownload(String value) {
+    public void setDownload(S3FileDownload value) {
         this.download = value;
     }
 

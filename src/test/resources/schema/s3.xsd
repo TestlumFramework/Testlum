@@ -35,13 +35,21 @@
             <x:extension base="tns:abstractCommand">
                 <x:choice>
                     <x:element name="upload" type="tns:nonEmptyString"/>
-                    <x:element name="download" type="tns:nonEmptyString"/>
+                    <x:element name="download" type="tns:s3FileDownload"/>
                     <x:element name="remove" type="tns:nonEmptyString"/>
                 </x:choice>
                 <x:attribute name="bucket" type="tns:nonEmptyString" use="required"/>
                 <x:attribute name="key" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="s3FileDownload">
+        <x:choice>
+            <x:element name="value" type="tns:nonEmptyString"/>
+            <x:element name="file" type="tns:nonEmptyString"/>
+        </x:choice>
+        <x:attribute name="fileName" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
 </x:schema>

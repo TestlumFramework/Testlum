@@ -926,6 +926,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link S3FileDownload }
+     * 
+     */
+    public S3FileDownload createS3FileDownload() {
+        return new S3FileDownload();
+    }
+
+    /**
      * Create an instance of {@link SendSqsMessage }
      * 
      */

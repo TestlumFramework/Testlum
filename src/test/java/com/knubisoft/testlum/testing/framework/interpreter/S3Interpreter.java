@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.CreateBucketRequest;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3Object;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.ComparisonException;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
@@ -20,6 +21,7 @@ import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.S3;
 import com.knubisoft.testlum.testing.model.scenario.S3Bucket;
 import com.knubisoft.testlum.testing.model.scenario.S3File;
+import com.knubisoft.testlum.testing.model.scenario.S3FileDownload;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -34,8 +36,10 @@ import java.util.Map;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.BUCKET_EXISTS;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.BUCKET_NOT_FOUND;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FILE_COMPARISON_ERROR;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FILE_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FILE_PROCESSING_ERROR;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FILE_VALUE_COMPARISON_ERROR;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_S3_PROCESSING;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALIAS;
 import static java.util.Objects.nonNull;
@@ -176,14 +180,29 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         ResultUtil.addS3FileMetaData(DOWNLOAD_FILE, fileCommand.getBucket(), fileCommand.getKey(), result);
         String expected = fileCommand.getDownload().getFile() == null
                 ? fileCommand.getDownload().getValue()
-                : FileSearcher.searchFileToString(fileCommand.getDownload().getFileName(), dependencies.getFile());
+                : FileSearcher.searchFileToString(fileCommand.getDownload().getFile(), dependencies.getFile());
         String actual = downloadFile(aliasEnv, bucketName, key);
         ResultUtil.setExpectedActual(expected, actual, result);
-        CompareBuilder comparator = newCompare()
-                .withExpected(expected)
-                .withActual(actual);
-        comparator.exec();
+        compare(expected, actual, fileCommand.getDownload(), result);
         setContextBody(actual);
+    }
+
+    private void compare(final String expected,
+                         final String actual,
+                         final S3FileDownload s3FileDownload,
+                         final CommandResult result) {
+        try {
+            CompareBuilder comparator = newCompare().withExpected(expected).withActual(actual);
+            comparator.exec();
+        } catch (ComparisonException e) {
+            ComparisonException comparisonException = s3FileDownload.getFile() == null
+                    ? new ComparisonException(String.format(
+                    FILE_VALUE_COMPARISON_ERROR, s3FileDownload.getFileName(), s3FileDownload.getValue()))
+                    : new ComparisonException(String.format(
+                    FILE_COMPARISON_ERROR, s3FileDownload.getFileName(), s3FileDownload.getFile()));
+            result.setException(comparisonException);
+            throw comparisonException;
+        }
     }
 
     @SneakyThrows
@@ -194,7 +213,6 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
             checkBucketFileExists(aliasEnv, bucketName, key);
             S3Object s3Object = amazonS3.get(aliasEnv).getObject(bucketName, key);
             return IOUtils.toString(s3Object.getObjectContent(), StandardCharsets.UTF_8);
-            //TODO Deal with media type files
         } catch (AmazonS3Exception e) {
             throw new DefaultFrameworkException(String.format(FILE_PROCESSING_ERROR, key, bucketName));
         }

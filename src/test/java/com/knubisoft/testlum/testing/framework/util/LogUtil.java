@@ -325,61 +325,55 @@ public class LogUtil {
     }
 
     public void logKafkaSendInfo(final SendKafkaMessage send, final String content) {
-        log.info(ACTION_LOG, SEND_ACTION.toUpperCase(Locale.ROOT));
-        log.info(TOPIC_LOG, send.getTopic());
+        logMessageBrokerGeneralMetaData(SEND_ACTION, TOPIC_LOG, send.getTopic(), content);
         logIfNotNull(CORRELATION_ID_LOG, send.getCorrelationId());
         logIfNotNull(HEADERS_LOG, send.getHeaders());
-        log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
-                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
     public void logKafkaReceiveInfo(final ReceiveKafkaMessage receive, final String content) {
-        log.info(ACTION_LOG, RECEIVE_ACTION.toUpperCase(Locale.ROOT));
-        log.info(TOPIC_LOG, receive.getTopic());
+        logMessageBrokerGeneralMetaData(RECEIVE_ACTION, TOPIC_LOG, receive.getTopic(), content);
         logIfNotNull(TIMEOUT_MILLIS_LOG, receive.getTimeoutMillis());
         logIfNotNull(COMMIT_LOG, receive.isCommit());
-        log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
-                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
     public void logRabbitSendInfo(final SendRmqMessage send, final String content) {
-        log.info(ACTION_LOG, SEND_ACTION.toUpperCase(Locale.ROOT));
-        log.info(ROUTING_KEY_LOG, send.getRoutingKey());
+        logMessageBrokerGeneralMetaData(SEND_ACTION, ROUTING_KEY_LOG, send.getRoutingKey(), content);
         logIfNotNull(TIMEOUT_MILLIS_LOG, send.getCorrelationId());
         logIfNotNull(EXCHANGE_LOG, send.getExchange());
         logIfNotNull(PREFETCH_COUNT_LOG, send.getHeaders());
-        log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
-                        .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
     public void logRabbitReceiveInfo(final ReceiveRmqMessage receive, final String content) {
-        log.info(ACTION_LOG, RECEIVE_ACTION.toUpperCase(Locale.ROOT));
-        log.info(QUEUE_LOG, receive.getQueue());
+        logMessageBrokerGeneralMetaData(RECEIVE_ACTION, QUEUE_LOG, receive.getQueue(), content);
         logIfNotNull(TIMEOUT_MILLIS_LOG, receive.getTimeoutMillis());
         logIfNotNull(PREFETCH_COUNT_LOG, receive.getPrefetchCount());
-        log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
-                        .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
     public void logSQSSendInfo(final SendSqsMessage send, final String content) {
-        log.info(ACTION_LOG, SEND_ACTION.toUpperCase(Locale.ROOT));
-        log.info(QUEUE_LOG, send.getQueue());
+        logMessageBrokerGeneralMetaData(SEND_ACTION, QUEUE_LOG, send.getQueue(), content);
         logIfNotNull(DELAY_SECONDS_LOG, send.getDelaySeconds());
         logIfNotNull(MESSAGE_DEDUPLICATION_ID_LOG, send.getMessageDeduplicationId());
         logIfNotNull(MESSAGE_GROUP_ID_LOG, send.getMessageGroupId());
-        log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
-                        .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
     public void logSQSReceiveInfo(final ReceiveSqsMessage receive, final String content) {
+        logMessageBrokerGeneralMetaData(RECEIVE_ACTION, QUEUE_LOG, receive.getQueue(), content);
         log.info(ACTION_LOG, RECEIVE_ACTION.toUpperCase(Locale.ROOT));
         log.info(QUEUE_LOG, receive.getQueue());
         logIfNotNull(MAX_NUMBER_OF_MESSAGES_LOG, receive.getMaxNumberOfMessages());
         logIfNotNull(WAIT_TIME_SECONDS_LOG, receive.getWaitTimeSeconds());
         logIfNotNull(RECEIVE_REQUEST_ATTEMPT_ID_LOG, receive.getReceiveRequestAttemptId());
         logIfNotNull(VISIBILITY_TIMEOUT_LOG, receive.getVisibilityTimeout());
+    }
+
+    public void logMessageBrokerGeneralMetaData(final String action,
+                                                final String topicOrRoutingKeyOrQueue,
+                                                final String topicOrRoutingKeyOrQueueValue,
+                                                final String content) {
+        log.info(ACTION_LOG, action.toUpperCase(Locale.ROOT));
+        log.info(topicOrRoutingKeyOrQueue, topicOrRoutingKeyOrQueueValue);
         log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
-                        .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
     }
 
     private void logIfNotNull(final String title, final Object data) {

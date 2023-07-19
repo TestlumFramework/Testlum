@@ -358,8 +358,6 @@ public class LogUtil {
 
     public void logSQSReceiveInfo(final ReceiveSqsMessage receive, final String content) {
         logMessageBrokerGeneralMetaData(RECEIVE_ACTION, QUEUE_LOG, receive.getQueue(), content);
-        log.info(ACTION_LOG, RECEIVE_ACTION.toUpperCase(Locale.ROOT));
-        log.info(QUEUE_LOG, receive.getQueue());
         logIfNotNull(MAX_NUMBER_OF_MESSAGES_LOG, receive.getMaxNumberOfMessages());
         logIfNotNull(WAIT_TIME_SECONDS_LOG, receive.getWaitTimeSeconds());
         logIfNotNull(RECEIVE_REQUEST_ATTEMPT_ID_LOG, receive.getReceiveRequestAttemptId());

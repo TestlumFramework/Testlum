@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
@@ -31,8 +30,6 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
 
     private final Map<AssertCmdPredicate, AssertMethod> assertCommandMap;
-    private final List<String> exceptionResult = new ArrayList<>();
-    private final AtomicInteger commandId = new AtomicInteger();
 
     public AssertExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -48,14 +45,14 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         List<CommandResult> subCommandsResult = new ArrayList<>();
         result.setSubCommandsResult(subCommandsResult);
         webAssert.getAttributeOrTitle().forEach(command -> {
-            CommandResult commandResult = ResultUtil.newUiCommandResultInstance(commandId.incrementAndGet(), command);
+            CommandResult commandResult =
+                    ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
             subCommandsResult.add(commandResult);
-            LogUtil.logAssertCommand(command, commandId.get());
+            LogUtil.logAssertCommand(command, dependencies.getPosition().get());
             if (ConditionUtil.isTrue(command.getCondition(), dependencies.getScenarioContext(), commandResult)) {
                 executeSubCommand(command, commandResult);
             }
         });
-        rethrowOnErrors();
     }
 
     private void executeSubCommand(final AbstractUiCommand command, final CommandResult result) {
@@ -97,19 +94,8 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
                     .withExpected(expected)
                     .exec();
         } catch (Exception e) {
-            handleException(e, result);
-        }
-    }
-
-    private void handleException(final Exception e, final CommandResult result) {
-        LogUtil.logException(e);
-        ResultUtil.setExceptionResult(result, e);
-        exceptionResult.add(e.getMessage());
-    }
-
-    private void rethrowOnErrors() {
-        if (!exceptionResult.isEmpty()) {
-            throw new DefaultFrameworkException(exceptionResult);
+            LogUtil.logException(e);
+            ResultUtil.setExceptionResult(result, e);
         }
     }
 

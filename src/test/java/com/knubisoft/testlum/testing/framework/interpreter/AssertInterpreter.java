@@ -21,8 +21,6 @@ import java.util.List;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ASSERT_CONTENT_IS_EQUAL;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ASSERT_CONTENT_NOT_EQUAL;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_LOG;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONTENT;
 
 
 @Slf4j
@@ -42,7 +40,8 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
             int commandId = dependencies.getPosition().incrementAndGet();
             CommandResult commandResult = ResultUtil.newCommandResultInstance(commandId, action);
             subCommandsResult.add(commandResult);
-            LogUtil.logSubCommand(commandId, action);
+            LogUtil.logAssertEqualityCommand(action, commandId);
+            ResultUtil.addAssertEqualityMetaData(action, commandResult);
             processEachAction(action, commandResult);
         });
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
@@ -52,8 +51,6 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
             executeEqualityAction(action);
-            log.info(CONTENT_LOG, formatContent(action));
-            result.put(CONTENT, formatContent(action));
         } catch (Exception e) {
             LogUtil.logException(e);
             ResultUtil.setExceptionResult(result, e);

@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
@@ -47,6 +48,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static java.lang.String.format;
@@ -698,6 +700,11 @@ public class ResultUtil {
     public void addAssertAttributeMetaData(final AssertAttribute attribute, final CommandResult result) {
         result.put(ASSERT_LOCATOR, attribute.getLocatorId());
         result.put(ASSERT_ATTRIBUTE, attribute.getName());
+    }
+
+    public void addAssertEqualityMetaData(final AssertEquality action, final CommandResult result) {
+        result.setComment(action.getComment());
+        result.put(CONTENT, String.join(COMMA, action.getContent()));
     }
 
     public void addSwipeMetaData(final SwipeNative swipeNative, final CommandResult result) {

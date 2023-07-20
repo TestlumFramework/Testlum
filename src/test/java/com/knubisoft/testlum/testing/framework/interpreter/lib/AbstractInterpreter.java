@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
+import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SLOW_COMMAND_PROCESSING;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMENT_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.POSITION_COMMAND_LOG;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -36,7 +36,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     }
 
     public final void apply(final T o, final CommandResult result) {
-        log.info(POSITION_COMMAND_LOG, dependencies.getPosition().get(), o.getClass().getSimpleName());
+        LogUtil.logCommand(result.getId(), o);
         if (isNotBlank(o.getComment())) {
             String comment = inject(o.getComment());
             log.info(COMMENT_LOG, comment);

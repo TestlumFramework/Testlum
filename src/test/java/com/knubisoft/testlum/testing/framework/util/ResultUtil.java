@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CompareWithElement;
 import com.knubisoft.testlum.testing.model.scenario.CompareWithFullScreen;
@@ -767,6 +768,11 @@ public class ResultUtil {
     public void addAssertAttributeMetaData(final AssertAttribute attribute, final CommandResult result) {
         result.put(ASSERT_LOCATOR, attribute.getLocatorId());
         result.put(ASSERT_ATTRIBUTE, attribute.getName());
+    }
+
+    public void addAssertEqualityMetaData(final AssertEquality action, final CommandResult result) {
+        result.setComment(action.getComment());
+        result.put(CONTENT, String.join(COMMA, action.getContent()));
     }
 
     public void addSwipeMetaData(final SwipeNative swipeNative, final CommandResult result) {

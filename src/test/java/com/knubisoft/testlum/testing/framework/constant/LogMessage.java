@@ -169,6 +169,7 @@ public final class LogMessage {
     public static final String FROM_PHONE_NUMBER_LOG = format(TABLE_FORMAT, "'From' phone number", "{}");
     public static final String TO_PHONE_NUMBER_LOG = format(TABLE_FORMAT, "'To' phone number", "{}");
     public static final String MESSAGE_LOG = format(TABLE_FORMAT, "Message", "{}");
+    public static final String MESSAGE_STATUS = format(TABLE_FORMAT, "Message status", "{}");
     public static final String IMAGE_COMPARISON_TYPE_LOG = format(TABLE_FORMAT, "Image comparison type", "{}");
     public static final String HIGHLIGHT_DIFFERENCE_LOG = format(TABLE_FORMAT, "Highlight difference", "{}");
     public static final String IMAGE_FOR_COMPARISON_LOG = format(TABLE_FORMAT, "Image for comparison", "{}");

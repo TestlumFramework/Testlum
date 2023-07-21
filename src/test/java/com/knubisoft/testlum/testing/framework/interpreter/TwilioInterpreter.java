@@ -11,10 +11,14 @@ import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.rest.api.v2010.account.MessageCreator;
 import com.twilio.type.PhoneNumber;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MESSAGE_STATUS;
+
+@Slf4j
 @InterpreterForClass(Twilio.class)
 public class TwilioInterpreter extends AbstractInterpreter<Twilio> {
 
@@ -39,7 +43,8 @@ public class TwilioInterpreter extends AbstractInterpreter<Twilio> {
 
     private void sendSms(final Twilio twilio, final String twilioNumber) {
         MessageCreator creator = getMessageCreator(twilio, twilioNumber);
-        creator.create();
+        Message message = creator.create();
+        log.info(MESSAGE_STATUS, message.getStatus());
     }
 
     private MessageCreator getMessageCreator(final Twilio twilio, final String twilioNumber) {

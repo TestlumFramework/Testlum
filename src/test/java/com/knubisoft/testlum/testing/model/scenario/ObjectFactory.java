@@ -294,14 +294,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WaitFor }
-     * 
-     */
-    public WaitFor createWaitFor() {
-        return new WaitFor();
-    }
-
-    /**
      * Create an instance of {@link Shell }
      * 
      */
@@ -387,6 +379,14 @@ public class ObjectFactory {
      */
     public File createFile() {
         return new File();
+    }
+
+    /**
+     * Create an instance of {@link UiWait }
+     * 
+     */
+    public UiWait createUiWait() {
+        return new UiWait();
     }
 
     /**

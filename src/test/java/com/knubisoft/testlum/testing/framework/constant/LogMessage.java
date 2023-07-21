@@ -147,6 +147,7 @@ public final class LogMessage {
     public static final String SWIPE_DIRECTION = format(TABLE_FORMAT, "Swipe direction", "{}");
     public static final String SWIPE_VALUE = format(TABLE_FORMAT, "Swipe value in %", "{}");
     public static final String SWIPE_TYPE = format(TABLE_FORMAT, "Swipe type", "{}");
+    public static final String WAIT_TYPE = format(TABLE_FORMAT, "Wait for element to be", "{}");
     public static final String DRAGGING_FROM = format(TABLE_FORMAT, "Dragging from locator", "{}");
     public static final String DROPPING_TO = format(TABLE_FORMAT, "Dropping to locator", "{}");
     public static final String DRAGGING_FILE_PATH = format(TABLE_FORMAT, "Dragging file path", "{}");

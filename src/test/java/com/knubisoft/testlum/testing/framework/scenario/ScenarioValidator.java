@@ -655,7 +655,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateFileIfExist(xmlFile, s3File.getUpload());
         } else if (nonNull(s3File.getDownload())) {
             S3FileDownload s3FileDownload = s3File.getDownload();
-            validateFileIfExist(xmlFile, s3FileDownload.getFileName());
             if (isNotEmpty(s3FileDownload.getFile())) {
                 validateFileIfExist(xmlFile, s3FileDownload.getFile());
             }

@@ -77,12 +77,10 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.END_UI
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_WEBVIEW;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXCEPTION_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXCHANGE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXPRESSION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HEADERS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND_TIMES;
@@ -340,7 +338,6 @@ public class LogUtil {
     public void logKafkaSendInfo(final SendKafkaMessage send, final String content) {
         logMessageBrokerGeneralMetaData(SEND_ACTION, TOPIC_LOG, send.getTopic(), content);
         logIfNotNull(CORRELATION_ID_LOG, send.getCorrelationId());
-        logIfNotNull(HEADERS_LOG, send.getHeaders());
     }
 
     public void logKafkaReceiveInfo(final ReceiveKafkaMessage receive, final String content) {
@@ -351,9 +348,7 @@ public class LogUtil {
 
     public void logRabbitSendInfo(final SendRmqMessage send, final String content) {
         logMessageBrokerGeneralMetaData(SEND_ACTION, ROUTING_KEY_LOG, send.getRoutingKey(), content);
-        logIfNotNull(TIMEOUT_MILLIS_LOG, send.getCorrelationId());
-        logIfNotNull(EXCHANGE_LOG, send.getExchange());
-        logIfNotNull(PREFETCH_COUNT_LOG, send.getHeaders());
+        logIfNotNull(CORRELATION_ID_LOG, send.getCorrelationId());
     }
 
     public void logRabbitReceiveInfo(final ReceiveRmqMessage receive, final String content) {

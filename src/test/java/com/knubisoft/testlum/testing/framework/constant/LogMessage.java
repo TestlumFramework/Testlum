@@ -176,7 +176,7 @@ public final class LogMessage {
     public static final String MAX_NUMBER_OF_MESSAGES_LOG = format(TABLE_FORMAT, "Max Number of Messages", "{}");
     public static final String WAIT_TIME_SECONDS_LOG = format(TABLE_FORMAT, "Wait Time Seconds", "{}");
     public static final String RECEIVE_REQUEST_ATTEMPT_ID_LOG = format(
-            TABLE_FORMAT, "Receive Request Attempt Id", "{}");
+            TABLE_FORMAT, "Attempt Id", "{}");
     public static final String VISIBILITY_TIMEOUT_LOG = format(TABLE_FORMAT, "Visibility Timeout", "{}");
     public static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
     public static final String ATTRIBUTE_LOG = format(TABLE_FORMAT, "Attribute", "{}");

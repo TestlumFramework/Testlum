@@ -491,8 +491,8 @@ public class LogUtil {
         }
     }
 
-    public void logHotKeyInfo(final AbstractUiCommand command) {
-        log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
+    public void logHotKeyInfo(final AbstractUiCommand command, final int position) {
+        log.info(COMMAND_LOG, position, command.getClass().getSimpleName());
         log.info(COMMENT_LOG, command.getComment());
     }
 

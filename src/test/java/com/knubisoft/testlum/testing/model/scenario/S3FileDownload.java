@@ -3,7 +3,6 @@ package com.knubisoft.testlum.testing.model.scenario;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -20,7 +19,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="value" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *         &lt;element name="file" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="fileName" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -37,8 +35,6 @@ public class S3FileDownload {
 
     protected String value;
     protected String file;
-    @XmlAttribute(name = "fileName", required = true)
-    protected String fileName;
 
     /**
      * Gets the value of the value property.
@@ -86,30 +82,6 @@ public class S3FileDownload {
      */
     public void setFile(String value) {
         this.file = value;
-    }
-
-    /**
-     * Gets the value of the fileName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getFileName() {
-        return fileName;
-    }
-
-    /**
-     * Sets the value of the fileName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setFileName(String value) {
-        this.fileName = value;
     }
 
 }

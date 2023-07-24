@@ -934,6 +934,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link S3FileRemove }
+     * 
+     */
+    public S3FileRemove createS3FileRemove() {
+        return new S3FileRemove();
+    }
+
+    /**
      * Create an instance of {@link SendSqsMessage }
      * 
      */

@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;choice&gt;
  *         &lt;element name="upload" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *         &lt;element name="download" type="{http://www.knubisoft.com/testlum/testing/model/scenario}s3FileDownload"/&gt;
- *         &lt;element name="remove" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="remove" type="{http://www.knubisoft.com/testlum/testing/model/scenario}s3FileRemove"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="bucket" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="key" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
@@ -42,7 +42,7 @@ public class S3File
 
     protected String upload;
     protected S3FileDownload download;
-    protected String remove;
+    protected S3FileRemove remove;
     @XmlAttribute(name = "bucket", required = true)
     protected String bucket;
     @XmlAttribute(name = "key", required = true)
@@ -101,10 +101,10 @@ public class S3File
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link S3FileRemove }
      *     
      */
-    public String getRemove() {
+    public S3FileRemove getRemove() {
         return remove;
     }
 
@@ -113,10 +113,10 @@ public class S3File
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link S3FileRemove }
      *     
      */
-    public void setRemove(String value) {
+    public void setRemove(S3FileRemove value) {
         this.remove = value;
     }
 

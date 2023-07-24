@@ -77,7 +77,6 @@ import com.knubisoft.testlum.testing.model.scenario.Redis;
 import com.knubisoft.testlum.testing.model.scenario.Response;
 import com.knubisoft.testlum.testing.model.scenario.S3;
 import com.knubisoft.testlum.testing.model.scenario.S3File;
-import com.knubisoft.testlum.testing.model.scenario.S3FileDownload;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
@@ -136,7 +135,6 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
@@ -653,13 +651,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateS3FileCommand(final File xmlFile, final S3File s3File) {
         if (isNotBlank(s3File.getUpload())) {
             validateFileIfExist(xmlFile, s3File.getUpload());
-        } else if (nonNull(s3File.getDownload())) {
-            S3FileDownload s3FileDownload = s3File.getDownload();
-            if (isNotEmpty(s3FileDownload.getFile())) {
-                validateFileIfExist(xmlFile, s3FileDownload.getFile());
-            }
-        } else {
-            validateFileIfExist(xmlFile, s3File.getRemove());
         }
     }
 

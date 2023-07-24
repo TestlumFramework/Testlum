@@ -41,6 +41,7 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FILE_PROCESSING_ERROR;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FILE_VALUE_COMPARISON_ERROR;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_S3_PROCESSING;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FILE_LOG;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALIAS;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -151,7 +152,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         if (nonNull(fileCommand.getDownload())) {
             processDownloadFileAction(fileCommand, bucketName, key, aliasEnv, result);
         }
-        if (isNotBlank(fileCommand.getRemove())) {
+        if (nonNull(fileCommand.getRemove())) {
             processRemoveFileAction(fileCommand, bucketName, key, aliasEnv, result);
         }
     }
@@ -162,7 +163,8 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                                          final AliasEnv aliasEnv,
                                          final CommandResult result) {
         LogUtil.logS3FileActionInfo(
-                UPLOAD_FILE, fileCommand.getBucket(), fileCommand.getKey(), fileCommand.getUpload());
+                UPLOAD_FILE, fileCommand.getBucket(), fileCommand.getKey());
+        log.info(FILE_LOG, fileCommand.getUpload());
         ResultUtil.addS3FileMetaData(UPLOAD_FILE, fileCommand.getBucket(), fileCommand.getKey(), result);
         File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileCommand.getUpload());
         result.put(FILE_NAME, fileCommand.getUpload());
@@ -176,20 +178,21 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                                            final AliasEnv aliasEnv,
                                            final CommandResult result) {
         LogUtil.logS3FileActionInfo(
-                DOWNLOAD_FILE, fileCommand.getBucket(), fileCommand.getKey(), fileCommand.getDownload().getFileName());
+                DOWNLOAD_FILE, fileCommand.getBucket(), fileCommand.getKey());
         ResultUtil.addS3FileMetaData(DOWNLOAD_FILE, fileCommand.getBucket(), fileCommand.getKey(), result);
         String expected = fileCommand.getDownload().getFile() == null
                 ? fileCommand.getDownload().getValue()
                 : FileSearcher.searchFileToString(fileCommand.getDownload().getFile(), dependencies.getFile());
         String actual = downloadFile(bucketName, key, aliasEnv);
         ResultUtil.setExpectedActual(expected, actual, result);
-        compare(expected, actual, fileCommand.getDownload(), result);
+        compare(expected, actual, fileCommand.getDownload(), key, result);
         setContextBody(actual);
     }
 
     private void compare(final String expected,
                          final String actual,
                          final S3FileDownload s3FileDownload,
+                         final String key,
                          final CommandResult result) {
         try {
             CompareBuilder comparator = newCompare().withExpected(expected).withActual(actual);
@@ -197,9 +200,9 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         } catch (ComparisonException e) {
             ComparisonException comparisonException = s3FileDownload.getFile() == null
                     ? new ComparisonException(String.format(
-                    FILE_VALUE_COMPARISON_ERROR, s3FileDownload.getFileName(), s3FileDownload.getValue()))
+                    FILE_VALUE_COMPARISON_ERROR, key, s3FileDownload.getValue()))
                     : new ComparisonException(String.format(
-                    FILE_COMPARISON_ERROR, s3FileDownload.getFileName(), s3FileDownload.getFile()));
+                    FILE_COMPARISON_ERROR, key, s3FileDownload.getFile()));
             result.setException(comparisonException);
             throw comparisonException;
         }
@@ -231,10 +234,10 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                                          final AliasEnv aliasEnv,
                                          final CommandResult result) {
         LogUtil.logS3FileActionInfo(
-                REMOVE_FILE, fileCommand.getBucket(), fileCommand.getKey(), fileCommand.getRemove());
+                REMOVE_FILE, fileCommand.getBucket(), fileCommand.getKey());
         ResultUtil.addS3FileMetaData(REMOVE_FILE, fileCommand.getBucket(), fileCommand.getKey(), result);
         checkBucketFileExists(bucketName, key, aliasEnv);
-        amazonS3.get(aliasEnv).deleteObject(bucketName, fileCommand.getRemove());
+        amazonS3.get(aliasEnv).deleteObject(bucketName, key);
     }
 
 }

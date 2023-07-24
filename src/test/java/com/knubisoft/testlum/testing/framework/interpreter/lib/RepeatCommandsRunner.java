@@ -27,7 +27,7 @@ public class RepeatCommandsRunner {
                                     final InterpreterDependencies dependencies,
                                     final List<CommandResult> subCommandsResult) {
         CommandResult commandResult =
-                ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
+                ResultUtil.newCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
         subCommandsResult.add(commandResult);
         executeCommand(command, dependencies, commandResult);
     }

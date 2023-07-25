@@ -33,6 +33,7 @@
     <x:include schemaLocation="ses-integration.xsd"/>
     <x:include schemaLocation="smtp-integration.xsd"/>
     <x:include schemaLocation="twilio-integration.xsd"/>
+    <x:include schemaLocation="vault-integration.xsd"/>
 
     <x:element name="integrations">
         <x:complexType>
@@ -57,6 +58,7 @@
                 <x:element name="sesIntegration" type="tns:sesIntegration" minOccurs="0"/>
                 <x:element name="smtpIntegration" type="tns:smtpIntegration" minOccurs="0"/>
                 <x:element name="twilioIntegration" type="tns:twilioIntegration" minOccurs="0"/>
+                <x:element name="vaultIntegration" type="tns:vaultIntegration" minOccurs="0"/>
             </x:all>
         </x:complexType>
     </x:element>

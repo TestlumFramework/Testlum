@@ -25,6 +25,7 @@ import com.knubisoft.testlum.testing.model.global_config.Ses;
 import com.knubisoft.testlum.testing.model.global_config.Smtp;
 import com.knubisoft.testlum.testing.model.global_config.Sqs;
 import com.knubisoft.testlum.testing.model.global_config.Twilio;
+import com.knubisoft.testlum.testing.model.global_config.Vault;
 import com.knubisoft.testlum.testing.model.global_config.WebsocketApi;
 import lombok.experimental.UtilityClass;
 
@@ -67,6 +68,7 @@ public class IntegrationsUtil {
         map.put(c -> c.equals(Rabbitmq.class), i -> i.getRabbitmqIntegration().getRabbitmq());
         map.put(c -> c.equals(Clickhouse.class), i -> i.getClickhouseIntegration().getClickhouse());
         map.put(c -> c.equals(Elasticsearch.class), i -> i.getElasticsearchIntegration().getElasticsearch());
+        map.put(c -> c.equals(Vault.class), i -> i.getVaultIntegration().getVault());
         configToIntegrationListMap = Collections.unmodifiableMap(map);
     }
 

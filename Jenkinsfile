@@ -24,7 +24,7 @@ pipeline {
         SITE_URL = "ssh://git@bitbucket.knubisoft.com:7999/cott/mega-test-app.git"
         URL_TESTING_TOOL = "ssh://git@bitbucket.knubisoft.com:7999/cott/testlum.git"
         URL_TESTING_TOOL_SCENARIOS = "ssh://git@bitbucket.knubisoft.com:7999/cott/testlum-test-resources.git"
-        GIT_CREDENTIALS_ID = "bitbucket"
+        GIT_CREDENTIALS_ID = "jenkins_ci_bitbucket_access"
         HOST='jenkins@192.168.0.7'
         PORT='22'
         HOST_DIR='/data/e2e-testing-tool'

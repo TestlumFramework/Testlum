@@ -7,8 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,7 +23,7 @@ public class VaultService {
 
     }
 
-    public String injectFromVault(final String toInject, final Map<String, String> vaultData) {
+    public String inject(final String toInject, final Map<String, String> vaultData) {
         if (StringUtils.isBlank(toInject)) {
             return toInject;
         }

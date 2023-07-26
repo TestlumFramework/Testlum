@@ -1,7 +1,5 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.bettercloud.vault.Vault;
-import com.bettercloud.vault.response.LogicalResponse;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.framework.vaultService.VaultService;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -23,7 +21,7 @@ public class InjectionUtil {
     @SneakyThrows
     public Integrations injectFromVault(final Integrations integrations, final Map<String, String> dataFromVault) {
         String asJson = JacksonMapperUtil.writeValueToCopiedString(integrations);
-        String injected = VaultService.injectFromVault(asJson, dataFromVault);
+        String injected = VaultService.inject(asJson, dataFromVault);
         return JacksonMapperUtil.readCopiedValue(injected, integrations.getClass());
     }
 }

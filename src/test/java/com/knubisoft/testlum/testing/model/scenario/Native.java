@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="click" type="{http://www.knubisoft.com/testlum/testing/model/scenario}click"/&gt;
  *         &lt;element name="input" type="{http://www.knubisoft.com/testlum/testing/model/scenario}input"/&gt;
  *         &lt;element name="assert" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeAssert"/&gt;
- *         &lt;element name="wait" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiWait"/&gt;
+ *         &lt;element name="wait" type="{http://www.knubisoft.com/testlum/testing/model/scenario}waitNative"/&gt;
  *         &lt;element name="clear" type="{http://www.knubisoft.com/testlum/testing/model/scenario}clear"/&gt;
  *         &lt;element name="image" type="{http://www.knubisoft.com/testlum/testing/model/scenario}image"/&gt;
  *         &lt;element name="refresh" type="{http://www.knubisoft.com/testlum/testing/model/scenario}refresh"/&gt;
@@ -55,7 +55,7 @@ public class Native
         @XmlElement(name = "click", type = Click.class),
         @XmlElement(name = "input", type = Input.class),
         @XmlElement(name = "assert", type = NativeAssert.class),
-        @XmlElement(name = "wait", type = UiWait.class),
+        @XmlElement(name = "wait", type = WaitNative.class),
         @XmlElement(name = "clear", type = Clear.class),
         @XmlElement(name = "image", type = Image.class),
         @XmlElement(name = "refresh", type = Refresh.class),
@@ -91,7 +91,7 @@ public class Native
      * {@link Click }
      * {@link Input }
      * {@link NativeAssert }
-     * {@link UiWait }
+     * {@link WaitNative }
      * {@link Clear }
      * {@link Image }
      * {@link Refresh }

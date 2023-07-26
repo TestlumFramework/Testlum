@@ -406,6 +406,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link WaitNative }
+     * 
+     */
+    public WaitNative createWaitNative() {
+        return new WaitNative();
+    }
+
+    /**
      * Create an instance of {@link WebVar }
      * 
      */

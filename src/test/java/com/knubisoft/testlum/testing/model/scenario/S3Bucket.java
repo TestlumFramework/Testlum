@@ -3,7 +3,6 @@ package com.knubisoft.testlum.testing.model.scenario;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -20,7 +19,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="create" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *         &lt;element name="remove" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="expected" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -39,8 +37,6 @@ public class S3Bucket
 
     protected String create;
     protected String remove;
-    @XmlAttribute(name = "expected", required = true)
-    protected String expected;
 
     /**
      * Gets the value of the create property.
@@ -88,30 +84,6 @@ public class S3Bucket
      */
     public void setRemove(String value) {
         this.remove = value;
-    }
-
-    /**
-     * Gets the value of the expected property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getExpected() {
-        return expected;
-    }
-
-    /**
-     * Sets the value of the expected property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setExpected(String value) {
-        this.expected = value;
     }
 
 }

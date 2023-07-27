@@ -30,14 +30,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link S3File }
-     * 
-     */
-    public S3File createS3File() {
-        return new S3File();
-    }
-
-    /**
      * Create an instance of {@link Scenario }
      * 
      */
@@ -926,6 +918,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link S3File }
+     * 
+     */
+    public S3File createS3File() {
+        return new S3File();
+    }
+
+    /**
+     * Create an instance of {@link S3FileDownload }
+     * 
+     */
+    public S3FileDownload createS3FileDownload() {
+        return new S3FileDownload();
+    }
+
+    /**
+     * Create an instance of {@link S3FileRemove }
+     * 
+     */
+    public S3FileRemove createS3FileRemove() {
+        return new S3FileRemove();
+    }
+
+    /**
      * Create an instance of {@link SendSqsMessage }
      * 
      */
@@ -1227,14 +1243,6 @@ public class ObjectFactory {
      */
     public LambdaBody createLambdaBody() {
         return new LambdaBody();
-    }
-
-    /**
-     * Create an instance of {@link S3File.Download }
-     * 
-     */
-    public S3File.Download createS3FileDownload() {
-        return new S3File.Download();
     }
 
 }

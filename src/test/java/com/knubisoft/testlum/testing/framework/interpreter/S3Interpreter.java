@@ -2,13 +2,11 @@ package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.CreateBucketRequest;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.ComparisonException;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
@@ -23,46 +21,43 @@ import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.S3;
 import com.knubisoft.testlum.testing.model.scenario.S3Bucket;
 import com.knubisoft.testlum.testing.model.scenario.S3File;
+import com.knubisoft.testlum.testing.model.scenario.S3FileDownload;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.BUCKET_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.BUCKET_EXISTS;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.BUCKET_NOT_FOUND;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FILE_COMPARISON_ERROR;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FILE_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FILE_PROCESSING_ERROR;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FILE_VALUE_COMPARISON_ERROR;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_S3_PROCESSING;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FILE_LOG;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALIAS;
-import static com.knubisoft.testlum.testing.framework.util.S3Util.CREATE_BUCKET;
-import static com.knubisoft.testlum.testing.framework.util.S3Util.DOWNLOAD_FILE;
-import static com.knubisoft.testlum.testing.framework.util.S3Util.FILE_NAME;
-import static com.knubisoft.testlum.testing.framework.util.S3Util.REMOVE_BUCKET;
-import static com.knubisoft.testlum.testing.framework.util.S3Util.REMOVE_FILE;
-import static com.knubisoft.testlum.testing.framework.util.S3Util.UPLOAD_FILE;
-import static com.knubisoft.testlum.testing.framework.util.S3Util.logAndReportBucketInfo;
-import static com.knubisoft.testlum.testing.framework.util.S3Util.logAndReportFileInfo;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 @InterpreterForClass(S3.class)
 public class S3Interpreter extends AbstractInterpreter<S3> {
+    public static final String CREATE_BUCKET = "create bucket";
+    public static final String REMOVE_BUCKET = "remove bucket";
+    public static final String UPLOAD_FILE = "upload file";
+    public static final String DOWNLOAD_FILE = "download file";
+    public static final String REMOVE_FILE = "remove file";
+    public static final String FILE_NAME = "File name";
+
     @Autowired(required = false)
-    private Map<AliasEnv, AmazonS3> amazonS3Map;
-    private AmazonS3 amazonS3;
+    private Map<AliasEnv, AmazonS3> amazonS3;
 
     public S3Interpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -71,8 +66,8 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     @Override
     protected void acceptImpl(final S3 o, final CommandResult result) {
         S3 s3 = injectCommand(o);
-        amazonS3 = amazonS3Map.get(new AliasEnv(s3.getAlias(), dependencies.getEnvironment()));
-        logAndReport(result, s3);
+        LogUtil.logAlias(s3.getAlias());
+        result.put(ALIAS, s3.getAlias());
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         for (AbstractCommand action : s3.getFileOrBucket()) {
@@ -80,20 +75,15 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
             LogUtil.logSubCommand(commandId, action);
             CommandResult commandResult = ResultUtil.newCommandResultInstance(commandId, action);
             subCommandsResult.add(commandResult);
-            processEachAction(action, commandResult);
+            processEachAction(action, new AliasEnv(s3.getAlias(), dependencies.getEnvironment()), commandResult);
         }
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
-    private void logAndReport(final CommandResult result, final S3 s3) {
-        LogUtil.logAlias(s3.getAlias());
-        result.put(ALIAS, s3.getAlias());
-    }
-
-    private void processEachAction(final AbstractCommand action, final CommandResult result) {
+    private void processEachAction(final AbstractCommand action, final AliasEnv aliasEnv, final CommandResult result) {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
-            processS3Action(action, result);
+            processS3Action(aliasEnv, action, result);
         } catch (Exception e) {
             LogUtil.logException(e);
             ResultUtil.setExceptionResult(result, e);
@@ -105,180 +95,149 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     }
 
     @SneakyThrows
-    private void processS3Action(final AbstractCommand s3, final CommandResult result) {
+    private void processS3Action(final AliasEnv aliasEnv, final AbstractCommand s3, final CommandResult result) {
         if (s3 instanceof S3Bucket) {
-            processBucketAction((S3Bucket) s3, result);
+            processBucketAction((S3Bucket) s3, aliasEnv, result);
         } else if (s3 instanceof S3File) {
-            processFileAction((S3File) s3, result);
+            processFileAction((S3File) s3, aliasEnv, result);
         } else {
             throw new DefaultFrameworkException(INCORRECT_S3_PROCESSING);
         }
     }
 
-    private void processBucketAction(final S3Bucket bucket, final CommandResult result) {
-        String region = amazonS3.getRegionName();
-        if (isNotBlank(bucket.getCreate())) {
-            executeCreateBucket(result, bucket, region);
-        } else if (isNotBlank(bucket.getRemove())) {
-            executeRemoveBucket(result, bucket);
+    private void processBucketAction(final S3Bucket bucketCommand,
+                                     final AliasEnv aliasEnv,
+                                     final CommandResult result) {
+        String region = amazonS3.get(aliasEnv).getRegionName();
+        if (isNotBlank(bucketCommand.getCreate())) {
+            LogUtil.logS3BucketActionInfo(CREATE_BUCKET, bucketCommand.getCreate());
+            ResultUtil.addS3BucketMetaData(CREATE_BUCKET, bucketCommand.getCreate(), result);
+            createBucket(bucketCommand.getCreate(), region, aliasEnv);
+        } else if (isNotBlank(bucketCommand.getRemove())) {
+            LogUtil.logS3BucketActionInfo(REMOVE_BUCKET, bucketCommand.getRemove());
+            ResultUtil.addS3BucketMetaData(REMOVE_BUCKET, bucketCommand.getRemove(), result);
+            removeBucket(aliasEnv, bucketCommand.getRemove());
         }
     }
 
-    private void executeCreateBucket(final CommandResult result, final S3Bucket bucketCommand, final String region) {
-        logAndReportBucketInfo(CREATE_BUCKET, bucketCommand.getCreate(), result);
-        createBucket(bucketCommand.getExpected(), bucketCommand.getCreate(), region, result);
-    }
-
-    private void createBucket(final String fileName,
-                              final String bucketName,
-                              final String region,
-                              final CommandResult result) {
-        if (amazonS3.doesBucketExistV2(bucketName)) {
+    private void createBucket(final String bucketName, final String region, final AliasEnv aliasEnv) {
+        if (amazonS3.get(aliasEnv).doesBucketExistV2(bucketName)) {
             throw new DefaultFrameworkException(String.format(BUCKET_EXISTS, bucketName));
         }
-        amazonS3.createBucket(new CreateBucketRequest(bucketName, region));
-        compareBucketActionResult(fileName, result);
+        amazonS3.get(aliasEnv).createBucket(new CreateBucketRequest(bucketName, region));
     }
 
-    private void compareBucketActionResult(final String expectedFileName, final CommandResult result) {
-        String actual = getBuckets(amazonS3).toString();
-        String expected = getContentIfFile(expectedFileName);
-        compare(result, expected, actual);
+    private void removeBucket(final AliasEnv aliasEnv, final String bucketName) {
+        checkBucketExist(aliasEnv, bucketName);
+        ListObjectsV2Result listOfFiles = amazonS3.get(aliasEnv).listObjectsV2(bucketName);
+        listOfFiles.getObjectSummaries()
+                .forEach(object -> amazonS3.get(aliasEnv).deleteObject(bucketName, object.getKey()));
+        amazonS3.get(aliasEnv).deleteBucket(bucketName);
     }
 
-    private List<String> getBuckets(final AmazonS3 client) {
-        return client.listBuckets().stream()
-                .map(Bucket::getName)
-                .collect(Collectors.toList());
-    }
-
-    private void compare(final CommandResult result, final String expected, final String actual) {
-        ResultUtil.setExpectedActual(expected, actual, result);
-        CompareBuilder comparator = newCompare()
-                .withExpected(expected)
-                .withActual(actual);
-        comparator.exec();
-    }
-
-    private void executeRemoveBucket(final CommandResult result, final S3Bucket bucketCommand) {
-        logAndReportBucketInfo(REMOVE_BUCKET, bucketCommand.getRemove(), result);
-        removeBucket(bucketCommand.getExpected(), bucketCommand.getRemove(), result);
-    }
-
-    private void removeBucket(final String expectedFileName, final String bucketName, final CommandResult result) {
-        checkBucketExist(bucketName);
-        ListObjectsV2Result listOfFiles = amazonS3.listObjectsV2(bucketName);
-        listOfFiles.getObjectSummaries().forEach(object -> amazonS3.deleteObject(bucketName, object.getKey()));
-        amazonS3.deleteBucket(bucketName);
-        compareBucketActionResult(expectedFileName, result);
-    }
-
-    private void checkBucketExist(final String bucketName) {
-        if (!amazonS3.doesBucketExistV2(bucketName)) {
+    private void checkBucketExist(final AliasEnv aliasEnv, final String bucketName) {
+        if (!amazonS3.get(aliasEnv).doesBucketExistV2(bucketName)) {
             throw new DefaultFrameworkException(String.format(BUCKET_NOT_FOUND, bucketName));
         }
     }
 
-    private void processFileAction(final S3File file, final CommandResult result) throws IOException {
-        String key = file.getKey();
-        String bucketName = file.getBucket();
-        if (isNotBlank(file.getUpload())) {
-            executeUploadFile(result, file, key, bucketName);
-        } else if (nonNull(file.getDownload())) {
-            executeDownloadFile(result, file, key, bucketName);
-        } else if (isNotBlank(file.getRemove())) {
-            executeRemoveFile(result, file, key, bucketName);
+    private void processFileAction(final S3File fileCommand,
+                                   final AliasEnv aliasEnv,
+                                   final CommandResult result) {
+        String key = fileCommand.getKey();
+        String bucketName = fileCommand.getBucket();
+        if (isNotBlank(fileCommand.getUpload())) {
+            processUploadFileAction(fileCommand, bucketName, key, aliasEnv, result);
+        }
+        if (nonNull(fileCommand.getDownload())) {
+            processDownloadFileAction(fileCommand, bucketName, key, aliasEnv, result);
+        }
+        if (nonNull(fileCommand.getRemove())) {
+            processRemoveFileAction(fileCommand, bucketName, key, aliasEnv, result);
         }
     }
 
-    private void executeUploadFile(final CommandResult result,
-                                   final S3File fileCommand,
-                                   final String key,
-                                   final String bucketName) {
-        logAndReportFileInfo(UPLOAD_FILE, fileCommand, fileCommand.getUpload(), result);
-        uploadFile(fileCommand, bucketName, key, result);
-    }
-
-    private void uploadFile(final S3File fileCommand,
-                            final String bucketName,
-                            final String key,
-                            final CommandResult result) {
-        final File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileCommand.getUpload());
-        result.put(FILE_NAME, fileCommand.getUpload());
-        checkBucketExist(bucketName);
-        amazonS3.putObject(bucketName, key, file);
-        compareFileActionResult(fileCommand.getExpected(), bucketName, result);
-    }
-
-    private void executeDownloadFile(final CommandResult result,
-                                     final S3File fileCommand,
-                                     final String key,
-                                     final String bucketName) throws IOException {
-        logAndReportFileInfo(DOWNLOAD_FILE, fileCommand, fileCommand.getExpected(), result);
-        setContextBody(downloadFile(fileCommand, bucketName, key, result));
-    }
-
-    private void executeRemoveFile(final CommandResult result,
-                                   final S3File fileCommand,
-                                   final String key,
-                                   final String bucketName) {
-        logAndReportFileInfo(REMOVE_FILE, fileCommand, fileCommand.getRemove(), result);
-        removeFile(fileCommand, bucketName, key, result);
-    }
-
-
-    private void compareFileActionResult(final String expectedFileName,
+    private void processUploadFileAction(final S3File fileCommand,
                                          final String bucketName,
+                                         final String key,
+                                         final AliasEnv aliasEnv,
                                          final CommandResult result) {
-        String actual = getFilesInBucket(amazonS3, bucketName).toString();
-        String expected = getContentIfFile(expectedFileName);
-        compare(result, expected, actual);
+        LogUtil.logS3FileActionInfo(
+                UPLOAD_FILE, fileCommand.getBucket(), fileCommand.getKey());
+        log.info(FILE_LOG, fileCommand.getUpload());
+        ResultUtil.addS3FileMetaData(UPLOAD_FILE, fileCommand.getBucket(), fileCommand.getKey(), result);
+        File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileCommand.getUpload());
+        result.put(FILE_NAME, fileCommand.getUpload());
+        checkBucketExist(aliasEnv, bucketName);
+        amazonS3.get(aliasEnv).putObject(bucketName, key, file);
     }
 
-
-    private List<String> getFilesInBucket(final AmazonS3 client, final String bucketName) {
-        return client.listObjectsV2(bucketName)
-                .getObjectSummaries().stream()
-                .map(S3ObjectSummary::getKey)
-                .collect(Collectors.toList());
+    private void processDownloadFileAction(final S3File fileCommand,
+                                           final String bucketName,
+                                           final String key,
+                                           final AliasEnv aliasEnv,
+                                           final CommandResult result) {
+        LogUtil.logS3FileActionInfo(
+                DOWNLOAD_FILE, fileCommand.getBucket(), fileCommand.getKey());
+        ResultUtil.addS3FileMetaData(DOWNLOAD_FILE, fileCommand.getBucket(), fileCommand.getKey(), result);
+        String expected = fileCommand.getDownload().getFile() == null
+                ? fileCommand.getDownload().getValue()
+                : FileSearcher.searchFileToString(fileCommand.getDownload().getFile(), dependencies.getFile());
+        String actual = downloadFile(bucketName, key, aliasEnv);
+        ResultUtil.setExpectedActual(expected, actual, result);
+        compare(expected, actual, fileCommand.getDownload(), key, result);
+        setContextBody(actual);
     }
 
-    private String downloadFile(final S3File fileCommand,
-                                final String bucketName,
-                                final String key,
-                                final CommandResult result) throws IOException {
-        String actual = downloadFile(bucketName, key).orElse(null);
-        File expectedFile = FileSearcher.searchFileFromDir(dependencies.getFile(), fileCommand.getExpected());
-        InputStream expectedStream = FileUtils.openInputStream(expectedFile);
-        String expected = IOUtils.toString(expectedStream, StandardCharsets.UTF_8);
-        compare(result, expected, actual);
-        return actual;
-    }
-
-    private Optional<String> downloadFile(final String bucketName, final String key) throws IOException {
+    private void compare(final String expected,
+                         final String actual,
+                         final S3FileDownload s3FileDownload,
+                         final String key,
+                         final CommandResult result) {
         try {
-            checkFileCommand(bucketName, key);
-            S3Object s3Object = amazonS3.getObject(bucketName, key);
-            S3ObjectInputStream s3ObjectInputStream = s3Object.getObjectContent();
-            return Optional.of(IOUtils.toString(s3ObjectInputStream, StandardCharsets.UTF_8));
+            CompareBuilder comparator = newCompare().withExpected(expected).withActual(actual);
+            comparator.exec();
+        } catch (ComparisonException e) {
+            ComparisonException comparisonException = s3FileDownload.getFile() == null
+                    ? new ComparisonException(String.format(
+                    FILE_VALUE_COMPARISON_ERROR, key, s3FileDownload.getValue()))
+                    : new ComparisonException(String.format(
+                    FILE_COMPARISON_ERROR, key, s3FileDownload.getFile()));
+            result.setException(comparisonException);
+            throw comparisonException;
+        }
+    }
+
+    @SneakyThrows
+    private String downloadFile(final String bucketName,
+                                final String key,
+                                final AliasEnv aliasEnv) {
+        try {
+            checkBucketFileExists(bucketName, key, aliasEnv);
+            S3Object s3Object = amazonS3.get(aliasEnv).getObject(bucketName, key);
+            return IOUtils.toString(s3Object.getObjectContent(), StandardCharsets.UTF_8);
         } catch (AmazonS3Exception e) {
             throw new DefaultFrameworkException(String.format(FILE_PROCESSING_ERROR, key, bucketName));
         }
     }
 
-    private void checkFileCommand(final String bucketName, final String key) {
-        checkBucketExist(bucketName);
-        if (!amazonS3.doesObjectExist(bucketName, key)) {
+    private void checkBucketFileExists(final String bucketName, final String key, final AliasEnv aliasEnv) {
+        checkBucketExist(aliasEnv, bucketName);
+        if (!amazonS3.get(aliasEnv).doesObjectExist(bucketName, key)) {
             throw new DefaultFrameworkException(String.format(FILE_NOT_FOUND, key, bucketName));
         }
     }
 
-    private void removeFile(final S3File fileCommand,
-                            final String bucketName,
-                            final String key,
-                            final CommandResult result) {
-        checkFileCommand(bucketName, key);
-        amazonS3.deleteObject(bucketName, fileCommand.getRemove());
-        compareFileActionResult(fileCommand.getExpected(), bucketName, result);
+    private void processRemoveFileAction(final S3File fileCommand,
+                                         final String bucketName,
+                                         final String key,
+                                         final AliasEnv aliasEnv,
+                                         final CommandResult result) {
+        LogUtil.logS3FileActionInfo(
+                REMOVE_FILE, fileCommand.getBucket(), fileCommand.getKey());
+        ResultUtil.addS3FileMetaData(REMOVE_FILE, fileCommand.getBucket(), fileCommand.getKey(), result);
+        checkBucketFileExists(bucketName, key, aliasEnv);
+        amazonS3.get(aliasEnv).deleteObject(bucketName, key);
     }
+
 }

@@ -322,8 +322,8 @@ public class LogUtil {
         log.info(LogMessage.S3_BUCKET_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket);
     }
 
-    public void logS3FileActionInfo(final String action, final String bucket, final String key, final String fileName) {
-        log.info(LogMessage.S3_FILE_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket, key, fileName);
+    public void logS3FileActionInfo(final String action, final String bucket, final String key) {
+        log.info(LogMessage.S3_FILE_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket, key);
     }
 
     public void logSESMessage(final Message sesMessage) {

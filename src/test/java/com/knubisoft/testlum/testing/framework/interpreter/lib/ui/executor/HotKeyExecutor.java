@@ -74,9 +74,9 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
         result.setSubCommandsResult(subCommandsResult);
         hotKey.getCopyOrPasteOrCut().forEach(command -> {
             CommandResult commandResult = ResultUtil.newUiCommandResultInstance(
-                    dependencies.getPosition().get(), command);
+                    dependencies.getPosition().incrementAndGet(), command);
             subCommandsResult.add(commandResult);
-            LogUtil.logHotKeyInfo(command);
+            LogUtil.logHotKeyInfo(command, dependencies.getPosition().get());
             executeHotKeyCommand(command, commandResult);
         });
     }

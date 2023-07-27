@@ -12,6 +12,7 @@ import com.knubisoft.testlum.testing.framework.util.WaitUtil;
 import com.knubisoft.testlum.testing.model.scenario.Clickable;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.UiWait;
+import com.knubisoft.testlum.testing.model.scenario.Visible;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -67,7 +68,7 @@ public class WaitExecutor extends AbstractUiExecutor<UiWait> {
         WebElement element = UiUtil.findWebElement(dependencies, command.getLocatorId());
         log.info(LOCATOR_LOG, command.getLocatorId());
         result.put(LOCATOR_ID, command.getLocatorId());
-        if (command instanceof Clickable) {
+        if (command instanceof Visible) {
             wait.until(ExpectedConditions.visibilityOf(element));
             log.info(WAIT_TYPE, "Visible");
         } else {

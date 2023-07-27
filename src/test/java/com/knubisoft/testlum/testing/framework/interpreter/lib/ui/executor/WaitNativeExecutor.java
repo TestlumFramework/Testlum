@@ -16,6 +16,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WAIT_I
 @ExecutorForClass(WaitNative.class)
 @Slf4j
 public class WaitNativeExecutor extends AbstractUiExecutor<WaitNative> {
+
     public WaitNativeExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
     }

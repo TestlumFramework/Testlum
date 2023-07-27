@@ -92,15 +92,9 @@ public final class LogMessage {
     public static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
     public static final String BY_URL_LOG = format(TABLE_FORMAT, "URL", "{}");
     public static final String FAILED_VISITING_PATH_LOG = "Failed to visit path {}";
-
     public static final String WEBSOCKET_ACTION_INFO_LOG = format(TABLE_FORMAT,
             "Comment", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Action", "{}");
-
-    public static final String BROKER_ACTION_INFO_LOG = format(TABLE_FORMAT,
-            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Queue", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Content", "{}");
 
     public static final String S3_BUCKET_ACTION_INFO_LOG = format(TABLE_FORMAT,
             "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
@@ -166,6 +160,24 @@ public final class LogMessage {
     public static final String SMTP_HOST_LOG = format(TABLE_FORMAT, "SMTP Host", "{}");
     public static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");
     public static final String SUBJECT_LOG = format(TABLE_FORMAT, "Subject", "{}");
+    public static final String ACTION_LOG = format(TABLE_FORMAT, "Action", "{}");
+    public static final String ROUTING_KEY_LOG = format(TABLE_FORMAT, "Routing Key", "{}");
+    public static final String CORRELATION_ID_LOG = format(TABLE_FORMAT, "Correlation Id", "{}");
+    public static final String EXCHANGE_LOG = format(TABLE_FORMAT, "Exchange", "{}");
+    public static final String HEADERS_LOG = format(TABLE_FORMAT, "Headers", "{}");
+    public static final String QUEUE_LOG = format(TABLE_FORMAT, "Queue", "{}");
+    public static final String TIMEOUT_MILLIS_LOG = format(TABLE_FORMAT, "Timeout Millis", "{}");
+    public static final String PREFETCH_COUNT_LOG = format(TABLE_FORMAT, "Prefetch Count", "{}");
+    public static final String TOPIC_LOG = format(TABLE_FORMAT, "Topic", "{}");
+    public static final String COMMIT_LOG = format(TABLE_FORMAT, "Commit", "{}");
+    public static final String DELAY_SECONDS_LOG = format(TABLE_FORMAT, "Delay Seconds", "{}");
+    public static final String MESSAGE_DEDUPLICATION_ID_LOG = format(TABLE_FORMAT, "Deduplication Id", "{}");
+    public static final String MESSAGE_GROUP_ID_LOG = format(TABLE_FORMAT, "Message Group Id", "{}");
+    public static final String MAX_NUMBER_OF_MESSAGES_LOG = format(TABLE_FORMAT, "Max Number of Messages", "{}");
+    public static final String WAIT_TIME_SECONDS_LOG = format(TABLE_FORMAT, "Wait Time Seconds", "{}");
+    public static final String RECEIVE_REQUEST_ATTEMPT_ID_LOG = format(
+            TABLE_FORMAT, "Attempt Id", "{}");
+    public static final String VISIBILITY_TIMEOUT_LOG = format(TABLE_FORMAT, "Visibility Timeout", "{}");
     public static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
     public static final String ATTRIBUTE_LOG = format(TABLE_FORMAT, "Attribute", "{}");
     public static final String DESTINATION_LOG = format(TABLE_FORMAT, "Destination", "{}");

@@ -9,7 +9,6 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.framework.util.WaitUtil;
-import com.knubisoft.testlum.testing.model.scenario.Clickable;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.UiWait;
 import com.knubisoft.testlum.testing.model.scenario.Visible;

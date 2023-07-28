@@ -165,7 +165,7 @@ public class ScenarioCollector {
             }
 
             private boolean getReadonlyValue(final MappingResult result) {
-                return nonNull(result.scenario) && (result.scenario.getSettings().isReadOnly());
+                return nonNull(result.scenario) && (result.scenario.getSettings().isTruncateStorages());
             }
         });
 

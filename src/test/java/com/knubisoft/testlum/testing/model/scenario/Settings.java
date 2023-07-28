@@ -22,7 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="active" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
  *       &lt;attribute name="onlyThis" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
- *       &lt;attribute name="readOnly" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *       &lt;attribute name="truncateStorages" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -43,8 +43,8 @@ public class Settings {
     protected Boolean active;
     @XmlAttribute(name = "onlyThis")
     protected Boolean onlyThis;
-    @XmlAttribute(name = "readOnly")
-    protected Boolean readOnly;
+    @XmlAttribute(name = "truncateStorages")
+    protected Boolean truncateStorages;
 
     /**
      * Gets the value of the variations property.
@@ -151,31 +151,31 @@ public class Settings {
     }
 
     /**
-     * Gets the value of the readOnly property.
+     * Gets the value of the truncateStorages property.
      * 
      * @return
      *     possible object is
      *     {@link Boolean }
      *     
      */
-    public boolean isReadOnly() {
-        if (readOnly == null) {
+    public boolean isTruncateStorages() {
+        if (truncateStorages == null) {
             return false;
         } else {
-            return readOnly;
+            return truncateStorages;
         }
     }
 
     /**
-     * Sets the value of the readOnly property.
+     * Sets the value of the truncateStorages property.
      * 
      * @param value
      *     allowed object is
      *     {@link Boolean }
      *     
      */
-    public void setReadOnly(Boolean value) {
-        this.readOnly = value;
+    public void setTruncateStorages(Boolean value) {
+        this.truncateStorages = value;
     }
 
 }

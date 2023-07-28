@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="storageIntegration"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/global-config}integration"&gt;
- *       &lt;attribute name="truncate" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
+ *       &lt;attribute name="truncate" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -56,7 +56,7 @@ public class StorageIntegration
      */
     public boolean isTruncate() {
         if (truncate == null) {
-            return true;
+            return false;
         } else {
             return truncate;
         }

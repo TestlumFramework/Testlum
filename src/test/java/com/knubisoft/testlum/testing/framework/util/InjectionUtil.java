@@ -1,15 +1,24 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.framework.vaultService.VaultService;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
-import java.util.Map;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @UtilityClass
 public class InjectionUtil {
+
+    private static final String ROUTE_REGEXP = "\\$\\{(.*?)}";
+    private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
+
 
     @SuppressWarnings("unchecked")
     public <T> T injectObject(final T t, final ScenarioContext scenarioContext) {
@@ -19,9 +28,33 @@ public class InjectionUtil {
     }
 
     @SneakyThrows
-    public Integrations injectFromVault(final Integrations integrations, final Map<String, String> dataFromVault) {
+    public Integrations injectFromVault(final Integrations integrations, final List<VaultService.VaultDto> dataFromVault) {
         String asJson = JacksonMapperUtil.writeValueToCopiedString(integrations);
-        String injected = VaultService.inject(asJson, dataFromVault);
+        String injected = inject(asJson, dataFromVault);
         return JacksonMapperUtil.readCopiedValue(injected, integrations.getClass());
+    }
+
+    public String inject(final String toInject, final List<VaultService.VaultDto> dataFromVault) {
+        if (StringUtils.isBlank(toInject)) {
+            return toInject;
+        }
+        Matcher m = ROUTE_PATTERN.matcher(toInject);
+        return getFormattedInject(toInject, m, dataFromVault);
+    }
+
+    private String getFormattedInject(final String original, final Matcher m, final List<VaultService.VaultDto> vaultData) {
+        String formatted = original;
+        while (m.find()) {
+            String vaultKey = m.group(1);
+            String vaultKeyInBraces = m.group(0);
+            String vaultValue = vaultData.stream()
+                    .filter(vaultDto -> vaultKey.equals(vaultDto.getKey()))
+                    .map(VaultService.VaultDto::getValue)
+                    .findFirst()
+                    .orElseThrow(() -> new DefaultFrameworkException("No such key in Vault"));
+            vaultValue = StringEscapeUtils.escapeJson(vaultValue);
+            formatted = formatted.replace(vaultKeyInBraces, vaultValue);
+        }
+        return formatted;
     }
 }

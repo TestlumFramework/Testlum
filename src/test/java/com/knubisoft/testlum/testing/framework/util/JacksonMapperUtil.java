@@ -9,7 +9,9 @@ import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.knubisoft.testlum.testing.framework.vaultService.VaultService;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
@@ -27,6 +29,8 @@ public final class JacksonMapperUtil {
     private static final ObjectMapper MAPPER = buildObjectMapper();
     private static final ObjectMapper DYNAMODB_MAPPER = createObjectMapperWithFieldVisibility();
     private static final ObjectMapper COPY_MAPPER = createObjectMapperForDeepCopy();
+    private static final ObjectMapper VAULT_MAPPER = buildObjectToVaultMapper();
+
 
     @SneakyThrows
     public <T> T readValue(final String content, final Class<T> valueType) {
@@ -41,6 +45,11 @@ public final class JacksonMapperUtil {
     @SneakyThrows
     public <T> T readValue(final File content, final Class<T> valueType) {
         return MAPPER.readValue(content, valueType);
+    }
+
+    @SneakyThrows
+    public VaultService.VaultDto readVaultValue(final String content, final Class<VaultService.VaultDto> vaultDto) {
+        return VAULT_MAPPER.readValue(content, vaultDto);
     }
 
     @SneakyThrows
@@ -113,5 +122,13 @@ public final class JacksonMapperUtil {
                 .activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE)
                 .activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_CONCRETE_AND_ARRAYS)
                 .build();
+    }
+
+    private ObjectMapper buildObjectToVaultMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(VaultService.VaultDto.class, new VaultService.VaultDtoDeserializer());
+        objectMapper.registerModule(module);
+        return objectMapper;
     }
 }

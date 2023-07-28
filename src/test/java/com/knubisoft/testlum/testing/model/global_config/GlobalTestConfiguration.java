@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="runScenariosByTag" type="{http://www.knubisoft.com/testlum/testing/model/global-config}runScenariosByTag"/&gt;
  *         &lt;element name="report" type="{http://www.knubisoft.com/testlum/testing/model/global-config}report"/&gt;
  *         &lt;element name="environments" type="{http://www.knubisoft.com/testlum/testing/model/global-config}environments"/&gt;
+ *         &lt;element name="vault" type="{http://www.knubisoft.com/testlum/testing/model/global-config}vault"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -43,7 +44,8 @@ import javax.xml.bind.annotation.XmlType;
     "delayBetweenScenarioRuns",
     "runScenariosByTag",
     "report",
-    "environments"
+    "environments",
+    "vault"
 })
 @XmlRootElement(name = "globalTestConfiguration")
 public class GlobalTestConfiguration {
@@ -62,6 +64,8 @@ public class GlobalTestConfiguration {
     protected Report report;
     @XmlElement(required = true)
     protected Environments environments;
+    @XmlElement(required = true)
+    protected Vault vault;
 
     /**
      * Gets the value of the subscription property.
@@ -237,6 +241,30 @@ public class GlobalTestConfiguration {
      */
     public void setEnvironments(Environments value) {
         this.environments = value;
+    }
+
+    /**
+     * Gets the value of the vault property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Vault }
+     *     
+     */
+    public Vault getVault() {
+        return vault;
+    }
+
+    /**
+     * Sets the value of the vault property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Vault }
+     *     
+     */
+    public void setVault(Vault value) {
+        this.vault = value;
     }
 
 }

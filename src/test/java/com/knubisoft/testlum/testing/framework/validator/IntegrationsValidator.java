@@ -59,7 +59,6 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
         map.put(i -> nonNull(i.getRabbitmqIntegration()), i -> i.getRabbitmqIntegration().getRabbitmq());
         map.put(i -> nonNull(i.getClickhouseIntegration()), i -> i.getClickhouseIntegration().getClickhouse());
         map.put(i -> nonNull(i.getElasticsearchIntegration()), i -> i.getElasticsearchIntegration().getElasticsearch());
-        map.put(i -> nonNull(i.getVaultIntegration()), i -> i.getVaultIntegration().getVault());
         configToIntegrationListMap = Collections.unmodifiableMap(map);
     }
 

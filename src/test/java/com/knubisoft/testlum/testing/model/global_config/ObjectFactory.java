@@ -238,14 +238,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link VaultIntegration }
-     * 
-     */
-    public VaultIntegration createVaultIntegration() {
-        return new VaultIntegration();
-    }
-
-    /**
      * Create an instance of {@link GlobalTestConfiguration }
      * 
      */
@@ -291,6 +283,14 @@ public class ObjectFactory {
      */
     public Environments createEnvironments() {
         return new Environments();
+    }
+
+    /**
+     * Create an instance of {@link Vault }
+     * 
+     */
+    public Vault createVault() {
+        return new Vault();
     }
 
     /**
@@ -771,14 +771,6 @@ public class ObjectFactory {
      */
     public Twilio createTwilio() {
         return new Twilio();
-    }
-
-    /**
-     * Create an instance of {@link Vault }
-     * 
-     */
-    public Vault createVault() {
-        return new Vault();
     }
 
     /**

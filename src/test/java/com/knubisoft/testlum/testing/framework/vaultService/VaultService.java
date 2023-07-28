@@ -1,45 +1,99 @@
 package com.knubisoft.testlum.testing.framework.vaultService;
 
-import com.bettercloud.vault.Vault;
-import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
+import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.knubisoft.testlum.testing.model.global_config.Vault;
+import lombok.Data;
+import org.springframework.vault.authentication.TokenAuthentication;
+import org.springframework.vault.client.VaultEndpoint;
+import org.springframework.vault.core.VaultTemplate;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class VaultService {
 
-    private static final String ROUTE_REGEXP = "\\$\\{(.*?)}";
-    private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
+    private static final String VAULT_KEY = "data";
 
-    @Autowired(required = false)
-    private Map<AliasEnv, Vault> vaultMap;
+    public VaultService() {
+        this.template = vault();
+    }
+    private final VaultTemplate template;
 
-    public static Integrations getWithVault(final Integrations integrations) {
+    public Integrations getWithVault(final Integrations integrations) {
 
+        //TODO figure out with path
+        Map<String, Object> data = Objects.requireNonNull(template.read("secret/data/rabbit/creds")).getData();
+        List<Object> vaultList = Objects.requireNonNull(data).entrySet().stream()
+                .filter(entry -> VAULT_KEY.equals(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
+        List<VaultDto> convertedVault = objToVaultDto(vaultList);
+        return InjectionUtil.injectFromVault(integrations, convertedVault);
     }
 
-    public String inject(final String toInject, final Map<String, String> vaultData) {
-        if (StringUtils.isBlank(toInject)) {
-            return toInject;
+    public VaultTemplate vault() {
+        Vault vault = GlobalTestConfigurationProvider.provide().getVault();
+        if (vault.isEnabled()) {
+            return new VaultTemplate(vaultEndpoint(), new TokenAuthentication(vault.getToken()));
+        } else {
+            throw new DefaultFrameworkException("Vault is not enabled in global config file");
         }
-        Matcher m = ROUTE_PATTERN.matcher(toInject);
-        return getFormattedInject(toInject, m, vaultData);
     }
 
-    private String getFormattedInject(final String original, final Matcher m, final Map<String, String> vaultData) {
-        String formatted = original;
-        while (m.find()) {
-            String vaultKey = m.group(1);
-            String vaultKeyInBraces = m.group(0);
-            String vaultValue = vaultData.get(vaultKey);
-            vaultValue = StringEscapeUtils.escapeJson(vaultValue);
-            formatted = formatted.replace(vaultKeyInBraces, vaultValue);
-        }
-        return formatted;
+    public VaultEndpoint vaultEndpoint() {
+
+        VaultEndpoint endpoint = new VaultEndpoint();
+        endpoint.setHost("127.0.0.1");
+        endpoint.setPort(8200);
+        endpoint.setScheme("http");
+        return endpoint;
     }
+
+    private List<VaultDto> objToVaultDto (List<Object> vaultList) {
+        List<String> formattedObjects = vaultList.stream()
+                .map(JacksonMapperUtil::writeValueAsString)
+                .collect(Collectors.toList());
+        return formattedObjects.stream()
+                .map(s -> JacksonMapperUtil.readVaultValue(s, VaultDto.class))
+                .collect(Collectors.toList());
+    }
+
+    @Data
+    public static class VaultDto {
+        private final String key;
+        private final String value;
+
+    }
+
+    public static class VaultDtoDeserializer extends StdDeserializer<VaultDto> {
+
+        public VaultDtoDeserializer() {
+            this(null);
+        }
+
+        public VaultDtoDeserializer(Class<?> vc) {
+            super(vc);
+        }
+
+        @Override
+        public VaultDto deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+            JsonNode node = jsonParser.getCodec().readTree(jsonParser);
+            String key = node.fieldNames().next();
+            String value = node.get(key).asText();
+
+            return new VaultDto(key, value);
+        }
+    }
+
 }

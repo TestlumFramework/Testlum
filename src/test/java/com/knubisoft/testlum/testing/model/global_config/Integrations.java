@@ -37,7 +37,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="sesIntegration" type="{http://www.knubisoft.com/testlum/testing/model/global-config}sesIntegration" minOccurs="0"/&gt;
  *         &lt;element name="smtpIntegration" type="{http://www.knubisoft.com/testlum/testing/model/global-config}smtpIntegration" minOccurs="0"/&gt;
  *         &lt;element name="twilioIntegration" type="{http://www.knubisoft.com/testlum/testing/model/global-config}twilioIntegration" minOccurs="0"/&gt;
- *         &lt;element name="vaultIntegration" type="{http://www.knubisoft.com/testlum/testing/model/global-config}vaultIntegration" minOccurs="0"/&gt;
  *       &lt;/all&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -73,7 +72,6 @@ public class Integrations {
     protected SesIntegration sesIntegration;
     protected SmtpIntegration smtpIntegration;
     protected TwilioIntegration twilioIntegration;
-    protected VaultIntegration vaultIntegration;
 
     /**
      * Gets the value of the apis property.
@@ -553,30 +551,6 @@ public class Integrations {
      */
     public void setTwilioIntegration(TwilioIntegration value) {
         this.twilioIntegration = value;
-    }
-
-    /**
-     * Gets the value of the vaultIntegration property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link VaultIntegration }
-     *     
-     */
-    public VaultIntegration getVaultIntegration() {
-        return vaultIntegration;
-    }
-
-    /**
-     * Sets the value of the vaultIntegration property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link VaultIntegration }
-     *     
-     */
-    public void setVaultIntegration(VaultIntegration value) {
-        this.vaultIntegration = value;
     }
 
 }

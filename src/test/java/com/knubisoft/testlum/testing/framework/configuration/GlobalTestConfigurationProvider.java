@@ -35,6 +35,8 @@ public class GlobalTestConfigurationProvider {
     private static final Map<String, UiConfig> UI_CONFIGS = collectUiConfigs();
     private static final Integrations DEFAULT_INTEGRATIONS = defaultIntegrations();
     private static final UiConfig DEFAULT_UI_CONFIGS = defaultUiConfigs();
+    private static final VaultService VAULT_SERVICE = new VaultService();
+
 
     public static GlobalTestConfiguration provide() {
         return GLOBAL_TEST_CONFIGURATION;
@@ -92,7 +94,7 @@ public class GlobalTestConfigurationProvider {
     private static Integrations initIntegration(final Environment env) {
         return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
                 .map(configFile -> XMLParsers.forIntegrations().process(configFile))
-                .map(integrations -> VaultService.getWithVault(integrations))
+                .map(integrations -> new VaultService().getWithVault(integrations))
                 .orElseGet(() -> {
                     log.warn(LogMessage.DISABLED_CONFIGURATION, Integrations.class.getSimpleName());
                     return new Integrations();

@@ -34,8 +34,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -62,7 +60,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         result.setSubCommandsResult(subCommandsResult);
         final AtomicInteger commandId = new AtomicInteger();
         for (Object action : rabbit.getSendOrReceive()) {
-            LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action.getClass().getSimpleName());
+            LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action);
             CommandResult commandResult = ResultUtil.newCommandResultInstance(commandId.incrementAndGet());
             subCommandsResult.add(commandResult);
             processEachAction(action, rabbit.getAlias(), commandResult);
@@ -102,8 +100,8 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                              final AliasEnv aliasEnv,
                              final CommandResult result) {
         String message = getMessageToSend(send);
-        LogUtil.logBrokerActionInfo(SEND_ACTION, send.getRoutingKey(), message);
-        ResultUtil.addRabbitMQInfoForSendAction(send, aliasEnv.getAlias(), result);
+        LogUtil.logRabbitSendInfo(send, message);
+        ResultUtil.addRabbitMQSendInfo(send, aliasEnv.getAlias(), result);
         result.put(MESSAGE_TO_SEND, message);
         createQueueIfNotExists(send.getRoutingKey(), aliasEnv);
         sendMessage(send, message, aliasEnv);
@@ -139,8 +137,8 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                                  final AliasEnv aliasEnv,
                                  final CommandResult result) {
         String messages = getMessageToReceive(receive);
-        LogUtil.logBrokerActionInfo(RECEIVE_ACTION, receive.getQueue(), messages);
-        ResultUtil.addRabbitMQInfoForReceiveAction(receive, aliasEnv.getAlias(), result);
+        LogUtil.logRabbitReceiveInfo(receive, messages);
+        ResultUtil.addRabbitMQReceiveInfo(receive, aliasEnv.getAlias(), result);
         createQueueIfNotExists(receive.getQueue(), aliasEnv);
         List<RabbitMQMessage> actualRmqMessages = receiveRmqMessages(receive, aliasEnv);
         compareMessages(actualRmqMessages, messages, result);

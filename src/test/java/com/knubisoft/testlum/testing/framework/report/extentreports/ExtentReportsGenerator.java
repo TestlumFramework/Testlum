@@ -61,6 +61,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private static final String UNSORTED_LIST_ITEM_TEMPLATE = "<li>%s</li>";
     private static final String SCENARIO_NAME_TEMPLATE = "Scenario #%d - %s";
     private static final String SCENARIO_STEP_NAME_TEMPLATE = "Scenario step #%d - %s";
+    private static final String SCENARIO_STEP_NAME_TEMPLATE_WITHOUT_POSITION = "Scenario step - %s";
     private static final String STEP_SKIPPED = "Command was skipped because of the condition";
     private static final String STEP_SUCCESS = "Scenario step executed successfully";
     private static final String SCREENSHOT = "Step screenshot";
@@ -211,7 +212,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
 
     private void createStepInfo(final ExtentTest extentTest, final CommandResult stepExecutionInfo) {
         String stepCommandKey = format(BOLD_TEXT_TEMPLATE, stepExecutionInfo.getCommandKey());
-        String stepName = format(SCENARIO_STEP_NAME_TEMPLATE, stepExecutionInfo.getId(), stepCommandKey);
+        String stepName = getStepName(stepExecutionInfo, stepCommandKey);
         ExtentTest step = extentTest.createNode(stepName);
         step.info(MarkupHelper.createLabel(stepExecutionInfo.getComment(), ExtentColor.BLUE));
         addScreenshotIfExists(step, stepExecutionInfo.getBase64Screenshot());
@@ -221,6 +222,12 @@ public class ExtentReportsGenerator implements ReportGenerator {
         if (CollectionUtils.isNotEmpty(stepExecutionInfo.getSubCommandsResult())) {
             addScenarioSteps(step, stepExecutionInfo.getSubCommandsResult());
         }
+    }
+
+    private String getStepName(final CommandResult stepExecutionInfo, final String stepCommandKey) {
+        return stepExecutionInfo.getId() != 0
+                ? format(SCENARIO_STEP_NAME_TEMPLATE, stepExecutionInfo.getId(), stepCommandKey)
+                : format(SCENARIO_STEP_NAME_TEMPLATE_WITHOUT_POSITION, stepCommandKey);
     }
 
     private void addScreenshotIfExists(final ExtentTest extentTest, final String screenshot) {

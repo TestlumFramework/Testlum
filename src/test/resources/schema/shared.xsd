@@ -9,7 +9,7 @@
 
     <x:complexType name="abstractCommand" abstract="true">
         <x:attribute name="comment" type="tns:stringMin10" use="required"/>
-        <x:attribute name="threshold" type="x:int"/>
+        <x:attribute name="threshold" type="tns:positiveIntegerMin1"/>
         <x:attribute name="condition" type="tns:nonEmptyString"/>
     </x:complexType>
 

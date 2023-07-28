@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnMysqlEnabledCondition;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.SqlOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.MySqlExecutor;
@@ -23,7 +23,7 @@ import java.util.Objects;
 @Slf4j
 @Conditional({OnMysqlEnabledCondition.class})
 @Component
-public class MySqlOperation implements StorageOperation {
+public class MySqlOperation implements SqlOperation {
 
     private final Map<AliasEnv, AbstractSqlExecutor> mySqlExecutor;
 

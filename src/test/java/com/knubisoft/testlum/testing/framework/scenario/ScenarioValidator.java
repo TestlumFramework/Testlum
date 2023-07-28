@@ -661,10 +661,12 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateFileIfExist(xmlFile, response.getFile());
         }
 
-        SendgridWithBody commandWithBody = (SendgridWithBody) sendgridInfo;
-        Body body = commandWithBody.getBody();
-        if (nonNull(body) && nonNull(body.getFrom())) {
-            validateFileIfExist(xmlFile, body.getFrom().getFile());
+        if (sendgridInfo instanceof SendgridWithBody) {
+            SendgridWithBody commandWithBody = (SendgridWithBody) sendgridInfo;
+            Body body = commandWithBody.getBody();
+            if (nonNull(body) && nonNull(body.getFrom())) {
+                validateFileIfExist(xmlFile, body.getFrom().getFile());
+            }
         }
     }
 

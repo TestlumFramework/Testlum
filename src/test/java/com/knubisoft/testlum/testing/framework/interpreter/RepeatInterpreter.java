@@ -36,7 +36,9 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
             this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result);
         } else {
             Repeat repeat = injectCommand(o);
-            this.repeatCommandsRunner.runCommands(repeat.getCommands(), dependencies, result);
+            for (int i = 0; i < repeat.getTimes(); i++) {
+                this.repeatCommandsRunner.runCommands(repeat.getCommands(), dependencies, result);
+            }
         }
     }
 }

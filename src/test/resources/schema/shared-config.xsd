@@ -79,7 +79,7 @@
     <x:complexType name="storageIntegration">
         <x:complexContent>
             <x:extension base="tns:integration">
-                <x:attribute name="truncate" type="x:boolean" default="true"/>
+                <x:attribute name="truncate" type="x:boolean" default="false"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

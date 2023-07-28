@@ -32,7 +32,11 @@ public final class LogMessage {
     public static final String ERROR_LOG = "Error ->";
     public static final String POSITION_COMMAND_LOG = ANSI_YELLOW
             + "--------- Scenario step #{} - {} ---------" + ANSI_RESET;
+    public static final String COMMAND_LOG_WITHOUT_POSITION = ANSI_YELLOW
+            + "--------- Scenario step - {} ---------" + ANSI_RESET;
     public static final String UI_COMMAND_LOG = ANSI_CYAN + "------- UI command #{} - {} -------" + ANSI_RESET;
+    public static final String UI_COMMAND_LOG_WITHOUT_POSITION = ANSI_CYAN
+            + "------- UI command - {} -------" + ANSI_RESET;
     public static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
     public static final String REPEAT_FINISHED_LOG = ANSI_CYAN + "------- Repeat is finished -------" + ANSI_RESET;
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
@@ -88,15 +92,9 @@ public final class LogMessage {
     public static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
     public static final String BY_URL_LOG = format(TABLE_FORMAT, "URL", "{}");
     public static final String FAILED_VISITING_PATH_LOG = "Failed to visit path {}";
-
     public static final String WEBSOCKET_ACTION_INFO_LOG = format(TABLE_FORMAT,
             "Comment", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Action", "{}");
-
-    public static final String BROKER_ACTION_INFO_LOG = format(TABLE_FORMAT,
-            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Queue", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Content", "{}");
 
     public static final String S3_BUCKET_ACTION_INFO_LOG = format(TABLE_FORMAT,
             "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
@@ -105,8 +103,7 @@ public final class LogMessage {
     public static final String S3_FILE_ACTION_INFO_LOG = format(TABLE_FORMAT,
             "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Bucket", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Key", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "File for action", "{}");
+            "Key", "{}");
 
     public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
 
@@ -139,6 +136,7 @@ public final class LogMessage {
     public static final String MOBILEBROWSER_LOG = "Mobilebrowser device: {}";
     public static final String NATIVE_NAVIGATION_LOG = format(TABLE_FORMAT, "Navigate to", "{}");
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
+    public static final String FILE_LOG = format(TABLE_FORMAT, "File", "{}");
     public static final String EXPRESSION_LOG = format(TABLE_FORMAT, "Expression", "{}");
     public static final String SCROLL_LOCATOR = format(TABLE_FORMAT, "Scroll locator", "{}");
     public static final String SCROLL_TYPE = format(TABLE_FORMAT, "Scroll type", "{}");
@@ -150,7 +148,6 @@ public final class LogMessage {
     public static final String DRAGGING_FROM = format(TABLE_FORMAT, "Dragging from locator", "{}");
     public static final String DROPPING_TO = format(TABLE_FORMAT, "Dropping to locator", "{}");
     public static final String DRAGGING_FILE_PATH = format(TABLE_FORMAT, "Dragging file path", "{}");
-    public static final String HOTKEY_COMMAND = format(TABLE_FORMAT, "Hotkey command", "{}");
     public static final String HOTKEY_COMMAND_LOCATOR = format(TABLE_FORMAT, "Hotkey command locator", "{}");
     public static final String HOTKEY_COMMAND_TIMES = format(TABLE_FORMAT, "Times to repeat", "{}");
     public static final String HTTP_STATUS_CODE = format(TABLE_FORMAT, "Status code", "{} {}");
@@ -162,6 +159,24 @@ public final class LogMessage {
     public static final String SMTP_HOST_LOG = format(TABLE_FORMAT, "SMTP Host", "{}");
     public static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");
     public static final String SUBJECT_LOG = format(TABLE_FORMAT, "Subject", "{}");
+    public static final String ACTION_LOG = format(TABLE_FORMAT, "Action", "{}");
+    public static final String ROUTING_KEY_LOG = format(TABLE_FORMAT, "Routing Key", "{}");
+    public static final String CORRELATION_ID_LOG = format(TABLE_FORMAT, "Correlation Id", "{}");
+    public static final String EXCHANGE_LOG = format(TABLE_FORMAT, "Exchange", "{}");
+    public static final String HEADERS_LOG = format(TABLE_FORMAT, "Headers", "{}");
+    public static final String QUEUE_LOG = format(TABLE_FORMAT, "Queue", "{}");
+    public static final String TIMEOUT_MILLIS_LOG = format(TABLE_FORMAT, "Timeout Millis", "{}");
+    public static final String PREFETCH_COUNT_LOG = format(TABLE_FORMAT, "Prefetch Count", "{}");
+    public static final String TOPIC_LOG = format(TABLE_FORMAT, "Topic", "{}");
+    public static final String COMMIT_LOG = format(TABLE_FORMAT, "Commit", "{}");
+    public static final String DELAY_SECONDS_LOG = format(TABLE_FORMAT, "Delay Seconds", "{}");
+    public static final String MESSAGE_DEDUPLICATION_ID_LOG = format(TABLE_FORMAT, "Deduplication Id", "{}");
+    public static final String MESSAGE_GROUP_ID_LOG = format(TABLE_FORMAT, "Message Group Id", "{}");
+    public static final String MAX_NUMBER_OF_MESSAGES_LOG = format(TABLE_FORMAT, "Max Number of Messages", "{}");
+    public static final String WAIT_TIME_SECONDS_LOG = format(TABLE_FORMAT, "Wait Time Seconds", "{}");
+    public static final String RECEIVE_REQUEST_ATTEMPT_ID_LOG = format(
+            TABLE_FORMAT, "Attempt Id", "{}");
+    public static final String VISIBILITY_TIMEOUT_LOG = format(TABLE_FORMAT, "Visibility Timeout", "{}");
     public static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
     public static final String ATTRIBUTE_LOG = format(TABLE_FORMAT, "Attribute", "{}");
     public static final String DESTINATION_LOG = format(TABLE_FORMAT, "Destination", "{}");
@@ -169,6 +184,7 @@ public final class LogMessage {
     public static final String FROM_PHONE_NUMBER_LOG = format(TABLE_FORMAT, "'From' phone number", "{}");
     public static final String TO_PHONE_NUMBER_LOG = format(TABLE_FORMAT, "'To' phone number", "{}");
     public static final String MESSAGE_LOG = format(TABLE_FORMAT, "Message", "{}");
+    public static final String MESSAGE_STATUS = format(TABLE_FORMAT, "Message status", "{}");
     public static final String IMAGE_COMPARISON_TYPE_LOG = format(TABLE_FORMAT, "Image comparison type", "{}");
     public static final String HIGHLIGHT_DIFFERENCE_LOG = format(TABLE_FORMAT, "Highlight difference", "{}");
     public static final String IMAGE_FOR_COMPARISON_LOG = format(TABLE_FORMAT, "Image for comparison", "{}");

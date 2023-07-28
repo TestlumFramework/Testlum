@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib;
 
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorProvider;
@@ -8,11 +9,15 @@ import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
+import com.knubisoft.testlum.testing.model.scenario.WebAssert;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SLOW_COMMAND_PROCESSING;
+import static java.util.Objects.nonNull;
 
 @Component
 public class SubCommandRunner {
@@ -29,10 +34,15 @@ public class SubCommandRunner {
     private void processEachCommand(final AbstractUiCommand command,
                                     final List<CommandResult> subCommandsResult,
                                     final ExecutorDependencies dependencies) {
-        CommandResult commandResult =
-                ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
+        CommandResult commandResult = createCommandResult(command, dependencies);
         subCommandsResult.add(commandResult);
         executeUiCommand(command, commandResult, dependencies);
+    }
+
+    private CommandResult createCommandResult(final AbstractUiCommand command,
+                                              final ExecutorDependencies dependencies) {
+        return command instanceof WebAssert ? ResultUtil.newUiCommandResultInstance(0, command)
+                : ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
     }
 
     private void executeUiCommand(final AbstractUiCommand command,
@@ -46,10 +56,7 @@ public class SubCommandRunner {
             LogUtil.logException(e);
             ConfigUtil.checkIfStopScenarioOnFailure(e);
         } finally {
-            long execTime = stopWatch.getTime();
-            stopWatch.stop();
-            result.setExecutionTime(execTime);
-            LogUtil.logExecutionTime(execTime, command);
+            checkExecutionTime(stopWatch, command, result);
         }
     }
 
@@ -58,5 +65,18 @@ public class SubCommandRunner {
         AbstractUiExecutor<AbstractUiCommand> executor = ExecutorProvider.getAppropriateExecutor(command, dependencies);
         dependencies.getContext().getAutowireCapableBeanFactory().autowireBean(executor);
         return executor;
+    }
+
+    private void checkExecutionTime(final StopWatch stopWatch,
+                                    final AbstractUiCommand command,
+                                    final CommandResult result) {
+        long execTime = stopWatch.getTime();
+        stopWatch.stop();
+        result.setExecutionTime(execTime);
+        LogUtil.logExecutionTime(execTime, command);
+        Integer threshold = command.getThreshold();
+        if (nonNull(threshold) && execTime > threshold) {
+            throw new DefaultFrameworkException(SLOW_COMMAND_PROCESSING, execTime, threshold);
+        }
     }
 }

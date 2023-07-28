@@ -20,6 +20,7 @@ import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
+import com.knubisoft.testlum.testing.model.scenario.Assert;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -136,7 +137,8 @@ public class ScenarioRunner {
     }
 
     private CommandResult prepareCommandResult(final AbstractCommand command) {
-        return ResultUtil.newCommandResultInstance(idGenerator.incrementAndGet(), command);
+        return command instanceof Assert ? ResultUtil.newUiCommandResultInstance(0, command)
+                : ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
     }
 
     @SuppressWarnings("unchecked")

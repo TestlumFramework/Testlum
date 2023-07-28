@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
@@ -16,10 +17,16 @@ import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
+import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
+import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
+import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
+import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
+import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
+import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.Ses;
 import com.knubisoft.testlum.testing.model.scenario.Smtp;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
@@ -39,22 +46,28 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ACTION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ATTRIBUTE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BODY_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CLEAR_COOKIES_AFTER;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_LOG_WITHOUT_POSITION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_SKIPPED_ON_CONDITION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMENT_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMIT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONDITION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_FORMAT;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CORRELATION_ID_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DB_TYPE_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DELAY_SECONDS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DRAGGING_FILE_PATH;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DRAGGING_FROM;
@@ -69,7 +82,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXPRES
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND_TIMES;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_COMPARISON_TYPE_LOG;
@@ -83,21 +95,31 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LAMBDA
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LAMBDA_PAYLOAD_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCAL_STORAGE_KEY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCATOR_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MAX_NUMBER_OF_MESSAGES_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MESSAGE_DEDUPLICATION_ID_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MESSAGE_GROUP_ID_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MESSAGE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILEBROWSER_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOVE_TO_EMPTY_SPACE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NAME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NEW_LOG_LINE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.PREFETCH_COUNT_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.POSITION_COMMAND_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUERY;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUEUE_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_REQUEST_ATTEMPT_ID_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REDIS_QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ROUTING_KEY_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_BY_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_DIRECTION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_LOCATOR;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_TYPE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_VALUE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SERVER_ERROR_RESPONSE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SKIPPED_BODY_VALIDATION;
@@ -116,11 +138,16 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_IN
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_URL;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TIMEOUT_MILLIS_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TOPIC_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COMMAND_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COMMAND_LOG_WITHOUT_POSITION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VALUE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VARIATION_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VISIBILITY_TIMEOUT_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WAIT_TIME_SECONDS_LOG;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.LAST_TAB;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.OPEN_TAB;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.WITHOUT_URL;
@@ -210,6 +237,14 @@ public class LogUtil {
     }
 
     /* general log */
+    public void logCommand(final long position, final AbstractCommand command) {
+        if (position != 0) {
+            log.info(POSITION_COMMAND_LOG, position, command.getClass().getSimpleName());
+        } else {
+            log.info(COMMAND_LOG_WITHOUT_POSITION, command.getClass().getSimpleName());
+        }
+    }
+
     public void logAlias(final String alias) {
         log.info(ALIAS_LOG, alias);
     }
@@ -299,18 +334,65 @@ public class LogUtil {
         }
     }
 
-    public void logBrokerActionInfo(final String action, final String destination, final String content) {
-        log.info(LogMessage.BROKER_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), destination,
-                StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
-                        .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+    public void logKafkaSendInfo(final SendKafkaMessage send, final String content) {
+        logMessageBrokerGeneralMetaData(SEND_ACTION, TOPIC_LOG, send.getTopic(), content);
+        logIfNotNull(CORRELATION_ID_LOG, send.getCorrelationId());
+    }
+
+    public void logKafkaReceiveInfo(final ReceiveKafkaMessage receive, final String content) {
+        logMessageBrokerGeneralMetaData(RECEIVE_ACTION, TOPIC_LOG, receive.getTopic(), content);
+        logIfNotNull(TIMEOUT_MILLIS_LOG, receive.getTimeoutMillis());
+        logIfNotNull(COMMIT_LOG, receive.isCommit());
+    }
+
+    public void logRabbitSendInfo(final SendRmqMessage send, final String content) {
+        logMessageBrokerGeneralMetaData(SEND_ACTION, ROUTING_KEY_LOG, send.getRoutingKey(), content);
+        logIfNotNull(CORRELATION_ID_LOG, send.getCorrelationId());
+    }
+
+    public void logRabbitReceiveInfo(final ReceiveRmqMessage receive, final String content) {
+        logMessageBrokerGeneralMetaData(RECEIVE_ACTION, QUEUE_LOG, receive.getQueue(), content);
+        logIfNotNull(TIMEOUT_MILLIS_LOG, receive.getTimeoutMillis());
+        logIfNotNull(PREFETCH_COUNT_LOG, receive.getPrefetchCount());
+    }
+
+    public void logSQSSendInfo(final SendSqsMessage send, final String content) {
+        logMessageBrokerGeneralMetaData(SEND_ACTION, QUEUE_LOG, send.getQueue(), content);
+        logIfNotNull(DELAY_SECONDS_LOG, send.getDelaySeconds());
+        logIfNotNull(MESSAGE_DEDUPLICATION_ID_LOG, send.getMessageDeduplicationId());
+        logIfNotNull(MESSAGE_GROUP_ID_LOG, send.getMessageGroupId());
+    }
+
+    public void logSQSReceiveInfo(final ReceiveSqsMessage receive, final String content) {
+        logMessageBrokerGeneralMetaData(RECEIVE_ACTION, QUEUE_LOG, receive.getQueue(), content);
+        logIfNotNull(MAX_NUMBER_OF_MESSAGES_LOG, receive.getMaxNumberOfMessages());
+        logIfNotNull(WAIT_TIME_SECONDS_LOG, receive.getWaitTimeSeconds());
+        logIfNotNull(RECEIVE_REQUEST_ATTEMPT_ID_LOG, receive.getReceiveRequestAttemptId());
+        logIfNotNull(VISIBILITY_TIMEOUT_LOG, receive.getVisibilityTimeout());
+    }
+
+    public void logMessageBrokerGeneralMetaData(final String action,
+                                                final String topicOrRoutingKeyOrQueue,
+                                                final String topicOrRoutingKeyOrQueueValue,
+                                                final String content) {
+        log.info(ACTION_LOG, action.toUpperCase(Locale.ROOT));
+        log.info(topicOrRoutingKeyOrQueue, topicOrRoutingKeyOrQueueValue);
+        log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
+                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+    }
+
+    private void logIfNotNull(final String title, final Object data) {
+        if (nonNull(data)) {
+            log.info(title, data);
+        }
     }
 
     public void logS3BucketActionInfo(final String action, final String bucket) {
         log.info(LogMessage.S3_BUCKET_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket);
     }
 
-    public void logS3FileActionInfo(final String action, final String bucket, final String key, final String fileName) {
-        log.info(LogMessage.S3_FILE_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket, key, fileName);
+    public void logS3FileActionInfo(final String action, final String bucket, final String key) {
+        log.info(LogMessage.S3_FILE_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket, key);
     }
 
     public void logSESMessage(final Message sesMessage) {
@@ -408,8 +490,12 @@ public class LogUtil {
     }
 
     /* ui log */
-    public void logUICommand(final int position, final AbstractCommand action) {
-        log.info(UI_COMMAND_LOG, position, action.getClass().getSimpleName());
+    public void logUICommand(final long position, final AbstractCommand action) {
+        if (position != 0) {
+            log.info(UI_COMMAND_LOG, position, action.getClass().getSimpleName());
+        } else {
+            log.info(UI_COMMAND_LOG_WITHOUT_POSITION, action.getClass().getSimpleName());
+        }
         if (isNotBlank(action.getComment())) {
             log.info(COMMENT_LOG, action.getComment());
         }
@@ -474,8 +560,8 @@ public class LogUtil {
         }
     }
 
-    public void logHotKeyInfo(final AbstractUiCommand command) {
-        log.info(HOTKEY_COMMAND, command.getClass().getSimpleName());
+    public void logHotKeyInfo(final AbstractUiCommand command, final int position) {
+        log.info(COMMAND_LOG, position, command.getClass().getSimpleName());
         log.info(COMMENT_LOG, command.getComment());
     }
 
@@ -495,7 +581,7 @@ public class LogUtil {
         log.info(TAB_URL, isNotBlank(url) ? url : WITHOUT_URL);
     }
 
-    public void logAssertCommand(final AbstractUiCommand command, final int position) {
+    public void logAssertCommand(final AbstractCommand command, final int position) {
         log.info(COMMAND_LOG, position, command.getClass().getSimpleName());
         log.info(COMMENT_LOG, command.getComment());
     }
@@ -508,6 +594,12 @@ public class LogUtil {
 
     public void logAssertTitleCommand(final AssertTitle title) {
         log.info(CONTENT_LOG, title.getContent());
+    }
+
+    public void logAssertEqualityCommand(final AssertEquality command, final int position) {
+        log.info(COMMAND_LOG, position, command.getClass().getSimpleName());
+        log.info(COMMENT_LOG, command.getComment());
+        log.info(CONTENT_LOG, String.join(COMMA, command.getContent()));
     }
 
     public void logDragAndDropInfo(final DragAndDrop dragAndDrop) {

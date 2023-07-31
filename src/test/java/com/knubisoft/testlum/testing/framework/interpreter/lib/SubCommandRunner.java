@@ -52,9 +52,7 @@ public class SubCommandRunner {
         try {
             getAppropriateExecutor(command, dependencies).apply(command, result);
         } catch (Exception e) {
-            ResultUtil.setExceptionResult(result, e);
-            LogUtil.logException(e);
-            ConfigUtil.checkIfStopScenarioOnFailure(e);
+            processException(e, result);
         } finally {
             checkExecutionTime(stopWatch, command, result);
         }
@@ -76,7 +74,13 @@ public class SubCommandRunner {
         LogUtil.logExecutionTime(execTime, command);
         Integer threshold = command.getThreshold();
         if (nonNull(threshold) && execTime > threshold) {
-            throw new DefaultFrameworkException(SLOW_COMMAND_PROCESSING, execTime, threshold);
+            processException(new DefaultFrameworkException(SLOW_COMMAND_PROCESSING, execTime, threshold), result);
         }
+    }
+
+    private void processException(final Exception e, final CommandResult result) {
+        ResultUtil.setExceptionResult(result, e);
+        LogUtil.logException(e);
+        ConfigUtil.checkIfStopScenarioOnFailure(e);
     }
 }

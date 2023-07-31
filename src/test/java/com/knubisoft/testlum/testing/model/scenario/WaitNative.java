@@ -8,14 +8,14 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for wait complex type.
+ * <p>Java class for waitNative complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="wait"&gt;
+ * &lt;complexType name="waitNative"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;attribute name="time" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}timePattern" /&gt;
  *       &lt;attribute name="unit" type="{http://www.knubisoft.com/testlum/testing/model/scenario}timeunit" default="seconds" /&gt;
  *     &lt;/extension&gt;
@@ -26,9 +26,9 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "wait")
-public class Wait
-    extends AbstractCommand
+@XmlType(name = "waitNative")
+public class WaitNative
+    extends AbstractUiCommand
 {
 
     @XmlAttribute(name = "time", required = true)

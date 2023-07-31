@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="input" type="{http://www.knubisoft.com/testlum/testing/model/scenario}input"/&gt;
  *         &lt;element name="assert" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webAssert"/&gt;
  *         &lt;element name="dropDown" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dropDown"/&gt;
- *         &lt;element name="wait" type="{http://www.knubisoft.com/testlum/testing/model/scenario}wait"/&gt;
+ *         &lt;element name="wait" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiWait"/&gt;
  *         &lt;element name="clear" type="{http://www.knubisoft.com/testlum/testing/model/scenario}clear"/&gt;
  *         &lt;element name="scroll" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scroll"/&gt;
  *         &lt;element name="scrollTo" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scrollTo"/&gt;
@@ -59,7 +59,7 @@ public class SwitchToFrame
         @XmlElement(name = "input", type = Input.class),
         @XmlElement(name = "assert", type = WebAssert.class),
         @XmlElement(name = "dropDown", type = DropDown.class),
-        @XmlElement(name = "wait", type = Wait.class),
+        @XmlElement(name = "wait", type = UiWait.class),
         @XmlElement(name = "clear", type = Clear.class),
         @XmlElement(name = "scroll", type = Scroll.class),
         @XmlElement(name = "scrollTo", type = ScrollTo.class),
@@ -98,7 +98,7 @@ public class SwitchToFrame
      * {@link Input }
      * {@link WebAssert }
      * {@link DropDown }
-     * {@link Wait }
+     * {@link UiWait }
      * {@link Clear }
      * {@link Scroll }
      * {@link ScrollTo }

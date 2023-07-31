@@ -374,6 +374,38 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link UiWait }
+     * 
+     */
+    public UiWait createUiWait() {
+        return new UiWait();
+    }
+
+    /**
+     * Create an instance of {@link Clickable }
+     * 
+     */
+    public Clickable createClickable() {
+        return new Clickable();
+    }
+
+    /**
+     * Create an instance of {@link Visible }
+     * 
+     */
+    public Visible createVisible() {
+        return new Visible();
+    }
+
+    /**
+     * Create an instance of {@link WaitNative }
+     * 
+     */
+    public WaitNative createWaitNative() {
+        return new WaitNative();
+    }
+
+    /**
      * Create an instance of {@link WebVar }
      * 
      */

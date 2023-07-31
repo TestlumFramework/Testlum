@@ -55,6 +55,7 @@ import javax.xml.bind.annotation.XmlType;
     Assert.class,
     Var.class,
     Condition.class,
+    Wait.class,
     Shell.class,
     Smtp.class,
     Twilio.class,

@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.variations;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.parser.CSVParser;
+import com.knubisoft.testlum.testing.model.scenario.Repeat;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +37,17 @@ public class GlobalVariations {
             VARIATIONS.putIfAbsent(fileName, variationList);
         }
         VARIATIONS_VALIDATOR.validateByScenario(variationList, scenario, filePath);
+    }
+
+    public void process(final Repeat repeat) {
+        if (StringUtils.isNotBlank(repeat.getVariations())) {
+            String fileName = repeat.getVariations();
+            List<Map<String, String>> variationList = VARIATIONS.get(fileName);
+            if (isNull(variationList)) {
+                variationList = CSV_PARSER.parseVariations(repeat.getVariations());
+                VARIATIONS.putIfAbsent(repeat.getVariations(), variationList);
+            }
+        }
     }
 
     public List<Map<String, String>> getVariations(final String fileName) {

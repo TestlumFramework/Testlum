@@ -19,6 +19,7 @@ public class ExceptionMessage {
     public static final String NOT_DECLARED_WITH_EXECUTOR_FOR_CLASS = "Each non abstract executor must "
             + "declare annotation ExecutorForClass. Class %s do not have this annotation";
     public static final String EXECUTOR_FOR_UI_COMMAND_NOT_FOUND = "Executor for class %s not found";
+    public static final String INTERPRETER_NOT_FOUND = "Interpreter for class %s not found";
     public static final String MISSING_CONSTRUCTOR = "Missing constructor for class: %s";
 
     public static final String ALIAS_BY_STORAGE_NAME_NOT_FOUND = "Alias for data storage [%s] not found. "

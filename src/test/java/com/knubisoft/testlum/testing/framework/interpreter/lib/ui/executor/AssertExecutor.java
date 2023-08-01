@@ -10,10 +10,14 @@ import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
-import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
+import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertEqual;
+import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
+
 import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
 import com.knubisoft.testlum.testing.model.scenario.WebAssert;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
@@ -24,8 +28,13 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ASSERT_CONTENT_IS_EQUAL;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ASSERT_CONTENT_NOT_EQUAL;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ASSERT_TYPE_NOT_SUPPORTED;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_LOG;
 
+@Slf4j
 @ExecutorForClass(WebAssert.class)
 public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
 
@@ -37,6 +46,8 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         assertCommands.put(a -> a instanceof AssertAttribute,
                 (a, result) -> executeAttributeCommand((AssertAttribute) a, result));
         assertCommands.put(a -> a instanceof AssertTitle, (a, result) -> executeTitleCommand((AssertTitle) a, result));
+        assertCommands.put(a -> a instanceof AssertEquality,
+                (a, result) -> executeEqualityCommand((AssertEquality) a, result));
         assertCommandMap = Collections.unmodifiableMap(assertCommands);
     }
 
@@ -44,7 +55,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
     public void execute(final WebAssert webAssert, final CommandResult result) {
         List<CommandResult> subCommandsResult = new ArrayList<>();
         result.setSubCommandsResult(subCommandsResult);
-        webAssert.getAttributeOrTitle().forEach(command -> {
+        webAssert.getAttributeOrTitleOrEqual().forEach(command -> {
             CommandResult commandResult =
                     ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
             subCommandsResult.add(commandResult);
@@ -55,7 +66,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         });
     }
 
-    private void executeSubCommand(final AbstractUiCommand command, final CommandResult result) {
+    private void executeSubCommand(final AbstractCommand command, final CommandResult result) {
         assertCommandMap.entrySet().stream()
                 .filter(method -> method.getKey().test(command))
                 .findFirst()
@@ -99,6 +110,25 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         }
     }
 
-    private interface AssertCmdPredicate extends Predicate<AbstractUiCommand> { }
-    private interface AssertMethod extends BiConsumer<AbstractUiCommand, CommandResult> { }
+    private void executeEqualityCommand(final AssertEquality assertEquality, final CommandResult result) {
+        List<String> content = assertEquality.getContent();
+        log.info(CONTENT_LOG, formatContent(content));
+        ResultUtil.addAssertEqualityMetaData(assertEquality, result);
+        if (assertEquality instanceof AssertEqual) {
+            if (content.stream().distinct().count() != 1) {
+                throw new DefaultFrameworkException(String.format(ASSERT_CONTENT_NOT_EQUAL, formatContent(content)));
+            }
+        } else {
+            if (content.stream().distinct().count() == 1) {
+                throw new DefaultFrameworkException(String.format(ASSERT_CONTENT_IS_EQUAL, formatContent(content)));
+            }
+        }
+    }
+
+    private String formatContent(final List<String> content) {
+        return String.join(COMMA, content);
+    }
+
+    private interface AssertCmdPredicate extends Predicate<AbstractCommand> { }
+    private interface AssertMethod extends BiConsumer<AbstractCommand, CommandResult> { }
 }

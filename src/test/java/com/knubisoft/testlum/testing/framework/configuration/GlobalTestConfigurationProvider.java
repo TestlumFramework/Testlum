@@ -5,10 +5,10 @@ import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.parser.XMLParsers;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
+import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.framework.validator.GlobalTestConfigValidator;
 import com.knubisoft.testlum.testing.framework.validator.IntegrationsValidator;
 import com.knubisoft.testlum.testing.framework.validator.UiConfigValidator;
-import com.knubisoft.testlum.testing.framework.vaultService.VaultService;
 import com.knubisoft.testlum.testing.model.global_config.Environment;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -35,8 +35,6 @@ public class GlobalTestConfigurationProvider {
     private static final Map<String, UiConfig> UI_CONFIGS = collectUiConfigs();
     private static final Integrations DEFAULT_INTEGRATIONS = defaultIntegrations();
     private static final UiConfig DEFAULT_UI_CONFIGS = defaultUiConfigs();
-    private static final VaultService VAULT_SERVICE = new VaultService();
-
 
     public static GlobalTestConfiguration provide() {
         return GLOBAL_TEST_CONFIGURATION;
@@ -94,7 +92,8 @@ public class GlobalTestConfigurationProvider {
     private static Integrations initIntegration(final Environment env) {
         return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
                 .map(configFile -> XMLParsers.forIntegrations().process(configFile))
-                .map(integrations -> new VaultService().getWithVault(integrations))
+                //.map(integrations -> new VaultService().getWithVault(integrations))
+                .map(InjectionUtil::injectFromVault)
                 .orElseGet(() -> {
                     log.warn(LogMessage.DISABLED_CONFIGURATION, Integrations.class.getSimpleName());
                     return new Integrations();

@@ -1,8 +1,6 @@
 
 package com.knubisoft.testlum.testing.model.global_config;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -22,7 +20,6 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence&gt;
  *         &lt;element name="address" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="token" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
- *         &lt;element name="path" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/restriction&gt;
@@ -35,8 +32,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "vault", propOrder = {
     "address",
-    "token",
-    "path"
+    "token"
 })
 public class Vault {
 
@@ -44,8 +40,6 @@ public class Vault {
     protected String address;
     @XmlElement(required = true)
     protected String token;
-    @XmlElement(required = true)
-    protected List<String> path;
     @XmlAttribute(name = "enabled")
     protected Boolean enabled;
 
@@ -95,35 +89,6 @@ public class Vault {
      */
     public void setToken(String value) {
         this.token = value;
-    }
-
-    /**
-     * Gets the value of the path property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the path property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getPath().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
-     */
-    public List<String> getPath() {
-        if (path == null) {
-            path = new ArrayList<String>();
-        }
-        return this.path;
     }
 
     /**

@@ -28,7 +28,7 @@
                 <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
                 <x:element name="report" type="tns:report"/>
                 <x:element name="environments" type="tns:environments"/>
-                <x:element name="vault" type="tns:vault"/>
+                <x:element name="vault" type="tns:vault" minOccurs="0"/>
             </x:sequence>
         </x:complexType>
     </x:element>

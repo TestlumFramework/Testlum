@@ -1,7 +1,6 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -9,7 +8,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -50,7 +48,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="smtp" type="{http://www.knubisoft.com/testlum/testing/model/scenario}smtp"/&gt;
  *         &lt;element name="twilio" type="{http://www.knubisoft.com/testlum/testing/model/scenario}twilio"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="times" use="required" type="{http://www.w3.org/2001/XMLSchema}positiveInteger" /&gt;
+ *       &lt;attribute name="times" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveIntegerMin1" /&gt;
+ *       &lt;attribute name="variations" type="{http://www.knubisoft.com/testlum/testing/model/scenario}csv" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -95,9 +94,10 @@ public class Repeat
         @XmlElement(name = "twilio", type = Twilio.class)
     })
     protected List<AbstractCommand> commands;
-    @XmlAttribute(name = "times", required = true)
-    @XmlSchemaType(name = "positiveInteger")
-    protected BigInteger times;
+    @XmlAttribute(name = "times")
+    protected Integer times;
+    @XmlAttribute(name = "variations")
+    protected String variations;
 
     /**
      * Gets the value of the commands property.
@@ -158,10 +158,10 @@ public class Repeat
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link Integer }
      *     
      */
-    public BigInteger getTimes() {
+    public Integer getTimes() {
         return times;
     }
 
@@ -170,11 +170,35 @@ public class Repeat
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link Integer }
      *     
      */
-    public void setTimes(BigInteger value) {
+    public void setTimes(Integer value) {
         this.times = value;
+    }
+
+    /**
+     * Gets the value of the variations property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getVariations() {
+        return variations;
+    }
+
+    /**
+     * Sets the value of the variations property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setVariations(String value) {
+        this.variations = value;
     }
 
 }

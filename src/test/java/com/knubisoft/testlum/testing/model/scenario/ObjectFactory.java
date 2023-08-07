@@ -30,14 +30,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link S3File }
-     * 
-     */
-    public S3File createS3File() {
-        return new S3File();
-    }
-
-    /**
      * Create an instance of {@link Scenario }
      * 
      */
@@ -379,6 +371,38 @@ public class ObjectFactory {
      */
     public File createFile() {
         return new File();
+    }
+
+    /**
+     * Create an instance of {@link UiWait }
+     * 
+     */
+    public UiWait createUiWait() {
+        return new UiWait();
+    }
+
+    /**
+     * Create an instance of {@link Clickable }
+     * 
+     */
+    public Clickable createClickable() {
+        return new Clickable();
+    }
+
+    /**
+     * Create an instance of {@link Visible }
+     * 
+     */
+    public Visible createVisible() {
+        return new Visible();
+    }
+
+    /**
+     * Create an instance of {@link WaitNative }
+     * 
+     */
+    public WaitNative createWaitNative() {
+        return new WaitNative();
     }
 
     /**
@@ -926,6 +950,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link S3File }
+     * 
+     */
+    public S3File createS3File() {
+        return new S3File();
+    }
+
+    /**
+     * Create an instance of {@link S3FileDownload }
+     * 
+     */
+    public S3FileDownload createS3FileDownload() {
+        return new S3FileDownload();
+    }
+
+    /**
+     * Create an instance of {@link S3FileRemove }
+     * 
+     */
+    public S3FileRemove createS3FileRemove() {
+        return new S3FileRemove();
+    }
+
+    /**
      * Create an instance of {@link SendSqsMessage }
      * 
      */
@@ -1227,14 +1275,6 @@ public class ObjectFactory {
      */
     public LambdaBody createLambdaBody() {
         return new LambdaBody();
-    }
-
-    /**
-     * Create an instance of {@link S3File.Download }
-     * 
-     */
-    public S3File.Download createS3FileDownload() {
-        return new S3File.Download();
     }
 
 }

@@ -11,7 +11,6 @@ import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.Include;
 import com.knubisoft.testlum.testing.model.scenario.Logout;
-import com.knubisoft.testlum.testing.model.scenario.Repeat;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -102,8 +101,6 @@ public class ScenarioCollector {
             addAuthCommands(updatedCommand, (Auth) command);
         } else if (command instanceof Include) {
             addIncludeCommands(updatedCommand, command);
-        } else if (command instanceof Repeat) {
-            addRepeatCommands(updatedCommand, (Repeat) command);
         } else {
             updatedCommand.add(command);
         }
@@ -149,13 +146,6 @@ public class ScenarioCollector {
         return XMLParsers.forScenario().process(file, scenarioValidator);
     }
 
-    private void addRepeatCommands(final List<AbstractCommand> updatedCommand, final Repeat repeatCommand) {
-        int times = repeatCommand.getTimes().intValue();
-        for (int i = 0; i < times; i++) {
-            repeatCommand.getCommands().forEach(command -> addAbstractCommand(updatedCommand, command));
-        }
-    }
-
     public static class Result {
 
         private static final TreeSet<MappingResult> SET_MAP = new TreeSet<>(new Comparator<MappingResult>() {
@@ -165,7 +155,7 @@ public class ScenarioCollector {
             }
 
             private boolean getReadonlyValue(final MappingResult result) {
-                return nonNull(result.scenario) && (result.scenario.getSettings().isReadOnly());
+                return nonNull(result.scenario) && (result.scenario.getSettings().isTruncateStorages());
             }
         });
 

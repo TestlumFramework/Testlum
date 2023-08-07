@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="comment" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}stringMin10" /&gt;
- *       &lt;attribute name="threshold" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
+ *       &lt;attribute name="threshold" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveIntegerMin1" /&gt;
  *       &lt;attribute name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -55,6 +55,7 @@ import javax.xml.bind.annotation.XmlType;
     Assert.class,
     Var.class,
     Condition.class,
+    Wait.class,
     Shell.class,
     Smtp.class,
     Twilio.class,

@@ -139,12 +139,15 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
+    private final GlobalTestConfigurationProvider configurationProvider;
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> uiCommandValidatorsMap;
-    private final Integrations integrations = GlobalTestConfigurationProvider.getDefaultIntegrations();
+    private final Integrations integrations;
     private final AtomicReference<String> variationsFileName = new AtomicReference<>(EMPTY);
 
-    public ScenarioValidator() {
+    public ScenarioValidator(final GlobalTestConfigurationProvider configurationProvider) {
+        this.configurationProvider = configurationProvider;
+        this.integrations = configurationProvider.getDefaultIntegrations();
         Map<AbstractCommandPredicate, AbstractCommandValidator> validatorMap = new HashMap<>();
 
         validatorMap.put(o -> o instanceof Auth, (xmlFile, command) -> {
@@ -404,7 +407,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         boolean containsNativeAndMobileCommands =
                 commands.stream().anyMatch(command -> command instanceof Native)
                         && commands.stream().anyMatch(command -> command instanceof Mobilebrowser);
-        if (containsNativeAndMobileCommands && MobileUtil.isNativeAndMobilebrowserConfigEnabled()) {
+        if (containsNativeAndMobileCommands
+                && MobileUtil.isNativeAndMobilebrowserConfigEnabled(configurationProvider)) {
             validateNativeAndMobileAppiumConfig();
         }
     }
@@ -419,7 +423,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private boolean isSameUrl() {
-        return GlobalTestConfigurationProvider.getUiConfigs().values().stream()
+        return configurationProvider.getUiConfigs().values().stream()
                 .filter(uiConfig -> allNotNull(uiConfig.getMobilebrowser(), uiConfig.getNative()))
                 .filter(uiConfig -> allNotNull(uiConfig.getNative().getConnection().getAppiumServer(),
                         uiConfig.getMobilebrowser().getConnection().getAppiumServer()))
@@ -429,7 +433,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private boolean isSameNativeAndMobileDevices() {
-        return GlobalTestConfigurationProvider.getUiConfigs().values().stream()
+        return configurationProvider.getUiConfigs().values().stream()
                 .filter(uiConfig -> allNotNull(uiConfig.getMobilebrowser(), uiConfig.getNative()))
                 .anyMatch(this::isSameNativeAndMobileDevices);
     }
@@ -699,24 +703,24 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateWebCommands(final Web command, final File xmlFile) {
-        if (BrowserUtil.filterDefaultEnabledBrowsers().isEmpty()
-                || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getWeb().isEnabled()) {
+        if (BrowserUtil.filterDefaultEnabledBrowsers(configurationProvider).isEmpty()
+                || !configurationProvider.getDefaultUiConfigs().getWeb().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_BROWSERS);
         }
         validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);
     }
 
     private void validateMobilebrowserCommands(final Mobilebrowser command, final File xmlFile) {
-        if (MobileUtil.filterDefaultEnabledMobilebrowserDevices().isEmpty()
-                || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getMobilebrowser().isEnabled()) {
+        if (MobileUtil.filterDefaultEnabledMobilebrowserDevices(configurationProvider).isEmpty()
+                || !configurationProvider.getDefaultUiConfigs().getMobilebrowser().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_MOBILEBROWSER_DEVICE);
         }
         validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);
     }
 
     private void validateNativeCommands(final Native command, final File xmlFile) {
-        if (MobileUtil.filterDefaultEnabledNativeDevices().isEmpty()
-                || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getNative().isEnabled()) {
+        if (MobileUtil.filterDefaultEnabledNativeDevices(configurationProvider).isEmpty()
+                || !configurationProvider.getDefaultUiConfigs().getNative().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_NATIVE_DEVICE);
         }
         validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);

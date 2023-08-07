@@ -11,11 +11,11 @@ import java.util.Objects;
 
 public class OnOracleEnabledCondition implements Condition {
 
-    private final OracleIntegration oracleIntegration =
-            GlobalTestConfigurationProvider.getDefaultIntegrations().getOracleIntegration();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        OracleIntegration oracleIntegration = configurationProvider.getDefaultIntegrations().getOracleIntegration();
         if (Objects.nonNull(oracleIntegration)) {
             return IntegrationsUtil.isEnabled(oracleIntegration.getOracle());
         }

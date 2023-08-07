@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
@@ -31,8 +32,9 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
 
     private final Map<AssertCmdPredicate, AssertMethod> assertCommandMap;
 
-    public AssertExecutor(final ExecutorDependencies dependencies) {
-        super(dependencies);
+    public AssertExecutor(final GlobalTestConfigurationProvider configurationProvider,
+                          final ExecutorDependencies dependencies) {
+        super(configurationProvider, dependencies);
         Map<AssertCmdPredicate, AssertMethod> assertCommands = new HashMap<>();
         assertCommands.put(a -> a instanceof AssertAttribute,
                 (a, result) -> executeAttributeCommand((AssertAttribute) a, result));

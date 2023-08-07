@@ -11,11 +11,12 @@ import java.util.Objects;
 
 public class OnRabbitMQEnabledCondition implements Condition {
 
-    private final RabbitmqIntegration rabbitmqIntegration =
-            GlobalTestConfigurationProvider.getDefaultIntegrations().getRabbitmqIntegration();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                 context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        RabbitmqIntegration rabbitmqIntegration =
+                configurationProvider.getDefaultIntegrations().getRabbitmqIntegration();
         if (Objects.nonNull(rabbitmqIntegration)) {
             return IntegrationsUtil.isEnabled(rabbitmqIntegration.getRabbitmq());
         }

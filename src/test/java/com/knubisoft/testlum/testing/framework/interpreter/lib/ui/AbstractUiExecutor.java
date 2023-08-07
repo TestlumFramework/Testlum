@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
@@ -11,9 +12,12 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
 
+    protected final GlobalTestConfigurationProvider configurationProvider;
     protected final ExecutorDependencies dependencies;
 
-    protected AbstractUiExecutor(final ExecutorDependencies dependencies) {
+    protected AbstractUiExecutor(final GlobalTestConfigurationProvider globalTestConfigurationProvider,
+                                 final ExecutorDependencies dependencies) {
+        this.configurationProvider = globalTestConfigurationProvider;
         this.dependencies = dependencies;
     }
 

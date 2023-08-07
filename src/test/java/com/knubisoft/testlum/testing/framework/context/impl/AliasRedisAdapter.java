@@ -21,10 +21,12 @@ public class AliasRedisAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private RedisOperation redisOperation;
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Redis redis : GlobalTestConfigurationProvider.getDefaultIntegrations().getRedisIntegration().getRedis()) {
+        for (Redis redis : globalTestConfigurationProvider.getDefaultIntegrations().getRedisIntegration().getRedis()) {
             if (redis.isEnabled()) {
                 aliasMap.put(REDIS + UNDERSCORE + redis.getAlias(), getMetadataRedis(redis));
             }

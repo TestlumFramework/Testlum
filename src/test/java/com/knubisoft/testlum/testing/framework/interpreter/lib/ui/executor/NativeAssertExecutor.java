@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -19,8 +20,9 @@ import java.util.List;
 @ExecutorForClass(NativeAssert.class)
 public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
 
-    public NativeAssertExecutor(final ExecutorDependencies dependencies) {
-        super(dependencies);
+    public NativeAssertExecutor(final GlobalTestConfigurationProvider configurationProvider,
+                                final ExecutorDependencies dependencies) {
+        super(configurationProvider, dependencies);
     }
 
     @Override

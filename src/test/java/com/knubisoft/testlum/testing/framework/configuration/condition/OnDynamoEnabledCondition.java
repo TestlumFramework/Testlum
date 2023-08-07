@@ -11,11 +11,12 @@ import java.util.Objects;
 
 public class OnDynamoEnabledCondition implements Condition {
 
-    private final DynamoIntegration dynamoIntegration =
-            GlobalTestConfigurationProvider.getDefaultIntegrations().getDynamoIntegration();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        DynamoIntegration dynamoIntegration =
+                configurationProvider.getDefaultIntegrations().getDynamoIntegration();
         if (Objects.nonNull(dynamoIntegration)) {
             return IntegrationsUtil.isEnabled(dynamoIntegration.getDynamo());
         }

@@ -11,11 +11,12 @@ import java.util.Objects;
 
 public class OnRedisEnabledCondition implements Condition {
 
-    private final RedisIntegration redisIntegration =
-            GlobalTestConfigurationProvider.getDefaultIntegrations().getRedisIntegration();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                 context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        RedisIntegration redisIntegration =
+                configurationProvider.getDefaultIntegrations().getRedisIntegration();
         if (Objects.nonNull(redisIntegration)) {
             return IntegrationsUtil.isEnabled(redisIntegration.getRedis());
         }

@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.auth;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.auth.AuthStrategy;
@@ -20,8 +21,10 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 @UtilityClass
 public class AuthFactory {
 
-    public AuthStrategy create(final InterpreterDependencies dependencies, final String alias) {
-        final Auth auth = getAuthConfig(dependencies.getEnvironment(), alias);
+    public AuthStrategy create(final InterpreterDependencies dependencies,
+                               final String alias,
+                               final GlobalTestConfigurationProvider configurationProvider) {
+        final Auth auth = getAuthConfig(dependencies.getEnvironment(), alias, configurationProvider);
 
         switch (auth.getAuthStrategy()) {
             case BASIC:
@@ -35,8 +38,10 @@ public class AuthFactory {
         }
     }
 
-    private Auth getAuthConfig(final String env, final String alias) {
-        List<Api> apiList = IntegrationsUtil.findListByEnv(Api.class, env);
+    private Auth getAuthConfig(final String env,
+                               final String alias,
+                               final GlobalTestConfigurationProvider configurationProvider) {
+        List<Api> apiList = IntegrationsUtil.findListByEnv(Api.class, env, configurationProvider);
         Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, alias);
         if (Objects.nonNull(apiIntegration.getAuth())) {
             return apiIntegration.getAuth();

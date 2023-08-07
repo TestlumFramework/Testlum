@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnMysqlEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -25,6 +26,10 @@ import java.util.Objects;
 @Component
 public class MySqlOperation implements StorageOperation {
 
+    @Autowired
+    private GlobalTestConfigurationProvider configurationProvider;
+    @Autowired
+    private EnvManager envManager;
     private final Map<AliasEnv, AbstractSqlExecutor> mySqlExecutor;
 
     public MySqlOperation(@Autowired(required = false) @Qualifier("mySqlDataSource")
@@ -36,16 +41,16 @@ public class MySqlOperation implements StorageOperation {
     @Override
     public StorageOperationResult apply(final Source source, final String databaseAlias) {
         List<String> queriesMySql = source.getQueries();
-        List<QueryResult<Object>> mySqlAppliedRecords = mySqlExecutor.get(AliasEnv.build(databaseAlias))
-                .executeQueries(queriesMySql);
+        List<QueryResult<Object>> mySqlAppliedRecords =
+                mySqlExecutor.get(new AliasEnv(databaseAlias, envManager.currentEnv())).executeQueries(queriesMySql);
         return new StorageOperationResult(mySqlAppliedRecords);
     }
 
     @Override
     public void clearSystem() {
         mySqlExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            if (isTruncate(Mysql.class, aliasEnv)
-                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (isTruncate(Mysql.class, aliasEnv, configurationProvider)
+                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

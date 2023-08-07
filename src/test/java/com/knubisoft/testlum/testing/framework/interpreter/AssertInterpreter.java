@@ -5,7 +5,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpret
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.Assert;
@@ -54,7 +53,7 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
         } catch (Exception e) {
             LogUtil.logException(e);
             ResultUtil.setExceptionResult(result, e);
-            ConfigUtil.checkIfStopScenarioOnFailure(e);
+            checkIfStopScenarioOnFailure(e);
         } finally {
             result.setExecutionTime(stopWatch.getTime());
             stopWatch.stop();

@@ -21,10 +21,12 @@ public class AliasSQSAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private SQSOperation sqsOperation;
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Sqs sqs : GlobalTestConfigurationProvider.getDefaultIntegrations().getSqsIntegration().getSqs()) {
+        for (Sqs sqs : globalTestConfigurationProvider.getDefaultIntegrations().getSqsIntegration().getSqs()) {
             if (sqs.isEnabled()) {
                 aliasMap.put(SQS + UNDERSCORE + sqs.getAlias(), getMetadataSQS(sqs));
             }

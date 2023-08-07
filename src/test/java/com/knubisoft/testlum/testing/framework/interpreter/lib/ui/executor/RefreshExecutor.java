@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -20,8 +21,9 @@ public class RefreshExecutor extends AbstractUiExecutor<Refresh> {
     private static final int DEFAULT_REFRESH_VALUE = 1500;
     private static final int DEFAULT_SCREEN_SEGMENT = 5;
 
-    public RefreshExecutor(final ExecutorDependencies dependencies) {
-        super(dependencies);
+    public RefreshExecutor(final GlobalTestConfigurationProvider configurationProvider,
+                           final ExecutorDependencies dependencies) {
+        super(configurationProvider, dependencies);
     }
 
     @Override

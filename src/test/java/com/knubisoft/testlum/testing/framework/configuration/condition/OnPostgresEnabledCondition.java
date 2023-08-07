@@ -11,11 +11,12 @@ import java.util.Objects;
 
 public class OnPostgresEnabledCondition implements Condition {
 
-    private final PostgresIntegration postgresIntegration =
-            GlobalTestConfigurationProvider.getDefaultIntegrations().getPostgresIntegration();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        PostgresIntegration postgresIntegration =
+                configurationProvider.getDefaultIntegrations().getPostgresIntegration();
         if (Objects.nonNull(postgresIntegration)) {
             return IntegrationsUtil.isEnabled(postgresIntegration.getPostgres());
         }

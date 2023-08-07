@@ -1,11 +1,13 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import org.apache.commons.lang3.time.StopWatch;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
@@ -13,6 +15,9 @@ import java.util.List;
 
 @Component
 public class RepeatCommandsRunner {
+
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     public void runCommands(final List<AbstractCommand> commandList,
                             final InterpreterDependencies dependencies,
@@ -41,7 +46,7 @@ public class RepeatCommandsRunner {
         } catch (Exception e) {
             ResultUtil.setExceptionResult(result, e);
             LogUtil.logException(e);
-            ConfigUtil.checkIfStopScenarioOnFailure(e);
+            checkIfStopScenarioOnFailure(e);
         } finally {
             long execTime = stopWatch.getTime();
             stopWatch.stop();
@@ -56,5 +61,11 @@ public class RepeatCommandsRunner {
                 InterpreterProvider.getAppropriateInterpreter(command, dependencies);
         dependencies.getContext().getAutowireCapableBeanFactory().autowireBean(interpreter);
         return interpreter;
+    }
+
+    private void checkIfStopScenarioOnFailure(final Exception e) {
+        if (globalTestConfigurationProvider.provide().isStopScenarioOnFailure()) {
+            throw new DefaultFrameworkException(e);
+        }
     }
 }

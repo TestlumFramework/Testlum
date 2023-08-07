@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
@@ -32,23 +33,26 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 @Service
 public class TestSetCollector {
 
+    private final GlobalTestConfigurationProvider configurationProvider;
     private final List<String> browsers;
     private final List<String> mobilebrowsers;
     private final List<String> nativeDevices;
 
-    public TestSetCollector() {
-        browsers = BrowserUtil.filterDefaultEnabledBrowsers().stream()
+    public TestSetCollector(final GlobalTestConfigurationProvider configurationProvider) {
+        this.configurationProvider = configurationProvider;
+        browsers = BrowserUtil.filterDefaultEnabledBrowsers(configurationProvider).stream()
                 .map(AbstractBrowser::getAlias).collect(Collectors.toList());
-        mobilebrowsers = MobileUtil.filterDefaultEnabledMobilebrowserDevices().stream()
+        mobilebrowsers = MobileUtil.filterDefaultEnabledMobilebrowserDevices(configurationProvider).stream()
                 .map(MobilebrowserDevice::getAlias).collect(Collectors.toList());
-        nativeDevices = MobileUtil.filterDefaultEnabledNativeDevices().stream()
+        nativeDevices = MobileUtil.filterDefaultEnabledNativeDevices(configurationProvider).stream()
                 .map(NativeDevice::getAlias).collect(Collectors.toList());
     }
 
 
     public Stream<Arguments> collect() {
-        ScenarioCollector.Result result = new ScenarioCollector().collect();
-        Set<MappingResult> validScenarios = new ScenarioFilter().filterScenarios(result.get());
+        ScenarioCollector.Result result = new ScenarioCollector(configurationProvider).collect();
+        Set<MappingResult> validScenarios =
+                new ScenarioFilter().filterScenarios(this.configurationProvider, result.get());
         return validScenarios.stream()
                 .flatMap(this::createArguments);
     }

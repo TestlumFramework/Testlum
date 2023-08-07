@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.auth.AuthFactory;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -9,10 +10,14 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
 @InterpreterForClass(Auth.class)
 public class AuthInterpreter extends AbstractInterpreter<Auth> {
+
+    @Autowired
+    private GlobalTestConfigurationProvider configurationProvider;
 
     public AuthInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -21,7 +26,7 @@ public class AuthInterpreter extends AbstractInterpreter<Auth> {
     @Override
     protected void acceptImpl(final Auth o, final CommandResult result) {
         Auth auth = injectCommand(o);
-        AuthStrategy authStrategy = AuthFactory.create(dependencies, auth.getApiAlias());
+        AuthStrategy authStrategy = AuthFactory.create(dependencies, auth.getApiAlias(), configurationProvider);
         ResultUtil.addAuthMetaData(auth, result);
         authStrategy.authenticate(auth, result);
     }

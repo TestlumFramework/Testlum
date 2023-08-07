@@ -1,16 +1,17 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorProvider;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.WebAssert;
 import org.apache.commons.lang3.time.StopWatch;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
@@ -21,6 +22,9 @@ import static java.util.Objects.nonNull;
 
 @Component
 public class SubCommandRunner {
+
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     public void runCommands(final List<AbstractUiCommand> commandList,
                             final CommandResult result,
@@ -54,7 +58,7 @@ public class SubCommandRunner {
         } catch (Exception e) {
             ResultUtil.setExceptionResult(result, e);
             LogUtil.logException(e);
-            ConfigUtil.checkIfStopScenarioOnFailure(e);
+            checkIfStopScenarioOnFailure(e);
         } finally {
             checkExecutionTime(stopWatch, command, result);
         }
@@ -77,6 +81,12 @@ public class SubCommandRunner {
         Integer threshold = command.getThreshold();
         if (nonNull(threshold) && execTime > threshold) {
             throw new DefaultFrameworkException(SLOW_COMMAND_PROCESSING, execTime, threshold);
+        }
+    }
+
+    private void checkIfStopScenarioOnFailure(final Exception e) {
+        if (globalTestConfigurationProvider.provide().isStopScenarioOnFailure()) {
+            throw new DefaultFrameworkException(e);
         }
     }
 }

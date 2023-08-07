@@ -11,11 +11,12 @@ import java.util.Objects;
 
 public class OnKafkaEnabledCondition implements Condition {
 
-    private final KafkaIntegration kafkaIntegration =
-            GlobalTestConfigurationProvider.getDefaultIntegrations().getKafkaIntegration();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        KafkaIntegration kafkaIntegration =
+                configurationProvider.getDefaultIntegrations().getKafkaIntegration();
         if (Objects.nonNull(kafkaIntegration)) {
             return IntegrationsUtil.isEnabled(kafkaIntegration.getKafka());
         }

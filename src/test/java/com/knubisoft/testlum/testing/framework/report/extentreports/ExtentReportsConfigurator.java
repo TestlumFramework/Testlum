@@ -28,9 +28,10 @@ public class ExtentReportsConfigurator {
     private static final String REPORT_NAME_TEMPLATE = "%s%s_%s.html";
     private static final String TEMPLATE_FOR_REPORT_SAVING_PATH = "%s%s%s%s";
 
-    public void configure(final ExtentReports extentReports) {
+    public void configure(final ExtentReports extentReports,
+                          final GlobalTestConfigurationProvider configurationProvider) {
         com.knubisoft.testlum.testing.model.global_config.ExtentReports extentReportsConfig =
-                GlobalTestConfigurationProvider.provide().getReport().getExtentReports();
+                configurationProvider.provide().getReport().getExtentReports();
         String projectName = extentReportsConfig.getProjectName();
         HtmlReportGenerator htmlReportGeneratorSettings = extentReportsConfig.getHtmlReportGenerator();
         KlovServerReportGenerator klovServerGeneratorSettings = extentReportsConfig.getKlovServerReportGenerator();

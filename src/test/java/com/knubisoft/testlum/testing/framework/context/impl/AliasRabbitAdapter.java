@@ -21,11 +21,13 @@ public class AliasRabbitAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private RabbitMQOperation rabbitMQOperation;
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
         for (Rabbitmq rabbitmq
-                : GlobalTestConfigurationProvider.getDefaultIntegrations().getRabbitmqIntegration().getRabbitmq()) {
+                : globalTestConfigurationProvider.getDefaultIntegrations().getRabbitmqIntegration().getRabbitmq()) {
             if (rabbitmq.isEnabled()) {
                 aliasMap.put(RABBITMQ + UNDERSCORE + rabbitmq.getAlias(), getMetadataRabbit(rabbitmq));
             }

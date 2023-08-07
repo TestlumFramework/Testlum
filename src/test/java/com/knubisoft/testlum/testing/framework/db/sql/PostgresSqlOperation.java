@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnPostgresEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -26,6 +27,10 @@ import java.util.Objects;
 public class PostgresSqlOperation implements StorageOperation {
 
     private final Map<AliasEnv, AbstractSqlExecutor> postgresExecutor;
+    @Autowired
+    private GlobalTestConfigurationProvider configurationProvider;
+    @Autowired
+    private EnvManager envManager;
 
     public PostgresSqlOperation(@Autowired(required = false) @Qualifier("postgresDataSource")
                                 final Map<AliasEnv, DataSource> postgresDataSource) {
@@ -36,7 +41,8 @@ public class PostgresSqlOperation implements StorageOperation {
     @Override
     public StorageOperationResult apply(final Source source, final String databaseAlias) {
         List<String> queriesPostgres = source.getQueries();
-        List<QueryResult<Object>> postgresAppliedRecords = postgresExecutor.get(AliasEnv.build(databaseAlias))
+        List<QueryResult<Object>> postgresAppliedRecords =
+                postgresExecutor.get(new AliasEnv(databaseAlias, envManager.currentEnv()))
                 .executeQueries(queriesPostgres);
         return new StorageOperationResult(postgresAppliedRecords);
     }
@@ -44,8 +50,8 @@ public class PostgresSqlOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         postgresExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            if (isTruncate(Postgres.class, aliasEnv)
-                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (isTruncate(Postgres.class, aliasEnv, configurationProvider)
+                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

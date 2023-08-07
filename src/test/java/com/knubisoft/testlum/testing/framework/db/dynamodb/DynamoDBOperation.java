@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.dynamodb;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnDynamoEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -35,10 +36,15 @@ public class DynamoDBOperation implements StorageOperation {
     private static final String FORBIDDEN_DDB_TABLE_NAME = "dynamobee";
 
     private final Map<AliasEnv, DynamoDbClient> dynamoDbClient;
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
+    @Autowired
+    private EnvManager envManager;
 
     public DynamoDBOperation(@Autowired(required = false)
                              final Map<AliasEnv, DynamoDbClient> dynamoDbClient) {
         this.dynamoDbClient = dynamoDbClient;
+
     }
 
     @Override
@@ -49,8 +55,8 @@ public class DynamoDBOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         dynamoDbClient.forEach((aliasEnv, dbClient) -> {
-            if (isTruncate(Dynamo.class, aliasEnv)
-                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (isTruncate(Dynamo.class, aliasEnv, globalTestConfigurationProvider)
+                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
                 dbClient.listTables().tableNames().forEach(tableName -> truncate(tableName, dbClient));
             }
         });
@@ -63,7 +69,7 @@ public class DynamoDBOperation implements StorageOperation {
 
     private QueryResult<List<Map<String, AttributeValue>>> executeSingleQuery(final String query,
                                                                               final String alias) {
-        ExecuteStatementResponse singleResponse = dynamoDbClient.get(AliasEnv.build(alias))
+        ExecuteStatementResponse singleResponse = dynamoDbClient.get(new AliasEnv(alias, envManager.currentEnv()))
                 .executeStatement(builder -> builder.statement(query));
         return new QueryResult<>(query, singleResponse.items());
     }

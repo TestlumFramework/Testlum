@@ -21,10 +21,12 @@ public class AliasMongoAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private MongoOperation mongoOperation;
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Mongo mongo : GlobalTestConfigurationProvider.getDefaultIntegrations().getMongoIntegration().getMongo()) {
+        for (Mongo mongo : globalTestConfigurationProvider.getDefaultIntegrations().getMongoIntegration().getMongo()) {
             if (mongo.isEnabled()) {
                 aliasMap.put(MONGODB + UNDERSCORE + mongo.getAlias(), getMetadataMongo(mongo));
             }

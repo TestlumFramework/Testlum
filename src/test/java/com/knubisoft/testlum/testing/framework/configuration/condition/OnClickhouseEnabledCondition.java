@@ -11,11 +11,12 @@ import java.util.Objects;
 
 public class OnClickhouseEnabledCondition implements Condition {
 
-    private final ClickhouseIntegration clickhouseIntegration =
-            GlobalTestConfigurationProvider.getDefaultIntegrations().getClickhouseIntegration();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        ClickhouseIntegration clickhouseIntegration =
+                configurationProvider.getDefaultIntegrations().getClickhouseIntegration();
         if (Objects.nonNull(clickhouseIntegration)) {
             return IntegrationsUtil.isEnabled(clickhouseIntegration.getClickhouse());
         }

@@ -3,6 +3,7 @@ package com.knubisoft.testlum.testing.framework.db.s3;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnS3EnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -21,6 +22,10 @@ import java.util.Objects;
 public class S3Operation implements StorageOperation {
 
     private final Map<AliasEnv, AmazonS3> amazonS3;
+    @Autowired
+    private GlobalTestConfigurationProvider configurationProvider;
+    @Autowired
+    private EnvManager envManager;
 
     public S3Operation(@Autowired(required = false) final Map<AliasEnv, AmazonS3> amazonS3) {
         this.amazonS3 = amazonS3;
@@ -34,7 +39,8 @@ public class S3Operation implements StorageOperation {
     @Override
     public void clearSystem() {
         this.amazonS3.forEach((aliasEnv, amazonS3) -> {
-            if (isTruncate(S3.class, aliasEnv) && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (isTruncate(S3.class, aliasEnv, configurationProvider)
+                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
                 amazonS3.listBuckets().forEach(bucket -> {
                     ListObjectsV2Result objectsInBucket = amazonS3.listObjectsV2(bucket.getName());
                     this.deleteObjectsInBucket(amazonS3, objectsInBucket, bucket.getName());

@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.amazonaws.services.simpleemail.model.Message;
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
@@ -57,7 +58,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BODY_L
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CLEAR_COOKIES_AFTER;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_LOG_WITHOUT_POSITION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_SKIPPED_ON_CONDITION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMENT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMIT_LOG;
@@ -75,7 +75,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DROPPI
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_FRAME;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_WEBVIEW;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXPRESSION_LOG;
@@ -105,7 +104,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NAME_L
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NEW_LOG_LINE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.PREFETCH_COUNT_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.POSITION_COMMAND_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUEUE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
@@ -162,7 +160,9 @@ public class LogUtil {
     private static final int MAX_CONTENT_LENGTH = 25 * 1024;
 
     /* execution log */
-    public void logScenarioDetails(final ScenarioArguments scenarioArguments, final int scenarioId) {
+    public void logScenarioDetails(final ScenarioArguments scenarioArguments,
+                                   final int scenarioId,
+                                   final GlobalTestConfigurationProvider globalTestConfigurationProvider) {
         log.info(EMPTY);
         log.info(SCENARIO_NUMBER_AND_PATH_LOG, scenarioId, scenarioArguments.getFile().getAbsolutePath());
         Overview overview = scenarioArguments.getScenario().getOverview();
@@ -172,7 +172,8 @@ public class LogUtil {
                     scenarioArguments.getEnvironment(),
                     scenarioArguments.getBrowser(),
                     scenarioArguments.getMobilebrowserDevice(),
-                    scenarioArguments.getNativeDevice());
+                    scenarioArguments.getNativeDevice(),
+                    globalTestConfigurationProvider);
         }
     }
 
@@ -194,17 +195,20 @@ public class LogUtil {
                            final String environment,
                            final String browserAlias,
                            final String mobilebrowserAlias,
-                           final String nativeDeviceAlias) {
+                           final String nativeDeviceAlias,
+                           final GlobalTestConfigurationProvider globalTestConfigurationProvider) {
         if (isNotBlank(variation)) {
             log.info(VARIATION_LOG, variation);
         }
-        BrowserUtil.getBrowserBy(environment, browserAlias).ifPresent(abstractBrowser ->
-                log.info(BROWSER_NAME_LOG, BrowserUtil.getBrowserInfo(abstractBrowser)));
+        BrowserUtil.getBrowserBy(environment, browserAlias, globalTestConfigurationProvider)
+                .ifPresent(abstractBrowser -> log.info(BROWSER_NAME_LOG, BrowserUtil.getBrowserInfo(abstractBrowser)));
 
-        MobileUtil.getMobilebrowserDeviceBy(environment, mobilebrowserAlias).ifPresent(mobilebrowserDevice ->
+        MobileUtil.getMobilebrowserDeviceBy(environment, mobilebrowserAlias, globalTestConfigurationProvider)
+                .ifPresent(mobilebrowserDevice ->
                 log.info(MOBILEBROWSER_LOG, MobileUtil.getMobilebrowserDeviceInfo(mobilebrowserDevice)));
 
-        MobileUtil.getNativeDeviceBy(environment, nativeDeviceAlias).ifPresent(nativeDevice ->
+        MobileUtil.getNativeDeviceBy(environment, nativeDeviceAlias, globalTestConfigurationProvider)
+                .ifPresent(nativeDevice ->
                 log.info(NATIVE_LOG, MobileUtil.getNativeDeviceInfo(nativeDevice)));
     }
 
@@ -237,13 +241,6 @@ public class LogUtil {
     }
 
     /* general log */
-    public void logCommand(final long position, final AbstractCommand command) {
-        if (position != 0) {
-            log.info(POSITION_COMMAND_LOG, position, command.getClass().getSimpleName());
-        } else {
-            log.info(COMMAND_LOG_WITHOUT_POSITION, command.getClass().getSimpleName());
-        }
-    }
 
     public void logAlias(final String alias) {
         log.info(ALIAS_LOG, alias);
@@ -323,15 +320,6 @@ public class LogUtil {
         log.info(ALIAS_LOG, alias);
         redisQueries.forEach(query ->
                 log.info(REDIS_QUERY, query.getCommand(), String.join(SPACE, query.getArg())));
-    }
-
-    public void logSqlException(final Exception ex, final String query) {
-        if (isNotBlank(ex.getMessage())) {
-            log.error(ERROR_SQL_QUERY, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE),
-                    SqlUtil.getBrokenQuery(ex, query).replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
-        } else {
-            log.error(ERROR_SQL_QUERY, ex.toString().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
-        }
     }
 
     public void logKafkaSendInfo(final SendKafkaMessage send, final String content) {

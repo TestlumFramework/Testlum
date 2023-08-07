@@ -23,13 +23,17 @@ import java.util.Objects;
 @Component
 public class RabbitMQOperation implements StorageOperation {
 
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
+    @Autowired
+    private EnvManager envManager;
     private final Map<AliasEnv, Client> rabbitMqClient;
     private final Map<String, Integrations> integrations;
 
     public RabbitMQOperation(@Autowired(required = false) @Qualifier("rabbitMqClient")
                              final Map<AliasEnv, Client> rabbitMqClient) {
         this.rabbitMqClient = rabbitMqClient;
-        this.integrations = GlobalTestConfigurationProvider.getIntegrations();
+        this.integrations = globalTestConfigurationProvider.getIntegrations();
     }
 
     @Override
@@ -40,8 +44,8 @@ public class RabbitMQOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         rabbitMqClient.forEach((aliasEnv, client) -> {
-            if (isTruncate(Rabbitmq.class, aliasEnv)
-                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (isTruncate(Rabbitmq.class, aliasEnv, globalTestConfigurationProvider)
+                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
                 String virtualHost = this.findByName(aliasEnv).getVirtualHost();
                 client.getQueues().forEach(queueInfo -> client.purgeQueue(virtualHost, queueInfo.getName()));
             }

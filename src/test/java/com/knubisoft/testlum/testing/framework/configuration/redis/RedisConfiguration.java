@@ -25,6 +25,9 @@ import java.util.stream.Collectors;
 @Conditional({OnRedisEnabledCondition.class})
 public class RedisConfiguration {
 
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
+
     @Bean
     public Map<AliasEnv, StringRedisConnection> stringRedisConnection(
             @Autowired @Qualifier("redisConnectionFactory")
@@ -48,7 +51,7 @@ public class RedisConfiguration {
     @Bean
     public Map<AliasEnv, RedisStandaloneConfiguration> redisStandaloneConfiguration() {
         final Map<AliasEnv, RedisStandaloneConfiguration> redisConfigMap = new HashMap<>();
-        GlobalTestConfigurationProvider.getIntegrations()
+        globalTestConfigurationProvider.getIntegrations()
                 .forEach((env, integrations) -> addStandaloneConfig(integrations, env, redisConfigMap));
         return redisConfigMap;
     }

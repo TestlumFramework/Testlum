@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -54,6 +55,8 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
 
     @Autowired
     private ApiClient apiClient;
+    @Autowired
+    private GlobalTestConfigurationProvider configurationProvider;
 
     public GraphqlInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -133,7 +136,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
 
     private String getFullUrl(final HttpInfo httpInfo, final String endpoint, final String alias) {
         List<GraphqlApi> apiList =
-                IntegrationsUtil.findListByEnv(GraphqlApi.class, dependencies.getEnvironment());
+                IntegrationsUtil.findListByEnv(GraphqlApi.class, dependencies.getEnvironment(), configurationProvider);
         GraphqlApi graphqlApi = IntegrationsUtil.findApiForAlias(apiList, alias);
         String url = graphqlApi.getUrl() + endpoint;
         if (httpInfo instanceof GraphqlGet) {

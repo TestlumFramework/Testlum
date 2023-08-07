@@ -11,11 +11,12 @@ import java.util.Objects;
 
 public class OnSendgridEnabledCondition implements Condition {
 
-    private final SendgridIntegration sendgridIntegration =
-            GlobalTestConfigurationProvider.getDefaultIntegrations().getSendgridIntegration();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                 context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        SendgridIntegration sendgridIntegration =
+                configurationProvider.getDefaultIntegrations().getSendgridIntegration();
         if (Objects.nonNull(sendgridIntegration)) {
             return IntegrationsUtil.isEnabled(sendgridIntegration.getSendgrid());
         }

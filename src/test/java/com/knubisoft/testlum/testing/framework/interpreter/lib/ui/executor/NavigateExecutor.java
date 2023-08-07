@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -20,8 +21,9 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.NAVIGATE_U
 @ExecutorForClass(Navigate.class)
 public class NavigateExecutor extends AbstractUiExecutor<Navigate> {
 
-    public NavigateExecutor(final ExecutorDependencies dependencies) {
-        super(dependencies);
+    public NavigateExecutor(final GlobalTestConfigurationProvider configurationProvider,
+                            final ExecutorDependencies dependencies) {
+        super(configurationProvider, dependencies);
     }
 
     @Override
@@ -42,7 +44,8 @@ public class NavigateExecutor extends AbstractUiExecutor<Navigate> {
     }
 
     private void navigateTo(final String path, final CommandResult result) {
-        String url = UiUtil.getUrl(path, dependencies.getEnvironment(), dependencies.getUiType());
+        String url =
+                UiUtil.getUrl(path, dependencies.getEnvironment(), dependencies.getUiType(), configurationProvider);
         dependencies.getDriver().navigate().to(url);
         result.put(NAVIGATE_URL, path);
         log.info(BY_URL_LOG, path);

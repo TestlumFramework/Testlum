@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -19,8 +20,9 @@ public class DragAndDropNativeExecutor extends AbstractUiExecutor<DragAndDropNat
 
     private static final int ACTION_DURATION = 1000;
 
-    public DragAndDropNativeExecutor(final ExecutorDependencies dependencies) {
-        super(dependencies);
+    public DragAndDropNativeExecutor(final GlobalTestConfigurationProvider configurationProvider,
+                                     final ExecutorDependencies dependencies) {
+        super(configurationProvider, dependencies);
     }
 
     @Override

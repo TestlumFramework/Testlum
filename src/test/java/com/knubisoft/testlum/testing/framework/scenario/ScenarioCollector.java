@@ -28,13 +28,15 @@ import static java.util.Objects.nonNull;
 @Slf4j
 public class ScenarioCollector {
 
+    private final GlobalTestConfigurationProvider configurationProvider;
     private final File rootTestResources;
     private final ScenarioValidator scenarioValidator;
 
-    public ScenarioCollector() {
+    public ScenarioCollector(final GlobalTestConfigurationProvider configurationProvider) {
+        this.configurationProvider = configurationProvider;
         TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
         this.rootTestResources = resourceSettings.getTestResourcesFolder();
-        this.scenarioValidator = new ScenarioValidator();
+        this.scenarioValidator = new ScenarioValidator(this.configurationProvider);
     }
 
     public Result collect() {
@@ -123,7 +125,7 @@ public class ScenarioCollector {
 
     private boolean isAutoLogout(final String alias) {
         //todo move to interpreter
-        List<Api> apiList = GlobalTestConfigurationProvider.getDefaultIntegrations().getApis().getApi();
+        List<Api> apiList = configurationProvider.getDefaultIntegrations().getApis().getApi();
         Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, alias);
         if (nonNull(apiIntegration.getAuth())) {
             return apiIntegration.getAuth().isAutoLogout();

@@ -11,11 +11,12 @@ import java.util.Objects;
 
 public class OnMongoEnabledCondition implements Condition {
 
-    private final MongoIntegration mongoIntegration =
-            GlobalTestConfigurationProvider.getDefaultIntegrations().getMongoIntegration();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        MongoIntegration mongoIntegration =
+                configurationProvider.getDefaultIntegrations().getMongoIntegration();
         if (Objects.nonNull(mongoIntegration)) {
             return IntegrationsUtil.isEnabled(mongoIntegration.getMongo());
         }

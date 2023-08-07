@@ -11,11 +11,12 @@ import java.util.Objects;
 
 public class OnSESEnabledCondition implements Condition {
 
-    private final SesIntegration sesIntegration =
-            GlobalTestConfigurationProvider.getDefaultIntegrations().getSesIntegration();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                 context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        SesIntegration sesIntegration =
+                configurationProvider.getDefaultIntegrations().getSesIntegration();
         if (Objects.nonNull(sesIntegration)) {
             return IntegrationsUtil.isEnabled(sesIntegration.getSes());
         }

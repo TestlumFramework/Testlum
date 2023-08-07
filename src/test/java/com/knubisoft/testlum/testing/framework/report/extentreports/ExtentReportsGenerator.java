@@ -5,6 +5,7 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.report.GlobalScenarioStatCollector;
@@ -20,6 +21,7 @@ import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -69,11 +71,13 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private static final String SCENARIO_FAILED = "Test scenario failed";
     private static final String SCENARIO_EXECUTION_TIME_TEMPLATE = "Test scenario execution time: %dms";
     private static final String STEP_EXECUTION_TIME_TEMPLATE = "Step execution time: %dms";
+    @Autowired
+    private GlobalTestConfigurationProvider configurationProvider;
 
     @Override
     public void generateReport(final GlobalScenarioStatCollector globalScenarioStatCollector) {
         ExtentReports extentReports = new ExtentReports();
-        ExtentReportsConfigurator.configure(extentReports);
+        ExtentReportsConfigurator.configure(extentReports, configurationProvider);
         globalScenarioStatCollector
                 .getResults().stream()
                 .sorted(Comparator.comparing(ScenarioResult::getId))
@@ -174,7 +178,8 @@ public class ExtentReportsGenerator implements ReportGenerator {
 
     private void addBrowserInfo(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
         if (isNotBlank(scenarioResult.getBrowser())) {
-            BrowserUtil.getBrowserBy(scenarioResult.getEnvironment(), scenarioResult.getBrowser())
+            BrowserUtil.getBrowserBy(
+                    scenarioResult.getEnvironment(), scenarioResult.getBrowser(), configurationProvider)
                     .ifPresent(browser -> extentTest.info(
                             MarkupHelper.createTable(createTableWithBrowserInfo(browser))));
         }
@@ -183,7 +188,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private void addMobilebrowserDeviceInfo(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
         if (isNotBlank(scenarioResult.getMobilebrowserDevice())) {
             MobileUtil.getMobilebrowserDeviceBy(scenarioResult.getEnvironment(),
-                            scenarioResult.getMobilebrowserDevice())
+                            scenarioResult.getMobilebrowserDevice(), configurationProvider)
                     .ifPresent(mobilebrowserDevice -> extentTest.info(
                             MarkupHelper.createTable(createTableWithMobilebrowserDeviceInfo(mobilebrowserDevice))));
         }
@@ -191,7 +196,8 @@ public class ExtentReportsGenerator implements ReportGenerator {
 
     private void addNativeDeviceInfo(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
         if (isNotBlank(scenarioResult.getNativeDevice())) {
-            MobileUtil.getNativeDeviceBy(scenarioResult.getEnvironment(), scenarioResult.getNativeDevice())
+            MobileUtil.getNativeDeviceBy(scenarioResult.getEnvironment(), scenarioResult.getNativeDevice(),
+                            configurationProvider)
                     .ifPresent(nativeDevice -> extentTest.info(
                             MarkupHelper.createTable(createTableWithNativeDeviceInfo(nativeDevice))));
         }

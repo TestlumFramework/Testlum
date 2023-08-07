@@ -11,11 +11,12 @@ import java.util.Objects;
 
 public class OnS3EnabledCondition implements Condition {
 
-    private final S3Integration s3Integration =
-            GlobalTestConfigurationProvider.getDefaultIntegrations().getS3Integration();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                 context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        S3Integration s3Integration =
+                configurationProvider.getDefaultIntegrations().getS3Integration();
         if (Objects.nonNull(s3Integration)) {
             return IntegrationsUtil.isEnabled(s3Integration.getS3());
         }

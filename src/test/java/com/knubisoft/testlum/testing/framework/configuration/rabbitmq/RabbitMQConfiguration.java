@@ -13,6 +13,7 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -31,8 +32,9 @@ public class RabbitMQConfiguration {
 
     private static final String SCHEMA = "http://";
     private static final String API_PATH = "/api";
-
-    private final Map<String, List<Rabbitmq>> rabbitmqMap = GlobalTestConfigurationProvider.getIntegrations()
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
+    private final Map<String, List<Rabbitmq>> rabbitmqMap = globalTestConfigurationProvider.getIntegrations()
             .entrySet().stream()
             .collect(Collectors.toMap(Map.Entry::getKey,
                     entry -> entry.getValue().getRabbitmqIntegration().getRabbitmq()));

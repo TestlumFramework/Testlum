@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_VALUE_FOUND_FOR_KEY;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VARIATIONS_NOT_FOUND;
 import static java.util.Objects.isNull;
 
@@ -22,6 +21,7 @@ import static java.util.Objects.isNull;
 public class GlobalVariations {
 
     private static final String ROUTE_REGEXP = "\\{\\{(.*?)}}";
+    private static final String NO_VALUE_FOUND_FOR_KEY = "Unable to find value for key <%s>. Available keys: %s";
     private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
     private static final VariationsMap VARIATIONS = new VariationsMap();
 

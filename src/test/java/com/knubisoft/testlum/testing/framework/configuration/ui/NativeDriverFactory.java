@@ -33,15 +33,19 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @UtilityClass
 public class NativeDriverFactory {
 
-    public WebDriver createDriver(final NativeDevice nativeDevice) {
+    public WebDriver createDriver(final NativeDevice nativeDevice,
+                                  final GlobalTestConfigurationProvider configurationProvider,
+                                  final EnvManager envManager) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         SeleniumDriverUtil.setDefaultCapabilities(nativeDevice, desiredCapabilities);
-        return getNativeWebDriver(nativeDevice, desiredCapabilities);
+        return getNativeWebDriver(nativeDevice, desiredCapabilities, configurationProvider, envManager);
     }
 
     private AppiumDriver getNativeWebDriver(final NativeDevice nativeDevice,
-                                            final DesiredCapabilities desiredCapabilities) {
-        UiConfig uiConfig = GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.currentEnv());
+                                            final DesiredCapabilities desiredCapabilities,
+                                            final GlobalTestConfigurationProvider configurationProvider,
+                                            final EnvManager envManager) {
+        UiConfig uiConfig = configurationProvider.getUiConfigs().get(envManager.currentEnv());
         String serverUrl = SeleniumDriverUtil.getNativeConnectionUrl(uiConfig);
         AppiumDriver driver = newAppiumDriver(nativeDevice, serverUrl, desiredCapabilities);
         int secondsToWait = uiConfig.getNative().getElementAutowait().getSeconds();

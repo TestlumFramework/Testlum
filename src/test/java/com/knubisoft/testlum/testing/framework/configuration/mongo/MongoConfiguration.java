@@ -11,6 +11,7 @@ import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -23,10 +24,13 @@ import java.util.Map;
 @Conditional({OnMongoEnabledCondition.class})
 public class MongoConfiguration {
 
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
+
     @Bean
     public Map<AliasEnv, MongoDatabase> mongoDatabases() {
         final Map<AliasEnv, MongoDatabase> databaseMap = new HashMap<>();
-        GlobalTestConfigurationProvider.getIntegrations()
+        globalTestConfigurationProvider.getIntegrations()
                 .forEach((env, integrations) -> addMongoDatabase(integrations, env, databaseMap));
         return databaseMap;
     }

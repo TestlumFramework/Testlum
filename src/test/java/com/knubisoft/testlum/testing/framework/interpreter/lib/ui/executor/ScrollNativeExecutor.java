@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -21,8 +22,9 @@ public class ScrollNativeExecutor extends AbstractUiExecutor<ScrollNative> {
 
     private static final int ACTION_DURATION = 700;
 
-    public ScrollNativeExecutor(final ExecutorDependencies dependencies) {
-        super(dependencies);
+    public ScrollNativeExecutor(final GlobalTestConfigurationProvider configurationProvider,
+                                final ExecutorDependencies dependencies) {
+        super(configurationProvider, dependencies);
     }
 
     @Override

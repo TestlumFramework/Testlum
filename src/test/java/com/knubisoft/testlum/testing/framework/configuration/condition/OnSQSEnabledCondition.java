@@ -11,11 +11,12 @@ import java.util.Objects;
 
 public class OnSQSEnabledCondition implements Condition {
 
-    private final SqsIntegration sqsIntegration =
-            GlobalTestConfigurationProvider.getDefaultIntegrations().getSqsIntegration();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                 context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        SqsIntegration sqsIntegration =
+                configurationProvider.getDefaultIntegrations().getSqsIntegration();
         if (Objects.nonNull(sqsIntegration)) {
             return IntegrationsUtil.isEnabled(sqsIntegration.getSqs());
         }

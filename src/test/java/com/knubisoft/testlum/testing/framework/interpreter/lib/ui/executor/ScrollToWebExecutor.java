@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -15,8 +16,9 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.SCROLL_LOC
 @ExecutorForClass(ScrollTo.class)
 public class ScrollToWebExecutor extends AbstractUiExecutor<ScrollTo> {
 
-    public ScrollToWebExecutor(final ExecutorDependencies dependencies) {
-        super(dependencies);
+    public ScrollToWebExecutor(final GlobalTestConfigurationProvider configurationProvider,
+                               final ExecutorDependencies dependencies) {
+        super(configurationProvider, dependencies);
     }
 
     @Override

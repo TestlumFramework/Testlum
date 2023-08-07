@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -46,8 +47,9 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     private final Actions action;
     private final Keys ctrlKey;
 
-    public HotKeyExecutor(final ExecutorDependencies dependencies) {
-        super(dependencies);
+    public HotKeyExecutor(final GlobalTestConfigurationProvider configurationProvider,
+                          final ExecutorDependencies dependencies) {
+        super(configurationProvider, dependencies);
         Map<HotKeyCommandPredicate, HotKeyCommandMethod> commands = new HashMap<>();
         commands.put(key -> key instanceof Cut, (key, result) -> cutCommand());
         commands.put(key -> key instanceof Copy, (key, result) -> copyCommand());

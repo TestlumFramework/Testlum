@@ -11,11 +11,12 @@ import java.util.Objects;
 
 public class OnElasticEnabledCondition implements Condition {
 
-    private final ElasticsearchIntegration elasticsearchIntegration =
-            GlobalTestConfigurationProvider.getDefaultIntegrations().getElasticsearchIntegration();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        ElasticsearchIntegration elasticsearchIntegration =
+                configurationProvider.getDefaultIntegrations().getElasticsearchIntegration();
         if (Objects.nonNull(elasticsearchIntegration)) {
             return IntegrationsUtil.isEnabled(elasticsearchIntegration.getElasticsearch());
         }

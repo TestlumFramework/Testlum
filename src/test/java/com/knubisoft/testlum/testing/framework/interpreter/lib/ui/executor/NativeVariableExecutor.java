@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -33,8 +34,9 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
     @Autowired
     private VariableHelper variableHelper;
 
-    public NativeVariableExecutor(final ExecutorDependencies dependencies) {
-        super(dependencies);
+    public NativeVariableExecutor(final GlobalTestConfigurationProvider configurationProvider,
+                                  final ExecutorDependencies dependencies) {
+        super(configurationProvider, dependencies);
         Map<VarPredicate<NativeVar>, VarMethod<NativeVar>> nativeVarMap = new HashMap<>();
         nativeVarMap.put(var -> nonNull(var.getElement()), this::getElementResult);
         nativeVarMap.put(var -> nonNull(var.getPath()), this::getPathResult);

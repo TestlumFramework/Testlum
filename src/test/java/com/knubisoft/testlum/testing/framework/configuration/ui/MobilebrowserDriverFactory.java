@@ -25,17 +25,21 @@ import static java.util.Objects.nonNull;
 @UtilityClass
 public class MobilebrowserDriverFactory {
 
-    public WebDriver createDriver(final MobilebrowserDevice mobileDevice) {
+    public WebDriver createDriver(final MobilebrowserDevice mobileDevice,
+                                  final GlobalTestConfigurationProvider configurationProvider,
+                                  final EnvManager envManager) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         SeleniumDriverUtil.setDefaultCapabilities(mobileDevice, desiredCapabilities);
         setCommonCapabilities(mobileDevice, desiredCapabilities);
         setPlatformCapabilities(mobileDevice, desiredCapabilities);
-        return getMobilebrowserWebDriver(desiredCapabilities);
+        return getMobilebrowserWebDriver(desiredCapabilities, configurationProvider, envManager);
     }
 
     @SneakyThrows
-    private WebDriver getMobilebrowserWebDriver(final DesiredCapabilities desiredCapabilities) {
-        UiConfig uiConfig = GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.currentEnv());
+    private WebDriver getMobilebrowserWebDriver(final DesiredCapabilities desiredCapabilities,
+                                                final GlobalTestConfigurationProvider configurationProvider,
+                                                final EnvManager envManager) {
+        UiConfig uiConfig = configurationProvider.getUiConfigs().get(envManager.currentEnv());
         String serverUrl = SeleniumDriverUtil.getMobilebrowserConnectionUrl(uiConfig);
         Mobilebrowser settings = uiConfig.getMobilebrowser();
         int secondsToWait = settings.getElementAutowait().getSeconds();

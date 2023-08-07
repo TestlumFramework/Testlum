@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -18,8 +19,9 @@ public class HoverExecutor extends AbstractUiExecutor<Hover> {
 
     private static final String MOVE_TO_EMPTY_SPACE = "//html";
 
-    public HoverExecutor(final ExecutorDependencies dependencies) {
-        super(dependencies);
+    public HoverExecutor(final GlobalTestConfigurationProvider configurationProvider,
+                         final ExecutorDependencies dependencies) {
+        super(configurationProvider, dependencies);
     }
 
     @Override

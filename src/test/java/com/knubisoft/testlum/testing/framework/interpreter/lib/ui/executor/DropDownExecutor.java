@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -27,8 +28,9 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_
 @ExecutorForClass(DropDown.class)
 public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
 
-    public DropDownExecutor(final ExecutorDependencies dependencies) {
-        super(dependencies);
+    public DropDownExecutor(final GlobalTestConfigurationProvider configurationProvider,
+                            final ExecutorDependencies dependencies) {
+        super(configurationProvider, dependencies);
     }
 
     @Override

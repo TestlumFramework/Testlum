@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -12,8 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 @ExecutorForClass(UiCondition.class)
 public class UiConditionExecutor extends AbstractUiExecutor<UiCondition> {
 
-    public UiConditionExecutor(final ExecutorDependencies dependencies) {
-        super(dependencies);
+    public UiConditionExecutor(final GlobalTestConfigurationProvider configurationProvider,
+                               final ExecutorDependencies dependencies) {
+        super(configurationProvider, dependencies);
     }
 
     @Override

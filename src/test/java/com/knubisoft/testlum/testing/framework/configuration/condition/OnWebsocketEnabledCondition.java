@@ -11,10 +11,11 @@ import java.util.Objects;
 
 public class OnWebsocketEnabledCondition implements Condition {
 
-    private final Websockets websockets = GlobalTestConfigurationProvider.getDefaultIntegrations().getWebsockets();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                 context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        Websockets websockets = configurationProvider.getDefaultIntegrations().getWebsockets();
         if (Objects.nonNull(websockets)) {
             return IntegrationsUtil.isEnabled(websockets.getApi());
         }

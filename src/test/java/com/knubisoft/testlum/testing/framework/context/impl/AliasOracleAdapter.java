@@ -21,11 +21,13 @@ public class AliasOracleAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private OracleOperation oracleOperation;
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
         for (Oracle oracle
-                : GlobalTestConfigurationProvider.getDefaultIntegrations().getOracleIntegration().getOracle()) {
+                : globalTestConfigurationProvider.getDefaultIntegrations().getOracleIntegration().getOracle()) {
             if (oracle.isEnabled()) {
                 aliasMap.put(ORACLE + UNDERSCORE + oracle.getAlias(), getMetadataOracle(oracle));
             }

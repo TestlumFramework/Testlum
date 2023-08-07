@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnOracleEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -26,6 +27,10 @@ import java.util.Objects;
 public class OracleOperation implements StorageOperation {
 
     private final Map<AliasEnv, AbstractSqlExecutor> oracleExecutor;
+    @Autowired
+    private GlobalTestConfigurationProvider configurationProvider;
+    @Autowired
+    private EnvManager envManager;
 
     public OracleOperation(@Autowired(required = false) @Qualifier("oracleDataSource")
                            final Map<AliasEnv, DataSource> oracleDataSource) {
@@ -36,16 +41,16 @@ public class OracleOperation implements StorageOperation {
     @Override
     public StorageOperationResult apply(final Source source, final String databaseAlias) {
         List<String> queriesOracle = source.getQueries();
-        List<QueryResult<Object>> oracleAppliedRecords = oracleExecutor.get(AliasEnv.build(databaseAlias))
-                .executeQueries(queriesOracle);
+        List<QueryResult<Object>> oracleAppliedRecords =
+                oracleExecutor.get(new AliasEnv(databaseAlias, envManager.currentEnv())).executeQueries(queriesOracle);
         return new StorageOperationResult(oracleAppliedRecords);
     }
 
     @Override
     public void clearSystem() {
         oracleExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            if (isTruncate(Oracle.class, aliasEnv)
-                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (isTruncate(Oracle.class, aliasEnv, configurationProvider)
+                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

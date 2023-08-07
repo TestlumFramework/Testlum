@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -44,8 +45,9 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     @Autowired
     private VariableHelper variableHelper;
 
-    public WebVariableExecutor(final ExecutorDependencies dependencies) {
-        super(dependencies);
+    public WebVariableExecutor(final GlobalTestConfigurationProvider configurationProvider,
+                               final ExecutorDependencies dependencies) {
+        super(configurationProvider, dependencies);
         Map<VarPredicate<WebVar>, VarMethod<WebVar>> webVarMap = new HashMap<>();
         webVarMap.put(var -> nonNull(var.getElement()), this::getElementResult);
         webVarMap.put(var -> nonNull(var.getDom()), this::getDomResult);

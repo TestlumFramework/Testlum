@@ -21,11 +21,13 @@ public class AliasDynamoAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private DynamoDBOperation dynamoDBOperation;
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
         for (Dynamo dynamo
-                : GlobalTestConfigurationProvider.getDefaultIntegrations().getDynamoIntegration().getDynamo()) {
+                : globalTestConfigurationProvider.getDefaultIntegrations().getDynamoIntegration().getDynamo()) {
             if (dynamo.isEnabled()) {
                 aliasMap.put(DYNAMO + UNDERSCORE + dynamo.getAlias(), getMetadataDynamo(dynamo));
             }

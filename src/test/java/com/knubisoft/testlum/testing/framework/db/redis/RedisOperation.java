@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.redis;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRedisEnabledCondition;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
@@ -32,6 +33,10 @@ public class RedisOperation implements StorageOperation {
     private static final String CLEAR_DATABASE = "FLUSHALL";
 
     private final Map<AliasEnv, StringRedisConnection> stringRedisConnection;
+    @Autowired
+    private GlobalTestConfigurationProvider configurationProvider;
+    @Autowired
+    private EnvManager envManager;
 
     public RedisOperation(@Autowired(required = false)
                           final Map<AliasEnv, StringRedisConnection> stringRedisConnection) {
@@ -46,8 +51,8 @@ public class RedisOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         stringRedisConnection.forEach((aliasEnv, redisConnection) -> {
-            if (isTruncate(Redis.class, aliasEnv)
-                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (isTruncate(Redis.class, aliasEnv, configurationProvider)
+                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
                 redisConnection.execute(CLEAR_DATABASE);
             }
         });
@@ -65,7 +70,8 @@ public class RedisOperation implements StorageOperation {
                 .orElseThrow(() -> new DefaultFrameworkException(REDIS_COMMAND_NOT_FOUND));
         String[] args = redisQuery.getArg().toArray(new String[0]);
 
-        Object response = stringRedisConnection.get(AliasEnv.build(databaseAlias)).execute(command, args);
+        Object response =
+                stringRedisConnection.get(new AliasEnv(databaseAlias, envManager.currentEnv())).execute(command, args);
         return convertResult(response);
     }
 

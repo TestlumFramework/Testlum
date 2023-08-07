@@ -26,15 +26,17 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @UtilityClass
 public class MobileUtil {
 
-    public List<NativeDevice> filterDefaultEnabledNativeDevices() {
-        Native aNative = GlobalTestConfigurationProvider.getDefaultUiConfigs().getNative();
+    public List<NativeDevice> filterDefaultEnabledNativeDevices(
+            final GlobalTestConfigurationProvider globalTestConfigurationProvider) {
+        Native aNative = globalTestConfigurationProvider.getDefaultUiConfigs().getNative();
         return nonNull(aNative)
                 ? filterEnabledDevices(aNative.getDevices().getDevice())
                 : Collections.emptyList();
     }
 
-    public List<MobilebrowserDevice> filterDefaultEnabledMobilebrowserDevices() {
-        Mobilebrowser mobilebrowser = GlobalTestConfigurationProvider.getDefaultUiConfigs().getMobilebrowser();
+    public List<MobilebrowserDevice> filterDefaultEnabledMobilebrowserDevices(
+            final GlobalTestConfigurationProvider globalTestConfigurationProvider) {
+        Mobilebrowser mobilebrowser = globalTestConfigurationProvider.getDefaultUiConfigs().getMobilebrowser();
         return nonNull(mobilebrowser)
                 ? filterEnabledDevices(mobilebrowser.getDevices().getDevice())
                 : Collections.emptyList();
@@ -44,27 +46,34 @@ public class MobileUtil {
         return deviceList.stream().filter(AbstractDevice::isEnabled).collect(Collectors.toList());
     }
 
-    public boolean isNativeAndMobilebrowserConfigEnabled() {
-        return !filterDefaultEnabledMobilebrowserDevices().isEmpty() && !filterDefaultEnabledNativeDevices().isEmpty()
-                && allNotNull(GlobalTestConfigurationProvider.getDefaultUiConfigs().getMobilebrowser()
+    public boolean isNativeAndMobilebrowserConfigEnabled(
+            final GlobalTestConfigurationProvider globalTestConfigurationProvider) {
+        return !filterDefaultEnabledMobilebrowserDevices(globalTestConfigurationProvider).isEmpty()
+                && !filterDefaultEnabledNativeDevices(globalTestConfigurationProvider).isEmpty()
+                && allNotNull(globalTestConfigurationProvider.getDefaultUiConfigs().getMobilebrowser()
                         .getConnection().getAppiumServer(),
-                GlobalTestConfigurationProvider.getDefaultUiConfigs().getNative().getConnection().getAppiumServer());
+                globalTestConfigurationProvider.getDefaultUiConfigs().getNative().getConnection().getAppiumServer());
     }
 
-    public Optional<MobilebrowserDevice> getMobilebrowserDeviceBy(final String env, final String deviceAlias) {
+    public Optional<MobilebrowserDevice> getMobilebrowserDeviceBy(
+            final String env,
+            final String deviceAlias,
+            final GlobalTestConfigurationProvider globalTestConfigurationProvider) {
         return isBlank(deviceAlias)
                 ? Optional.empty()
-                : GlobalTestConfigurationProvider.getMobilebrowserSettings(env)
+                : globalTestConfigurationProvider.getMobilebrowserSettings(env)
                 .getDevices().getDevice().stream()
                 .filter(MobilebrowserDevice::isEnabled)
                 .filter(device -> device.getAlias().equalsIgnoreCase(deviceAlias))
                 .findFirst();
     }
 
-    public Optional<NativeDevice> getNativeDeviceBy(final String env, final String deviceAlias) {
+    public Optional<NativeDevice> getNativeDeviceBy(final String env,
+                                                    final String deviceAlias,
+                                                    final GlobalTestConfigurationProvider configurationProvider) {
         return isBlank(deviceAlias)
                 ? Optional.empty()
-                : GlobalTestConfigurationProvider.getNativeSettings(env)
+                : configurationProvider.getNativeSettings(env)
                 .getDevices().getDevice().stream()
                 .filter(device -> device.isEnabled() && device.getAlias().equalsIgnoreCase(deviceAlias))
                 .findFirst();

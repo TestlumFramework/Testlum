@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.mongodb;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnMongoEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -23,6 +24,10 @@ import java.util.stream.Collectors;
 public class MongoOperation implements StorageOperation {
 
     private final Map<AliasEnv, MongoDatabase> mongoDatabases;
+    @Autowired
+    private GlobalTestConfigurationProvider configurationProvider;
+    @Autowired
+    private EnvManager envManager;
 
     public MongoOperation(@Autowired(required = false) final Map<AliasEnv, MongoDatabase> mongoDatabases) {
         this.mongoDatabases = mongoDatabases;
@@ -36,8 +41,8 @@ public class MongoOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         mongoDatabases.forEach((aliasEnv, database) -> {
-            if (isTruncate(Mongo.class, aliasEnv)
-                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (isTruncate(Mongo.class, aliasEnv, configurationProvider)
+                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
                 for (String collectionName : database.listCollectionNames()) {
                     if (database.getCollection(collectionName).countDocuments() > 0) {
                         database.getCollection(collectionName).drop();
@@ -55,7 +60,7 @@ public class MongoOperation implements StorageOperation {
 
     private String executeQuery(final String query, final String databaseAlias) {
         Document document = Document.parse(query);
-        Document result = mongoDatabases.get(AliasEnv.build(databaseAlias)).runCommand(document);
+        Document result = mongoDatabases.get(new AliasEnv(databaseAlias, envManager.currentEnv())).runCommand(document);
         return JacksonMapperUtil.writeValueAsString(result);
     }
 }

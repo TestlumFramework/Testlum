@@ -21,18 +21,21 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @UtilityClass
 public class BrowserUtil {
 
-    public List<AbstractBrowser> filterDefaultEnabledBrowsers() {
-        Web web = GlobalTestConfigurationProvider.getDefaultUiConfigs().getWeb();
+    public List<AbstractBrowser> filterDefaultEnabledBrowsers(
+            final GlobalTestConfigurationProvider globalTestConfigurationProvider) {
+        Web web = globalTestConfigurationProvider.getDefaultUiConfigs().getWeb();
         return nonNull(web)
                 ? web.getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari().stream()
                 .filter(AbstractBrowser::isEnabled).collect(Collectors.toList())
                 : Collections.emptyList();
     }
 
-    public Optional<AbstractBrowser> getBrowserBy(final String env, final String browserAlias) {
+    public Optional<AbstractBrowser> getBrowserBy(final String env,
+                                                  final String browserAlias,
+                                                  final GlobalTestConfigurationProvider configurationProvider) {
         return isBlank(browserAlias)
                 ? Optional.empty()
-                : GlobalTestConfigurationProvider.getWebSettings(env)
+                : configurationProvider.getWebSettings(env)
                 .getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari().stream()
                 .filter(browser -> browser.isEnabled() && browser.getAlias().equalsIgnoreCase(browserAlias))
                 .findFirst();

@@ -11,11 +11,12 @@ import java.util.Objects;
 
 public class OnLambdaEnabledCondition implements Condition {
 
-    private final LambdaIntegration lambdaIntegration =
-            GlobalTestConfigurationProvider.getDefaultIntegrations().getLambdaIntegration();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        LambdaIntegration lambdaIntegration =
+                configurationProvider.getDefaultIntegrations().getLambdaIntegration();
         if (Objects.nonNull(lambdaIntegration)) {
             return IntegrationsUtil.isEnabled(lambdaIntegration.getLambda());
         }

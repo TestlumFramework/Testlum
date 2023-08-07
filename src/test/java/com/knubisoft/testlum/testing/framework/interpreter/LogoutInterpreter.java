@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.auth.AuthFactory;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -8,10 +9,14 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.auth.AuthStrategy
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.Logout;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
 @InterpreterForClass(Logout.class)
 public class LogoutInterpreter extends AbstractInterpreter<Logout> {
+
+    @Autowired
+    private GlobalTestConfigurationProvider configurationProvider;
 
     public LogoutInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -20,7 +25,7 @@ public class LogoutInterpreter extends AbstractInterpreter<Logout> {
     @Override
     protected void acceptImpl(final Logout o, final CommandResult result) {
         Logout logout = injectCommand(o);
-        AuthStrategy authStrategy = AuthFactory.create(dependencies, logout.getAlias());
+        AuthStrategy authStrategy = AuthFactory.create(dependencies, logout.getAlias(), configurationProvider);
         authStrategy.logout();
     }
 }

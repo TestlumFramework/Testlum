@@ -21,10 +21,12 @@ public class AliasKafkaAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private KafkaOperation kafkaOperation;
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Kafka kafka : GlobalTestConfigurationProvider.getDefaultIntegrations().getKafkaIntegration().getKafka()) {
+        for (Kafka kafka : globalTestConfigurationProvider.getDefaultIntegrations().getKafkaIntegration().getKafka()) {
             if (kafka.isEnabled()) {
                 aliasMap.put(KAFKA + UNDERSCORE + kafka.getAlias(), getMetadataKafka(kafka));
             }

@@ -21,11 +21,13 @@ public class AliasPostgresAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private PostgresSqlOperation postgresSqlOperation;
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
         for (Postgres postgres
-                : GlobalTestConfigurationProvider.getDefaultIntegrations().getPostgresIntegration().getPostgres()) {
+                : globalTestConfigurationProvider.getDefaultIntegrations().getPostgresIntegration().getPostgres()) {
             if (postgres.isEnabled()) {
                 aliasMap.put(POSTGRES + UNDERSCORE + postgres.getAlias(), getMetadataPostgres(postgres));
             }

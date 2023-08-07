@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnClickhouseEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -26,6 +27,10 @@ import java.util.Objects;
 public class ClickhouseOperation implements StorageOperation {
 
     private final Map<AliasEnv, AbstractSqlExecutor> clickhouseExecutor;
+    @Autowired
+    private GlobalTestConfigurationProvider configurationProvider;
+    @Autowired
+    private EnvManager envManager;
 
     public ClickhouseOperation(@Autowired @Qualifier("clickhouseDataSource")
                                final Map<AliasEnv, DataSource> clickhouseDataSource) {
@@ -36,16 +41,17 @@ public class ClickhouseOperation implements StorageOperation {
     @Override
     public StorageOperationResult apply(final Source source, final String databaseAlias) {
         List<String> queriesClickhouse = source.getQueries();
-        List<QueryResult<Object>> clickhouseAppliedRecords = clickhouseExecutor.get(AliasEnv.build(databaseAlias))
-                .executeQueries(queriesClickhouse);
+        List<QueryResult<Object>> clickhouseAppliedRecords =
+                clickhouseExecutor.get(new AliasEnv(databaseAlias, envManager.currentEnv()))
+                        .executeQueries(queriesClickhouse);
         return new StorageOperationResult(clickhouseAppliedRecords);
     }
 
     @Override
     public void clearSystem() {
         clickhouseExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            if (isTruncate(Clickhouse.class, aliasEnv)
-                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
+            if (isTruncate(Clickhouse.class, aliasEnv, configurationProvider)
+                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

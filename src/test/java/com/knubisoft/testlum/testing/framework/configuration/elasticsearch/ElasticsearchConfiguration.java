@@ -14,6 +14,7 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +28,10 @@ import java.util.stream.Collectors;
 @Conditional({OnElasticEnabledCondition.class})
 public class ElasticsearchConfiguration {
 
-    private final Map<String, List<Elasticsearch>> elasticsearchMap = GlobalTestConfigurationProvider.getIntegrations()
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
+
+    private final Map<String, List<Elasticsearch>> elasticsearchMap = globalTestConfigurationProvider.getIntegrations()
             .entrySet().stream()
             .collect(Collectors.toMap(Map.Entry::getKey,
                     entry -> entry.getValue().getElasticsearchIntegration().getElasticsearch()));

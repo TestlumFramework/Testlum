@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Kafka;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -31,10 +32,13 @@ import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZE
 @Conditional({OnKafkaEnabledCondition.class})
 public class KafkaConsumerConfiguration {
 
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
+
     @Bean
     public Map<AliasEnv, KafkaConsumer<String, String>> kafkaConsumer() {
         final Map<AliasEnv, KafkaConsumer<String, String>> consumerMap = new HashMap<>();
-        GlobalTestConfigurationProvider.getIntegrations()
+        globalTestConfigurationProvider.getIntegrations()
                 .forEach((env, integrations) -> addKafkaConsumer(integrations, env, consumerMap));
         return consumerMap;
     }

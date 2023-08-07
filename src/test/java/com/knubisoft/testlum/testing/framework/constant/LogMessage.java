@@ -18,8 +18,6 @@ public final class LogMessage {
     public static final String RECEIVE_ACTION = "receive";
     public static final String SUBSCRIBE = "subscribe";
 
-    public static final String COMPARISON_FOR_STEP_WAS_SKIPPED = "Comparison for step [{}] was skipped";
-
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001b[0m";
@@ -30,10 +28,6 @@ public final class LogMessage {
     public static final String ANSI_BLUE_UNDERLINED = "\033[4;34m";
 
     public static final String ERROR_LOG = "Error ->";
-    public static final String POSITION_COMMAND_LOG = ANSI_YELLOW
-            + "--------- Scenario step #{} - {} ---------" + ANSI_RESET;
-    public static final String COMMAND_LOG_WITHOUT_POSITION = ANSI_YELLOW
-            + "--------- Scenario step - {} ---------" + ANSI_RESET;
     public static final String UI_COMMAND_LOG = ANSI_CYAN + "------- UI command #{} - {} -------" + ANSI_RESET;
     public static final String UI_COMMAND_LOG_WITHOUT_POSITION = ANSI_CYAN
             + "------- UI command - {} -------" + ANSI_RESET;
@@ -46,8 +40,6 @@ public final class LogMessage {
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
     public static final String QUERY = format(TABLE_FORMAT, "Query", "{}");
     public static final String REDIS_QUERY = format(TABLE_FORMAT, "Query", "{} {}");
-    public static final String ERROR_SQL_QUERY = ANSI_RED + "Error while executing SQL query -> "
-            + "{}" + ANSI_ORANGE + NEW_LOG_LINE + "{}" + ANSI_RESET;
     public static final String SCENARIO_NUMBER_AND_PATH_LOG = ANSI_GREEN
             + "================== Execute for scenario #{} - {} ==================" + ANSI_RESET;
     public static final String LINE =
@@ -122,7 +114,6 @@ public final class LogMessage {
                     + "{} test successful\n{} test failed\n";
     public static final String FAILED_SCENARIOS_NAME_TEMPLATE =
             ANSI_RED_BOLD + "Scenario %s was failed. Related exception provided below." + ANSI_RED_BOLD;
-    public static final String SUCCESS_QUERY = "Query completed successfully";
 
     public static final String DATASET_PATH_LOG = format(TABLE_FORMAT, "Migration dataset", "{}");
     public static final String DB_TYPE_LOG = format(TABLE_FORMAT, "DB Type", "{}");

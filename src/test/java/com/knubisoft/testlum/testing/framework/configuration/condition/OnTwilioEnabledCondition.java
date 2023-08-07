@@ -11,11 +11,12 @@ import java.util.Objects;
 
 public class OnTwilioEnabledCondition implements Condition {
 
-    private final TwilioIntegration twilioIntegration =
-            GlobalTestConfigurationProvider.getDefaultIntegrations().getTwilioIntegration();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                 context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        TwilioIntegration twilioIntegration =
+                configurationProvider.getDefaultIntegrations().getTwilioIntegration();
         if (Objects.nonNull(twilioIntegration)) {
             return IntegrationsUtil.isEnabled(twilioIntegration.getTwilio());
         }

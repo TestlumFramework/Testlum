@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
@@ -18,8 +19,9 @@ import org.openqa.selenium.WebDriver;
 @ExecutorForClass(Scroll.class)
 public class ScrollWebExecutor extends AbstractUiExecutor<Scroll> {
 
-    public ScrollWebExecutor(final ExecutorDependencies dependencies) {
-        super(dependencies);
+    public ScrollWebExecutor(final GlobalTestConfigurationProvider configurationProvider,
+                             final ExecutorDependencies dependencies) {
+        super(configurationProvider, dependencies);
     }
 
     @Override

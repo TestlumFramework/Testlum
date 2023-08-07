@@ -21,11 +21,13 @@ public class AliasClickhouseAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private ClickhouseOperation clickhouseOperation;
+    @Autowired
+    private GlobalTestConfigurationProvider configurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
         for (Clickhouse clickhouse
-                : GlobalTestConfigurationProvider.getDefaultIntegrations().getClickhouseIntegration().getClickhouse()) {
+                : configurationProvider.getDefaultIntegrations().getClickhouseIntegration().getClickhouse()) {
             if (clickhouse.isEnabled()) {
                 aliasMap.put(CLICKHOUSE + UNDERSCORE + clickhouse.getAlias(), getMetadataClickhouse(clickhouse));
             }

@@ -21,10 +21,12 @@ public class AliasMySqlAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private MySqlOperation mySqlOperation;
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Mysql mysql : GlobalTestConfigurationProvider.getDefaultIntegrations().getMysqlIntegration().getMysql()) {
+        for (Mysql mysql : globalTestConfigurationProvider.getDefaultIntegrations().getMysqlIntegration().getMysql()) {
             if (mysql.isEnabled()) {
                 aliasMap.put(MYSQL + UNDERSCORE + mysql.getAlias(), getMetadataMySQL(mysql));
             }

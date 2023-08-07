@@ -23,22 +23,24 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 
 public class ScenarioFilter {
 
-    public Set<MappingResult> filterScenarios(final Set<MappingResult> original) {
+    public Set<MappingResult> filterScenarios(final GlobalTestConfigurationProvider configurationProvider,
+                                              final Set<MappingResult> original) {
         boolean containsNonParsed = original.removeIf(this::isScenarioNonParsed);
-        if (GlobalTestConfigurationProvider.provide().isStopIfInvalidScenario() && containsNonParsed) {
+        if (configurationProvider.provide().isStopIfInvalidScenario() && containsNonParsed) {
             throw new DefaultFrameworkException(STOP_IF_NON_PARSED_SCENARIO);
         } else if (original.isEmpty()) {
             throw new DefaultFrameworkException(VALID_SCENARIOS_NOT_FOUND);
         }
-        return filterValidScenarios(original);
+        return filterValidScenarios(original, configurationProvider);
     }
 
-    private Set<MappingResult> filterValidScenarios(final Set<MappingResult> validScenarios) {
+    private Set<MappingResult> filterValidScenarios(final Set<MappingResult> validScenarios,
+                                                    final GlobalTestConfigurationProvider configurationProvider) {
         Set<MappingResult> activeScenarios = filterIsActive(validScenarios);
         Set<MappingResult> scenariosWithOnlyThisEnabled = filterScenariosIfOnlyThis(activeScenarios);
         return scenariosWithOnlyThisEnabled.isEmpty()
-                ? filterScenariosByTags(activeScenarios)
-                : filterScenariosByTags(scenariosWithOnlyThisEnabled);
+                ? filterScenariosByTags(activeScenarios, configurationProvider)
+                : filterScenariosByTags(scenariosWithOnlyThisEnabled, configurationProvider);
     }
 
     private Set<MappingResult> filterIsActive(final Set<MappingResult> original) {
@@ -49,8 +51,9 @@ public class ScenarioFilter {
         return filterBy(original, e -> e.scenario.getSettings().isOnlyThis());
     }
 
-    private Set<MappingResult> filterScenariosByTags(final Set<MappingResult> activeScenarios) {
-        RunScenariosByTag runScenariosByTag = GlobalTestConfigurationProvider.provide().getRunScenariosByTag();
+    private Set<MappingResult> filterScenariosByTags(final Set<MappingResult> activeScenarios,
+                                                     final GlobalTestConfigurationProvider configurationProvider) {
+        RunScenariosByTag runScenariosByTag = configurationProvider.provide().getRunScenariosByTag();
         return runScenariosByTag.isEnabled()
                 ? filterByTags(activeScenarios, getEnabledTags(runScenariosByTag.getTag()))
                 : activeScenarios;

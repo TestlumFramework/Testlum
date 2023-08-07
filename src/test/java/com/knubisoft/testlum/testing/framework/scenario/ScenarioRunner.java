@@ -4,6 +4,8 @@ import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigura
 import com.knubisoft.testlum.testing.framework.configuration.ui.MobilebrowserDriverFactory;
 import com.knubisoft.testlum.testing.framework.configuration.ui.NativeDriverFactory;
 import com.knubisoft.testlum.testing.framework.configuration.ui.WebDriverFactory;
+import com.knubisoft.testlum.testing.framework.configuration.ui.WebDriverFactoryContainer;
+import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.exception.StopSignalException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -54,6 +56,8 @@ public class ScenarioRunner {
     private final ApplicationContext ctx;
 
     private InterpreterDependencies dependencies;
+    private GlobalTestConfigurationProvider configurationProvider;
+    private EnvManager envManager;
     private boolean stopScenarioOnFailure;
     private CommandToInterpreterMap cmdToInterpreterMap;
 
@@ -67,7 +71,9 @@ public class ScenarioRunner {
 
     private void prepare() {
         this.dependencies = createDependencies();
-        this.stopScenarioOnFailure = GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure();
+        this.configurationProvider = ctx.getBean(GlobalTestConfigurationProvider.class);
+        this.envManager = ctx.getBean(EnvManager.class);
+        this.stopScenarioOnFailure = configurationProvider.provide().isStopScenarioOnFailure();
         this.cmdToInterpreterMap = createClassToInterpreterMap(dependencies);
     }
 
@@ -91,7 +97,7 @@ public class ScenarioRunner {
     }
 
     private void runScenarioCommands() {
-        LogUtil.logScenarioDetails(scenarioArguments, scenarioResult.getId());
+        LogUtil.logScenarioDetails(scenarioArguments, scenarioResult.getId(), configurationProvider);
         try {
             runCommands(scenarioArguments.getScenario().getCommands());
         } catch (StopSignalException ignore) {
@@ -203,21 +209,24 @@ public class ScenarioRunner {
     }
 
     private WebDriver createWebDriver() {
-        return BrowserUtil.getBrowserBy(scenarioArguments.getEnvironment(), scenarioArguments.getBrowser())
-                .map(WebDriverFactory::createDriver)
+        return BrowserUtil.getBrowserBy(scenarioArguments.getEnvironment(), scenarioArguments.getBrowser(),
+                        configurationProvider)
+                .map(device -> WebDriverFactory.createDriver(device,
+                        new WebDriverFactoryContainer(configurationProvider, envManager)))
                 .orElse(new MockDriver(WEB_DRIVER_NOT_INIT));
     }
 
     private WebDriver createMobilebrowserDriver() {
         return MobileUtil.getMobilebrowserDeviceBy(scenarioArguments.getEnvironment(),
-                        scenarioArguments.getMobilebrowserDevice())
-                .map(MobilebrowserDriverFactory::createDriver)
+                        scenarioArguments.getMobilebrowserDevice(), configurationProvider)
+                .map(device -> MobilebrowserDriverFactory.createDriver(device, configurationProvider, envManager))
                 .orElse(new MockDriver(MOBILEBROWSER_DRIVER_NOT_INIT));
     }
 
     private WebDriver createNativeDriver() {
-        return MobileUtil.getNativeDeviceBy(scenarioArguments.getEnvironment(), scenarioArguments.getNativeDevice())
-                .map(NativeDriverFactory::createDriver)
+        return MobileUtil.getNativeDeviceBy(scenarioArguments.getEnvironment(), scenarioArguments.getNativeDevice(),
+                        configurationProvider)
+                .map(device -> NativeDriverFactory.createDriver(device, configurationProvider, envManager))
                 .orElse(new MockDriver(NATIVE_DRIVER_NOT_INIT));
     }
 

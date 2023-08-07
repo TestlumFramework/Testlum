@@ -195,14 +195,17 @@ public class UiUtil {
         return new Point(dimension.width / 2, dimension.height / 2);
     }
 
-    public String getUrl(final String path, final String env, final UiType uiType) {
+    public String getUrl(final String path,
+                         final String env,
+                         final UiType uiType,
+                         final GlobalTestConfigurationProvider globalTestConfigurationProvider) {
         if (HTTP_PATTERN.matcher(path).matches()) {
             return path;
         }
         if (UiType.MOBILE_BROWSER == uiType) {
-            return GlobalTestConfigurationProvider.getMobilebrowserSettings(env)
+            return globalTestConfigurationProvider.getMobilebrowserSettings(env)
                     .getBaseUrl() + path;
         }
-        return GlobalTestConfigurationProvider.getWebSettings(env).getBaseUrl() + path;
+        return globalTestConfigurationProvider.getWebSettings(env).getBaseUrl() + path;
     }
 }

@@ -11,11 +11,12 @@ import java.util.Objects;
 
 public class OnSmtpEnabledCondition implements Condition {
 
-    private final SmtpIntegration smtpIntegration =
-            GlobalTestConfigurationProvider.getDefaultIntegrations().getSmtpIntegration();
-
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
+        GlobalTestConfigurationProvider configurationProvider =
+                 context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
+        SmtpIntegration smtpIntegration =
+                configurationProvider.getDefaultIntegrations().getSmtpIntegration();
         if (Objects.nonNull(smtpIntegration)) {
             return IntegrationsUtil.isEnabled(smtpIntegration.getSmtp());
         }

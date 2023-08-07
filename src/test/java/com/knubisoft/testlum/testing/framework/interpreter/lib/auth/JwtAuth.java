@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.auth;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.constant.AuthorizationConstant;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -12,6 +13,7 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -26,6 +28,9 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 public class JwtAuth extends AbstractAuthStrategy {
+
+    @Autowired
+    private GlobalTestConfigurationProvider configurationProvider;
 
     public JwtAuth(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -52,7 +57,8 @@ public class JwtAuth extends AbstractAuthStrategy {
 
     private String getTokenFromResponse(final Auth auth, final String response) {
         DocumentContext context = JsonPath.parse(response);
-        List<Api> apiList = IntegrationsUtil.findListByEnv(Api.class, dependencies.getEnvironment());
+        List<Api> apiList =
+                IntegrationsUtil.findListByEnv(Api.class, dependencies.getEnvironment(), configurationProvider);
         Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, auth.getApiAlias());
         return context.read(isNotBlank(apiIntegration.getAuth().getTokenName())
                 ? apiIntegration.getAuth().getTokenName() : AuthorizationConstant.CONTENT_KEY_TOKEN);
@@ -80,7 +86,8 @@ public class JwtAuth extends AbstractAuthStrategy {
     }
 
     private String getFullApiUrl(final Auth auth) {
-        List<Api> apiList = IntegrationsUtil.findListByEnv(Api.class, dependencies.getEnvironment());
+        List<Api> apiList =
+                IntegrationsUtil.findListByEnv(Api.class, dependencies.getEnvironment(), configurationProvider);
         Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, auth.getApiAlias());
         return apiIntegration.getUrl() + auth.getLoginEndpoint();
     }

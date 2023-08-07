@@ -10,6 +10,7 @@ import com.knubisoft.testlum.testing.framework.configuration.condition.OnSESEnab
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Ses;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -21,10 +22,13 @@ import java.util.Map;
 @Conditional({OnSESEnabledCondition.class})
 public class SESConfiguration {
 
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
+
     @Bean
     public Map<AliasEnv, AmazonSimpleEmailService> amazonSimpleEmailService() {
         Map<AliasEnv, AmazonSimpleEmailService> amazonSesMap = new HashMap<>();
-        GlobalTestConfigurationProvider.getIntegrations()
+        globalTestConfigurationProvider.getIntegrations()
                 .forEach((env, integrations) -> addAmazonSes(integrations, env, amazonSesMap));
         return amazonSesMap;
     }

@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.util.DataSourceUtil;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Mysql;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -18,10 +19,13 @@ import java.util.Map;
 @Conditional({OnMysqlEnabledCondition.class})
 public class MysqlDataSourceConfiguration {
 
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
+
     @Bean("mySqlDataSource")
     public Map<AliasEnv, DataSource> mysqlDataSource() {
         Map<AliasEnv, DataSource> dataSourceMap = new HashMap<>();
-        GlobalTestConfigurationProvider.getIntegrations()
+        globalTestConfigurationProvider.getIntegrations()
                 .forEach((env, integrations) -> collectDataSource(integrations, env, dataSourceMap));
         return dataSourceMap;
     }

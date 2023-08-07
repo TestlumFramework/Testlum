@@ -21,10 +21,12 @@ public class AliasElasticsearchAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private ElasticsearchOperation elasticsearchOperation;
+    @Autowired
+    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Elasticsearch elasticsearch : GlobalTestConfigurationProvider.getDefaultIntegrations()
+        for (Elasticsearch elasticsearch : globalTestConfigurationProvider.getDefaultIntegrations()
                 .getElasticsearchIntegration().getElasticsearch()) {
             if (elasticsearch.isEnabled()) {
                 aliasMap.put(ELASTICSEARCH + UNDERSCORE + elasticsearch.getAlias(),

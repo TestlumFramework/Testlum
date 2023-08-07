@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="runScenariosByTag" type="{http://www.knubisoft.com/testlum/testing/model/global-config}runScenariosByTag"/&gt;
  *         &lt;element name="report" type="{http://www.knubisoft.com/testlum/testing/model/global-config}report"/&gt;
  *         &lt;element name="environments" type="{http://www.knubisoft.com/testlum/testing/model/global-config}environments"/&gt;
- *         &lt;element name="vault" type="{http://www.knubisoft.com/testlum/testing/model/global-config}vault"/&gt;
+ *         &lt;element name="vault" type="{http://www.knubisoft.com/testlum/testing/model/global-config}vault" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -64,7 +64,6 @@ public class GlobalTestConfiguration {
     protected Report report;
     @XmlElement(required = true)
     protected Environments environments;
-    @XmlElement(required = true)
     protected Vault vault;
 
     /**

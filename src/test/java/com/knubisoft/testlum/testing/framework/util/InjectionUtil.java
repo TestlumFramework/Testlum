@@ -38,33 +38,46 @@ public class InjectionUtil {
     }
 
     @SneakyThrows
-    public Integrations injectFromVault(final Integrations integrations, final List<VaultService.VaultDto> dataFromVault) {
+    public Integrations injectFromVault(final Integrations integrations,
+                                        final Map<String, List<VaultService.VaultDto>> vaultByPath) {
         String asJson = JacksonMapperUtil.writeValueToCopiedString(integrations);
-        String injected = inject(asJson, dataFromVault);
+        String injected = inject(asJson, vaultByPath);
         return JacksonMapperUtil.readCopiedValue(injected, integrations.getClass());
     }
 
-    public String inject(final String toInject, final List<VaultService.VaultDto> dataFromVault) {
+    public String inject(final String toInject, final Map<String, List<VaultService.VaultDto>> vaultByPath) {
         if (StringUtils.isBlank(toInject)) {
             return toInject;
         }
         Matcher m = ROUTE_PATTERN.matcher(toInject);
-        return getFormattedInject(toInject, m, dataFromVault);
+        return getFormattedInject(toInject, m, vaultByPath);
     }
 
-    private String getFormattedInject(final String original, final Matcher m, final List<VaultService.VaultDto> vaultData) {
+    private String getFormattedInject(final String original, final Matcher m,
+                                      final Map<String, List<VaultService.VaultDto>> vaultByPath) {
         String formatted = original;
         while (m.find()) {
             String vaultKey = m.group(1);
             String vaultKeyInBraces = m.group(0);
-            String vaultValue = vaultData.stream()
-                    .filter(vaultDto -> vaultKey.equals(vaultDto.getKey()))
-                    .map(VaultService.VaultDto::getValue)
-                    .findFirst()
-                    .orElseThrow(() -> new DefaultFrameworkException("No such key in Vault"));
+            String vaultValue = getValue(vaultKey, vaultByPath);
             vaultValue = StringEscapeUtils.escapeJson(vaultValue);
             formatted = formatted.replace(vaultKeyInBraces, vaultValue);
         }
         return formatted;
+    }
+
+    private String getValue(final String vaultKey, final Map<String, List<VaultService.VaultDto>> vaultByPath) {
+        String[] divided = vaultKey.split("\\.");
+        String path = divided[0];
+        Map.Entry<String, List<VaultService.VaultDto>> data = vaultByPath.entrySet().stream()
+                .filter(e -> e.getKey().contains(path))
+                .findFirst()
+                .orElseThrow(() -> new DefaultFrameworkException("No such path in vault"));
+        List<VaultService.VaultDto> vaultData = data.getValue();
+        return vaultData.stream()
+                .filter(vaultDto -> vaultKey.equals(vaultDto.getKey()))
+                .map(VaultService.VaultDto::getValue)
+                .findFirst()
+                .orElseThrow(() -> new DefaultFrameworkException("No such key in Vault"));
     }
 }

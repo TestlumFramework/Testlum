@@ -71,7 +71,6 @@
         <http-client.version>3.10.0</http-client.version>
         <spring-rabbit.version>2.3.6</spring-rabbit.version>
         <kafka-clients.version>2.7.1</kafka-clients.version>
-<!--        <vault-java-driver.version>5.1.0</vault-java-driver.version>-->
         <spring-vault-core.version>2.3.3</spring-vault-core.version>
         <jedis.version>3.3.0</jedis.version>
         <HikariCP.version>4.0.2</HikariCP.version>
@@ -454,16 +453,28 @@
             </exclusions>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.bettercloud</groupId>-->
-<!--            <artifactId>vault-java-driver</artifactId>-->
-<!--            <version>${vault-java-driver.version}</version>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>org.springframework.vault</groupId>
             <artifactId>spring-vault-core</artifactId>
             <version>${spring-vault-core.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

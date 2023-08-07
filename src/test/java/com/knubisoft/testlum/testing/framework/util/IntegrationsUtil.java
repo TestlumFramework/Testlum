@@ -25,7 +25,6 @@ import com.knubisoft.testlum.testing.model.global_config.Ses;
 import com.knubisoft.testlum.testing.model.global_config.Smtp;
 import com.knubisoft.testlum.testing.model.global_config.Sqs;
 import com.knubisoft.testlum.testing.model.global_config.Twilio;
-import com.knubisoft.testlum.testing.model.global_config.Vault;
 import com.knubisoft.testlum.testing.model.global_config.WebsocketApi;
 import lombok.experimental.UtilityClass;
 

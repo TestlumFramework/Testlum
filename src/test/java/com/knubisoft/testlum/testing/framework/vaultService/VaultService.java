@@ -16,6 +16,7 @@ import org.springframework.vault.client.VaultEndpoint;
 import org.springframework.vault.core.VaultTemplate;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,22 +25,29 @@ import java.util.stream.Collectors;
 public class VaultService {
 
     private static final String VAULT_KEY = "data";
+    private static final String VAULT_HOST = "127.0.0.1";
+    private static final int VAULT_PORT = 8200;
+    private static final String VAULT_SCHEME = "http";
+
+    private final VaultTemplate template;
 
     public VaultService() {
         this.template = vault();
     }
-    private final VaultTemplate template;
 
     public Integrations getWithVault(final Integrations integrations) {
-
-        //TODO figure out with path
-        Map<String, Object> data = Objects.requireNonNull(template.read("secret/data/rabbit/creds")).getData();
-        List<Object> vaultList = Objects.requireNonNull(data).entrySet().stream()
-                .filter(entry -> VAULT_KEY.equals(entry.getKey()))
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
-        List<VaultDto> convertedVault = objToVaultDto(vaultList);
-        return InjectionUtil.injectFromVault(integrations, convertedVault);
+        List<String> paths = getVaultForAllPaths();
+        Map<String, List<VaultDto>> vaultByPath = new HashMap<>();
+        for (String path : paths) {
+            Map<String, Object> data = Objects.requireNonNull(template.read(path)).getData();
+            List<Object> vaultList = Objects.requireNonNull(data).entrySet().stream()
+                    .filter(entry -> VAULT_KEY.equals(entry.getKey()))
+                    .map(Map.Entry::getValue)
+                    .collect(Collectors.toList());
+            List<VaultDto> convertedVault = objToVaultDto(vaultList);
+            vaultByPath.put(path, convertedVault);
+        }
+        return InjectionUtil.injectFromVault(integrations, vaultByPath);
     }
 
     public VaultTemplate vault() {
@@ -54,19 +62,24 @@ public class VaultService {
     public VaultEndpoint vaultEndpoint() {
 
         VaultEndpoint endpoint = new VaultEndpoint();
-        endpoint.setHost("127.0.0.1");
-        endpoint.setPort(8200);
-        endpoint.setScheme("http");
+        endpoint.setHost(VAULT_HOST);
+        endpoint.setPort(VAULT_PORT);
+        endpoint.setScheme(VAULT_SCHEME);
         return endpoint;
     }
 
-    private List<VaultDto> objToVaultDto (List<Object> vaultList) {
+    private List<VaultDto> objToVaultDto(final List<Object> vaultList) {
         List<String> formattedObjects = vaultList.stream()
                 .map(JacksonMapperUtil::writeValueAsString)
                 .collect(Collectors.toList());
         return formattedObjects.stream()
                 .map(s -> JacksonMapperUtil.readVaultValue(s, VaultDto.class))
                 .collect(Collectors.toList());
+    }
+
+    private List<String> getVaultForAllPaths() {
+        Vault vault = GlobalTestConfigurationProvider.provide().getVault();
+        return vault.getPath();
     }
 
     @Data
@@ -82,12 +95,13 @@ public class VaultService {
             this(null);
         }
 
-        public VaultDtoDeserializer(Class<?> vc) {
+        public VaultDtoDeserializer(final Class<?> vc) {
             super(vc);
         }
 
         @Override
-        public VaultDto deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+        public VaultDto deserialize(final JsonParser jsonParser,
+                                    final DeserializationContext deserializationContext) throws IOException {
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
             String key = node.fieldNames().next();
             String value = node.get(key).asText();

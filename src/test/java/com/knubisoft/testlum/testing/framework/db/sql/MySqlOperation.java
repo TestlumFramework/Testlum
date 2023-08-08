@@ -23,7 +23,7 @@ import java.util.Objects;
 
 @Slf4j
 @Conditional({OnMysqlEnabledCondition.class})
-@Component
+@Component("mySqlOperation")
 public class MySqlOperation implements StorageOperation {
 
     @Autowired

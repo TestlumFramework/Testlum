@@ -13,9 +13,9 @@ public class OnMysqlEnabledCondition implements Condition {
 
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        GlobalTestConfigurationProvider configProvider =
+        GlobalTestConfigurationProvider configurationProvider =
                 context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
-        MysqlIntegration mysqlIntegration = configProvider.getDefaultIntegrations().getMysqlIntegration();
+        MysqlIntegration mysqlIntegration = configurationProvider.getDefaultIntegrations().getMysqlIntegration();
         if (Objects.nonNull(mysqlIntegration)) {
             return IntegrationsUtil.isEnabled(mysqlIntegration.getMysql());
         }

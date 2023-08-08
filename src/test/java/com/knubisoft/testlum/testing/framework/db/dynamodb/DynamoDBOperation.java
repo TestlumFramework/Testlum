@@ -37,7 +37,7 @@ public class DynamoDBOperation implements StorageOperation {
 
     private final Map<AliasEnv, DynamoDbClient> dynamoDbClient;
     @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
+    private GlobalTestConfigurationProvider configurationProvider;
     @Autowired
     private EnvManager envManager;
 
@@ -55,7 +55,7 @@ public class DynamoDBOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         dynamoDbClient.forEach((aliasEnv, dbClient) -> {
-            if (isTruncate(Dynamo.class, aliasEnv, globalTestConfigurationProvider)
+            if (isTruncate(Dynamo.class, aliasEnv, configurationProvider)
                     && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
                 dbClient.listTables().tableNames().forEach(tableName -> truncate(tableName, dbClient));
             }

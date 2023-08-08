@@ -13,7 +13,7 @@ public class OnVaultEnabledCondition implements Condition {
     Vault vault = GlobalTestConfigurationProvider.provide().getVault();
 
     @Override
-    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+    public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
         return Objects.nonNull(vault);
     }
 }

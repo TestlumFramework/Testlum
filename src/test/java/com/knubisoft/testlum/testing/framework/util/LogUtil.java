@@ -319,12 +319,6 @@ public class LogUtil {
         logAllQueries(queries, alias);
     }
 
-    public void logAllRedisQueries(final List<RedisQuery> redisQueries, final String alias) {
-        log.info(ALIAS_LOG, alias);
-        redisQueries.forEach(query ->
-                log.info(REDIS_QUERY, query.getCommand(), String.join(SPACE, query.getArg())));
-    }
-
     public void logSqlException(final Exception ex, final String query) {
         if (isNotBlank(ex.getMessage())) {
             log.error(ERROR_SQL_QUERY, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE),

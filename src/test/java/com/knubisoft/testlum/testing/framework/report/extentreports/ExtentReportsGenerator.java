@@ -91,9 +91,8 @@ public class ExtentReportsGenerator implements ReportGenerator {
         addBrowserInfo(extentTest, scenarioResult);
         addMobilebrowserDeviceInfo(extentTest, scenarioResult);
         addNativeDeviceInfo(extentTest, scenarioResult);
-        setExecutionResult(extentTest, scenarioResult);
         addScenarioSteps(extentTest, scenarioResult.getCommands());
-        checkIfTestSkipped(extentTest);
+        setExecutionResult(extentTest, scenarioResult);
     }
 
     private void addOverviewInfo(final ExtentTest extentTest, final Overview overview, final String filePath) {
@@ -201,12 +200,17 @@ public class ExtentReportsGenerator implements ReportGenerator {
     }
 
     private void setExecutionResult(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
+        extentTest.info(format(SCENARIO_EXECUTION_TIME_TEMPLATE, scenarioResult.getExecutionTime()));
         if (scenarioResult.isSuccess()) {
             extentTest.pass(MarkupHelper.createLabel(SCENARIO_SUCCESS, ExtentColor.GREEN));
+            Test testModel = extentTest.getModel();
+            if (extentTest.getStatus().equals(Status.SKIP)
+                    && !testModel.getChildren().stream().allMatch(test -> test.getStatus().equals(Status.SKIP))) {
+                testModel.setStatus(Status.PASS);
+            }
         } else {
             extentTest.fail(MarkupHelper.createLabel(SCENARIO_FAILED, ExtentColor.RED));
         }
-        extentTest.info(format(SCENARIO_EXECUTION_TIME_TEMPLATE, scenarioResult.getExecutionTime()));
     }
 
     private void addScenarioSteps(final ExtentTest extentTest, final List<CommandResult> steps) {
@@ -280,13 +284,5 @@ public class ExtentReportsGenerator implements ReportGenerator {
             extentTest.fail(stepExecutionInfo.getException());
         }
         extentTest.info(format(STEP_EXECUTION_TIME_TEMPLATE, stepExecutionInfo.getExecutionTime()));
-    }
-
-    private void checkIfTestSkipped(final ExtentTest extentTest) {
-        Test testModel = extentTest.getModel();
-        if (testModel.getStatus().equals(Status.SKIP)
-                && !testModel.getChildren().stream().allMatch(test -> test.getStatus().equals(Status.SKIP))) {
-            testModel.setStatus(Status.PASS);
-        }
     }
 }

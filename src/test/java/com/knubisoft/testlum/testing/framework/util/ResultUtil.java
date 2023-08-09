@@ -169,7 +169,6 @@ public class ResultUtil {
     private static final String COMMENT_FOR_SQS_RECEIVE_ACTION = "Receive message from SQS";
     private static final String TIMEOUT_MILLIS = "Timeout millis";
     private static final String KEY = "Key";
-    private static final String BUCKET = "Bucket";
     private static final String CORRELATION_ID = "Correlation ID";
     private static final String RECEIVE = "Receive";
     private static final String SUBSCRIBE = "Subscribe";
@@ -457,21 +456,6 @@ public class ResultUtil {
         result.put(ALIAS, alias);
         result.put(LAMBDA_FUNCTION_NAME, functionName);
         result.put(LAMBDA_PAYLOAD, StringPrettifier.asJsonResult(payload));
-    }
-
-    public void addS3BucketMetaData(final String action,
-                                    final String bucket,
-                                    final CommandResult result) {
-        result.put(ACTION, action);
-        result.put(BUCKET, bucket);
-    }
-
-    public void addS3FileMetaData(final String action,
-                                  final String bucket,
-                                  final String key,
-                                  final CommandResult result) {
-        addS3BucketMetaData(action, bucket, result);
-        result.put(KEY, key);
     }
 
     public void addShellMetaData(final List<String> shellFiles,

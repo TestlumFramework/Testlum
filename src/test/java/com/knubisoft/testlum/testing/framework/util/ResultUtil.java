@@ -305,20 +305,6 @@ public class ResultUtil {
         }
     }
 
-
-    public void addSendGridMetaData(final String alias,
-                                    final String httpMethodName,
-                                    final Map<String, String> headers,
-                                    final String endpoint,
-                                    final CommandResult result) {
-        result.put(ALIAS, alias);
-        result.put(ENDPOINT, endpoint);
-        result.put(HTTP_METHOD, httpMethodName);
-        if (!headers.isEmpty()) {
-            addHeadersMetaData(headers, result);
-        }
-    }
-
     private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
                 .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))

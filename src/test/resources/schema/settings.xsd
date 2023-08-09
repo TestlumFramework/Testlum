@@ -14,7 +14,7 @@
         </x:sequence>
         <x:attribute name="active" type="x:boolean" default="true"/>
         <x:attribute name="onlyThis" type="x:boolean" default="false"/>
-        <x:attribute name="readOnly" type="x:boolean" default="false"/>
+        <x:attribute name="truncateStorages" type="x:boolean" default="false"/>
     </x:complexType>
 
     <x:simpleType name="csv">

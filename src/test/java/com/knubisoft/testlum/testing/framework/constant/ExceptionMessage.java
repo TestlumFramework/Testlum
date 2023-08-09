@@ -19,6 +19,7 @@ public class ExceptionMessage {
     public static final String NOT_DECLARED_WITH_EXECUTOR_FOR_CLASS = "Each non abstract executor must "
             + "declare annotation ExecutorForClass. Class %s do not have this annotation";
     public static final String EXECUTOR_FOR_UI_COMMAND_NOT_FOUND = "Executor for class %s not found";
+    public static final String INTERPRETER_NOT_FOUND = "Interpreter for class %s not found";
     public static final String MISSING_CONSTRUCTOR = "Missing constructor for class: %s";
 
     public static final String ALIAS_BY_STORAGE_NAME_NOT_FOUND = "Alias for data storage [%s] not found. "
@@ -198,6 +199,8 @@ public class ExceptionMessage {
     public static final String BUCKET_NOT_FOUND = "Bucket with name <%s> is not found ";
     public static final String FILE_NOT_FOUND = "File with key <%s> in bucket <%s> is not found";
     public static final String FILE_PROCESSING_ERROR = "File with key <%s> in bucket <%s> can not be processed";
+    public static final String FILE_COMPARISON_ERROR = "Actual file <%s> is not the same as expected file <%s>";
+    public static final String FILE_VALUE_COMPARISON_ERROR = "Actual file <%s> is not the same as expected value <%s>";
     public static final String INCORRECT_SQS_PROCESSING = "Incorrect SQS processing";
     public static final String REDIS_COMMAND_NOT_FOUND = "Redis command was not provided";
     public static final String NAME_FOR_MIGRATION_MUST_PRESENT = "Data storage name for migration must present";

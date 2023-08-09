@@ -74,9 +74,9 @@ import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.Redis;
+import com.knubisoft.testlum.testing.model.scenario.Repeat;
 import com.knubisoft.testlum.testing.model.scenario.Response;
 import com.knubisoft.testlum.testing.model.scenario.S3;
-import com.knubisoft.testlum.testing.model.scenario.S3Bucket;
 import com.knubisoft.testlum.testing.model.scenario.S3File;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
@@ -391,6 +391,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             GlobalVariations.process(scenario, xmlFile);
             variationsFileName.set(scenario.getSettings().getVariations());
         }
+        if (scenario.getCommands().stream().anyMatch(command -> command instanceof Repeat)) {
+            Repeat repeat = (Repeat) scenario.getCommands().stream()
+                    .filter(command -> command instanceof Repeat)
+                    .findFirst().get();
+            GlobalVariations.process(repeat);
+            variationsFileName.set(repeat.getVariations());
+        }
     }
 
     private void validateIfContainsNativeAndMobileCommands(final List<AbstractCommand> commands) {
@@ -644,36 +651,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateS3Command(final File xmlFile, final S3 s3) {
         s3.getFileOrBucket().stream()
-                .map(this::getS3CommandFilename)
-                .filter(Objects::nonNull)
-                .forEach(filename -> validateFileIfExist(xmlFile, filename));
+                .filter(command -> command instanceof S3File)
+                .map(command -> (S3File) command)
+                .forEach(s3File -> validateS3FileCommand(xmlFile, s3File));
     }
 
-    private String getS3CommandFilename(final Object s3Command) {
-        if (s3Command instanceof S3Bucket) {
-            S3Bucket bucketCommand = (S3Bucket) s3Command;
-            return getS3BucketCommandFilename(bucketCommand);
-        } else {
-            S3File fileCommand = (S3File) s3Command;
-            return getS3FileCommandFilename(fileCommand);
-        }
-    }
-
-    private String getS3BucketCommandFilename(final S3Bucket s3Bucket) {
-        if (isNotBlank(s3Bucket.getCreate())) {
-            return s3Bucket.getExpected();
-        } else {
-            return s3Bucket.getExpected();
-        }
-    }
-
-    private String getS3FileCommandFilename(final S3File s3File) {
+    private void validateS3FileCommand(final File xmlFile, final S3File s3File) {
         if (isNotBlank(s3File.getUpload())) {
-            return s3File.getUpload();
-        } else if (nonNull(s3File.getDownload())) {
-            return s3File.getExpected();
-        } else {
-            return s3File.getRemove();
+            validateFileIfExist(xmlFile, s3File.getUpload());
         }
     }
 
@@ -684,10 +669,12 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateFileIfExist(xmlFile, response.getFile());
         }
 
-        SendgridWithBody commandWithBody = (SendgridWithBody) sendgridInfo;
-        Body body = commandWithBody.getBody();
-        if (nonNull(body) && nonNull(body.getFrom())) {
-            validateFileIfExist(xmlFile, body.getFrom().getFile());
+        if (sendgridInfo instanceof SendgridWithBody) {
+            SendgridWithBody commandWithBody = (SendgridWithBody) sendgridInfo;
+            Body body = commandWithBody.getBody();
+            if (nonNull(body) && nonNull(body.getFrom())) {
+                validateFileIfExist(xmlFile, body.getFrom().getFile());
+            }
         }
     }
 

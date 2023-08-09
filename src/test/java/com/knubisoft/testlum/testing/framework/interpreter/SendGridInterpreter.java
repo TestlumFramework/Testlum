@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
@@ -17,7 +18,6 @@ import com.knubisoft.testlum.testing.model.scenario.Body;
 import com.knubisoft.testlum.testing.model.scenario.Sendgrid;
 import com.knubisoft.testlum.testing.model.scenario.SendgridInfo;
 import com.knubisoft.testlum.testing.model.scenario.SendgridWithBody;
-import com.knubisoft.testlum.testing.model.scenario.SendgridWithoutBody;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -27,9 +27,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_HTTP_METHOD;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ACTUAL_CODE;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONTENT_TO_SEND;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.EXPECTED_CODE;
@@ -38,23 +41,34 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.EXPECTED_C
 @InterpreterForClass(Sendgrid.class)
 public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
+    private static final String START_DATE = "start_date";
+    private final Map<Method, String> sgEndpoints;
+
     @Autowired(required = false)
     private Map<AliasEnv, SendGrid> sendGrid;
 
     public SendGridInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
+        final Map<Method, String> endpoints = new HashMap<>(5);
+        endpoints.put(Method.GET, "stats");
+        endpoints.put(Method.PATCH, "templates/%s");
+        endpoints.put(Method.PUT, "contacts");
+        endpoints.put(Method.POST, "mail/send");
+        endpoints.put(Method.DELETE, "templates/%s");
+        sgEndpoints = Collections.unmodifiableMap(endpoints);
     }
 
     @Override
     protected void acceptImpl(final Sendgrid o, final CommandResult result) {
         Sendgrid sendgrid = injectCommand(o);
         SendGridUtil.SendGridMethodMetadata metadata = SendGridUtil.getSendgridMethodMetadata(sendgrid);
+        String endpoint = getEndpoint(metadata.getHttpMethod());
         SendgridInfo sendgridInfo = metadata.getHttpInfo();
         Method method = metadata.getHttpMethod();
         Map<String, String> headers = getHeaders(sendgridInfo);
-        ResultUtil.addSendGridMetaData(sendgrid.getAlias(), method.name(), headers, sendgridInfo.getEndpoint(), result);
+        ResultUtil.addSendGridMetaData(sendgrid.getAlias(), method.name(), headers, endpoint, result);
+        Response actual = getActual(sendgridInfo, method, sendgrid.getAlias(), endpoint, sendgrid, result);
         ApiResponse expected = getExpected(sendgridInfo, headers);
-        Response actual = getActual(sendgridInfo, method, sendgrid.getAlias(), result);
         compare(expected, actual, result);
         setContextBody(actual.getBody());
     }
@@ -71,14 +85,13 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     private Response getActual(final SendgridInfo sendgridInfo,
                                final Method method,
                                final String alias,
+                               final String endpoint,
+                               final Sendgrid sendgrid,
                                final CommandResult result) {
-        String body = getBody(sendgridInfo);
-        Request request = new Request();
-        request.setMethod(method);
-        request.setEndpoint(sendgridInfo.getEndpoint());
-        request.setBody(body);
+        String body = getBody(sendgridInfo, method);
+        Request request = getRequest(body, method, sendgrid, endpoint);
         result.put(CONTENT_TO_SEND, StringPrettifier.asJsonResult(body));
-        LogUtil.logHttpInfo(alias, method.name(), sendgridInfo.getEndpoint());
+        LogUtil.logHttpInfo(alias, method.name(), endpoint);
         LogUtil.logBody(request.getBody());
         return sendGrid.get(new AliasEnv(alias, dependencies.getEnvironment())).api(request);
     }
@@ -103,12 +116,34 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         return headers;
     }
 
-    private String getBody(final SendgridInfo sendgridInfo) {
-        if (sendgridInfo instanceof SendgridWithoutBody) {
+    private String getBody(final SendgridInfo sendgridInfo, final Method method) {
+        if (method.equals(Method.GET)) {
             return null;
         }
         SendgridWithBody commandWithBody = (SendgridWithBody) sendgridInfo;
         Body body = commandWithBody.getBody();
         return SendGridUtil.extractBody(body, this);
+    }
+
+    private String getEndpoint(final Method method) {
+        return sgEndpoints.entrySet().stream()
+                .filter(entry -> method.equals(entry.getKey()))
+                .findFirst()
+                .orElseThrow(() -> new DefaultFrameworkException(String.format(UNKNOWN_HTTP_METHOD, method.toString())))
+                .getValue();
+    }
+
+    private Request getRequest(final String body,
+                               final Method method,
+                               final Sendgrid sendgrid,
+                               final String endpoint) {
+        Request request = new Request();
+        request.setMethod(method);
+        request.setEndpoint(endpoint);
+        request.setBody(body);
+        if (method.equals(Method.GET)) {
+            request.addQueryParam(START_DATE, sendgrid.getGet().getStartDate());
+        }
+        return request;
     }
 }

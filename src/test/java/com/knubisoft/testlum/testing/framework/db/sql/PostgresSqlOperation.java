@@ -23,7 +23,7 @@ import java.util.Objects;
 
 @Slf4j
 @Conditional({OnPostgresEnabledCondition.class})
-@Component
+@Component("postgresOperation")
 public class PostgresSqlOperation implements StorageOperation {
 
     private final Map<AliasEnv, AbstractSqlExecutor> postgresExecutor;

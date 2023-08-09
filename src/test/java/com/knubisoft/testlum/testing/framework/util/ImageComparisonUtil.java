@@ -110,8 +110,8 @@ public class ImageComparisonUtil {
     }
 
     public void findExpectedInActual(final Image image,
-                                     final BufferedImage actual,
                                      final BufferedImage expected,
+                                     final BufferedImage actual,
                                      final File parentFile,
                                      final List<Rectangle> excludedElements,
                                      final CommandResult result) {

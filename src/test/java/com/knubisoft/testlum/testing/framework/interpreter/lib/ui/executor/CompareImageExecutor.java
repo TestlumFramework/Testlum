@@ -80,7 +80,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
             }
             return extractImageFromElement(webElement, compareWithElement.getAttribute(), result);
         } else if (nonNull(image.getPart())) {
-            return getElementAsImage(webDriver, image.getElement().getLocatorId());
+            return getElementAsImage(webDriver, image.getPart().getLocatorId());
         } else {
             return ImageIO.read(UiUtil.takeScreenshot(webDriver));
         }

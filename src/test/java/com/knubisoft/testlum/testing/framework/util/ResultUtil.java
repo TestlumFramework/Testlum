@@ -24,9 +24,6 @@ import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
-import com.knubisoft.testlum.testing.model.scenario.Ses;
-import com.knubisoft.testlum.testing.model.scenario.SesBody;
-import com.knubisoft.testlum.testing.model.scenario.SesMessage;
 import com.knubisoft.testlum.testing.model.scenario.Smtp;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.Twilio;
@@ -135,7 +132,6 @@ public class ResultUtil {
     private static final String LOCATOR_FOR_SCROLL = "Locator for scroll";
     private static final String DESTINATION = "Destination";
     private static final String SUBJECT = "Subject";
-    private static final String HTML = "HTML";
     private static final String TEXT = "Text";
     private static final String SOURCE = "Source";
     private static final String QUERIES = "Queries";
@@ -323,17 +319,6 @@ public class ResultUtil {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
                 .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
                 .collect(Collectors.toList()));
-    }
-
-    public void addSesMetaData(final Ses ses, final CommandResult result) {
-        SesMessage message = ses.getMessage();
-        SesBody body = message.getBody();
-        result.put(ALIAS, ses.getAlias());
-        result.put(DESTINATION, ses.getDestination());
-        result.put(SOURCE, ses.getSource());
-        result.put(SUBJECT, message.getSubject().getValue());
-        result.put(TEXT, body.getText().getValue());
-        result.put(HTML, body.getHtml().getValue());
     }
 
     public static void addSmtpMetaData(final Smtp smtp,

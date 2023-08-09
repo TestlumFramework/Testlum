@@ -97,8 +97,6 @@ public final class LogMessage {
             "Bucket", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Key", "{}");
 
-    public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
-
     public static final String WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND = ANSI_ORANGE
             + "Websocket message handler for topic <{}> not found" + ANSI_RESET;
     public static final String WEBSOCKET_ALREADY_SUBSCRIBED = ANSI_ORANGE

@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.amazonaws.services.simpleemail.model.Message;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.model.ScenarioArguments;
@@ -28,7 +27,6 @@ import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
-import com.knubisoft.testlum.testing.model.scenario.Ses;
 import com.knubisoft.testlum.testing.model.scenario.Smtp;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.Twilio;
@@ -381,32 +379,6 @@ public class LogUtil {
 
     public void logS3FileActionInfo(final String action, final String bucket, final String key) {
         log.info(LogMessage.S3_FILE_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket, key);
-    }
-
-    public void logSESMessage(final Message sesMessage) {
-        StringBuilder message = new StringBuilder();
-        if (nonNull(sesMessage.getBody())) {
-            appendBodyContentIfNotBlank(sesMessage.getBody().getHtml().getData(), "HTML", message);
-            appendBodyContentIfNotBlank(sesMessage.getBody().getText().getData(), "Text", message);
-        } else {
-            message.append("Message body is empty");
-        }
-        log.info(BODY_LOG, message);
-    }
-
-    private void appendBodyContentIfNotBlank(final String data, final String title, final StringBuilder sb) {
-        if (isNotBlank(data)) {
-            sb.append(format(LogMessage.SES_BODY_CONTENT_AND_TITLE_TEMPLATE,
-                    title,
-                    EMPTY,
-                    data.replaceAll(REGEX_NEW_LINE, format("%n%15s", EMPTY))));
-        }
-    }
-
-    public void logSesInfo(final Ses ses) {
-        log.info(ALIAS_LOG, ses.getAlias());
-        log.info(SOURCE_LOG, ses.getSource());
-        log.info(DESTINATION_LOG, ses.getDestination());
     }
 
     public void logSmtpInfo(final Smtp smtp, final JavaMailSenderImpl javaMailSender) {

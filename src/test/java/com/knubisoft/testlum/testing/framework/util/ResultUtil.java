@@ -29,7 +29,6 @@ import com.knubisoft.testlum.testing.model.scenario.SesBody;
 import com.knubisoft.testlum.testing.model.scenario.SesMessage;
 import com.knubisoft.testlum.testing.model.scenario.Smtp;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
-import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSubscribe;
@@ -192,9 +191,6 @@ public class ResultUtil {
     private static final String EXECUTION_RESULT_FILENAME = "scenarios_execution_result.txt";
     private static final String SMTP_HOST = "SMTP Host";
     private static final String SMTP_PORT = "SMTP Port";
-    private static final String FROM = "From";
-    private static final String TO = "To";
-    private static final String MESSAGE = "Message";
     private static final String IMAGE_FOR_COMPARISON = "Image for comparison";
     private static final String HIGHLIGHT_DIFFERENCE = "Highlight difference";
     private static final String IMAGE_COMPARISON_TYPE = "Image comparison type";
@@ -346,13 +342,6 @@ public class ResultUtil {
         result.put(DESTINATION, smtp.getRecipientEmail());
         result.put(SUBJECT, smtp.getSubject());
         result.put(TEXT, smtp.getText());
-    }
-
-    public static void addTwilioMetaData(final Twilio twilio, final String twilioNumber, final CommandResult result) {
-        result.put(ALIAS, twilio.getAlias());
-        result.put(FROM, twilioNumber);
-        result.put(TO, twilio.getDestinationPhoneNumber());
-        result.put(MESSAGE, twilio.getMessage());
     }
 
     public void addRabbitMQSendInfo(final SendRmqMessage sendAction,

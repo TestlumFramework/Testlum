@@ -992,6 +992,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft.testlum</groupId>
+            <artifactId>clickhouse</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

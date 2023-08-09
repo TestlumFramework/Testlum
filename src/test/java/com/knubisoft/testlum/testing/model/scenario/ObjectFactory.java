@@ -838,22 +838,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CompareWithPart }
-     * 
-     */
-    public CompareWithPart createCompareWithPart() {
-        return new CompareWithPart();
-    }
-
-    /**
-     * Create an instance of {@link FindPart }
-     * 
-     */
-    public FindPart createFindPart() {
-        return new FindPart();
-    }
-
-    /**
      * Create an instance of {@link ComparisonConditions }
      * 
      */

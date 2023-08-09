@@ -303,8 +303,8 @@
                 <x:choice>
                     <x:element name="fullScreen" type="tns:compareWithFullScreen"/>
                     <x:element name="element" type="tns:compareWithElement"/>
-                    <x:element name="part" type="tns:compareWithPart"/>
-                    <x:element name="findPart" type="tns:findPart"/>
+<!--                    <x:element name="part" type="tns:compareWithPart"/>-->
+<!--                    <x:element name="findPart" type="tns:findPart"/>-->
                 </x:choice>
                 <x:attribute name="file" type="tns:imageExtension" use="required"/>
                 <x:attribute name="highlightDifference" type="x:boolean" default="false"/>
@@ -323,19 +323,19 @@
         <x:attribute name="attribute" type="tns:nonEmptyString" default="src"/>
     </x:complexType>
 
-    <x:complexType name="compareWithPart">
-        <x:complexContent>
-            <x:extension base="tns:comparisonConditions">
-                <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
+<!--    <x:complexType name="compareWithPart">-->
+<!--        <x:complexContent>-->
+<!--            <x:extension base="tns:comparisonConditions">-->
+<!--                <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>-->
+<!--            </x:extension>-->
+<!--        </x:complexContent>-->
+<!--    </x:complexType>-->
 
-    <x:complexType name="findPart">
-        <x:complexContent>
-            <x:extension base="tns:comparisonConditions"/>
-        </x:complexContent>
-    </x:complexType>
+<!--    <x:complexType name="findPart">-->
+<!--        <x:complexContent>-->
+<!--            <x:extension base="tns:comparisonConditions"/>-->
+<!--        </x:complexContent>-->
+<!--    </x:complexType>-->
 
     <x:complexType name="comparisonConditions">
         <x:choice minOccurs="0" maxOccurs="unbounded">

@@ -548,11 +548,12 @@ public class LogUtil {
             logCompareWithElementInfo(image.getElement());
         } else if (nonNull(image.getFullScreen())) {
             logCompareWithFullscreen(image.getFullScreen());
-        } else if (nonNull(image.getPart())) {
-            logCompareWithPart(image.getPart());
-        } else {
-            logFindPartInfo(image.getFindPart());
         }
+//        else if (nonNull(image.getPart())) {
+//            logCompareWithPart(image.getPart());
+//        } else {
+//            logFindPartInfo(image.getFindPart());
+//        }
     }
 
     private void logCompareWithElementInfo(final CompareWithElement element) {

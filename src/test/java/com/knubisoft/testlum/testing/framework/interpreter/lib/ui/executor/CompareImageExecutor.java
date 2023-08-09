@@ -50,12 +50,14 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         BufferedImage expectedImage = ImageIO.read(FileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
         BufferedImage actualImage = getActualImage(dependencies.getDriver(), image, result);
         List<Rectangle> excludedElements = getExcludedElements(image);
-        if (nonNull(image.getFullScreen()) || nonNull(image.getElement()) || nonNull(image.getPart())) {
+        if (nonNull(image.getFullScreen()) || nonNull(image.getElement())) {
             processCompareWith(image, expectedImage, actualImage, scenarioFile, excludedElements, result);
-        } else {
-            ImageComparisonUtil.findExpectedInActual(image, expectedImage,
-                    actualImage, scenarioFile.getParentFile(), excludedElements, result);
         }
+        //todo find out later, if we need this feature
+//        else {
+//            ImageComparisonUtil.findExpectedInActual(image, expectedImage,
+//                    actualImage, scenarioFile.getParentFile(), excludedElements, result);
+//        }
     }
 
     private void processCompareWith(final Image image,
@@ -79,9 +81,11 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
                 return ImageIO.read(UiUtil.takeScreenshot(webElement));
             }
             return extractImageFromElement(webElement, compareWithElement.getAttribute(), result);
-        } else if (nonNull(image.getPart())) {
-            return getElementAsImage(webDriver, image.getPart().getLocatorId());
-        } else {
+        }
+//        else if (nonNull(image.getPart())) {
+//            return getElementAsImage(webDriver, image.getPart().getLocatorId());
+//        }
+        else {
             return ImageIO.read(UiUtil.takeScreenshot(webDriver));
         }
     }
@@ -109,11 +113,12 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         List<Rectangle> excludedElements = new ArrayList<>();
         if (nonNull(image.getFullScreen())) {
             image.getFullScreen().getExclude().forEach(element -> addElementToExclude(excludedElements, element));
-        } else if (nonNull(image.getPart())) {
-            image.getPart().getExclude().forEach(element -> addElementToExclude(excludedElements, element));
-        } else if (nonNull(image.getFindPart())) {
-            image.getFindPart().getExclude().forEach(element -> addElementToExclude(excludedElements, element));
         }
+//        else if (nonNull(image.getPart())) {
+//            image.getPart().getExclude().forEach(element -> addElementToExclude(excludedElements, element));
+//        } else if (nonNull(image.getFindPart())) {
+//            image.getFindPart().getExclude().forEach(element -> addElementToExclude(excludedElements, element));
+//        }
         return excludedElements;
     }
 

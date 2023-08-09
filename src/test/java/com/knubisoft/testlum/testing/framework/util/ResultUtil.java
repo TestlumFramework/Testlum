@@ -706,11 +706,12 @@ public class ResultUtil {
             addCompareWithElementMetaData(image.getElement(), result);
         } else if (nonNull(image.getFullScreen())) {
             addCompareWithFullScreenMetaData(image.getFullScreen(), result);
-        } else if (nonNull(image.getPart())) {
-            addCompareWithPartMetaData(image.getPart(), result);
-        } else {
-            addFindPartMetaData(image.getFindPart(), result);
         }
+//        else if (nonNull(image.getPart())) {
+//            addCompareWithPartMetaData(image.getPart(), result);
+//        } else {
+//            addFindPartMetaData(image.getFindPart(), result);
+//        }
     }
 
     private void addCompareWithElementMetaData(final CompareWithElement element, final CommandResult result) {

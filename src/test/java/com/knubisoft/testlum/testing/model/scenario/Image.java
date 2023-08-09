@@ -19,8 +19,6 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;choice&gt;
  *         &lt;element name="fullScreen" type="{http://www.knubisoft.com/testlum/testing/model/scenario}compareWithFullScreen"/&gt;
  *         &lt;element name="element" type="{http://www.knubisoft.com/testlum/testing/model/scenario}compareWithElement"/&gt;
- *         &lt;element name="part" type="{http://www.knubisoft.com/testlum/testing/model/scenario}compareWithPart"/&gt;
- *         &lt;element name="findPart" type="{http://www.knubisoft.com/testlum/testing/model/scenario}findPart"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="file" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}imageExtension" /&gt;
  *       &lt;attribute name="highlightDifference" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
@@ -34,9 +32,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "image", propOrder = {
     "fullScreen",
-    "element",
-    "part",
-    "findPart"
+    "element"
 })
 public class Image
     extends AbstractUiCommand
@@ -44,8 +40,6 @@ public class Image
 
     protected CompareWithFullScreen fullScreen;
     protected CompareWithElement element;
-    protected CompareWithPart part;
-    protected FindPart findPart;
     @XmlAttribute(name = "file", required = true)
     protected String file;
     @XmlAttribute(name = "highlightDifference")
@@ -97,54 +91,6 @@ public class Image
      */
     public void setElement(CompareWithElement value) {
         this.element = value;
-    }
-
-    /**
-     * Gets the value of the part property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link CompareWithPart }
-     *     
-     */
-    public CompareWithPart getPart() {
-        return part;
-    }
-
-    /**
-     * Sets the value of the part property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link CompareWithPart }
-     *     
-     */
-    public void setPart(CompareWithPart value) {
-        this.part = value;
-    }
-
-    /**
-     * Gets the value of the findPart property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link FindPart }
-     *     
-     */
-    public FindPart getFindPart() {
-        return findPart;
-    }
-
-    /**
-     * Sets the value of the findPart property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link FindPart }
-     *     
-     */
-    public void setFindPart(FindPart value) {
-        this.findPart = value;
     }
 
     /**

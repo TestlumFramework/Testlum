@@ -27,7 +27,6 @@ import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.Ses;
 import com.knubisoft.testlum.testing.model.scenario.SesBody;
 import com.knubisoft.testlum.testing.model.scenario.SesMessage;
-import com.knubisoft.testlum.testing.model.scenario.Smtp;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
@@ -39,7 +38,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import org.springframework.http.HttpMethod;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -190,8 +188,6 @@ public class ResultUtil {
     private static final String FAILED = "failed";
     private static final String SUCCESSFULLY = "successfully";
     private static final String EXECUTION_RESULT_FILENAME = "scenarios_execution_result.txt";
-    private static final String SMTP_HOST = "SMTP Host";
-    private static final String SMTP_PORT = "SMTP Port";
     private static final String FROM = "From";
     private static final String TO = "To";
     private static final String MESSAGE = "Message";
@@ -334,18 +330,6 @@ public class ResultUtil {
         result.put(SUBJECT, message.getSubject().getValue());
         result.put(TEXT, body.getText().getValue());
         result.put(HTML, body.getHtml().getValue());
-    }
-
-    public static void addSmtpMetaData(final Smtp smtp,
-                                       final JavaMailSenderImpl javaMailSender,
-                                       final CommandResult result) {
-        result.put(ALIAS, smtp.getAlias());
-        result.put(SMTP_HOST, javaMailSender.getHost());
-        result.put(SMTP_PORT, javaMailSender.getPort());
-        result.put(SOURCE, javaMailSender.getUsername());
-        result.put(DESTINATION, smtp.getRecipientEmail());
-        result.put(SUBJECT, smtp.getSubject());
-        result.put(TEXT, smtp.getText());
     }
 
     public static void addTwilioMetaData(final Twilio twilio, final String twilioNumber, final CommandResult result) {

@@ -21,11 +21,6 @@
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.testlum.testing.framework.interpreter.SmtpInterpreter"/>
-        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
-    </Match>
-
-    <Match>
         <Class name="com.knubisoft.testlum.testing.framework.configuration.websocket.WebsocketStompMessageHandler"/>
         <Bug pattern="DM_DEFAULT_ENCODING"/>
     </Match>

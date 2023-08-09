@@ -158,9 +158,6 @@ public final class LogMessage {
     public static final String SKIPPED_BODY_VALIDATION = ANSI_ORANGE
             + "Validation of the response body was skipped because of no expected file"
             + ANSI_RESET;
-    public static final String SMTP_HOST_LOG = format(TABLE_FORMAT, "SMTP Host", "{}");
-    public static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");
-    public static final String SUBJECT_LOG = format(TABLE_FORMAT, "Subject", "{}");
     public static final String ACTION_LOG = format(TABLE_FORMAT, "Action", "{}");
     public static final String ROUTING_KEY_LOG = format(TABLE_FORMAT, "Routing Key", "{}");
     public static final String CORRELATION_ID_LOG = format(TABLE_FORMAT, "Correlation Id", "{}");

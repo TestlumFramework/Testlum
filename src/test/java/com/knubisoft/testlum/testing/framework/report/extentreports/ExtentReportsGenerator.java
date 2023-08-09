@@ -3,8 +3,10 @@ package com.knubisoft.testlum.testing.framework.report.extentreports;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
+import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
+import com.aventstack.extentreports.model.Test;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.report.GlobalScenarioStatCollector;
@@ -91,6 +93,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
         addNativeDeviceInfo(extentTest, scenarioResult);
         setExecutionResult(extentTest, scenarioResult);
         addScenarioSteps(extentTest, scenarioResult.getCommands());
+        checkIfTestSkipped(extentTest);
     }
 
     private void addOverviewInfo(final ExtentTest extentTest, final Overview overview, final String filePath) {
@@ -277,5 +280,13 @@ public class ExtentReportsGenerator implements ReportGenerator {
             extentTest.fail(stepExecutionInfo.getException());
         }
         extentTest.info(format(STEP_EXECUTION_TIME_TEMPLATE, stepExecutionInfo.getExecutionTime()));
+    }
+
+    private void checkIfTestSkipped(final ExtentTest extentTest) {
+        Test testModel = extentTest.getModel();
+        if (testModel.getStatus().equals(Status.SKIP)
+                && !testModel.getChildren().stream().allMatch(test -> test.getStatus().equals(Status.SKIP))) {
+            testModel.setStatus(Status.PASS);
+        }
     }
 }

@@ -6,7 +6,6 @@ import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
-import com.aventstack.extentreports.model.Test;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.report.GlobalScenarioStatCollector;
@@ -203,10 +202,9 @@ public class ExtentReportsGenerator implements ReportGenerator {
         extentTest.info(format(SCENARIO_EXECUTION_TIME_TEMPLATE, scenarioResult.getExecutionTime()));
         if (scenarioResult.isSuccess()) {
             extentTest.pass(MarkupHelper.createLabel(SCENARIO_SUCCESS, ExtentColor.GREEN));
-            Test testModel = extentTest.getModel();
             if (extentTest.getStatus().equals(Status.SKIP)
-                    && !testModel.getChildren().stream().allMatch(test -> test.getStatus().equals(Status.SKIP))) {
-                testModel.setStatus(Status.PASS);
+                    && !scenarioResult.getCommands().stream().allMatch(CommandResult::isSkipped)) {
+                extentTest.getModel().setStatus(Status.PASS);
             }
         } else {
             extentTest.fail(MarkupHelper.createLabel(SCENARIO_FAILED, ExtentColor.RED));

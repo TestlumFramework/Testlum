@@ -81,13 +81,12 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
                 return ImageIO.read(UiUtil.takeScreenshot(webElement));
             }
             return extractImageFromElement(webElement, compareWithElement.getAttribute(), result);
+        } else {
+            return ImageIO.read(UiUtil.takeScreenshot(webDriver));
         }
 //        else if (nonNull(image.getPart())) {
 //            return getElementAsImage(webDriver, image.getPart().getLocatorId());
 //        }
-        else {
-            return ImageIO.read(UiUtil.takeScreenshot(webDriver));
-        }
     }
 
     private BufferedImage extractImageFromElement(final WebElement webElement,
@@ -102,12 +101,13 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         return ImageIO.read(new URL(urlToImage));
     }
 
-    private BufferedImage getElementAsImage(final WebDriver webDriver, final String locatorId) throws IOException {
-        WebElement webElement = UiUtil.findWebElement(dependencies, locatorId);
-        org.openqa.selenium.Rectangle rectangle = webElement.getRect();
-        BufferedImage fullScreen = ImageIO.read(UiUtil.takeScreenshot(webDriver));
-        return fullScreen.getSubimage(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
-    }
+//    private BufferedImage getElementAsImage(final WebDriver webDriver, final String locatorId) throws IOException {
+//        WebElement webElement = UiUtil.findWebElement(dependencies, locatorId);
+//        org.openqa.selenium.Rectangle rectangle = webElement.getRect();
+//        BufferedImage fullScreen = ImageIO.read(UiUtil.takeScreenshot(webDriver));
+//        return fullScreen
+//        .getSubimage(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
+//    }
 
     private List<Rectangle> getExcludedElements(final Image image) {
         List<Rectangle> excludedElements = new ArrayList<>();

@@ -12,11 +12,9 @@ import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.CompareWithElement;
 import com.knubisoft.testlum.testing.model.scenario.CompareWithFullScreen;
-import com.knubisoft.testlum.testing.model.scenario.CompareWithPart;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Exclude;
-import com.knubisoft.testlum.testing.model.scenario.FindPart;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
@@ -87,7 +85,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUT
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXPRESSION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND_TIMES;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
@@ -113,8 +110,8 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOVE_T
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NAME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NEW_LOG_LINE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.PREFETCH_COUNT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.POSITION_COMMAND_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.PREFETCH_COUNT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUEUE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
@@ -146,7 +143,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_CO
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_INDEX;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_URL;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_FIND;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TIMEOUT_MILLIS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TOPIC_LOG;
@@ -574,30 +570,30 @@ public class LogUtil {
         }
     }
 
-    private void logCompareWithPart(final CompareWithPart part) {
-        log.info(IMAGE_COMPARISON_TYPE_LOG, GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
-        log.info(LOCATOR_LOG, part.getLocatorId());
-        if (nonNull(part.getPercentage())) {
-            log.info(IMAGE_MATCH_PERCENTAGE_LOG, part.getPercentage());
-        }
-        if (!part.getExclude().isEmpty()) {
-            log.info(IMAGE_EXCLUDED_ELEMENT_LOG, StringUtils.join(part.getExclude().stream()
-                    .map(Exclude::getLocatorId)
-                    .collect(Collectors.joining(COMMA + SPACE))));
-        }
-    }
-
-    private void logFindPartInfo(final FindPart part) {
-        log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_FIND);
-        if (nonNull(part.getPercentage())) {
-            log.info(IMAGE_MATCH_PERCENTAGE_LOG, part.getPercentage());
-        }
-        if (!part.getExclude().isEmpty()) {
-            log.info(IMAGE_EXCLUDED_ELEMENT_LOG, StringUtils.join(part.getExclude().stream()
-                    .map(Exclude::getLocatorId)
-                    .collect(Collectors.joining(COMMA + SPACE))));
-        }
-    }
+//    private void logCompareWithPart(final CompareWithPart part) {
+//        log.info(IMAGE_COMPARISON_TYPE_LOG, GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
+//        log.info(LOCATOR_LOG, part.getLocatorId());
+//        if (nonNull(part.getPercentage())) {
+//            log.info(IMAGE_MATCH_PERCENTAGE_LOG, part.getPercentage());
+//        }
+//        if (!part.getExclude().isEmpty()) {
+//            log.info(IMAGE_EXCLUDED_ELEMENT_LOG, StringUtils.join(part.getExclude().stream()
+//                    .map(Exclude::getLocatorId)
+//                    .collect(Collectors.joining(COMMA + SPACE))));
+//        }
+//    }
+//
+//    private void logFindPartInfo(final FindPart part) {
+//        log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_FIND);
+//        if (nonNull(part.getPercentage())) {
+//            log.info(IMAGE_MATCH_PERCENTAGE_LOG, part.getPercentage());
+//        }
+//        if (!part.getExclude().isEmpty()) {
+//            log.info(IMAGE_EXCLUDED_ELEMENT_LOG, StringUtils.join(part.getExclude().stream()
+//                    .map(Exclude::getLocatorId)
+//                    .collect(Collectors.joining(COMMA + SPACE))));
+//        }
+//    }
 
     public void logScrollInfo(final Scroll scroll) {
         log.info(SCROLL_DIRECTION_LOG, scroll.getDirection());

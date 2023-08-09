@@ -10,13 +10,11 @@ import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CompareWithElement;
 import com.knubisoft.testlum.testing.model.scenario.CompareWithFullScreen;
-import com.knubisoft.testlum.testing.model.scenario.CompareWithPart;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Exclude;
-import com.knubisoft.testlum.testing.model.scenario.FindPart;
-import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
+import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
@@ -58,9 +56,7 @@ import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.X;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_FIND;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -733,31 +729,31 @@ public class ResultUtil {
         }
     }
 
-    private void addCompareWithPartMetaData(final CompareWithPart part,
-                                            final CommandResult result) {
-        result.put(IMAGE_COMPARISON_TYPE, GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
-        result.put(IMAGE_LOCATOR, part.getLocatorId());
-        if (nonNull(part.getPercentage())) {
-            result.put(MATCH_PERCENTAGE, part.getPercentage());
-        }
-        if (!part.getExclude().isEmpty()) {
-            result.put(EXCLUDED_ELEMENT, StringUtils.join(part.getExclude().stream()
-                    .map(Exclude::getLocatorId)
-                    .collect(Collectors.joining(COMMA + SPACE))));
-        }
-    }
-
-    private void addFindPartMetaData(final FindPart part, final CommandResult result) {
-        result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_FIND);
-        if (nonNull(part.getPercentage())) {
-            result.put(MATCH_PERCENTAGE, part.getPercentage());
-        }
-        if (!part.getExclude().isEmpty()) {
-            result.put(EXCLUDED_ELEMENT, StringUtils.join(part.getExclude().stream()
-                    .map(Exclude::getLocatorId)
-                    .collect(Collectors.joining(COMMA + SPACE))));
-        }
-    }
+//    private void addCompareWithPartMetaData(final CompareWithPart part,
+//                                            final CommandResult result) {
+//        result.put(IMAGE_COMPARISON_TYPE, GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
+//        result.put(IMAGE_LOCATOR, part.getLocatorId());
+//        if (nonNull(part.getPercentage())) {
+//            result.put(MATCH_PERCENTAGE, part.getPercentage());
+//        }
+//        if (!part.getExclude().isEmpty()) {
+//            result.put(EXCLUDED_ELEMENT, StringUtils.join(part.getExclude().stream()
+//                    .map(Exclude::getLocatorId)
+//                    .collect(Collectors.joining(COMMA + SPACE))));
+//        }
+//    }
+//
+//    private void addFindPartMetaData(final FindPart part, final CommandResult result) {
+//        result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_FIND);
+//        if (nonNull(part.getPercentage())) {
+//            result.put(MATCH_PERCENTAGE, part.getPercentage());
+//        }
+//        if (!part.getExclude().isEmpty()) {
+//            result.put(EXCLUDED_ELEMENT, StringUtils.join(part.getExclude().stream()
+//                    .map(Exclude::getLocatorId)
+//                    .collect(Collectors.joining(COMMA + SPACE))));
+//        }
+//    }
 
     public void addImagesSizeMetaData(final ImageComparisonResult comparisonResult, final CommandResult result) {
         result.put(EXPECTED_IMAGE_SIZE, comparisonResult.getExpected().getWidth()

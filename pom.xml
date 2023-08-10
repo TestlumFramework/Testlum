@@ -995,6 +995,18 @@
 
         <dependency>
             <groupId>com.knubisoft.testlum</groupId>
+            <artifactId>sendgrid</artifactId>
+            <version>1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft.testlum</groupId>
             <artifactId>redis</artifactId>
             <version>1.0</version>
             <exclusions>

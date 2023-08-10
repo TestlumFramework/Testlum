@@ -21,14 +21,13 @@ import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
-import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
-import com.knubisoft.testlum.testing.model.scenario.Ses;
+import com.knubisoft.testlum.testing.model.scenario.Smtp;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.knubisoft.testlum.testing.model.scenario.Ui;
@@ -106,7 +105,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUEUE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_REQUEST_ATTEMPT_ID_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REDIS_QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ROUTING_KEY_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
@@ -119,7 +117,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_A
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SERVER_ERROR_RESPONSE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SKIPPED_BODY_VALIDATION;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SOURCE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_FRAME;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_WEBVIEW;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_DIRECTION;
@@ -311,12 +308,6 @@ public class LogUtil {
         logAllQueries(queries, alias);
     }
 
-    public void logAllRedisQueries(final List<RedisQuery> redisQueries, final String alias) {
-        log.info(ALIAS_LOG, alias);
-        redisQueries.forEach(query ->
-                log.info(REDIS_QUERY, query.getCommand(), String.join(SPACE, query.getArg())));
-    }
-
     public void logKafkaSendInfo(final SendKafkaMessage send, final String content) {
         logMessageBrokerGeneralMetaData(SEND_ACTION, TOPIC_LOG, send.getTopic(), content);
         logIfNotNull(CORRELATION_ID_LOG, send.getCorrelationId());
@@ -368,40 +359,6 @@ public class LogUtil {
         if (nonNull(data)) {
             log.info(title, data);
         }
-    }
-
-    public void logS3BucketActionInfo(final String action, final String bucket) {
-        log.info(LogMessage.S3_BUCKET_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket);
-    }
-
-    public void logS3FileActionInfo(final String action, final String bucket, final String key) {
-        log.info(LogMessage.S3_FILE_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket, key);
-    }
-
-    public void logSESMessage(final Message sesMessage) {
-        StringBuilder message = new StringBuilder();
-        if (nonNull(sesMessage.getBody())) {
-            appendBodyContentIfNotBlank(sesMessage.getBody().getHtml().getData(), "HTML", message);
-            appendBodyContentIfNotBlank(sesMessage.getBody().getText().getData(), "Text", message);
-        } else {
-            message.append("Message body is empty");
-        }
-        log.info(BODY_LOG, message);
-    }
-
-    private void appendBodyContentIfNotBlank(final String data, final String title, final StringBuilder sb) {
-        if (isNotBlank(data)) {
-            sb.append(format(LogMessage.SES_BODY_CONTENT_AND_TITLE_TEMPLATE,
-                    title,
-                    EMPTY,
-                    data.replaceAll(REGEX_NEW_LINE, format("%n%15s", EMPTY))));
-        }
-    }
-
-    public void logSesInfo(final Ses ses) {
-        log.info(ALIAS_LOG, ses.getAlias());
-        log.info(SOURCE_LOG, ses.getSource());
-        log.info(DESTINATION_LOG, ses.getDestination());
     }
 
     public void logTwilioInfo(final Twilio twilio, final String twilioPhoneNumber) {

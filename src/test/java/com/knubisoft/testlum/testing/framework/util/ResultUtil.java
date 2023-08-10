@@ -24,9 +24,6 @@ import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
-import com.knubisoft.testlum.testing.model.scenario.Ses;
-import com.knubisoft.testlum.testing.model.scenario.SesBody;
-import com.knubisoft.testlum.testing.model.scenario.SesMessage;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
@@ -131,11 +128,6 @@ public class ResultUtil {
     private static final String SCROLL_MEASURE = "Scroll measure";
     private static final String SCROLL_TYPE = "Scroll type";
     private static final String LOCATOR_FOR_SCROLL = "Locator for scroll";
-    private static final String DESTINATION = "Destination";
-    private static final String SUBJECT = "Subject";
-    private static final String HTML = "HTML";
-    private static final String TEXT = "Text";
-    private static final String SOURCE = "Source";
     private static final String QUERIES = "Queries";
     private static final String ENABLE = "Enable";
     private static final String DISABLE = "Disable";
@@ -167,7 +159,6 @@ public class ResultUtil {
     private static final String COMMENT_FOR_SQS_RECEIVE_ACTION = "Receive message from SQS";
     private static final String TIMEOUT_MILLIS = "Timeout millis";
     private static final String KEY = "Key";
-    private static final String BUCKET = "Bucket";
     private static final String CORRELATION_ID = "Correlation ID";
     private static final String RECEIVE = "Receive";
     private static final String SUBSCRIBE = "Subscribe";
@@ -301,35 +292,10 @@ public class ResultUtil {
         }
     }
 
-
-    public void addSendGridMetaData(final String alias,
-                                    final String httpMethodName,
-                                    final Map<String, String> headers,
-                                    final String endpoint,
-                                    final CommandResult result) {
-        result.put(ALIAS, alias);
-        result.put(ENDPOINT, endpoint);
-        result.put(HTTP_METHOD, httpMethodName);
-        if (!headers.isEmpty()) {
-            addHeadersMetaData(headers, result);
-        }
-    }
-
     private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
                 .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
                 .collect(Collectors.toList()));
-    }
-
-    public void addSesMetaData(final Ses ses, final CommandResult result) {
-        SesMessage message = ses.getMessage();
-        SesBody body = message.getBody();
-        result.put(ALIAS, ses.getAlias());
-        result.put(DESTINATION, ses.getDestination());
-        result.put(SOURCE, ses.getSource());
-        result.put(SUBJECT, message.getSubject().getValue());
-        result.put(TEXT, body.getText().getValue());
-        result.put(HTML, body.getHtml().getValue());
     }
 
     public static void addTwilioMetaData(final Twilio twilio, final String twilioNumber, final CommandResult result) {
@@ -441,21 +407,6 @@ public class ResultUtil {
         result.put(ALIAS, alias);
         result.put(LAMBDA_FUNCTION_NAME, functionName);
         result.put(LAMBDA_PAYLOAD, StringPrettifier.asJsonResult(payload));
-    }
-
-    public void addS3BucketMetaData(final String action,
-                                    final String bucket,
-                                    final CommandResult result) {
-        result.put(ACTION, action);
-        result.put(BUCKET, bucket);
-    }
-
-    public void addS3FileMetaData(final String action,
-                                  final String bucket,
-                                  final String key,
-                                  final CommandResult result) {
-        addS3BucketMetaData(action, bucket, result);
-        result.put(KEY, key);
     }
 
     public void addShellMetaData(final List<String> shellFiles,

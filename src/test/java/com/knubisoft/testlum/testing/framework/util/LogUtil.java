@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.amazonaws.services.simpleemail.model.Message;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.model.ScenarioArguments;
@@ -27,9 +26,7 @@ import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
-import com.knubisoft.testlum.testing.model.scenario.Smtp;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
-import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.knubisoft.testlum.testing.model.scenario.Ui;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -76,7 +73,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXCEPT
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXPRESSION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND_TIMES;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
@@ -94,7 +90,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCATO
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MAX_NUMBER_OF_MESSAGES_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MESSAGE_DEDUPLICATION_ID_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MESSAGE_GROUP_ID_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MESSAGE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILEBROWSER_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOVE_TO_EMPTY_SPACE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NAME_LOG;
@@ -130,7 +125,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_S
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TIMEOUT_MILLIS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TOPIC_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TO_PHONE_NUMBER_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COMMAND_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COMMAND_LOG_WITHOUT_POSITION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;
@@ -359,12 +353,6 @@ public class LogUtil {
         if (nonNull(data)) {
             log.info(title, data);
         }
-    }
-
-    public void logTwilioInfo(final Twilio twilio, final String twilioPhoneNumber) {
-        log.info(FROM_PHONE_NUMBER_LOG, twilioPhoneNumber);
-        log.info(TO_PHONE_NUMBER_LOG, twilio.getDestinationPhoneNumber());
-        log.info(MESSAGE_LOG, twilio.getMessage());
     }
 
     public void logWebsocketActionInfo(final String action,

@@ -25,7 +25,6 @@ import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
-import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSubscribe;
@@ -179,9 +178,6 @@ public class ResultUtil {
     private static final String FAILED = "failed";
     private static final String SUCCESSFULLY = "successfully";
     private static final String EXECUTION_RESULT_FILENAME = "scenarios_execution_result.txt";
-    private static final String FROM = "From";
-    private static final String TO = "To";
-    private static final String MESSAGE = "Message";
     private static final String IMAGE_FOR_COMPARISON = "Image for comparison";
     private static final String HIGHLIGHT_DIFFERENCE = "Highlight difference";
     private static final String IMAGE_COMPARISON_TYPE = "Image comparison type";
@@ -296,13 +292,6 @@ public class ResultUtil {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
                 .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
                 .collect(Collectors.toList()));
-    }
-
-    public static void addTwilioMetaData(final Twilio twilio, final String twilioNumber, final CommandResult result) {
-        result.put(ALIAS, twilio.getAlias());
-        result.put(FROM, twilioNumber);
-        result.put(TO, twilio.getDestinationPhoneNumber());
-        result.put(MESSAGE, twilio.getMessage());
     }
 
     public void addRabbitMQSendInfo(final SendRmqMessage sendAction,

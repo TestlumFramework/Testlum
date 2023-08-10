@@ -120,7 +120,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SERVER_ERROR_RESPONSE_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SKIPPED_BODY_VALIDATION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SMTP_HOST_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SMTP_PORT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SOURCE_LOG;
@@ -466,10 +465,6 @@ public class LogUtil {
                     StringPrettifier.asJsonResult(StringPrettifier.cut(body))
                             .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
-    }
-
-    public void logBodyValidationSkipped() {
-        log.info(SKIPPED_BODY_VALIDATION);
     }
 
     public void logVarInfo(final String name, final String value) {

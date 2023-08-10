@@ -266,19 +266,6 @@ public class ResultUtil {
         result.put(destination, destinationValue);
     }
 
-    public void addHttpMetaData(final String alias,
-                                final String httpMethodName,
-                                final Map<String, String> headers,
-                                final String endpoint,
-                                final CommandResult result) {
-        result.put(API_ALIAS, alias);
-        result.put(ENDPOINT, endpoint);
-        result.put(HTTP_METHOD, httpMethodName);
-        if (!headers.isEmpty()) {
-            addHeadersMetaData(headers, result);
-        }
-    }
-
     public void addGraphQlMetaData(final String alias,
                                    final HttpMethod httpMethod,
                                    final Map<String, String> headers,

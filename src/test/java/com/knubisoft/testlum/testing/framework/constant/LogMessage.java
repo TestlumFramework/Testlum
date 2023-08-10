@@ -39,7 +39,6 @@ public final class LogMessage {
     public static final String CONDITION_LOG = format(TABLE_FORMAT, "Condition", "'{}' = {};");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
     public static final String QUERY = format(TABLE_FORMAT, "Query", "{}");
-    public static final String REDIS_QUERY = format(TABLE_FORMAT, "Query", "{} {}");
     public static final String SCENARIO_NUMBER_AND_PATH_LOG = ANSI_GREEN
             + "================== Execute for scenario #{} - {} ==================" + ANSI_RESET;
     public static final String LINE =

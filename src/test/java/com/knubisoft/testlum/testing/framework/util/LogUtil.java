@@ -21,7 +21,6 @@ import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
-import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
@@ -108,7 +107,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUEUE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_REQUEST_ATTEMPT_ID_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REDIS_QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ROUTING_KEY_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
@@ -314,12 +312,6 @@ public class LogUtil {
     public void logAllQueries(final String dbType, final List<String> queries, final String alias) {
         log.info(DB_TYPE_LOG, dbType);
         logAllQueries(queries, alias);
-    }
-
-    public void logAllRedisQueries(final List<RedisQuery> redisQueries, final String alias) {
-        log.info(ALIAS_LOG, alias);
-        redisQueries.forEach(query ->
-                log.info(REDIS_QUERY, query.getCommand(), String.join(SPACE, query.getArg())));
     }
 
     public void logKafkaSendInfo(final SendKafkaMessage send, final String content) {

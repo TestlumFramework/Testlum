@@ -279,19 +279,6 @@ public class ResultUtil {
         }
     }
 
-    public void addGraphQlMetaData(final String alias,
-                                   final HttpMethod httpMethod,
-                                   final Map<String, String> headers,
-                                   final String endpoint,
-                                   final CommandResult result) {
-        result.put(ALIAS, alias);
-        result.put(HTTP_METHOD, httpMethod);
-        result.put(ENDPOINT, endpoint);
-        if (!headers.isEmpty()) {
-            addHeadersMetaData(headers, result);
-        }
-    }
-
     public static void addElasticsearchMetaData(final String alias,
                                                 final String httpMethodName,
                                                 final Map<String, String> headers,

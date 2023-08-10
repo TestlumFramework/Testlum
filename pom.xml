@@ -996,7 +996,7 @@
         <dependency>
             <groupId>com.knubisoft.testlum</groupId>
             <artifactId>ses</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.zaxxer</groupId>

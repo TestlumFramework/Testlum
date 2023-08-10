@@ -981,6 +981,12 @@
 
         <dependency>
             <groupId>com.knubisoft.testlum</groupId>
+            <artifactId>oracle</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft.testlum</groupId>
             <artifactId>sendgrid</artifactId>
             <version>1.0</version>
             <exclusions>

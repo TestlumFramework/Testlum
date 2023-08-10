@@ -87,15 +87,6 @@ public final class LogMessage {
             "Comment", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Action", "{}");
 
-    public static final String S3_BUCKET_ACTION_INFO_LOG = format(TABLE_FORMAT,
-            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Bucket for action", "{}");
-
-    public static final String S3_FILE_ACTION_INFO_LOG = format(TABLE_FORMAT,
-            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Bucket", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Key", "{}");
-
     public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
 
     public static final String WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND = ANSI_ORANGE
@@ -126,7 +117,6 @@ public final class LogMessage {
     public static final String MOBILEBROWSER_LOG = "Mobilebrowser device: {}";
     public static final String NATIVE_NAVIGATION_LOG = format(TABLE_FORMAT, "Navigate to", "{}");
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
-    public static final String FILE_LOG = format(TABLE_FORMAT, "File", "{}");
     public static final String EXPRESSION_LOG = format(TABLE_FORMAT, "Expression", "{}");
     public static final String SCROLL_LOCATOR = format(TABLE_FORMAT, "Scroll locator", "{}");
     public static final String SCROLL_TYPE = format(TABLE_FORMAT, "Scroll type", "{}");

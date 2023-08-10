@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import nu.pattern.OpenCV;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -21,6 +22,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.File;
@@ -50,10 +52,10 @@ public class ImageComparisonUtil {
     private static final int RGB_255 = 255;
 
     @SneakyThrows
-    public void processImageComparisonResult(final ImageComparisonResult comparisonResult,
-                                             final Image image,
-                                             final File directoryToSave,
-                                             final CommandResult result) {
+    public void processComparisonResult(final ImageComparisonResult comparisonResult,
+                                        final Image image,
+                                        final File directoryToSave,
+                                        final CommandResult result) {
         ImageComparisonState imageComparisonState = comparisonResult.getImageComparisonState();
         if (imageComparisonState != ImageComparisonState.MATCH) {
             File actualImageFile = saveActualImage(comparisonResult, image, directoryToSave);
@@ -113,18 +115,21 @@ public class ImageComparisonUtil {
                                      final BufferedImage expected,
                                      final BufferedImage actual,
                                      final File parentFile,
-                                     final List<Rectangle> excludedElements,
+                                     final List<Rectangle> excludeList,
                                      final CommandResult result) {
         OpenCV.loadShared();
         Mat actualMat = bufferedImageToMat(actual);
         Mat expectedMat = bufferedImageToMat(expected);
+        Rect matchRect = getMatchingRectangle(actualMat, expectedMat);
+        ImageComparisonResult comparisonResult = getComparisonResult(image, expected, actual, excludeList, matchRect);
+        prepareResultImage(image, comparisonResult.getImageComparisonState(), parentFile, actualMat, matchRect, result);
+    }
+
+    private Rect getMatchingRectangle(final Mat actualMat, final Mat expectedMat) {
         Mat resultMat = new Mat();
         Imgproc.matchTemplate(actualMat, expectedMat, resultMat, Imgproc.TM_CCOEFF);
         Core.MinMaxLocResult mmr = Core.minMaxLoc(resultMat);
-        Rect matchRect = new Rect(mmr.maxLoc, new Size(expectedMat.width(), expectedMat.height()));
-        BufferedImage subImage = actual.getSubimage(matchRect.x, matchRect.y, matchRect.width, matchRect.height);
-        ImageComparisonResult comparisonResult = ImageComparator.compare(image, expected, subImage, excludedElements);
-        saveResultImage(image, comparisonResult.getImageComparisonState(), parentFile, actualMat, matchRect, result);
+        return new Rect(mmr.maxLoc, new Size(expectedMat.width(), expectedMat.height()));
     }
 
     private Mat bufferedImageToMat(final BufferedImage imageToConvert) {
@@ -154,28 +159,56 @@ public class ImageComparisonUtil {
         return byteArray;
     }
 
-    private void saveResultImage(final Image image,
-                                 final ImageComparisonState comparisonState,
-                                 final File parentFile,
-                                 final Mat actualMat,
-                                 final Rect matchRect,
-                                 final CommandResult result) {
+    private ImageComparisonResult getComparisonResult(final Image image,
+                                                      final BufferedImage expected,
+                                                      final BufferedImage actual,
+                                                      final List<Rectangle> excludedElements,
+                                                      final Rect matchRect) {
+        System.setProperty(SystemUtils.JAVA_AWT_HEADLESS, "false");
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize().getSize();
+        BufferedImage subImage = getSubImage(actual, matchRect, screenSize);
+        return ImageComparator.compare(image, expected, subImage, excludedElements);
+    }
+
+    private BufferedImage getSubImage(final BufferedImage actual,
+                                      final Rect matchRect,
+                                      final Dimension screenSize) {
+        if (screenSize.getWidth() > actual.getWidth() || screenSize.getHeight() > actual.getHeight()) {
+            double scaleX = Math.ceil(screenSize.getWidth() / actual.getWidth());
+            double scaleY = Math.ceil(screenSize.getHeight() / actual.getHeight());
+            return actual.getSubimage((int) Math.ceil(matchRect.x * scaleX), (int) Math.ceil(matchRect.y * scaleY),
+                    (int) Math.ceil(matchRect.width * scaleX), (int) Math.ceil(matchRect.height * scaleY));
+        } else if (actual.getWidth() > screenSize.getWidth() && actual.getHeight() > screenSize.getHeight()) {
+            BufferedImage resizedActual = com.github.romankh3.image.comparison.ImageComparisonUtil
+                    .resize(actual, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+            return resizedActual.getSubimage(matchRect.x, matchRect.y, matchRect.width, matchRect.height);
+        } else {
+            return actual.getSubimage(matchRect.x, matchRect.y, matchRect.width, matchRect.height);
+        }
+    }
+
+    private void prepareResultImage(final Image image,
+                                    final ImageComparisonState comparisonState,
+                                    final File parentFile,
+                                    final Mat actualMat,
+                                    final Rect matchRect,
+                                    final CommandResult result) {
         verifyDirectoryToSave(parentFile);
         if (comparisonState.equals(ImageComparisonState.MATCH)) {
             Imgproc.rectangle(actualMat, matchRect.tl(), matchRect.br(), new Scalar(0, RGB_255, 0), 1);
-            saveImage(image.getFile(), parentFile, actualMat, TestResourceSettings.RESULT_IMAGE_PREFIX, result);
+            saveResultImage(image.getFile(), parentFile, actualMat, TestResourceSettings.RESULT_IMAGE_PREFIX, result);
         } else {
             Imgproc.rectangle(actualMat, matchRect.tl(), matchRect.br(), new Scalar(0, 0, RGB_255), 1);
-            saveImage(image.getFile(), parentFile, actualMat, TestResourceSettings.ACTUAL_IMAGE_PREFIX, result);
+            saveResultImage(image.getFile(), parentFile, actualMat, TestResourceSettings.ACTUAL_IMAGE_PREFIX, result);
             throw new ImageComparisonException(IMAGE_NOT_FOUND);
         }
     }
 
-    private void saveImage(final String expectedImageName,
-                           final File parentFile,
-                           final Mat actualMat,
-                           final String imagePrefix,
-                           final CommandResult result) {
+    private void saveResultImage(final String expectedImageName,
+                                 final File parentFile,
+                                 final Mat actualMat,
+                                 final String imagePrefix,
+                                 final CommandResult result) {
         File resultFile = new File(parentFile.getAbsolutePath(), getImageNameToSave(expectedImageName, imagePrefix));
         Imgcodecs.imwrite(resultFile.getAbsolutePath(), actualMat);
         UiUtil.putScreenshotToResult(result, resultFile);

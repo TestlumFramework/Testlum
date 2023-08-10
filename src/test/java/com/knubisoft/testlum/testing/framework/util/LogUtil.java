@@ -12,6 +12,7 @@ import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.CompareWithElement;
 import com.knubisoft.testlum.testing.model.scenario.CompareWithFullScreen;
+import com.knubisoft.testlum.testing.model.scenario.CompareWithPart;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Exclude;
@@ -85,6 +86,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUT
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXPRESSION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FROM_PHONE_NUMBER_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND_TIMES;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
@@ -544,10 +546,10 @@ public class LogUtil {
             logCompareWithElementInfo(image.getElement());
         } else if (nonNull(image.getFullScreen())) {
             logCompareWithFullscreen(image.getFullScreen());
+        } else if (nonNull(image.getPart())) {
+            logCompareWithPart(image.getPart());
         }
-//        else if (nonNull(image.getPart())) {
-//            logCompareWithPart(image.getPart());
-//        } else {
+//        else {
 //            logFindPartInfo(image.getFindPart());
 //        }
     }
@@ -570,19 +572,19 @@ public class LogUtil {
         }
     }
 
-//    private void logCompareWithPart(final CompareWithPart part) {
-//        log.info(IMAGE_COMPARISON_TYPE_LOG, GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
-//        log.info(LOCATOR_LOG, part.getLocatorId());
-//        if (nonNull(part.getPercentage())) {
-//            log.info(IMAGE_MATCH_PERCENTAGE_LOG, part.getPercentage());
-//        }
-//        if (!part.getExclude().isEmpty()) {
-//            log.info(IMAGE_EXCLUDED_ELEMENT_LOG, StringUtils.join(part.getExclude().stream()
-//                    .map(Exclude::getLocatorId)
-//                    .collect(Collectors.joining(COMMA + SPACE))));
-//        }
-//    }
-//
+    private void logCompareWithPart(final CompareWithPart part) {
+        log.info(IMAGE_COMPARISON_TYPE_LOG, GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
+        log.info(LOCATOR_LOG, part.getLocatorId());
+        if (nonNull(part.getPercentage())) {
+            log.info(IMAGE_MATCH_PERCENTAGE_LOG, part.getPercentage());
+        }
+        if (!part.getExclude().isEmpty()) {
+            log.info(IMAGE_EXCLUDED_ELEMENT_LOG, StringUtils.join(part.getExclude().stream()
+                    .map(Exclude::getLocatorId)
+                    .collect(Collectors.joining(COMMA + SPACE))));
+        }
+    }
+
 //    private void logFindPartInfo(final FindPart part) {
 //        log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_FIND);
 //        if (nonNull(part.getPercentage())) {

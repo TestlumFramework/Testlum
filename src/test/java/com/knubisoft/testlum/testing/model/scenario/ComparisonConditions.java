@@ -35,7 +35,8 @@ import javax.xml.bind.annotation.XmlType;
     "exclude"
 })
 @XmlSeeAlso({
-    CompareWithFullScreen.class
+    CompareWithFullScreen.class,
+    CompareWithPart.class
 })
 public class ComparisonConditions {
 

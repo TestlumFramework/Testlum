@@ -26,10 +26,10 @@ public class ImageComparator {
         }
         if (nonNull(image.getFullScreen()) && nonNull(image.getFullScreen().getPercentage())) {
             imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENTS - image.getFullScreen().getPercentage());
+        } else if (nonNull(image.getPart()) && nonNull(image.getPart().getPercentage())) {
+            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENTS - image.getPart().getPercentage());
         }
-//        else if (nonNull(image.getPart()) && nonNull(image.getPart().getPercentage())) {
-//            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENTS - image.getPart().getPercentage());
-//        } else if (nonNull(image.getFindPart()) && nonNull(image.getFindPart().getPercentage())) {
+//        else if (nonNull(image.getFindPart()) && nonNull(image.getFindPart().getPercentage())) {
 //            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENTS - image.getFindPart().getPercentage());
 //        }
         return imageComparison.compareImages();

@@ -23,7 +23,7 @@ import java.util.Objects;
 
 @Slf4j
 @Conditional({OnClickhouseEnabledCondition.class})
-@Component
+@Component("clickhouseOperation")
 public class ClickhouseOperation implements StorageOperation {
 
     private final Map<AliasEnv, AbstractSqlExecutor> clickhouseExecutor;

@@ -14,7 +14,6 @@ import com.knubisoft.testlum.testing.model.scenario.CompareWithPart;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Exclude;
-import com.knubisoft.testlum.testing.model.scenario.FindPart;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
@@ -60,7 +59,6 @@ import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_FIND;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;

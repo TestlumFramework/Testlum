@@ -37,7 +37,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.client.HttpClientErrorException;
 import software.amazon.awssdk.http.HttpStatusCode;
 
@@ -118,12 +117,8 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_A
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SERVER_ERROR_RESPONSE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SKIPPED_BODY_VALIDATION;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SMTP_HOST_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SMTP_PORT_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SOURCE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_FRAME;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_WEBVIEW;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SUBJECT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_DIRECTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_QUANTITY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_TYPE;
@@ -364,16 +359,6 @@ public class LogUtil {
         if (nonNull(data)) {
             log.info(title, data);
         }
-    }
-
-    public void logSmtpInfo(final Smtp smtp, final JavaMailSenderImpl javaMailSender) {
-        log.info(ALIAS_LOG, smtp.getAlias());
-        log.info(SMTP_HOST_LOG, javaMailSender.getHost());
-        log.info(SMTP_PORT_LOG, javaMailSender.getPort());
-        log.info(SOURCE_LOG, javaMailSender.getUsername());
-        log.info(DESTINATION_LOG, smtp.getRecipientEmail());
-        log.info(SUBJECT_LOG, smtp.getSubject());
-        log.info(CONTENT_LOG, smtp.getText());
     }
 
     public void logTwilioInfo(final Twilio twilio, final String twilioPhoneNumber) {

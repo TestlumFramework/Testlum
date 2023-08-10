@@ -39,7 +39,6 @@ public final class LogMessage {
     public static final String CONDITION_LOG = format(TABLE_FORMAT, "Condition", "'{}' = {};");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
     public static final String QUERY = format(TABLE_FORMAT, "Query", "{}");
-    public static final String REDIS_QUERY = format(TABLE_FORMAT, "Query", "{} {}");
     public static final String SCENARIO_NUMBER_AND_PATH_LOG = ANSI_GREEN
             + "================== Execute for scenario #{} - {} ==================" + ANSI_RESET;
     public static final String LINE =
@@ -88,15 +87,6 @@ public final class LogMessage {
             "Comment", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Action", "{}");
 
-    public static final String S3_BUCKET_ACTION_INFO_LOG = format(TABLE_FORMAT,
-            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Bucket for action", "{}");
-
-    public static final String S3_FILE_ACTION_INFO_LOG = format(TABLE_FORMAT,
-            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Bucket", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Key", "{}");
-
     public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
 
     public static final String WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND = ANSI_ORANGE
@@ -127,7 +117,6 @@ public final class LogMessage {
     public static final String MOBILEBROWSER_LOG = "Mobilebrowser device: {}";
     public static final String NATIVE_NAVIGATION_LOG = format(TABLE_FORMAT, "Navigate to", "{}");
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
-    public static final String FILE_LOG = format(TABLE_FORMAT, "File", "{}");
     public static final String EXPRESSION_LOG = format(TABLE_FORMAT, "Expression", "{}");
     public static final String SCROLL_LOCATOR = format(TABLE_FORMAT, "Scroll locator", "{}");
     public static final String SCROLL_TYPE = format(TABLE_FORMAT, "Scroll type", "{}");
@@ -145,11 +134,9 @@ public final class LogMessage {
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "HTTP method", "{}");
     public static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
     public static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
-    public static final String SKIPPED_BODY_VALIDATION = "Validation of the response body was skipped "
-            + "because of no expected file";
-    public static final String SMTP_HOST_LOG = format(TABLE_FORMAT, "SMTP Host", "{}");
-    public static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");
-    public static final String SUBJECT_LOG = format(TABLE_FORMAT, "Subject", "{}");
+    public static final String SKIPPED_BODY_VALIDATION = ANSI_ORANGE
+            + "Validation of the response body was skipped because of no expected file"
+            + ANSI_RESET;
     public static final String ACTION_LOG = format(TABLE_FORMAT, "Action", "{}");
     public static final String ROUTING_KEY_LOG = format(TABLE_FORMAT, "Routing Key", "{}");
     public static final String CORRELATION_ID_LOG = format(TABLE_FORMAT, "Correlation Id", "{}");

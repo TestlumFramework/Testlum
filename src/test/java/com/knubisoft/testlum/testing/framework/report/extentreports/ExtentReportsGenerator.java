@@ -3,6 +3,7 @@ package com.knubisoft.testlum.testing.framework.report.extentreports;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
+import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
@@ -89,8 +90,8 @@ public class ExtentReportsGenerator implements ReportGenerator {
         addBrowserInfo(extentTest, scenarioResult);
         addMobilebrowserDeviceInfo(extentTest, scenarioResult);
         addNativeDeviceInfo(extentTest, scenarioResult);
-        setExecutionResult(extentTest, scenarioResult);
         addScenarioSteps(extentTest, scenarioResult.getCommands());
+        setExecutionResult(extentTest, scenarioResult);
     }
 
     private void addOverviewInfo(final ExtentTest extentTest, final Overview overview, final String filePath) {
@@ -198,12 +199,16 @@ public class ExtentReportsGenerator implements ReportGenerator {
     }
 
     private void setExecutionResult(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
+        extentTest.info(format(SCENARIO_EXECUTION_TIME_TEMPLATE, scenarioResult.getExecutionTime()));
         if (scenarioResult.isSuccess()) {
             extentTest.pass(MarkupHelper.createLabel(SCENARIO_SUCCESS, ExtentColor.GREEN));
+            if (extentTest.getStatus().equals(Status.SKIP)
+                    && !scenarioResult.getCommands().stream().allMatch(CommandResult::isSkipped)) {
+                extentTest.getModel().setStatus(Status.PASS);
+            }
         } else {
             extentTest.fail(MarkupHelper.createLabel(SCENARIO_FAILED, ExtentColor.RED));
         }
-        extentTest.info(format(SCENARIO_EXECUTION_TIME_TEMPLATE, scenarioResult.getExecutionTime()));
     }
 
     private void addScenarioSteps(final ExtentTest extentTest, final List<CommandResult> steps) {

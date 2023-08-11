@@ -19,9 +19,11 @@ import com.knubisoft.testlum.testing.model.global_config.AbstractCapabilities;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
+import lombok.SneakyThrows;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Field;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -70,6 +72,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private static final String SCENARIO_FAILED = "Test scenario failed";
     private static final String SCENARIO_EXECUTION_TIME_TEMPLATE = "Test scenario execution time: %dms";
     private static final String STEP_EXECUTION_TIME_TEMPLATE = "Step execution time: %dms";
+    private static final int SKIP_LEVEL = 15;
 
     @Override
     public void generateReport(final GlobalScenarioStatCollector globalScenarioStatCollector) {
@@ -201,11 +204,8 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private void setExecutionResult(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
         extentTest.info(format(SCENARIO_EXECUTION_TIME_TEMPLATE, scenarioResult.getExecutionTime()));
         if (scenarioResult.isSuccess()) {
+            checkIfTestSkipped(extentTest, scenarioResult);
             extentTest.pass(MarkupHelper.createLabel(SCENARIO_SUCCESS, ExtentColor.GREEN));
-            if (extentTest.getStatus().equals(Status.SKIP)
-                    && !scenarioResult.getCommands().stream().allMatch(CommandResult::isSkipped)) {
-                extentTest.getModel().setStatus(Status.PASS);
-            }
         } else {
             extentTest.fail(MarkupHelper.createLabel(SCENARIO_FAILED, ExtentColor.RED));
         }
@@ -282,5 +282,17 @@ public class ExtentReportsGenerator implements ReportGenerator {
             extentTest.fail(stepExecutionInfo.getException());
         }
         extentTest.info(format(STEP_EXECUTION_TIME_TEMPLATE, stepExecutionInfo.getExecutionTime()));
+    }
+
+    @SneakyThrows
+    private void checkIfTestSkipped(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
+        if (extentTest.getStatus().equals(Status.SKIP)
+                && !scenarioResult.getCommands().stream().allMatch(CommandResult::isSkipped)) {
+            Class<Status> statusClass = Status.class;
+            Field level = statusClass.getDeclaredField("level");
+            level.setAccessible(true);
+            level.set(extentTest.getStatus(), SKIP_LEVEL);
+            level.setAccessible(false);
+        }
     }
 }

@@ -72,6 +72,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private static final String SCENARIO_FAILED = "Test scenario failed";
     private static final String SCENARIO_EXECUTION_TIME_TEMPLATE = "Test scenario execution time: %dms";
     private static final String STEP_EXECUTION_TIME_TEMPLATE = "Step execution time: %dms";
+    public static final int SKIP_LEVEL = 15;
 
     @Override
     public void generateReport(final GlobalScenarioStatCollector globalScenarioStatCollector) {
@@ -290,7 +291,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
             Class<Status> statusClass = Status.class;
             Field level = statusClass.getDeclaredField("level");
             level.setAccessible(true);
-            level.set(extentTest.getStatus(), 15);
+            level.set(extentTest.getStatus(), SKIP_LEVEL);
             level.setAccessible(false);
         }
     }

@@ -6,6 +6,7 @@ import com.github.romankh3.image.comparison.model.Rectangle;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import lombok.experimental.UtilityClass;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class ImageComparator {
                                          final List<Rectangle> excludedElements) {
         ImageComparison imageComparison = new ImageComparison(expectedImage, actualImage);
         if (!excludedElements.isEmpty()) {
-            imageComparison.setExcludedAreas(excludedElements);
+            setExcludedElements(excludedElements, imageComparison);
         }
         if (nonNull(image.getFullScreen()) && nonNull(image.getFullScreen().getPercentage())) {
             imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENTS - image.getFullScreen().getPercentage());
@@ -33,5 +34,13 @@ public class ImageComparator {
 //            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENTS - image.getFindPart().getPercentage());
 //        }
         return imageComparison.compareImages();
+    }
+
+    private void setExcludedElements(final List<Rectangle> excludedElements,
+                                     final ImageComparison imageComparison) {
+        imageComparison.setExcludedAreas(excludedElements);
+        imageComparison.setDrawExcludedRectangles(true);
+        imageComparison.setExcludedRectangleFilling(true, 50);
+        imageComparison.setExcludedRectangleColor(Color.GREEN);
     }
 }

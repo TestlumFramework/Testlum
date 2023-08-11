@@ -232,6 +232,7 @@ public class ExceptionMessage {
             + "SIZE_MISMATCH%n" + "Expected image size: %sx%s%n" + "Actual image size: %sx%s";
     public static final String IMAGES_MISMATCH = "The images don't match. Image comparison state is -> MISMATCH. "
             + "Difference percent: %s";
+    public static final String ELEMENT_OUT_OF_BOUNDS = "Element is out of screen bounds";
     public static final String IMAGE_NOT_FOUND = "The image was not found on the page";
     public static final String WEB_ELEMENT_ATTRIBUTE_NOT_EXIST = "Web element does not have attribute <%s>";
     public static final String ELEMENT_NOT_FOUND = "Element with locator <%s> was not found during 'scrollTo'";

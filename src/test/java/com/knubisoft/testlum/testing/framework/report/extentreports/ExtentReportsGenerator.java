@@ -72,7 +72,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private static final String SCENARIO_FAILED = "Test scenario failed";
     private static final String SCENARIO_EXECUTION_TIME_TEMPLATE = "Test scenario execution time: %dms";
     private static final String STEP_EXECUTION_TIME_TEMPLATE = "Step execution time: %dms";
-    public static final int SKIP_LEVEL = 15;
+    private static final int SKIP_LEVEL = 15;
 
     @Override
     public void generateReport(final GlobalScenarioStatCollector globalScenarioStatCollector) {

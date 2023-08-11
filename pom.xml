@@ -928,8 +928,8 @@
 <!--    TESTLUM PLUGINS    -->
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>utils</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-utils</artifactId>
             <version>1.0</version>
             <exclusions>
                 <exclusion>
@@ -956,50 +956,56 @@
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>models</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-models</artifactId>
             <version>1.0</version>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>mysql</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-mysql</artifactId>
             <version>1.0</version>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>postgres</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-postgres</artifactId>
             <version>1.0</version>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>clickhouse</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-clickhouse</artifactId>
             <version>1.0</version>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>oracle</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-oracle</artifactId>
             <version>1.0</version>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>mongo</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-mongo</artifactId>
             <version>1.0</version>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>dynamo</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-dynamo</artifactId>
             <version>1.0</version>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>sendgrid</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-kafka</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-sendgrid</artifactId>
             <version>1.0</version>
             <exclusions>
                 <exclusion>
@@ -1010,8 +1016,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>redis</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-redis</artifactId>
             <version>1.0</version>
             <exclusions>
                 <exclusion>
@@ -1026,8 +1032,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>s3</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-s3</artifactId>
             <version>1.0</version>
             <exclusions>
                 <exclusion>
@@ -1042,8 +1048,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>ses</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-ses</artifactId>
             <version>1.0</version>
             <exclusions>
                 <exclusion>
@@ -1054,8 +1060,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>smtp</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-smtp</artifactId>
             <version>1.0</version>
             <exclusions>
                 <exclusion>
@@ -1070,8 +1076,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>twilio</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-twilio</artifactId>
             <version>1.0</version>
             <exclusions>
                 <exclusion>

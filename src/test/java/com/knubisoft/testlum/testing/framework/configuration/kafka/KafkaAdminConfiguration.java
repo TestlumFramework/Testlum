@@ -7,7 +7,6 @@ import com.knubisoft.testlum.testing.model.global_config.Kafka;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.KafkaAdminClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -22,13 +21,14 @@ import java.util.stream.Collectors;
 @Conditional({OnKafkaEnabledCondition.class})
 public class KafkaAdminConfiguration {
 
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
+    private final Map<String, List<Kafka>> kafkaMap;
 
-    private final Map<String, List<Kafka>> kafkaMap = globalTestConfigurationProvider.getIntegrations()
-            .entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey,
-                    entry -> entry.getValue().getKafkaIntegration().getKafka()));
+    public KafkaAdminConfiguration(final GlobalTestConfigurationProvider configurationProvider) {
+        this.kafkaMap = configurationProvider.getIntegrations()
+                .entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        entry -> entry.getValue().getKafkaIntegration().getKafka()));
+    }
 
     @Bean
     public Map<AliasEnv, KafkaAdmin> kafkaAdmin() {

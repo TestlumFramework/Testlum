@@ -10,18 +10,15 @@ import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
-import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
+import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
-import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
-import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.RmqHeaders;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
-import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
@@ -150,14 +147,11 @@ public class ResultUtil {
     private static final String SQS_VISIBILITY_TIMEOUT = "Visibility timeout";
     private static final String SQS_WAIT_TIME_SECONDS = "Wait time";
     private static final String SQS_RECEIVE_REQUEST_ATTEMPT_ID = "Receive request attempt id";
-    private static final String COMMENT_FOR_KAFKA_SEND_ACTION = "Send message to Kafka";
     private static final String COMMENT_FOR_RABBIT_SEND_ACTION = "Send message to RabbitMQ";
     private static final String COMMENT_FOR_SQS_SEND_ACTION = "Send message to SQS";
-    private static final String COMMENT_FOR_KAFKA_RECEIVE_ACTION = "Receive message from Kafka";
     private static final String COMMENT_FOR_RABBIT_RECEIVE_ACTION = "Receive message from RabbitMQ";
     private static final String COMMENT_FOR_SQS_RECEIVE_ACTION = "Receive message from SQS";
     private static final String TIMEOUT_MILLIS = "Timeout millis";
-    private static final String KEY = "Key";
     private static final String CORRELATION_ID = "Correlation ID";
     private static final String RECEIVE = "Receive";
     private static final String SUBSCRIBE = "Subscribe";
@@ -297,25 +291,6 @@ public class ResultUtil {
         result.setCommandKey(RECEIVE);
         result.setComment(COMMENT_FOR_RABBIT_RECEIVE_ACTION);
         addMessageBrokerGeneralMetaData(alias, RECEIVE, QUEUE, receiveAction.getQueue(), result);
-        result.put(HEADERS_STATUS, receiveAction.isHeaders() ? ENABLE : DISABLE);
-        result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
-    }
-
-    public void addKafkaSendInfo(final SendKafkaMessage sendAction,
-                                 final String alias,
-                                 final CommandResult result) {
-        result.setCommandKey(SEND);
-        result.setComment(COMMENT_FOR_KAFKA_SEND_ACTION);
-        addMessageBrokerGeneralMetaData(alias, SEND, TOPIC, sendAction.getTopic(), result);
-        addKafkaAdditionalMetaDataForSendAction(sendAction, result);
-    }
-
-    public void addKafkaReceiveInfo(final ReceiveKafkaMessage receiveAction,
-                                    final String alias,
-                                    final CommandResult result) {
-        result.setCommandKey(RECEIVE);
-        result.setComment(COMMENT_FOR_KAFKA_RECEIVE_ACTION);
-        addMessageBrokerGeneralMetaData(alias, RECEIVE, TOPIC, receiveAction.getTopic(), result);
         result.put(HEADERS_STATUS, receiveAction.isHeaders() ? ENABLE : DISABLE);
         result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
     }
@@ -522,23 +497,6 @@ public class ResultUtil {
     public void addOpenTabMetadata(final String url,
                                    final CommandResult result) {
         result.put(OPEN_COMMAND, isNotBlank(url) ? String.format(NEW_TAB_WITH_URL, url) : NEW_TAB);
-    }
-
-    private void addKafkaAdditionalMetaDataForSendAction(final SendKafkaMessage sendAction,
-                                                         final CommandResult result) {
-        String key = sendAction.getKey();
-        String correlationId = sendAction.getCorrelationId();
-        KafkaHeaders kafkaHeaders = sendAction.getHeaders();
-        if (isNotBlank(key)) {
-            result.put(KEY, key);
-        }
-        if (isNotBlank(correlationId)) {
-            result.put(CORRELATION_ID, correlationId);
-        }
-        if (nonNull(kafkaHeaders)) {
-            result.put(ADDITIONAL_HEADERS, kafkaHeaders.getHeader().stream().map(header ->
-                    format(HEADER_TEMPLATE, header.getName(), header.getValue())).collect(Collectors.toList()));
-        }
     }
 
     private void addRabbitMQAdditionalMetaDataForSendAction(final SendRmqMessage sendAction,

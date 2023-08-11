@@ -17,13 +17,11 @@ import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
-import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
-import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
@@ -54,7 +52,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CLEAR_
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_SKIPPED_ON_CONDITION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMENT_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMIT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONDITION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_FORMAT;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_LOG;
@@ -124,7 +121,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_UR
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TIMEOUT_MILLIS_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TOPIC_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COMMAND_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COMMAND_LOG_WITHOUT_POSITION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;
@@ -300,17 +296,6 @@ public class LogUtil {
     public void logAllQueries(final String dbType, final List<String> queries, final String alias) {
         log.info(DB_TYPE_LOG, dbType);
         logAllQueries(queries, alias);
-    }
-
-    public void logKafkaSendInfo(final SendKafkaMessage send, final String content) {
-        logMessageBrokerGeneralMetaData(SEND_ACTION, TOPIC_LOG, send.getTopic(), content);
-        logIfNotNull(CORRELATION_ID_LOG, send.getCorrelationId());
-    }
-
-    public void logKafkaReceiveInfo(final ReceiveKafkaMessage receive, final String content) {
-        logMessageBrokerGeneralMetaData(RECEIVE_ACTION, TOPIC_LOG, receive.getTopic(), content);
-        logIfNotNull(TIMEOUT_MILLIS_LOG, receive.getTimeoutMillis());
-        logIfNotNull(COMMIT_LOG, receive.isCommit());
     }
 
     public void logRabbitSendInfo(final SendRmqMessage send, final String content) {

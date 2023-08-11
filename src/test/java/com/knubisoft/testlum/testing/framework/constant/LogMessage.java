@@ -145,8 +145,6 @@ public final class LogMessage {
     public static final String QUEUE_LOG = format(TABLE_FORMAT, "Queue", "{}");
     public static final String TIMEOUT_MILLIS_LOG = format(TABLE_FORMAT, "Timeout Millis", "{}");
     public static final String PREFETCH_COUNT_LOG = format(TABLE_FORMAT, "Prefetch Count", "{}");
-    public static final String TOPIC_LOG = format(TABLE_FORMAT, "Topic", "{}");
-    public static final String COMMIT_LOG = format(TABLE_FORMAT, "Commit", "{}");
     public static final String DELAY_SECONDS_LOG = format(TABLE_FORMAT, "Delay Seconds", "{}");
     public static final String MESSAGE_DEDUPLICATION_ID_LOG = format(TABLE_FORMAT, "Deduplication Id", "{}");
     public static final String MESSAGE_GROUP_ID_LOG = format(TABLE_FORMAT, "Message Group Id", "{}");

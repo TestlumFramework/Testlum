@@ -24,16 +24,17 @@ import java.util.Objects;
 public class RabbitMQOperation implements StorageOperation {
 
     @Autowired
-    private GlobalTestConfigurationProvider configurationProvider;
-    @Autowired
     private EnvManager envManager;
     private final Map<AliasEnv, Client> rabbitMqClient;
+    private final GlobalTestConfigurationProvider configurationProvider;
     private final Map<String, Integrations> integrations;
 
     public RabbitMQOperation(@Autowired(required = false) @Qualifier("rabbitMqClient")
-                             final Map<AliasEnv, Client> rabbitMqClient) {
+                             final Map<AliasEnv, Client> rabbitMqClient,
+                             final GlobalTestConfigurationProvider configurationProvider) {
         this.rabbitMqClient = rabbitMqClient;
-        this.integrations = configurationProvider.getIntegrations();
+        this.configurationProvider = configurationProvider;
+        this.integrations = this.configurationProvider.getIntegrations();
     }
 
     @Override

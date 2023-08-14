@@ -137,16 +137,6 @@ public final class LogMessage {
     public static final String SKIPPED_BODY_VALIDATION = ANSI_ORANGE
             + "Validation of the response body was skipped because of no expected file"
             + ANSI_RESET;
-    public static final String ACTION_LOG = format(TABLE_FORMAT, "Action", "{}");
-    public static final String QUEUE_LOG = format(TABLE_FORMAT, "Queue", "{}");
-    public static final String DELAY_SECONDS_LOG = format(TABLE_FORMAT, "Delay Seconds", "{}");
-    public static final String MESSAGE_DEDUPLICATION_ID_LOG = format(TABLE_FORMAT, "Deduplication Id", "{}");
-    public static final String MESSAGE_GROUP_ID_LOG = format(TABLE_FORMAT, "Message Group Id", "{}");
-    public static final String MAX_NUMBER_OF_MESSAGES_LOG = format(TABLE_FORMAT, "Max Number of Messages", "{}");
-    public static final String WAIT_TIME_SECONDS_LOG = format(TABLE_FORMAT, "Wait Time Seconds", "{}");
-    public static final String RECEIVE_REQUEST_ATTEMPT_ID_LOG = format(
-            TABLE_FORMAT, "Attempt Id", "{}");
-    public static final String VISIBILITY_TIMEOUT_LOG = format(TABLE_FORMAT, "Visibility Timeout", "{}");
     public static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
     public static final String ATTRIBUTE_LOG = format(TABLE_FORMAT, "Attribute", "{}");
     public static final String DESTINATION_LOG = format(TABLE_FORMAT, "Destination", "{}");

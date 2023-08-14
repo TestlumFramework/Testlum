@@ -13,11 +13,9 @@ import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
-import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
-import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
@@ -50,7 +48,6 @@ public class ResultUtil {
     public static final String API_ALIAS = "API alias";
     public static final String AUTHENTICATION_TYPE = "Authentication type";
     public static final String CREDENTIALS_FILE = "Credentials file";
-    public static final String QUEUE = "Queue";
     public static final String MESSAGE_TO_SEND = "Message to send";
     public static final String CONTENT_TO_SEND = "Content to send";
     public static final String EXPECTED_CODE = "Expected code";
@@ -122,28 +119,16 @@ public class ResultUtil {
     private static final String SCROLL_TYPE = "Scroll type";
     private static final String LOCATOR_FOR_SCROLL = "Locator for scroll";
     private static final String QUERIES = "Queries";
-    private static final String ENABLE = "Enable";
-    private static final String DISABLE = "Disable";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
     private static final String LAMBDA_FUNCTION_NAME = "Function name";
     private static final String LAMBDA_PAYLOAD = "Payload";
-    private static final String HEADERS_STATUS = "Headers status";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
     private static final String TOPIC = "Topic";
     private static final String NUMBER_OF_MESSAGES = "Number of messages";
     private static final String ALL_AVAILABLE_MESSAGES = "All available messages";
     private static final String ACTION = "Action";
     private static final String SEND = "Send";
-    private static final String SQS_DELAY_SECONDS = "Delay";
-    private static final String SQS_MESSAGE_DUPLICATION_ID = "Message duplication id";
-    private static final String SQS_MESSAGE_GROUP_ID = "Message group id";
-    private static final String SQS_MAX_NUMBER_OF_MESSAGES = "Max number of messages";
-    private static final String SQS_VISIBILITY_TIMEOUT = "Visibility timeout";
-    private static final String SQS_WAIT_TIME_SECONDS = "Wait time";
-    private static final String SQS_RECEIVE_REQUEST_ATTEMPT_ID = "Receive request attempt id";
-    private static final String COMMENT_FOR_SQS_SEND_ACTION = "Send message to SQS";
-    private static final String COMMENT_FOR_SQS_RECEIVE_ACTION = "Receive message from SQS";
     private static final String TIMEOUT_MILLIS = "Timeout millis";
     private static final String RECEIVE = "Receive";
     private static final String SUBSCRIBE = "Subscribe";
@@ -265,24 +250,6 @@ public class ResultUtil {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
                 .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
                 .collect(Collectors.toList()));
-    }
-
-    public void addSqsSendInfo(final SendSqsMessage sendAction,
-                               final String alias,
-                               final CommandResult result) {
-        result.setCommandKey(SEND);
-        result.setComment(COMMENT_FOR_SQS_SEND_ACTION);
-        addMessageBrokerGeneralMetaData(alias, SEND, QUEUE, sendAction.getQueue(), result);
-        addSqsAdditionalMetaDataForSendAction(sendAction, result);
-    }
-
-    public void addSqsReceiveInfo(final ReceiveSqsMessage receiveAction,
-                                  final String alias,
-                                  final CommandResult result) {
-        result.setCommandKey(RECEIVE);
-        result.setComment(COMMENT_FOR_SQS_RECEIVE_ACTION);
-        addMessageBrokerGeneralMetaData(alias, RECEIVE, QUEUE, receiveAction.getQueue(), result);
-        addSqsAdditionalMetaDataForReceiveAction(receiveAction, result);
     }
 
     public void addWebsocketInfoForSendAction(final WebsocketSend sendAction,
@@ -469,34 +436,6 @@ public class ResultUtil {
     public void addOpenTabMetadata(final String url,
                                    final CommandResult result) {
         result.put(OPEN_COMMAND, isNotBlank(url) ? String.format(NEW_TAB_WITH_URL, url) : NEW_TAB);
-    }
-
-    private void addSqsAdditionalMetaDataForSendAction(final SendSqsMessage sendAction, final CommandResult result) {
-        if (nonNull(sendAction.getDelaySeconds())) {
-            result.put(SQS_DELAY_SECONDS, sendAction.getDelaySeconds());
-        }
-        if (isNotBlank(sendAction.getMessageDeduplicationId())) {
-            result.put(SQS_MESSAGE_DUPLICATION_ID, sendAction.getMessageDeduplicationId());
-        }
-        if (isNotBlank(sendAction.getMessageGroupId())) {
-            result.put(SQS_MESSAGE_GROUP_ID, sendAction.getMessageGroupId());
-        }
-    }
-
-    private void addSqsAdditionalMetaDataForReceiveAction(final ReceiveSqsMessage receiveAction,
-                                                          final CommandResult result) {
-        if (nonNull(receiveAction.getMaxNumberOfMessages())) {
-            result.put(SQS_MAX_NUMBER_OF_MESSAGES, receiveAction.getMaxNumberOfMessages());
-        }
-        if (nonNull(receiveAction.getVisibilityTimeout())) {
-            result.put(SQS_VISIBILITY_TIMEOUT, receiveAction.getVisibilityTimeout());
-        }
-        if (nonNull(receiveAction.getWaitTimeSeconds())) {
-            result.put(SQS_WAIT_TIME_SECONDS, receiveAction.getWaitTimeSeconds());
-        }
-        if (isNotBlank(receiveAction.getReceiveRequestAttemptId())) {
-            result.put(SQS_RECEIVE_REQUEST_ATTEMPT_ID, receiveAction.getReceiveRequestAttemptId());
-        }
     }
 
     @SneakyThrows

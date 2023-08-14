@@ -1043,6 +1043,12 @@
 
         <dependency>
             <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-sqs</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
             <artifactId>testlum-smtp</artifactId>
             <version>1.0</version>
             <exclusions>

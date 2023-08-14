@@ -129,8 +129,6 @@ public class ResultUtil {
     private static final String DISABLE = "Disable";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
-    private static final String LAMBDA_FUNCTION_NAME = "Function name";
-    private static final String LAMBDA_PAYLOAD = "Payload";
     private static final String HEADERS_STATUS = "Headers status";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
     private static final String TOPIC = "Topic";
@@ -349,15 +347,6 @@ public class ResultUtil {
         if (isNotBlank(destinationValue)) {
             result.put(destination, destinationValue);
         }
-    }
-
-    public void addLambdaGeneralMetaData(final String alias,
-                                         final String functionName,
-                                         final String payload,
-                                         final CommandResult result) {
-        result.put(ALIAS, alias);
-        result.put(LAMBDA_FUNCTION_NAME, functionName);
-        result.put(LAMBDA_PAYLOAD, StringPrettifier.asJsonResult(payload));
     }
 
     public void addShellMetaData(final List<String> shellFiles,

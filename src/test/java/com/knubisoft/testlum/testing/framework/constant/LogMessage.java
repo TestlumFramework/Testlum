@@ -165,8 +165,6 @@ public final class LogMessage {
     public static final String OVERVIEW_INFO_LOG = "{}: {}";
     public static final String MOVE_TO_EMPTY_SPACE = format(TABLE_FORMAT, "Move to empty space", "{}");
 
-    public static final String LAMBDA_FUNCTION_LOG = format(TABLE_FORMAT, "Function name", "{}");
-    public static final String LAMBDA_PAYLOAD_LOG = format(TABLE_FORMAT, "Payload", "{}");
     public static final String UI_EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Step execution time", "{} ms");
     public static final String COMMAND_TYPE_LOG = format(TABLE_FORMAT, "Command type", "{}");
     public static final String JS_FILE_LOG = format(TABLE_FORMAT, "JS file", "{}");

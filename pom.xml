@@ -456,6 +456,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
             <version>${org.spring.boot.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.datatype</groupId>
+                    <artifactId>jackson-datatype-jsr310</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -486,6 +492,10 @@
                 <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.yaml</groupId>
+                    <artifactId>snakeyaml</artifactId>
                 </exclusion>
             </exclusions>
 
@@ -929,40 +939,6 @@
 
         <dependency>
             <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-utils</artifactId>
-            <version>1.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.datatype</groupId>
-                    <artifactId>jackson-datatype-jsr310</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.yaml</groupId>
-                    <artifactId>snakeyaml</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-beans</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-models</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
             <artifactId>testlum-mysql</artifactId>
             <version>1.0</version>
         </dependency>
@@ -1000,6 +976,12 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-kafka</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-rabbit</artifactId>
             <version>1.0</version>
         </dependency>
 
@@ -1092,8 +1074,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>elasticsearch</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-elasticsearch</artifactId>
             <version>1.0</version>
             <exclusions>
                 <exclusion>

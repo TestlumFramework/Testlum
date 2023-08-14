@@ -13,13 +13,10 @@ import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
-import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
-import com.knubisoft.testlum.testing.model.scenario.RmqHeaders;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
-import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
@@ -136,8 +133,6 @@ public class ResultUtil {
     private static final String TOPIC = "Topic";
     private static final String NUMBER_OF_MESSAGES = "Number of messages";
     private static final String ALL_AVAILABLE_MESSAGES = "All available messages";
-    private static final String ROUTING_KEY = "Routing Key";
-    private static final String EXCHANGE = "Exchange";
     private static final String ACTION = "Action";
     private static final String SEND = "Send";
     private static final String SQS_DELAY_SECONDS = "Delay";
@@ -147,12 +142,9 @@ public class ResultUtil {
     private static final String SQS_VISIBILITY_TIMEOUT = "Visibility timeout";
     private static final String SQS_WAIT_TIME_SECONDS = "Wait time";
     private static final String SQS_RECEIVE_REQUEST_ATTEMPT_ID = "Receive request attempt id";
-    private static final String COMMENT_FOR_RABBIT_SEND_ACTION = "Send message to RabbitMQ";
     private static final String COMMENT_FOR_SQS_SEND_ACTION = "Send message to SQS";
-    private static final String COMMENT_FOR_RABBIT_RECEIVE_ACTION = "Receive message from RabbitMQ";
     private static final String COMMENT_FOR_SQS_RECEIVE_ACTION = "Receive message from SQS";
     private static final String TIMEOUT_MILLIS = "Timeout millis";
-    private static final String CORRELATION_ID = "Correlation ID";
     private static final String RECEIVE = "Receive";
     private static final String SUBSCRIBE = "Subscribe";
     private static final String DATABASE = "Database";
@@ -273,26 +265,6 @@ public class ResultUtil {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
                 .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
                 .collect(Collectors.toList()));
-    }
-
-    public void addRabbitMQSendInfo(final SendRmqMessage sendAction,
-                                    final String alias,
-                                    final CommandResult result) {
-        result.setCommandKey(SEND);
-        result.setComment(COMMENT_FOR_RABBIT_SEND_ACTION);
-        addMessageBrokerGeneralMetaData(alias, SEND, ROUTING_KEY, sendAction.getRoutingKey(), result);
-        addRabbitMQAdditionalMetaDataForSendAction(sendAction, result);
-    }
-
-    public void addRabbitMQReceiveInfo(final ReceiveRmqMessage receiveAction,
-                                       final String alias,
-                                       final CommandResult result) {
-
-        result.setCommandKey(RECEIVE);
-        result.setComment(COMMENT_FOR_RABBIT_RECEIVE_ACTION);
-        addMessageBrokerGeneralMetaData(alias, RECEIVE, QUEUE, receiveAction.getQueue(), result);
-        result.put(HEADERS_STATUS, receiveAction.isHeaders() ? ENABLE : DISABLE);
-        result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
     }
 
     public void addSqsSendInfo(final SendSqsMessage sendAction,
@@ -497,23 +469,6 @@ public class ResultUtil {
     public void addOpenTabMetadata(final String url,
                                    final CommandResult result) {
         result.put(OPEN_COMMAND, isNotBlank(url) ? String.format(NEW_TAB_WITH_URL, url) : NEW_TAB);
-    }
-
-    private void addRabbitMQAdditionalMetaDataForSendAction(final SendRmqMessage sendAction,
-                                                            final CommandResult result) {
-        String exchange = sendAction.getExchange();
-        String correlationId = sendAction.getCorrelationId();
-        RmqHeaders rabbitHeaders = sendAction.getHeaders();
-        if (isNotBlank(exchange)) {
-            result.put(EXCHANGE, exchange);
-        }
-        if (isNotBlank(correlationId)) {
-            result.put(CORRELATION_ID, correlationId);
-        }
-        if (nonNull(rabbitHeaders)) {
-            result.put(ADDITIONAL_HEADERS, rabbitHeaders.getHeader().stream().map(header ->
-                    format(HEADER_TEMPLATE, header.getName(), header.getValue())).collect(Collectors.toList()));
-        }
     }
 
     private void addSqsAdditionalMetaDataForSendAction(final SendSqsMessage sendAction, final CommandResult result) {

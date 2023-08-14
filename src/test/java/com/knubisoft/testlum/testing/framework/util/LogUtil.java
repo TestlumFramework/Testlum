@@ -17,12 +17,10 @@ import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
-import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
-import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.Ui;
@@ -55,7 +53,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMEN
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONDITION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_FORMAT;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CORRELATION_ID_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DB_TYPE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DELAY_SECONDS_LOG;
@@ -92,13 +89,11 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOVE_T
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NAME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NEW_LOG_LINE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.PREFETCH_COUNT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUEUE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.RECEIVE_REQUEST_ATTEMPT_ID_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ROUTING_KEY_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_BY_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_DIRECTION_LOG;
@@ -120,7 +115,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_IN
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_URL;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TIMEOUT_MILLIS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COMMAND_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COMMAND_LOG_WITHOUT_POSITION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;
@@ -296,17 +290,6 @@ public class LogUtil {
     public void logAllQueries(final String dbType, final List<String> queries, final String alias) {
         log.info(DB_TYPE_LOG, dbType);
         logAllQueries(queries, alias);
-    }
-
-    public void logRabbitSendInfo(final SendRmqMessage send, final String content) {
-        logMessageBrokerGeneralMetaData(SEND_ACTION, ROUTING_KEY_LOG, send.getRoutingKey(), content);
-        logIfNotNull(CORRELATION_ID_LOG, send.getCorrelationId());
-    }
-
-    public void logRabbitReceiveInfo(final ReceiveRmqMessage receive, final String content) {
-        logMessageBrokerGeneralMetaData(RECEIVE_ACTION, QUEUE_LOG, receive.getQueue(), content);
-        logIfNotNull(TIMEOUT_MILLIS_LOG, receive.getTimeoutMillis());
-        logIfNotNull(PREFETCH_COUNT_LOG, receive.getPrefetchCount());
     }
 
     public void logSQSSendInfo(final SendSqsMessage send, final String content) {

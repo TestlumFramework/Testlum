@@ -456,6 +456,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
             <version>${org.spring.boot.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.datatype</groupId>
+                    <artifactId>jackson-datatype-jsr310</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -486,6 +492,10 @@
                 <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.yaml</groupId>
+                    <artifactId>snakeyaml</artifactId>
                 </exclusion>
             </exclusions>
 
@@ -928,42 +938,68 @@
 <!--    TESTLUM PLUGINS    -->
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>utils</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-mysql</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-postgres</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-clickhouse</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-oracle</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-mongo</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-dynamo</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-kafka</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-rabbit</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-sendgrid</artifactId>
             <version>1.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.datatype</groupId>
-                    <artifactId>jackson-datatype-jsr310</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.yaml</groupId>
-                    <artifactId>snakeyaml</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-beans</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>models</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>mysql</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-redis</artifactId>
             <version>1.0</version>
             <exclusions>
                 <exclusion>
@@ -978,8 +1014,74 @@
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>postgres</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-s3</artifactId>
+            <version>1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.zaxxer</groupId>
+                    <artifactId>HikariCP</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-ses</artifactId>
+            <version>1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.zaxxer</groupId>
+                    <artifactId>HikariCP</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-sqs</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-smtp</artifactId>
+            <version>1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.zaxxer</groupId>
+                    <artifactId>HikariCP</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-twilio</artifactId>
+            <version>1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.zaxxer</groupId>
+                    <artifactId>HikariCP</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-elasticsearch</artifactId>
             <version>1.0</version>
             <exclusions>
                 <exclusion>

@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Conditional({OnDynamoEnabledCondition.class})
-@Component
+@Component("dynamoOperation")
 public class DynamoDBOperation implements StorageOperation {
 
     private static final String FORBIDDEN_DDB_TABLE_NAME = "dynamobee";

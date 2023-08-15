@@ -23,7 +23,7 @@ import java.util.Objects;
 
 @Slf4j
 @Conditional({OnOracleEnabledCondition.class})
-@Component
+@Component("oracleOperation")
 public class OracleOperation implements StorageOperation {
 
     private final Map<AliasEnv, AbstractSqlExecutor> oracleExecutor;

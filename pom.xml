@@ -1096,8 +1096,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>http</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-http</artifactId>
             <version>1.0</version>
             <exclusions>
                 <exclusion>

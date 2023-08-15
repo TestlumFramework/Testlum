@@ -30,9 +30,6 @@ public class ImageComparator {
         } else if (nonNull(image.getPart()) && nonNull(image.getPart().getPercentage())) {
             imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENTS - image.getPart().getPercentage());
         }
-//        else if (nonNull(image.getFindPart()) && nonNull(image.getFindPart().getPercentage())) {
-//            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENTS - image.getFindPart().getPercentage());
-//        }
         return imageComparison.compareImages();
     }
 

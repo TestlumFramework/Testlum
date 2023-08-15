@@ -549,9 +549,6 @@ public class LogUtil {
         } else if (nonNull(image.getPart())) {
             logCompareWithPart(image.getPart());
         }
-//        else {
-//            logFindPartInfo(image.getFindPart());
-//        }
     }
 
     private void logCompareWithElementInfo(final CompareWithElement element) {
@@ -578,24 +575,7 @@ public class LogUtil {
         if (nonNull(part.getPercentage())) {
             log.info(IMAGE_MATCH_PERCENTAGE_LOG, part.getPercentage());
         }
-        if (!part.getExclude().isEmpty()) {
-            log.info(IMAGE_EXCLUDED_ELEMENT_LOG, StringUtils.join(part.getExclude().stream()
-                    .map(Exclude::getLocatorId)
-                    .collect(Collectors.joining(COMMA + SPACE))));
-        }
     }
-
-//    private void logFindPartInfo(final FindPart part) {
-//        log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_FIND);
-//        if (nonNull(part.getPercentage())) {
-//            log.info(IMAGE_MATCH_PERCENTAGE_LOG, part.getPercentage());
-//        }
-//        if (!part.getExclude().isEmpty()) {
-//            log.info(IMAGE_EXCLUDED_ELEMENT_LOG, StringUtils.join(part.getExclude().stream()
-//                    .map(Exclude::getLocatorId)
-//                    .collect(Collectors.joining(COMMA + SPACE))));
-//        }
-//    }
 
     public void logScrollInfo(final Scroll scroll) {
         log.info(SCROLL_DIRECTION_LOG, scroll.getDirection());

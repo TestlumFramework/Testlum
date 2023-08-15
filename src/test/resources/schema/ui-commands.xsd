@@ -304,7 +304,6 @@
                     <x:element name="fullScreen" type="tns:compareWithFullScreen"/>
                     <x:element name="element" type="tns:compareWithElement"/>
                     <x:element name="part" type="tns:compareWithPart"/>
-<!--                    <x:element name="findPart" type="tns:findPart"/>-->
                 </x:choice>
                 <x:attribute name="file" type="tns:imageExtension" use="required"/>
                 <x:attribute name="highlightDifference" type="x:boolean" default="false"/>
@@ -313,9 +312,10 @@
     </x:complexType>
 
     <x:complexType name="compareWithFullScreen">
-        <x:complexContent>
-            <x:extension base="tns:comparisonConditions"/>
-        </x:complexContent>
+        <x:choice minOccurs="0" maxOccurs="unbounded">
+            <x:element name="exclude" type="tns:exclude"/>
+        </x:choice>
+        <x:attribute name="percentage" type="tns:positiveDoubleMin0Max100"/>
     </x:complexType>
 
     <x:complexType name="compareWithElement">
@@ -324,23 +324,7 @@
     </x:complexType>
 
     <x:complexType name="compareWithPart">
-        <x:complexContent>
-            <x:extension base="tns:comparisonConditions">
-                <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
-<!--    <x:complexType name="findPart">-->
-<!--        <x:complexContent>-->
-<!--            <x:extension base="tns:comparisonConditions"/>-->
-<!--        </x:complexContent>-->
-<!--    </x:complexType>-->
-
-    <x:complexType name="comparisonConditions">
-        <x:choice minOccurs="0" maxOccurs="unbounded">
-            <x:element name="exclude" type="tns:exclude"/>
-        </x:choice>
+        <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
         <x:attribute name="percentage" type="tns:positiveDoubleMin0Max100"/>
     </x:complexType>
 

@@ -106,7 +106,6 @@
                     <x:element name="chromeOptionsArguments" type="tns:browserOptionsArguments" minOccurs="0"/>
                 </x:sequence>
                 <x:attribute name="headlessMode" type="x:boolean" use="required"/>
-                <x:attribute name="scaleFactor" type="tns:scaleFactor"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -118,7 +117,6 @@
                     <x:element name="firefoxOptionsArguments" type="tns:browserOptionsArguments" minOccurs="0"/>
                 </x:sequence>
                 <x:attribute name="headlessMode" type="x:boolean" use="required"/>
-                <x:attribute name="scaleFactor" type="tns:scaleFactor"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -130,7 +128,6 @@
                     <x:element name="edgeOptionsArguments" type="tns:browserOptionsArguments" minOccurs="0"/>
                 </x:sequence>
                 <x:attribute name="headlessMode" type="x:boolean" use="required"/>
-                <x:attribute name="scaleFactor" type="tns:scaleFactor"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -141,7 +138,6 @@
                 <x:sequence>
                     <x:element name="operaOptionsArguments" type="tns:browserOptionsArguments" minOccurs="0"/>
                 </x:sequence>
-                <x:attribute name="scaleFactor" type="tns:scaleFactor"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -151,12 +147,4 @@
             <x:extension base="tns:abstractBrowser"/>
         </x:complexContent>
     </x:complexType>
-
-    <x:simpleType name="scaleFactor">
-        <x:restriction base="x:decimal">
-            <x:minInclusive value="0.1"/>
-            <x:maxInclusive value="10"/>
-            <x:fractionDigits value="1"/>
-        </x:restriction>
-    </x:simpleType>
 </x:schema>

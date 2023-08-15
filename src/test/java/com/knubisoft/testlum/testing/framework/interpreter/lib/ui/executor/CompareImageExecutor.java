@@ -14,13 +14,18 @@ import com.knubisoft.testlum.testing.framework.util.ImageComparisonUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
-import com.knubisoft.testlum.testing.model.scenario.CompareWithElement;
+import com.knubisoft.testlum.testing.model.scenario.CompareWithFullScreen;
 import com.knubisoft.testlum.testing.model.scenario.Image;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -28,8 +33,9 @@ import java.awt.image.RasterFormatException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ELEMENT_OUT_OF_BOUNDS;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.URL_TO_IMAGE_LOG;
@@ -39,6 +45,10 @@ import static java.util.Objects.nonNull;
 @Slf4j
 @ExecutorForClass(Image.class)
 public class CompareImageExecutor extends AbstractUiExecutor<Image> {
+
+    private static final String MOBILE_SCREEN_WIDTH = "return screen.width;";
+    private static final String MOBILE_SCREEN_HEIGHT = "return screen.height;";
+    private static final String STATUS_BAR_HEIGHT = "statBarHeight";
 
     public CompareImageExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -52,43 +62,25 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         File scenarioFile = dependencies.getFile();
         BufferedImage expected = ImageIO.read(FileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
         BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
-        List<Rectangle> excludeList = getExcludeList(image, expected);
+        List<Rectangle> excludeList = getExcludeList(image.getFullScreen(), expected, dependencies.getDriver());
         ImageComparisonResult comparisonResult = ImageComparator.compare(image, expected, actual, excludeList);
-        ImageComparisonUtil.processComparisonResult(comparisonResult, image, scenarioFile.getParentFile(), result);
-//            ImageComparisonUtil.findExpectedInActual(image, expected, actual,
-//                    scenarioFile.getParentFile(), excludeList, result);
+        ImageComparisonUtil.processImageComparisonResult(comparisonResult, image, scenarioFile.getParentFile(), result);
     }
 
     private BufferedImage getActualImage(final WebDriver webDriver,
                                          final Image image,
                                          final CommandResult result) throws IOException {
         if (nonNull(image.getElement())) {
-            return getImageElement(image.getElement(), result);
+            WebElement webElement = UiUtil.findWebElement(dependencies, image.getElement().getLocatorId());
+            if (UiType.NATIVE == dependencies.getUiType()) {
+                return ImageIO.read(UiUtil.takeScreenshot(webElement));
+            }
+            return extractImageFromElement(webElement, image.getElement().getAttribute(), result);
         }
         if (nonNull(image.getPart())) {
-            return getImagePart(webDriver, image);
+            return getScreenPart(webDriver, image);
         }
         return ImageIO.read(UiUtil.takeScreenshot(webDriver));
-    }
-
-    private BufferedImage getImagePart(final WebDriver webDriver, final Image image) throws IOException {
-        if (UiType.NATIVE == dependencies.getUiType() || UiType.MOBILE_BROWSER == dependencies.getUiType()) {
-            return getMobileOrNativeElementAsImage(webDriver, image.getPart().getLocatorId());
-        }
-        try {
-            return getElementAsImage(webDriver, image.getPart().getLocatorId());
-        } catch (RasterFormatException e) {
-            throw new DefaultFrameworkException(ELEMENT_OUT_OF_BOUNDS);
-        }
-    }
-
-    private BufferedImage getImageElement(final CompareWithElement compareWithElement,
-                                          final CommandResult result) throws IOException {
-        WebElement webElement = UiUtil.findWebElement(dependencies, compareWithElement.getLocatorId());
-        if (UiType.NATIVE == dependencies.getUiType()) {
-            return ImageIO.read(UiUtil.takeScreenshot(webElement));
-        }
-        return extractImageFromElement(webElement, compareWithElement.getAttribute(), result);
     }
 
     private BufferedImage extractImageFromElement(final WebElement webElement,
@@ -103,6 +95,17 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         return ImageIO.read(new URL(urlToImage));
     }
 
+    private BufferedImage getScreenPart(final WebDriver webDriver, final Image image) throws IOException {
+        if (UiType.NATIVE == dependencies.getUiType() || UiType.MOBILE_BROWSER == dependencies.getUiType()) {
+            return getMobileOrNativeElementAsImage(webDriver, image.getPart().getLocatorId());
+        }
+        try {
+            return getElementAsImage(webDriver, image.getPart().getLocatorId());
+        } catch (RasterFormatException e) {
+            throw new DefaultFrameworkException(ELEMENT_OUT_OF_BOUNDS);
+        }
+    }
+
     private BufferedImage getMobileOrNativeElementAsImage(final WebDriver webDriver,
                                                           final String locatorId) throws IOException {
         WebElement webElement = UiUtil.findWebElement(dependencies, locatorId);
@@ -113,56 +116,61 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
 
     private BufferedImage getElementAsImage(final WebDriver webDriver, final String locatorId) throws IOException {
         BufferedImage fullScreen = ImageIO.read(UiUtil.takeScreenshot(webDriver));
-        double scaleX = 0;
-        double scaleY = 0;
-        Dimension windowSize = dependencies.getDriver().manage().window().getSize();
-        if (fullScreen.getWidth() > windowSize.getWidth() || fullScreen.getHeight() > windowSize.getHeight()) {
-            scaleX = (double) fullScreen.getWidth() / windowSize.getWidth();
-            scaleY = (double) fullScreen.getHeight() / windowSize.getHeight();
-        }
-        Rectangle rectangle = getElementArea(locatorId, (int) Math.ceil(scaleX), (int) Math.ceil(scaleY));
+        Scale scale = getScaling(fullScreen, webDriver);
+        Rectangle rectangle = getElementArea(locatorId, scale);
         return fullScreen.getSubimage((int) rectangle.getMinPoint().getX(), (int) rectangle.getMinPoint().getY(),
                 Math.abs(rectangle.getWidth()), Math.abs(rectangle.getHeight()));
     }
 
-    private List<Rectangle> getExcludeList(final Image image, final BufferedImage expected) {
-        double scaleX = 0;
-        double scaleY = 0;
-        Dimension windowSize = dependencies.getDriver().manage().window().getSize();
-        if (expected.getWidth() > windowSize.getWidth() || expected.getHeight() > windowSize.getHeight()) {
-            scaleX = (double) expected.getWidth() / windowSize.getWidth();
-            scaleY = (double) expected.getHeight() / windowSize.getHeight();
+    private List<Rectangle> getExcludeList(final CompareWithFullScreen fullScreen,
+                                           final BufferedImage expected,
+                                           final WebDriver driver) {
+        if (nonNull(fullScreen) && !fullScreen.getExclude().isEmpty()) {
+            Scale scale = getScaling(expected, driver);
+            return fullScreen.getExclude().stream()
+                    .map(element -> getElementArea(element.getLocatorId(), scale))
+                    .collect(Collectors.toList());
         }
-        return getExcludedElements(image, (int) Math.ceil(scaleX), (int) Math.ceil(scaleY));
+        return Collections.emptyList();
     }
 
-    private List<Rectangle> getExcludedElements(final Image image, final int scaleX, final int scaleY) {
-        List<Rectangle> excludeList = new ArrayList<>();
-        if (nonNull(image.getFullScreen())) {
-            image.getFullScreen().getExclude().forEach(element ->
-                    excludeList.add(getElementArea(element.getLocatorId(), scaleX, scaleY)));
-        } else if (nonNull(image.getPart())) {
-            image.getPart().getExclude().forEach(element ->
-                    excludeList.add(getElementArea(element.getLocatorId(), scaleX, scaleY)));
+    private Scale getScaling(final BufferedImage screen, final WebDriver driver) {
+        if (UiType.MOBILE_BROWSER.equals(dependencies.getUiType())) {
+            return getMobilebrowserScale(screen, driver);
         }
-//        else if (nonNull(image.getFindPart())) {
-//            image.getFindPart().getExclude().forEach(element ->
-//                    excludeList.add(getElementArea(element.getLocatorId(), scaleX, scaleY)));
-//        }
-        return excludeList;
+        Dimension windowSize = driver.manage().window().getSize();
+        if (screen.getWidth() / windowSize.getWidth() > 1 || screen.getHeight() / windowSize.getHeight() > 1) {
+            return new Scale((double) screen.getWidth() / windowSize.getWidth(),
+                    (double) screen.getHeight() / (windowSize.getHeight()));
+        }
+        return new Scale(1, 1);
     }
 
-    private Rectangle getElementArea(final String locatorId, final int scaleX, final int scaleY) {
+    private Scale getMobilebrowserScale(final BufferedImage screen, final WebDriver driver) {
+        Capabilities capabilities = ((RemoteWebDriver) driver).getCapabilities();
+        int statBarHeight = Integer.parseInt(capabilities.getCapability(STATUS_BAR_HEIGHT).toString());
+        int width = Integer.parseInt(((JavascriptExecutor) driver).executeScript(MOBILE_SCREEN_WIDTH).toString());
+        int height = Integer.parseInt(((JavascriptExecutor) driver).executeScript(MOBILE_SCREEN_HEIGHT).toString());
+        if (screen.getWidth() / width > 1 || screen.getHeight() / height > 1) {
+            return new Scale((double) screen.getWidth() / width,
+                    (double) screen.getHeight() / (height + ((double) statBarHeight / 2)));
+        }
+        return new Scale(1, 1);
+    }
+
+    private Rectangle getElementArea(final String locatorId, final Scale scale) {
         org.openqa.selenium.Rectangle seleniumRectangle = UiUtil.findWebElement(dependencies, locatorId).getRect();
-        if (scaleX != 0 && scaleY != 0) {
-            return new Rectangle(Math.abs(seleniumRectangle.getX() * scaleX),
-                    Math.abs(seleniumRectangle.getY() * scaleY),
-                    Math.abs((seleniumRectangle.getX() + seleniumRectangle.getWidth()) * scaleX),
-                    Math.abs((seleniumRectangle.getY() + seleniumRectangle.getHeight()) * scaleY));
-        } else {
-            return new Rectangle(Math.abs(seleniumRectangle.getX()), Math.abs(seleniumRectangle.getY()),
-                    Math.abs(seleniumRectangle.getX() + seleniumRectangle.getWidth()),
-                    Math.abs(seleniumRectangle.getY() + seleniumRectangle.getHeight()));
-        }
+        double x = seleniumRectangle.getX() * scale.getScaleX();
+        double y = seleniumRectangle.getY() * scale.getScaleY();
+        double width = (seleniumRectangle.getX() + seleniumRectangle.getWidth()) * scale.getScaleX();
+        double height = (seleniumRectangle.getY() + seleniumRectangle.getHeight()) * scale.getScaleY();
+        return new Rectangle((int) x, (int) y, (int) width, (int) height);
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    private static class Scale {
+        private final double scaleX;
+        private final double scaleY;
     }
 }

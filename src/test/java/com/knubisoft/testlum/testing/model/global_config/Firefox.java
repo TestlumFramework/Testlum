@@ -1,7 +1,6 @@
 
 package com.knubisoft.testlum.testing.model.global_config;
 
-import java.math.BigDecimal;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -21,7 +20,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="firefoxOptionsArguments" type="{http://www.knubisoft.com/testlum/testing/model/global-config}browserOptionsArguments" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="headlessMode" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *       &lt;attribute name="scaleFactor" type="{http://www.knubisoft.com/testlum/testing/model/global-config}scaleFactor" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -40,8 +38,6 @@ public class Firefox
     protected BrowserOptionsArguments firefoxOptionsArguments;
     @XmlAttribute(name = "headlessMode", required = true)
     protected boolean headlessMode;
-    @XmlAttribute(name = "scaleFactor")
-    protected BigDecimal scaleFactor;
 
     /**
      * Gets the value of the firefoxOptionsArguments property.
@@ -81,30 +77,6 @@ public class Firefox
      */
     public void setHeadlessMode(boolean value) {
         this.headlessMode = value;
-    }
-
-    /**
-     * Gets the value of the scaleFactor property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public BigDecimal getScaleFactor() {
-        return scaleFactor;
-    }
-
-    /**
-     * Sets the value of the scaleFactor property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link BigDecimal }
-     *     
-     */
-    public void setScaleFactor(BigDecimal value) {
-        this.scaleFactor = value;
     }
 
 }

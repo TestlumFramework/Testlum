@@ -846,14 +846,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ComparisonConditions }
-     * 
-     */
-    public ComparisonConditions createComparisonConditions() {
-        return new ComparisonConditions();
-    }
-
-    /**
      * Create an instance of {@link DragAndDrop }
      * 
      */

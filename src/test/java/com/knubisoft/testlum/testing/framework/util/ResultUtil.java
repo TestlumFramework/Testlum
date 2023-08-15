@@ -707,9 +707,6 @@ public class ResultUtil {
         } else if (nonNull(image.getPart())) {
             addCompareWithPartMetaData(image.getPart(), result);
         }
-//        else {
-//            addFindPartMetaData(image.getFindPart(), result);
-//        }
     }
 
     private void addCompareWithElementMetaData(final CompareWithElement element, final CommandResult result) {
@@ -738,24 +735,7 @@ public class ResultUtil {
         if (nonNull(part.getPercentage())) {
             result.put(MATCH_PERCENTAGE, part.getPercentage());
         }
-        if (!part.getExclude().isEmpty()) {
-            result.put(EXCLUDED_ELEMENT, StringUtils.join(part.getExclude().stream()
-                    .map(Exclude::getLocatorId)
-                    .collect(Collectors.joining(COMMA + SPACE))));
-        }
     }
-
-//    private void addFindPartMetaData(final FindPart part, final CommandResult result) {
-//        result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_FIND);
-//        if (nonNull(part.getPercentage())) {
-//            result.put(MATCH_PERCENTAGE, part.getPercentage());
-//        }
-//        if (!part.getExclude().isEmpty()) {
-//            result.put(EXCLUDED_ELEMENT, StringUtils.join(part.getExclude().stream()
-//                    .map(Exclude::getLocatorId)
-//                    .collect(Collectors.joining(COMMA + SPACE))));
-//        }
-//    }
 
     public void addImagesSizeMetaData(final ImageComparisonResult comparisonResult, final CommandResult result) {
         result.put(EXPECTED_IMAGE_SIZE, comparisonResult.getExpected().getWidth()

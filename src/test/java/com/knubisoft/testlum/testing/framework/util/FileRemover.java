@@ -30,8 +30,7 @@ public final class FileRemover {
         @Override
         public FileVisitResult visitFile(final Path file,
                                          final BasicFileAttributes attr) throws IOException {
-            if (attr.isRegularFile() && isActualFile(file) || isScreenshotFile(file) || isActualImageFile(file)
-            || isResultImageFile(file)) {
+            if (attr.isRegularFile() && isActualFile(file) || isScreenshotFile(file) || isActualImageFile(file)) {
                 Files.delete(file);
             }
             return FileVisitResult.CONTINUE;
@@ -60,10 +59,6 @@ public final class FileRemover {
 
         private boolean isActualImageFile(final Path file) {
             return isFileWithPrefix(file, TestResourceSettings.ACTUAL_IMAGE_PREFIX);
-        }
-
-        private boolean isResultImageFile(final Path file) {
-            return isFileWithPrefix(file, TestResourceSettings.RESULT_IMAGE_PREFIX);
         }
 
         private boolean isFileWithSuffix(final Path file, final String suffix) {

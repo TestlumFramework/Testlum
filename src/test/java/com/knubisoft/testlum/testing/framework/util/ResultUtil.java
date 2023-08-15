@@ -6,7 +6,6 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
 import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
-import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
@@ -46,12 +45,7 @@ public class ResultUtil {
 
     public static final String ALIAS = "Alias";
     public static final String API_ALIAS = "API alias";
-    public static final String AUTHENTICATION_TYPE = "Authentication type";
-    public static final String CREDENTIALS_FILE = "Credentials file";
     public static final String MESSAGE_TO_SEND = "Message to send";
-    public static final String CONTENT_TO_SEND = "Content to send";
-    public static final String EXPECTED_CODE = "Expected code";
-    public static final String ACTUAL_CODE = "Actual code";
     public static final String JSON_PATH = "JSON path";
     public static final String XML_PATH = "Xml path";
     public static final String RELATIONAL_DB_QUERY = "Relational DB query";
@@ -192,13 +186,6 @@ public class ResultUtil {
     public void setExpectedActual(final String expected, final String actual, final CommandResult result) {
         result.setExpected(expected);
         result.setActual(actual);
-    }
-
-    public void addDatabaseMetaData(final String databaseAlias,
-                                    final List<String> queries,
-                                    final CommandResult result) {
-        result.put(DATABASE_ALIAS, databaseAlias);
-        result.put(QUERIES, queries);
     }
 
     public void addMigrateMetaData(final String databaseName,
@@ -354,12 +341,6 @@ public class ResultUtil {
                                               final CommandResult result) {
         result.setSkipped(!conditionResult);
         result.put(CONDITION, conditionName + " = " + conditionResult);
-    }
-
-    public void addAuthMetaData(final Auth auth, final CommandResult result) {
-        result.put(API_ALIAS, auth.getApiAlias());
-        result.put(ENDPOINT, auth.getLoginEndpoint());
-        result.put(CREDENTIALS_FILE, auth.getCredentials());
     }
 
     public void addWaitMetaData(final String time,

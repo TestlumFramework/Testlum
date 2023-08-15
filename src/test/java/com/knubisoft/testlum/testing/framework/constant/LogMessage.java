@@ -83,11 +83,6 @@ public final class LogMessage {
     public static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
     public static final String BY_URL_LOG = format(TABLE_FORMAT, "URL", "{}");
     public static final String FAILED_VISITING_PATH_LOG = "Failed to visit path {}";
-    public static final String WEBSOCKET_ACTION_INFO_LOG = format(TABLE_FORMAT,
-            "Comment", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Action", "{}");
-
-    public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
 
     public static final String WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND = ANSI_ORANGE
             + "Websocket message handler for topic <{}> not found" + ANSI_RESET;

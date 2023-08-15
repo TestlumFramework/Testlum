@@ -59,7 +59,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CORREL
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DB_TYPE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DELAY_SECONDS_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DRAGGING_FILE_PATH;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DRAGGING_FROM;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DROPPING_TO;
@@ -337,19 +336,6 @@ public class LogUtil {
     private void logIfNotNull(final String title, final Object data) {
         if (nonNull(data)) {
             log.info(title, data);
-        }
-    }
-
-    public void logWebsocketActionInfo(final String action,
-                                       final String comment,
-                                       final String destination,
-                                       final String content) {
-        log.info(LogMessage.WEBSOCKET_ACTION_INFO_LOG, comment, action.toUpperCase(Locale.ROOT));
-        if (isNotBlank(destination)) {
-            log.info(DESTINATION_LOG, destination);
-        }
-        if (isNotBlank(content)) {
-            log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
     }
 

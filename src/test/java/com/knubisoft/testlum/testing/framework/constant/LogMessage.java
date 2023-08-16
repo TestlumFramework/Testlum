@@ -105,7 +105,6 @@ public final class LogMessage {
     public static final String FAILED_SCENARIOS_NAME_TEMPLATE =
             ANSI_RED_BOLD + "Scenario %s was failed. Related exception provided below." + ANSI_RED_BOLD;
 
-    public static final String DATASET_PATH_LOG = format(TABLE_FORMAT, "Migration dataset", "{}");
     public static final String DB_TYPE_LOG = format(TABLE_FORMAT, "DB Type", "{}");
     public static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
     public static final String EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Execution time ", "{} ms");

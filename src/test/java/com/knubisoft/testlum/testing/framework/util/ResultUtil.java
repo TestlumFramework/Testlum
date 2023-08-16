@@ -118,7 +118,6 @@ public class ResultUtil {
     private static final String SCROLL_MEASURE = "Scroll measure";
     private static final String SCROLL_TYPE = "Scroll type";
     private static final String LOCATOR_FOR_SCROLL = "Locator for scroll";
-    private static final String QUERIES = "Queries";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
     private static final String LAMBDA_FUNCTION_NAME = "Function name";
@@ -132,9 +131,6 @@ public class ResultUtil {
     private static final String TIMEOUT_MILLIS = "Timeout millis";
     private static final String RECEIVE = "Receive";
     private static final String SUBSCRIBE = "Subscribe";
-    private static final String DATABASE = "Database";
-    private static final String DATABASE_ALIAS = "Database alias";
-    private static final String PATCHES = "Patches";
     private static final String SHELL_FILES = "Shell files";
     private static final String SHELL_COMMANDS = "Shell commands";
     private static final String TYPE = "Type";
@@ -192,32 +188,6 @@ public class ResultUtil {
     public void setExpectedActual(final String expected, final String actual, final CommandResult result) {
         result.setExpected(expected);
         result.setActual(actual);
-    }
-
-    public void addDatabaseMetaData(final String databaseAlias,
-                                    final List<String> queries,
-                                    final CommandResult result) {
-        result.put(DATABASE_ALIAS, databaseAlias);
-        result.put(QUERIES, queries);
-    }
-
-    public void addMigrateMetaData(final String databaseName,
-                                   final String databaseAlias,
-                                   final List<String> patches,
-                                   final CommandResult result) {
-        result.put(DATABASE, databaseName);
-        result.put(DATABASE_ALIAS, databaseAlias);
-        result.put(PATCHES, patches);
-    }
-
-    public void addMessageBrokerGeneralMetaData(final String alias,
-                                                final String action,
-                                                final String destination,
-                                                final String destinationValue,
-                                                final CommandResult result) {
-        result.put(ALIAS, alias);
-        result.put(ACTION, action);
-        result.put(destination, destinationValue);
     }
 
     public void addHttpMetaData(final String alias,

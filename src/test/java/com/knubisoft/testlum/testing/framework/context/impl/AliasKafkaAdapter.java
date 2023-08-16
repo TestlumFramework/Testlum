@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigura
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
+import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
 import com.knubisoft.testlum.testing.framework.db.kafka.KafkaOperation;
 import com.knubisoft.testlum.testing.model.global_config.Kafka;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class AliasKafkaAdapter implements AliasAdapter {
     }
 
     private NameToAdapterAlias.Metadata getMetadataKafka(final Kafka kafka) {
-        return NameToAdapterAlias.Metadata.builder()
+        return NameToAdapterAliasImpl.Metadata.builder()
                 .configuration(kafka)
                 .storageOperation(kafkaOperation)
                 .build();

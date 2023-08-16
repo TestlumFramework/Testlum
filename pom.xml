@@ -1102,8 +1102,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft.testlum</groupId>
-            <artifactId>graphql</artifactId>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-graphql</artifactId>
             <version>1.0</version>
             <exclusions>
                 <exclusion>

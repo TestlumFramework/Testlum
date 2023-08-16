@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigura
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnPostgresEnabledCondition;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
+import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
 import com.knubisoft.testlum.testing.framework.db.sql.PostgresSqlOperation;
 import com.knubisoft.testlum.testing.model.global_config.Postgres;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class AliasPostgresAdapter implements AliasAdapter {
     }
 
     private NameToAdapterAlias.Metadata getMetadataPostgres(final Postgres postgres) {
-        return NameToAdapterAlias.Metadata.builder()
+        return NameToAdapterAliasImpl.Metadata.builder()
                 .configuration(postgres)
                 .storageOperation(postgresSqlOperation)
                 .build();

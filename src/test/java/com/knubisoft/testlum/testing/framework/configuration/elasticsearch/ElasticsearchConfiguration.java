@@ -30,8 +30,8 @@ public class ElasticsearchConfiguration {
 
     private final Map<String, List<Elasticsearch>> elasticsearchMap;
 
-    public ElasticsearchConfiguration(@Autowired GlobalTestConfigurationProvider globalTestConfigurationProvider) {
-        this.elasticsearchMap = globalTestConfigurationProvider.getIntegrations()
+    public ElasticsearchConfiguration(final @Autowired GlobalTestConfigurationProvider configurationProvider) {
+        this.elasticsearchMap = configurationProvider.getIntegrations()
                 .entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         entry -> entry.getValue().getElasticsearchIntegration().getElasticsearch()));

@@ -177,16 +177,7 @@ public class ExceptionMessage {
     public static final String UNKNOWN_HTTP_METHOD = "Unknown http method: %s";
     public static final String UNKNOWN_BODY_CONTENT = "Unknown body content provided";
     public static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";
-    public static final String INCORRECT_S3_PROCESSING = "Incorrect S3 processing";
-    public static final String BUCKET_EXISTS = "Bucket with name <%s> already exists";
-    public static final String BUCKET_NOT_FOUND = "Bucket with name <%s> is not found ";
-    public static final String FILE_NOT_FOUND = "File with key <%s> in bucket <%s> is not found";
-    public static final String FILE_PROCESSING_ERROR = "File with key <%s> in bucket <%s> can not be processed";
-    public static final String FILE_COMPARISON_ERROR = "Actual file <%s> is not the same as expected file <%s>";
-    public static final String FILE_VALUE_COMPARISON_ERROR = "Actual file <%s> is not the same as expected value <%s>";
-    public static final String INCORRECT_SQS_PROCESSING = "Incorrect SQS processing";
     public static final String REDIS_COMMAND_NOT_FOUND = "Redis command was not provided";
-    public static final String NAME_FOR_MIGRATION_MUST_PRESENT = "Data storage name for migration must present";
     public static final String AUTH_WAS_NOT_DEFINED = "<Auth strategy> was not defined in the <api> configuration. "
             + "Usage example: <auth strategy=\"basic\".../>";
     public static final String TIME_UNIT_UNKNOWN_TYPE = "Time unit unknown type: %s";

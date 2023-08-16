@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.websocket;
 
+import com.knubisoft.testlum.testing.framework.interpreter.WebsocketConnectionManager;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
 import lombok.RequiredArgsConstructor;

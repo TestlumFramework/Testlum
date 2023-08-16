@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigura
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
+import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
 import com.knubisoft.testlum.testing.framework.db.rabbitmq.RabbitMQOperation;
 import com.knubisoft.testlum.testing.model.global_config.Rabbitmq;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class AliasRabbitAdapter implements AliasAdapter {
     }
 
     private NameToAdapterAlias.Metadata getMetadataRabbit(final Rabbitmq rabbitmq) {
-        return NameToAdapterAlias.Metadata.builder()
+        return NameToAdapterAliasImpl.Metadata.builder()
                 .configuration(rabbitmq)
                 .storageOperation(rabbitMQOperation)
                 .build();

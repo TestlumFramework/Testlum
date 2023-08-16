@@ -73,21 +73,11 @@ public final class LogMessage {
             + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
             + "--------------------------------------------------" + ANSI_RESET;
 
-    public static final String INITIAL_STRUCTURE_GENERATION_SUCCESS = ANSI_GREEN + "Initial structure by path "
-            + ANSI_BLUE_UNDERLINED + "{}" + ANSI_RESET + ANSI_GREEN + " generated successfully";
-    public static final String INITIAL_STRUCTURE_GENERATION_ERROR = ANSI_RED
-            + "Failed to generate initial structure by path " + ANSI_BLUE_UNDERLINED + "{}" + ANSI_RESET;
-
     public static final String FAILED_VARIABLE_LOG = "Failed variable <{}> comment <{}>";
 
     public static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
     public static final String BY_URL_LOG = format(TABLE_FORMAT, "URL", "{}");
     public static final String FAILED_VISITING_PATH_LOG = "Failed to visit path {}";
-    public static final String WEBSOCKET_ACTION_INFO_LOG = format(TABLE_FORMAT,
-            "Comment", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Action", "{}");
-
-    public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
 
     public static final String WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND = ANSI_ORANGE
             + "Websocket message handler for topic <{}> not found" + ANSI_RESET;
@@ -105,7 +95,6 @@ public final class LogMessage {
     public static final String FAILED_SCENARIOS_NAME_TEMPLATE =
             ANSI_RED_BOLD + "Scenario %s was failed. Related exception provided below." + ANSI_RED_BOLD;
 
-    public static final String DATASET_PATH_LOG = format(TABLE_FORMAT, "Migration dataset", "{}");
     public static final String DB_TYPE_LOG = format(TABLE_FORMAT, "DB Type", "{}");
     public static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
     public static final String EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Execution time ", "{} ms");
@@ -140,7 +129,6 @@ public final class LogMessage {
     public static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
     public static final String ATTRIBUTE_LOG = format(TABLE_FORMAT, "Attribute", "{}");
     public static final String DESTINATION_LOG = format(TABLE_FORMAT, "Destination", "{}");
-    public static final String SOURCE_LOG = format(TABLE_FORMAT, "Source", "{}");
     public static final String IMAGE_COMPARISON_TYPE_LOG = format(TABLE_FORMAT, "Image comparison type", "{}");
     public static final String HIGHLIGHT_DIFFERENCE_LOG = format(TABLE_FORMAT, "Highlight difference", "{}");
     public static final String IMAGE_FOR_COMPARISON_LOG = format(TABLE_FORMAT, "Image for comparison", "{}");
@@ -149,8 +137,6 @@ public final class LogMessage {
     public static final String OVERVIEW_INFO_LOG = "{}: {}";
     public static final String MOVE_TO_EMPTY_SPACE = format(TABLE_FORMAT, "Move to empty space", "{}");
 
-    public static final String LAMBDA_FUNCTION_LOG = format(TABLE_FORMAT, "Function name", "{}");
-    public static final String LAMBDA_PAYLOAD_LOG = format(TABLE_FORMAT, "Payload", "{}");
     public static final String UI_EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Step execution time", "{} ms");
     public static final String COMMAND_TYPE_LOG = format(TABLE_FORMAT, "Command type", "{}");
     public static final String JS_FILE_LOG = format(TABLE_FORMAT, "JS file", "{}");
@@ -159,10 +145,6 @@ public final class LogMessage {
     public static final String SCROLL_DIRECTION_LOG = format(TABLE_FORMAT, "Direction", "{}");
     public static final String SCROLL_BY_LOG = format(TABLE_FORMAT, "Scroll by", "{}");
     public static final String TIMES_LOG = format(TABLE_FORMAT, "Times to repeat", "{}");
-    public static final String CREDENTIALS_LOG = format(TABLE_FORMAT, "Credentials", "{}");
-    public static final String INVALID_CREDENTIALS_LOG = format(TABLE_FORMAT, "Invalid credentials", "{}");
-    public static final String SERVER_BAD_GATEWAY_RESPONSE_LOG = format(TABLE_FORMAT, "Server is shutdown", "{}");
-    public static final String SERVER_ERROR_RESPONSE_LOG = format(TABLE_FORMAT, "Request failed", "{}");
     public static final String LOCAL_STORAGE_KEY = format(TABLE_FORMAT, "Local storage key", "{}");
     public static final String CLEAR_COOKIES_AFTER = format(TABLE_FORMAT, "Clear cookies after", "{}");
     public static final String TAB_COMMAND = format(TABLE_FORMAT, "Command", "{}");

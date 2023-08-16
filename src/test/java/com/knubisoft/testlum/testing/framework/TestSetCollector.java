@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework;
 
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.interpreter.GlobalVariations;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioFilter;
@@ -33,6 +34,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 @Service
 public class TestSetCollector {
 
+    private GlobalVariations globalVariations;
     private final GlobalTestConfigurationProvider configurationProvider;
     private final List<String> browsers;
     private final List<String> mobilebrowsers;
@@ -176,6 +178,6 @@ public class TestSetCollector {
     }
 
     private List<Map<String, String>> getVariationList(final MappingResult entry) {
-        return GlobalVariationsImpl.getVariations(entry.scenario.getSettings().getVariations());
+        return globalVariations.getVariations(entry.scenario.getSettings().getVariations());
     }
 }

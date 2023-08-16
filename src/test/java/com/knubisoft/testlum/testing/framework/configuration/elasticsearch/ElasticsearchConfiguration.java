@@ -28,13 +28,14 @@ import java.util.stream.Collectors;
 @Conditional({OnElasticEnabledCondition.class})
 public class ElasticsearchConfiguration {
 
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
+    private final Map<String, List<Elasticsearch>> elasticsearchMap;
 
-    private final Map<String, List<Elasticsearch>> elasticsearchMap = globalTestConfigurationProvider.getIntegrations()
-            .entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey,
-                    entry -> entry.getValue().getElasticsearchIntegration().getElasticsearch()));
+    public ElasticsearchConfiguration(final @Autowired GlobalTestConfigurationProvider configurationProvider) {
+        this.elasticsearchMap = configurationProvider.getIntegrations()
+                .entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        entry -> entry.getValue().getElasticsearchIntegration().getElasticsearch()));
+    }
 
     @Bean(name = "restHighLevelClient")
     public Map<AliasEnv, RestHighLevelClient> restHighLevelClient(

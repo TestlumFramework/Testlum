@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigura
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnMongoEnabledCondition;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
+import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
 import com.knubisoft.testlum.testing.framework.db.mongodb.MongoOperation;
 import com.knubisoft.testlum.testing.model.global_config.Mongo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class AliasMongoAdapter implements AliasAdapter {
     }
 
     private NameToAdapterAlias.Metadata getMetadataMongo(final Mongo mongodb) {
-        return NameToAdapterAlias.Metadata.builder()
+        return NameToAdapterAliasImpl.Metadata.builder()
                 .configuration(mongodb)
                 .storageOperation(mongoOperation)
                 .build();

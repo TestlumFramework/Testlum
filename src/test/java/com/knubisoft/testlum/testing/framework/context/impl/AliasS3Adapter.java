@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.configuration.condition.OnS3Enabl
 import com.knubisoft.testlum.testing.framework.constant.MigrationConstant;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
+import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
 import com.knubisoft.testlum.testing.framework.db.s3.S3Operation;
 import com.knubisoft.testlum.testing.model.global_config.S3;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class AliasS3Adapter implements AliasAdapter {
     }
 
     private NameToAdapterAlias.Metadata getMetadataS3(final S3 s3) {
-        return NameToAdapterAlias.Metadata.builder()
+        return NameToAdapterAliasImpl.Metadata.builder()
                 .configuration(s3)
                 .storageOperation(s3Operation)
                 .build();

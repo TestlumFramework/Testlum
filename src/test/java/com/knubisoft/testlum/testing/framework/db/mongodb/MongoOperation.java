@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Conditional({OnMongoEnabledCondition.class})
-@Component
+@Component("mongoOperation")
 public class MongoOperation implements StorageOperation {
 
     private final Map<AliasEnv, MongoDatabase> mongoDatabases;

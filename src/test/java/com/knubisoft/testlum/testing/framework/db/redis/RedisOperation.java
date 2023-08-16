@@ -27,7 +27,7 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static java.util.Objects.isNull;
 
 @Conditional({OnRedisEnabledCondition.class})
-@Component
+@Component("redisOperation")
 public class RedisOperation implements StorageOperation {
 
     private static final String CLEAR_DATABASE = "FLUSHALL";

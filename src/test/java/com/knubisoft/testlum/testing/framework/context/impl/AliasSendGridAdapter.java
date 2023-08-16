@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigura
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSendgridEnabledCondition;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
+import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
 import com.knubisoft.testlum.testing.framework.db.sendgrid.SendGridOperation;
 import com.knubisoft.testlum.testing.model.global_config.Sendgrid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class AliasSendGridAdapter implements AliasAdapter {
     }
 
     private NameToAdapterAlias.Metadata getMetadataSendGrid(final Sendgrid sendgrid) {
-        return NameToAdapterAlias.Metadata.builder()
+        return NameToAdapterAliasImpl.Metadata.builder()
                 .configuration(sendgrid)
                 .storageOperation(sendGridOperation)
                 .build();

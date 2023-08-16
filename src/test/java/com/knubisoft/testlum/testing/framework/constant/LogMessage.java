@@ -39,7 +39,6 @@ public final class LogMessage {
     public static final String CONDITION_LOG = format(TABLE_FORMAT, "Condition", "'{}' = {};");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
     public static final String QUERY = format(TABLE_FORMAT, "Query", "{}");
-    public static final String REDIS_QUERY = format(TABLE_FORMAT, "Query", "{} {}");
     public static final String SCENARIO_NUMBER_AND_PATH_LOG = ANSI_GREEN
             + "================== Execute for scenario #{} - {} ==================" + ANSI_RESET;
     public static final String LINE =
@@ -88,15 +87,6 @@ public final class LogMessage {
             "Comment", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
             "Action", "{}");
 
-    public static final String S3_BUCKET_ACTION_INFO_LOG = format(TABLE_FORMAT,
-            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Bucket for action", "{}");
-
-    public static final String S3_FILE_ACTION_INFO_LOG = format(TABLE_FORMAT,
-            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Bucket", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Key", "{}");
-
     public static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
 
     public static final String WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND = ANSI_ORANGE
@@ -115,7 +105,6 @@ public final class LogMessage {
     public static final String FAILED_SCENARIOS_NAME_TEMPLATE =
             ANSI_RED_BOLD + "Scenario %s was failed. Related exception provided below." + ANSI_RED_BOLD;
 
-    public static final String DATASET_PATH_LOG = format(TABLE_FORMAT, "Migration dataset", "{}");
     public static final String DB_TYPE_LOG = format(TABLE_FORMAT, "DB Type", "{}");
     public static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
     public static final String EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Execution time ", "{} ms");
@@ -127,7 +116,6 @@ public final class LogMessage {
     public static final String MOBILEBROWSER_LOG = "Mobilebrowser device: {}";
     public static final String NATIVE_NAVIGATION_LOG = format(TABLE_FORMAT, "Navigate to", "{}");
     public static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
-    public static final String FILE_LOG = format(TABLE_FORMAT, "File", "{}");
     public static final String EXPRESSION_LOG = format(TABLE_FORMAT, "Expression", "{}");
     public static final String SCROLL_LOCATOR = format(TABLE_FORMAT, "Scroll locator", "{}");
     public static final String SCROLL_TYPE = format(TABLE_FORMAT, "Scroll type", "{}");
@@ -145,37 +133,13 @@ public final class LogMessage {
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "HTTP method", "{}");
     public static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
     public static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
-    public static final String SKIPPED_BODY_VALIDATION = "Validation of the response body was skipped "
-            + "because of no expected file";
-    public static final String SMTP_HOST_LOG = format(TABLE_FORMAT, "SMTP Host", "{}");
-    public static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");
-    public static final String SUBJECT_LOG = format(TABLE_FORMAT, "Subject", "{}");
-    public static final String ACTION_LOG = format(TABLE_FORMAT, "Action", "{}");
-    public static final String ROUTING_KEY_LOG = format(TABLE_FORMAT, "Routing Key", "{}");
-    public static final String CORRELATION_ID_LOG = format(TABLE_FORMAT, "Correlation Id", "{}");
-    public static final String EXCHANGE_LOG = format(TABLE_FORMAT, "Exchange", "{}");
-    public static final String HEADERS_LOG = format(TABLE_FORMAT, "Headers", "{}");
-    public static final String QUEUE_LOG = format(TABLE_FORMAT, "Queue", "{}");
-    public static final String TIMEOUT_MILLIS_LOG = format(TABLE_FORMAT, "Timeout Millis", "{}");
-    public static final String PREFETCH_COUNT_LOG = format(TABLE_FORMAT, "Prefetch Count", "{}");
-    public static final String TOPIC_LOG = format(TABLE_FORMAT, "Topic", "{}");
-    public static final String COMMIT_LOG = format(TABLE_FORMAT, "Commit", "{}");
-    public static final String DELAY_SECONDS_LOG = format(TABLE_FORMAT, "Delay Seconds", "{}");
-    public static final String MESSAGE_DEDUPLICATION_ID_LOG = format(TABLE_FORMAT, "Deduplication Id", "{}");
-    public static final String MESSAGE_GROUP_ID_LOG = format(TABLE_FORMAT, "Message Group Id", "{}");
-    public static final String MAX_NUMBER_OF_MESSAGES_LOG = format(TABLE_FORMAT, "Max Number of Messages", "{}");
-    public static final String WAIT_TIME_SECONDS_LOG = format(TABLE_FORMAT, "Wait Time Seconds", "{}");
-    public static final String RECEIVE_REQUEST_ATTEMPT_ID_LOG = format(
-            TABLE_FORMAT, "Attempt Id", "{}");
-    public static final String VISIBILITY_TIMEOUT_LOG = format(TABLE_FORMAT, "Visibility Timeout", "{}");
+    public static final String SKIPPED_BODY_VALIDATION = ANSI_ORANGE
+            + "Validation of the response body was skipped because of no expected file"
+            + ANSI_RESET;
     public static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
     public static final String ATTRIBUTE_LOG = format(TABLE_FORMAT, "Attribute", "{}");
     public static final String DESTINATION_LOG = format(TABLE_FORMAT, "Destination", "{}");
     public static final String SOURCE_LOG = format(TABLE_FORMAT, "Source", "{}");
-    public static final String FROM_PHONE_NUMBER_LOG = format(TABLE_FORMAT, "'From' phone number", "{}");
-    public static final String TO_PHONE_NUMBER_LOG = format(TABLE_FORMAT, "'To' phone number", "{}");
-    public static final String MESSAGE_LOG = format(TABLE_FORMAT, "Message", "{}");
-    public static final String MESSAGE_STATUS = format(TABLE_FORMAT, "Message status", "{}");
     public static final String IMAGE_COMPARISON_TYPE_LOG = format(TABLE_FORMAT, "Image comparison type", "{}");
     public static final String HIGHLIGHT_DIFFERENCE_LOG = format(TABLE_FORMAT, "Highlight difference", "{}");
     public static final String IMAGE_FOR_COMPARISON_LOG = format(TABLE_FORMAT, "Image for comparison", "{}");

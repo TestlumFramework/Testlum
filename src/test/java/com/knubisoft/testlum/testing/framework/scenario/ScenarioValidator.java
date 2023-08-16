@@ -12,7 +12,7 @@ import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.SendGridUtil;
 import com.knubisoft.testlum.testing.framework.validator.XMLValidator;
-import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
+import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.global_config.Apis;
 import com.knubisoft.testlum.testing.model.global_config.AppiumCapabilities;
@@ -391,14 +391,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateVariationsIfExist(final Scenario scenario, final File xmlFile) {
         if (isNotBlank(scenario.getSettings().getVariations())) {
-            GlobalVariations.process(scenario, xmlFile);
+            GlobalVariationsImpl.process(scenario, xmlFile);
             variationsFileName.set(scenario.getSettings().getVariations());
         }
         if (scenario.getCommands().stream().anyMatch(command -> command instanceof Repeat)) {
             Repeat repeat = (Repeat) scenario.getCommands().stream()
                     .filter(command -> command instanceof Repeat)
                     .findFirst().get();
-            GlobalVariations.process(repeat);
+            GlobalVariationsImpl.process(repeat);
             variationsFileName.set(repeat.getVariations());
         }
     }
@@ -473,9 +473,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateFileNamesIfVariations(final File xmlFile, final String fileName) {
-        List<Map<String, String>> variationsList = GlobalVariations.getVariations(variationsFileName.get());
+        List<Map<String, String>> variationsList = GlobalVariationsImpl.getVariations(variationsFileName.get());
         variationsList.forEach(variationsMap -> {
-            String variationValue = GlobalVariations.getVariationValue(fileName, variationsMap);
+            String variationValue = GlobalVariationsImpl.getVariationValue(fileName, variationsMap);
             File file = nonNull(xmlFile) ? FileSearcher.searchFileFromDir(xmlFile, variationValue)
                     : FileSearcher.searchFileFromDataFolder(variationValue);
         });

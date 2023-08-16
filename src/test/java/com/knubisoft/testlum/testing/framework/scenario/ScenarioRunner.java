@@ -16,7 +16,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.MockDriver;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
-import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
+import com.knubisoft.testlum.testing.framework.util.InjectionUtilImpl;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
@@ -79,7 +79,7 @@ public class ScenarioRunner {
 
     private void injectOverview() {
         Scenario scenario = scenarioArguments.getScenario();
-        scenario.setOverview(InjectionUtil.injectObject(scenario.getOverview(), dependencies.getScenarioContext()));
+        scenario.setOverview(InjectionUtilImpl.injectObject(scenario.getOverview(), dependencies.getScenarioContext()));
     }
 
     private void prepareScenarioResult() {

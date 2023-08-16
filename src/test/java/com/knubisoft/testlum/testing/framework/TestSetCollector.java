@@ -8,7 +8,7 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioFilter;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ScenarioStepReader;
-import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
+import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl;
 import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
@@ -176,6 +176,6 @@ public class TestSetCollector {
     }
 
     private List<Map<String, String>> getVariationList(final MappingResult entry) {
-        return GlobalVariations.getVariations(entry.scenario.getSettings().getVariations());
+        return GlobalVariationsImpl.getVariations(entry.scenario.getSettings().getVariations());
     }
 }

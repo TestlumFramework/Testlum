@@ -4,7 +4,7 @@ import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigura
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
-import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
+import com.knubisoft.testlum.testing.framework.util.InjectionUtilImpl;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 
@@ -22,7 +22,7 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
     }
 
     public final void apply(final T o, final CommandResult result) {
-        T t = InjectionUtil.injectObject(o, dependencies.getScenarioContext());
+        T t = InjectionUtilImpl.injectObject(o, dependencies.getScenarioContext());
         result.setComment(t.getComment());
         LogUtil.logUICommand(result.getId(), t);
         if (ConditionUtil.isTrue(t.getCondition(), dependencies.getScenarioContext(), result)) {

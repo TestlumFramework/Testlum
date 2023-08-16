@@ -3,10 +3,9 @@ package com.knubisoft.testlum.testing.framework.interpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.RepeatCommandsRunner;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
-import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
+import com.knubisoft.testlum.testing.framework.util.InjectionUtilImpl;
+import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Repeat;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +18,10 @@ import java.util.stream.Collectors;
 public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
 
     @Autowired
-    private RepeatCommandsRunner repeatCommandsRunner;
+    private RepeatCommandRunner repeatCommandRunner;
+
+    @Autowired
+    private InjectionUtil injectionUtil;
 
     public RepeatInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -29,15 +31,15 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
     protected void acceptImpl(final Repeat o, final CommandResult result) {
         if (StringUtils.isNotBlank(o.getVariations())) {
             List<AbstractCommand> commands = o.getCommands();
-            List<AbstractCommand> injectedCommand = GlobalVariations.getVariations(o.getVariations()).stream()
+            List<AbstractCommand> injectedCommand = GlobalVariationsImpl.getVariations(o.getVariations()).stream()
                     .flatMap(variation -> commands.stream().map(command ->
-                            InjectionUtil.injectObjectVariation(command, variation)))
+                            injectionUtil.injectObjectVariation(command, variation)))
                     .collect(Collectors.toList());
-            this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result);
+            this.repeatCommandRunner.runCommands(injectedCommand, dependencies, result);
         } else {
             Repeat repeat = injectCommand(o);
             for (int i = 0; i < repeat.getTimes(); i++) {
-                this.repeatCommandsRunner.runCommands(repeat.getCommands(), dependencies, result);
+                this.repeatCommandRunner.runCommands(repeat.getCommands(), dependencies, result);
             }
         }
     }

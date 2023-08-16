@@ -25,7 +25,7 @@ public class SpringTestContext {
         for (AliasAdapter aliasAdapter : aliasAdapters) {
             aliasAdapter.apply(aliasMap);
         }
-        return new NameToAdapterAlias(aliasMap);
+        return new NameToAdapterAliasImpl(aliasMap);
     }
 
     @Bean

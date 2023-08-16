@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigura
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnMysqlEnabledCondition;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
+import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
 import com.knubisoft.testlum.testing.framework.db.sql.MySqlOperation;
 import com.knubisoft.testlum.testing.model.global_config.Mysql;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class AliasMySqlAdapter implements AliasAdapter {
     }
 
     private NameToAdapterAlias.Metadata getMetadataMySQL(final Mysql mysql) {
-        return NameToAdapterAlias.Metadata.builder()
+        return NameToAdapterAliasImpl.Metadata.builder()
                 .configuration(mysql)
                 .storageOperation(mySqlOperation)
                 .build();

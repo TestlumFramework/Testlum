@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigura
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnElasticEnabledCondition;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
+import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
 import com.knubisoft.testlum.testing.framework.db.elasticsearch.ElasticsearchOperation;
 import com.knubisoft.testlum.testing.model.global_config.Elasticsearch;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class AliasElasticsearchAdapter implements AliasAdapter {
     }
 
     private NameToAdapterAlias.Metadata getMetadataElasticsearch(final Elasticsearch elasticsearch) {
-        return NameToAdapterAlias.Metadata.builder()
+        return NameToAdapterAliasImpl.Metadata.builder()
                 .configuration(elasticsearch)
                 .storageOperation(elasticsearchOperation)
                 .build();

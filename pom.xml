@@ -987,6 +987,12 @@
 
         <dependency>
             <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-migrate</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
             <artifactId>testlum-sendgrid</artifactId>
             <version>1.0</version>
             <exclusions>
@@ -1082,6 +1088,22 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-elasticsearch</artifactId>
+            <version>1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.zaxxer</groupId>
+                    <artifactId>HikariCP</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-graphql</artifactId>
             <version>1.0</version>
             <exclusions>
                 <exclusion>

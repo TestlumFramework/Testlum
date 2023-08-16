@@ -244,14 +244,6 @@ public class LogUtil {
         log.error(LogMessage.ERROR_LOG, ex);
     }
 
-    public void logStructureGeneration(final String path) {
-        log.info(INITIAL_STRUCTURE_GENERATION_SUCCESS, path);
-    }
-
-    public void logErrorStructureGeneration(final String path, final Exception ex) {
-        log.error(INITIAL_STRUCTURE_GENERATION_ERROR, path, ex);
-    }
-
     /* integrations log */
     public void logAuthInfo(final Auth auth) {
         log.info(ALIAS_LOG, auth.getApiAlias());

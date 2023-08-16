@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigura
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnDynamoEnabledCondition;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
+import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
 import com.knubisoft.testlum.testing.framework.db.dynamodb.DynamoDBOperation;
 import com.knubisoft.testlum.testing.model.global_config.Dynamo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class AliasDynamoAdapter implements AliasAdapter {
     }
 
     private NameToAdapterAlias.Metadata getMetadataDynamo(final Dynamo dynamodb) {
-        return NameToAdapterAlias.Metadata.builder()
+        return NameToAdapterAliasImpl.Metadata.builder()
                 .configuration(dynamodb)
                 .storageOperation(dynamoDBOperation)
                 .build();

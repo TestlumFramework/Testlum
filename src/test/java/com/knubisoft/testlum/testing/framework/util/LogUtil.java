@@ -7,7 +7,6 @@ import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
 import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
-import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
@@ -27,12 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
-import org.springframework.web.client.HttpClientErrorException;
-import software.amazon.awssdk.http.HttpStatusCode;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Locale;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
@@ -49,9 +45,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMEN
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONDITION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_FORMAT;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DB_TYPE_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DRAGGING_FILE_PATH;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DRAGGING_FROM;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DROPPING_TO;
@@ -68,12 +62,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HTTP_M
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_COMPARISON_TYPE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_FOR_COMPARISON_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_SOURCE_ATT_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INITIAL_STRUCTURE_GENERATION_ERROR;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INITIAL_STRUCTURE_GENERATION_SUCCESS;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INVALID_CREDENTIALS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INVALID_SCENARIO_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LAMBDA_FUNCTION_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LAMBDA_PAYLOAD_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCAL_STORAGE_KEY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILEBROWSER_LOG;
@@ -89,9 +78,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_LOCATOR;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_TYPE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_VALUE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SERVER_ERROR_RESPONSE_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SKIPPED_BODY_VALIDATION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_FRAME;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_WEBVIEW;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_DIRECTION;
@@ -243,31 +229,7 @@ public class LogUtil {
         log.error(LogMessage.ERROR_LOG, ex);
     }
 
-    public void logStructureGeneration(final String path) {
-        log.info(INITIAL_STRUCTURE_GENERATION_SUCCESS, path);
-    }
-
-    public void logErrorStructureGeneration(final String path, final Exception ex) {
-        log.error(INITIAL_STRUCTURE_GENERATION_ERROR, path, ex);
-    }
-
     /* integrations log */
-    public void logAuthInfo(final Auth auth) {
-        log.info(ALIAS_LOG, auth.getApiAlias());
-        log.info(ENDPOINT_LOG, auth.getLoginEndpoint());
-        log.info(CREDENTIALS_LOG, auth.getCredentials());
-    }
-
-    public void logResponseStatusError(final HttpClientErrorException exception) {
-        if (HttpStatusCode.NOT_FOUND == exception.getRawStatusCode()) {
-            log.info(INVALID_CREDENTIALS_LOG, exception.getRawStatusCode());
-        } else if (HttpStatusCode.BAD_GATEWAY == exception.getRawStatusCode()) {
-            log.info(SERVER_BAD_GATEWAY_RESPONSE_LOG, exception.getRawStatusCode());
-        } else {
-            log.info(SERVER_ERROR_RESPONSE_LOG, exception.getRawStatusCode());
-        }
-    }
-
     public void logAllQueries(final List<String> queries, final String alias) {
         log.info(ALIAS_LOG, alias);
         queries.forEach(query -> log.info(QUERY, query.replaceAll(REGEX_MANY_SPACES, SPACE)));
@@ -276,28 +238,6 @@ public class LogUtil {
     public void logAllQueries(final String dbType, final List<String> queries, final String alias) {
         log.info(DB_TYPE_LOG, dbType);
         logAllQueries(queries, alias);
-    }
-
-    public void logWebsocketActionInfo(final String action,
-                                       final String comment,
-                                       final String destination,
-                                       final String content) {
-        log.info(LogMessage.WEBSOCKET_ACTION_INFO_LOG, comment, action.toUpperCase(Locale.ROOT));
-        if (isNotBlank(destination)) {
-            log.info(DESTINATION_LOG, destination);
-        }
-        if (isNotBlank(content)) {
-            log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
-        }
-    }
-
-    public void logLambdaInfo(final String alias, final String functionName, final String payload) {
-        log.info(ALIAS_LOG, alias);
-        log.info(LAMBDA_FUNCTION_LOG, functionName);
-        if (isNotBlank(payload)) {
-            log.info(LAMBDA_PAYLOAD_LOG,
-                    StringPrettifier.asJsonResult(payload).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
-        }
     }
 
     public void logHttpInfo(final String alias, final String method, final String endpoint) {
@@ -319,10 +259,6 @@ public class LogUtil {
                     StringPrettifier.asJsonResult(StringPrettifier.cut(body))
                             .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
-    }
-
-    public void logBodyValidationSkipped() {
-        log.info(SKIPPED_BODY_VALIDATION);
     }
 
     public void logVarInfo(final String name, final String value) {

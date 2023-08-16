@@ -119,8 +119,6 @@ public class ResultUtil {
     private static final String LOCATOR_FOR_SCROLL = "Locator for scroll";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
-    private static final String LAMBDA_FUNCTION_NAME = "Function name";
-    private static final String LAMBDA_PAYLOAD = "Payload";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
     private static final String TOPIC = "Topic";
     private static final String NUMBER_OF_MESSAGES = "Number of messages";
@@ -202,33 +200,6 @@ public class ResultUtil {
         }
     }
 
-    public static void addElasticsearchMetaData(final String alias,
-                                                final String httpMethodName,
-                                                final Map<String, String> headers,
-                                                final String endpoint,
-                                                final CommandResult result) {
-        result.put(ALIAS, alias);
-        result.put(ENDPOINT, endpoint);
-        result.put(HTTP_METHOD, httpMethodName);
-        if (!headers.isEmpty()) {
-            addHeadersMetaData(headers, result);
-        }
-    }
-
-
-    public void addSendGridMetaData(final String alias,
-                                    final String httpMethodName,
-                                    final Map<String, String> headers,
-                                    final String endpoint,
-                                    final CommandResult result) {
-        result.put(ALIAS, alias);
-        result.put(ENDPOINT, endpoint);
-        result.put(HTTP_METHOD, httpMethodName);
-        if (!headers.isEmpty()) {
-            addHeadersMetaData(headers, result);
-        }
-    }
-
     private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
                 .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
@@ -271,15 +242,6 @@ public class ResultUtil {
         if (isNotBlank(destinationValue)) {
             result.put(destination, destinationValue);
         }
-    }
-
-    public void addLambdaGeneralMetaData(final String alias,
-                                         final String functionName,
-                                         final String payload,
-                                         final CommandResult result) {
-        result.put(ALIAS, alias);
-        result.put(LAMBDA_FUNCTION_NAME, functionName);
-        result.put(LAMBDA_PAYLOAD, StringPrettifier.asJsonResult(payload));
     }
 
     public void addShellMetaData(final List<String> shellFiles,

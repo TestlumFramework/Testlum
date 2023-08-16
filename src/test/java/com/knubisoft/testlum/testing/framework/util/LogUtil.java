@@ -73,8 +73,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INITIA
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INITIAL_STRUCTURE_GENERATION_SUCCESS;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INVALID_CREDENTIALS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INVALID_SCENARIO_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LAMBDA_FUNCTION_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LAMBDA_PAYLOAD_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCAL_STORAGE_KEY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILEBROWSER_LOG;
@@ -281,15 +279,6 @@ public class LogUtil {
         }
         if (isNotBlank(content)) {
             log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
-        }
-    }
-
-    public void logLambdaInfo(final String alias, final String functionName, final String payload) {
-        log.info(ALIAS_LOG, alias);
-        log.info(LAMBDA_FUNCTION_LOG, functionName);
-        if (isNotBlank(payload)) {
-            log.info(LAMBDA_PAYLOAD_LOG,
-                    StringPrettifier.asJsonResult(payload).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
     }
 

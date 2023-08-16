@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigura
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnClickhouseEnabledCondition;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
+import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
 import com.knubisoft.testlum.testing.framework.db.sql.ClickhouseOperation;
 import com.knubisoft.testlum.testing.model.global_config.Clickhouse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class AliasClickhouseAdapter implements AliasAdapter {
     }
 
     private NameToAdapterAlias.Metadata getMetadataClickhouse(final Clickhouse clickhouse) {
-        return NameToAdapterAlias.Metadata.builder()
+        return NameToAdapterAliasImpl.Metadata.builder()
                 .configuration(clickhouse)
                 .storageOperation(clickhouseOperation)
                 .build();

@@ -25,7 +25,6 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
-import org.springframework.http.HttpMethod;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -203,14 +202,28 @@ public class ResultUtil {
         }
     }
 
-    public void addGraphQlMetaData(final String alias,
-                                   final HttpMethod httpMethod,
-                                   final Map<String, String> headers,
-                                   final String endpoint,
-                                   final CommandResult result) {
+    public static void addElasticsearchMetaData(final String alias,
+                                                final String httpMethodName,
+                                                final Map<String, String> headers,
+                                                final String endpoint,
+                                                final CommandResult result) {
         result.put(ALIAS, alias);
-        result.put(HTTP_METHOD, httpMethod);
         result.put(ENDPOINT, endpoint);
+        result.put(HTTP_METHOD, httpMethodName);
+        if (!headers.isEmpty()) {
+            addHeadersMetaData(headers, result);
+        }
+    }
+
+
+    public void addSendGridMetaData(final String alias,
+                                    final String httpMethodName,
+                                    final Map<String, String> headers,
+                                    final String endpoint,
+                                    final CommandResult result) {
+        result.put(ALIAS, alias);
+        result.put(ENDPOINT, endpoint);
+        result.put(HTTP_METHOD, httpMethodName);
         if (!headers.isEmpty()) {
             addHeadersMetaData(headers, result);
         }

@@ -79,7 +79,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_LOCATOR;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_TYPE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_VALUE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SKIPPED_BODY_VALIDATION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_FRAME;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_WEBVIEW;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_DIRECTION;
@@ -261,10 +260,6 @@ public class LogUtil {
                     StringPrettifier.asJsonResult(StringPrettifier.cut(body))
                             .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
         }
-    }
-
-    public void logBodyValidationSkipped() {
-        log.info(SKIPPED_BODY_VALIDATION);
     }
 
     public void logVarInfo(final String name, final String value) {

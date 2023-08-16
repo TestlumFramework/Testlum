@@ -14,26 +14,26 @@ import java.util.Objects;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ALIAS_BY_STORAGE_NAME_NOT_FOUND;
 
 @RequiredArgsConstructor
-public class NameToAdapterAlias {
+public class NameToAdapterAliasImpl implements NameToAdapterAlias {
 
-    private final Map<String, Metadata> alias;
+    private final Map<String, NameToAdapterAlias.Metadata> alias;
 
-    public Metadata getByNameOrThrow(final String name) {
+    public NameToAdapterAlias.Metadata getByNameOrThrow(final String name) {
         String adapterName = name.toUpperCase(Locale.US);
-        Metadata metadata = this.alias.get(adapterName);
+        NameToAdapterAlias.Metadata metadata = this.alias.get(adapterName);
         if (Objects.isNull(metadata)) {
             throw new DefaultFrameworkException(ALIAS_BY_STORAGE_NAME_NOT_FOUND, adapterName, alias.keySet());
         }
         return metadata;
     }
 
-    public Map<String, Metadata> getAlias() {
+    public Map<String, NameToAdapterAlias.Metadata> getAlias() {
         return Collections.unmodifiableMap(alias);
     }
 
     @Builder
     @Getter
-    public static class Metadata {
+    public static class Metadata implements NameToAdapterAlias.Metadata {
         private final Object configuration;
         private final StorageOperation storageOperation;
     }

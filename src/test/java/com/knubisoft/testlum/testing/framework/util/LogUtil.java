@@ -69,8 +69,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_SOURCE_ATT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INVALID_CREDENTIALS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INVALID_SCENARIO_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LAMBDA_FUNCTION_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LAMBDA_PAYLOAD_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCAL_STORAGE_KEY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILEBROWSER_LOG;
@@ -265,15 +263,6 @@ public class LogUtil {
     public void logAllQueries(final String dbType, final List<String> queries, final String alias) {
         log.info(DB_TYPE_LOG, dbType);
         logAllQueries(queries, alias);
-    }
-
-    public void logLambdaInfo(final String alias, final String functionName, final String payload) {
-        log.info(ALIAS_LOG, alias);
-        log.info(LAMBDA_FUNCTION_LOG, functionName);
-        if (isNotBlank(payload)) {
-            log.info(LAMBDA_PAYLOAD_LOG,
-                    StringPrettifier.asJsonResult(payload).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
-        }
     }
 
     public void logHttpInfo(final String alias, final String method, final String endpoint) {

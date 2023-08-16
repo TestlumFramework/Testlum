@@ -100,7 +100,6 @@ public final class LogMessage {
     public static final String FAILED_SCENARIOS_NAME_TEMPLATE =
             ANSI_RED_BOLD + "Scenario %s was failed. Related exception provided below." + ANSI_RED_BOLD;
 
-    public static final String DATASET_PATH_LOG = format(TABLE_FORMAT, "Migration dataset", "{}");
     public static final String DB_TYPE_LOG = format(TABLE_FORMAT, "DB Type", "{}");
     public static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
     public static final String EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Execution time ", "{} ms");
@@ -144,8 +143,6 @@ public final class LogMessage {
     public static final String OVERVIEW_INFO_LOG = "{}: {}";
     public static final String MOVE_TO_EMPTY_SPACE = format(TABLE_FORMAT, "Move to empty space", "{}");
 
-    public static final String LAMBDA_FUNCTION_LOG = format(TABLE_FORMAT, "Function name", "{}");
-    public static final String LAMBDA_PAYLOAD_LOG = format(TABLE_FORMAT, "Payload", "{}");
     public static final String UI_EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Step execution time", "{} ms");
     public static final String COMMAND_TYPE_LOG = format(TABLE_FORMAT, "Command type", "{}");
     public static final String JS_FILE_LOG = format(TABLE_FORMAT, "JS file", "{}");

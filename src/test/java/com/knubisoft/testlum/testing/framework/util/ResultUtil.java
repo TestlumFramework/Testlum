@@ -22,7 +22,6 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
-import org.springframework.http.HttpMethod;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -45,7 +44,6 @@ public class ResultUtil {
     public static final String API_ALIAS = "API alias";
     public static final String AUTHENTICATION_TYPE = "Authentication type";
     public static final String CREDENTIALS_FILE = "Credentials file";
-    public static final String MESSAGE_TO_SEND = "Message to send";
     public static final String JSON_PATH = "JSON path";
     public static final String XML_PATH = "Xml path";
     public static final String RELATIONAL_DB_QUERY = "Relational DB query";
@@ -112,15 +110,9 @@ public class ResultUtil {
     private static final String SCROLL_MEASURE = "Scroll measure";
     private static final String SCROLL_TYPE = "Scroll type";
     private static final String LOCATOR_FOR_SCROLL = "Locator for scroll";
-    private static final String QUERIES = "Queries";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
-    private static final String LAMBDA_FUNCTION_NAME = "Function name";
-    private static final String LAMBDA_PAYLOAD = "Payload";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
-    private static final String DATABASE = "Database";
-    private static final String DATABASE_ALIAS = "Database alias";
-    private static final String PATCHES = "Patches";
     private static final String SHELL_FILES = "Shell files";
     private static final String SHELL_COMMANDS = "Shell commands";
     private static final String TYPE = "Type";
@@ -180,15 +172,6 @@ public class ResultUtil {
         result.setActual(actual);
     }
 
-    public void addMigrateMetaData(final String databaseName,
-                                   final String databaseAlias,
-                                   final List<String> patches,
-                                   final CommandResult result) {
-        result.put(DATABASE, databaseName);
-        result.put(DATABASE_ALIAS, databaseAlias);
-        result.put(PATCHES, patches);
-    }
-
     public void addHttpMetaData(final String alias,
                                 final String httpMethodName,
                                 final Map<String, String> headers,
@@ -202,32 +185,10 @@ public class ResultUtil {
         }
     }
 
-    public void addGraphQlMetaData(final String alias,
-                                   final HttpMethod httpMethod,
-                                   final Map<String, String> headers,
-                                   final String endpoint,
-                                   final CommandResult result) {
-        result.put(ALIAS, alias);
-        result.put(HTTP_METHOD, httpMethod);
-        result.put(ENDPOINT, endpoint);
-        if (!headers.isEmpty()) {
-            addHeadersMetaData(headers, result);
-        }
-    }
-
     private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
                 .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
                 .collect(Collectors.toList()));
-    }
-
-    public void addLambdaGeneralMetaData(final String alias,
-                                         final String functionName,
-                                         final String payload,
-                                         final CommandResult result) {
-        result.put(ALIAS, alias);
-        result.put(LAMBDA_FUNCTION_NAME, functionName);
-        result.put(LAMBDA_PAYLOAD, StringPrettifier.asJsonResult(payload));
     }
 
     public void addShellMetaData(final List<String> shellFiles,

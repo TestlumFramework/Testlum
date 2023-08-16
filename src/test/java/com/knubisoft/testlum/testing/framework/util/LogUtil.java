@@ -33,7 +33,6 @@ import software.amazon.awssdk.http.HttpStatusCode;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Locale;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
@@ -52,7 +51,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTEN
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CREDENTIALS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DB_TYPE_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DESTINATION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DRAGGING_FILE_PATH;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DRAGGING_FROM;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DROPPING_TO;
@@ -69,8 +67,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HTTP_M
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_COMPARISON_TYPE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_FOR_COMPARISON_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_SOURCE_ATT_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INITIAL_STRUCTURE_GENERATION_ERROR;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INITIAL_STRUCTURE_GENERATION_SUCCESS;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INVALID_CREDENTIALS_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INVALID_SCENARIO_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCAL_STORAGE_KEY;
@@ -267,19 +263,6 @@ public class LogUtil {
     public void logAllQueries(final String dbType, final List<String> queries, final String alias) {
         log.info(DB_TYPE_LOG, dbType);
         logAllQueries(queries, alias);
-    }
-
-    public void logWebsocketActionInfo(final String action,
-                                       final String comment,
-                                       final String destination,
-                                       final String content) {
-        log.info(LogMessage.WEBSOCKET_ACTION_INFO_LOG, comment, action.toUpperCase(Locale.ROOT));
-        if (isNotBlank(destination)) {
-            log.info(DESTINATION_LOG, destination);
-        }
-        if (isNotBlank(content)) {
-            log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
-        }
     }
 
     public void logHttpInfo(final String alias, final String method, final String endpoint) {

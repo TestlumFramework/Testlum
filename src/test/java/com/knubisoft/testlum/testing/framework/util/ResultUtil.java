@@ -17,9 +17,6 @@ import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
-import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
-import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
-import com.knubisoft.testlum.testing.model.scenario.WebsocketSubscribe;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
@@ -47,10 +44,6 @@ public class ResultUtil {
     public static final String API_ALIAS = "API alias";
     public static final String AUTHENTICATION_TYPE = "Authentication type";
     public static final String CREDENTIALS_FILE = "Credentials file";
-    public static final String MESSAGE_TO_SEND = "Message to send";
-    public static final String CONTENT_TO_SEND = "Content to send";
-    public static final String EXPECTED_CODE = "Expected code";
-    public static final String ACTUAL_CODE = "Actual code";
     public static final String JSON_PATH = "JSON path";
     public static final String XML_PATH = "Xml path";
     public static final String RELATIONAL_DB_QUERY = "Relational DB query";
@@ -120,14 +113,6 @@ public class ResultUtil {
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
-    private static final String TOPIC = "Topic";
-    private static final String NUMBER_OF_MESSAGES = "Number of messages";
-    private static final String ALL_AVAILABLE_MESSAGES = "All available messages";
-    private static final String ACTION = "Action";
-    private static final String SEND = "Send";
-    private static final String TIMEOUT_MILLIS = "Timeout millis";
-    private static final String RECEIVE = "Receive";
-    private static final String SUBSCRIBE = "Subscribe";
     private static final String SHELL_FILES = "Shell files";
     private static final String SHELL_COMMANDS = "Shell commands";
     private static final String TYPE = "Type";
@@ -204,44 +189,6 @@ public class ResultUtil {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
                 .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
                 .collect(Collectors.toList()));
-    }
-
-    public void addWebsocketInfoForSendAction(final WebsocketSend sendAction,
-                                              final String alias,
-                                              final String message,
-                                              final CommandResult result) {
-        addWebsocketGeneralInfo(SEND, sendAction.getComment(), alias, ENDPOINT, sendAction.getEndpoint(), result);
-        result.put(MESSAGE_TO_SEND, message);
-    }
-
-    public void addWebsocketInfoForReceiveAction(final WebsocketReceive receiveAction,
-                                                 final String alias,
-                                                 final CommandResult result) {
-        addWebsocketGeneralInfo(RECEIVE, receiveAction.getComment(), alias, TOPIC, receiveAction.getTopic(), result);
-        result.put(NUMBER_OF_MESSAGES, nonNull(receiveAction.getLimit())
-                ? receiveAction.getLimit().intValue() : ALL_AVAILABLE_MESSAGES);
-        result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
-    }
-
-    public void addWebsocketInfoForSubscribeAction(final WebsocketSubscribe subscribe,
-                                                   final String alias,
-                                                   final CommandResult result) {
-        addWebsocketGeneralInfo(SUBSCRIBE, subscribe.getComment(), alias, TOPIC, subscribe.getTopic(), result);
-    }
-
-    private static void addWebsocketGeneralInfo(final String action,
-                                                final String comment,
-                                                final String alias,
-                                                final String destination,
-                                                final String destinationValue,
-                                                final CommandResult result) {
-        result.setCommandKey(action);
-        result.setComment(comment);
-        result.put(ALIAS, alias);
-        result.put(ACTION, action);
-        if (isNotBlank(destinationValue)) {
-            result.put(destination, destinationValue);
-        }
     }
 
     public void addShellMetaData(final List<String> shellFiles,

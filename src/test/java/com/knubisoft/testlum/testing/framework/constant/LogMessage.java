@@ -28,9 +28,6 @@ public final class LogMessage {
     public static final String ANSI_BLUE_UNDERLINED = "\033[4;34m";
 
     public static final String ERROR_LOG = "Error ->";
-    public static final String UI_COMMAND_LOG = ANSI_CYAN + "------- UI command #{} - {} -------" + ANSI_RESET;
-    public static final String UI_COMMAND_LOG_WITHOUT_POSITION = ANSI_CYAN
-            + "------- UI command - {} -------" + ANSI_RESET;
     public static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
     public static final String REPEAT_FINISHED_LOG = ANSI_CYAN + "------- Repeat is finished -------" + ANSI_RESET;
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");

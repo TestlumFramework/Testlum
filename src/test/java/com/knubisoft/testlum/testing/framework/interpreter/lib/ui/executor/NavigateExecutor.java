@@ -6,7 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
+
 import com.knubisoft.testlum.testing.model.scenario.Navigate;
 import com.knubisoft.testlum.testing.model.scenario.NavigateCommand;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +21,10 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.NAVIGATE_U
 @ExecutorForClass(Navigate.class)
 public class NavigateExecutor extends AbstractUiExecutor<Navigate> {
 
-    public NavigateExecutor(final GlobalTestConfigurationProvider configurationProvider,
-                            final ExecutorDependencies dependencies) {
-        super(configurationProvider, dependencies);
+    private final GlobalTestConfigurationProvider configurationProvider;
+    public NavigateExecutor(final ExecutorDependencies dependencies) {
+        super(dependencies);
+        this.configurationProvider = dependencies.getContext().getBean(GlobalTestConfigurationProvider.class);
     }
 
     @Override
@@ -40,12 +41,12 @@ public class NavigateExecutor extends AbstractUiExecutor<Navigate> {
                 break;
             default: throw new DefaultFrameworkException(NAVIGATE_NOT_SUPPORTED, navigateCommand.value());
         }
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void navigateTo(final String path, final CommandResult result) {
         String url =
-                UiUtil.getUrl(path, dependencies.getEnvironment(), dependencies.getUiType(), configurationProvider);
+                uiUtil.getUrl(path, dependencies.getEnvironment(), dependencies.getUiType(), configurationProvider);
         dependencies.getDriver().navigate().to(url);
         result.put(NAVIGATE_URL, path);
         log.info(BY_URL_LOG, path);

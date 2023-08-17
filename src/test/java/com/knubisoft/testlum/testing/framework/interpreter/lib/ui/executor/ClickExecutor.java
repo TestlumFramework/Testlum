@@ -1,12 +1,11 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
+
 import com.knubisoft.testlum.testing.model.scenario.Click;
 import com.knubisoft.testlum.testing.model.scenario.ClickMethod;
 import org.openqa.selenium.WebElement;
@@ -18,18 +17,17 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CLICK_METH
 @ExecutorForClass(Click.class)
 public class ClickExecutor extends AbstractUiExecutor<Click> {
 
-    public ClickExecutor(final GlobalTestConfigurationProvider configurationProvider,
-                         final ExecutorDependencies dependencies) {
-        super(configurationProvider, dependencies);
+    public ClickExecutor(final ExecutorDependencies dependencies) {
+        super(dependencies);
     }
 
     @Override
     public void execute(final Click click, final CommandResult result) {
         result.put(CLICK_LOCATOR, click.getLocatorId());
-        WebElement webElement = UiUtil.findWebElement(dependencies, click.getLocatorId());
+        WebElement webElement = uiUtil.findWebElement(dependencies, click.getLocatorId());
 //        UiUtil.waitForElementVisibility(dependencies, webElement);
-        UiUtil.highlightElementIfRequired(click.isHighlight(), webElement, dependencies.getDriver());
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.highlightElementIfRequired(click.isHighlight(), webElement, dependencies.getDriver());
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         clickWithMethod(click.getMethod(), webElement, result);
     }
 

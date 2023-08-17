@@ -59,7 +59,7 @@ public enum InnerScrollScript {
         this.percentageScript = percentageScript;
     }
 
-    public static String getInnerScrollScript(final Scroll scroll) {
+    public static String getInnerScrollScript(final Scroll scroll, final UiUtil uiUtil) {
         Locator locator = GlobalLocators.getLocator(scroll.getLocatorId());
         return Arrays.stream(InnerScrollScript.values())
                 .filter(e -> e.getLocatorTypePredicate().test(locator))
@@ -67,10 +67,10 @@ public enum InnerScrollScript {
                 .map(e -> {
                     String selector = e.locatorValue.apply(locator);
                     int value = scroll.getValue();
-                    ScrollDirection scrollDirection = scroll.getDirection();
+                    ScrollDirection direction = scroll.getDirection();
                     return ScrollMeasure.PERCENT == scroll.getMeasure()
-                            ? formatInnerPercentScript(e.getPercentageScript(), selector, value, scrollDirection)
-                            : formatInnerPixelScript(e.getPixelScript(), selector, value, scrollDirection);
+                            ? formatInnerPercentScript(e.getPercentageScript(), selector, value, direction, uiUtil)
+                            : formatInnerPixelScript(e.getPixelScript(), selector, value, direction);
                 })
                 .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.INVALID_LOCATOR, locator));
     }
@@ -87,8 +87,9 @@ public enum InnerScrollScript {
     private static String formatInnerPercentScript(final String script,
                                                    final String selector,
                                                    final int value,
-                                                   final ScrollDirection scrollDirection) {
-        float percent = UiUtil.calculatePercentageValue(value);
+                                                   final ScrollDirection scrollDirection,
+                                                   final UiUtil uiUtil) {
+        float percent = uiUtil.calculatePercentageValue(value);
         return format(script,
                 selector,
                 selector,

@@ -21,7 +21,7 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static java.util.Objects.nonNull;
 
 @Component
-public class SubCommandRunner {
+public class SubCommandRunnerImpl implements SubCommandRunner {
 
     @Autowired
     private GlobalTestConfigurationProvider globalTestConfigurationProvider;

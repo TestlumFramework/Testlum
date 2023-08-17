@@ -55,9 +55,9 @@ public class ScenarioRunner {
     private final ScenarioArguments scenarioArguments;
     private final ApplicationContext ctx;
 
-    private InterpreterDependencies dependencies;
     private GlobalTestConfigurationProvider configurationProvider;
     private EnvManager envManager;
+    private InterpreterDependencies dependencies;
     private boolean stopScenarioOnFailure;
     private CommandToInterpreterMap cmdToInterpreterMap;
 
@@ -70,9 +70,9 @@ public class ScenarioRunner {
     }
 
     private void prepare() {
-        this.dependencies = createDependencies();
         this.configurationProvider = ctx.getBean(GlobalTestConfigurationProvider.class);
         this.envManager = ctx.getBean(EnvManager.class);
+        this.dependencies = createDependencies();
         this.stopScenarioOnFailure = configurationProvider.provide().isStopScenarioOnFailure();
         this.cmdToInterpreterMap = createClassToInterpreterMap(dependencies);
     }

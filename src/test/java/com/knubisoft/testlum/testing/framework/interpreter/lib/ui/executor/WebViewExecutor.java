@@ -1,8 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.SubCommandRunner;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.SubCommandRunnerImpl;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -21,11 +20,10 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 public class WebViewExecutor extends AbstractUiExecutor<WebView> {
 
     @Autowired
-    private SubCommandRunner subCommandRunner;
+    private SubCommandRunnerImpl subCommandRunner;
 
-    public WebViewExecutor(final GlobalTestConfigurationProvider configurationProvider,
-                           final ExecutorDependencies dependencies) {
-        super(configurationProvider, dependencies);
+    public WebViewExecutor(final ExecutorDependencies dependencies) {
+        super(dependencies);
     }
 
     @Override

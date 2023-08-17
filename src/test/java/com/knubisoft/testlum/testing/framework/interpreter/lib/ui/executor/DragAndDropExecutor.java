@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -10,7 +9,7 @@ import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
+
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriver;
@@ -27,9 +26,8 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
 
     private final WebDriver driver;
 
-    public DragAndDropExecutor(final GlobalTestConfigurationProvider configurationProvider,
-                               final ExecutorDependencies dependencies) {
-        super(configurationProvider, dependencies);
+    public DragAndDropExecutor(final ExecutorDependencies dependencies) {
+        super(dependencies);
         driver = dependencies.getDriver();
     }
 
@@ -37,15 +35,15 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
     public void execute(final DragAndDrop dragAndDrop, final CommandResult result) {
         LogUtil.logDragAndDropInfo(dragAndDrop);
         ResultUtil.addDragAndDropMetaDada(dragAndDrop, result);
-        WebElement target = UiUtil.findWebElement(dependencies, dragAndDrop.getToLocatorId());
+        WebElement target = uiUtil.findWebElement(dependencies, dragAndDrop.getToLocatorId());
         if (StringUtils.isNotBlank(dragAndDrop.getFileName())) {
             File source = FileSearcher.searchFileFromDir(
                     dependencies.getFile().getParentFile(), dragAndDrop.getFileName());
             dropFile(target, source);
         } else {
-            dropElement(target, UiUtil.findWebElement(dependencies, dragAndDrop.getFromLocatorId()));
+            dropElement(target, uiUtil.findWebElement(dependencies, dragAndDrop.getFromLocatorId()));
         }
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void dropElement(final WebElement target, final WebElement source) {

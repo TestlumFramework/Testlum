@@ -27,11 +27,12 @@ public class ImageComparisonUtil {
     public void processImageComparisonResult(final ImageComparisonResult comparisonResult,
                                              final Image image,
                                              final File directoryToSave,
+                                             final UiUtil uiUtil,
                                              final CommandResult result) {
         ImageComparisonState imageComparisonState = comparisonResult.getImageComparisonState();
         if (imageComparisonState != ImageComparisonState.MATCH) {
             File actualImage = saveActualImage(comparisonResult, image, directoryToSave);
-            UiUtil.putScreenshotToResult(result, actualImage);
+            uiUtil.putScreenshotToResult(result, actualImage);
             result.put(ADDITIONAL_INFO, IMAGE_ATTACHED_TO_STEP);
             throw new ImageComparisonException(format(IMAGES_DONT_MATCH, imageComparisonState.name()));
         }

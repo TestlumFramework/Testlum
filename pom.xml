@@ -1108,6 +1108,18 @@
 
         <dependency>
             <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-native</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-mobilebrowser</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
             <artifactId>testlum-ui-assert</artifactId>
             <version>1.0</version>
         </dependency>

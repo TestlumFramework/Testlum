@@ -937,6 +937,33 @@
 
         <!--    TESTLUM PLUGINS    -->
 
+        <!--    GENERAL    -->
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-migrate</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-repeat</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-assert</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-conditional</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <!--    DATABASES    -->
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-mysql</artifactId>
@@ -973,6 +1000,8 @@
             <version>1.0</version>
         </dependency>
 
+        <!--    QUEUES    -->
+
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-kafka</artifactId>
@@ -987,15 +1016,11 @@
 
         <dependency>
             <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-migrate</artifactId>
+            <artifactId>testlum-sqs</artifactId>
             <version>1.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-sendgrid</artifactId>
-            <version>1.0</version>
-        </dependency>
+        <!--    CACHE AND STORAGE    -->
 
         <dependency>
             <groupId>com.knubisoft</groupId>
@@ -1009,15 +1034,17 @@
             <version>1.0</version>
         </dependency>
 
+        <!--    MESSAGES AND MAILING    -->
+
         <dependency>
             <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-ses</artifactId>
+            <artifactId>testlum-sendgrid</artifactId>
             <version>1.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-sqs</artifactId>
+            <artifactId>testlum-ses</artifactId>
             <version>1.0</version>
         </dependency>
 
@@ -1033,21 +1060,11 @@
             <version>1.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-repeat</artifactId>
-            <version>1.0</version>
-        </dependency>
+        <!--    API    -->
 
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-elasticsearch</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-assert</artifactId>
             <version>1.0</version>
         </dependency>
 
@@ -1066,12 +1083,6 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-graphql</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-conditional</artifactId>
             <version>1.0</version>
         </dependency>
 

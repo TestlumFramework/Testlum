@@ -105,8 +105,6 @@ public class ResultUtil {
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
-    private static final String SHELL_FILES = "Shell files";
-    private static final String SHELL_COMMANDS = "Shell commands";
     private static final String TYPE = "Type";
     private static final String DB_TYPE = "DB type";
     private static final String NAME = "Name";
@@ -181,17 +179,6 @@ public class ResultUtil {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
                 .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
                 .collect(Collectors.toList()));
-    }
-
-    public void addShellMetaData(final List<String> shellFiles,
-                                 final List<String> shellCommands,
-                                 final CommandResult result) {
-        if (!shellCommands.isEmpty()) {
-            result.put(SHELL_COMMANDS, shellCommands);
-        }
-        if (!shellFiles.isEmpty()) {
-            result.put(SHELL_FILES, shellFiles);
-        }
     }
 
     public void addVariableMetaData(final String type,

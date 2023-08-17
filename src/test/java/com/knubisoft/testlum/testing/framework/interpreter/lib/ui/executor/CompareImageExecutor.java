@@ -2,7 +2,6 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.Rectangle;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -23,13 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.awt.image.RasterFormatException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -37,7 +36,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ELEMENT_OUT_OF_BOUNDS;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.URL_TO_IMAGE_LOG;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.URL_TO_ACTUAL_IMAGE;
 import static java.util.Objects.nonNull;
@@ -78,7 +76,8 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
             return extractImageFromElement(webElement, image.getElement().getAttribute(), result);
         }
         if (nonNull(image.getPart())) {
-            return getScreenPart(webDriver, image);
+            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocatorId());
+            return ImageIO.read(webElement.getScreenshotAs(OutputType.FILE));
         }
         return ImageIO.read(UiUtil.takeScreenshot(webDriver));
     }
@@ -93,33 +92,6 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         log.info(URL_TO_IMAGE_LOG, urlToImage);
         result.put(URL_TO_ACTUAL_IMAGE, urlToImage);
         return ImageIO.read(new URL(urlToImage));
-    }
-
-    private BufferedImage getScreenPart(final WebDriver webDriver, final Image image) throws IOException {
-        if (UiType.NATIVE == dependencies.getUiType() || UiType.MOBILE_BROWSER == dependencies.getUiType()) {
-            return getMobileOrNativeElementAsImage(webDriver, image.getPart().getLocatorId());
-        }
-        try {
-            return getElementAsImage(webDriver, image.getPart().getLocatorId());
-        } catch (RasterFormatException e) {
-            throw new DefaultFrameworkException(ELEMENT_OUT_OF_BOUNDS);
-        }
-    }
-
-    private BufferedImage getMobileOrNativeElementAsImage(final WebDriver webDriver,
-                                                          final String locatorId) throws IOException {
-        WebElement webElement = UiUtil.findWebElement(dependencies, locatorId);
-        org.openqa.selenium.Rectangle rectangle = webElement.getRect();
-        BufferedImage fullscreen = ImageIO.read(UiUtil.takeScreenshot(webDriver));
-        return fullscreen.getSubimage(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
-    }
-
-    private BufferedImage getElementAsImage(final WebDriver webDriver, final String locatorId) throws IOException {
-        BufferedImage fullScreen = ImageIO.read(UiUtil.takeScreenshot(webDriver));
-        Scale scale = getScaling(fullScreen, webDriver);
-        Rectangle rectangle = getElementArea(locatorId, scale);
-        return fullScreen.getSubimage((int) rectangle.getMinPoint().getX(), (int) rectangle.getMinPoint().getY(),
-                Math.abs(rectangle.getWidth()), Math.abs(rectangle.getHeight()));
     }
 
     private List<Rectangle> getExcludeList(final CompareWithFullScreen fullScreen,
@@ -140,8 +112,8 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         }
         Dimension windowSize = driver.manage().window().getSize();
         if (screen.getWidth() / windowSize.getWidth() > 1 || screen.getHeight() / windowSize.getHeight() > 1) {
-            return new Scale((double) screen.getWidth() / windowSize.getWidth(),
-                    (double) screen.getHeight() / (windowSize.getHeight()));
+            return new Scale(Math.ceil((double) screen.getWidth() / windowSize.getWidth()),
+                    Math.ceil((double) screen.getHeight() / (windowSize.getHeight())));
         }
         return new Scale(1, 1);
     }

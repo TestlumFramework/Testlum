@@ -140,15 +140,17 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private final GlobalTestConfigurationProvider configurationProvider;
-    private GlobalVariations globalVariations;
+    private final GlobalVariations globalVariations;
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> uiCommandValidatorsMap;
     private final Integrations integrations;
     private final AtomicReference<String> variationsFileName = new AtomicReference<>(EMPTY);
 
-    public ScenarioValidator(final GlobalTestConfigurationProvider configurationProvider) {
+    public ScenarioValidator(final GlobalTestConfigurationProvider configurationProvider,
+                             final GlobalVariations globalVariations) {
         this.configurationProvider = configurationProvider;
         this.integrations = configurationProvider.getDefaultIntegrations();
+        this.globalVariations = globalVariations;
         Map<AbstractCommandPredicate, AbstractCommandValidator> validatorMap = new HashMap<>();
 
         validatorMap.put(o -> o instanceof Auth, (xmlFile, command) -> {

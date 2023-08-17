@@ -9,7 +9,6 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioFilter;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ScenarioStepReader;
-import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl;
 import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
@@ -34,13 +33,15 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 @Service
 public class TestSetCollector {
 
-    private GlobalVariations globalVariations;
+    private final GlobalVariations globalVariations;
     private final GlobalTestConfigurationProvider configurationProvider;
     private final List<String> browsers;
     private final List<String> mobilebrowsers;
     private final List<String> nativeDevices;
 
-    public TestSetCollector(final GlobalTestConfigurationProvider configurationProvider) {
+    public TestSetCollector(final GlobalVariations globalVariations,
+                            final GlobalTestConfigurationProvider configurationProvider) {
+        this.globalVariations = globalVariations;
         this.configurationProvider = configurationProvider;
         browsers = BrowserUtil.filterDefaultEnabledBrowsers(configurationProvider).stream()
                 .map(AbstractBrowser::getAlias).collect(Collectors.toList());
@@ -52,7 +53,7 @@ public class TestSetCollector {
 
 
     public Stream<Arguments> collect() {
-        ScenarioCollector.Result result = new ScenarioCollector(configurationProvider).collect();
+        ScenarioCollector.Result result = new ScenarioCollector(configurationProvider, globalVariations).collect();
         Set<MappingResult> validScenarios =
                 new ScenarioFilter().filterScenarios(this.configurationProvider, result.get());
         return validScenarios.stream()

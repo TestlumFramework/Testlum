@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib;
 
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.interpreter.RepeatCommandRunner;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
@@ -14,7 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Component
-public class RepeatCommandsRunner {
+public class RepeatCommandsRunnerImpl implements RepeatCommandRunner {
 
     @Autowired
     private GlobalTestConfigurationProvider globalTestConfigurationProvider;

@@ -5,8 +5,6 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
-import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
-import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
@@ -17,15 +15,11 @@ import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
-import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
-import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
-import com.knubisoft.testlum.testing.model.scenario.WebsocketSubscribe;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
-import org.springframework.http.HttpMethod;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -34,7 +28,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static java.lang.String.format;
@@ -46,12 +39,6 @@ public class ResultUtil {
 
     public static final String ALIAS = "Alias";
     public static final String API_ALIAS = "API alias";
-    public static final String AUTHENTICATION_TYPE = "Authentication type";
-    public static final String CREDENTIALS_FILE = "Credentials file";
-    public static final String MESSAGE_TO_SEND = "Message to send";
-    public static final String CONTENT_TO_SEND = "Content to send";
-    public static final String EXPECTED_CODE = "Expected code";
-    public static final String ACTUAL_CODE = "Actual code";
     public static final String JSON_PATH = "JSON path";
     public static final String XML_PATH = "Xml path";
     public static final String RELATIONAL_DB_QUERY = "Relational DB query";
@@ -67,7 +54,6 @@ public class ResultUtil {
     public static final String LOCATOR_FORM = "Locator ID = %s";
     public static final String ELEMENT_PRESENT = "Is the web element present";
     public static final String CONDITION = "Condition";
-    public static final String CONTENT = "Content";
     public static final String GENERATED_STRING = "Randomly generated string";
     public static final String ASSERT_LOCATOR = "Locator for assert command";
     public static final String ASSERT_ATTRIBUTE = "Assert command attribute";
@@ -118,17 +104,7 @@ public class ResultUtil {
     private static final String LOCATOR_FOR_SCROLL = "Locator for scroll";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
-    private static final String LAMBDA_FUNCTION_NAME = "Function name";
-    private static final String LAMBDA_PAYLOAD = "Payload";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
-    private static final String TOPIC = "Topic";
-    private static final String NUMBER_OF_MESSAGES = "Number of messages";
-    private static final String ALL_AVAILABLE_MESSAGES = "All available messages";
-    private static final String ACTION = "Action";
-    private static final String SEND = "Send";
-    private static final String TIMEOUT_MILLIS = "Timeout millis";
-    private static final String RECEIVE = "Receive";
-    private static final String SUBSCRIBE = "Subscribe";
     private static final String SHELL_FILES = "Shell files";
     private static final String SHELL_COMMANDS = "Shell commands";
     private static final String TYPE = "Type";
@@ -201,70 +177,10 @@ public class ResultUtil {
         }
     }
 
-    public void addGraphQlMetaData(final String alias,
-                                   final HttpMethod httpMethod,
-                                   final Map<String, String> headers,
-                                   final String endpoint,
-                                   final CommandResult result) {
-        result.put(ALIAS, alias);
-        result.put(HTTP_METHOD, httpMethod);
-        result.put(ENDPOINT, endpoint);
-        if (!headers.isEmpty()) {
-            addHeadersMetaData(headers, result);
-        }
-    }
-
     private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
                 .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
                 .collect(Collectors.toList()));
-    }
-
-    public void addWebsocketInfoForSendAction(final WebsocketSend sendAction,
-                                              final String alias,
-                                              final String message,
-                                              final CommandResult result) {
-        addWebsocketGeneralInfo(SEND, sendAction.getComment(), alias, ENDPOINT, sendAction.getEndpoint(), result);
-        result.put(MESSAGE_TO_SEND, message);
-    }
-
-    public void addWebsocketInfoForReceiveAction(final WebsocketReceive receiveAction,
-                                                 final String alias,
-                                                 final CommandResult result) {
-        addWebsocketGeneralInfo(RECEIVE, receiveAction.getComment(), alias, TOPIC, receiveAction.getTopic(), result);
-        result.put(NUMBER_OF_MESSAGES, nonNull(receiveAction.getLimit())
-                ? receiveAction.getLimit().intValue() : ALL_AVAILABLE_MESSAGES);
-        result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
-    }
-
-    public void addWebsocketInfoForSubscribeAction(final WebsocketSubscribe subscribe,
-                                                   final String alias,
-                                                   final CommandResult result) {
-        addWebsocketGeneralInfo(SUBSCRIBE, subscribe.getComment(), alias, TOPIC, subscribe.getTopic(), result);
-    }
-
-    private static void addWebsocketGeneralInfo(final String action,
-                                                final String comment,
-                                                final String alias,
-                                                final String destination,
-                                                final String destinationValue,
-                                                final CommandResult result) {
-        result.setCommandKey(action);
-        result.setComment(comment);
-        result.put(ALIAS, alias);
-        result.put(ACTION, action);
-        if (isNotBlank(destinationValue)) {
-            result.put(destination, destinationValue);
-        }
-    }
-
-    public void addLambdaGeneralMetaData(final String alias,
-                                         final String functionName,
-                                         final String payload,
-                                         final CommandResult result) {
-        result.put(ALIAS, alias);
-        result.put(LAMBDA_FUNCTION_NAME, functionName);
-        result.put(LAMBDA_PAYLOAD, StringPrettifier.asJsonResult(payload));
     }
 
     public void addShellMetaData(final List<String> shellFiles,
@@ -322,12 +238,6 @@ public class ResultUtil {
                                               final CommandResult result) {
         result.setSkipped(!conditionResult);
         result.put(CONDITION, conditionName + " = " + conditionResult);
-    }
-
-    public void addAuthMetaData(final Auth auth, final CommandResult result) {
-        result.put(API_ALIAS, auth.getApiAlias());
-        result.put(ENDPOINT, auth.getLoginEndpoint());
-        result.put(CREDENTIALS_FILE, auth.getCredentials());
     }
 
     public void addWaitMetaData(final String time,
@@ -431,11 +341,6 @@ public class ResultUtil {
     public void addAssertAttributeMetaData(final AssertAttribute attribute, final CommandResult result) {
         result.put(ASSERT_LOCATOR, attribute.getLocatorId());
         result.put(ASSERT_ATTRIBUTE, attribute.getName());
-    }
-
-    public void addAssertEqualityMetaData(final AssertEquality action, final CommandResult result) {
-        result.setComment(action.getComment());
-        result.put(CONTENT, String.join(COMMA, action.getContent()));
     }
 
     public void addSwipeMetaData(final SwipeNative swipeNative, final CommandResult result) {

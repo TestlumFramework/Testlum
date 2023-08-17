@@ -3,6 +3,7 @@ package com.knubisoft.testlum.testing.framework.configuration.websocket;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnWebsocketEnabledCondition;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.interpreter.WebsocketConnectionManager;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.WebsocketApi;
 import com.knubisoft.testlum.testing.model.global_config.WebsocketProtocol;

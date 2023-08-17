@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -9,7 +8,7 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
+
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
 import com.knubisoft.testlum.testing.model.scenario.NativeAssert;
 import org.openqa.selenium.WebElement;
@@ -20,9 +19,8 @@ import java.util.List;
 @ExecutorForClass(NativeAssert.class)
 public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
 
-    public NativeAssertExecutor(final GlobalTestConfigurationProvider configurationProvider,
-                                final ExecutorDependencies dependencies) {
-        super(configurationProvider, dependencies);
+    public NativeAssertExecutor(final ExecutorDependencies dependencies) {
+        super(dependencies);
     }
 
     @Override
@@ -47,11 +45,11 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
         String expected = attribute.getContent();
         ResultUtil.setExpectedActual(expected, actual, result);
         executeComparison(actual, expected, result);
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private String getActualValue(final AssertAttribute attribute) {
-        WebElement webElement = UiUtil.findWebElement(dependencies, attribute.getLocatorId());
+        WebElement webElement = uiUtil.findWebElement(dependencies, attribute.getLocatorId());
         return webElement.getAttribute(attribute.getName());
     }
 

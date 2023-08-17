@@ -86,8 +86,6 @@ public class ResultUtil {
     public static final String NATIVE_NAVIGATE_TO = "Navigate to destination";
     public static final String ALL_VALUES_DESELECT = "all values (deselect)";
     public static final String ONE_VALUE_TEMPLATE = "one value (%s)";
-    public static final String CLEAR_COOKIES_AFTER_EXECUTION = "Clear cookies after execution";
-    public static final String CLEAR_LOCAL_STORAGE_BY_KEY = "Clear local storage by key";
     public static final String URL_TO_ACTUAL_IMAGE = "URL to actual image";
     public static final String ADDITIONAL_INFO = "Additional info";
     public static final String IMAGE_ATTACHED_TO_STEP = "Actual image attached to report step";

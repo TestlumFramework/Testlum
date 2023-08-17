@@ -10,7 +10,6 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.pages.Locator;
 import io.appium.java_client.AppiumDriver;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.Dimension;
@@ -23,6 +22,7 @@ import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -42,8 +42,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.openqa.selenium.interactions.PointerInput.Origin.viewport;
 
 @Slf4j
-@UtilityClass
-public class UiUtil {
+@Service
+public class UiUtilImpl implements UiUtil {
 
     private static final String FILE_PATH_PREFIX = "file:";
     private static final String APPIUM_LOCALHOST_ALIAS = "10.0.2.2";
@@ -103,13 +103,15 @@ public class UiUtil {
     }
 
     private WebDriverWait getWebDriverWait(final ExecutorDependencies dependencies) {
-        int secondsToWait = dependencies.getUiType().getSettings(dependencies.getEnvironment())
+        int secondsToWait = dependencies.getUiType().getSettings(dependencies.getEnvironment(),
+                        dependencies.getContext().getBean(GlobalTestConfigurationProvider.class))
                 .getElementAutowait().getSeconds();
         return new WebDriverWait(dependencies.getDriver(), Duration.ofSeconds(secondsToWait));
     }
 
     public void takeScreenshotAndSaveIfRequired(final CommandResult result, final ExecutorDependencies dependencies) {
-        boolean isTakeScreenshots = dependencies.getUiType().getSettings(dependencies.getEnvironment())
+        boolean isTakeScreenshots = dependencies.getUiType().getSettings(dependencies.getEnvironment(),
+                        dependencies.getContext().getBean(GlobalTestConfigurationProvider.class))
                 .getTakeScreenshots().isEnabled();
         if (isTakeScreenshots) {
             File screenshot = takeScreenshot(dependencies.getDriver());
@@ -198,14 +200,14 @@ public class UiUtil {
     public String getUrl(final String path,
                          final String env,
                          final UiType uiType,
-                         final GlobalTestConfigurationProvider globalTestConfigurationProvider) {
+                         final GlobalTestConfigurationProvider configurationProvider) {
         if (HTTP_PATTERN.matcher(path).matches()) {
             return path;
         }
         if (UiType.MOBILE_BROWSER == uiType) {
-            return globalTestConfigurationProvider.getMobilebrowserSettings(env)
+            return configurationProvider.getMobilebrowserSettings(env)
                     .getBaseUrl() + path;
         }
-        return globalTestConfigurationProvider.getWebSettings(env).getBaseUrl() + path;
+        return configurationProvider.getWebSettings(env).getBaseUrl() + path;
     }
 }

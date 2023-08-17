@@ -1228,6 +1228,20 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+<!--    TESTLUM UI PLUGINS    -->
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-web</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-ui-assert</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

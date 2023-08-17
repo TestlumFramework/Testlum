@@ -6,8 +6,7 @@ import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
-import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
-import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
+import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
@@ -89,8 +88,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_IN
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_URL;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COMMAND_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COMMAND_LOG_WITHOUT_POSITION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VALUE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VARIATION_LOG;
@@ -267,19 +264,6 @@ public class LogUtil {
     }
 
     /* ui log */
-    public void logUICommand(final long position, final AbstractCommand action) {
-        if (position != 0) {
-            log.info(UI_COMMAND_LOG, position, action.getClass().getSimpleName());
-        } else {
-            log.info(UI_COMMAND_LOG_WITHOUT_POSITION, action.getClass().getSimpleName());
-        }
-        if (isNotBlank(action.getComment())) {
-            log.info(COMMENT_LOG, action.getComment());
-        }
-        if (action instanceof CommandWithLocator) {
-            log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());
-        }
-    }
 
     public void logUiAttributes(final boolean isClearCookies, final String storageKey) {
         log.info(CLEAR_COOKIES_AFTER, isClearCookies);
@@ -369,8 +353,10 @@ public class LogUtil {
         log.info(CONTENT_LOG, StringPrettifier.cut(attribute.getContent()));
     }
 
-    public void logAssertTitleCommand(final AssertTitle title) {
-        log.info(CONTENT_LOG, title.getContent());
+    public void logAssertEqualityCommand(final AssertEquality command, final int position) {
+        log.info(COMMAND_LOG, position, command.getClass().getSimpleName());
+        log.info(COMMENT_LOG, command.getComment());
+        log.info(CONTENT_LOG, String.join(COMMA, command.getContent()));
     }
 
     public void logDragAndDropInfo(final DragAndDrop dragAndDrop) {

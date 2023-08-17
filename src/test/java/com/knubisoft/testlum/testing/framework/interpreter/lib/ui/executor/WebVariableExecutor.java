@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -8,7 +7,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
+
 import com.knubisoft.testlum.testing.framework.util.VariableHelper;
 import com.knubisoft.testlum.testing.framework.util.VariableHelper.VarMethod;
 import com.knubisoft.testlum.testing.framework.util.VariableHelper.VarPredicate;
@@ -45,9 +44,8 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     @Autowired
     private VariableHelper variableHelper;
 
-    public WebVariableExecutor(final GlobalTestConfigurationProvider configurationProvider,
-                               final ExecutorDependencies dependencies) {
-        super(configurationProvider, dependencies);
+    public WebVariableExecutor(final ExecutorDependencies dependencies) {
+        super(dependencies);
         Map<VarPredicate<WebVar>, VarMethod<WebVar>> webVarMap = new HashMap<>();
         webVarMap.put(var -> nonNull(var.getElement()), this::getElementResult);
         webVarMap.put(var -> nonNull(var.getDom()), this::getDomResult);
@@ -87,7 +85,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         String valueResult;
         String locatorId = webVar.getElement().getPresent().getLocatorId();
         try {
-            UiUtil.findWebElement(dependencies, locatorId);
+            uiUtil.findWebElement(dependencies, locatorId);
             valueResult = String.valueOf(true);
         } catch (NoSuchElementException e) {
             valueResult = String.valueOf(false);
@@ -99,7 +97,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     private String getDomResult(final WebVar webVar, final CommandResult result) {
         String locatorId = webVar.getDom().getLocatorId();
         if (StringUtils.isNotBlank(locatorId)) {
-            String valueResult = UiUtil.findWebElement(dependencies, locatorId).getAttribute("outerHTML");
+            String valueResult = uiUtil.findWebElement(dependencies, locatorId).getAttribute("outerHTML");
             ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), LOCATOR_FORM, locatorId, valueResult, result);
             return valueResult;
         }

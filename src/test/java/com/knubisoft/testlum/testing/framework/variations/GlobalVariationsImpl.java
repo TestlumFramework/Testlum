@@ -5,7 +5,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.GlobalVariations;
 import com.knubisoft.testlum.testing.framework.parser.CSVParser;
 import com.knubisoft.testlum.testing.model.scenario.Repeat;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
-import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -22,13 +21,13 @@ import static java.util.Objects.isNull;
 @Component
 public class GlobalVariationsImpl implements GlobalVariations {
 
-    private final String ROUTE_REGEXP = "\\{\\{(.*?)}}";
-    private final String NO_VALUE_FOUND_FOR_KEY = "Unable to find value for key <%s>. Available keys: %s";
-    private final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
-    private final VariationsMap VARIATIONS = new VariationsMap();
+    private static final String ROUTE_REGEXP = "\\{\\{(.*?)}}";
+    private static final String NO_VALUE_FOUND_FOR_KEY = "Unable to find value for key <%s>. Available keys: %s";
+    private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
+    private static final VariationsMap VARIATIONS = new VariationsMap();
 
-    private final CSVParser CSV_PARSER = new CSVParser();
-    private final VariationsValidator VARIATIONS_VALIDATOR = new VariationsValidator();
+    private static final CSVParser CSV_PARSER = new CSVParser();
+    private static final VariationsValidator VARIATIONS_VALIDATOR = new VariationsValidator();
 
     @Override
     public void process(final Scenario scenario, final File filePath) {

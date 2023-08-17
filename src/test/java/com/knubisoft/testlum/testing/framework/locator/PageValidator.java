@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.locator;
 
-import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.validator.XMLValidator;
 import com.knubisoft.testlum.testing.model.pages.Locator;
@@ -11,6 +10,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PageValidator implements XMLValidator<Page> {
+
+    private static final String LOCATOR_ID_HAS_DUPLICATE_LOCATOR =
+            "Locator id from page <%s> has duplicate locator with id <%s>";
 
     @Override
     public void validate(final Page page, final File xmlFile) {
@@ -24,7 +26,7 @@ public class PageValidator implements XMLValidator<Page> {
 
     private void throwIfDuplicateLocators(final boolean contains, final Page page, final String locatorId) {
         if (contains) {
-            throw new DefaultFrameworkException(ExceptionMessage.LOCATOR_ID_HAS_DUPLICATE_LOCATOR,
+            throw new DefaultFrameworkException(LOCATOR_ID_HAS_DUPLICATE_LOCATOR,
                     page.getDetails().getName(), locatorId);
         }
     }

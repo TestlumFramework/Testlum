@@ -1,12 +1,11 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
+
 import com.knubisoft.testlum.testing.model.scenario.ScrollToNative;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.NoSuchElementException;
@@ -25,17 +24,16 @@ public class ScrollToNativeExecutor extends AbstractUiExecutor<ScrollToNative> {
     private static final int DEFAULT_SCROLLS_COUNT = 20;
     private static final int ACTION_DURATION = 750;
 
-    public ScrollToNativeExecutor(final GlobalTestConfigurationProvider configurationProvider,
-                                  final ExecutorDependencies dependencies) {
-        super(configurationProvider, dependencies);
+    public ScrollToNativeExecutor(final ExecutorDependencies dependencies) {
+        super(dependencies);
     }
 
     @Override
     public void execute(final ScrollToNative scrollToNative, final CommandResult result) {
         AppiumDriver driver = (AppiumDriver) dependencies.getDriver();
-        Point start = UiUtil.getCenterPoint(driver);
+        Point start = uiUtil.getCenterPoint(driver);
         Point end = new Point(0, DEFAULT_SCROLL_VALUE);
-        Sequence scroll = UiUtil.buildSequence(start, end, ACTION_DURATION);
+        Sequence scroll = uiUtil.buildSequence(start, end, ACTION_DURATION);
         result.put(SCROLL_TO_ELEMENT, scrollToNative.getLocatorId());
         processScrollToElement(scrollToNative, result, driver, scroll);
     }
@@ -47,8 +45,8 @@ public class ScrollToNativeExecutor extends AbstractUiExecutor<ScrollToNative> {
         for (int i = 0; i < DEFAULT_SCROLLS_COUNT; i++) {
             try {
                 driver.perform(Collections.singletonList(scroll));
-                UiUtil.findWebElement(dependencies, scrollToNative.getLocatorId()).isDisplayed();
-                UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+                uiUtil.findWebElement(dependencies, scrollToNative.getLocatorId()).isDisplayed();
+                uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
                 return;
             } catch (NoSuchElementException e) {
                 //Means locator is not visible, code continue scrolling to find locator

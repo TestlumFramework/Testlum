@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -8,7 +7,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
+
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.BackSpace;
 import com.knubisoft.testlum.testing.model.scenario.Copy;
@@ -47,9 +46,8 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     private final Actions action;
     private final Keys ctrlKey;
 
-    public HotKeyExecutor(final GlobalTestConfigurationProvider configurationProvider,
-                          final ExecutorDependencies dependencies) {
-        super(configurationProvider, dependencies);
+    public HotKeyExecutor(final ExecutorDependencies dependencies) {
+        super(dependencies);
         Map<HotKeyCommandPredicate, HotKeyCommandMethod> commands = new HashMap<>();
         commands.put(key -> key instanceof Cut, (key, result) -> cutCommand());
         commands.put(key -> key instanceof Copy, (key, result) -> copyCommand());
@@ -132,7 +130,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     private WebElement getElementForHotKey(final String locatorId, final CommandResult result) {
         result.put(HOTKEY_LOCATOR, locatorId);
         log.info(HOTKEY_COMMAND_LOCATOR, locatorId);
-        return UiUtil.findWebElement(dependencies, locatorId);
+        return uiUtil.findWebElement(dependencies, locatorId);
     }
 
     private Keys chooseKeyForOperatingSystem() {

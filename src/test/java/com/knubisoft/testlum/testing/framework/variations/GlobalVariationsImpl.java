@@ -1,11 +1,12 @@
 package com.knubisoft.testlum.testing.framework.variations;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.interpreter.GlobalVariations;
 import com.knubisoft.testlum.testing.framework.parser.CSVParser;
 import com.knubisoft.testlum.testing.model.scenario.Repeat;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
-import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.HashMap;
@@ -17,8 +18,8 @@ import java.util.regex.Pattern;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VARIATIONS_NOT_FOUND;
 import static java.util.Objects.isNull;
 
-@UtilityClass
-public class GlobalVariations {
+@Component
+public class GlobalVariationsImpl implements GlobalVariations {
 
     private static final String ROUTE_REGEXP = "\\{\\{(.*?)}}";
     private static final String NO_VALUE_FOUND_FOR_KEY = "Unable to find value for key <%s>. Available keys: %s";
@@ -28,6 +29,7 @@ public class GlobalVariations {
     private static final CSVParser CSV_PARSER = new CSVParser();
     private static final VariationsValidator VARIATIONS_VALIDATOR = new VariationsValidator();
 
+    @Override
     public void process(final Scenario scenario, final File filePath) {
         String fileName = scenario.getSettings().getVariations();
         List<Map<String, String>> variationList = VARIATIONS.get(fileName);
@@ -39,6 +41,7 @@ public class GlobalVariations {
         VARIATIONS_VALIDATOR.validateByScenario(variationList, scenario, filePath);
     }
 
+    @Override
     public void process(final Repeat repeat) {
         if (StringUtils.isNotBlank(repeat.getVariations())) {
             String fileName = repeat.getVariations();
@@ -50,6 +53,7 @@ public class GlobalVariations {
         }
     }
 
+    @Override
     public List<Map<String, String>> getVariations(final String fileName) {
         List<Map<String, String>> variationList = VARIATIONS.get(fileName);
         if (isNull(variationList)) {
@@ -58,10 +62,11 @@ public class GlobalVariations {
         return variationList;
     }
 
-    private class VariationsMap extends HashMap<String, List<Map<String, String>>> {
+    private static class VariationsMap extends HashMap<String, List<Map<String, String>>> {
         private static final long serialVersionUID = 1;
     }
 
+    @Override
     public String getVariationValue(final String variation, final Map<String, String> variationMap) {
         if (StringUtils.isBlank(variation)) {
             return variation;

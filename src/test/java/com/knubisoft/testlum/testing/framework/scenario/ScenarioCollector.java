@@ -3,6 +3,7 @@ package com.knubisoft.testlum.testing.framework.scenario;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.interpreter.GlobalVariations;
 import com.knubisoft.testlum.testing.framework.parser.XMLParsers;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
@@ -31,12 +32,15 @@ public class ScenarioCollector {
     private final GlobalTestConfigurationProvider configurationProvider;
     private final File rootTestResources;
     private final ScenarioValidator scenarioValidator;
+    private final GlobalVariations globalVariations;
 
-    public ScenarioCollector(final GlobalTestConfigurationProvider configurationProvider) {
+    public ScenarioCollector(final GlobalTestConfigurationProvider configurationProvider,
+                             final GlobalVariations globalVariations) {
         this.configurationProvider = configurationProvider;
+        this.globalVariations = globalVariations;
         TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
         this.rootTestResources = resourceSettings.getTestResourcesFolder();
-        this.scenarioValidator = new ScenarioValidator(this.configurationProvider);
+        this.scenarioValidator = new ScenarioValidator(this.configurationProvider, this.globalVariations);
     }
 
     public Result collect() {

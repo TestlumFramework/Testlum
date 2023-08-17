@@ -1,13 +1,12 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
+
 import com.knubisoft.testlum.testing.model.scenario.DropDown;
 import com.knubisoft.testlum.testing.model.scenario.OneValue;
 import com.knubisoft.testlum.testing.model.scenario.SelectOrDeselectBy;
@@ -28,16 +27,15 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_
 @ExecutorForClass(DropDown.class)
 public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
 
-    public DropDownExecutor(final GlobalTestConfigurationProvider configurationProvider,
-                            final ExecutorDependencies dependencies) {
-        super(configurationProvider, dependencies);
+    public DropDownExecutor(final ExecutorDependencies dependencies) {
+        super(dependencies);
     }
 
     @Override
     public void execute(final DropDown dropDown, final CommandResult result) {
         String locatorId = dropDown.getLocatorId();
         result.put(DROP_DOWN_LOCATOR, locatorId);
-        Select select = new Select(UiUtil.findWebElement(dependencies, locatorId));
+        Select select = new Select(uiUtil.findWebElement(dependencies, locatorId));
         OneValue oneValue = dropDown.getOneValue();
         if (Objects.nonNull(oneValue)) {
             processOneValueFromDropDown(oneValue, select, result);
@@ -60,7 +58,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         } else {
             deselectByMethod(select, method, value);
         }
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void selectByMethod(final Select select, final SelectOrDeselectBy method, final String value) {

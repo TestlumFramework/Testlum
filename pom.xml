@@ -963,6 +963,12 @@
             <version>1.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-wait</artifactId>
+            <version>1.0</version>
+        </dependency>
+
         <!--    DATABASES    -->
         <dependency>
             <groupId>com.knubisoft</groupId>

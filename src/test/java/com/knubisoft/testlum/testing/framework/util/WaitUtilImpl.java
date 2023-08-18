@@ -1,17 +1,19 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.wait.util.WaitUtil;
 import com.knubisoft.testlum.testing.model.scenario.Timeunit;
-import lombok.experimental.UtilityClass;
+import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.TIME_UNIT_UNKNOWN_TYPE;
 
-@UtilityClass
-public class WaitUtil {
+@Service
+public class WaitUtilImpl implements WaitUtil {
 
+    @Override
     public TimeUnit getTimeUnit(final Timeunit unit) {
         switch (unit) {
             case MILLIS:
@@ -23,6 +25,7 @@ public class WaitUtil {
         }
     }
 
+    @Override
     public void sleep(final long timeout, final TimeUnit timeUnit) {
         try {
             timeUnit.sleep(timeout);
@@ -31,6 +34,7 @@ public class WaitUtil {
         }
     }
 
+    @Override
     public void waitUntil(final BooleanSupplier condition,
                           final long timeoutMillis,
                           final TimeUnit timeUnit,

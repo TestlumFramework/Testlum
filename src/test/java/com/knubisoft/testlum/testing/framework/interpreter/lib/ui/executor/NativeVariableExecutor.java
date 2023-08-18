@@ -6,10 +6,10 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-
-import com.knubisoft.testlum.testing.framework.util.VariableHelper;
-import com.knubisoft.testlum.testing.framework.util.VariableHelper.VarMethod;
-import com.knubisoft.testlum.testing.framework.util.VariableHelper.VarPredicate;
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
+import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
+import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarMethod;
+import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarPredicate;
 import com.knubisoft.testlum.testing.model.scenario.NativeVar;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.NoSuchElementException;

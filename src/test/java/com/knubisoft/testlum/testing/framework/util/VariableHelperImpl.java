@@ -11,6 +11,7 @@ import com.knubisoft.testlum.testing.framework.db.source.ListSource;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
+import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.FromConstant;
 import com.knubisoft.testlum.testing.model.scenario.FromExpression;
@@ -41,9 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SLASH_SEPARATOR;
@@ -60,13 +59,13 @@ import static java.util.Objects.nonNull;
 
 @Slf4j
 @Component
-public class VariableHelper {
+public class VariableHelperImpl implements VariableHelper {
 
     private final Map<RandomPredicate, RandomFunction> randomGenerateMethodMap;
     @Autowired
     private NameToAdapterAlias nameToAdapterAlias;
 
-    public VariableHelper() {
+    public VariableHelperImpl() {
         Map<RandomPredicate, RandomFunction> functionMap = new HashMap<>();
         functionMap.put(r -> nonNull(r.getNumeric()), r -> RandomStringUtils.randomNumeric(r.getLength()));
         functionMap.put(r -> nonNull(r.getAlphabetic()), r -> RandomStringUtils.randomAlphabetic(r.getLength()));
@@ -75,6 +74,7 @@ public class VariableHelper {
         randomGenerateMethodMap = Collections.unmodifiableMap(functionMap);
     }
 
+    @Override
     public <T extends AbstractCommand> VarMethod<T> lookupVarMethod(final Map<VarPredicate<T>, VarMethod<T>> methodMap,
                                                                     final T var) {
         return methodMap.entrySet().stream()
@@ -85,6 +85,7 @@ public class VariableHelper {
                 .getValue();
     }
 
+    @Override
     public String getRandomGenerateResult(final FromRandomGenerate randomGenerate,
                                           final String varName,
                                           final CommandResult result) {
@@ -116,6 +117,7 @@ public class VariableHelper {
         return randomString.toString();
     }
 
+    @Override
     public String getFileResult(final FromFile fromFile,
                                 final String varName,
                                 final Function<String, String> fileToString,
@@ -125,6 +127,7 @@ public class VariableHelper {
         return valueResult;
     }
 
+    @Override
     public String getConstantResult(final FromConstant fromConstant,
                                     final String varName,
                                     final CommandResult result) {
@@ -133,6 +136,7 @@ public class VariableHelper {
         return valueResult;
     }
 
+    @Override
     public String getExpressionResult(final FromExpression fromExpression,
                                       final String varName,
                                       final CommandResult result) {
@@ -144,6 +148,7 @@ public class VariableHelper {
         return valueResult;
     }
 
+    @Override
     @SneakyThrows
     public String getPathResult(final FromPath fromPath,
                                 final String varName,
@@ -183,6 +188,7 @@ public class VariableHelper {
         return valueResult;
     }
 
+    @Override
     public String getSQLResult(final FromSQL fromSQL,
                                final String varName,
                                final CommandResult result) {
@@ -227,9 +233,4 @@ public class VariableHelper {
         String[] queryParts = rawList.get(0).getQuery().split(DelimiterConstant.SPACE);
         return queryParts[1];
     }
-
-    public interface VarPredicate<T extends AbstractCommand> extends Predicate<T> { }
-    public interface VarMethod<T extends AbstractCommand> extends BiFunction<T, CommandResult, String> { }
-    private interface RandomPredicate extends Predicate<FromRandomGenerate> { }
-    private interface RandomFunction extends Function<FromRandomGenerate, String> { }
 }

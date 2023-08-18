@@ -5,9 +5,10 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.WaitUtil;
+import com.knubisoft.testlum.testing.framework.wait.util.WaitUtil;
 import com.knubisoft.testlum.testing.model.scenario.Wait;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.TimeUnit;
 
@@ -17,6 +18,9 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WAIT_I
 @Slf4j
 public class WaitExecutor extends AbstractUiExecutor<Wait> {
 
+    @Autowired
+    private WaitUtil waitUtil;
+
     public WaitExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
     }
@@ -25,8 +29,8 @@ public class WaitExecutor extends AbstractUiExecutor<Wait> {
     public void execute(final Wait wait, final CommandResult result) {
         String time = wait.getTime();
         log.info(WAIT_INFO_LOG, time, wait.getUnit());
-        TimeUnit timeUnit = WaitUtil.getTimeUnit(wait.getUnit());
+        TimeUnit timeUnit = waitUtil.getTimeUnit(wait.getUnit());
         ResultUtil.addWaitMetaData(time, timeUnit, result);
-        WaitUtil.sleep(Long.parseLong(time), timeUnit);
+        waitUtil.sleep(Long.parseLong(time), timeUnit);
     }
 }

@@ -29,7 +29,6 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;

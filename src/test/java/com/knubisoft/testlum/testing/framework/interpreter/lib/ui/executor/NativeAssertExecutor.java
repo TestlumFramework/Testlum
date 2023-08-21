@@ -44,7 +44,7 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
     private void processEachCommand(final AbstractCommand command, final CommandResult result) {
         if (command instanceof AssertAttribute) {
             executeAttributeCommand((AssertAttribute) command, result);
-        } else {
+        } else if (command instanceof AssertEquality) {
             AssertHelper.executeEqualityCommand((AssertEquality) command, result);
         }
     }

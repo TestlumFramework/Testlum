@@ -15,7 +15,9 @@
 
     <x:simpleType name="urlWeb" final="restriction">
         <x:restriction base="x:string">
-            <x:pattern value="https?://.+|chrome-extension://.+"/>
+            <x:pattern value="https?://.+"/>
+            <x:pattern value="chrome-extension://.+"/>
+            <x:pattern value="\{\{.*\}\}"/>
         </x:restriction>
     </x:simpleType>
 

@@ -39,6 +39,6 @@ public class ImageComparator {
         imageComparison.setExcludedAreas(excludedElements);
         imageComparison.setDrawExcludedRectangles(true);
         imageComparison.setExcludedRectangleFilling(true, OPACITY_PERCENT);
-        imageComparison.setExcludedRectangleColor(Color.GREEN);
+        imageComparison.setExcludedRectangleColor(Color.ORANGE);
     }
 }

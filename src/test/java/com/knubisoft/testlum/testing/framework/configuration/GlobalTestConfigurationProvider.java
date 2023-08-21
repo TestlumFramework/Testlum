@@ -110,6 +110,7 @@ public class GlobalTestConfigurationProvider {
     private static UiConfig initUiConfig(final Environment env) {
         return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.UI_CONFIG_FILENAME)
                 .map(configFile -> XMLParsers.forUiConfig().process(configFile))
+                .map(InjectionUtil::injectFromVault)
                 .orElseGet(() -> {
                     log.warn(LogMessage.DISABLED_CONFIGURATION, UiConfig.class.getSimpleName());
                     return new UiConfig();

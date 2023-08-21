@@ -1,23 +1,16 @@
-package com.knubisoft.testlum.testing.framework.vaultService;
+package com.knubisoft.testlum.testing.framework.vault;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnVaultEnabledCondition;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
+import com.knubisoft.testlum.testing.framework.vault.model.VaultDto;
 import com.knubisoft.testlum.testing.model.global_config.Vault;
-import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.vault.authentication.TokenAuthentication;
 import org.springframework.vault.client.VaultEndpoint;
 import org.springframework.vault.core.VaultTemplate;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -25,7 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-@Conditional({OnVaultEnabledCondition.class})
 public class VaultService {
 
     private static final String VAULT_KEY = "data";
@@ -38,15 +30,15 @@ public class VaultService {
     private static final VaultTemplate TEMPLATE = vault();
 
     public static VaultTemplate vault() {
-        Vault vault = GlobalTestConfigurationProvider.provide().getVault();
-        if (vault.isEnabled()) {
+        if (Objects.nonNull(GlobalTestConfigurationProvider.provide().getVault())) {
+            Vault vault = GlobalTestConfigurationProvider.provide().getVault();
             return new VaultTemplate(vaultEndpoint(), new TokenAuthentication(vault.getToken()));
         } else {
             throw new DefaultFrameworkException("Vault is not enabled in global config file");
         }
     }
 
-    public static VaultEndpoint vaultEndpoint() {
+    private static VaultEndpoint vaultEndpoint() {
 
         VaultEndpoint endpoint = new VaultEndpoint();
         endpoint.setHost(VAULT_HOST);
@@ -106,33 +98,4 @@ public class VaultService {
             throw new DefaultFrameworkException("No data found for path: %s", vaultKey);
         }
     }
-
-    @Data
-    public static class VaultDto {
-        private final String key;
-        private final String value;
-    }
-
-    public static class VaultDtoDeserializer extends StdDeserializer<VaultDto> {
-        private static final long serialVersionUID = 1;
-
-        public VaultDtoDeserializer() {
-            this(null);
-        }
-
-        public VaultDtoDeserializer(final Class<?> vc) {
-            super(vc);
-        }
-
-        @Override
-        public VaultDto deserialize(final JsonParser jsonParser,
-                                    final DeserializationContext deserializationContext) throws IOException {
-            JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-            String key = node.fieldNames().next();
-            String value = node.get(key).asText();
-
-            return new VaultDto(key, value);
-        }
-    }
-
 }

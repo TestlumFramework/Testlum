@@ -11,7 +11,8 @@ import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.knubisoft.testlum.testing.framework.vaultService.VaultService;
+import com.knubisoft.testlum.testing.framework.vault.model.VaultDto;
+import com.knubisoft.testlum.testing.framework.vault.model.VaultDtoDeserializer;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
@@ -48,7 +49,7 @@ public final class JacksonMapperUtil {
     }
 
     @SneakyThrows
-    public VaultService.VaultDto readVaultValue(final String content, final Class<VaultService.VaultDto> vaultDto) {
+    public VaultDto readVaultValue(final String content, final Class<VaultDto> vaultDto) {
         return VAULT_MAPPER.readValue(content, vaultDto);
     }
 
@@ -115,6 +116,7 @@ public final class JacksonMapperUtil {
         PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
                 .allowIfSubType("java.util.")
                 .allowIfSubType("com.knubisoft.testlum.testing.model.scenario.")
+                .allowIfSubType("com.knubisoft.testlum.testing.model.global_config.")
                 .build();
 
         return JsonMapper.builder()
@@ -127,7 +129,7 @@ public final class JacksonMapperUtil {
     private ObjectMapper buildObjectToVaultMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
-        module.addDeserializer(VaultService.VaultDto.class, new VaultService.VaultDtoDeserializer());
+        module.addDeserializer(VaultDto.class, new VaultDtoDeserializer());
         objectMapper.registerModule(module);
         return objectMapper;
     }

@@ -228,7 +228,11 @@ public class ExceptionMessage {
     public static final String NAVIGATE_NOT_SUPPORTED = "Navigate command %s not supported";
     public static final String DROP_DOWN_NOT_SUPPORTED = "Drop down by method by %s not supported";
     public static final String JS_FILE_UNREADABLE = "The .js file by path ./javascript/%s unreadable";
-    public static final String IMAGES_DONT_MATCH = "The images don't match. Image comparison state is -> %s";
+    public static final String IMAGES_SIZE_MISMATCH = "The images don't match. Image comparison state is -> "
+            + "SIZE_MISMATCH%n" + "Expected image size: %sx%s%n" + "Actual image size: %sx%s";
+    public static final String IMAGES_MISMATCH = "The images don't match. Image comparison state is -> MISMATCH. "
+            + "Difference percent: %s";
+    public static final String ELEMENT_OUT_OF_BOUNDS = "Element is out of screen bounds";
     public static final String WEB_ELEMENT_ATTRIBUTE_NOT_EXIST = "Web element does not have attribute <%s>";
     public static final String ELEMENT_NOT_FOUND = "Element with locator <%s> was not found during 'scrollTo'";
     public static final String DRAG_AND_DROP_FILE_NOT_FOUND = "Drag and drop file with name <%s> not found";

@@ -83,7 +83,7 @@ public class WebDriverFactory {
         setCapabilities(browser, browserOptions);
         switch (BrowserUtil.getBrowserType(browser)) {
             case BROWSER_STACK:
-                return getBrowserStackDriver(browser.getBrowserType().getBrowserStack(), browserOptions);
+                return getBrowserStackDriver(browser, browserOptions);
             case REMOTE:
                 return getRemoteDriver(browser.getBrowserType().getRemoteBrowser(), browserOptions);
             case IN_DOCKER:
@@ -96,10 +96,15 @@ public class WebDriverFactory {
     }
 
     @SneakyThrows
-    private WebDriver getBrowserStackDriver(final BrowserStackWeb browserStack,
+    private WebDriver getBrowserStackDriver(final AbstractBrowser browser,
                                             final MutableCapabilities browserOptions) {
+        BrowserStackWeb browserStack = browser.getBrowserType().getBrowserStack();
         browserOptions.setCapability("browserstack.local", Boolean.TRUE);
+        browserOptions.setCapability("browserstack.use_w3c", Boolean.TRUE);
+        browserOptions.setCapability(CapabilityType.BROWSER_NAME, browser.getClass().getSimpleName());
         browserOptions.setCapability(CapabilityType.BROWSER_VERSION, browserStack.getBrowserVersion());
+        browserOptions.setCapability("os", browserStack.getOs());
+        browserOptions.setCapability("osVersion", browserStack.getOsVersion());
         String browserStackUrl = SeleniumDriverUtil.getBrowserStackUrl(
                 GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.currentEnv()));
         return new RemoteWebDriver(new URL(browserStackUrl), browserOptions);

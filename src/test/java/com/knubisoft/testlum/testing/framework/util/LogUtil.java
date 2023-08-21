@@ -6,7 +6,6 @@ import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
-import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.CompareWith;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
@@ -350,12 +349,6 @@ public class LogUtil {
         log.info(LOCATOR_LOG, attribute.getLocatorId());
         log.info(ATTRIBUTE_LOG, attribute.getName());
         log.info(CONTENT_LOG, StringPrettifier.cut(attribute.getContent()));
-    }
-
-    public void logAssertEqualityCommand(final AssertEquality command, final int position) {
-        log.info(COMMAND_LOG, position, command.getClass().getSimpleName());
-        log.info(COMMENT_LOG, command.getComment());
-        log.info(CONTENT_LOG, String.join(COMMA, command.getContent()));
     }
 
     public void logDragAndDropInfo(final DragAndDrop dragAndDrop) {

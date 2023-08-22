@@ -21,9 +21,6 @@ import java.util.stream.Collectors;
 public class VaultService {
 
     private static final String VAULT_KEY = "data";
-    private static final String VAULT_HOST = "127.0.0.1";
-    private static final int VAULT_PORT = 8200;
-    private static final String VAULT_SCHEME = "http";
     private static final String ROUTE_REGEXP = "\\{\\{(.*?)}}";
     private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
 
@@ -32,18 +29,18 @@ public class VaultService {
     public static VaultTemplate vault() {
         if (Objects.nonNull(GlobalTestConfigurationProvider.provide().getVault())) {
             Vault vault = GlobalTestConfigurationProvider.provide().getVault();
-            return new VaultTemplate(vaultEndpoint(), new TokenAuthentication(vault.getToken()));
+            return new VaultTemplate(vaultEndpoint(vault), new TokenAuthentication(vault.getToken()));
         } else {
             throw new DefaultFrameworkException("Vault is not enabled in global config file");
         }
     }
 
-    private static VaultEndpoint vaultEndpoint() {
+    private static VaultEndpoint vaultEndpoint(final Vault vault) {
 
         VaultEndpoint endpoint = new VaultEndpoint();
-        endpoint.setHost(VAULT_HOST);
-        endpoint.setPort(VAULT_PORT);
-        endpoint.setScheme(VAULT_SCHEME);
+        endpoint.setHost(vault.getHost());
+        endpoint.setPort(vault.getPort());
+        endpoint.setScheme(vault.getScheme());
         return endpoint;
     }
 
@@ -86,7 +83,7 @@ public class VaultService {
     }
 
     private static String getValue(final String vaultKey, final String path, final String key) {
-        if (Objects.nonNull(Objects.requireNonNull(TEMPLATE.read(path)).getData())) {
+        if (Objects.nonNull(TEMPLATE.read(path).getData())) {
             Map<String, Object> data = Objects.requireNonNull(TEMPLATE.read(path)).getData();
             List<VaultDto> convertedVault = getVaultByPath(data);
             return convertedVault.stream()

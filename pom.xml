@@ -94,7 +94,7 @@
         <extent-reports.version>5.0.9</extent-reports.version>
         <jakarta.activation.version>1.2.2</jakarta.activation.version>
         <com.twilio.sdk.version>9.0.0-rc.3</com.twilio.sdk.version>
-        <image-comparison.version>4.4.0</image-comparison.version>
+        <image-comparison.version>4.4.1</image-comparison.version>
         <com.github.curious-odd-man.rgxgen.version>1.4</com.github.curious-odd-man.rgxgen.version>
         <skipGenerateModels>true</skipGenerateModels>
     </properties>
@@ -912,6 +912,8 @@
             <groupId>com.github.romankh3</groupId>
             <artifactId>image-comparison</artifactId>
             <version>${image-comparison.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/test/resources/lib/image-comparison-4.4.1.jar</systemPath>
         </dependency>
 
         <dependency>

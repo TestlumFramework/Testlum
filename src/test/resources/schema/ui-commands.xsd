@@ -301,8 +301,9 @@
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:choice>
-                    <x:element name="compareWithFullScreen" type="tns:compareWithFullScreen"/>
-                    <x:element name="compareWith" type="tns:compareWith"/>
+                    <x:element name="fullScreen" type="tns:compareWithFullScreen"/>
+                    <x:element name="element" type="tns:compareWithElement"/>
+                    <x:element name="part" type="tns:compareWithPart"/>
                 </x:choice>
                 <x:attribute name="file" type="tns:imageExtension" use="required"/>
                 <x:attribute name="highlightDifference" type="x:boolean" default="false"/>
@@ -310,11 +311,21 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="compareWithFullScreen"/>
+    <x:complexType name="compareWithFullScreen">
+        <x:choice minOccurs="0" maxOccurs="unbounded">
+            <x:element name="exclude" type="tns:exclude"/>
+        </x:choice>
+        <x:attribute name="percentage" type="tns:positiveDoubleMin0Max100"/>
+    </x:complexType>
 
-    <x:complexType name="compareWith">
+    <x:complexType name="compareWithElement">
         <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
         <x:attribute name="attribute" type="tns:nonEmptyString" default="src"/>
+    </x:complexType>
+
+    <x:complexType name="compareWithPart">
+        <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
+        <x:attribute name="percentage" type="tns:positiveDoubleMin0Max100"/>
     </x:complexType>
 
     <x:complexType name="dragAndDrop">
@@ -360,4 +371,14 @@
         </x:complexContent>
     </x:complexType>
 
+    <x:complexType name="exclude">
+        <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="positiveDoubleMin0Max100">
+        <x:restriction base="x:double">
+            <x:minInclusive value="0"/>
+            <x:maxInclusive value="100"/>
+        </x:restriction>
+    </x:simpleType>
 </x:schema>

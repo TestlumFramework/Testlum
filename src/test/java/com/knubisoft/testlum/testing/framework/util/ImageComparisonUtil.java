@@ -15,9 +15,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.IMAGES_DONT_MATCH;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.IMAGES_MISMATCH;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.IMAGES_SIZE_MISMATCH;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ADDITIONAL_INFO;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.IMAGE_ATTACHED_TO_STEP;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.IMAGE_MISMATCH_PERCENT;
 import static java.lang.String.format;
 
 @UtilityClass
@@ -33,8 +35,21 @@ public class ImageComparisonUtil {
             File actualImage = saveActualImage(comparisonResult, image, directoryToSave);
             UiUtil.putScreenshotToResult(result, actualImage);
             result.put(ADDITIONAL_INFO, IMAGE_ATTACHED_TO_STEP);
-            throw new ImageComparisonException(format(IMAGES_DONT_MATCH, imageComparisonState.name()));
+            if (imageComparisonState.equals(ImageComparisonState.SIZE_MISMATCH)) {
+                processSizeMismatchException(comparisonResult, result);
+            } else {
+                result.put(IMAGE_MISMATCH_PERCENT, comparisonResult.getDifferencePercent());
+                throw new ImageComparisonException(format(IMAGES_MISMATCH, comparisonResult.getDifferencePercent()));
+            }
         }
+    }
+
+    private void processSizeMismatchException(final ImageComparisonResult comparisonResult,
+                                              final CommandResult result) {
+        ResultUtil.addImagesSizeMetaData(comparisonResult, result);
+        throw new ImageComparisonException(format(IMAGES_SIZE_MISMATCH,
+                comparisonResult.getExpected().getWidth(), comparisonResult.getExpected().getHeight(),
+                comparisonResult.getActual().getWidth(), comparisonResult.getActual().getHeight()));
     }
 
     private File saveActualImage(final ImageComparisonResult comparisonResult,
@@ -64,8 +79,7 @@ public class ImageComparisonUtil {
     }
 
     private String getImageNameToSave(final String expectedImageFullName) {
-        return format("%s%s.%s",
-                TestResourceSettings.ACTUAL_IMAGE_PREFIX,
+        return format("%s%s.%s", TestResourceSettings.ACTUAL_IMAGE_PREFIX,
                 FilenameUtils.getBaseName(expectedImageFullName),
                 FilenameUtils.getExtension(expectedImageFullName));
     }

@@ -6,16 +6,17 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for compareWithFullScreen complex type.
+ * <p>Java class for comparisonConditions complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="compareWithFullScreen"&gt;
+ * &lt;complexType name="comparisonConditions"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
@@ -30,10 +31,14 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "compareWithFullScreen", propOrder = {
+@XmlType(name = "comparisonConditions", propOrder = {
     "exclude"
 })
-public class CompareWithFullScreen {
+@XmlSeeAlso({
+    CompareWithFullScreen.class,
+    CompareWithPart.class
+})
+public class ComparisonConditions {
 
     protected List<Exclude> exclude;
     @XmlAttribute(name = "percentage")

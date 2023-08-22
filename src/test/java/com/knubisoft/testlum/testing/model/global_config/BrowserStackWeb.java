@@ -17,6 +17,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="browserVersion" use="required" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" /&gt;
+ *       &lt;attribute name="os" use="required" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" /&gt;
+ *       &lt;attribute name="osVersion" use="required" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -30,6 +32,10 @@ public class BrowserStackWeb {
 
     @XmlAttribute(name = "browserVersion", required = true)
     protected String browserVersion;
+    @XmlAttribute(name = "os", required = true)
+    protected String os;
+    @XmlAttribute(name = "osVersion", required = true)
+    protected String osVersion;
 
     /**
      * Gets the value of the browserVersion property.
@@ -53,6 +59,54 @@ public class BrowserStackWeb {
      */
     public void setBrowserVersion(String value) {
         this.browserVersion = value;
+    }
+
+    /**
+     * Gets the value of the os property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getOs() {
+        return os;
+    }
+
+    /**
+     * Sets the value of the os property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setOs(String value) {
+        this.os = value;
+    }
+
+    /**
+     * Gets the value of the osVersion property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getOsVersion() {
+        return osVersion;
+    }
+
+    /**
+     * Sets the value of the osVersion property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setOsVersion(String value) {
+        this.osVersion = value;
     }
 
 }

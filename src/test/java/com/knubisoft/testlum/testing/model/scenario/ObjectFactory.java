@@ -830,11 +830,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CompareWith }
+     * Create an instance of {@link CompareWithElement }
      * 
      */
-    public CompareWith createCompareWith() {
-        return new CompareWith();
+    public CompareWithElement createCompareWithElement() {
+        return new CompareWithElement();
+    }
+
+    /**
+     * Create an instance of {@link CompareWithPart }
+     * 
+     */
+    public CompareWithPart createCompareWithPart() {
+        return new CompareWithPart();
     }
 
     /**
@@ -875,6 +883,14 @@ public class ObjectFactory {
      */
     public Refresh createRefresh() {
         return new Refresh();
+    }
+
+    /**
+     * Create an instance of {@link Exclude }
+     * 
+     */
+    public Exclude createExclude() {
+        return new Exclude();
     }
 
     /**

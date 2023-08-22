@@ -3,7 +3,6 @@ package com.knubisoft.testlum.testing.model.global_config;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -23,7 +22,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="scheme" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="token" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -47,8 +45,6 @@ public class Vault {
     protected String scheme;
     @XmlElement(required = true)
     protected String token;
-    @XmlAttribute(name = "enabled")
-    protected Boolean enabled;
 
     /**
      * Gets the value of the host property.
@@ -136,30 +132,6 @@ public class Vault {
      */
     public void setToken(String value) {
         this.token = value;
-    }
-
-    /**
-     * Gets the value of the enabled property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public Boolean isEnabled() {
-        return enabled;
-    }
-
-    /**
-     * Sets the value of the enabled property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setEnabled(Boolean value) {
-        this.enabled = value;
     }
 
 }

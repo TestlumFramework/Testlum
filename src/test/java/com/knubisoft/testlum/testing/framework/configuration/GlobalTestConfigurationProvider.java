@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -92,8 +93,13 @@ public class GlobalTestConfigurationProvider {
     private static Integrations initIntegration(final Environment env) {
         return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
                 .map(configFile -> XMLParsers.forIntegrations().process(configFile))
-                //.map(integrations -> new VaultService().getWithVault(integrations))
-                .map(InjectionUtil::injectFromVault)
+                .map(t -> {
+                    if (Objects.nonNull(GlobalTestConfigurationProvider.provide().getVault())) {
+                        return InjectionUtil.injectFromVault(t);
+                    } else {
+                    return t;
+                    }
+                })
                 .orElseGet(() -> {
                     log.warn(LogMessage.DISABLED_CONFIGURATION, Integrations.class.getSimpleName());
                     return new Integrations();
@@ -110,7 +116,13 @@ public class GlobalTestConfigurationProvider {
     private static UiConfig initUiConfig(final Environment env) {
         return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.UI_CONFIG_FILENAME)
                 .map(configFile -> XMLParsers.forUiConfig().process(configFile))
-                .map(InjectionUtil::injectFromVault)
+                .map(t -> {
+                    if (Objects.nonNull(GlobalTestConfigurationProvider.provide().getVault())) {
+                    return InjectionUtil.injectFromVault(t);
+                    } else {
+                    return t;
+                    }
+                })
                 .orElseGet(() -> {
                     log.warn(LogMessage.DISABLED_CONFIGURATION, UiConfig.class.getSimpleName());
                     return new UiConfig();

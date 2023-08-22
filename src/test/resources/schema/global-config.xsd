@@ -78,6 +78,5 @@
             <x:element name="scheme" type="tns:nonEmptyString"/>
             <x:element name="token" type="tns:nonEmptyString"/>
         </x:sequence>
-        <x:attribute name="enabled" type="x:boolean"/>
     </x:complexType>
 </x:schema>

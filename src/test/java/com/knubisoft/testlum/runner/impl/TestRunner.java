@@ -2,6 +2,7 @@ package com.knubisoft.testlum.runner.impl;
 
 import com.knubisoft.testlum.runner.Runner;
 import com.knubisoft.testlum.testing.RootTest;
+import com.knubisoft.testlum.testing.RootTestParallel;
 import com.knubisoft.testlum.testing.framework.SystemInfo;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.util.ArgumentsUtils;
@@ -33,7 +34,7 @@ public class TestRunner implements Runner {
     private TestExecutionSummary runTests() {
         LauncherDiscoveryRequest tests = LauncherDiscoveryRequestBuilder
                 .request()
-                .selectors(selectClass(RootTest.class))
+                .selectors(selectClass(RootTest.class), selectClass(RootTestParallel.class))
                 .build();
         Launcher launcher = LauncherFactory.create();
         SummaryGeneratingListener listener = new SummaryGeneratingListener();

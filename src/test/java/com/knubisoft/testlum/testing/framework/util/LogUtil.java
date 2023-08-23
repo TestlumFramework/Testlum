@@ -6,7 +6,6 @@ import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
-import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
@@ -627,12 +626,6 @@ public class LogUtil {
 
     public void logAssertTitleCommand(final AssertTitle title) {
         log.info(CONTENT_LOG, title.getContent());
-    }
-
-    public void logAssertEqualityCommand(final AssertEquality command, final int position) {
-        log.info(COMMAND_LOG, position, command.getClass().getSimpleName());
-        log.info(COMMENT_LOG, command.getComment());
-        log.info(CONTENT_LOG, String.join(COMMA, command.getContent()));
     }
 
     public void logDragAndDropInfo(final DragAndDrop dragAndDrop) {

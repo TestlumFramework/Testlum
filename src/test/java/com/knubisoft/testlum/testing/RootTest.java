@@ -46,7 +46,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @SpringBootTest(classes = SpringTestContext.class)
 @Execution(ExecutionMode.SAME_THREAD)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisabledIf("parallel")
+@DisabledIf("isParallel")
 public class RootTest {
 
     @Autowired
@@ -125,7 +125,7 @@ public class RootTest {
         FileRemover.clearActualFiles(scenarioFolder);
     }
 
-    private static boolean parallel() {
+    private static boolean isParallel() {
         return GlobalTestConfigurationProvider.provide().isParallelExecution();
     }
 

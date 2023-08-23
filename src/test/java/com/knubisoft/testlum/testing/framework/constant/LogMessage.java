@@ -155,8 +155,9 @@ public final class LogMessage {
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "HTTP method", "{}");
     public static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
     public static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
-    public static final String SKIPPED_BODY_VALIDATION = "Validation of the response body was skipped "
-            + "because of no expected file";
+    public static final String SKIPPED_BODY_VALIDATION = ANSI_ORANGE
+            + "Validation of the response body was skipped because of no expected file"
+            + ANSI_RESET;
     public static final String SMTP_HOST_LOG = format(TABLE_FORMAT, "SMTP Host", "{}");
     public static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");
     public static final String SUBJECT_LOG = format(TABLE_FORMAT, "Subject", "{}");
@@ -190,6 +191,8 @@ public final class LogMessage {
     public static final String HIGHLIGHT_DIFFERENCE_LOG = format(TABLE_FORMAT, "Highlight difference", "{}");
     public static final String IMAGE_FOR_COMPARISON_LOG = format(TABLE_FORMAT, "Image for comparison", "{}");
     public static final String IMAGE_SOURCE_ATT_LOG = format(TABLE_FORMAT, "Image source attribute", "{}");
+    public static final String IMAGE_EXCLUDED_ELEMENT_LOG = format(TABLE_FORMAT, "Excluded elements", "{}");
+    public static final String IMAGE_MATCH_PERCENTAGE_LOG = format(TABLE_FORMAT, "Match percentage", "{}");
     public static final String URL_TO_IMAGE_LOG = format(TABLE_FORMAT, "URL to actual image", "{}");
     public static final String OVERVIEW_INFO_LOG = "{}: {}";
     public static final String MOVE_TO_EMPTY_SPACE = format(TABLE_FORMAT, "Move to empty space", "{}");
@@ -219,6 +222,7 @@ public final class LogMessage {
     public static final String MOBILEBROWSER_APPIUM_INFO = MOBILEBROWSER_INFO + " | udid = %s";
     public static final String NATIVE_INFO = "Device name = %s | platform = %s | version = %s";
     public static final String NATIVE_APPIUM_INFO = NATIVE_INFO + " | udid = %s";
-    public static final String EXTRACT_THEN_COMPARE = "Extract from web element then compare";
-    public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a screenshot then compare";
+    public static final String EXTRACT_THEN_COMPARE = "Extract image from web element then compare";
+    public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a full screenshot then compare";
+    public static final String GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE = "Get element as screenshot then compare";
 }

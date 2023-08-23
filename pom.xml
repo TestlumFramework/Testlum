@@ -63,7 +63,7 @@
         <tomcat.jdbc.version>10.1.0-M2</tomcat.jdbc.version>
         <postgresql.driver.version>42.2.18</postgresql.driver.version>
         <oracle.database.ojdbc8>21.7.0.0</oracle.database.ojdbc8>
-        <mongodb-driver-sync.version>4.6.1</mongodb-driver-sync.version>
+        <mongodb-java-driver.version>3.12.11</mongodb-java-driver.version>
         <mysql-connector-java.version>8.0.25</mysql-connector-java.version>
         <spring-kafka.version>2.7.1</spring-kafka.version>
         <com.amazonaws.version>1.12.129</com.amazonaws.version>
@@ -93,7 +93,7 @@
         <extent-reports.version>5.0.9</extent-reports.version>
         <jakarta.activation.version>1.2.2</jakarta.activation.version>
         <com.twilio.sdk.version>9.0.0-rc.3</com.twilio.sdk.version>
-        <image-comparison.version>4.4.0</image-comparison.version>
+        <image-comparison.version>4.4.1</image-comparison.version>
         <com.github.curious-odd-man.rgxgen.version>1.4</com.github.curious-odd-man.rgxgen.version>
         <skipGenerateModels>true</skipGenerateModels>
     </properties>
@@ -242,8 +242,8 @@
 
         <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-sync</artifactId>
-            <version>${mongodb-driver-sync.version}</version>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>${mongodb-java-driver.version}</version>
         </dependency>
 
         <dependency>
@@ -864,16 +864,6 @@
             <groupId>com.aventstack</groupId>
             <artifactId>klov-reporter</artifactId>
             <version>${extent-reports.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.mongodb</groupId>
-                    <artifactId>mongodb-driver-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.mongodb</groupId>
-                    <artifactId>bson</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -897,6 +887,8 @@
             <groupId>com.github.romankh3</groupId>
             <artifactId>image-comparison</artifactId>
             <version>${image-comparison.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/test/resources/lib/image-comparison-4.4.1.jar</systemPath>
         </dependency>
 
         <dependency>

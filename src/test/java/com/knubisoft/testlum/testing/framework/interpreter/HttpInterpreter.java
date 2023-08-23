@@ -72,8 +72,8 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                               final String actualBody,
                               final HttpValidator httpValidator,
                               final CommandResult result) {
-        String body = getContentIfFile(expected.getFile());
-        if (StringUtils.isNotBlank(body)) {
+        if (StringUtils.isNotBlank(expected.getFile())) {
+            String body = getContentIfFile(expected.getFile());
             result.setActual(StringPrettifier.asJsonResult(actualBody));
             result.setExpected(StringPrettifier.asJsonResult(body));
             httpValidator.validateBody(body, actualBody);

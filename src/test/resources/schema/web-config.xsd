@@ -74,6 +74,8 @@
 
     <x:complexType name="browserStackWeb">
         <x:attribute name="browserVersion" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="os" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="osVersion" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
     <x:complexType name="screenRecording">

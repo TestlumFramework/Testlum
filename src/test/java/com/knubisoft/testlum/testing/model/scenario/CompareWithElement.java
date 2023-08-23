@@ -8,12 +8,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for compareWith complex type.
+ * <p>Java class for compareWithElement complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="compareWith"&gt;
+ * &lt;complexType name="compareWithElement"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scenarioLocator" /&gt;
@@ -26,8 +26,8 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "compareWith")
-public class CompareWith {
+@XmlType(name = "compareWithElement")
+public class CompareWithElement {
 
     @XmlAttribute(name = "locatorId", required = true)
     protected String locatorId;

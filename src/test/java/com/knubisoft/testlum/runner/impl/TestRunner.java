@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.configuration.TestResourceSetting
 import com.knubisoft.testlum.testing.framework.util.ArgumentsUtils;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.junit.platform.launcher.Launcher;
@@ -18,7 +19,6 @@ import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.io.File;
-import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
@@ -43,16 +43,13 @@ public class TestRunner implements Runner {
         }
     }
 
+    @SneakyThrows
     private void isParallelExecution() {
         if (!GlobalTestConfigurationProvider.provide().isParallelExecution()) {
-            try {
-                File junitPropertiesFile = new File(ClassLoader.getSystemResource(JUNIT_PROPERTIES_FILENAME).getFile());
-                String junitProperties = FileUtils.readFileToString(junitPropertiesFile, UTF_8);
-                String newJunitProperties = junitProperties.replace(PARALLEL_ENABLED, PARALLEL_DISABLED);
-                FileUtils.write(junitPropertiesFile, newJunitProperties, UTF_8);
-            } catch (IOException e) {
-                log.error(e.getMessage());
-            }
+            File junitPropertiesFile = new File(ClassLoader.getSystemResource(JUNIT_PROPERTIES_FILENAME).getFile());
+            String junitProperties = FileUtils.readFileToString(junitPropertiesFile, UTF_8);
+            String newJunitProperties = junitProperties.replace(PARALLEL_ENABLED, PARALLEL_DISABLED);
+            FileUtils.write(junitPropertiesFile, newJunitProperties, UTF_8);
         }
     }
 

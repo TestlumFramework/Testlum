@@ -11,16 +11,6 @@
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.testlum.testing.RootTest"/>
-        <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD"/>
-    </Match>
-
-    <Match>
-        <Class name="com.knubisoft.testlum.testing.RootTestParallel"/>
-        <Bug pattern="UPM_UNCALLED_PRIVATE_METHOD"/>
-    </Match>
-
-    <Match>
         <Class name="com.knubisoft.testlum.testing.framework.util.ArgumentsUtils"/>
         <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
     </Match>

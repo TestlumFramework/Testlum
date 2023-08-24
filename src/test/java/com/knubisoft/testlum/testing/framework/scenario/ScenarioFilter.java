@@ -54,7 +54,9 @@ public class ScenarioFilter {
         RunScenariosByTag runScenariosByTag = GlobalTestConfigurationProvider.provide().getRunScenariosByTag();
         return runScenariosByTag.isEnabled()
                 ? filterByTags(activeScenarios, getEnabledTags(runScenariosByTag.getTag()))
-                : activeScenarios.stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new));
+                : activeScenarios.stream()
+                .sorted(Comparator.comparing(mappingResult -> mappingResult.file.getPath()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private Set<MappingResult> filterByTags(final Set<MappingResult> original, final List<String> enabledTags) {
@@ -85,7 +87,7 @@ public class ScenarioFilter {
                                                   final Predicate<MappingResult> by) {
         return scenarios.stream()
                 .filter(by)
-                .sorted()
+                .sorted(Comparator.comparing(mappingResult -> mappingResult.file.getPath()))
                 .sorted(Comparator.comparing(mappingResult -> mappingResult.scenario.getSettings().getTags()))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }

@@ -14,6 +14,7 @@ import com.knubisoft.testlum.testing.model.scenario.Logout;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -169,9 +170,14 @@ public class ScenarioCollector {
     }
 
     @RequiredArgsConstructor
-    public static class MappingResult {
+    public static class MappingResult implements Comparable<MappingResult> {
         public final File file;
         public final Scenario scenario;
         public final Exception exception;
+
+        @Override
+        public int compareTo(@NotNull MappingResult o) {
+            return this.file.getPath().compareTo(o.file.getPath());
+        }
     }
 }

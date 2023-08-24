@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.testlum.testing.model.global_config.TagValue;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -53,7 +54,7 @@ public class ScenarioFilter {
         RunScenariosByTag runScenariosByTag = GlobalTestConfigurationProvider.provide().getRunScenariosByTag();
         return runScenariosByTag.isEnabled()
                 ? filterByTags(activeScenarios, getEnabledTags(runScenariosByTag.getTag()))
-                : activeScenarios;
+                : activeScenarios.stream().sorted().collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private Set<MappingResult> filterByTags(final Set<MappingResult> original, final List<String> enabledTags) {
@@ -84,6 +85,8 @@ public class ScenarioFilter {
                                                   final Predicate<MappingResult> by) {
         return scenarios.stream()
                 .filter(by)
+                .sorted()
+                .sorted(Comparator.comparing(mappingResult -> mappingResult.scenario.getSettings().getTags()))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 

@@ -10,6 +10,7 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.ImageComparator;
 import com.knubisoft.testlum.testing.framework.util.ImageComparisonUtil;
+import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
@@ -21,7 +22,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -47,6 +47,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
     private static final String MOBILE_SCREEN_WIDTH = "return screen.width;";
     private static final String MOBILE_SCREEN_HEIGHT = "return screen.height;";
     private static final String STATUS_BAR_HEIGHT = "statBarHeight";
+    private static final String WINDOW_INNER_HEIGHT = "return window.innerHeight;";
 
     public CompareImageExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -119,15 +120,20 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
     }
 
     private Scale getMobilebrowserScale(final BufferedImage screen, final WebDriver driver) {
-        Capabilities capabilities = ((RemoteWebDriver) driver).getCapabilities();
-        int statBarHeight = Integer.parseInt(capabilities.getCapability(STATUS_BAR_HEIGHT).toString());
-        int width = Integer.parseInt(((JavascriptExecutor) driver).executeScript(MOBILE_SCREEN_WIDTH).toString());
-        int height = Integer.parseInt(((JavascriptExecutor) driver).executeScript(MOBILE_SCREEN_HEIGHT).toString());
-        if (screen.getWidth() / width > 1 || screen.getHeight() / height > 1) {
-            return new Scale((double) screen.getWidth() / width,
-                    (double) screen.getHeight() / (height + ((double) statBarHeight / 2)));
+        long screenWidth = (Long) JavascriptUtil.executeJsScript(MOBILE_SCREEN_WIDTH, driver);
+        long screenHeight = getScreenHeight(driver);
+        if (screen.getWidth() / screenWidth > 1 || screen.getHeight() / screenHeight > 1) {
+            return new Scale((double) screen.getWidth() / screenWidth, (double) screen.getHeight() / screenHeight);
         }
         return new Scale(1, 1);
+    }
+
+    private long getScreenHeight(final WebDriver driver) {
+        long screenHeight = (Long) JavascriptUtil.executeJsScript(MOBILE_SCREEN_HEIGHT, driver);
+        if (screenHeight > dependencies.getDriver().manage().window().getSize().getHeight()) {
+            screenHeight = dependencies.getDriver().manage().window().getSize().getHeight();
+        }
+        return screenHeight;
     }
 
     private Rectangle getElementArea(final String locatorId, final Scale scale) {
@@ -136,7 +142,30 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         double y = seleniumRectangle.getY() * scale.getScaleY();
         double width = (seleniumRectangle.getX() + seleniumRectangle.getWidth()) * scale.getScaleX();
         double height = (seleniumRectangle.getY() + seleniumRectangle.getHeight()) * scale.getScaleY();
+        if (UiType.MOBILE_BROWSER.equals(dependencies.getUiType())) {
+            return getMobileElementArea((int) x, y, (int) width, height);
+        }
         return new Rectangle((int) x, (int) y, (int) width, (int) height);
+    }
+
+    private Rectangle getMobileElementArea(final int x, final double y, final int width, final double height) {
+        Capabilities mobileCapabilities = ((RemoteWebDriver) dependencies.getDriver()).getCapabilities();
+        long statBarHeight = getStatBarHeight(mobileCapabilities, dependencies.getDriver());
+        long screenHeight = (Long) JavascriptUtil.executeJsScript(MOBILE_SCREEN_HEIGHT, dependencies.getDriver());
+        if (screenHeight > dependencies.getDriver().manage().window().getSize().getHeight()) {
+            statBarHeight -= (statBarHeight * 2) + (statBarHeight / 2);
+            return new Rectangle(x, (int) (y + statBarHeight), width, (int) (height + statBarHeight));
+        }
+        return new Rectangle(x, (int) (y + statBarHeight) + 15, width, (int) (height + statBarHeight) + 15);
+    }
+
+    private long getStatBarHeight(final Capabilities capabilities, final WebDriver driver) {
+        if (nonNull(capabilities.getCapability(STATUS_BAR_HEIGHT))) {
+            return (Long) capabilities.getCapability(STATUS_BAR_HEIGHT);
+        }
+        long screenHeight = (Long) JavascriptUtil.executeJsScript(MOBILE_SCREEN_HEIGHT, driver);
+        long windowHeight = (Long) JavascriptUtil.executeJsScript(WINDOW_INNER_HEIGHT, driver);
+        return screenHeight - windowHeight;
     }
 
     @Getter

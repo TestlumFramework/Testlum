@@ -156,7 +156,8 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
             statBarHeight -= (statBarHeight * 2) + (statBarHeight / 2);
             return new Rectangle(x, (int) (y + statBarHeight), width, (int) (height + statBarHeight));
         }
-        return new Rectangle(x, (int) (y + statBarHeight) + 15, width, (int) (height + statBarHeight) + 15);
+        final int gap = 15;
+        return new Rectangle(x, (int) (y + statBarHeight) + gap, width, (int) (height + statBarHeight) + gap);
     }
 
     private long getStatBarHeight(final Capabilities capabilities, final WebDriver driver) {

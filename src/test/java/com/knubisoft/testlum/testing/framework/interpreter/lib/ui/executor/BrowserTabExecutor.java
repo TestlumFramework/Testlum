@@ -31,9 +31,9 @@ import static java.util.Objects.nonNull;
 @ExecutorForClass(BrowserTab.class)
 public class BrowserTabExecutor extends AbstractUiExecutor<BrowserTab> {
 
+    private static final String WINDOW_OPEN = "window.open()";
     private final WebDriver driver;
     private final LinkedList<String> openedTabs;
-    private static final String WINDOW_OPEN = "window.open()";
 
     public BrowserTabExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);

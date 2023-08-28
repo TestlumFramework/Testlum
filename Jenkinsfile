@@ -81,6 +81,7 @@ pipeline {
         steps {
             dir("site") {
                 sh "docker-compose -f docker/docker-compose-jenkins.yaml up -d --force-recreate"
+                sh "docker exec -t vault-e2e sh /tmp/init_vault.sh"
                 sh 'sleep 5'
                 sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -e TZ=Europe/Kiev -p 8080:8080 -d ${TEST_API} --name ${TEST_API} -e SPRING_PROFILES_ACTIVE=jenkins'
 //                 sh 'java -jar TEST-API/target/mega-test-api.jar --spring.profiles.active=jenkins --spring.config.location="TEST-API/src/main/resources/" &'

@@ -9,8 +9,6 @@ import com.knubisoft.testlum.testing.framework.util.ArgumentsUtils;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
@@ -19,11 +17,14 @@ import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.util.Properties;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
-@Slf4j
 public class TestRunner implements Runner {
 
     private static final String JUNIT_PROPERTIES_FILENAME = "junit-platform.properties";
@@ -46,10 +47,16 @@ public class TestRunner implements Runner {
     @SneakyThrows
     private void isParallelExecution() {
         if (!GlobalTestConfigurationProvider.provide().isParallelExecution()) {
-            File junitPropertiesFile = new File(ClassLoader.getSystemResource(JUNIT_PROPERTIES_FILENAME).getFile());
-            String junitProperties = FileUtils.readFileToString(junitPropertiesFile, UTF_8);
-            String newJunitProperties = junitProperties.replace(PARALLEL_ENABLED, PARALLEL_DISABLED);
-            FileUtils.write(junitPropertiesFile, newJunitProperties, UTF_8);
+            Properties properties = new Properties();
+            try (InputStream inputStream = ClassLoader.getSystemResourceAsStream(JUNIT_PROPERTIES_FILENAME);
+                 OutputStream outputStream = Files.newOutputStream(
+                         new File(ClassLoader.getSystemResource(JUNIT_PROPERTIES_FILENAME).toURI()).toPath())) {
+                properties.load(inputStream);
+                properties.setProperty(PARALLEL_ENABLED, PARALLEL_DISABLED);
+                properties.store(outputStream, null);
+            } catch (IOException e) {
+                //ignore
+            }
         }
     }
 

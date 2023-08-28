@@ -85,7 +85,7 @@ public class VaultService {
     }
 
     private String getValue(final String vaultKey, final String path, final String key) {
-        if (Objects.nonNull(TEMPLATE.read(path).getData())) {
+        if (Objects.nonNull(TEMPLATE.read(path))) {
             Map<String, Object> data = Objects.requireNonNull(TEMPLATE.read(path)).getData();
             List<VaultDto> convertedVault = getVaultByPath(data);
             return convertedVault.stream()

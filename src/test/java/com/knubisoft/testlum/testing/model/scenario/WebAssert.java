@@ -22,6 +22,8 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;choice maxOccurs="unbounded"&gt;
  *         &lt;element name="attribute" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertAttribute"/&gt;
  *         &lt;element name="title" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertTitle"/&gt;
+ *         &lt;element name="equal" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertEqual"/&gt;
+ *         &lt;element name="notEqual" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertNotEqual"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -32,7 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "webAssert", propOrder = {
-    "attributeOrTitle"
+    "attributeOrTitleOrEqual"
 })
 public class WebAssert
     extends AbstractUiCommand
@@ -40,23 +42,25 @@ public class WebAssert
 
     @XmlElements({
         @XmlElement(name = "attribute", type = AssertAttribute.class),
-        @XmlElement(name = "title", type = AssertTitle.class)
+        @XmlElement(name = "title", type = AssertTitle.class),
+        @XmlElement(name = "equal", type = AssertEqual.class),
+        @XmlElement(name = "notEqual", type = AssertNotEqual.class)
     })
-    protected List<AbstractUiCommand> attributeOrTitle;
+    protected List<AbstractCommand> attributeOrTitleOrEqual;
 
     /**
-     * Gets the value of the attributeOrTitle property.
+     * Gets the value of the attributeOrTitleOrEqual property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the attributeOrTitle property.
+     * This is why there is not a <CODE>set</CODE> method for the attributeOrTitleOrEqual property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getAttributeOrTitle().add(newItem);
+     *    getAttributeOrTitleOrEqual().add(newItem);
      * </pre>
      * 
      * 
@@ -64,14 +68,16 @@ public class WebAssert
      * Objects of the following type(s) are allowed in the list
      * {@link AssertAttribute }
      * {@link AssertTitle }
+     * {@link AssertEqual }
+     * {@link AssertNotEqual }
      * 
      * 
      */
-    public List<AbstractUiCommand> getAttributeOrTitle() {
-        if (attributeOrTitle == null) {
-            attributeOrTitle = new ArrayList<AbstractUiCommand>();
+    public List<AbstractCommand> getAttributeOrTitleOrEqual() {
+        if (attributeOrTitleOrEqual == null) {
+            attributeOrTitleOrEqual = new ArrayList<AbstractCommand>();
         }
-        return this.attributeOrTitle;
+        return this.attributeOrTitleOrEqual;
     }
 
 }

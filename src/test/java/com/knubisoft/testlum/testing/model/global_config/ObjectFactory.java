@@ -286,6 +286,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Vault }
+     * 
+     */
+    public Vault createVault() {
+        return new Vault();
+    }
+
+    /**
      * Create an instance of {@link TagValue }
      * 
      */

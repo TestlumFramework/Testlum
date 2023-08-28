@@ -46,6 +46,8 @@
                 <x:choice maxOccurs="unbounded">
                     <x:element name="attribute" type="tns:assertAttribute"/>
                     <x:element name="title" type="tns:assertTitle"/>
+                    <x:element name="equal" type="tns:assertEqual"/>
+                    <x:element name="notEqual" type="tns:assertNotEqual"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>
@@ -56,6 +58,8 @@
             <x:extension base="tns:abstractUiCommand">
                 <x:choice maxOccurs="unbounded">
                     <x:element name="attribute" type="tns:assertAttribute"/>
+                    <x:element name="equal" type="tns:assertEqual"/>
+                    <x:element name="notEqual" type="tns:assertNotEqual"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>

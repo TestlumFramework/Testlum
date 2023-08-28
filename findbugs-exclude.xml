@@ -49,4 +49,14 @@
         <Class name="com.knubisoft.testlum.testing.framework.interpreter.lib.http.ApiClient"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
+
+    <Match>
+        <Class name="com.knubisoft.testlum.testing.framework.vault.VaultService"/>
+        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.testlum.testing.framework.vault.VaultService"/>
+        <Bug pattern="SE_NO_SERIALVERSIONID"/>
+    </Match>
 </FindBugsFilter>

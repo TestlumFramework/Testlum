@@ -5,11 +5,14 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.AssertHelper;
 import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
+import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.NativeAssert;
 import org.openqa.selenium.WebElement;
 
@@ -27,15 +30,23 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
     public void execute(final NativeAssert aAssert, final CommandResult result) {
         List<CommandResult> subCommandsResult = new ArrayList<>();
         result.setSubCommandsResult(subCommandsResult);
-        aAssert.getAttribute().forEach(attribute -> {
+        aAssert.getAttributeOrEqualOrNotEqual().forEach(command -> {
             CommandResult commandResult =
-                    ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), attribute);
+                    ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
             subCommandsResult.add(commandResult);
-            LogUtil.logAssertCommand(attribute, dependencies.getPosition().get());
-            if (ConditionUtil.isTrue(attribute.getCondition(), dependencies.getScenarioContext(), commandResult)) {
-                executeAttributeCommand(attribute, commandResult);
+            LogUtil.logAssertCommand(command, dependencies.getPosition().get());
+            if (ConditionUtil.isTrue(command.getCondition(), dependencies.getScenarioContext(), commandResult)) {
+                processEachCommand(command, commandResult);
             }
         });
+    }
+
+    private void processEachCommand(final AbstractCommand command, final CommandResult result) {
+        if (command instanceof AssertAttribute) {
+            executeAttributeCommand((AssertAttribute) command, result);
+        } else if (command instanceof AssertEquality) {
+            AssertHelper.executeEqualityCommand((AssertEquality) command, result);
+        }
     }
 
     private void executeAttributeCommand(final AssertAttribute attribute, final CommandResult result) {

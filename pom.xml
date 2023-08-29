@@ -10,8 +10,9 @@
     <name>TESTLUM</name>
 
     <properties>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
         <java.version>11</java.version>
-        <maven.compiler.release>${java.version}</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <start-class>com.knubisoft.testlum.starter.TESTLUMStarter</start-class>

@@ -58,7 +58,7 @@ public class ScenarioFilter {
     }
 
     private Set<MappingResult> filterByTags(final Set<MappingResult> original, final List<String> enabledTags) {
-        Set<MappingResult> filteredByTags = sortByName(filterBy(original, e -> isMatchesTags(e, enabledTags))).stream()
+        Set<MappingResult> filteredByTags = filterBy(sortByName(original), e -> isMatchesTags(e, enabledTags)).stream()
                 .sorted(Comparator.comparing(mappingResult -> mappingResult.scenario.getSettings().getTags()))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         if (filteredByTags.isEmpty()) {

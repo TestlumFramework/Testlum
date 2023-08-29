@@ -8,16 +8,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for image complex type.
+ * <p>Java class for nativeImage complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="image"&gt;
+ * &lt;complexType name="nativeImage"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice&gt;
- *         &lt;element name="fullScreen" type="{http://www.knubisoft.com/testlum/testing/model/scenario}fullScreen"/&gt;
+ *         &lt;element name="fullScreen" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeFullScreen"/&gt;
  *         &lt;element name="picture" type="{http://www.knubisoft.com/testlum/testing/model/scenario}picture"/&gt;
  *         &lt;element name="element" type="{http://www.knubisoft.com/testlum/testing/model/scenario}element"/&gt;
  *       &lt;/choice&gt;
@@ -31,16 +31,16 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "image", propOrder = {
+@XmlType(name = "nativeImage", propOrder = {
     "fullScreen",
     "picture",
     "element"
 })
-public class Image
+public class NativeImage
     extends AbstractUiCommand
 {
 
-    protected FullScreen fullScreen;
+    protected NativeFullScreen fullScreen;
     protected Picture picture;
     protected Element element;
     @XmlAttribute(name = "file", required = true)
@@ -53,10 +53,10 @@ public class Image
      * 
      * @return
      *     possible object is
-     *     {@link FullScreen }
+     *     {@link NativeFullScreen }
      *     
      */
-    public FullScreen getFullScreen() {
+    public NativeFullScreen getFullScreen() {
         return fullScreen;
     }
 
@@ -65,10 +65,10 @@ public class Image
      * 
      * @param value
      *     allowed object is
-     *     {@link FullScreen }
+     *     {@link NativeFullScreen }
      *     
      */
-    public void setFullScreen(FullScreen value) {
+    public void setFullScreen(NativeFullScreen value) {
         this.fullScreen = value;
     }
 

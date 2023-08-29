@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="clear" type="{http://www.knubisoft.com/testlum/testing/model/scenario}clear"/&gt;
  *         &lt;element name="scroll" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scroll"/&gt;
  *         &lt;element name="scrollTo" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scrollTo"/&gt;
- *         &lt;element name="image" type="{http://www.knubisoft.com/testlum/testing/model/scenario}image"/&gt;
+ *         &lt;element name="image" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeImage"/&gt;
  *         &lt;element name="javascript" type="{http://www.knubisoft.com/testlum/testing/model/scenario}javascript"/&gt;
  *         &lt;element name="navigate" type="{http://www.knubisoft.com/testlum/testing/model/scenario}navigate"/&gt;
  *         &lt;element name="hover" type="{http://www.knubisoft.com/testlum/testing/model/scenario}hover"/&gt;
@@ -65,7 +65,7 @@ public class Mobilebrowser
         @XmlElement(name = "clear", type = Clear.class),
         @XmlElement(name = "scroll", type = Scroll.class),
         @XmlElement(name = "scrollTo", type = ScrollTo.class),
-        @XmlElement(name = "image", type = Image.class),
+        @XmlElement(name = "image", type = NativeImage.class),
         @XmlElement(name = "javascript", type = Javascript.class),
         @XmlElement(name = "navigate", type = Navigate.class),
         @XmlElement(name = "hover", type = Hover.class),
@@ -107,7 +107,7 @@ public class Mobilebrowser
      * {@link Clear }
      * {@link Scroll }
      * {@link ScrollTo }
-     * {@link Image }
+     * {@link NativeImage }
      * {@link Javascript }
      * {@link Navigate }
      * {@link Hover }

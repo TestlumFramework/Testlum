@@ -8,16 +8,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for compareWithPart complex type.
+ * <p>Java class for picture complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="compareWithPart"&gt;
+ * &lt;complexType name="picture"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scenarioLocator" /&gt;
- *       &lt;attribute name="percentage" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveDoubleMin0Max100" /&gt;
+ *       &lt;attribute name="attribute" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" default="src" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -26,13 +26,13 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "compareWithPart")
-public class CompareWithPart {
+@XmlType(name = "picture")
+public class Picture {
 
     @XmlAttribute(name = "locatorId", required = true)
     protected String locatorId;
-    @XmlAttribute(name = "percentage")
-    protected Double percentage;
+    @XmlAttribute(name = "attribute")
+    protected String attribute;
 
     /**
      * Gets the value of the locatorId property.
@@ -59,27 +59,31 @@ public class CompareWithPart {
     }
 
     /**
-     * Gets the value of the percentage property.
+     * Gets the value of the attribute property.
      * 
      * @return
      *     possible object is
-     *     {@link Double }
+     *     {@link String }
      *     
      */
-    public Double getPercentage() {
-        return percentage;
+    public String getAttribute() {
+        if (attribute == null) {
+            return "src";
+        } else {
+            return attribute;
+        }
     }
 
     /**
-     * Sets the value of the percentage property.
+     * Sets the value of the attribute property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Double }
+     *     {@link String }
      *     
      */
-    public void setPercentage(Double value) {
-        this.percentage = value;
+    public void setAttribute(String value) {
+        this.attribute = value;
     }
 
 }

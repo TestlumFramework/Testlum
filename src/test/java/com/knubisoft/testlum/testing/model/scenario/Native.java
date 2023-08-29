@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="assert" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeAssert"/&gt;
  *         &lt;element name="wait" type="{http://www.knubisoft.com/testlum/testing/model/scenario}waitNative"/&gt;
  *         &lt;element name="clear" type="{http://www.knubisoft.com/testlum/testing/model/scenario}clear"/&gt;
- *         &lt;element name="image" type="{http://www.knubisoft.com/testlum/testing/model/scenario}image"/&gt;
+ *         &lt;element name="image" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeImage"/&gt;
  *         &lt;element name="refresh" type="{http://www.knubisoft.com/testlum/testing/model/scenario}refresh"/&gt;
  *         &lt;element name="navigate" type="{http://www.knubisoft.com/testlum/testing/model/scenario}navigateNative"/&gt;
  *         &lt;element name="dragAndDrop" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dragAndDropNative"/&gt;
@@ -57,7 +57,7 @@ public class Native
         @XmlElement(name = "assert", type = NativeAssert.class),
         @XmlElement(name = "wait", type = WaitNative.class),
         @XmlElement(name = "clear", type = Clear.class),
-        @XmlElement(name = "image", type = Image.class),
+        @XmlElement(name = "image", type = NativeImage.class),
         @XmlElement(name = "refresh", type = Refresh.class),
         @XmlElement(name = "navigate", type = NavigateNative.class),
         @XmlElement(name = "dragAndDrop", type = DragAndDropNative.class),
@@ -93,7 +93,7 @@ public class Native
      * {@link NativeAssert }
      * {@link WaitNative }
      * {@link Clear }
-     * {@link Image }
+     * {@link NativeImage }
      * {@link Refresh }
      * {@link NavigateNative }
      * {@link DragAndDropNative }

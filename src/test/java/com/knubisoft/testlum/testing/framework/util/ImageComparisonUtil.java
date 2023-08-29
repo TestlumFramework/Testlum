@@ -5,7 +5,8 @@ import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.ImageComparisonState;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.model.scenario.Image;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FilenameUtils;
@@ -27,12 +28,14 @@ public class ImageComparisonUtil {
 
     @SneakyThrows
     public void processImageComparisonResult(final ImageComparisonResult comparisonResult,
-                                             final Image image,
+                                             final String expectedImageFullName,
+                                             final boolean isHighlightDifference,
                                              final File directoryToSave,
                                              final CommandResult result) {
         ImageComparisonState imageComparisonState = comparisonResult.getImageComparisonState();
         if (imageComparisonState != ImageComparisonState.MATCH) {
-            File actualImage = saveActualImage(comparisonResult, image, directoryToSave);
+            File actualImage =
+                    saveActualImage(comparisonResult, expectedImageFullName, isHighlightDifference, directoryToSave);
             UiUtil.putScreenshotToResult(result, actualImage);
             result.put(ADDITIONAL_INFO, IMAGE_ATTACHED_TO_STEP);
             if (imageComparisonState.equals(ImageComparisonState.SIZE_MISMATCH)) {
@@ -53,12 +56,12 @@ public class ImageComparisonUtil {
     }
 
     private File saveActualImage(final ImageComparisonResult comparisonResult,
-                                 final Image image,
+                                 final String expectedImageFullName,
+                                 final boolean isHighlightDifference,
                                  final File directoryToSave) throws IOException {
-        String expectedImageFullName = image.getFile();
         String imageExtension = FilenameUtils.getExtension(expectedImageFullName);
         File fileToSave = getFileToSave(directoryToSave, expectedImageFullName);
-        if (image.isHighlightDifference()) {
+        if (isHighlightDifference) {
             ImageIO.write(comparisonResult.getResult(), imageExtension, fileToSave);
         } else {
             ImageIO.write(comparisonResult.getActual(), imageExtension, fileToSave);
@@ -82,5 +85,12 @@ public class ImageComparisonUtil {
         return format("%s%s.%s", TestResourceSettings.ACTUAL_IMAGE_PREFIX,
                 FilenameUtils.getBaseName(expectedImageFullName),
                 FilenameUtils.getExtension(expectedImageFullName));
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    public static class Scale {
+        private final double scaleX;
+        private final double scaleY;
     }
 }

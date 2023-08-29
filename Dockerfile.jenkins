@@ -1,10 +1,10 @@
-FROM maven:3.8.5-openjdk-8 as maven-build
+FROM maven:3.8.5-openjdk-11 as maven-build
 
 WORKDIR /testlum/
 COPY . .
 RUN mvn clean install -DskipTests -Pquality-checking
 
-FROM openjdk:8-alpine
+FROM openjdk:11-alpine
 
 ARG JAR_FILE=target/testlum-with-dependencies.jar
 

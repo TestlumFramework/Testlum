@@ -1165,7 +1165,7 @@
                                         <dependencyConvergence/>
                                         <reactorModuleConvergence/>
                                         <requireJavaVersion>
-                                            <version>1.8.0</version>
+                                            <version>11</version>
                                         </requireJavaVersion>
                                         <!--                                    if you use version for plugin from props as ${version} move this property to root pom-->
                                         <requirePluginVersions>

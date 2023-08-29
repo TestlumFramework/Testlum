@@ -54,17 +54,23 @@ public class ScenarioFilter {
         RunScenariosByTag runScenariosByTag = GlobalTestConfigurationProvider.provide().getRunScenariosByTag();
         return runScenariosByTag.isEnabled()
                 ? filterByTags(activeScenarios, getEnabledTags(runScenariosByTag.getTag()))
-                : activeScenarios.stream()
-                .sorted(Comparator.comparing(mappingResult -> mappingResult.file.getPath()))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+                : sortByName(activeScenarios);
     }
 
     private Set<MappingResult> filterByTags(final Set<MappingResult> original, final List<String> enabledTags) {
-        Set<MappingResult> filteredByTags = filterBy(original, e -> isMatchesTags(e, enabledTags));
+        Set<MappingResult> filteredByTags = sortByName(filterBy(original, e -> isMatchesTags(e, enabledTags))).stream()
+                .sorted(Comparator.comparing(mappingResult -> mappingResult.scenario.getSettings().getTags()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
         if (filteredByTags.isEmpty()) {
             throw new DefaultFrameworkException(NO_SCENARIOS_FILTERED_BY_TAGS);
         }
         return filteredByTags;
+    }
+
+    private LinkedHashSet<MappingResult> sortByName(final Set<MappingResult> activeScenarios) {
+        return activeScenarios.stream()
+                .sorted(Comparator.comparing(mappingResult -> mappingResult.file.getPath()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private boolean isMatchesTags(final MappingResult entry, final List<String> enabledTags) {
@@ -87,8 +93,6 @@ public class ScenarioFilter {
                                                   final Predicate<MappingResult> by) {
         return scenarios.stream()
                 .filter(by)
-                .sorted(Comparator.comparing(mappingResult -> mappingResult.file.getPath()))
-                .sorted(Comparator.comparing(mappingResult -> mappingResult.scenario.getSettings().getTags()))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 

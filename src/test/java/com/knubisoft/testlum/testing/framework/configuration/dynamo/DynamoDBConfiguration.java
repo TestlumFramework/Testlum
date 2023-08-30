@@ -24,12 +24,12 @@ import java.util.Map;
 public class DynamoDBConfiguration {
 
     @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
+    private GlobalTestConfigurationProvider configurationProvider;
 
     @Bean
     public Map<AliasEnv, DynamoDbClient> dynamodb() {
         Map<AliasEnv, DynamoDbClient> dbClientMap = new HashMap<>();
-        globalTestConfigurationProvider.getIntegrations()
+        configurationProvider.getIntegrations()
                 .forEach((env, integrations) -> addDynamoDbClient(integrations, env, dbClientMap));
         return dbClientMap;
     }

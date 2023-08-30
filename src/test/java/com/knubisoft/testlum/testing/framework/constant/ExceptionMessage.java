@@ -194,6 +194,7 @@ public class ExceptionMessage {
     public static final String VAR_QUERY_RESULT_ERROR =
             "Query result is empty. Perhaps your database is empty or there is no such value in the database";
     public static final String GENERATION_METHOD_NOT_SUPPORTED = "Random string generation method is not supported";
+    public static final String ASSERT_TYPE_NOT_SUPPORTED = "Assert command %s not supported";
     public static final String HOT_KEY_NOT_SUPPORTED = "Hotkey command %s not supported";
     public static final String NAVIGATE_NOT_SUPPORTED = "Navigate command %s not supported";
     public static final String DROP_DOWN_NOT_SUPPORTED = "Drop down by method by %s not supported";

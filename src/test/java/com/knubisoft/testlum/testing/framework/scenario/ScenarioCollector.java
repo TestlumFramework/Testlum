@@ -160,7 +160,7 @@ public class ScenarioCollector {
             for (Map<String, String> variationMap : variationsList) {
                 String variationValue = GlobalVariations.getVariationValue(include.getScenario(), variationMap);
                 if (variationMap.containsValue(variationValue)) {
-                    return ((Include) InjectionUtil.injectObjectVariation(command, variationMap));
+                    return (Include) InjectionUtil.injectObjectVariation(command, variationMap);
                 }
                 throw new IllegalArgumentException(
                         String.format(NO_VALUE_FOUND_IN_VARIATIONS, variationValue, variationMap));

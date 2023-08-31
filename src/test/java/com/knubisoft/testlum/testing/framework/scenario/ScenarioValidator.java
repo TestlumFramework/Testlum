@@ -448,14 +448,15 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .anyMatch(nativeUdids::contains);
     }
 
-    private void validateFileExistenceInDataFolder(final String fileName) {
+    private File validateFileExistenceInDataFolder(final String fileName) {
         if (isNotBlank(fileName) && fileName.trim().contains(DOUBLE_OPEN_BRACE)
                 && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && isNotBlank(variationsFileName.get())) {
-            validateFileNamesIfVariations(null, fileName);
+            return validateFileNamesIfVariations(null, fileName);
         } else if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
                 && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {
-            FileSearcher.searchFileFromDataFolder(fileName);
+            return FileSearcher.searchFileFromDataFolder(fileName);
         }
+        return null;
     }
 
     private void validateFileIfExist(final File xmlFile, final String fileName) {
@@ -468,13 +469,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
-    private void validateFileNamesIfVariations(final File xmlFile, final String fileName) {
+    private File validateFileNamesIfVariations(final File xmlFile, final String fileName) {
         List<Map<String, String>> variationsList = GlobalVariations.getVariations(variationsFileName.get());
-        variationsList.forEach(variationsMap -> {
+        for (Map<String, String> variationsMap : variationsList) {
             String variationValue = GlobalVariations.getVariationValue(fileName, variationsMap);
-            File file = nonNull(xmlFile) ? FileSearcher.searchFileFromDir(xmlFile, variationValue)
+            return nonNull(xmlFile) ? FileSearcher.searchFileFromDir(xmlFile, variationValue)
                     : FileSearcher.searchFileFromDataFolder(variationValue);
-        });
+        }
+        return null;
     }
 
     private void checkIntegrationExistence(final Object integration, final Class<?> name) {
@@ -593,7 +595,10 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateExistsDatasets(final Migrate migrate) {
         List<String> datasets = migrate.getDataset();
         StorageName storageName = migrate.getName();
-        datasets.forEach(dataset -> DatasetValidator.validateDatasetByExtension(dataset, storageName));
+        datasets.stream()
+                .map(this::validateFileExistenceInDataFolder)
+                .filter(Objects::nonNull)
+                .forEach(dataset -> DatasetValidator.validateDatasetByExtension(dataset.getName(), storageName));
     }
 
     private void validateElasticsearchCommand(final File xmlFile, final Elasticsearch elasticsearch) {

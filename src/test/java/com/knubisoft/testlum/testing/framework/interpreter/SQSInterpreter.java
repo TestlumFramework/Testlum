@@ -54,7 +54,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         final AtomicInteger commandId = new AtomicInteger();
         for (Object action : sqs.getSendOrReceive()) {
             LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action);
-            CommandResult commandResult = ResultUtil.newCommandResultInstance(commandId.incrementAndGet());
+            CommandResult commandResult = ResultUtil.newCommandResultInstance(dependencies.getPosition().get());
             subCommandsResult.add(commandResult);
             processEachAction(action, sqs.getAlias(), commandResult);
         }

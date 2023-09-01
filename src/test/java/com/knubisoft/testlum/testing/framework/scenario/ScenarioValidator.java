@@ -11,7 +11,6 @@ import com.knubisoft.testlum.testing.framework.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.SendGridUtil;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.framework.validator.XMLValidator;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
 import com.knubisoft.testlum.testing.model.global_config.Api;
@@ -128,7 +127,6 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NOT_ENABLED_NATIVE_DEVICE;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_VALUE_FOUND_FOR_KEY;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SAME_APPIUM_URL;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SAME_MOBILE_DEVICES;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF;
@@ -472,24 +470,11 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private File validateFileNamesIfVariations(final File xmlFile, final String fileName) {
-        for (Map<String, String> variationsMap : variationList) {
-            if (variationsMap.containsKey(fileName)) {
-                String variationValue = GlobalVariations.getVariationValue(fileName, variationsMap);
-                return nonNull(xmlFile) ? FileSearcher.searchFileFromDir(xmlFile, variationValue)
-                        : FileSearcher.searchFileFromDataFolder(variationValue);
-            }
-        }
-        throw new IllegalArgumentException(
-                String.format(NO_VALUE_FOUND_FOR_KEY, fileName, prettifyVariationsList(variationList)));
-    }
-
-    private String prettifyVariationsList(final List<Map<String, String>> variationsList) {
-        String variations = variationsList.stream()
-                .map(map -> map.entrySet().stream()
-                        .map(entry -> entry.getKey() + ": " + entry.getValue())
-                        .collect(Collectors.joining(", ", "{ ", " }")))
-                .collect(Collectors.joining("\n"));
-        return StringPrettifier.cut(variations);
+        String variationValue = variationList.stream()
+                .map(variationsMap -> GlobalVariations.getVariationValue(fileName, variationsMap))
+                .findFirst().get();
+        return nonNull(xmlFile) ? FileSearcher.searchFileFromDir(xmlFile, variationValue)
+                : FileSearcher.searchFileFromDataFolder(variationValue);
     }
 
     private void checkIntegrationExistence(final Object integration, final Class<?> name) {

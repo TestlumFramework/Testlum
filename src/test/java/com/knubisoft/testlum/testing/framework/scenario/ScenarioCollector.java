@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_NOT_FOUND;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_VALUE_FOUND_IN_VARIATIONS;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -86,7 +85,6 @@ public class ScenarioCollector {
         getScenarioVariations(xmlFile, scenario);
         updateScenario(scenario);
         scenarioValidator.validate(scenario, xmlFile);
-        this.variationFileName = StringUtils.EMPTY;
         return scenario;
     }
 
@@ -156,15 +154,11 @@ public class ScenarioCollector {
     private Include getIncludeCommand(final AbstractCommand command) {
         Include include = (Include) command;
         if (StringUtils.isNotBlank(variationFileName)) {
-            List<Map<String, String>> variationsList = GlobalVariations.getVariations(variationFileName);
-            for (Map<String, String> variationMap : variationsList) {
-                String variationValue = GlobalVariations.getVariationValue(include.getScenario(), variationMap);
-                if (variationMap.containsValue(variationValue)) {
-                    return (Include) InjectionUtil.injectObjectVariation(command, variationMap);
-                }
-                throw new IllegalArgumentException(
-                        String.format(NO_VALUE_FOUND_IN_VARIATIONS, variationValue, variationMap));
-            }
+            List<Map<String, String>> variationList = GlobalVariations.getVariations(variationFileName);
+            include = variationList.stream()
+                    .map(variationMap -> (Include) InjectionUtil.injectObjectVariation(command, variationMap))
+                    .findFirst().get();
+            this.variationFileName = null;
         }
         return include;
     }

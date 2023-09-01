@@ -3,8 +3,8 @@ package com.knubisoft.testlum.testing.framework.util;
 import com.github.romankh3.image.comparison.ImageComparison;
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.Rectangle;
-import com.knubisoft.testlum.testing.model.scenario.Element;
 import com.knubisoft.testlum.testing.model.scenario.FullScreen;
+import com.knubisoft.testlum.testing.model.scenario.Part;
 import lombok.experimental.UtilityClass;
 
 import java.awt.Color;
@@ -20,7 +20,7 @@ public class ImageComparator {
     private static final int OPACITY_PERCENT = 50;
 
     public ImageComparisonResult compare(final FullScreen fullScreen,
-                                         final Element element,
+                                         final Part part,
                                          final BufferedImage expectedImage,
                                          final BufferedImage actualImage,
                                          final List<Rectangle> excludedElements) {
@@ -30,8 +30,8 @@ public class ImageComparator {
         }
         if (nonNull(fullScreen) && nonNull(fullScreen.getPercentage())) {
             imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENT - fullScreen.getPercentage());
-        } else if (nonNull(element) && nonNull(element.getPercentage())) {
-            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENT - element.getPercentage());
+        } else if (nonNull(part) && nonNull(part.getPercentage())) {
+            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENT - part.getPercentage());
         }
         return imageComparison.compareImages();
     }

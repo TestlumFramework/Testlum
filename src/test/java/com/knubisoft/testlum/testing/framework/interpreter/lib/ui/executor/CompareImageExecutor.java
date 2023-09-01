@@ -51,7 +51,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
         List<Rectangle> excludeList = getExcludeList(image.getFullScreen(), expected, dependencies.getDriver());
         ImageComparisonResult comparisonResult =
-                ImageComparator.compare(image.getFullScreen(), image.getElement(), expected, actual, excludeList);
+                ImageComparator.compare(image.getFullScreen(), image.getPart(), expected, actual, excludeList);
         ImageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
                 image.isHighlightDifference(), scenarioFile.getParentFile(), result);
     }
@@ -60,11 +60,11 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
                                          final Image image,
                                          final CommandResult result) throws IOException {
         if (nonNull(image.getPicture())) {
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getElement().getLocatorId());
+            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPicture().getLocatorId());
             return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
         }
-        if (nonNull(image.getElement())) {
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getElement().getLocatorId());
+        if (nonNull(image.getPart())) {
+            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocatorId());
             return ImageIO.read(UiUtil.takeScreenshot(webElement));
         }
         return ImageIO.read(UiUtil.takeScreenshot(webDriver));

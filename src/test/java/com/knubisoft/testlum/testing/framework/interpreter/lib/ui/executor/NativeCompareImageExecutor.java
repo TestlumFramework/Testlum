@@ -16,6 +16,7 @@ import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.NativeFullScreen;
 import com.knubisoft.testlum.testing.model.scenario.NativeImage;
+import com.knubisoft.testlum.testing.model.scenario.Part;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Capabilities;
@@ -65,7 +66,7 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
         if (nonNull(actual)) {
             List<Rectangle> excludeList = getExcludeList(image.getFullScreen(), expected, dependencies.getDriver());
             ImageComparisonResult comparisonResult =
-                    ImageComparator.compare(image.getFullScreen(), image.getElement(), expected, actual, excludeList);
+                    ImageComparator.compare(image.getFullScreen(), image.getPart(), expected, actual, excludeList);
             ImageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
                     image.isHighlightDifference(), scenarioFile.getParentFile(), result);
         }
@@ -77,8 +78,8 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
         if (nonNull(image.getPicture())) {
             return getElementsPicture(image, result);
         }
-        if (nonNull(image.getElement())) {
-            return getElementAsScreenshot(webDriver, image);
+        if (nonNull(image.getPart())) {
+            return getElementAsScreenshot(webDriver, image.getPart());
         }
         return ImageIO.read(UiUtil.takeScreenshot(webDriver));
     }
@@ -103,13 +104,13 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
     }
 
     private BufferedImage getElementAsScreenshot(final WebDriver webDriver,
-                                                 final NativeImage image) throws IOException {
+                                                 final Part part) throws IOException {
         if (UiType.MOBILE_BROWSER.equals(dependencies.getUiType())
                 && JavascriptUtil.executeJsScript(GET_PLATFORM_SCRIPT, webDriver).equals(IPHONE)) {
             log.info(IPHONE_ELEMENT_COMMAND_NOT_SUPPORTED);
             return null;
         }
-        WebElement webElement = UiUtil.findWebElement(dependencies, image.getElement().getLocatorId());
+        WebElement webElement = UiUtil.findWebElement(dependencies, part.getLocatorId());
         return ImageIO.read(webElement.getScreenshotAs(OutputType.FILE));
     }
 

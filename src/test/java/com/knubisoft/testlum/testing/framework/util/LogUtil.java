@@ -11,7 +11,6 @@ import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
-import com.knubisoft.testlum.testing.model.scenario.Element;
 import com.knubisoft.testlum.testing.model.scenario.Exclude;
 import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
@@ -19,6 +18,7 @@ import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.NativeImage;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
+import com.knubisoft.testlum.testing.model.scenario.Part;
 import com.knubisoft.testlum.testing.model.scenario.Picture;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
@@ -546,8 +546,8 @@ public class LogUtil {
             logCompareWithElementInfo(image.getPicture());
         } else if (nonNull(image.getFullScreen())) {
             logCompareWithFullscreen(image.getFullScreen());
-        } else if (nonNull(image.getElement())) {
-            logCompareWithPart(image.getElement());
+        } else if (nonNull(image.getPart())) {
+            logCompareWithPart(image.getPart());
         }
     }
 
@@ -558,8 +558,8 @@ public class LogUtil {
             logCompareWithElementInfo(image.getPicture());
         } else if (nonNull(image.getFullScreen())) {
             logCompareWithFullscreen(image.getFullScreen());
-        } else if (nonNull(image.getElement())) {
-            logCompareWithPart(image.getElement());
+        } else if (nonNull(image.getPart())) {
+            logCompareWithPart(image.getPart());
         }
     }
 
@@ -581,7 +581,7 @@ public class LogUtil {
         }
     }
 
-    private void logCompareWithPart(final Element part) {
+    private void logCompareWithPart(final Part part) {
         log.info(IMAGE_COMPARISON_TYPE_LOG, GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
         log.info(LOCATOR_LOG, part.getLocatorId());
         if (nonNull(part.getPercentage())) {

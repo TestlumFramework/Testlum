@@ -854,11 +854,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Element }
+     * Create an instance of {@link Part }
      * 
      */
-    public Element createElement() {
-        return new Element();
+    public Part createPart() {
+        return new Part();
     }
 
     /**

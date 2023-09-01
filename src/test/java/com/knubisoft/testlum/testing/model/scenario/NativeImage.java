@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;choice&gt;
  *         &lt;element name="fullScreen" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeFullScreen"/&gt;
  *         &lt;element name="picture" type="{http://www.knubisoft.com/testlum/testing/model/scenario}picture"/&gt;
- *         &lt;element name="element" type="{http://www.knubisoft.com/testlum/testing/model/scenario}element"/&gt;
+ *         &lt;element name="part" type="{http://www.knubisoft.com/testlum/testing/model/scenario}part"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="file" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}imageExtension" /&gt;
  *       &lt;attribute name="highlightDifference" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "nativeImage", propOrder = {
     "fullScreen",
     "picture",
-    "element"
+    "part"
 })
 public class NativeImage
     extends AbstractUiCommand
@@ -42,7 +42,7 @@ public class NativeImage
 
     protected NativeFullScreen fullScreen;
     protected Picture picture;
-    protected Element element;
+    protected Part part;
     @XmlAttribute(name = "file", required = true)
     protected String file;
     @XmlAttribute(name = "highlightDifference")
@@ -97,27 +97,27 @@ public class NativeImage
     }
 
     /**
-     * Gets the value of the element property.
+     * Gets the value of the part property.
      * 
      * @return
      *     possible object is
-     *     {@link Element }
+     *     {@link Part }
      *     
      */
-    public Element getElement() {
-        return element;
+    public Part getPart() {
+        return part;
     }
 
     /**
-     * Sets the value of the element property.
+     * Sets the value of the part property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Element }
+     *     {@link Part }
      *     
      */
-    public void setElement(Element value) {
-        this.element = value;
+    public void setPart(Part value) {
+        this.part = value;
     }
 
     /**

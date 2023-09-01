@@ -10,7 +10,6 @@ import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
-import com.knubisoft.testlum.testing.model.scenario.Element;
 import com.knubisoft.testlum.testing.model.scenario.Exclude;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import com.knubisoft.testlum.testing.model.scenario.FullScreen;
@@ -18,6 +17,7 @@ import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
 import com.knubisoft.testlum.testing.model.scenario.NativeImage;
+import com.knubisoft.testlum.testing.model.scenario.Part;
 import com.knubisoft.testlum.testing.model.scenario.Picture;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
@@ -705,8 +705,8 @@ public class ResultUtil {
             addCompareWithElementMetaData(image.getPicture(), result);
         } else if (nonNull(image.getFullScreen())) {
             addCompareWithFullScreenMetaData(image.getFullScreen(), result);
-        } else if (nonNull(image.getElement())) {
-            addCompareWithPartMetaData(image.getElement(), result);
+        } else if (nonNull(image.getPart())) {
+            addCompareWithPartMetaData(image.getPart(), result);
         }
     }
 
@@ -717,8 +717,8 @@ public class ResultUtil {
             addCompareWithElementMetaData(image.getPicture(), result);
         } else if (nonNull(image.getFullScreen())) {
             addCompareWithFullScreenMetaData(image.getFullScreen(), result);
-        } else if (nonNull(image.getElement())) {
-            addCompareWithPartMetaData(image.getElement(), result);
+        } else if (nonNull(image.getPart())) {
+            addCompareWithPartMetaData(image.getPart(), result);
         }
     }
 
@@ -741,7 +741,7 @@ public class ResultUtil {
         }
     }
 
-    private void addCompareWithPartMetaData(final Element part,
+    private void addCompareWithPartMetaData(final Part part,
                                             final CommandResult result) {
         result.put(IMAGE_COMPARISON_TYPE, GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
         result.put(IMAGE_LOCATOR, part.getLocatorId());

@@ -303,7 +303,7 @@
                 <x:choice>
                     <x:element name="fullScreen" type="tns:fullScreen"/>
                     <x:element name="picture" type="tns:picture"/>
-                    <x:element name="element" type="tns:element"/>
+                    <x:element name="part" type="tns:part"/>
                 </x:choice>
                 <x:attribute name="file" type="tns:imageExtension" use="required"/>
                 <x:attribute name="highlightDifference" type="x:boolean" default="false"/>
@@ -317,7 +317,7 @@
                 <x:choice>
                     <x:element name="fullScreen" type="tns:nativeFullScreen"/>
                     <x:element name="picture" type="tns:picture"/>
-                    <x:element name="element" type="tns:element"/>
+                    <x:element name="part" type="tns:part"/>
                 </x:choice>
                 <x:attribute name="file" type="tns:imageExtension" use="required"/>
                 <x:attribute name="highlightDifference" type="x:boolean" default="false"/>
@@ -345,7 +345,7 @@
         <x:attribute name="attribute" type="tns:nonEmptyString" default="src"/>
     </x:complexType>
 
-    <x:complexType name="element">
+    <x:complexType name="part">
         <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
         <x:attribute name="percentage" type="tns:positiveDoubleMin0Max100"/>
     </x:complexType>

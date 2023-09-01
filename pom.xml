@@ -941,7 +941,7 @@
 
         <dependency>
             <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-shared-util</artifactId>
+            <artifactId>testlum-util</artifactId>
             <version>1.0</version>
         </dependency>
 

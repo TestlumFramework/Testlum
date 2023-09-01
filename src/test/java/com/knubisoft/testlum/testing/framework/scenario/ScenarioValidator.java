@@ -448,15 +448,16 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .anyMatch(nativeUdids::contains);
     }
 
-    private File validateFileExistenceInDataFolder(final String fileName) {
+    private String validateFileExistenceInDataFolder(final String fileName) {
         if (isNotBlank(fileName) && fileName.trim().contains(DOUBLE_OPEN_BRACE)
                 && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && !variationList.isEmpty()) {
-            return validateFileNamesIfVariations(null, fileName);
-        } else if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
-                && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {
-            return FileSearcher.searchFileFromDataFolder(fileName);
+            return validateFileNamesIfVariations(null, fileName).getName();
         }
-        return null;
+        if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
+                && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {
+            return FileSearcher.searchFileFromDataFolder(fileName).getName();
+        }
+        return fileName;
     }
 
     private void validateFileIfExist(final File xmlFile, final String fileName) {
@@ -595,8 +596,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         StorageName storageName = migrate.getName();
         datasets.stream()
                 .map(this::validateFileExistenceInDataFolder)
-                .filter(Objects::nonNull)
-                .forEach(dataset -> DatasetValidator.validateDatasetByExtension(dataset.getName(), storageName));
+                .forEach(dataset -> DatasetValidator.validateDatasetByExtension(dataset, storageName));
     }
 
     private void validateElasticsearchCommand(final File xmlFile, final Elasticsearch elasticsearch) {

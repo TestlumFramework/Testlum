@@ -90,8 +90,8 @@ public class ScenarioCollector {
 
     private void getScenarioVariations(final File xmlFile, final Scenario scenario) {
         if (nonNull(scenario.getSettings().getVariations())) {
-            this.variationFileName = scenario.getSettings().getVariations();
             GlobalVariations.process(scenario, xmlFile);
+            this.variationFileName = scenario.getSettings().getVariations();
         }
     }
 

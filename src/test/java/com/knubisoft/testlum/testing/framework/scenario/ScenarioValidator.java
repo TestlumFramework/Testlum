@@ -11,6 +11,7 @@ import com.knubisoft.testlum.testing.framework.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.SendGridUtil;
+import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.framework.validator.XMLValidator;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
 import com.knubisoft.testlum.testing.model.global_config.Api;
@@ -111,7 +112,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -119,7 +119,6 @@ import java.util.stream.Stream;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOUBLE_CLOSE_BRACE;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOUBLE_OPEN_BRACE;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_ALIASES_DOESNT_MATCH;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
@@ -129,6 +128,7 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NOT_ENABLED_NATIVE_DEVICE;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_VALUE_FOUND_FOR_KEY;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SAME_APPIUM_URL;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SAME_MOBILE_DEVICES;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF;
@@ -142,7 +142,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> uiCommandValidatorsMap;
     private final Integrations integrations = GlobalTestConfigurationProvider.getDefaultIntegrations();
-    private final AtomicReference<String> variationsFileName = new AtomicReference<>(EMPTY);
+    private List<Map<String, String>> variationList = new ArrayList<>();
 
     public ScenarioValidator() {
         Map<AbstractCommandPredicate, AbstractCommandValidator> validatorMap = new HashMap<>();
@@ -382,22 +382,25 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateVariationsIfExist(scenario, xmlFile);
             validateIfContainsNativeAndMobileCommands(scenario.getCommands());
             scenario.getCommands().forEach(command -> validateCommand(command, xmlFile));
-            variationsFileName.set(EMPTY);
+            variationList = new ArrayList<>();
         }
     }
 
     private void validateVariationsIfExist(final Scenario scenario, final File xmlFile) {
         if (isNotBlank(scenario.getSettings().getVariations())) {
             GlobalVariations.process(scenario, xmlFile);
-            variationsFileName.set(scenario.getSettings().getVariations());
+            variationList.addAll(GlobalVariations.getVariations(scenario.getSettings().getVariations()));
         }
         if (scenario.getCommands().stream().anyMatch(command -> command instanceof Repeat)) {
             Repeat repeat = (Repeat) scenario.getCommands().stream()
                     .filter(command -> command instanceof Repeat)
                     .findFirst().get();
-            GlobalVariations.process(repeat);
-            variationsFileName.set(repeat.getVariations());
+            if (nonNull(repeat.getVariations())) {
+                GlobalVariations.process(repeat);
+                variationList.addAll(GlobalVariations.getVariations(repeat.getVariations()));
+            }
         }
+
     }
 
     private void validateIfContainsNativeAndMobileCommands(final List<AbstractCommand> commands) {
@@ -450,7 +453,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateFileExistenceInDataFolder(final String fileName) {
         if (isNotBlank(fileName) && fileName.trim().contains(DOUBLE_OPEN_BRACE)
-                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && isNotBlank(variationsFileName.get())) {
+                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && !variationList.isEmpty()) {
             validateFileNamesIfVariations(null, fileName);
         } else if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
                 && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {
@@ -460,7 +463,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateFileIfExist(final File xmlFile, final String fileName) {
         if (isNotBlank(fileName) && fileName.trim().contains(DOUBLE_OPEN_BRACE)
-                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && isNotBlank(variationsFileName.get())) {
+                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && !variationList.isEmpty()) {
             validateFileNamesIfVariations(xmlFile, fileName);
         } else if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
                 && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {
@@ -469,12 +472,25 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateFileNamesIfVariations(final File xmlFile, final String fileName) {
-        List<Map<String, String>> variationsList = GlobalVariations.getVariations(variationsFileName.get());
-        variationsList.forEach(variationsMap -> {
-            String variationValue = GlobalVariations.getVariationValue(fileName, variationsMap);
-            File file = nonNull(xmlFile) ? FileSearcher.searchFileFromDir(xmlFile, variationValue)
-                    : FileSearcher.searchFileFromDataFolder(variationValue);
-        });
+        for (Map<String, String> variationsMap : variationList) {
+            if (variationsMap.containsKey(fileName)) {
+                String variationValue = GlobalVariations.getVariationValue(fileName, variationsMap);
+                File file = nonNull(xmlFile) ? FileSearcher.searchFileFromDir(xmlFile, variationValue)
+                        : FileSearcher.searchFileFromDataFolder(variationValue);
+                return;
+            }
+        }
+        throw new IllegalArgumentException(
+                String.format(NO_VALUE_FOUND_FOR_KEY, fileName, prettifyVariationsList(variationList)));
+    }
+
+    private String prettifyVariationsList(final List<Map<String, String>> variationsList) {
+        String variations = variationsList.stream()
+                .map(map -> map.entrySet().stream()
+                        .map(entry -> entry.getKey() + ": " + entry.getValue())
+                        .collect(Collectors.joining(", ", "{ ", " }")))
+                .collect(Collectors.joining("\n"));
+        return StringPrettifier.cut(variations);
     }
 
     private void checkIntegrationExistence(final Object integration, final Class<?> name) {

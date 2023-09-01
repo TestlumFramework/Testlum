@@ -20,9 +20,6 @@ public class GlobalTestConfigValidator implements XMLValidator<GlobalTestConfigu
         if (Objects.isNull(globalTestConfig.getSubscription())) {
             throw new DefaultFrameworkException("Cannot find customer subscription configuration");
         }
-        if ("free".equalsIgnoreCase(globalTestConfig.getSubscription().getType().value())) {
-            return;
-        }
         try {
             subscriptionValidator.checkSubscription(globalTestConfig);
         } catch (Exception e) {

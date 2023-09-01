@@ -15,7 +15,6 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="subscriptionType"&gt;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
  *     &lt;enumeration value="stripe"/&gt;
- *     &lt;enumeration value="free"/&gt;
  *   &lt;/restriction&gt;
  * &lt;/simpleType&gt;
  * </pre>
@@ -26,9 +25,7 @@ import javax.xml.bind.annotation.XmlType;
 public enum SubscriptionType {
 
     @XmlEnumValue("stripe")
-    STRIPE("stripe"),
-    @XmlEnumValue("free")
-    FREE("free");
+    STRIPE("stripe");
     private final String value;
 
     SubscriptionType(String v) {

@@ -43,7 +43,6 @@
     <x:simpleType name="subscriptionType">
         <x:restriction base="x:string">
             <x:enumeration value="stripe"/>
-            <x:enumeration value="free"/>
         </x:restriction>
     </x:simpleType>
 

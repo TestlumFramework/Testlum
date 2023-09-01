@@ -395,8 +395,10 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             Repeat repeat = (Repeat) scenario.getCommands().stream()
                     .filter(command -> command instanceof Repeat)
                     .findFirst().get();
-            GlobalVariations.process(repeat);
-            variationList.addAll(GlobalVariations.getVariations(repeat.getVariations()));
+            if (nonNull(repeat.getVariations())) {
+                GlobalVariations.process(repeat);
+                variationList.addAll(GlobalVariations.getVariations(repeat.getVariations()));
+            }
         }
 
     }

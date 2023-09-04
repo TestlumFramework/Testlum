@@ -349,22 +349,6 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="scrollNative">
-        <x:complexContent>
-            <x:extension base="tns:commandWithOptionalLocator">
-                <x:attribute name="type" type="tns:scrollType" use="required"/>
-                <x:attribute name="direction" type="tns:scrollDirection" default="down"/>
-                <x:attribute name="value" type="x:int" use="required"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="scrollToNative">
-        <x:complexContent>
-            <x:extension base="tns:commandWithLocator"/>
-        </x:complexContent>
-    </x:complexType>
-
     <x:complexType name="refresh">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand"/>

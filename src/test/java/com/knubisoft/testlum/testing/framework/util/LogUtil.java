@@ -24,7 +24,6 @@ import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
-import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
@@ -125,7 +124,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_DIRECTION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_LOCATOR;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_TYPE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_VALUE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SEND_ACTION;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SERVER_BAD_GATEWAY_RESPONSE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SERVER_ERROR_RESPONSE_LOG;
@@ -649,15 +647,6 @@ public class LogUtil {
         log.info(SWIPE_VALUE, swipeNative.getPercent());
         if (isNotBlank(swipeNative.getLocatorId())) {
             log.info(LOCATOR_LOG, swipeNative.getLocatorId());
-        }
-    }
-
-    public void logScrollNativeInfo(final ScrollNative scrollNative) {
-        log.info(SCROLL_TYPE, scrollNative.getType());
-        log.info(SCROLL_DIRECTION_LOG, scrollNative.getDirection());
-        log.info(SCROLL_VALUE, scrollNative.getValue());
-        if (isNotBlank(scrollNative.getLocatorId())) {
-            log.info(SCROLL_LOCATOR, scrollNative.getLocatorId());
         }
     }
 }

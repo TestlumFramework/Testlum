@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_SQS_PROCESSING;
@@ -51,7 +50,6 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         Sqs sqs = injectCommand(o);
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
-        final AtomicInteger commandId = new AtomicInteger();
         for (Object action : sqs.getSendOrReceive()) {
             LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action);
             CommandResult commandResult = ResultUtil.newCommandResultInstance(dependencies.getPosition().get());

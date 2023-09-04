@@ -11,7 +11,6 @@ import com.knubisoft.testlum.testing.framework.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.SendGridUtil;
-import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.framework.validator.XMLValidator;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
 import com.knubisoft.testlum.testing.model.global_config.Api;
@@ -128,7 +127,6 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NOT_ENABLED_NATIVE_DEVICE;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_VALUE_FOUND_FOR_KEY;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SAME_APPIUM_URL;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SAME_MOBILE_DEVICES;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF;
@@ -400,7 +398,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 variationList.addAll(GlobalVariations.getVariations(repeat.getVariations()));
             }
         }
-
     }
 
     private void validateIfContainsNativeAndMobileCommands(final List<AbstractCommand> commands) {
@@ -451,14 +448,16 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .anyMatch(nativeUdids::contains);
     }
 
-    private void validateFileExistenceInDataFolder(final String fileName) {
+    private String validateFileExistenceInDataFolder(final String fileName) {
         if (isNotBlank(fileName) && fileName.trim().contains(DOUBLE_OPEN_BRACE)
                 && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && !variationList.isEmpty()) {
-            validateFileNamesIfVariations(null, fileName);
-        } else if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
-                && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {
-            FileSearcher.searchFileFromDataFolder(fileName);
+            return validateFileNamesIfVariations(null, fileName).getName();
         }
+        if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
+                && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {
+            return FileSearcher.searchFileFromDataFolder(fileName).getName();
+        }
+        return fileName;
     }
 
     private void validateFileIfExist(final File xmlFile, final String fileName) {
@@ -471,26 +470,12 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
     }
 
-    private void validateFileNamesIfVariations(final File xmlFile, final String fileName) {
-        for (Map<String, String> variationsMap : variationList) {
-            if (variationsMap.containsKey(fileName)) {
-                String variationValue = GlobalVariations.getVariationValue(fileName, variationsMap);
-                File file = nonNull(xmlFile) ? FileSearcher.searchFileFromDir(xmlFile, variationValue)
-                        : FileSearcher.searchFileFromDataFolder(variationValue);
-                return;
-            }
-        }
-        throw new IllegalArgumentException(
-                String.format(NO_VALUE_FOUND_FOR_KEY, fileName, prettifyVariationsList(variationList)));
-    }
-
-    private String prettifyVariationsList(final List<Map<String, String>> variationsList) {
-        String variations = variationsList.stream()
-                .map(map -> map.entrySet().stream()
-                        .map(entry -> entry.getKey() + ": " + entry.getValue())
-                        .collect(Collectors.joining(", ", "{ ", " }")))
-                .collect(Collectors.joining("\n"));
-        return StringPrettifier.cut(variations);
+    private File validateFileNamesIfVariations(final File xmlFile, final String fileName) {
+        String variationValue = variationList.stream()
+                .map(variationsMap -> GlobalVariations.getVariationValue(fileName, variationsMap))
+                .findFirst().get();
+        return nonNull(xmlFile) ? FileSearcher.searchFileFromDir(xmlFile, variationValue)
+                : FileSearcher.searchFileFromDataFolder(variationValue);
     }
 
     private void checkIntegrationExistence(final Object integration, final Class<?> name) {
@@ -609,7 +594,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateExistsDatasets(final Migrate migrate) {
         List<String> datasets = migrate.getDataset();
         StorageName storageName = migrate.getName();
-        datasets.forEach(dataset -> DatasetValidator.validateDatasetByExtension(dataset, storageName));
+        datasets.stream()
+                .map(this::validateFileExistenceInDataFolder)
+                .forEach(dataset -> DatasetValidator.validateDatasetByExtension(dataset, storageName));
     }
 
     private void validateElasticsearchCommand(final File xmlFile, final Elasticsearch elasticsearch) {

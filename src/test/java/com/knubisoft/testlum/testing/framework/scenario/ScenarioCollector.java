@@ -5,7 +5,9 @@ import com.knubisoft.testlum.testing.framework.configuration.TestResourceSetting
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.parser.XMLParsers;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
+import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
+import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
@@ -14,11 +16,13 @@ import com.knubisoft.testlum.testing.model.scenario.Logout;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -30,6 +34,7 @@ public class ScenarioCollector {
 
     private final File rootTestResources;
     private final ScenarioValidator scenarioValidator;
+    private String variationFileName;
 
     public ScenarioCollector() {
         TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
@@ -77,9 +82,17 @@ public class ScenarioCollector {
 
     private Scenario convertXmlToScenario(final File xmlFile) {
         Scenario scenario = XMLParsers.forScenario().process(xmlFile);
+        getScenarioVariations(xmlFile, scenario);
         updateScenario(scenario);
         scenarioValidator.validate(scenario, xmlFile);
         return scenario;
+    }
+
+    private void getScenarioVariations(final File xmlFile, final Scenario scenario) {
+        if (nonNull(scenario.getSettings().getVariations())) {
+            GlobalVariations.process(scenario, xmlFile);
+            this.variationFileName = scenario.getSettings().getVariations();
+        }
     }
 
     private void updateScenario(final Scenario scenario) {
@@ -132,10 +145,22 @@ public class ScenarioCollector {
     }
 
     private void addIncludeCommands(final List<AbstractCommand> updatedCommands, final AbstractCommand command) {
-        Include include = (Include) command;
+        Include include = getIncludeCommand(command);
         Scenario includedScenario = findIncludedScenarioAndParse(include);
         updateScenario(includedScenario);
         updatedCommands.addAll(includedScenario.getCommands());
+    }
+
+    private Include getIncludeCommand(final AbstractCommand command) {
+        Include include = (Include) command;
+        if (StringUtils.isNotBlank(variationFileName)) {
+            List<Map<String, String>> variationList = GlobalVariations.getVariations(variationFileName);
+            include = variationList.stream()
+                    .map(variationMap -> (Include) InjectionUtil.injectObjectVariation(command, variationMap))
+                    .findFirst().get();
+            this.variationFileName = null;
+        }
+        return include;
     }
 
     private Scenario findIncludedScenarioAndParse(final Include include) {

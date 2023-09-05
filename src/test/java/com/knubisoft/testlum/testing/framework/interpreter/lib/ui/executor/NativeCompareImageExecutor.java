@@ -58,7 +58,7 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
         BufferedImage expected = ImageIO.read(FileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
         BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
         ImageComparisonResult comparisonResult =
-                ImageComparator.compareNative(image, expected, cutStatusBar(actual, dependencies.getDriver()));
+                ImageComparator.compareNative(image, expected, cutStatusBar(image, actual, dependencies.getDriver()));
         ImageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
                 image.isHighlightDifference(), scenarioFile.getParentFile(), result);
     }
@@ -103,9 +103,11 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
         return ImageIO.read(webElement.getScreenshotAs(OutputType.FILE));
     }
 
-    private BufferedImage cutStatusBar(final BufferedImage screenshot, final WebDriver driver) {
+    private BufferedImage cutStatusBar(final NativeImage image,
+                                       final BufferedImage screenshot,
+                                       final WebDriver driver) {
         Capabilities capabilities = ((RemoteWebDriver) driver).getCapabilities();
-        if (isNativeOrIosMobilebrowser(capabilities)) {
+        if (nonNull(image.getFullScreen()) && isNativeOrIosMobilebrowser(capabilities)) {
             int statusBarHeight = getStatusBarHeight(driver);
             return screenshot.getSubimage(0, statusBarHeight, screenshot.getWidth(),
                     screenshot.getHeight() - statusBarHeight);

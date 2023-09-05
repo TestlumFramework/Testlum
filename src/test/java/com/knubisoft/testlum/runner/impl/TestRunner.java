@@ -3,6 +3,7 @@ package com.knubisoft.testlum.runner.impl;
 import com.knubisoft.testlum.runner.Runner;
 import com.knubisoft.testlum.testing.RootTest;
 import com.knubisoft.testlum.testing.framework.SystemInfo;
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.util.ArgumentsUtils;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
@@ -15,6 +16,7 @@ import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import static com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider.provide;
+import static java.util.Objects.nonNull;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
 public class TestRunner implements Runner {
@@ -31,10 +33,20 @@ public class TestRunner implements Runner {
         String configFileName = ArgumentsUtils.getConfigurationFileName(args[0]);
         String pathToTestResources = ArgumentsUtils.getPathToTestResources(args[1]);
         TestResourceSettings.init(configFileName, pathToTestResources);
+        initLocatorsFolder();
         TestExecutionSummary testExecutionSummary = runTests();
         LogUtil.logTestExecutionSummary(testExecutionSummary);
         if (SystemInfo.TESTING_IN_PIPELINE) {
             ResultUtil.writeFullTestCycleExecutionResult(testExecutionSummary);
+        }
+    }
+
+    private void initLocatorsFolder() {
+        if (GlobalTestConfigurationProvider.getUiConfigs().values().stream()
+                .anyMatch(uiConfig -> nonNull(uiConfig.getWeb()) && uiConfig.getWeb().isEnabled()
+                        || nonNull(uiConfig.getNative()) && uiConfig.getNative().isEnabled()
+                        || nonNull(uiConfig.getMobilebrowser()) && uiConfig.getMobilebrowser().isEnabled())) {
+            TestResourceSettings.getInstance().initLocatorsFolder();
         }
     }
 

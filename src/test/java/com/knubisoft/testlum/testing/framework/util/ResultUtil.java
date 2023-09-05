@@ -23,7 +23,6 @@ import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
 import com.knubisoft.testlum.testing.model.scenario.RmqHeaders;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
-import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
@@ -129,7 +128,6 @@ public class ResultUtil {
     public static final String ADDITIONAL_INFO = "Additional info";
     public static final String IMAGE_ATTACHED_TO_STEP = "Actual image attached to report step";
     public static final String IMAGE_MISMATCH_PERCENT = "Expected image size";
-    public static final String SCROLL_TO_ELEMENT = "Scrolling to element with locator id";
     private static final String FROM_LOCATOR = "From element with locator";
     private static final String FROM_LOCAL_FILE = "From local file";
     private static final String TO_LOCATOR = "To element with locator";
@@ -575,16 +573,6 @@ public class ResultUtil {
         if (ScrollType.INNER == scroll.getType()) {
             result.put(LOCATOR_FOR_SCROLL, scroll.getLocatorId());
         }
-    }
-
-    public void addScrollNativeMetaDada(final ScrollNative scrollNative,
-                                        final CommandResult result) {
-        result.put(SCROLL_TYPE, scrollNative.getType());
-        if (ScrollType.INNER == scrollNative.getType()) {
-            result.put(LOCATOR_FOR_SCROLL, scrollNative.getLocatorId());
-        }
-        result.put(SCROLL_DIRECTION, scrollNative.getDirection());
-        result.put(VALUE, scrollNative.getValue());
     }
 
     public void addDragAndDropMetaDada(final DragAndDrop dragAndDrop,

@@ -41,7 +41,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
 import static java.util.Objects.nonNull;
@@ -69,10 +68,9 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         Kafka kafka = injectCommand(o);
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
-        final AtomicInteger commandId = new AtomicInteger();
         for (Object action : kafka.getSendOrReceive()) {
             LogUtil.logSubCommand(dependencies.getPosition().incrementAndGet(), action);
-            CommandResult commandResult = ResultUtil.newCommandResultInstance(commandId.incrementAndGet());
+            CommandResult commandResult = ResultUtil.newCommandResultInstance(dependencies.getPosition().get());
             subCommandsResult.add(commandResult);
             processEachAction(action, kafka.getAlias(), commandResult);
         }

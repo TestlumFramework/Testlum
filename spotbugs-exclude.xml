@@ -3,6 +3,15 @@
     <Match>
         <Bug pattern="UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/> <!--@PostConstruct-->
     </Match>
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP" />
+    </Match>
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP2" />
+    </Match>
+    <Match>
+        <Bug pattern="MS_EXPOSE_REP" />
+    </Match>S
 
     <Match>
         <Class name="com.knubisoft.testlum.testing.framework.scenario.ScenarioRunner"/>
@@ -58,5 +67,15 @@
     <Match>
         <Class name="com.knubisoft.testlum.testing.framework.vault.VaultService"/>
         <Bug pattern="SE_NO_SERIALVERSIONID"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor"/>
+        <Bug pattern="DM_CONVERT_CASE"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor.WebVariableExecutor"/>
+        <Bug pattern="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR"/>
     </Match>
 </FindBugsFilter>

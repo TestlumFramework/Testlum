@@ -11,7 +11,7 @@
     </Match>
     <Match>
         <Bug pattern="MS_EXPOSE_REP" />
-    </Match>S
+    </Match>
 
     <Match>
         <Class name="com.knubisoft.testlum.testing.framework.scenario.ScenarioRunner"/>

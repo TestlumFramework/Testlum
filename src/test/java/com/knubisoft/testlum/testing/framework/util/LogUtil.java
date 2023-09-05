@@ -15,6 +15,7 @@ import com.knubisoft.testlum.testing.model.scenario.Exclude;
 import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
+import com.knubisoft.testlum.testing.model.scenario.NativeFullScreen;
 import com.knubisoft.testlum.testing.model.scenario.NativeImage;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
@@ -578,6 +579,13 @@ public class LogUtil {
             log.info(IMAGE_EXCLUDED_ELEMENT_LOG, StringUtils.join(fullScreen.getExclude().stream()
                     .map(Exclude::getLocatorId)
                     .collect(Collectors.joining(COMMA + SPACE))));
+        }
+    }
+
+    private void logCompareWithFullscreen(final NativeFullScreen fullScreen) {
+        log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_COMPARE);
+        if (nonNull(fullScreen.getPercentage())) {
+            log.info(IMAGE_MATCH_PERCENTAGE_LOG, fullScreen.getPercentage());
         }
     }
 

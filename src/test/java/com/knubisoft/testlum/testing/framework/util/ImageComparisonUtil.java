@@ -5,8 +5,6 @@ import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.ImageComparisonState;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FilenameUtils;
@@ -85,12 +83,5 @@ public class ImageComparisonUtil {
         return format("%s%s.%s", TestResourceSettings.ACTUAL_IMAGE_PREFIX,
                 FilenameUtils.getBaseName(expectedImageFullName),
                 FilenameUtils.getExtension(expectedImageFullName));
-    }
-
-    @Getter
-    @RequiredArgsConstructor
-    public static class Scale {
-        private final double scaleX;
-        private final double scaleY;
     }
 }

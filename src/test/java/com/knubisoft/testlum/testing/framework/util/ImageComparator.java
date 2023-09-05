@@ -3,8 +3,8 @@ package com.knubisoft.testlum.testing.framework.util;
 import com.github.romankh3.image.comparison.ImageComparison;
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.Rectangle;
-import com.knubisoft.testlum.testing.model.scenario.FullScreen;
-import com.knubisoft.testlum.testing.model.scenario.Part;
+import com.knubisoft.testlum.testing.model.scenario.Image;
+import com.knubisoft.testlum.testing.model.scenario.NativeImage;
 import lombok.experimental.UtilityClass;
 
 import java.awt.Color;
@@ -19,8 +19,7 @@ public class ImageComparator {
     private static final double MAX_PERCENT = 100;
     private static final int OPACITY_PERCENT = 50;
 
-    public ImageComparisonResult compare(final FullScreen fullScreen,
-                                         final Part part,
+    public ImageComparisonResult compare(final Image image,
                                          final BufferedImage expectedImage,
                                          final BufferedImage actualImage,
                                          final List<Rectangle> excludedElements) {
@@ -28,10 +27,22 @@ public class ImageComparator {
         if (!excludedElements.isEmpty()) {
             setExcludedElements(excludedElements, imageComparison);
         }
-        if (nonNull(fullScreen) && nonNull(fullScreen.getPercentage())) {
-            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENT - fullScreen.getPercentage());
-        } else if (nonNull(part) && nonNull(part.getPercentage())) {
-            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENT - part.getPercentage());
+        if (nonNull(image.getFullScreen()) && nonNull(image.getFullScreen().getPercentage())) {
+            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENT - image.getFullScreen().getPercentage());
+        } else if (nonNull(image.getPart()) && nonNull(image.getPart().getPercentage())) {
+            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENT - image.getPart().getPercentage());
+        }
+        return imageComparison.compareImages();
+    }
+
+    public ImageComparisonResult compareNative(final NativeImage image,
+                                               final BufferedImage expectedImage,
+                                               final BufferedImage actualImage) {
+        ImageComparison imageComparison = new ImageComparison(expectedImage, actualImage);
+        if (nonNull(image.getFullScreen()) && nonNull(image.getFullScreen().getPercentage())) {
+            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENT - image.getFullScreen().getPercentage());
+        } else if (nonNull(image.getPart()) && nonNull(image.getPart().getPercentage())) {
+            imageComparison.setAllowingPercentOfDifferentPixels(MAX_PERCENT - image.getPart().getPercentage());
         }
         return imageComparison.compareImages();
     }

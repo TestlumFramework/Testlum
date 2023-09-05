@@ -225,8 +225,4 @@ public final class LogMessage {
     public static final String EXTRACT_THEN_COMPARE = "Extract picture from web element then compare";
     public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a full screenshot then compare";
     public static final String GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE = "Get element as screenshot then compare";
-    public static final String NATIVE_PICTURE_COMMAND_NOT_SUPPORTED = ANSI_ORANGE
-            + "Native testing does not support <picture> command" + ANSI_RESET;
-    public static final String IPHONE_ELEMENT_COMMAND_NOT_SUPPORTED = ANSI_ORANGE
-        + "iPhone devices does not support <element> command" + ANSI_RESET;
 }

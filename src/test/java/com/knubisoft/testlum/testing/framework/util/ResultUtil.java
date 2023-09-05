@@ -16,6 +16,7 @@ import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
+import com.knubisoft.testlum.testing.model.scenario.NativeFullScreen;
 import com.knubisoft.testlum.testing.model.scenario.NativeImage;
 import com.knubisoft.testlum.testing.model.scenario.Part;
 import com.knubisoft.testlum.testing.model.scenario.Picture;
@@ -728,8 +729,7 @@ public class ResultUtil {
         result.put(IMAGE_SOURCE_ATT, element.getAttribute());
     }
 
-    private void addCompareWithFullScreenMetaData(final FullScreen fullScreen,
-                                                  final CommandResult result) {
+    private void addCompareWithFullScreenMetaData(final FullScreen fullScreen, final CommandResult result) {
         result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
         if (nonNull(fullScreen.getPercentage())) {
             result.put(MATCH_PERCENTAGE, fullScreen.getPercentage());
@@ -738,6 +738,13 @@ public class ResultUtil {
             result.put(EXCLUDED_ELEMENT, StringUtils.join(fullScreen.getExclude().stream()
                     .map(Exclude::getLocatorId)
                     .collect(Collectors.joining(COMMA + SPACE))));
+        }
+    }
+
+    private void addCompareWithFullScreenMetaData(final NativeFullScreen fullScreen, final CommandResult result) {
+        result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
+        if (nonNull(fullScreen.getPercentage())) {
+            result.put(MATCH_PERCENTAGE, fullScreen.getPercentage());
         }
     }
 

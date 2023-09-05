@@ -333,11 +333,7 @@
     </x:complexType>
 
     <x:complexType name="nativeFullScreen">
-        <x:complexContent>
-            <x:extension base="tns:fullScreen">
-                <x:attribute name="excludeStatusBar" type="x:boolean" default="false"/>
-            </x:extension>
-        </x:complexContent>
+        <x:attribute name="percentage" type="tns:positiveDoubleMin0Max100"/>
     </x:complexType>
 
     <x:complexType name="picture">

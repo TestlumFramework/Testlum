@@ -14,6 +14,8 @@ import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.Image;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Dimension;
@@ -50,8 +52,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         BufferedImage expected = ImageIO.read(FileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
         BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
         List<Rectangle> excludeList = getExcludeList(image.getFullScreen(), expected, dependencies.getDriver());
-        ImageComparisonResult comparisonResult =
-                ImageComparator.compare(image.getFullScreen(), image.getPart(), expected, actual, excludeList);
+        ImageComparisonResult comparisonResult = ImageComparator.compare(image, expected, actual, excludeList);
         ImageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
                 image.isHighlightDifference(), scenarioFile.getParentFile(), result);
     }
@@ -83,7 +84,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
                                            final BufferedImage expected,
                                            final WebDriver driver) {
         if (nonNull(fullScreen) && !fullScreen.getExclude().isEmpty()) {
-            ImageComparisonUtil.Scale scale = getScaling(expected, driver);
+            Scale scale = getScaling(expected, driver);
             return fullScreen.getExclude().stream()
                     .map(element -> getElementArea(element.getLocatorId(), scale))
                     .collect(Collectors.toList());
@@ -91,21 +92,28 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         return Collections.emptyList();
     }
 
-    private ImageComparisonUtil.Scale getScaling(final BufferedImage screen, final WebDriver driver) {
+    private Scale getScaling(final BufferedImage screen, final WebDriver driver) {
         Dimension windowSize = driver.manage().window().getSize();
         if (screen.getWidth() / windowSize.getWidth() > 1 || screen.getHeight() / windowSize.getHeight() > 1) {
-            return new ImageComparisonUtil.Scale(Math.ceil((double) screen.getWidth() / windowSize.getWidth()),
+            return new Scale(Math.ceil((double) screen.getWidth() / windowSize.getWidth()),
                     Math.ceil((double) screen.getHeight() / (windowSize.getHeight())));
         }
-        return new ImageComparisonUtil.Scale(1, 1);
+        return new Scale(1, 1);
     }
 
-    private Rectangle getElementArea(final String locatorId, final ImageComparisonUtil.Scale scale) {
+    private Rectangle getElementArea(final String locatorId, final Scale scale) {
         org.openqa.selenium.Rectangle seleniumRectangle = UiUtil.findWebElement(dependencies, locatorId).getRect();
         double x = seleniumRectangle.getX() * scale.getScaleX();
         double y = seleniumRectangle.getY() * scale.getScaleY();
         double width = (seleniumRectangle.getX() + seleniumRectangle.getWidth()) * scale.getScaleX();
         double height = (seleniumRectangle.getY() + seleniumRectangle.getHeight()) * scale.getScaleY();
         return new Rectangle((int) x, (int) y, (int) width, (int) height);
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    private static class Scale {
+        private final double scaleX;
+        private final double scaleY;
     }
 }

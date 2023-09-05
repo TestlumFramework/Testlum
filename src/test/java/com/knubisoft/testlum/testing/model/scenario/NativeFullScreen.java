@@ -15,9 +15,9 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="nativeFullScreen"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}fullScreen"&gt;
- *       &lt;attribute name="excludeStatusBar" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
- *     &lt;/extension&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;attribute name="percentage" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveDoubleMin0Max100" /&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -26,39 +26,33 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "nativeFullScreen")
-public class NativeFullScreen
-    extends FullScreen
-{
+public class NativeFullScreen {
 
-    @XmlAttribute(name = "excludeStatusBar")
-    protected Boolean excludeStatusBar;
+    @XmlAttribute(name = "percentage")
+    protected Double percentage;
 
     /**
-     * Gets the value of the excludeStatusBar property.
+     * Gets the value of the percentage property.
      * 
      * @return
      *     possible object is
-     *     {@link Boolean }
+     *     {@link Double }
      *     
      */
-    public boolean isExcludeStatusBar() {
-        if (excludeStatusBar == null) {
-            return false;
-        } else {
-            return excludeStatusBar;
-        }
+    public Double getPercentage() {
+        return percentage;
     }
 
     /**
-     * Sets the value of the excludeStatusBar property.
+     * Sets the value of the percentage property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Boolean }
+     *     {@link Double }
      *     
      */
-    public void setExcludeStatusBar(Boolean value) {
-        this.excludeStatusBar = value;
+    public void setPercentage(Double value) {
+        this.percentage = value;
     }
 
 }

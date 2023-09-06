@@ -1102,6 +1102,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link QueryParam }
+     * 
+     */
+    public QueryParam createQueryParam() {
+        return new QueryParam();
+    }
+
+    /**
      * Create an instance of {@link SendgridGet }
      * 
      */

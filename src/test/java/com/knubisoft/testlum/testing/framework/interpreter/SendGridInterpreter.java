@@ -2,7 +2,6 @@ package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
@@ -27,12 +26,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_HTTP_METHOD;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ACTUAL_CODE;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONTENT_TO_SEND;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.EXPECTED_CODE;
@@ -41,33 +38,23 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.EXPECTED_C
 @InterpreterForClass(Sendgrid.class)
 public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
-    private static final String START_DATE = "start_date";
-    private final Map<Method, String> sgEndpoints;
-
     @Autowired(required = false)
     private Map<AliasEnv, SendGrid> sendGrid;
 
     public SendGridInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
-        final Map<Method, String> endpoints = new HashMap<>(5);
-        endpoints.put(Method.GET, "stats");
-        endpoints.put(Method.PATCH, "templates/%s");
-        endpoints.put(Method.PUT, "contacts");
-        endpoints.put(Method.POST, "mail/send");
-        endpoints.put(Method.DELETE, "templates/%s");
-        sgEndpoints = Collections.unmodifiableMap(endpoints);
     }
 
     @Override
     protected void acceptImpl(final Sendgrid o, final CommandResult result) {
         Sendgrid sendgrid = injectCommand(o);
         SendGridUtil.SendGridMethodMetadata metadata = SendGridUtil.getSendgridMethodMetadata(sendgrid);
-        String endpoint = getEndpoint(metadata.getHttpMethod());
+        String endpoint = metadata.getHttpInfo().getEndpoint();
         SendgridInfo sendgridInfo = metadata.getHttpInfo();
         Method method = metadata.getHttpMethod();
         Map<String, String> headers = getHeaders(sendgridInfo);
         ResultUtil.addSendGridMetaData(sendgrid.getAlias(), method.name(), headers, endpoint, result);
-        Response actual = getActual(sendgridInfo, method, sendgrid.getAlias(), endpoint, sendgrid, result);
+        Response actual = getActual(sendgridInfo, method, sendgrid.getAlias(), endpoint, result);
         ApiResponse expected = getExpected(sendgridInfo, headers);
         compare(expected, actual, result);
         setContextBody(actual.getBody());
@@ -78,7 +65,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         String body = StringUtils.isBlank(response.getFile())
                 ? DelimiterConstant.EMPTY
                 : getContentIfFile(response.getFile());
-        return new ApiResponse(response.getCode(), headers, body);
+        return new ApiResponse(response.getCode(), headers, StringPrettifier.asJsonResult(body));
     }
 
     @SneakyThrows
@@ -86,10 +73,9 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
                                final Method method,
                                final String alias,
                                final String endpoint,
-                               final Sendgrid sendgrid,
                                final CommandResult result) {
         String body = getBody(sendgridInfo, method);
-        Request request = getRequest(body, method, sendgrid, endpoint);
+        Request request = getRequest(body, method, sendgridInfo, endpoint);
         result.put(CONTENT_TO_SEND, StringPrettifier.asJsonResult(body));
         LogUtil.logHttpInfo(alias, method.name(), endpoint);
         LogUtil.logBody(request.getBody());
@@ -97,7 +83,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     }
 
     private void compare(final ApiResponse expected, final Response actual, final CommandResult result) {
-        String expectedBody = toString(expected.getBody());
+        String expectedBody = expected.getBody().toString();
         result.setExpected(StringPrettifier.asJsonResult(expectedBody));
         result.setActual(StringPrettifier.asJsonResult(actual.getBody()));
         result.put(EXPECTED_CODE, expected.getCode());
@@ -125,24 +111,17 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         return SendGridUtil.extractBody(body, this);
     }
 
-    private String getEndpoint(final Method method) {
-        return sgEndpoints.entrySet().stream()
-                .filter(entry -> method.equals(entry.getKey()))
-                .findFirst()
-                .orElseThrow(() -> new DefaultFrameworkException(String.format(UNKNOWN_HTTP_METHOD, method.toString())))
-                .getValue();
-    }
-
     private Request getRequest(final String body,
                                final Method method,
-                               final Sendgrid sendgrid,
+                               final SendgridInfo sendgridInfo,
                                final String endpoint) {
         Request request = new Request();
         request.setMethod(method);
         request.setEndpoint(endpoint);
         request.setBody(body);
-        if (method.equals(Method.GET)) {
-            request.addQueryParam(START_DATE, sendgrid.getGet().getStartDate());
+        if (Objects.nonNull(sendgridInfo.getQueryParam())) {
+            sendgridInfo.getQueryParam().forEach(queryParam ->
+                    request.addQueryParam(queryParam.getKey(), queryParam.getValue()));
         }
         return request;
     }

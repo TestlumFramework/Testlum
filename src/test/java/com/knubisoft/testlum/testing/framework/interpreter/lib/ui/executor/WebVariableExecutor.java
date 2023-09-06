@@ -79,30 +79,29 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     private String getElementResult(final WebVar webVar, final CommandResult result) {
-//        String valueResult;
-//        String locatorId = webVar.getElement().getPresent().getLocatorId();
-//        try {
-//            UiUtil.findWebElement(dependencies, locatorId);
-//            valueResult = String.valueOf(true);
-//        } catch (NoSuchElementException e) {
-//            valueResult = String.valueOf(false);
-//        }
-//        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), LOCATOR_FORM, locatorId, valueResult, result);
-//        return valueResult;
-        return null;
+        String valueResult;
+        String locatorId = webVar.getElement().getPresent().getLocatorId();
+        try {
+            UiUtil.findWebElement(dependencies, locatorId, webVar.getElement().getPresent().getLocatorStrategy());
+            valueResult = String.valueOf(true);
+        } catch (NoSuchElementException e) {
+            valueResult = String.valueOf(false);
+        }
+        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), LOCATOR_FORM, locatorId, valueResult, result);
+        return valueResult;
     }
 
     private String getDomResult(final WebVar webVar, final CommandResult result) {
-//        String locatorId = webVar.getDom().getLocatorId();
-//        if (StringUtils.isNotBlank(locatorId)) {
-//            String valueResult = UiUtil.findWebElement(dependencies, locatorId).getAttribute("outerHTML");
-//            ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), LOCATOR_FORM, locatorId, valueResult, result);
-//            return valueResult;
-//        }
-//        String valueResult = dependencies.getDriver().getPageSource();
-//        ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), FULL_DOM, valueResult, result);
-//        return valueResult;
-        return null;
+        String locatorId = webVar.getDom().getLocatorId();
+        if (StringUtils.isNotBlank(locatorId)) {
+            String valueResult = UiUtil.findWebElement(dependencies, locatorId, webVar.getDom().getLocatorStrategy())
+                    .getAttribute("outerHTML");
+            ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), LOCATOR_FORM, locatorId, valueResult, result);
+            return valueResult;
+        }
+        String valueResult = dependencies.getDriver().getPageSource();
+        ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), FULL_DOM, valueResult, result);
+        return valueResult;
     }
 
     private String getWebCookiesResult(final WebVar var, final CommandResult result) {

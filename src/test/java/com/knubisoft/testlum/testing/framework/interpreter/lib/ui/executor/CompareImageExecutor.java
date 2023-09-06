@@ -66,6 +66,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         ImageComparisonUtil.processImageComparisonResult(comparisonResult, image, scenarioFile.getParentFile(), result);
     }
 
+    //CHECKSTYLE:OFF
     private BufferedImage getActualImage(final WebDriver webDriver,
                                          final Image image,
                                          final CommandResult result) throws IOException {
@@ -84,6 +85,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         }
         return ImageIO.read(UiUtil.takeScreenshot(webDriver));
     }
+    //CHECKSTYLE:ON
 
     private BufferedImage extractImageFromElement(final WebElement webElement,
                                                   final String imageSourceAttribute,

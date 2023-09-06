@@ -62,6 +62,7 @@ public class UiUtil {
         return value;
     }
 
+    //CHECKSTYLE:OFF
     public WebElement findWebElement(final ExecutorDependencies dependencies,
                                      final String locatorId,
                                      final LocatorStrategy locatorStrategy) {
@@ -92,6 +93,7 @@ public class UiUtil {
         }
         return WebElementFinder.find(locator, dependencies.getDriver());
     }
+    //CHECKSTYLE:ON
 
 
     public void highlightElementIfRequired(final boolean isHighlight,

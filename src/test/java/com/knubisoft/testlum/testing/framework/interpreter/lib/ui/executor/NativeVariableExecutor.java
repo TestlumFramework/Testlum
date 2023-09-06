@@ -68,16 +68,16 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
     }
 
     private String getElementResult(final NativeVar var, final CommandResult result) {
-        String valueResult = null;
+        String valueResult;
         String locatorId = var.getElement().getPresent().getLocatorId();
-//        LocatorStrategy locatorStrategy = var.getElement().getPresent().
-//        try {
-//            UiUtil.findWebElement(dependencies, locatorId);
-//            valueResult = String.valueOf(true);
-//        } catch (NoSuchElementException e) {
-//            valueResult = String.valueOf(false);
-//        }
-//        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, var.getName(), LOCATOR_FORM, locatorId, valueResult, result);
+        LocatorStrategy locatorStrategy = var.getElement().getPresent().getLocatorStrategy();
+        try {
+            UiUtil.findWebElement(dependencies, locatorId, locatorStrategy);
+            valueResult = String.valueOf(true);
+        } catch (NoSuchElementException e) {
+            valueResult = String.valueOf(false);
+        }
+        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, var.getName(), LOCATOR_FORM, locatorId, valueResult, result);
         return valueResult;
     }
 

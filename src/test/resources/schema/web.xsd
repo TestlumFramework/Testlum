@@ -16,6 +16,7 @@
                     <x:element name="assert" type="tns:webAssert"/>
                     <x:element name="dropDown" type="tns:dropDown"/>
                     <x:element name="wait" type="tns:uiWait"/>
+                    <x:element name="waitUntilPageIsReady" type="tns:waitUntilPageIsReady"/>
                     <x:element name="clear" type="tns:clear"/>
                     <x:element name="scroll" type="tns:scroll"/>
                     <x:element name="scrollTo" type="tns:scrollTo"/>

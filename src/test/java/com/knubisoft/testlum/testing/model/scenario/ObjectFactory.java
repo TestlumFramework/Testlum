@@ -398,6 +398,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link WaitUntilPageIsReady }
+     * 
+     */
+    public WaitUntilPageIsReady createWaitUntilPageIsReady() {
+        return new WaitUntilPageIsReady();
+    }
+
+    /**
      * Create an instance of {@link WaitNative }
      * 
      */

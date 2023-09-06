@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.XmlType;
     Cut.class,
     SingleKeyCommand.class,
     Image.class,
+    MobileImage.class,
     NativeImage.class,
     DragAndDrop.class,
     DragAndDropNative.class,

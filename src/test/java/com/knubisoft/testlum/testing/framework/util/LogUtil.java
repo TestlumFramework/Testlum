@@ -15,7 +15,7 @@ import com.knubisoft.testlum.testing.model.scenario.Exclude;
 import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
-import com.knubisoft.testlum.testing.model.scenario.NativeFullScreen;
+import com.knubisoft.testlum.testing.model.scenario.MobileImage;
 import com.knubisoft.testlum.testing.model.scenario.NativeImage;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
@@ -36,6 +36,7 @@ import com.knubisoft.testlum.testing.model.scenario.Smtp;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.knubisoft.testlum.testing.model.scenario.Ui;
+import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -552,12 +553,22 @@ public class LogUtil {
         }
     }
 
-    public void logImageComparisonInfo(final NativeImage image) {
+    public void logImageComparisonInfo(final MobileImage image) {
         log.info(IMAGE_FOR_COMPARISON_LOG, image.getFile());
         log.info(HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
         if (nonNull(image.getPicture())) {
             logCompareWithElementInfo(image.getPicture());
         } else if (nonNull(image.getFullScreen())) {
+            logCompareWithFullscreen(image.getFullScreen());
+        } else if (nonNull(image.getPart())) {
+            logCompareWithPart(image.getPart());
+        }
+    }
+
+    public void logImageComparisonInfo(final NativeImage image) {
+        log.info(IMAGE_FOR_COMPARISON_LOG, image.getFile());
+        log.info(HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
+        if (nonNull(image.getFullScreen())) {
             logCompareWithFullscreen(image.getFullScreen());
         } else if (nonNull(image.getPart())) {
             logCompareWithPart(image.getPart());
@@ -570,7 +581,7 @@ public class LogUtil {
         log.info(IMAGE_SOURCE_ATT_LOG, element.getAttribute());
     }
 
-    private void logCompareWithFullscreen(final FullScreen fullScreen) {
+    private void logCompareWithFullscreen(final WebFullScreen fullScreen) {
         log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_COMPARE);
         if (nonNull(fullScreen.getPercentage())) {
             log.info(IMAGE_MATCH_PERCENTAGE_LOG, fullScreen.getPercentage());
@@ -582,7 +593,7 @@ public class LogUtil {
         }
     }
 
-    private void logCompareWithFullscreen(final NativeFullScreen fullScreen) {
+    private void logCompareWithFullscreen(final FullScreen fullScreen) {
         log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_COMPARE);
         if (nonNull(fullScreen.getPercentage())) {
             log.info(IMAGE_MATCH_PERCENTAGE_LOG, fullScreen.getPercentage());

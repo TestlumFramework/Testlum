@@ -301,6 +301,20 @@
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:choice>
+                    <x:element name="fullScreen" type="tns:webFullScreen"/>
+                    <x:element name="picture" type="tns:picture"/>
+                    <x:element name="part" type="tns:part"/>
+                </x:choice>
+                <x:attribute name="file" type="tns:imageExtension" use="required"/>
+                <x:attribute name="highlightDifference" type="x:boolean" default="false"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="mobileImage">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice>
                     <x:element name="fullScreen" type="tns:fullScreen"/>
                     <x:element name="picture" type="tns:picture"/>
                     <x:element name="part" type="tns:part"/>
@@ -315,8 +329,7 @@
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:choice>
-                    <x:element name="fullScreen" type="tns:nativeFullScreen"/>
-                    <x:element name="picture" type="tns:picture"/>
+                    <x:element name="fullScreen" type="tns:fullScreen"/>
                     <x:element name="part" type="tns:part"/>
                 </x:choice>
                 <x:attribute name="file" type="tns:imageExtension" use="required"/>
@@ -326,14 +339,17 @@
     </x:complexType>
 
     <x:complexType name="fullScreen">
-        <x:choice minOccurs="0" maxOccurs="unbounded">
-            <x:element name="exclude" type="tns:exclude"/>
-        </x:choice>
         <x:attribute name="percentage" type="tns:positiveDoubleMin0Max100"/>
     </x:complexType>
 
-    <x:complexType name="nativeFullScreen">
-        <x:attribute name="percentage" type="tns:positiveDoubleMin0Max100"/>
+    <x:complexType name="webFullScreen">
+        <x:complexContent>
+            <x:extension base="tns:fullScreen">
+                <x:choice minOccurs="0" maxOccurs="unbounded">
+                    <x:element name="exclude" type="tns:exclude"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
     </x:complexType>
 
     <x:complexType name="picture">

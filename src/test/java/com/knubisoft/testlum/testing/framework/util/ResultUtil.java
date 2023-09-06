@@ -16,7 +16,7 @@ import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
-import com.knubisoft.testlum.testing.model.scenario.NativeFullScreen;
+import com.knubisoft.testlum.testing.model.scenario.MobileImage;
 import com.knubisoft.testlum.testing.model.scenario.NativeImage;
 import com.knubisoft.testlum.testing.model.scenario.Part;
 import com.knubisoft.testlum.testing.model.scenario.Picture;
@@ -36,6 +36,7 @@ import com.knubisoft.testlum.testing.model.scenario.SesMessage;
 import com.knubisoft.testlum.testing.model.scenario.Smtp;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.Twilio;
+import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSubscribe;
@@ -711,12 +712,22 @@ public class ResultUtil {
         }
     }
 
-    public void addImageComparisonMetaData(final NativeImage image, final CommandResult result) {
+    public void addImageComparisonMetaData(final MobileImage image, final CommandResult result) {
         result.put(IMAGE_FOR_COMPARISON, image.getFile());
         result.put(HIGHLIGHT_DIFFERENCE, image.isHighlightDifference());
         if (nonNull(image.getPicture())) {
             addCompareWithElementMetaData(image.getPicture(), result);
         } else if (nonNull(image.getFullScreen())) {
+            addCompareWithFullScreenMetaData(image.getFullScreen(), result);
+        } else if (nonNull(image.getPart())) {
+            addCompareWithPartMetaData(image.getPart(), result);
+        }
+    }
+
+    public void addImageComparisonMetaData(final NativeImage image, final CommandResult result) {
+        result.put(IMAGE_FOR_COMPARISON, image.getFile());
+        result.put(HIGHLIGHT_DIFFERENCE, image.isHighlightDifference());
+        if (nonNull(image.getFullScreen())) {
             addCompareWithFullScreenMetaData(image.getFullScreen(), result);
         } else if (nonNull(image.getPart())) {
             addCompareWithPartMetaData(image.getPart(), result);
@@ -729,7 +740,7 @@ public class ResultUtil {
         result.put(IMAGE_SOURCE_ATT, element.getAttribute());
     }
 
-    private void addCompareWithFullScreenMetaData(final FullScreen fullScreen, final CommandResult result) {
+    private void addCompareWithFullScreenMetaData(final WebFullScreen fullScreen, final CommandResult result) {
         result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
         if (nonNull(fullScreen.getPercentage())) {
             result.put(MATCH_PERCENTAGE, fullScreen.getPercentage());
@@ -741,7 +752,7 @@ public class ResultUtil {
         }
     }
 
-    private void addCompareWithFullScreenMetaData(final NativeFullScreen fullScreen, final CommandResult result) {
+    private void addCompareWithFullScreenMetaData(final FullScreen fullScreen, final CommandResult result) {
         result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
         if (nonNull(fullScreen.getPercentage())) {
             result.put(MATCH_PERCENTAGE, fullScreen.getPercentage());

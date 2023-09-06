@@ -822,6 +822,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link MobileImage }
+     * 
+     */
+    public MobileImage createMobileImage() {
+        return new MobileImage();
+    }
+
+    /**
      * Create an instance of {@link NativeImage }
      * 
      */
@@ -838,11 +846,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link NativeFullScreen }
+     * Create an instance of {@link WebFullScreen }
      * 
      */
-    public NativeFullScreen createNativeFullScreen() {
-        return new NativeFullScreen();
+    public WebFullScreen createWebFullScreen() {
+        return new WebFullScreen();
     }
 
     /**

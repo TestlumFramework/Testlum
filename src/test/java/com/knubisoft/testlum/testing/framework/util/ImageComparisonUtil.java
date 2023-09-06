@@ -8,6 +8,9 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FilenameUtils;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -20,9 +23,14 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ADDITIONAL
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.IMAGE_ATTACHED_TO_STEP;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.IMAGE_MISMATCH_PERCENT;
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
 
 @UtilityClass
 public class ImageComparisonUtil {
+
+    private static final String MOBILE_SCREEN_HEIGHT = "return screen.height;";
+    private static final String WINDOW_INNER_HEIGHT = "return window.innerHeight;";
+    private static final String STATUS_BAR_HEIGHT = "statBarHeight";
 
     @SneakyThrows
     public void processImageComparisonResult(final ImageComparisonResult comparisonResult,
@@ -83,5 +91,15 @@ public class ImageComparisonUtil {
         return format("%s%s.%s", TestResourceSettings.ACTUAL_IMAGE_PREFIX,
                 FilenameUtils.getBaseName(expectedImageFullName),
                 FilenameUtils.getExtension(expectedImageFullName));
+    }
+
+    public int getStatusBarHeight(final WebDriver driver) {
+        Capabilities deviceCapabilities = ((RemoteWebDriver) driver).getCapabilities();
+        if (nonNull(deviceCapabilities.getCapability(STATUS_BAR_HEIGHT))) {
+            return (int) ((long) deviceCapabilities.getCapability(STATUS_BAR_HEIGHT));
+        }
+        long screenHeight = (Long) JavascriptUtil.executeJsScript(MOBILE_SCREEN_HEIGHT, driver);
+        long windowHeight = (Long) JavascriptUtil.executeJsScript(WINDOW_INNER_HEIGHT, driver);
+        return (int) (screenHeight - windowHeight);
     }
 }

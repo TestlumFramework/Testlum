@@ -45,7 +45,8 @@ public class ScrollToNativeExecutor extends AbstractUiExecutor<ScrollToNative> {
         for (int i = 0; i < DEFAULT_SCROLLS_COUNT; i++) {
             try {
                 driver.perform(Collections.singletonList(scroll));
-                UiUtil.findWebElement(dependencies, scrollToNative.getLocatorId()).isDisplayed();
+                UiUtil.findWebElement(dependencies, scrollToNative.getLocatorId(), scrollToNative.getLocatorStrategy())
+                        .isDisplayed();
                 UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
                 return;
             } catch (NoSuchElementException e) {

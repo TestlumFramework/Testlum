@@ -8,6 +8,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.locator.GlobalLocators;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.pages.Locator;
+import com.knubisoft.testlum.testing.model.pages.Text;
+import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import io.appium.java_client.AppiumDriver;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -60,10 +62,37 @@ public class UiUtil {
         return value;
     }
 
-    public WebElement findWebElement(final ExecutorDependencies dependencies, final String locatorId) {
-        Locator locator = GlobalLocators.getLocator(locatorId);
+    public WebElement findWebElement(final ExecutorDependencies dependencies,
+                                     final String locatorId,
+                                     final LocatorStrategy locatorStrategy) {
+        Locator locator = new Locator();
+        locator.setId(locatorId);
+        switch (locatorStrategy) {
+            case LOCATOR_ID:
+                locator = GlobalLocators.getLocator(locatorId);
+                break;
+            case XPATH:
+                locator.setXpath(locatorId);
+                break;
+            case ID:
+                locator.setId(locatorId);
+                break;
+            case TEXT:
+                Text text = new Text();
+                text.setPlaceholder(false);
+                text.setValue(locatorId);
+                locator.setText(text);
+                break;
+            case CLASS:
+                locator.setClazz(locatorId);
+                break;
+            case CSS_SELECTOR:
+                locator.setCssSelector(locatorId);
+                break;
+        }
         return WebElementFinder.find(locator, dependencies.getDriver());
     }
+
 
     public void highlightElementIfRequired(final boolean isHighlight,
                                            final WebElement element,

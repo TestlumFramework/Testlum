@@ -15,6 +15,7 @@ import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.CompareWithFullScreen;
 import com.knubisoft.testlum.testing.model.scenario.Image;
+import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -69,14 +70,16 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
                                          final Image image,
                                          final CommandResult result) throws IOException {
         if (nonNull(image.getElement())) {
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getElement().getLocatorId());
+            WebElement webElement = UiUtil.findWebElement(dependencies, image.getElement().getLocatorId(),
+                    image.getElement().getLocatorStrategy());
             if (UiType.NATIVE == dependencies.getUiType()) {
                 return ImageIO.read(UiUtil.takeScreenshot(webElement));
             }
             return extractImageFromElement(webElement, image.getElement().getAttribute(), result);
         }
         if (nonNull(image.getPart())) {
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocatorId());
+            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocatorId(),
+                    image.getElement().getLocatorStrategy());
             return ImageIO.read(webElement.getScreenshotAs(OutputType.FILE));
         }
         return ImageIO.read(UiUtil.takeScreenshot(webDriver));
@@ -100,7 +103,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         if (nonNull(fullScreen) && !fullScreen.getExclude().isEmpty()) {
             Scale scale = getScaling(expected, driver);
             return fullScreen.getExclude().stream()
-                    .map(element -> getElementArea(element.getLocatorId(), scale))
+                    .map(element -> getElementArea(element.getLocatorId(), scale, element.getLocatorStrategy()))
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
@@ -130,8 +133,9 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         return new Scale(1, 1);
     }
 
-    private Rectangle getElementArea(final String locatorId, final Scale scale) {
-        org.openqa.selenium.Rectangle seleniumRectangle = UiUtil.findWebElement(dependencies, locatorId).getRect();
+    private Rectangle getElementArea(final String locatorId, final Scale scale, final LocatorStrategy locatorStrategy) {
+        org.openqa.selenium.Rectangle seleniumRectangle =
+                UiUtil.findWebElement(dependencies, locatorId, locatorStrategy).getRect();
         double x = seleniumRectangle.getX() * scale.getScaleX();
         double y = seleniumRectangle.getY() * scale.getScaleY();
         double width = (seleniumRectangle.getX() + seleniumRectangle.getWidth()) * scale.getScaleX();

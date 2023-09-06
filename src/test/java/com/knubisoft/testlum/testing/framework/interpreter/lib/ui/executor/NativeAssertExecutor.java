@@ -60,8 +60,9 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
     }
 
     private String getActualValue(final AssertAttribute attribute) {
-        WebElement webElement = UiUtil.findWebElement(dependencies, attribute.getLocatorId());
-        return webElement.getAttribute(attribute.getName());
+//        WebElement webElement = UiUtil.findWebElement(dependencies, attribute.getLocatorId());
+//        return webElement.getAttribute(attribute.getName());
+        return null;
     }
 
     private void executeComparison(final String actual, final String expected, final CommandResult result) {

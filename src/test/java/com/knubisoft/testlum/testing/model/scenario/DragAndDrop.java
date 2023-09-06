@@ -17,10 +17,11 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice&gt;
- *         &lt;element name="fromLocatorId" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scenarioLocator"/&gt;
+ *         &lt;element name="fromLocatorId" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *         &lt;element name="fileName" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="toLocatorId" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scenarioLocator" /&gt;
+ *       &lt;attribute name="toLocatorId" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="toLocatorStrategy" type="{http://www.knubisoft.com/testlum/testing/model/scenario}locatorStrategy" default="locatorId" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -41,6 +42,8 @@ public class DragAndDrop
     protected String fileName;
     @XmlAttribute(name = "toLocatorId", required = true)
     protected String toLocatorId;
+    @XmlAttribute(name = "toLocatorStrategy")
+    protected LocatorStrategy toLocatorStrategy;
 
     /**
      * Gets the value of the fromLocatorId property.
@@ -112,6 +115,34 @@ public class DragAndDrop
      */
     public void setToLocatorId(String value) {
         this.toLocatorId = value;
+    }
+
+    /**
+     * Gets the value of the toLocatorStrategy property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link LocatorStrategy }
+     *     
+     */
+    public LocatorStrategy getToLocatorStrategy() {
+        if (toLocatorStrategy == null) {
+            return LocatorStrategy.LOCATOR_ID;
+        } else {
+            return toLocatorStrategy;
+        }
+    }
+
+    /**
+     * Sets the value of the toLocatorStrategy property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link LocatorStrategy }
+     *     
+     */
+    public void setToLocatorStrategy(LocatorStrategy value) {
+        this.toLocatorStrategy = value;
     }
 
 }

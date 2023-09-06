@@ -51,7 +51,7 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
         int swipeValue = getSwipeValue(swipeNative, screenDimensions);
         Point start = SwipeType.PAGE == swipeNative.getType()
                 ? UiUtil.getCenterPoint(driver)
-                : UiUtil.findWebElement(dependencies, swipeNative.getLocatorId())
+                : UiUtil.findWebElement(dependencies, swipeNative.getLocatorId(), swipeNative.getLocatorStrategy())
                 .getLocation();
         Point end = getEndPoint(swipeNative.getDirection(), start, swipeValue);
         return UiUtil.buildSequence(start, end, ACTION_DURATION);

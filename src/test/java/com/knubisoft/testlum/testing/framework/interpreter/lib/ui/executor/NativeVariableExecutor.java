@@ -10,6 +10,7 @@ import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.framework.util.VariableHelper;
 import com.knubisoft.testlum.testing.framework.util.VariableHelper.VarMethod;
 import com.knubisoft.testlum.testing.framework.util.VariableHelper.VarPredicate;
+import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import com.knubisoft.testlum.testing.model.scenario.NativeVar;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.NoSuchElementException;
@@ -67,15 +68,16 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
     }
 
     private String getElementResult(final NativeVar var, final CommandResult result) {
-        String valueResult;
+        String valueResult = null;
         String locatorId = var.getElement().getPresent().getLocatorId();
-        try {
-            UiUtil.findWebElement(dependencies, locatorId);
-            valueResult = String.valueOf(true);
-        } catch (NoSuchElementException e) {
-            valueResult = String.valueOf(false);
-        }
-        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, var.getName(), LOCATOR_FORM, locatorId, valueResult, result);
+//        LocatorStrategy locatorStrategy = var.getElement().getPresent().
+//        try {
+//            UiUtil.findWebElement(dependencies, locatorId);
+//            valueResult = String.valueOf(true);
+//        } catch (NoSuchElementException e) {
+//            valueResult = String.valueOf(false);
+//        }
+//        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, var.getName(), LOCATOR_FORM, locatorId, valueResult, result);
         return valueResult;
     }
 

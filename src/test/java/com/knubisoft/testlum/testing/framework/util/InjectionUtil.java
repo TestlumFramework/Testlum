@@ -32,4 +32,11 @@ public class InjectionUtil {
         String injected = VaultService.inject(asJson);
         return JacksonMapperUtil.readCopiedValue(injected, (Class<T>) t.getClass());
     }
+
+    @SuppressWarnings("unchecked")
+    public <T> T injectFromSystem(final T t) {
+        String asJason = JacksonMapperUtil.writeValueToCopiedString(t);
+        String injected = SystemVariableService.inject(asJason);
+        return JacksonMapperUtil.readCopiedValue(injected, (Class<T>) t.getClass());
+    }
 }

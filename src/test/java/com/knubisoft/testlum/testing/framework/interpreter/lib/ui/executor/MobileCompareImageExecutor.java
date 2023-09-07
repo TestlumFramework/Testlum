@@ -63,7 +63,7 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
             return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
         }
         if (nonNull(image.getPart())) {
-            if (UiType.MOBILE_BROWSER.equals(dependencies.getUiType()) && isIosDevice(webDriver)){
+            if (UiType.MOBILE_BROWSER.equals(dependencies.getUiType()) && isIosDevice(webDriver)) {
                 throw new DefaultFrameworkException(IOS_NOT_SUPPORT_PART_COMMAND);
             }
             WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocatorId());

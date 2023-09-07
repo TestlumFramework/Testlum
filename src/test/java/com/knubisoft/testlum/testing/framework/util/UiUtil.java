@@ -67,7 +67,7 @@ public class UiUtil {
                                      final String locatorId,
                                      final LocatorStrategy locatorStrategy) {
         Locator locator = new Locator();
-        locator.setId(locatorId);
+        locator.setLocatorId(locatorId);
         switch (locatorStrategy) {
             case LOCATOR_ID:
                 locator = GlobalLocators.getLocator(locatorId);

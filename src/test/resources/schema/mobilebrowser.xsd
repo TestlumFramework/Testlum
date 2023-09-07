@@ -20,7 +20,7 @@
                     <x:element name="clear" type="tns:clear"/>
                     <x:element name="scroll" type="tns:scroll"/>
                     <x:element name="scrollTo" type="tns:scrollTo"/>
-                    <x:element name="image" type="tns:nativeImage"/>
+                    <x:element name="image" type="tns:mobileImage"/>
                     <x:element name="javascript" type="tns:javascript"/>
                     <x:element name="navigate" type="tns:navigate"/>
                     <x:element name="hover" type="tns:hover"/>

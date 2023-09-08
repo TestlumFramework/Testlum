@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.configuration.TestResourceSetting
 import com.knubisoft.testlum.testing.framework.util.ArgumentsUtils;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.model.global_config.UiConfig;
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
@@ -42,13 +43,19 @@ public class TestRunner implements Runner {
     }
 
     private void initLocatorsFolder() {
-        if (GlobalTestConfigurationProvider.getUiConfigs().values().stream()
-                .anyMatch(uiConfig -> nonNull(uiConfig.getWeb()) && uiConfig.getWeb().isEnabled()
-                        || nonNull(uiConfig.getNative()) && uiConfig.getNative().isEnabled()
-                        || nonNull(uiConfig.getMobilebrowser()) && uiConfig.getMobilebrowser().isEnabled())) {
+        boolean isUiConfigEnabled = GlobalTestConfigurationProvider.getUiConfigs().values().stream()
+                .anyMatch(this::isUiConfigEnabled);
+        if (isUiConfigEnabled) {
             TestResourceSettings.getInstance().initLocatorsFolder();
         }
     }
+
+    private boolean isUiConfigEnabled(final UiConfig uiConfig) {
+        return (nonNull(uiConfig.getWeb()) && uiConfig.getWeb().isEnabled())
+                || (nonNull(uiConfig.getNative()) && uiConfig.getNative().isEnabled())
+                || (nonNull(uiConfig.getMobilebrowser()) && uiConfig.getMobilebrowser().isEnabled());
+    }
+
 
     private TestExecutionSummary runTests() {
         LauncherDiscoveryRequest tests = LauncherDiscoveryRequestBuilder

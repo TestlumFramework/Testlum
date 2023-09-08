@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -19,6 +20,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -31,6 +33,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.QUEUE_DOES_NOT_EXIST;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.MESSAGE_TO_SEND;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -43,6 +46,8 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
 
     @Autowired(required = false)
     private Map<AliasEnv, RabbitTemplate> rabbitTemplate;
+    @Autowired(required = false)
+    private Map<AliasEnv, AmqpAdmin> amqpAdmin;
 
     public RabbitMQInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -97,6 +102,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         LogUtil.logRabbitSendInfo(send, message);
         ResultUtil.addRabbitMQSendInfo(send, aliasEnv.getAlias(), result);
         result.put(MESSAGE_TO_SEND, message);
+        createQueueIfNotExists(send.getRoutingKey(), aliasEnv);
         sendMessage(send, message, aliasEnv);
     }
 
@@ -132,6 +138,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         String messages = getMessageToReceive(receive);
         LogUtil.logRabbitReceiveInfo(receive, messages);
         ResultUtil.addRabbitMQReceiveInfo(receive, aliasEnv.getAlias(), result);
+        createQueueIfNotExists(receive.getQueue(), aliasEnv);
         List<RabbitMQMessage> actualRmqMessages = receiveRmqMessages(receive, aliasEnv);
         compareMessages(actualRmqMessages, messages, result);
     }
@@ -183,6 +190,16 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         return StringUtils.isNotBlank(message)
                 ? message
                 : getContentIfFile(file);
+    }
+
+    private void createQueueIfNotExists(final String queue, final AliasEnv aliasEnv) {
+        if (checkIsQueueNotExists(queue, aliasEnv)) {
+            throw new DefaultFrameworkException(QUEUE_DOES_NOT_EXIST, queue);
+        }
+    }
+
+    private boolean checkIsQueueNotExists(final String queue, final AliasEnv aliasEnv) {
+        return isNull(amqpAdmin.get(aliasEnv).getQueueProperties(queue));
     }
 
     @Data

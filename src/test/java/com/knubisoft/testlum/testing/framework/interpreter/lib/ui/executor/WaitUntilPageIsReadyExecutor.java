@@ -9,7 +9,12 @@ import com.knubisoft.testlum.testing.model.scenario.Timeunit;
 import com.knubisoft.testlum.testing.model.scenario.WaitUntilPageIsReady;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.PAGE_NOT_LOADED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WAIT_INFO_LOG;
@@ -38,8 +43,9 @@ public class WaitUntilPageIsReadyExecutor extends AbstractUiExecutor<WaitUntilPa
     private Boolean executeAndWaitUntilPageIsReady(final WaitUntilPageIsReady o) {
         JavascriptExecutor js = (JavascriptExecutor) dependencies.getDriver();
         long timeToWait = o.getUnit() == Timeunit.MILLIS ? parseLong(o.getTime()) : parseLong(o.getTime()) * TO_MILLIS;
+        long spentTimeOnWaitBeforeReload = waitBeforeStartOfReload(timeToWait);
         long startTime = System.currentTimeMillis();
-        while (System.currentTimeMillis() - startTime < timeToWait) {
+        while (System.currentTimeMillis() - startTime < timeToWait - spentTimeOnWaitBeforeReload) {
             String pageState = checkIfPageIsLoadedJS(js);
             if ("complete".equalsIgnoreCase(pageState)) {
                 return true;
@@ -47,6 +53,14 @@ public class WaitUntilPageIsReadyExecutor extends AbstractUiExecutor<WaitUntilPa
             Thread.sleep(INTERVAL);
         }
         return false;
+    }
+
+    private long waitBeforeStartOfReload(final long timeToWait) {
+        long startTime = System.currentTimeMillis();
+        WebDriverWait wait = new WebDriverWait(dependencies.getDriver(), Duration.ofSeconds(timeToWait));
+        wait.until(ExpectedConditions.stalenessOf(
+                dependencies.getDriver().findElement(By.xpath("/html"))));
+        return System.currentTimeMillis() - startTime;
     }
 
     private String checkIfPageIsLoadedJS(final JavascriptExecutor js) {

@@ -29,11 +29,7 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
     protected void acceptImpl(final Repeat o, final CommandResult result) {
         if (StringUtils.isNotBlank(o.getVariations())) {
             List<AbstractCommand> commands = o.getCommands();
-            List<AbstractCommand> injectedCommand = GlobalVariations.getVariations(o.getVariations()).stream()
-                    .flatMap(variation -> commands.stream()
-                            .map(command -> InjectionUtil.injectObject(command, dependencies.getScenarioContext()))
-                            .map(command -> InjectionUtil.injectObjectVariation(command, variation)))
-                    .collect(Collectors.toList());
+            List<AbstractCommand> injectedCommand = getInjectedCommands(o, commands);
             this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result);
         } else {
             Repeat repeat = injectCommand(o);
@@ -41,5 +37,14 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
                 this.repeatCommandsRunner.runCommands(repeat.getCommands(), dependencies, result);
             }
         }
+    }
+
+    private List<AbstractCommand> getInjectedCommands(final Repeat o,
+                                                      final List<AbstractCommand> commands) {
+        return GlobalVariations.getVariations(o.getVariations()).stream()
+                .flatMap(variation -> commands.stream()
+                        .map(command -> InjectionUtil.injectObject(command, dependencies.getScenarioContext()))
+                        .map(command -> InjectionUtil.injectObjectVariation(command, variation)))
+                .collect(Collectors.toList());
     }
 }

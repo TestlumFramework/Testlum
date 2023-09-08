@@ -398,11 +398,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link WaitUntilPageIsReady }
+     * Create an instance of {@link PageLoad }
      * 
      */
-    public WaitUntilPageIsReady createWaitUntilPageIsReady() {
-        return new WaitUntilPageIsReady();
+    public PageLoad createPageLoad() {
+        return new PageLoad();
     }
 
     /**

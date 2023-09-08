@@ -19,6 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;choice minOccurs="0"&gt;
  *         &lt;element name="clickable" type="{http://www.knubisoft.com/testlum/testing/model/scenario}clickable"/&gt;
  *         &lt;element name="visible" type="{http://www.knubisoft.com/testlum/testing/model/scenario}visible"/&gt;
+ *         &lt;element name="pageLoad" type="{http://www.knubisoft.com/testlum/testing/model/scenario}pageLoad"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="time" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}timePattern" /&gt;
  *       &lt;attribute name="unit" type="{http://www.knubisoft.com/testlum/testing/model/scenario}timeunit" default="seconds" /&gt;
@@ -32,7 +33,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "uiWait", propOrder = {
     "clickable",
-    "visible"
+    "visible",
+    "pageLoad"
 })
 public class UiWait
     extends AbstractUiCommand
@@ -40,6 +42,7 @@ public class UiWait
 
     protected Clickable clickable;
     protected Visible visible;
+    protected PageLoad pageLoad;
     @XmlAttribute(name = "time", required = true)
     protected String time;
     @XmlAttribute(name = "unit")
@@ -91,6 +94,30 @@ public class UiWait
      */
     public void setVisible(Visible value) {
         this.visible = value;
+    }
+
+    /**
+     * Gets the value of the pageLoad property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link PageLoad }
+     *     
+     */
+    public PageLoad getPageLoad() {
+        return pageLoad;
+    }
+
+    /**
+     * Sets the value of the pageLoad property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link PageLoad }
+     *     
+     */
+    public void setPageLoad(PageLoad value) {
+        this.pageLoad = value;
     }
 
     /**

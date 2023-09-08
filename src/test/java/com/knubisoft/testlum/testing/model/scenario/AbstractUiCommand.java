@@ -27,7 +27,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "abstractUiCommand")
 @XmlSeeAlso({
     UiWait.class,
-    WaitUntilPageIsReady.class,
     WaitNative.class,
     WebVar.class,
     NativeVar.class,

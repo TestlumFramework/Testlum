@@ -233,6 +233,7 @@ public class ExceptionMessage {
     public static final String IMAGES_MISMATCH = "The images don't match. Image comparison state is -> MISMATCH. "
             + "Difference percent: %s";
     public static final String PAGE_NOT_LOADED = "Page is not loaded!";
+    public static final String PAGE_DID_NO_RESTART = "Page did not start to reload, time took for that - %s millis";
     public static final String ELEMENT_OUT_OF_BOUNDS = "Element is out of screen bounds";
     public static final String WEB_ELEMENT_ATTRIBUTE_NOT_EXIST = "Web element does not have attribute <%s>";
     public static final String ELEMENT_NOT_FOUND = "Element with locator <%s> was not found during 'scrollTo'";

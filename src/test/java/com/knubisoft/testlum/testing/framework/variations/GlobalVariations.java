@@ -86,18 +86,19 @@ public class GlobalVariations {
                                        final Matcher m,
                                        final Map<String, String> variationMap,
                                        final ScenarioContext scenarioContext) {
-        String finalValue = variation;
         while (m.find()) {
             String variationKey = m.group(1);
             String variationKeyInBraces = m.group(0);
             String variationValue = variationMap.get(variationKey);
             if (isNull(variationValue)) {
-                if (isContextValue(variationKey, scenarioContext)) continue;
+                if (isContextValue(variationKey, scenarioContext)) {
+                    continue;
+                }
                 throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, variationKey, variationMap));
             }
-            finalValue = finalValue.replace(variationKeyInBraces, variationValue);
+            return variation.replace(variationKeyInBraces, variationValue);
         }
-        return finalValue;
+        return variation;
     }
 
     private boolean isContextValue(final String variationKey, final ScenarioContext scenarioContext) {

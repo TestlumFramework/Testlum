@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlSeeAlso({
     Clickable.class,
     Visible.class,
+    PageLoad.class,
     Click.class,
     Hover.class,
     Input.class,

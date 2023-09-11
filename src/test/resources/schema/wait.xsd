@@ -33,7 +33,11 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="pageLoad"/>
+    <x:complexType name="pageLoad">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator"/>
+        </x:complexContent>
+    </x:complexType>
 
     <x:complexType name="waitNative">
         <x:complexContent>

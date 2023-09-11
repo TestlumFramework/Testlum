@@ -16,8 +16,8 @@ import com.knubisoft.testlum.testing.model.scenario.UiWait;
 import com.knubisoft.testlum.testing.model.scenario.Visible;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -25,7 +25,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.PAGE_DID_NO_RESTART;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.PAGE_DID_NOT_RELOAD;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.PAGE_NOT_LOADED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WAIT_INFO_LOG;
@@ -73,7 +73,7 @@ public class WaitExecutor extends AbstractUiExecutor<UiWait> {
         } else if (nonNull(wait.getClickable())) {
             waitIfVisibleOrClickable(wait.getClickable(), timeUnit.toSeconds(Long.parseLong(time)), result);
         } else if (nonNull(wait.getPageLoad())) {
-            waitIfPageLoad(time, wait.getUnit());
+            waitIfPageLoad(wait.getPageLoad().getLocatorId(), time, wait.getUnit());
         } else {
             WaitUtil.sleep(Long.parseLong(time), timeUnit);
         }
@@ -96,19 +96,19 @@ public class WaitExecutor extends AbstractUiExecutor<UiWait> {
         }
     }
 
-    private void waitIfPageLoad(final String time, final Timeunit unit) {
-        if (!executeAndWaitUntilPageIsReady(time, unit)) {
+    private void waitIfPageLoad(final String locatorId, final String time, final Timeunit unit) {
+        if (!executeAndWaitUntilPageIsReady(locatorId, time, unit)) {
             throw new DefaultFrameworkException(PAGE_NOT_LOADED);
         }
     }
 
     @SneakyThrows
-    private boolean executeAndWaitUntilPageIsReady(final String time, final Timeunit unit) {
+    private boolean executeAndWaitUntilPageIsReady(final String locatorId, final String time, final Timeunit unit) {
         JavascriptExecutor js = (JavascriptExecutor) dependencies.getDriver();
         long timeToWait = unit == Timeunit.MILLIS ? parseLong(time) : parseLong(time) * TO_MILLIS;
-        long spentTimeOnWaitBeforeReload = waitBeforeStartOfReload(timeToWait);
+        long spentTimeForReload = waitForReload(locatorId, timeToWait);
         long startTime = System.currentTimeMillis();
-        while (System.currentTimeMillis() - startTime < timeToWait - spentTimeOnWaitBeforeReload) {
+        while (System.currentTimeMillis() - startTime < timeToWait - spentTimeForReload) {
             String pageState = checkIfPageIsLoadedJS(js);
             if ("complete".equalsIgnoreCase(pageState)) {
                 return true;
@@ -118,16 +118,17 @@ public class WaitExecutor extends AbstractUiExecutor<UiWait> {
         return false;
     }
 
-    private long waitBeforeStartOfReload(final long timeToWait) {
+    private long waitForReload(final String locatorId, final long timeToWait) {
         long startTime = System.currentTimeMillis();
-        WebDriverWait wait = new WebDriverWait(dependencies.getDriver(), Duration.ofSeconds(timeToWait));
-        wait.until(ExpectedConditions.stalenessOf(
-                dependencies.getDriver().findElement(By.xpath("/html"))));
-        long endTime = System.currentTimeMillis() - startTime;
-        if (endTime > timeToWait) {
-            throw new DefaultFrameworkException(PAGE_DID_NO_RESTART, endTime);
+        while (System.currentTimeMillis() - startTime < timeToWait) {
+            try {
+                UiUtil.findWebElement(dependencies, locatorId);
+                return System.currentTimeMillis() - startTime;
+            } catch (NoSuchElementException ignored) {
+                //ignored
+            }
         }
-        return endTime;
+        throw new DefaultFrameworkException(PAGE_DID_NOT_RELOAD);
     }
 
     private String checkIfPageIsLoadedJS(final JavascriptExecutor js) {

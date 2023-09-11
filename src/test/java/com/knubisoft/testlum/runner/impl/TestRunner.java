@@ -56,7 +56,6 @@ public class TestRunner implements Runner {
                 || (nonNull(uiConfig.getMobilebrowser()) && uiConfig.getMobilebrowser().isEnabled());
     }
 
-
     private TestExecutionSummary runTests() {
         LauncherDiscoveryRequest tests = LauncherDiscoveryRequestBuilder
                 .request()

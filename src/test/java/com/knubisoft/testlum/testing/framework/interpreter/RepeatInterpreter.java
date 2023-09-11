@@ -17,7 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REPEAT_FINISHED_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_REPEAT_FINISHED_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static java.lang.String.format;
 
@@ -54,7 +54,7 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
                 this.repeatCommandsRunner.runCommands(repeat1.getCommands(), dependencies, result, subCommandsResult);
             }
         }
-        log.info(REPEAT_FINISHED_LOG);
+        log.info(COMMAND_REPEAT_FINISHED_LOG);
     }
     //CHECKSTYLE:ON
 }

@@ -47,7 +47,10 @@ import javax.xml.bind.annotation.XmlType;
     DragAndDrop.class,
     DragAndDropNative.class,
     Refresh.class,
+    MobilebrowserRepeat.class,
+    WebRepeat.class,
     WebView.class,
+    NativeRepeat.class,
     NavigateNative.class,
     CommandWithOptionalLocator.class
 })

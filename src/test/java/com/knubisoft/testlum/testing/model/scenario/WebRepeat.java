@@ -12,14 +12,14 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for web complex type.
+ * <p>Java class for webRepeat complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="web"&gt;
+ * &lt;complexType name="webRepeat"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}ui"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
  *         &lt;element name="click" type="{http://www.knubisoft.com/testlum/testing/model/scenario}click"/&gt;
  *         &lt;element name="input" type="{http://www.knubisoft.com/testlum/testing/model/scenario}input"/&gt;
@@ -41,8 +41,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiCondition"/&gt;
  *         &lt;element name="repeat" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webRepeat"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="clearCookiesAfterExecution" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
- *       &lt;attribute name="clearLocalStorageByKey" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="times" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveIntegerMin1" /&gt;
+ *       &lt;attribute name="variations" type="{http://www.knubisoft.com/testlum/testing/model/scenario}csv" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -51,11 +51,11 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "web", propOrder = {
+@XmlType(name = "webRepeat", propOrder = {
     "clickOrInputOrAssert"
 })
-public class Web
-    extends Ui
+public class WebRepeat
+    extends AbstractUiCommand
 {
 
     @XmlElements({
@@ -80,10 +80,10 @@ public class Web
         @XmlElement(name = "repeat", type = WebRepeat.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
-    @XmlAttribute(name = "clearCookiesAfterExecution")
-    protected Boolean clearCookiesAfterExecution;
-    @XmlAttribute(name = "clearLocalStorageByKey")
-    protected String clearLocalStorageByKey;
+    @XmlAttribute(name = "times")
+    protected Integer times;
+    @XmlAttribute(name = "variations")
+    protected String variations;
 
     /**
      * Gets the value of the clickOrInputOrAssert property.
@@ -133,55 +133,51 @@ public class Web
     }
 
     /**
-     * Gets the value of the clearCookiesAfterExecution property.
+     * Gets the value of the times property.
      * 
      * @return
      *     possible object is
-     *     {@link Boolean }
+     *     {@link Integer }
      *     
      */
-    public boolean isClearCookiesAfterExecution() {
-        if (clearCookiesAfterExecution == null) {
-            return false;
-        } else {
-            return clearCookiesAfterExecution;
-        }
+    public Integer getTimes() {
+        return times;
     }
 
     /**
-     * Sets the value of the clearCookiesAfterExecution property.
+     * Sets the value of the times property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Boolean }
+     *     {@link Integer }
      *     
      */
-    public void setClearCookiesAfterExecution(Boolean value) {
-        this.clearCookiesAfterExecution = value;
+    public void setTimes(Integer value) {
+        this.times = value;
     }
 
     /**
-     * Gets the value of the clearLocalStorageByKey property.
+     * Gets the value of the variations property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getClearLocalStorageByKey() {
-        return clearLocalStorageByKey;
+    public String getVariations() {
+        return variations;
     }
 
     /**
-     * Sets the value of the clearLocalStorageByKey property.
+     * Sets the value of the variations property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setClearLocalStorageByKey(String value) {
-        this.clearLocalStorageByKey = value;
+    public void setVariations(String value) {
+        this.variations = value;
     }
 
 }

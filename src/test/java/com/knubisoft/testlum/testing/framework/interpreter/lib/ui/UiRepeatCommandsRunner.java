@@ -1,28 +1,28 @@
-package com.knubisoft.testlum.testing.framework.interpreter.lib;
+package com.knubisoft.testlum.testing.framework.interpreter.lib.ui;
 
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
+import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public class RepeatCommandsRunner {
+public class UiRepeatCommandsRunner {
 
-    public void runCommands(final List<AbstractCommand> commandList,
-                            final InterpreterDependencies dependencies,
+    public void runCommands(final List<AbstractUiCommand> commandList,
+                            final ExecutorDependencies dependencies,
                             final CommandResult result,
-                            final List<CommandResult> subCommandsResult) {
-        commandList.forEach(command -> processEachCommand(command, dependencies, subCommandsResult));
+                            final List<CommandResult> subCommandResult) {
+        commandList.forEach(command -> processEachCommand(command, dependencies, subCommandResult));
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
-    private void processEachCommand(final AbstractCommand command,
-                                    final InterpreterDependencies dependencies,
+    private void processEachCommand(final AbstractUiCommand command,
+                                    final ExecutorDependencies dependencies,
                                     final List<CommandResult> subCommandsResult) {
         CommandResult commandResult =
                 ResultUtil.newCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
@@ -30,8 +30,8 @@ public class RepeatCommandsRunner {
         executeCommand(command, dependencies, commandResult);
     }
 
-    private void executeCommand(final AbstractCommand command,
-                                final InterpreterDependencies dependencies,
+    private void executeCommand(final AbstractUiCommand command,
+                                final ExecutorDependencies dependencies,
                                 final CommandResult result) {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
@@ -48,11 +48,11 @@ public class RepeatCommandsRunner {
         }
     }
 
-    private AbstractInterpreter<AbstractCommand> getAppropriateInterpreter(final AbstractCommand command,
-                                                                           final InterpreterDependencies dependencies) {
-        AbstractInterpreter<AbstractCommand> interpreter =
-                InterpreterProvider.getAppropriateInterpreter(command, dependencies);
-        dependencies.getContext().getAutowireCapableBeanFactory().autowireBean(interpreter);
-        return interpreter;
+    private AbstractUiExecutor<AbstractUiCommand> getAppropriateInterpreter(final AbstractUiCommand command,
+                                                                           final ExecutorDependencies dependencies) {
+        AbstractUiExecutor<AbstractUiCommand> executor =
+                ExecutorProvider.getAppropriateExecutor(command, dependencies);
+        dependencies.getContext().getAutowireCapableBeanFactory().autowireBean(executor);
+        return executor;
     }
 }

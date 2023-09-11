@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="dragAndDrop" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dragAndDrop"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webVar"/&gt;
  *         &lt;element name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiCondition"/&gt;
+ *         &lt;element name="repeat" type="{http://www.knubisoft.com/testlum/testing/model/scenario}mobilebrowserRepeat"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="clearCookiesAfterExecution" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *       &lt;attribute name="clearLocalStorageByKey" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
@@ -73,7 +74,8 @@ public class Mobilebrowser
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
         @XmlElement(name = "dragAndDrop", type = DragAndDrop.class),
         @XmlElement(name = "var", type = WebVar.class),
-        @XmlElement(name = "condition", type = UiCondition.class)
+        @XmlElement(name = "condition", type = UiCondition.class),
+        @XmlElement(name = "repeat", type = MobilebrowserRepeat.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "clearCookiesAfterExecution")
@@ -116,6 +118,7 @@ public class Mobilebrowser
      * {@link DragAndDrop }
      * {@link WebVar }
      * {@link UiCondition }
+     * {@link MobilebrowserRepeat }
      * 
      * 
      */

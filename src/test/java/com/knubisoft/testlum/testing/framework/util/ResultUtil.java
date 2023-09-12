@@ -6,18 +6,32 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
-import com.knubisoft.testlum.testing.model.scenario.CompareWithElement;
-import com.knubisoft.testlum.testing.model.scenario.CompareWithFullScreen;
-import com.knubisoft.testlum.testing.model.scenario.CompareWithPart;
+import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
+import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Exclude;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
+import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
+import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
+import com.knubisoft.testlum.testing.model.scenario.MobileImage;
+import com.knubisoft.testlum.testing.model.scenario.NativeImage;
+import com.knubisoft.testlum.testing.model.scenario.Part;
+import com.knubisoft.testlum.testing.model.scenario.Picture;
+import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
+import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
+import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
+import com.knubisoft.testlum.testing.model.scenario.RmqHeaders;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
+import com.knubisoft.testlum.testing.model.scenario.Twilio;
+import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
+import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
+import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
+import com.knubisoft.testlum.testing.model.scenario.WebsocketSubscribe;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
@@ -129,7 +143,7 @@ public class ResultUtil {
     private static final String IMAGE_FOR_COMPARISON = "Image for comparison";
     private static final String HIGHLIGHT_DIFFERENCE = "Highlight difference";
     private static final String IMAGE_COMPARISON_TYPE = "Image comparison type";
-    private static final String IMAGE_LOCATOR = "Locator to element with image";
+    private static final String IMAGE_LOCATOR = "Locator to element with picture";
     private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
     private static final String MATCH_PERCENTAGE = "Match percentage";
     private static final String EXCLUDED_ELEMENT = "Excluded elements locators";
@@ -318,8 +332,8 @@ public class ResultUtil {
     public void addImageComparisonMetaData(final Image image, final CommandResult result) {
         result.put(IMAGE_FOR_COMPARISON, image.getFile());
         result.put(HIGHLIGHT_DIFFERENCE, image.isHighlightDifference());
-        if (nonNull(image.getElement())) {
-            addCompareWithElementMetaData(image.getElement(), result);
+        if (nonNull(image.getPicture())) {
+            addCompareWithElementMetaData(image.getPicture(), result);
         } else if (nonNull(image.getFullScreen())) {
             addCompareWithFullScreenMetaData(image.getFullScreen(), result);
         } else if (nonNull(image.getPart())) {
@@ -327,14 +341,35 @@ public class ResultUtil {
         }
     }
 
-    private void addCompareWithElementMetaData(final CompareWithElement element, final CommandResult result) {
+    public void addImageComparisonMetaData(final MobileImage image, final CommandResult result) {
+        result.put(IMAGE_FOR_COMPARISON, image.getFile());
+        result.put(HIGHLIGHT_DIFFERENCE, image.isHighlightDifference());
+        if (nonNull(image.getPicture())) {
+            addCompareWithElementMetaData(image.getPicture(), result);
+        } else if (nonNull(image.getFullScreen())) {
+            addCompareWithFullScreenMetaData(image.getFullScreen(), result);
+        } else if (nonNull(image.getPart())) {
+            addCompareWithPartMetaData(image.getPart(), result);
+        }
+    }
+
+    public void addImageComparisonMetaData(final NativeImage image, final CommandResult result) {
+        result.put(IMAGE_FOR_COMPARISON, image.getFile());
+        result.put(HIGHLIGHT_DIFFERENCE, image.isHighlightDifference());
+        if (nonNull(image.getFullScreen())) {
+            addCompareWithFullScreenMetaData(image.getFullScreen(), result);
+        } else if (nonNull(image.getPart())) {
+            addCompareWithPartMetaData(image.getPart(), result);
+        }
+    }
+
+    private void addCompareWithElementMetaData(final Picture element, final CommandResult result) {
         result.put(IMAGE_COMPARISON_TYPE, EXTRACT_THEN_COMPARE);
         result.put(IMAGE_LOCATOR, element.getLocatorId());
         result.put(IMAGE_SOURCE_ATT, element.getAttribute());
     }
 
-    private void addCompareWithFullScreenMetaData(final CompareWithFullScreen fullScreen,
-                                                  final CommandResult result) {
+    private void addCompareWithFullScreenMetaData(final WebFullScreen fullScreen, final CommandResult result) {
         result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
         if (nonNull(fullScreen.getPercentage())) {
             result.put(MATCH_PERCENTAGE, fullScreen.getPercentage());
@@ -346,7 +381,14 @@ public class ResultUtil {
         }
     }
 
-    private void addCompareWithPartMetaData(final CompareWithPart part,
+    private void addCompareWithFullScreenMetaData(final FullScreen fullScreen, final CommandResult result) {
+        result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
+        if (nonNull(fullScreen.getPercentage())) {
+            result.put(MATCH_PERCENTAGE, fullScreen.getPercentage());
+        }
+    }
+
+    private void addCompareWithPartMetaData(final Part part,
                                             final CommandResult result) {
         result.put(IMAGE_COMPARISON_TYPE, GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
         result.put(IMAGE_LOCATOR, part.getLocatorId());

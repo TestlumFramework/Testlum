@@ -301,9 +301,9 @@
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:choice>
-                    <x:element name="fullScreen" type="tns:compareWithFullScreen"/>
-                    <x:element name="element" type="tns:compareWithElement"/>
-                    <x:element name="part" type="tns:compareWithPart"/>
+                    <x:element name="fullScreen" type="tns:webFullScreen"/>
+                    <x:element name="picture" type="tns:picture"/>
+                    <x:element name="part" type="tns:part"/>
                 </x:choice>
                 <x:attribute name="file" type="tns:imageExtension" use="required"/>
                 <x:attribute name="highlightDifference" type="x:boolean" default="false"/>
@@ -311,19 +311,53 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="compareWithFullScreen">
-        <x:choice minOccurs="0" maxOccurs="unbounded">
-            <x:element name="exclude" type="tns:exclude"/>
-        </x:choice>
+    <x:complexType name="mobileImage">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice>
+                    <x:element name="fullScreen" type="tns:fullScreen"/>
+                    <x:element name="picture" type="tns:picture"/>
+                    <x:element name="part" type="tns:part"/>
+                </x:choice>
+                <x:attribute name="file" type="tns:imageExtension" use="required"/>
+                <x:attribute name="highlightDifference" type="x:boolean" default="false"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="nativeImage">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice>
+                    <x:element name="fullScreen" type="tns:fullScreen"/>
+                    <x:element name="part" type="tns:part"/>
+                </x:choice>
+                <x:attribute name="file" type="tns:imageExtension" use="required"/>
+                <x:attribute name="highlightDifference" type="x:boolean" default="false"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="fullScreen">
         <x:attribute name="percentage" type="tns:positiveDoubleMin0Max100"/>
     </x:complexType>
 
-    <x:complexType name="compareWithElement">
+    <x:complexType name="webFullScreen">
+        <x:complexContent>
+            <x:extension base="tns:fullScreen">
+                <x:choice minOccurs="0" maxOccurs="unbounded">
+                    <x:element name="exclude" type="tns:exclude"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="picture">
         <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
         <x:attribute name="attribute" type="tns:nonEmptyString" default="src"/>
     </x:complexType>
 
-    <x:complexType name="compareWithPart">
+    <x:complexType name="part">
         <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
         <x:attribute name="percentage" type="tns:positiveDoubleMin0Max100"/>
     </x:complexType>

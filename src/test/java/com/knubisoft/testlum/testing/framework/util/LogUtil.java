@@ -9,16 +9,18 @@ import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
 import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
-import com.knubisoft.testlum.testing.model.scenario.CompareWithElement;
-import com.knubisoft.testlum.testing.model.scenario.CompareWithFullScreen;
-import com.knubisoft.testlum.testing.model.scenario.CompareWithPart;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Exclude;
+import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
+import com.knubisoft.testlum.testing.model.scenario.MobileImage;
+import com.knubisoft.testlum.testing.model.scenario.NativeImage;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
+import com.knubisoft.testlum.testing.model.scenario.Part;
+import com.knubisoft.testlum.testing.model.scenario.Picture;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
 import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
@@ -33,6 +35,7 @@ import com.knubisoft.testlum.testing.model.scenario.Smtp;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.knubisoft.testlum.testing.model.scenario.Ui;
+import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -539,8 +542,8 @@ public class LogUtil {
     public void logImageComparisonInfo(final Image image) {
         log.info(IMAGE_FOR_COMPARISON_LOG, image.getFile());
         log.info(HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
-        if (nonNull(image.getElement())) {
-            logCompareWithElementInfo(image.getElement());
+        if (nonNull(image.getPicture())) {
+            logCompareWithElementInfo(image.getPicture());
         } else if (nonNull(image.getFullScreen())) {
             logCompareWithFullscreen(image.getFullScreen());
         } else if (nonNull(image.getPart())) {
@@ -548,13 +551,35 @@ public class LogUtil {
         }
     }
 
-    private void logCompareWithElementInfo(final CompareWithElement element) {
+    public void logImageComparisonInfo(final MobileImage image) {
+        log.info(IMAGE_FOR_COMPARISON_LOG, image.getFile());
+        log.info(HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
+        if (nonNull(image.getPicture())) {
+            logCompareWithElementInfo(image.getPicture());
+        } else if (nonNull(image.getFullScreen())) {
+            logCompareWithFullscreen(image.getFullScreen());
+        } else if (nonNull(image.getPart())) {
+            logCompareWithPart(image.getPart());
+        }
+    }
+
+    public void logImageComparisonInfo(final NativeImage image) {
+        log.info(IMAGE_FOR_COMPARISON_LOG, image.getFile());
+        log.info(HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
+        if (nonNull(image.getFullScreen())) {
+            logCompareWithFullscreen(image.getFullScreen());
+        } else if (nonNull(image.getPart())) {
+            logCompareWithPart(image.getPart());
+        }
+    }
+
+    private void logCompareWithElementInfo(final Picture element) {
         log.info(IMAGE_COMPARISON_TYPE_LOG, EXTRACT_THEN_COMPARE);
         log.info(LOCATOR_LOG, element.getLocatorId());
         log.info(IMAGE_SOURCE_ATT_LOG, element.getAttribute());
     }
 
-    private void logCompareWithFullscreen(final CompareWithFullScreen fullScreen) {
+    private void logCompareWithFullscreen(final WebFullScreen fullScreen) {
         log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_COMPARE);
         if (nonNull(fullScreen.getPercentage())) {
             log.info(IMAGE_MATCH_PERCENTAGE_LOG, fullScreen.getPercentage());
@@ -566,7 +591,14 @@ public class LogUtil {
         }
     }
 
-    private void logCompareWithPart(final CompareWithPart part) {
+    private void logCompareWithFullscreen(final FullScreen fullScreen) {
+        log.info(IMAGE_COMPARISON_TYPE_LOG, TAKE_SCREENSHOT_THEN_COMPARE);
+        if (nonNull(fullScreen.getPercentage())) {
+            log.info(IMAGE_MATCH_PERCENTAGE_LOG, fullScreen.getPercentage());
+        }
+    }
+
+    private void logCompareWithPart(final Part part) {
         log.info(IMAGE_COMPARISON_TYPE_LOG, GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
         log.info(LOCATOR_LOG, part.getLocatorId());
         if (nonNull(part.getPercentage())) {

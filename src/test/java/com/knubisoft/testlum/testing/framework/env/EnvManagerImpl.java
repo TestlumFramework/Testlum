@@ -26,7 +26,7 @@ public class EnvManagerImpl implements EnvManager {
     }
 
     public String currentEnv() {
-        return THREAD_ENV.get().getFolder();
+        return EnvProvider.currentEnv();
     }
 
     public String acquireEnv() throws InterruptedException {
@@ -65,6 +65,13 @@ public class EnvManagerImpl implements EnvManager {
             } finally {
                 lock.unlock();
             }
+        }
+    }
+
+    public static class EnvProvider {
+
+        public static String currentEnv() {
+            return THREAD_ENV.get().getFolder();
         }
     }
 }

@@ -1,12 +1,11 @@
 package com.knubisoft.testlum.testing.framework.configuration.sendgrid;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSendgridEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Sendgrid;
 import com.sendgrid.SendGrid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -18,14 +17,10 @@ import java.util.Map;
 @Conditional({OnSendgridEnabledCondition.class})
 public class SendgridConfiguration {
 
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
-
     @Bean
     public Map<AliasEnv, SendGrid> sendGrid() {
         Map<AliasEnv, SendGrid> sendGridMap = new HashMap<>();
-        globalTestConfigurationProvider.getIntegrations()
-                .forEach((env, integrations) -> addToMap(integrations, env, sendGridMap));
+        ConfigProvider.getIntegrations().forEach((env, integrations) -> addToMap(integrations, env, sendGridMap));
         return sendGridMap;
     }
 

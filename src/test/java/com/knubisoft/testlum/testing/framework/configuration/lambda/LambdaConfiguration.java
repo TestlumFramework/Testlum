@@ -1,11 +1,10 @@
 package com.knubisoft.testlum.testing.framework.configuration.lambda;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnLambdaEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Lambda;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -23,13 +22,10 @@ import java.util.Map;
 @Conditional({OnLambdaEnabledCondition.class})
 public class LambdaConfiguration {
 
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
-
     @Bean
     public Map<AliasEnv, LambdaClient> awsLambdaClients() {
         final Map<AliasEnv, LambdaClient> lambdaClientMap = new HashMap<>();
-        globalTestConfigurationProvider.getIntegrations()
+        ConfigProvider.getIntegrations()
                 .forEach((env, integrations) -> addLambdaClient(integrations, env, lambdaClientMap));
         return lambdaClientMap;
     }

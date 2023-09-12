@@ -1,4 +1,4 @@
-package com.knubisoft.testlum.testing.model;
+package com.knubisoft.testlum.testing.framework.scenario;
 
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.Builder;

@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSQSEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
@@ -22,12 +22,10 @@ public class AliasSQSAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private SQSOperation sqsOperation;
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Sqs sqs : globalTestConfigurationProvider.getDefaultIntegrations().getSqsIntegration().getSqs()) {
+        for (Sqs sqs : ConfigProvider.getDefaultIntegrations().getSqsIntegration().getSqs()) {
             if (sqs.isEnabled()) {
                 aliasMap.put(SQS + UNDERSCORE + sqs.getAlias(), getMetadataSQS(sqs));
             }

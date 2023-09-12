@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnClickhouseEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
@@ -22,13 +22,11 @@ public class AliasClickhouseAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private ClickhouseOperation clickhouseOperation;
-    @Autowired
-    private GlobalTestConfigurationProvider configurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
         for (Clickhouse clickhouse
-                : configurationProvider.getDefaultIntegrations().getClickhouseIntegration().getClickhouse()) {
+                : ConfigProvider.getDefaultIntegrations().getClickhouseIntegration().getClickhouse()) {
             if (clickhouse.isEnabled()) {
                 aliasMap.put(CLICKHOUSE + UNDERSCORE + clickhouse.getAlias(), getMetadataClickhouse(clickhouse));
             }

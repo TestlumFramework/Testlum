@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioFilter;
@@ -9,7 +9,6 @@ import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ScenarioStepReader;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
-import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
@@ -34,28 +33,25 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 public class TestSetCollector {
 
     private final GlobalVariations globalVariations;
-    private final GlobalTestConfigurationProvider configurationProvider;
     private final List<String> browsers;
     private final List<String> mobilebrowsers;
     private final List<String> nativeDevices;
 
-    public TestSetCollector(final GlobalVariations globalVariations,
-                            final GlobalTestConfigurationProvider configurationProvider) {
+    public TestSetCollector(final GlobalVariations globalVariations) {
         this.globalVariations = globalVariations;
-        this.configurationProvider = configurationProvider;
-        browsers = BrowserUtil.filterDefaultEnabledBrowsers(configurationProvider).stream()
+        browsers = BrowserUtil.filterDefaultEnabledBrowsers().stream()
                 .map(AbstractBrowser::getAlias).collect(Collectors.toList());
-        mobilebrowsers = MobileUtil.filterDefaultEnabledMobilebrowserDevices(configurationProvider).stream()
+        mobilebrowsers = MobileUtil.filterDefaultEnabledMobilebrowserDevices().stream()
                 .map(MobilebrowserDevice::getAlias).collect(Collectors.toList());
-        nativeDevices = MobileUtil.filterDefaultEnabledNativeDevices(configurationProvider).stream()
+        nativeDevices = MobileUtil.filterDefaultEnabledNativeDevices().stream()
                 .map(NativeDevice::getAlias).collect(Collectors.toList());
     }
 
 
     public Stream<Arguments> collect() {
-        ScenarioCollector.Result result = new ScenarioCollector(configurationProvider, globalVariations).collect();
+        ScenarioCollector.Result result = new ScenarioCollector(globalVariations).collect();
         Set<MappingResult> validScenarios =
-                new ScenarioFilter().filterScenarios(this.configurationProvider, result.get());
+                new ScenarioFilter().filterScenarios(result.get());
         return validScenarios.stream()
                 .flatMap(this::createArguments);
     }

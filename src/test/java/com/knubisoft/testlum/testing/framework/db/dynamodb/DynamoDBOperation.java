@@ -1,12 +1,10 @@
 package com.knubisoft.testlum.testing.framework.db.dynamodb;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnDynamoEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
-import com.knubisoft.testlum.testing.model.global_config.Dynamo;
+import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
@@ -36,10 +34,6 @@ public class DynamoDBOperation implements StorageOperation {
     private static final String FORBIDDEN_DDB_TABLE_NAME = "dynamobee";
 
     private final Map<AliasEnv, DynamoDbClient> dynamoDbClient;
-    @Autowired
-    private GlobalTestConfigurationProvider configurationProvider;
-    @Autowired
-    private EnvManager envManager;
 
     public DynamoDBOperation(@Autowired(required = false)
                              final Map<AliasEnv, DynamoDbClient> dynamoDbClient) {
@@ -55,8 +49,7 @@ public class DynamoDBOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         dynamoDbClient.forEach((aliasEnv, dbClient) -> {
-            if (isTruncate(Dynamo.class, aliasEnv, configurationProvider)
-                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
                 dbClient.listTables().tableNames().forEach(tableName -> truncate(tableName, dbClient));
             }
         });
@@ -69,7 +62,7 @@ public class DynamoDBOperation implements StorageOperation {
 
     private QueryResult<List<Map<String, AttributeValue>>> executeSingleQuery(final String query,
                                                                               final String alias) {
-        ExecuteStatementResponse singleResponse = dynamoDbClient.get(new AliasEnv(alias, envManager.currentEnv()))
+        ExecuteStatementResponse singleResponse = dynamoDbClient.get(new AliasEnv(alias, EnvProvider.currentEnv()))
                 .executeStatement(builder -> builder.statement(query));
         return new QueryResult<>(query, singleResponse.items());
     }

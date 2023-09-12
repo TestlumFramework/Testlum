@@ -1,11 +1,11 @@
 package com.knubisoft.testlum.testing.framework.db.rabbitmq;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Rabbitmq;
@@ -23,18 +23,13 @@ import java.util.Objects;
 @Component
 public class RabbitMQOperation implements StorageOperation {
 
-    @Autowired
-    private EnvManager envManager;
     private final Map<AliasEnv, Client> rabbitMqClient;
-    private final GlobalTestConfigurationProvider configurationProvider;
     private final Map<String, Integrations> integrations;
 
     public RabbitMQOperation(@Autowired(required = false) @Qualifier("rabbitMqClient")
-                             final Map<AliasEnv, Client> rabbitMqClient,
-                             final GlobalTestConfigurationProvider configurationProvider) {
+                             final Map<AliasEnv, Client> rabbitMqClient) {
         this.rabbitMqClient = rabbitMqClient;
-        this.configurationProvider = configurationProvider;
-        this.integrations = this.configurationProvider.getIntegrations();
+        this.integrations = ConfigProvider.getIntegrations();
     }
 
     @Override
@@ -45,8 +40,7 @@ public class RabbitMQOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         rabbitMqClient.forEach((aliasEnv, client) -> {
-            if (isTruncate(Rabbitmq.class, aliasEnv, configurationProvider)
-                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
                 String virtualHost = this.findByName(aliasEnv).getVirtualHost();
                 client.getQueues().forEach(queueInfo -> client.purgeQueue(virtualHost, queueInfo.getName()));
             }

@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnOracleEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
@@ -22,13 +22,10 @@ public class AliasOracleAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private OracleOperation oracleOperation;
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Oracle oracle
-                : globalTestConfigurationProvider.getDefaultIntegrations().getOracleIntegration().getOracle()) {
+        for (Oracle oracle : ConfigProvider.getDefaultIntegrations().getOracleIntegration().getOracle()) {
             if (oracle.isEnabled()) {
                 aliasMap.put(ORACLE + UNDERSCORE + oracle.getAlias(), getMetadataOracle(oracle));
             }

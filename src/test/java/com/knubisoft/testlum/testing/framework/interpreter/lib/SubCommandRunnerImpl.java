@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -11,7 +11,6 @@ import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.WebAssert;
 import org.apache.commons.lang3.time.StopWatch;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
@@ -22,9 +21,6 @@ import static java.util.Objects.nonNull;
 
 @Component
 public class SubCommandRunnerImpl implements SubCommandRunner {
-
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     public void runCommands(final List<AbstractUiCommand> commandList,
                             final CommandResult result,
@@ -89,7 +85,7 @@ public class SubCommandRunnerImpl implements SubCommandRunner {
     }
 
     private void checkIfStopScenarioOnFailure(final Exception e) {
-        if (globalTestConfigurationProvider.provide().isStopScenarioOnFailure()) {
+        if (ConfigProvider.provide().isStopScenarioOnFailure()) {
             throw new DefaultFrameworkException(e);
         }
     }

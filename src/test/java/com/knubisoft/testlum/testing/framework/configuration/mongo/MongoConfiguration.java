@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.mongo;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnMongoEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Mongo;
@@ -11,7 +11,6 @@ import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -24,13 +23,10 @@ import java.util.Map;
 @Conditional({OnMongoEnabledCondition.class})
 public class MongoConfiguration {
 
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
-
     @Bean
     public Map<AliasEnv, MongoDatabase> mongoDatabases() {
         final Map<AliasEnv, MongoDatabase> databaseMap = new HashMap<>();
-        globalTestConfigurationProvider.getIntegrations()
+        ConfigProvider.getIntegrations()
                 .forEach((env, integrations) -> addMongoDatabase(integrations, env, databaseMap));
         return databaseMap;
     }

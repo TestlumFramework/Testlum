@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.configuration.elasticsearch;
 
 import com.amazonaws.auth.AWS4Signer;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnElasticEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Elasticsearch;
 import org.apache.http.HttpHost;
@@ -14,7 +14,6 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -30,9 +29,8 @@ public class ElasticsearchConfiguration {
 
     private final Map<String, List<Elasticsearch>> elasticsearchMap;
 
-    public ElasticsearchConfiguration(final @Autowired GlobalTestConfigurationProvider configurationProvider) {
-        this.elasticsearchMap = configurationProvider.getIntegrations()
-                .entrySet().stream()
+    public ElasticsearchConfiguration() {
+        this.elasticsearchMap = ConfigProvider.getIntegrations().entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         entry -> entry.getValue().getElasticsearchIntegration().getElasticsearch()));
     }

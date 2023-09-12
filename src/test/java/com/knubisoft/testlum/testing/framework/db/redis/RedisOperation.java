@@ -1,15 +1,13 @@
 package com.knubisoft.testlum.testing.framework.db.redis;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRedisEnabledCondition;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
-import com.knubisoft.testlum.testing.model.global_config.Redis;
 import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
@@ -33,10 +31,6 @@ public class RedisOperation implements StorageOperation {
     private static final String CLEAR_DATABASE = "FLUSHALL";
 
     private final Map<AliasEnv, StringRedisConnection> stringRedisConnection;
-    @Autowired
-    private GlobalTestConfigurationProvider configurationProvider;
-    @Autowired
-    private EnvManager envManager;
 
     public RedisOperation(@Autowired(required = false)
                           final Map<AliasEnv, StringRedisConnection> stringRedisConnection) {
@@ -51,8 +45,7 @@ public class RedisOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         stringRedisConnection.forEach((aliasEnv, redisConnection) -> {
-            if (isTruncate(Redis.class, aliasEnv, configurationProvider)
-                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
                 redisConnection.execute(CLEAR_DATABASE);
             }
         });
@@ -71,7 +64,7 @@ public class RedisOperation implements StorageOperation {
         String[] args = redisQuery.getArg().toArray(new String[0]);
 
         Object response =
-                stringRedisConnection.get(new AliasEnv(databaseAlias, envManager.currentEnv())).execute(command, args);
+                stringRedisConnection.get(new AliasEnv(databaseAlias, EnvProvider.currentEnv())).execute(command, args);
         return convertResult(response);
     }
 

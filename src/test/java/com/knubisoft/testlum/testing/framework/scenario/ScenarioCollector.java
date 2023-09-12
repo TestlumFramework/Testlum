@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.parser.XMLParsers;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
@@ -32,19 +32,16 @@ import static java.util.Objects.nonNull;
 @Slf4j
 public class ScenarioCollector {
 
-    private final GlobalTestConfigurationProvider configurationProvider;
     private final File rootTestResources;
     private final ScenarioValidator scenarioValidator;
     private final GlobalVariations globalVariations;
     private String variationFileName;
 
-    public ScenarioCollector(final GlobalTestConfigurationProvider configurationProvider,
-                             final GlobalVariations globalVariations) {
-        this.configurationProvider = configurationProvider;
+    public ScenarioCollector(final GlobalVariations globalVariations) {
         this.globalVariations = globalVariations;
         TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
         this.rootTestResources = resourceSettings.getTestResourcesFolder();
-        this.scenarioValidator = new ScenarioValidator(this.configurationProvider, this.globalVariations);
+        this.scenarioValidator = new ScenarioValidator(this.globalVariations);
     }
 
     public Result collect() {
@@ -141,7 +138,7 @@ public class ScenarioCollector {
 
     private boolean isAutoLogout(final String alias) {
         //todo move to interpreter
-        List<Api> apiList = configurationProvider.getDefaultIntegrations().getApis().getApi();
+        List<Api> apiList = ConfigProvider.getDefaultIntegrations().getApis().getApi();
         Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, alias);
         if (nonNull(apiIntegration.getAuth())) {
             return apiIntegration.getAuth().isAutoLogout();

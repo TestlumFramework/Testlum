@@ -11,7 +11,6 @@ import com.knubisoft.testlum.testing.framework.util.ImageComparator;
 import com.knubisoft.testlum.testing.framework.util.ImageComparisonUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
 import lombok.Getter;
@@ -54,7 +53,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         List<Rectangle> excludeList = getExcludeList(image.getFullScreen(), expected, dependencies.getDriver());
         ImageComparisonResult comparisonResult = ImageComparator.compare(image, expected, actual, excludeList);
         ImageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
-                image.isHighlightDifference(), scenarioFile.getParentFile(), result);
+                image.isHighlightDifference(), scenarioFile.getParentFile(), uiUtil, result);
     }
 
     private BufferedImage getActualImage(final WebDriver webDriver,
@@ -66,7 +65,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         }
         if (nonNull(image.getPart())) {
             WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocatorId());
-            return ImageIO.read(UiUtil.takeScreenshot(webElement));
+            return ImageIO.read(uiUtil.takeScreenshot(webElement));
         }
         return ImageIO.read(uiUtil.takeScreenshot(webDriver));
     }

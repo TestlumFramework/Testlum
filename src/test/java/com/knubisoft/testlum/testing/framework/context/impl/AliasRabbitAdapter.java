@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
@@ -22,13 +22,10 @@ public class AliasRabbitAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private RabbitMQOperation rabbitMQOperation;
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Rabbitmq rabbitmq
-                : globalTestConfigurationProvider.getDefaultIntegrations().getRabbitmqIntegration().getRabbitmq()) {
+        for (Rabbitmq rabbitmq : ConfigProvider.getDefaultIntegrations().getRabbitmqIntegration().getRabbitmq()) {
             if (rabbitmq.isEnabled()) {
                 aliasMap.put(RABBITMQ + UNDERSCORE + rabbitmq.getAlias(), getMetadataRabbit(rabbitmq));
             }

@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
@@ -22,12 +22,10 @@ public class AliasKafkaAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private KafkaOperation kafkaOperation;
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Kafka kafka : globalTestConfigurationProvider.getDefaultIntegrations().getKafkaIntegration().getKafka()) {
+        for (Kafka kafka : ConfigProvider.getDefaultIntegrations().getKafkaIntegration().getKafka()) {
             if (kafka.isEnabled()) {
                 aliasMap.put(KAFKA + UNDERSCORE + kafka.getAlias(), getMetadataKafka(kafka));
             }

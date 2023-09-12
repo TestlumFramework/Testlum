@@ -1,14 +1,12 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnMysqlEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.MySqlExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
-import com.knubisoft.testlum.testing.model.global_config.Mysql;
+import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -26,10 +24,6 @@ import java.util.Objects;
 @Component("mySqlOperation")
 public class MySqlOperation implements StorageOperation {
 
-    @Autowired
-    private GlobalTestConfigurationProvider configurationProvider;
-    @Autowired
-    private EnvManager envManager;
     private final Map<AliasEnv, AbstractSqlExecutor> mySqlExecutor;
 
     public MySqlOperation(@Autowired(required = false) @Qualifier("mySqlDataSource")
@@ -42,15 +36,14 @@ public class MySqlOperation implements StorageOperation {
     public StorageOperationResult apply(final Source source, final String databaseAlias) {
         List<String> queriesMySql = source.getQueries();
         List<QueryResult<Object>> mySqlAppliedRecords =
-                mySqlExecutor.get(new AliasEnv(databaseAlias, envManager.currentEnv())).executeQueries(queriesMySql);
+                mySqlExecutor.get(new AliasEnv(databaseAlias, EnvProvider.currentEnv())).executeQueries(queriesMySql);
         return new StorageOperationResult(mySqlAppliedRecords);
     }
 
     @Override
     public void clearSystem() {
         mySqlExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            if (isTruncate(Mysql.class, aliasEnv, configurationProvider)
-                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

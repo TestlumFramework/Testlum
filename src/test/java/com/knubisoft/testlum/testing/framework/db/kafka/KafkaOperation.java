@@ -1,12 +1,10 @@
 package com.knubisoft.testlum.testing.framework.db.kafka;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
-import com.knubisoft.testlum.testing.model.global_config.Kafka;
+import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
 import lombok.SneakyThrows;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.DeleteTopicsResult;
@@ -30,10 +28,6 @@ public class KafkaOperation implements StorageOperation {
 
     private final Map<AliasEnv, KafkaConsumer<String, String>> kafkaConsumer;
     private final Map<AliasEnv, AdminClient> adminClient;
-    @Autowired
-    private GlobalTestConfigurationProvider configurationProvider;
-    @Autowired
-    private EnvManager envManager;
 
     public KafkaOperation(@Autowired(required = false) final Map<AliasEnv, KafkaConsumer<String, String>> kafkaConsumer,
                           @Autowired(required = false) final Map<AliasEnv, AdminClient> adminClient) {
@@ -49,8 +43,7 @@ public class KafkaOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         kafkaConsumer.forEach((aliasEnv, kafkaConsumer) -> {
-            if (isTruncate(Kafka.class, aliasEnv, configurationProvider)
-                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
                 clearKafka(kafkaConsumer, aliasEnv);
             }
         });

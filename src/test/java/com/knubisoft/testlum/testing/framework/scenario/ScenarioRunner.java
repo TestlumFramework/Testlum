@@ -1,11 +1,9 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.configuration.ui.MobilebrowserDriverFactory;
 import com.knubisoft.testlum.testing.framework.configuration.ui.NativeDriverFactory;
 import com.knubisoft.testlum.testing.framework.configuration.ui.WebDriverFactory;
-import com.knubisoft.testlum.testing.framework.configuration.ui.WebDriverFactoryContainer;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.exception.StopSignalException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -20,7 +18,6 @@ import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
@@ -54,8 +51,6 @@ public class ScenarioRunner {
     private final ScenarioArguments scenarioArguments;
     private final ApplicationContext ctx;
 
-    private GlobalTestConfigurationProvider configurationProvider;
-    private EnvManager envManager;
     private InterpreterDependencies dependencies;
     private boolean stopScenarioOnFailure;
     private CommandToInterpreterMap cmdToInterpreterMap;
@@ -69,10 +64,8 @@ public class ScenarioRunner {
     }
 
     private void prepare() {
-        this.configurationProvider = ctx.getBean(GlobalTestConfigurationProvider.class);
-        this.envManager = ctx.getBean(EnvManager.class);
         this.dependencies = createDependencies();
-        this.stopScenarioOnFailure = configurationProvider.provide().isStopScenarioOnFailure();
+        this.stopScenarioOnFailure = ConfigProvider.provide().isStopScenarioOnFailure();
         this.cmdToInterpreterMap = createClassToInterpreterMap(dependencies);
     }
 
@@ -208,21 +201,20 @@ public class ScenarioRunner {
 
     private WebDriver createWebDriver() {
         return BrowserUtil.getBrowserBy(scenarioArguments.getEnvironment(), scenarioArguments.getBrowser())
-                .map(device -> WebDriverFactory.createDriver(device,
-                        new WebDriverFactoryContainer(configurationProvider, envManager)))
+                .map(WebDriverFactory::createDriver)
                 .orElse(new MockDriver(WEB_DRIVER_NOT_INIT));
     }
 
     private WebDriver createMobilebrowserDriver() {
         return MobileUtil.getMobilebrowserDeviceBy(scenarioArguments.getEnvironment(),
                         scenarioArguments.getMobilebrowserDevice())
-                .map(device -> MobilebrowserDriverFactory.createDriver(device, envManager))
+                .map(MobilebrowserDriverFactory::createDriver)
                 .orElse(new MockDriver(MOBILEBROWSER_DRIVER_NOT_INIT));
     }
 
     private WebDriver createNativeDriver() {
         return MobileUtil.getNativeDeviceBy(scenarioArguments.getEnvironment(), scenarioArguments.getNativeDevice())
-                .map(device -> NativeDriverFactory.createDriver(device, configurationProvider, envManager))
+                .map(NativeDriverFactory::createDriver)
                 .orElse(new MockDriver(NATIVE_DRIVER_NOT_INIT));
     }
 

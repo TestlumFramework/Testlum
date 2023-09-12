@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnS3EnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.constant.MigrationConstant;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
@@ -22,12 +22,10 @@ public class AliasS3Adapter implements AliasAdapter {
 
     @Autowired(required = false)
     private S3Operation s3Operation;
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (S3 s3 : globalTestConfigurationProvider.getDefaultIntegrations().getS3Integration().getS3()) {
+        for (S3 s3 : ConfigProvider.getDefaultIntegrations().getS3Integration().getS3()) {
             if (s3.isEnabled()) {
                 aliasMap.put(MigrationConstant.S3 + UNDERSCORE + s3.getAlias(), getMetadataS3(s3));
             }

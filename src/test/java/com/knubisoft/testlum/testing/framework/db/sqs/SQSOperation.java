@@ -3,13 +3,11 @@ package com.knubisoft.testlum.testing.framework.db.sqs;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.ListQueuesResult;
 import com.amazonaws.services.sqs.model.PurgeQueueRequest;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSQSEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
-import com.knubisoft.testlum.testing.model.global_config.Sqs;
+import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
@@ -23,10 +21,6 @@ import java.util.Objects;
 public class SQSOperation implements StorageOperation {
 
     private final Map<AliasEnv, AmazonSQS> amazonSQS;
-    @Autowired
-    private GlobalTestConfigurationProvider configurationProvider;
-    @Autowired
-    private EnvManager envManager;
 
     public SQSOperation(@Autowired(required = false) final Map<AliasEnv, AmazonSQS> amazonSQS) {
         this.amazonSQS = amazonSQS;
@@ -40,8 +34,7 @@ public class SQSOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         amazonSQS.forEach((aliasEnv, amazonSQS) -> {
-            if (isTruncate(Sqs.class, aliasEnv, configurationProvider)
-                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
                 ListQueuesResult listQueuesResult = amazonSQS.listQueues();
                 List<String> queueUrls = listQueuesResult.getQueueUrls();
                 queueUrls.forEach(queueUrl -> amazonSQS.purgeQueue(new PurgeQueueRequest(queueUrl)));

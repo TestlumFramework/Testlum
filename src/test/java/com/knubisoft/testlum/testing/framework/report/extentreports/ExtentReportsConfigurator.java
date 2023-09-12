@@ -30,7 +30,7 @@ public class ExtentReportsConfigurator {
 
     public void configure(final ExtentReports extentReports) {
         com.knubisoft.testlum.testing.model.global_config.ExtentReports extentReportsConfig =
-                GlobalTestConfigurationProviderImpl.ConfigurationProvider.provide().getReport().getExtentReports();
+                GlobalTestConfigurationProviderImpl.ConfigProvider.provide().getReport().getExtentReports();
         String projectName = extentReportsConfig.getProjectName();
         HtmlReportGenerator htmlReportGeneratorSettings = extentReportsConfig.getHtmlReportGenerator();
         KlovServerReportGenerator klovServerGeneratorSettings = extentReportsConfig.getKlovServerReportGenerator();

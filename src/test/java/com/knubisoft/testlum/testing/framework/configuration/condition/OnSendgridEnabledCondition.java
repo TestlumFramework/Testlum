@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.condition;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.testlum.testing.model.global_config.SendgridIntegration;
 import org.springframework.context.annotation.Condition;
@@ -13,10 +13,7 @@ public class OnSendgridEnabledCondition implements Condition {
 
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        GlobalTestConfigurationProvider configurationProvider =
-                 context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
-        SendgridIntegration sendgridIntegration =
-                configurationProvider.getDefaultIntegrations().getSendgridIntegration();
+        SendgridIntegration sendgridIntegration = ConfigProvider.getDefaultIntegrations().getSendgridIntegration();
         if (Objects.nonNull(sendgridIntegration)) {
             return IntegrationsUtil.isEnabled(sendgridIntegration.getSendgrid());
         }

@@ -1,14 +1,12 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnPostgresEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.PostgresExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
-import com.knubisoft.testlum.testing.model.global_config.Postgres;
+import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,10 +25,6 @@ import java.util.Objects;
 public class PostgresSqlOperation implements StorageOperation {
 
     private final Map<AliasEnv, AbstractSqlExecutor> postgresExecutor;
-    @Autowired
-    private GlobalTestConfigurationProvider configurationProvider;
-    @Autowired
-    private EnvManager envManager;
 
     public PostgresSqlOperation(@Autowired(required = false) @Qualifier("postgresDataSource")
                                 final Map<AliasEnv, DataSource> postgresDataSource) {
@@ -42,7 +36,7 @@ public class PostgresSqlOperation implements StorageOperation {
     public StorageOperationResult apply(final Source source, final String databaseAlias) {
         List<String> queriesPostgres = source.getQueries();
         List<QueryResult<Object>> postgresAppliedRecords =
-                postgresExecutor.get(new AliasEnv(databaseAlias, envManager.currentEnv()))
+                postgresExecutor.get(new AliasEnv(databaseAlias, EnvProvider.currentEnv()))
                 .executeQueries(queriesPostgres);
         return new StorageOperationResult(postgresAppliedRecords);
     }
@@ -50,8 +44,7 @@ public class PostgresSqlOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         postgresExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            if (isTruncate(Postgres.class, aliasEnv, configurationProvider)
-                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

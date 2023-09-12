@@ -1,14 +1,13 @@
 package com.knubisoft.testlum.testing.framework.configuration.kafka;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Kafka;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -20,14 +19,10 @@ import java.util.Map;
 @Conditional({OnKafkaEnabledCondition.class})
 public class KafkaProducerConfiguration {
 
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
-
     @Bean
     public Map<AliasEnv, KafkaProducer<String, String>> kafkaProducer() {
         Map<AliasEnv, KafkaProducer<String, String>> producerMap = new HashMap<>();
-        globalTestConfigurationProvider.getIntegrations()
-                .forEach((env, integrations) -> addConfigProps(integrations, env, producerMap));
+        ConfigProvider.getIntegrations().forEach((env, integrations) -> addConfigProps(integrations, env, producerMap));
         return producerMap;
     }
 

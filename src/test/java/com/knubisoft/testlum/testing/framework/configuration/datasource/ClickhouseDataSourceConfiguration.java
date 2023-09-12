@@ -1,11 +1,10 @@
 package com.knubisoft.testlum.testing.framework.configuration.datasource;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnClickhouseEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Clickhouse;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -20,13 +19,10 @@ import java.util.Map;
 @Conditional({OnClickhouseEnabledCondition.class})
 public class ClickhouseDataSourceConfiguration {
 
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
-
     @Bean("clickhouseDataSource")
     public Map<AliasEnv, DataSource> dataSource() {
         final Map<AliasEnv, DataSource> dataSourceMap = new HashMap<>();
-        globalTestConfigurationProvider.getIntegrations()
+        ConfigProvider.getIntegrations()
                 .forEach((env, integrations) -> collectDataSource(integrations, env, dataSourceMap));
         return dataSourceMap;
     }

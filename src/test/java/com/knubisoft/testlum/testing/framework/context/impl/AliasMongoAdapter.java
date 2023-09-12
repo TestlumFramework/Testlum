@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnMongoEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
@@ -22,12 +22,10 @@ public class AliasMongoAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private MongoOperation mongoOperation;
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Mongo mongo : globalTestConfigurationProvider.getDefaultIntegrations().getMongoIntegration().getMongo()) {
+        for (Mongo mongo : ConfigProvider.getDefaultIntegrations().getMongoIntegration().getMongo()) {
             if (mongo.isEnabled()) {
                 aliasMap.put(MONGODB + UNDERSCORE + mongo.getAlias(), getMetadataMongo(mongo));
             }

@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -32,13 +31,11 @@ import static java.util.Objects.nonNull;
 public class BrowserTabExecutor extends AbstractUiExecutor<BrowserTab> {
 
     private static final String WINDOW_OPEN = "window.open()";
-    private final GlobalTestConfigurationProvider configurationProvider;
     private final WebDriver driver;
     private final LinkedList<String> openedTabs;
 
     public BrowserTabExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        this.configurationProvider = dependencies.getContext().getBean(GlobalTestConfigurationProvider.class);
         driver = dependencies.getDriver();
         openedTabs = new LinkedList<>(driver.getWindowHandles());
     }
@@ -88,8 +85,7 @@ public class BrowserTabExecutor extends AbstractUiExecutor<BrowserTab> {
             driver.switchTo().newWindow(WindowType.TAB);
         }
         if (StringUtils.isNotBlank(url)) {
-            driver.navigate().to(uiUtil.getUrl(url, dependencies.getEnvironment(),
-                    dependencies.getUiType(), configurationProvider));
+            driver.navigate().to(uiUtil.getUrl(url, dependencies.getEnvironment(), dependencies.getUiType()));
         }
         ResultUtil.addOpenTabMetadata(url, result);
         LogUtil.logOpenTabCommand(url);

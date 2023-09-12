@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.context;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl;
 import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Configuration
-@ComponentScan(basePackages = {"com.knubisoft.testlum.testing.framework.configuration.global", "com.knubisoft"})
+@ComponentScan(basePackages = {"com.knubisoft"})
 public class SpringTestContext {
 
     @Bean
@@ -29,16 +29,16 @@ public class SpringTestContext {
     }
 
     @Bean
-    public EnvManager envManager(final GlobalTestConfigurationProvider configurationProvider) {
-        boolean isParallelExecutionEnabled = configurationProvider.provide().isParallelExecution();
-        List<Environment> enabledEnvList = configurationProvider.getEnabledEnvironments();
+    public EnvManager envManager() {
+        boolean isParallelExecutionEnabled = ConfigProvider.provide().isParallelExecution();
+        List<Environment> enabledEnvList = ConfigProvider.getEnabledEnvironments();
         final List<Environment> envList = isParallelExecutionEnabled
                 ? enabledEnvList : Collections.singletonList(enabledEnvList.get(0));
         return new EnvManagerImpl(envList);
     }
 
     @Bean
-    public ReportGenerator reportGenerator(final GlobalTestConfigurationProvider configurationProvider) {
-        return ReportGeneratorFactory.create(configurationProvider.provide().getReport());
+    public ReportGenerator reportGenerator() {
+        return ReportGeneratorFactory.create(ConfigProvider.provide().getReport());
     }
 }

@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.kafka;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Kafka;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -23,8 +23,8 @@ public class KafkaAdminConfiguration {
 
     private final Map<String, List<Kafka>> kafkaMap;
 
-    public KafkaAdminConfiguration(final GlobalTestConfigurationProvider configurationProvider) {
-        this.kafkaMap = configurationProvider.getIntegrations()
+    public KafkaAdminConfiguration() {
+        this.kafkaMap = GlobalTestConfigurationProviderImpl.ConfigProvider.getIntegrations()
                 .entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey,
                         entry -> entry.getValue().getKafkaIntegration().getKafka()));

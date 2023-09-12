@@ -12,7 +12,6 @@ import com.knubisoft.testlum.testing.framework.util.ImageComparator;
 import com.knubisoft.testlum.testing.framework.util.ImageComparisonUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.MobileImage;
 import lombok.SneakyThrows;
@@ -52,31 +51,31 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
         ImageComparisonResult comparisonResult = ImageComparator.compare(image, expected,
                 cutStatusBar(image.getFullScreen(), actual, dependencies.getDriver()));
         ImageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
-                image.isHighlightDifference(), scenarioFile.getParentFile(), result);
+                image.isHighlightDifference(), scenarioFile.getParentFile(), uiUtil, result);
     }
 
     private BufferedImage getActualImage(final WebDriver webDriver,
                                          final MobileImage image,
                                          final CommandResult result) throws IOException {
         if (nonNull(image.getPicture())) {
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPicture().getLocatorId());
+            WebElement webElement = uiUtil.findWebElement(dependencies, image.getPicture().getLocatorId());
             return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
         }
         if (nonNull(image.getPart())) {
             if (UiType.MOBILE_BROWSER.equals(dependencies.getUiType()) && isIosDevice(webDriver)) {
                 throw new DefaultFrameworkException(IOS_NOT_SUPPORT_PART_COMMAND);
             }
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocatorId());
-            return ImageIO.read(UiUtil.takeScreenshot(webElement));
+            WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocatorId());
+            return ImageIO.read(uiUtil.takeScreenshot(webElement));
         }
-        return ImageIO.read(UiUtil.takeScreenshot(webDriver));
+        return ImageIO.read(uiUtil.takeScreenshot(webDriver));
     }
 
     private BufferedImage extractImageFromElement(final WebElement webElement,
                                                   final String imageSourceAttribute,
                                                   final CommandResult result) throws IOException {
-        String urlToImage = UiUtil.getElementAttribute(webElement, imageSourceAttribute, dependencies.getDriver());
-        urlToImage = UiUtil.resolveHostIfNeeded(urlToImage);
+        String urlToImage = uiUtil.getElementAttribute(webElement, imageSourceAttribute, dependencies.getDriver());
+        urlToImage = uiUtil.resolveHostIfNeeded(urlToImage);
         log.info(URL_TO_IMAGE_LOG, urlToImage);
         result.put(URL_TO_ACTUAL_IMAGE, urlToImage);
         return ImageIO.read(new URL(urlToImage));

@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.ui;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.SeleniumDriverUtil;
 import com.knubisoft.testlum.testing.model.global_config.AppiumNativeCapabilities;
@@ -33,19 +33,15 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @UtilityClass
 public class NativeDriverFactory {
 
-    public WebDriver createDriver(final NativeDevice nativeDevice,
-                                  final GlobalTestConfigurationProvider configurationProvider,
-                                  final EnvManager envManager) {
+    public WebDriver createDriver(final NativeDevice nativeDevice) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         SeleniumDriverUtil.setDefaultCapabilities(nativeDevice, desiredCapabilities);
-        return getNativeWebDriver(nativeDevice, desiredCapabilities, configurationProvider, envManager);
+        return getNativeWebDriver(nativeDevice, desiredCapabilities);
     }
 
     private AppiumDriver getNativeWebDriver(final NativeDevice nativeDevice,
-                                            final DesiredCapabilities desiredCapabilities,
-                                            final GlobalTestConfigurationProvider configurationProvider,
-                                            final EnvManager envManager) {
-        UiConfig uiConfig = configurationProvider.getUiConfigs().get(envManager.currentEnv());
+                                            final DesiredCapabilities desiredCapabilities) {
+        UiConfig uiConfig = ConfigProvider.getUiConfigs().get(EnvProvider.currentEnv());
         String serverUrl = SeleniumDriverUtil.getNativeConnectionUrl(uiConfig);
         AppiumDriver driver = newAppiumDriver(nativeDevice, serverUrl, desiredCapabilities);
         int secondsToWait = uiConfig.getNative().getElementAutowait().getSeconds();

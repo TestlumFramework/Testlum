@@ -1,13 +1,12 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import org.apache.commons.lang3.time.StopWatch;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedList;
@@ -15,9 +14,6 @@ import java.util.List;
 
 @Component
 public class RepeatCommandsRunnerImpl implements RepeatCommandRunner {
-
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     public void runCommands(final List<AbstractCommand> commandList,
                             final InterpreterDependencies dependencies,
@@ -64,7 +60,7 @@ public class RepeatCommandsRunnerImpl implements RepeatCommandRunner {
     }
 
     private void checkIfStopScenarioOnFailure(final Exception e) {
-        if (globalTestConfigurationProvider.provide().isStopScenarioOnFailure()) {
+        if (ConfigProvider.provide().isStopScenarioOnFailure()) {
             throw new DefaultFrameworkException(e);
         }
     }

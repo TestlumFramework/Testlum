@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
@@ -199,15 +200,14 @@ public class UiUtilImpl implements UiUtil {
 
     public String getUrl(final String path,
                          final String env,
-                         final UiType uiType,
-                         final GlobalTestConfigurationProvider configurationProvider) {
+                         final UiType uiType) {
         if (HTTP_PATTERN.matcher(path).matches()) {
             return path;
         }
         if (UiType.MOBILE_BROWSER == uiType) {
-            return configurationProvider.getMobilebrowserSettings(env)
+            return ConfigProvider.getMobilebrowserSettings(env)
                     .getBaseUrl() + path;
         }
-        return configurationProvider.getWebSettings(env).getBaseUrl() + path;
+        return ConfigProvider.getWebSettings(env).getBaseUrl() + path;
     }
 }

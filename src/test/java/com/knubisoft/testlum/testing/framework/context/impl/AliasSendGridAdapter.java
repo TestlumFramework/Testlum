@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSendgridEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
@@ -22,13 +22,10 @@ public class AliasSendGridAdapter implements AliasAdapter {
 
     @Autowired
     private SendGridOperation sendGridOperation;
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Sendgrid sendgrid
-                : globalTestConfigurationProvider.getDefaultIntegrations().getSendgridIntegration().getSendgrid()) {
+        for (Sendgrid sendgrid : ConfigProvider.getDefaultIntegrations().getSendgridIntegration().getSendgrid()) {
             if (sendgrid.isEnabled()) {
                 aliasMap.put(SENDGRID + UNDERSCORE + sendgrid.getAlias(), getMetadataSendGrid(sendgrid));
             }

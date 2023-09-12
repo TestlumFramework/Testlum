@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.condition;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
 import com.knubisoft.testlum.testing.model.global_config.SesIntegration;
 import org.springframework.context.annotation.Condition;
@@ -13,10 +13,7 @@ public class OnSESEnabledCondition implements Condition {
 
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        GlobalTestConfigurationProvider configurationProvider =
-                 context.getBeanFactory().getBean(GlobalTestConfigurationProvider.class);
-        SesIntegration sesIntegration =
-                configurationProvider.getDefaultIntegrations().getSesIntegration();
+        SesIntegration sesIntegration = ConfigProvider.getDefaultIntegrations().getSesIntegration();
         if (Objects.nonNull(sesIntegration)) {
             return IntegrationsUtil.isEnabled(sesIntegration.getSes());
         }

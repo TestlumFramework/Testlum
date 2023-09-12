@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRedisEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
@@ -22,12 +22,10 @@ public class AliasRedisAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private RedisOperation redisOperation;
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Redis redis : globalTestConfigurationProvider.getDefaultIntegrations().getRedisIntegration().getRedis()) {
+        for (Redis redis : ConfigProvider.getDefaultIntegrations().getRedisIntegration().getRedis()) {
             if (redis.isEnabled()) {
                 aliasMap.put(REDIS + UNDERSCORE + redis.getAlias(), getMetadataRedis(redis));
             }

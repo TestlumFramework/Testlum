@@ -1,13 +1,11 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
-import com.knubisoft.testlum.testing.model.ScenarioArguments;
+import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
 import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
-import com.knubisoft.testlum.testing.model.scenario.Auth;
-import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Exclude;
@@ -20,10 +18,6 @@ import com.knubisoft.testlum.testing.model.scenario.Overview;
 import com.knubisoft.testlum.testing.model.scenario.OverviewPart;
 import com.knubisoft.testlum.testing.model.scenario.Part;
 import com.knubisoft.testlum.testing.model.scenario.Picture;
-import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
-import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
-import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
-import com.knubisoft.testlum.testing.model.scenario.RedisQuery;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;

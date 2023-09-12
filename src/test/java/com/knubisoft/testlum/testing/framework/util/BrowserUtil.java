@@ -1,7 +1,6 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.testlum.testing.model.global_config.Web;
@@ -23,9 +22,8 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @UtilityClass
 public class BrowserUtil {
 
-    public List<AbstractBrowser> filterDefaultEnabledBrowsers(
-            final GlobalTestConfigurationProvider globalTestConfigurationProvider) {
-        Web web = globalTestConfigurationProvider.getDefaultUiConfigs().getWeb();
+    public List<AbstractBrowser> filterDefaultEnabledBrowsers() {
+        Web web = ConfigProvider.getDefaultUiConfigs().getWeb();
         return nonNull(web)
                 ? web.getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari().stream()
                 .filter(AbstractBrowser::isEnabled).collect(Collectors.toList())
@@ -35,7 +33,7 @@ public class BrowserUtil {
     public Optional<AbstractBrowser> getBrowserBy(final String env, final String browserAlias) {
         return isBlank(browserAlias)
                 ? Optional.empty()
-                : GlobalTestConfigurationProviderImpl.ConfigurationProvider.getWebSettings(env)
+                : ConfigProvider.getWebSettings(env)
                 .getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari().stream()
                 .filter(browser -> browser.isEnabled() && browser.getAlias().equalsIgnoreCase(browserAlias))
                 .findFirst();

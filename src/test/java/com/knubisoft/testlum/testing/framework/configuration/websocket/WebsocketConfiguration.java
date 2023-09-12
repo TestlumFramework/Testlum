@@ -1,13 +1,12 @@
 package com.knubisoft.testlum.testing.framework.configuration.websocket;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnWebsocketEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.interpreter.WebsocketConnectionManager;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.WebsocketApi;
 import com.knubisoft.testlum.testing.model.global_config.WebsocketProtocol;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -27,13 +26,10 @@ import java.util.Map;
 @Conditional(OnWebsocketEnabledCondition.class)
 public class WebsocketConfiguration {
 
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
-
     @Bean
     public Map<AliasEnv, WebsocketConnectionManager> websocketConnectionSupplier() {
         final Map<AliasEnv, WebsocketConnectionManager> connectionSupplierMap = new HashMap<>();
-        globalTestConfigurationProvider.getIntegrations()
+        ConfigProvider.getIntegrations()
                 .forEach((env, integrations) -> addWebsocketConnection(integrations, env, connectionSupplierMap));
         return connectionSupplierMap;
     }

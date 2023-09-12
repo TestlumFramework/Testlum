@@ -29,8 +29,8 @@ public class VaultService {
     private static final VaultTemplate TEMPLATE = vault();
 
     public VaultTemplate vault() {
-        if (Objects.nonNull(GlobalTestConfigurationProviderImpl.ConfigurationProvider.provide().getVault())) {
-            Vault vault = GlobalTestConfigurationProviderImpl.ConfigurationProvider.provide().getVault();
+        if (Objects.nonNull(GlobalTestConfigurationProviderImpl.ConfigProvider.provide().getVault())) {
+            Vault vault = GlobalTestConfigurationProviderImpl.ConfigProvider.provide().getVault();
             return new VaultTemplate(vaultEndpoint(vault), new TokenAuthentication(vault.getToken()));
         } else {
             throw new DefaultFrameworkException("Vault is not enabled in global config file");

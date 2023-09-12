@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnElasticEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
@@ -22,13 +22,11 @@ public class AliasElasticsearchAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private ElasticsearchOperation elasticsearchOperation;
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Elasticsearch elasticsearch : globalTestConfigurationProvider.getDefaultIntegrations()
-                .getElasticsearchIntegration().getElasticsearch()) {
+        for (Elasticsearch elasticsearch
+                : ConfigProvider.getDefaultIntegrations().getElasticsearchIntegration().getElasticsearch()) {
             if (elasticsearch.isEnabled()) {
                 aliasMap.put(ELASTICSEARCH + UNDERSCORE + elasticsearch.getAlias(),
                         getMetadataElasticsearch(elasticsearch));

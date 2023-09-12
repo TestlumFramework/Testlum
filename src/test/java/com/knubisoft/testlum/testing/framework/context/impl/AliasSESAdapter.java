@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSESEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
@@ -22,12 +22,10 @@ public class AliasSESAdapter implements AliasAdapter {
 
     @Autowired(required = false)
     private SESOperation sesOperation;
-    @Autowired
-    private GlobalTestConfigurationProvider globalTestConfigurationProvider;
 
     @Override
     public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Ses ses : globalTestConfigurationProvider.getDefaultIntegrations().getSesIntegration().getSes()) {
+        for (Ses ses : ConfigProvider.getDefaultIntegrations().getSesIntegration().getSes()) {
             if (ses.isEnabled()) {
                 aliasMap.put(SES + UNDERSCORE + ses.getAlias(), getMetadataSES(ses));
             }

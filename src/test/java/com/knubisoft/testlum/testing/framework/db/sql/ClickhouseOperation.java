@@ -1,14 +1,12 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnClickhouseEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.ClickhouseExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
-import com.knubisoft.testlum.testing.model.global_config.Clickhouse;
+import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,10 +25,6 @@ import java.util.Objects;
 public class ClickhouseOperation implements StorageOperation {
 
     private final Map<AliasEnv, AbstractSqlExecutor> clickhouseExecutor;
-    @Autowired
-    private GlobalTestConfigurationProvider configurationProvider;
-    @Autowired
-    private EnvManager envManager;
 
     public ClickhouseOperation(@Autowired @Qualifier("clickhouseDataSource")
                                final Map<AliasEnv, DataSource> clickhouseDataSource) {
@@ -42,7 +36,7 @@ public class ClickhouseOperation implements StorageOperation {
     public StorageOperationResult apply(final Source source, final String databaseAlias) {
         List<String> queriesClickhouse = source.getQueries();
         List<QueryResult<Object>> clickhouseAppliedRecords =
-                clickhouseExecutor.get(new AliasEnv(databaseAlias, envManager.currentEnv()))
+                clickhouseExecutor.get(new AliasEnv(databaseAlias, EnvProvider.currentEnv()))
                         .executeQueries(queriesClickhouse);
         return new StorageOperationResult(clickhouseAppliedRecords);
     }
@@ -50,8 +44,7 @@ public class ClickhouseOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         clickhouseExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            if (isTruncate(Clickhouse.class, aliasEnv, configurationProvider)
-                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
+            if (Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

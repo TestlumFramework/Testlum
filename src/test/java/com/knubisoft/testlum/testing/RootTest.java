@@ -3,18 +3,18 @@ package com.knubisoft.testlum.testing;
 import com.knubisoft.testlum.testing.framework.ConnectionManager;
 import com.knubisoft.testlum.testing.framework.SystemDataStoreCleaner;
 import com.knubisoft.testlum.testing.framework.TestSetCollector;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
 import com.knubisoft.testlum.testing.framework.context.SpringTestContext;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
+import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
 import com.knubisoft.testlum.testing.framework.env.service.LockService;
 import com.knubisoft.testlum.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
+import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioRunner;
 import com.knubisoft.testlum.testing.framework.util.FileRemover;
-import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.global_config.DelayBetweenScenarioRuns;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import org.apache.commons.lang3.time.StopWatch;
@@ -71,12 +71,6 @@ public class RootTest {
     @Autowired
     private ConnectionManager connectionManager;
 
-    @Autowired
-    private GlobalTestConfigurationProvider configurationProvider;
-
-    @Autowired
-    private EnvManager envManager;
-
     @BeforeAll
     public void beforeAll() throws Exception {
         prepareTestInstance();
@@ -95,7 +89,7 @@ public class RootTest {
     }
 
     private void execute(final ScenarioArguments scenarioArguments) {
-        scenarioArguments.setEnvironment(envManager.currentEnv());
+        scenarioArguments.setEnvironment(EnvProvider.currentEnv());
         clearDataStorages(scenarioArguments.getScenario());
         StopWatch stopWatch = StopWatch.createStarted();
         ScenarioRunner scenarioRunner = new ScenarioRunner(scenarioArguments, ctx);
@@ -131,7 +125,7 @@ public class RootTest {
 
     @AfterEach
     public void afterEach() throws Exception {
-        DelayBetweenScenarioRuns delay = configurationProvider.provide().getDelayBetweenScenarioRuns();
+        DelayBetweenScenarioRuns delay = ConfigProvider.provide().getDelayBetweenScenarioRuns();
         if (nonNull(delay) && delay.isEnabled()) {
             TimeUnit.SECONDS.sleep(delay.getSeconds());
         }

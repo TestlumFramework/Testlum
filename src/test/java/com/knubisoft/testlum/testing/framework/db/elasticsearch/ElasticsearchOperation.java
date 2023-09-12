@@ -1,12 +1,10 @@
 package com.knubisoft.testlum.testing.framework.db.elasticsearch;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnElasticEnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
-import com.knubisoft.testlum.testing.model.global_config.Elasticsearch;
+import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
 import lombok.SneakyThrows;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.client.RequestOptions;
@@ -23,10 +21,6 @@ import java.util.Objects;
 public class ElasticsearchOperation implements StorageOperation {
 
     private final Map<AliasEnv, RestHighLevelClient> restHighLevelClient;
-    @Autowired
-    private GlobalTestConfigurationProvider configurationProvider;
-    @Autowired
-    private EnvManager envManager;
 
     public ElasticsearchOperation(@Autowired(required = false)
                                   final Map<AliasEnv, RestHighLevelClient> restHighLevelClient) {
@@ -38,14 +32,12 @@ public class ElasticsearchOperation implements StorageOperation {
         return null;
     }
 
-    @Override
     @SneakyThrows
+    @Override
     public void clearSystem() {
         DeleteIndexRequest request = new DeleteIndexRequest("*");
         for (Map.Entry<AliasEnv, RestHighLevelClient> entry : restHighLevelClient.entrySet()) {
-            AliasEnv aliasEnv = entry.getKey();
-            if (isTruncate(Elasticsearch.class, aliasEnv, configurationProvider)
-                    && Objects.equals(aliasEnv.getEnvironment(), envManager.currentEnv())) {
+            if (Objects.equals(entry.getKey().getEnvironment(), EnvProvider.currentEnv())) {
                 entry.getValue().indices().delete(request, RequestOptions.DEFAULT);
             }
         }

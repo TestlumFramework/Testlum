@@ -1,11 +1,10 @@
 package com.knubisoft.testlum.testing.framework.configuration.dynamo;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnDynamoEnabledCondition;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Dynamo;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -23,13 +22,10 @@ import java.util.Map;
 @Conditional({OnDynamoEnabledCondition.class})
 public class DynamoDBConfiguration {
 
-    @Autowired
-    private GlobalTestConfigurationProvider configurationProvider;
-
     @Bean
     public Map<AliasEnv, DynamoDbClient> dynamodb() {
         Map<AliasEnv, DynamoDbClient> dbClientMap = new HashMap<>();
-        configurationProvider.getIntegrations()
+        ConfigProvider.getIntegrations()
                 .forEach((env, integrations) -> addDynamoDbClient(integrations, env, dbClientMap));
         return dbClientMap;
     }

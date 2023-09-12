@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.NavigateNative;
 import com.knubisoft.testlum.testing.model.scenario.NavigateNativeDestination;
 import io.appium.java_client.android.AndroidDriver;
@@ -47,7 +48,7 @@ public class NavigateNativeExecutor extends AbstractUiExecutor<NavigateNative> {
         if (dependencies.getDriver() instanceof IOSDriver) {
             performIOSNavigation(navigateNative, (IOSDriver) dependencies.getDriver());
         }
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void performIOSNavigation(final NavigateNative navigateNative, final IOSDriver driver) {

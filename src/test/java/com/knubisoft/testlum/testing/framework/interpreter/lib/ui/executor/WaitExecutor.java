@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.framework.wait.util.WaitUtil;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.UiWait;
@@ -18,6 +19,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCATOR_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WAIT_INFO_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WAIT_TYPE;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.LOCATOR_ID;
@@ -64,7 +66,7 @@ public class WaitExecutor extends AbstractUiExecutor<UiWait> {
                                           final CommandResult result) {
         Duration duration = Duration.ofSeconds(seconds);
         WebDriverWait wait = new WebDriverWait(dependencies.getDriver(), duration);
-        WebElement element = uiUtil.findWebElement(dependencies, command.getLocatorId());
+        WebElement element = UiUtil.findWebElement(dependencies, command.getLocatorId());
         log.info(LOCATOR_LOG, command.getLocatorId());
         result.put(LOCATOR_ID, command.getLocatorId());
         if (command instanceof Visible) {

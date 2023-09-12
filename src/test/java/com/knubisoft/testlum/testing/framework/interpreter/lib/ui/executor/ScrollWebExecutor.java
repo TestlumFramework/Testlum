@@ -12,6 +12,7 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.PageScrollScript;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import org.openqa.selenium.WebDriver;
 
@@ -27,16 +28,16 @@ public class ScrollWebExecutor extends AbstractUiExecutor<Scroll> {
         ResultUtil.addScrollMetaData(scroll, result);
         LogUtil.logScrollInfo(scroll);
         executeScrollScript(scroll, dependencies.getDriver());
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void executeScrollScript(final Scroll scroll, final WebDriver webDriver) {
         switch (scroll.getType()) {
             case INNER:
-                JavascriptUtil.executeJsScript(InnerScrollScript.getInnerScrollScript(scroll, uiUtil), webDriver);
+                JavascriptUtil.executeJsScript(InnerScrollScript.getInnerScrollScript(scroll), webDriver);
                 break;
             case PAGE:
-                JavascriptUtil.executeJsScript(PageScrollScript.getPageScrollScript(scroll, uiUtil), webDriver);
+                JavascriptUtil.executeJsScript(PageScrollScript.getPageScrollScript(scroll), webDriver);
                 break;
             default:
                 throw new DefaultFrameworkException(ExceptionMessage.SCROLL_TYPE_NOT_FOUND, scroll.getType());

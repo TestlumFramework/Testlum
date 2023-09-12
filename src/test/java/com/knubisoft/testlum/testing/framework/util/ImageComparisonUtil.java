@@ -37,13 +37,12 @@ public class ImageComparisonUtil {
                                              final String expectedImageFullName,
                                              final boolean isHighlightDifference,
                                              final File directoryToSave,
-                                             final UiUtil uiUtil,
                                              final CommandResult result) {
         ImageComparisonState imageComparisonState = comparisonResult.getImageComparisonState();
         if (imageComparisonState != ImageComparisonState.MATCH) {
             File actualImage =
                     saveActualImage(comparisonResult, expectedImageFullName, isHighlightDifference, directoryToSave);
-            uiUtil.putScreenshotToResult(result, actualImage);
+            UiUtil.putScreenshotToResult(result, actualImage);
             result.put(ADDITIONAL_INFO, IMAGE_ATTACHED_TO_STEP);
             if (imageComparisonState.equals(ImageComparisonState.SIZE_MISMATCH)) {
                 processSizeMismatchException(comparisonResult, result);

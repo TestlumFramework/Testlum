@@ -20,11 +20,11 @@ public enum PageScrollScript {
         this.script = script;
     }
 
-    public static String getPageScrollScript(final Scroll scroll, final UiUtil uiUtil) {
+    public static String getPageScrollScript(final Scroll scroll) {
         int value = scroll.getValue();
         boolean isUpDirection = ScrollDirection.UP == scroll.getDirection();
         if (ScrollMeasure.PERCENT == scroll.getMeasure()) {
-            float percent = uiUtil.calculatePercentageValue(value);
+            float percent = UiUtil.calculatePercentageValue(value);
             return format(VERTICAL_BY_PERCENT.getScript(), isUpDirection ? DelimiterConstant.DASH + percent : percent);
         }
         return format(VERTICAL_BY_PIXEL.getScript(), isUpDirection ? DelimiterConstant.DASH + value : value);

@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Refresh;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.Dimension;
@@ -29,12 +30,11 @@ public class RefreshExecutor extends AbstractUiExecutor<Refresh> {
         AppiumDriver driver = (AppiumDriver) dependencies.getDriver();
         Dimension dimensions = driver.manage().window().getSize();
         Point start = new Point(dimensions.width / 2, dimensions.height / DEFAULT_SCREEN_SEGMENT);
-        Sequence preRefreshAction =
-                uiUtil.buildSequence(start, new Point(start.x, -1), ACTION_DURATION);
+        Sequence preRefreshAction = UiUtil.buildSequence(start, new Point(start.x, -1), ACTION_DURATION);
         Sequence refreshAction =
-                uiUtil.buildSequence(start, new Point(start.x, DEFAULT_REFRESH_VALUE), ACTION_DURATION);
+                UiUtil.buildSequence(start, new Point(start.x, DEFAULT_REFRESH_VALUE), ACTION_DURATION);
         driver.perform(Collections.singletonList(preRefreshAction));
         driver.perform(Collections.singletonList(refreshAction));
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 }

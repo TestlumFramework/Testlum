@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarMethod;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarPredicate;
@@ -14,8 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_VARIABLE_LOG;
@@ -34,15 +33,14 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
 
     public NativeVariableExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        Map<VarPredicate<NativeVar>, VarMethod<NativeVar>> nativeVarMap = new HashMap<>();
-        nativeVarMap.put(var -> nonNull(var.getElement()), this::getElementResult);
-        nativeVarMap.put(var -> nonNull(var.getPath()), this::getPathResult);
-        nativeVarMap.put(var -> nonNull(var.getConstant()), this::getConstantResult);
-        nativeVarMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
-        nativeVarMap.put(var -> nonNull(var.getFile()), this::getFileResult);
-        nativeVarMap.put(var -> nonNull(var.getSql()), this::getSQLResult);
-        nativeVarMap.put(var -> nonNull(var.getGenerate()), this::getRandomGenerateResult);
-        varToMethodMap = Collections.unmodifiableMap(nativeVarMap);
+        varToMethodMap = Map.of(
+                var -> nonNull(var.getElement()), this::getElementResult,
+                var -> nonNull(var.getPath()), this::getPathResult,
+                var -> nonNull(var.getConstant()), this::getConstantResult,
+                var -> nonNull(var.getExpression()), this::getExpressionResult,
+                var -> nonNull(var.getFile()), this::getFileResult,
+                var -> nonNull(var.getSql()), this::getSQLResult,
+                var -> nonNull(var.getGenerate()), this::getRandomGenerateResult);
     }
 
     @Override
@@ -69,7 +67,7 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
         String valueResult;
         String locatorId = var.getElement().getPresent().getLocatorId();
         try {
-            uiUtil.findWebElement(dependencies, locatorId);
+            UiUtil.findWebElement(dependencies, locatorId);
             valueResult = String.valueOf(true);
         } catch (NoSuchElementException e) {
             valueResult = String.valueOf(false);

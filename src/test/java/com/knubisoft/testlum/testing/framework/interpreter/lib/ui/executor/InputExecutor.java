@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Input;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebElement;
@@ -24,13 +25,13 @@ public class InputExecutor extends AbstractUiExecutor<Input> {
     @Override
     public void execute(final Input input, final CommandResult result) {
         result.put(INPUT_LOCATOR, input.getLocatorId());
-        WebElement webElement = uiUtil.findWebElement(dependencies, input.getLocatorId());
-        uiUtil.waitForElementVisibility(dependencies, webElement);
-        uiUtil.highlightElementIfRequired(input.isHighlight(), webElement, dependencies.getDriver());
-        String value = uiUtil.resolveSendKeysType(input.getValue(), webElement, dependencies.getFile());
+        WebElement webElement = UiUtil.findWebElement(dependencies, input.getLocatorId());
+        UiUtil.waitForElementVisibility(dependencies, webElement);
+        UiUtil.highlightElementIfRequired(input.isHighlight(), webElement, dependencies.getDriver());
+        String value = UiUtil.resolveSendKeysType(input.getValue(), webElement, dependencies.getFile());
         result.put(INPUT_VALUE, value);
         log.info(VALUE_LOG, value);
         webElement.sendKeys(value);
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 }

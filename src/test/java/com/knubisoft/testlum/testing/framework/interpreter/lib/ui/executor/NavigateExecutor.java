@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Navigate;
 import com.knubisoft.testlum.testing.model.scenario.NavigateCommand;
 import lombok.extern.slf4j.Slf4j;
@@ -37,11 +38,11 @@ public class NavigateExecutor extends AbstractUiExecutor<Navigate> {
                 break;
             default: throw new DefaultFrameworkException(NAVIGATE_NOT_SUPPORTED, navigateCommand.value());
         }
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void navigateTo(final String path, final CommandResult result) {
-        String url = uiUtil.getUrl(path, dependencies.getEnvironment(), dependencies.getUiType());
+        String url = UiUtil.getUrl(path, dependencies.getEnvironment(), dependencies.getUiType());
         dependencies.getDriver().navigate().to(url);
         result.put(NAVIGATE_URL, path);
         log.info(BY_URL_LOG, path);

@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
 
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Click;
 import com.knubisoft.testlum.testing.model.scenario.ClickMethod;
 import org.openqa.selenium.WebElement;
@@ -24,10 +25,10 @@ public class ClickExecutor extends AbstractUiExecutor<Click> {
     @Override
     public void execute(final Click click, final CommandResult result) {
         result.put(CLICK_LOCATOR, click.getLocatorId());
-        WebElement webElement = uiUtil.findWebElement(dependencies, click.getLocatorId());
+        WebElement webElement = UiUtil.findWebElement(dependencies, click.getLocatorId());
 //        UiUtil.waitForElementVisibility(dependencies, webElement);
-        uiUtil.highlightElementIfRequired(click.isHighlight(), webElement, dependencies.getDriver());
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        UiUtil.highlightElementIfRequired(click.isHighlight(), webElement, dependencies.getDriver());
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         clickWithMethod(click.getMethod(), webElement, result);
     }
 

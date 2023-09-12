@@ -59,7 +59,7 @@ public enum InnerScrollScript {
         this.percentageScript = percentageScript;
     }
 
-    public static String getInnerScrollScript(final Scroll scroll, final UiUtil uiUtil) {
+    public static String getInnerScrollScript(final Scroll scroll) {
         Locator locator = GlobalLocators.getLocator(scroll.getLocatorId());
         return Arrays.stream(InnerScrollScript.values())
                 .filter(e -> e.getLocatorTypePredicate().test(locator))
@@ -69,7 +69,7 @@ public enum InnerScrollScript {
                     int value = scroll.getValue();
                     ScrollDirection direction = scroll.getDirection();
                     return ScrollMeasure.PERCENT == scroll.getMeasure()
-                            ? formatInnerPercentScript(e.getPercentageScript(), selector, value, direction, uiUtil)
+                            ? formatInnerPercentScript(e.getPercentageScript(), selector, value, direction)
                             : formatInnerPixelScript(e.getPixelScript(), selector, value, direction);
                 })
                 .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.INVALID_LOCATOR, locator));
@@ -87,9 +87,8 @@ public enum InnerScrollScript {
     private static String formatInnerPercentScript(final String script,
                                                    final String selector,
                                                    final int value,
-                                                   final ScrollDirection scrollDirection,
-                                                   final UiUtil uiUtil) {
-        float percent = uiUtil.calculatePercentageValue(value);
+                                                   final ScrollDirection scrollDirection) {
+        float percent = UiUtil.calculatePercentageValue(value);
         return format(script,
                 selector,
                 selector,

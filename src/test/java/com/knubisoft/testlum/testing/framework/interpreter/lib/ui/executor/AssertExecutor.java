@@ -9,6 +9,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
 import com.knubisoft.testlum.testing.model.scenario.AssertEqual;
@@ -77,12 +78,12 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         String expected = attribute.getContent();
         ResultUtil.setExpectedActual(expected, actual, result);
         executeComparison(actual, expected, result);
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private String getActualValue(final AssertAttribute attribute) {
-        WebElement webElement = uiUtil.findWebElement(dependencies, attribute.getLocatorId());
-        return uiUtil.getElementAttribute(webElement, attribute.getName(), dependencies.getDriver());
+        WebElement webElement = UiUtil.findWebElement(dependencies, attribute.getLocatorId());
+        return UiUtil.getElementAttribute(webElement, attribute.getName(), dependencies.getDriver());
     }
 
     private void executeEqualityCommand(final AssertEquality action, final CommandResult result) {
@@ -117,7 +118,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         String actual = dependencies.getDriver().getTitle();
         ResultUtil.setExpectedActual(title.getContent(), actual, result);
         executeComparison(actual, title.getContent(), result);
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void executeComparison(final String actual, final String expected, final CommandResult result) {

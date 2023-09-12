@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.SwipeDirection;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.SwipeType;
@@ -34,7 +35,7 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
         ResultUtil.addSwipeMetaData(swipeNative, result);
         LogUtil.logSwipeNativeInfo(swipeNative);
         performSwipe(swipeNative);
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void performSwipe(final SwipeNative swipeNative) {
@@ -50,11 +51,11 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
         Dimension screenDimensions = driver.manage().window().getSize();
         int swipeValue = getSwipeValue(swipeNative, screenDimensions);
         Point start = SwipeType.PAGE == swipeNative.getType()
-                ? uiUtil.getCenterPoint(driver)
-                : uiUtil.findWebElement(dependencies, swipeNative.getLocatorId())
+                ? UiUtil.getCenterPoint(driver)
+                : UiUtil.findWebElement(dependencies, swipeNative.getLocatorId())
                 .getLocation();
         Point end = getEndPoint(swipeNative.getDirection(), start, swipeValue);
-        return uiUtil.buildSequence(start, end, ACTION_DURATION);
+        return UiUtil.buildSequence(start, end, ACTION_DURATION);
     }
 
     private int getSwipeValue(final SwipeNative swipeNative, final Dimension screenDimensions) {

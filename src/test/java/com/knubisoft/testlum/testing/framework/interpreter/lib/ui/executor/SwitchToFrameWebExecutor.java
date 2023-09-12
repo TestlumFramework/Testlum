@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.SwitchToFrame;
 import org.openqa.selenium.WebElement;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +28,9 @@ public class SwitchToFrameWebExecutor extends AbstractUiExecutor<SwitchToFrame> 
     public void execute(final SwitchToFrame switchToFrame, final CommandResult result) {
         String locatorId = switchToFrame.getLocatorId();
         result.put(SWITCH_LOCATOR, locatorId);
-        WebElement element = uiUtil.findWebElement(dependencies, locatorId);
+        WebElement element = UiUtil.findWebElement(dependencies, locatorId);
         dependencies.getDriver().switchTo().frame(element);
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
 
         LogUtil.startUiCommandsInFrame();
         this.subCommandRunner.runCommands(switchToFrame.getClickOrInputOrAssert(), result, dependencies);

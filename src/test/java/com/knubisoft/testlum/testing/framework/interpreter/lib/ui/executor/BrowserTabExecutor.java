@@ -9,6 +9,7 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.BrowserTab;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -49,7 +50,7 @@ public class BrowserTabExecutor extends AbstractUiExecutor<BrowserTab> {
         } else if (nonNull(browserTab.getSwitch())) {
             switchToTab(browserTab.getSwitch().getIndex(), result);
         }
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void closeTab(final Integer tabIndex, final CommandResult result) {
@@ -85,7 +86,7 @@ public class BrowserTabExecutor extends AbstractUiExecutor<BrowserTab> {
             driver.switchTo().newWindow(WindowType.TAB);
         }
         if (StringUtils.isNotBlank(url)) {
-            driver.navigate().to(uiUtil.getUrl(url, dependencies.getEnvironment(), dependencies.getUiType()));
+            driver.navigate().to(UiUtil.getUrl(url, dependencies.getEnvironment(), dependencies.getUiType()));
         }
         ResultUtil.addOpenTabMetadata(url, result);
         LogUtil.logOpenTabCommand(url);

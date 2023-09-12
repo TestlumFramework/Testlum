@@ -10,6 +10,7 @@ import com.knubisoft.testlum.testing.framework.util.ImageComparator;
 import com.knubisoft.testlum.testing.framework.util.ImageComparisonUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.NativeImage;
 import lombok.SneakyThrows;
@@ -51,16 +52,16 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
         BufferedImage actual = getActualImage(dependencies.getDriver(), image);
         ImageComparisonResult comparisonResult = ImageComparator.compare(image, expected, actual);
         ImageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
-                image.isHighlightDifference(), scenarioFile.getParentFile(), uiUtil, result);
+                image.isHighlightDifference(), scenarioFile.getParentFile(), result);
     }
 
     private BufferedImage getActualImage(final WebDriver webDriver,
                                          final NativeImage image) throws IOException {
         if (nonNull(image.getPart())) {
-            WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocatorId());
+            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocatorId());
             return ImageIO.read(webElement.getScreenshotAs(OutputType.FILE));
         }
-        BufferedImage fullScreen = ImageIO.read(uiUtil.takeScreenshot(webDriver));
+        BufferedImage fullScreen = ImageIO.read(UiUtil.takeScreenshot(webDriver));
         return cutStatusBar(image.getFullScreen(), fullScreen, webDriver);
     }
 

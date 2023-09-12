@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -30,12 +31,12 @@ public class HoverExecutor extends AbstractUiExecutor<Hover> {
         if (ConditionUtil.isTrue(hover.getCondition(), dependencies.getScenarioContext(), result)) {
             executeHoverCommand(actions, hover);
         }
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         moveToEmptySpace(hover.isMoveToEmptySpace(), actions);
     }
 
     private void executeHoverCommand(final Actions actions, final Hover hover) {
-        WebElement webElement = uiUtil.findWebElement(dependencies, hover.getLocatorId());
+        WebElement webElement = UiUtil.findWebElement(dependencies, hover.getLocatorId());
         performMovement(actions, webElement);
     }
 

@@ -45,7 +45,7 @@
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.testlum.testing.framework.util.UiUtilImpl"/>
+        <Class name="com.knubisoft.testlum.testing.framework.util.UiUtil"/>
         <Bug pattern="BC_UNCONFIRMED_CAST"/>
     </Match>
 

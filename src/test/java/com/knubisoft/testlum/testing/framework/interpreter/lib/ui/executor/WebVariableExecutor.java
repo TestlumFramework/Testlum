@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarMethod;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarPredicate;
@@ -80,7 +81,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         String valueResult;
         String locatorId = webVar.getElement().getPresent().getLocatorId();
         try {
-            uiUtil.findWebElement(dependencies, locatorId);
+            UiUtil.findWebElement(dependencies, locatorId);
             valueResult = String.valueOf(true);
         } catch (NoSuchElementException e) {
             valueResult = String.valueOf(false);
@@ -92,7 +93,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     private String getDomResult(final WebVar webVar, final CommandResult result) {
         String locatorId = webVar.getDom().getLocatorId();
         if (StringUtils.isNotBlank(locatorId)) {
-            String valueResult = uiUtil.findWebElement(dependencies, locatorId).getAttribute("outerHTML");
+            String valueResult = UiUtil.findWebElement(dependencies, locatorId).getAttribute("outerHTML");
             ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), LOCATOR_FORM, locatorId, valueResult, result);
             return valueResult;
         }

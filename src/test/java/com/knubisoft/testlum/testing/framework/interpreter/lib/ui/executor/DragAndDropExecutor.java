@@ -10,6 +10,7 @@ import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriver;
@@ -35,15 +36,15 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
     public void execute(final DragAndDrop dragAndDrop, final CommandResult result) {
         LogUtil.logDragAndDropInfo(dragAndDrop);
         ResultUtil.addDragAndDropMetaDada(dragAndDrop, result);
-        WebElement target = uiUtil.findWebElement(dependencies, dragAndDrop.getToLocatorId());
+        WebElement target = UiUtil.findWebElement(dependencies, dragAndDrop.getToLocatorId());
         if (StringUtils.isNotBlank(dragAndDrop.getFileName())) {
             File source = FileSearcher.searchFileFromDir(
                     dependencies.getFile().getParentFile(), dragAndDrop.getFileName());
             dropFile(target, source);
         } else {
-            dropElement(target, uiUtil.findWebElement(dependencies, dragAndDrop.getFromLocatorId()));
+            dropElement(target, UiUtil.findWebElement(dependencies, dragAndDrop.getFromLocatorId()));
         }
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void dropElement(final WebElement target, final WebElement source) {

@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.BackSpace;
 import com.knubisoft.testlum.testing.model.scenario.Copy;
@@ -130,7 +131,7 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     private WebElement getElementForHotKey(final String locatorId, final CommandResult result) {
         result.put(HOTKEY_LOCATOR, locatorId);
         log.info(HOTKEY_COMMAND_LOCATOR, locatorId);
-        return uiUtil.findWebElement(dependencies, locatorId);
+        return UiUtil.findWebElement(dependencies, locatorId);
     }
 
     private Keys chooseKeyForOperatingSystem() {

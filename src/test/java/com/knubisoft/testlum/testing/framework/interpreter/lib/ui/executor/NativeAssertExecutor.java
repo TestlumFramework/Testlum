@@ -9,6 +9,7 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
 import com.knubisoft.testlum.testing.model.scenario.AssertEqual;
@@ -65,11 +66,11 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
         String expected = attribute.getContent();
         ResultUtil.setExpectedActual(expected, actual, result);
         executeComparison(actual, expected, result);
-        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private String getActualValue(final AssertAttribute attribute) {
-        WebElement webElement = uiUtil.findWebElement(dependencies, attribute.getLocatorId());
+        WebElement webElement = UiUtil.findWebElement(dependencies, attribute.getLocatorId());
         return webElement.getAttribute(attribute.getName());
     }
 

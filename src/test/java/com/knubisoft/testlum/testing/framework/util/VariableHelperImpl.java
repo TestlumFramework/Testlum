@@ -38,7 +38,6 @@ import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -66,12 +65,11 @@ public class VariableHelperImpl implements VariableHelper {
     private NameToAdapterAlias nameToAdapterAlias;
 
     public VariableHelperImpl() {
-        Map<RandomPredicate, RandomFunction> functionMap = new HashMap<>();
-        functionMap.put(r -> nonNull(r.getNumeric()), r -> RandomStringUtils.randomNumeric(r.getLength()));
-        functionMap.put(r -> nonNull(r.getAlphabetic()), r -> RandomStringUtils.randomAlphabetic(r.getLength()));
-        functionMap.put(r -> nonNull(r.getAlphanumeric()), r -> RandomStringUtils.randomAlphanumeric(r.getLength()));
-        functionMap.put(r -> nonNull(r.getRandomRegexp()), this::generateStringByRegexp);
-        randomGenerateMethodMap = Collections.unmodifiableMap(functionMap);
+        randomGenerateMethodMap = Map.of(
+                r -> nonNull(r.getNumeric()), r -> RandomStringUtils.randomNumeric(r.getLength()),
+                r -> nonNull(r.getAlphabetic()), r -> RandomStringUtils.randomAlphabetic(r.getLength()),
+                r -> nonNull(r.getAlphanumeric()), r -> RandomStringUtils.randomAlphanumeric(r.getLength()),
+                r -> nonNull(r.getRandomRegexp()), this::generateStringByRegexp);
     }
 
     @Override
@@ -221,7 +219,7 @@ public class VariableHelperImpl implements VariableHelper {
     }
 
     private void verifyIfContentNotEmpty(final List<LinkedCaseInsensitiveMap<String>> content) {
-        if (content.size() < 1) {
+        if (content.isEmpty()) {
             throw new DefaultFrameworkException(VAR_QUERY_RESULT_ERROR);
         }
     }

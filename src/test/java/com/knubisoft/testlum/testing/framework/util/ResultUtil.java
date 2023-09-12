@@ -1,24 +1,28 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
-import com.knubisoft.testlum.testing.model.scenario.CompareWith;
+import com.knubisoft.testlum.testing.model.scenario.CompareWithElement;
+import com.knubisoft.testlum.testing.model.scenario.CompareWithFullScreen;
+import com.knubisoft.testlum.testing.model.scenario.CompareWithPart;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
+import com.knubisoft.testlum.testing.model.scenario.Exclude;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
-import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.io.File;
@@ -28,7 +32,11 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.X;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
@@ -45,6 +53,7 @@ public class ResultUtil {
     public static final String FILE = "File";
     public static final String EXPRESSION = "Expression";
     public static final String CONSTANT = "Constant";
+    public static final String CONTENT = "Content";
     public static final String NO_EXPRESSION = "No expression";
     public static final String COOKIES = "Cookies";
     public static final String URL = "Url";
@@ -89,7 +98,7 @@ public class ResultUtil {
     public static final String URL_TO_ACTUAL_IMAGE = "URL to actual image";
     public static final String ADDITIONAL_INFO = "Additional info";
     public static final String IMAGE_ATTACHED_TO_STEP = "Actual image attached to report step";
-    public static final String SCROLL_TO_ELEMENT = "Scrolling to element with locator id";
+    public static final String IMAGE_MISMATCH_PERCENT = "Expected image size";
     private static final String FROM_LOCATOR = "From element with locator";
     private static final String FROM_LOCAL_FILE = "From local file";
     private static final String TO_LOCATOR = "To element with locator";
@@ -122,6 +131,10 @@ public class ResultUtil {
     private static final String IMAGE_COMPARISON_TYPE = "Image comparison type";
     private static final String IMAGE_LOCATOR = "Locator to element with image";
     private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
+    private static final String MATCH_PERCENTAGE = "Match percentage";
+    private static final String EXCLUDED_ELEMENT = "Excluded elements locators";
+    private static final String ACTUAL_IMAGE_SIZE = "Actual image size";
+    private static final String EXPECTED_IMAGE_SIZE = "Expected image size";
 
     public CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
         CommandResult commandResult = new CommandResult();
@@ -254,16 +267,6 @@ public class ResultUtil {
         }
     }
 
-    public void addScrollNativeMetaDada(final ScrollNative scrollNative,
-                                        final CommandResult result) {
-        result.put(SCROLL_TYPE, scrollNative.getType());
-        if (ScrollType.INNER == scrollNative.getType()) {
-            result.put(LOCATOR_FOR_SCROLL, scrollNative.getLocatorId());
-        }
-        result.put(SCROLL_DIRECTION, scrollNative.getDirection());
-        result.put(VALUE, scrollNative.getValue());
-    }
-
     public void addDragAndDropMetaDada(final DragAndDrop dragAndDrop,
                                        final CommandResult result) {
         if (isNotBlank(dragAndDrop.getFileName())) {
@@ -315,14 +318,48 @@ public class ResultUtil {
     public void addImageComparisonMetaData(final Image image, final CommandResult result) {
         result.put(IMAGE_FOR_COMPARISON, image.getFile());
         result.put(HIGHLIGHT_DIFFERENCE, image.isHighlightDifference());
-        CompareWith compareWith = image.getCompareWith();
-        if (nonNull(compareWith)) {
-            result.put(IMAGE_COMPARISON_TYPE, EXTRACT_THEN_COMPARE);
-            result.put(IMAGE_LOCATOR, compareWith.getLocatorId());
-            result.put(IMAGE_SOURCE_ATT, compareWith.getAttribute());
-        } else {
-            result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
+        if (nonNull(image.getElement())) {
+            addCompareWithElementMetaData(image.getElement(), result);
+        } else if (nonNull(image.getFullScreen())) {
+            addCompareWithFullScreenMetaData(image.getFullScreen(), result);
+        } else if (nonNull(image.getPart())) {
+            addCompareWithPartMetaData(image.getPart(), result);
         }
+    }
+
+    private void addCompareWithElementMetaData(final CompareWithElement element, final CommandResult result) {
+        result.put(IMAGE_COMPARISON_TYPE, EXTRACT_THEN_COMPARE);
+        result.put(IMAGE_LOCATOR, element.getLocatorId());
+        result.put(IMAGE_SOURCE_ATT, element.getAttribute());
+    }
+
+    private void addCompareWithFullScreenMetaData(final CompareWithFullScreen fullScreen,
+                                                  final CommandResult result) {
+        result.put(IMAGE_COMPARISON_TYPE, TAKE_SCREENSHOT_THEN_COMPARE);
+        if (nonNull(fullScreen.getPercentage())) {
+            result.put(MATCH_PERCENTAGE, fullScreen.getPercentage());
+        }
+        if (!fullScreen.getExclude().isEmpty()) {
+            result.put(EXCLUDED_ELEMENT, StringUtils.join(fullScreen.getExclude().stream()
+                    .map(Exclude::getLocatorId)
+                    .collect(Collectors.joining(COMMA + SPACE))));
+        }
+    }
+
+    private void addCompareWithPartMetaData(final CompareWithPart part,
+                                            final CommandResult result) {
+        result.put(IMAGE_COMPARISON_TYPE, GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
+        result.put(IMAGE_LOCATOR, part.getLocatorId());
+        if (nonNull(part.getPercentage())) {
+            result.put(MATCH_PERCENTAGE, part.getPercentage());
+        }
+    }
+
+    public void addImagesSizeMetaData(final ImageComparisonResult comparisonResult, final CommandResult result) {
+        result.put(EXPECTED_IMAGE_SIZE, comparisonResult.getExpected().getWidth()
+                + X + comparisonResult.getExpected().getHeight());
+        result.put(ACTUAL_IMAGE_SIZE, comparisonResult.getActual().getWidth()
+                + X + comparisonResult.getActual().getHeight());
     }
 
     public void addAssertAttributeMetaData(final AssertAttribute attribute, final CommandResult result) {

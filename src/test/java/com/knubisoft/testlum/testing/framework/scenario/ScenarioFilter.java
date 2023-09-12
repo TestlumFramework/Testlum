@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.testlum.testing.model.global_config.TagValue;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -56,15 +57,23 @@ public class ScenarioFilter {
         RunScenariosByTag runScenariosByTag = configurationProvider.provide().getRunScenariosByTag();
         return runScenariosByTag.isEnabled()
                 ? filterByTags(activeScenarios, getEnabledTags(runScenariosByTag.getTag()))
-                : activeScenarios;
+                : sortByName(activeScenarios);
     }
 
     private Set<MappingResult> filterByTags(final Set<MappingResult> original, final List<String> enabledTags) {
-        Set<MappingResult> filteredByTags = filterBy(original, e -> isMatchesTags(e, enabledTags));
+        Set<MappingResult> filteredByTags = filterBy(sortByName(original), e -> isMatchesTags(e, enabledTags)).stream()
+                .sorted(Comparator.comparing(mappingResult -> mappingResult.scenario.getSettings().getTags()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
         if (filteredByTags.isEmpty()) {
             throw new DefaultFrameworkException(NO_SCENARIOS_FILTERED_BY_TAGS);
         }
         return filteredByTags;
+    }
+
+    private LinkedHashSet<MappingResult> sortByName(final Set<MappingResult> activeScenarios) {
+        return activeScenarios.stream()
+                .sorted(Comparator.comparing(mappingResult -> mappingResult.file.getPath()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private boolean isMatchesTags(final MappingResult entry, final List<String> enabledTags) {

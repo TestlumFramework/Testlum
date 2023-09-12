@@ -7,24 +7,32 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.util.ResultUtil;
-import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
+import com.knubisoft.testlum.testing.framework.util.LogUtil;
+import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertEqual;
+import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
+import com.knubisoft.testlum.testing.model.scenario.AssertNotEqual;
 import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
 import com.knubisoft.testlum.testing.model.scenario.WebAssert;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ASSERT_TYPE_NOT_SUPPORTED;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_LOG;
+import static com.knubisoft.testlum.testing.framework.interpreter.AssertInterpreter.ASSERT_CONTENT_IS_EQUAL;
+import static com.knubisoft.testlum.testing.framework.interpreter.AssertInterpreter.ASSERT_CONTENT_NOT_EQUAL;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONTENT;
 
+@Slf4j
 @ExecutorForClass(WebAssert.class)
 public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
 
@@ -32,18 +40,17 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
 
     public AssertExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        Map<AssertCmdPredicate, AssertMethod> assertCommands = new HashMap<>();
-        assertCommands.put(AssertAttribute.class::isInstance,
-                (a, result) -> executeAttributeCommand((AssertAttribute) a, result));
-        assertCommands.put(AssertTitle.class::isInstance, (a, result) -> executeTitleCommand((AssertTitle) a, result));
-        assertCommandMap = Collections.unmodifiableMap(assertCommands);
+        assertCommandMap = Map.of(
+                AssertAttribute.class::isInstance, (a, result) -> executeAttributeCommand((AssertAttribute) a, result),
+                a -> a instanceof AssertEquality, (a, result) -> executeEqualityCommand((AssertEquality) a, result),
+                AssertTitle.class::isInstance, (a, result) -> executeTitleCommand((AssertTitle) a, result));
     }
 
     @Override
     public void execute(final WebAssert webAssert, final CommandResult result) {
         List<CommandResult> subCommandsResult = new ArrayList<>();
         result.setSubCommandsResult(subCommandsResult);
-        webAssert.getAttributeOrTitle().forEach(command -> {
+        webAssert.getAttributeOrTitleOrEqual().forEach(command -> {
             CommandResult commandResult =
                     ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
             subCommandsResult.add(commandResult);
@@ -54,7 +61,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         });
     }
 
-    private void executeSubCommand(final AbstractUiCommand command, final CommandResult result) {
+    private void executeSubCommand(final AbstractCommand command, final CommandResult result) {
         assertCommandMap.entrySet().stream()
                 .filter(method -> method.getKey().test(command))
                 .findFirst()
@@ -78,6 +85,33 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         return uiUtil.getElementAttribute(webElement, attribute.getName(), dependencies.getDriver());
     }
 
+    private void executeEqualityCommand(final AssertEquality action, final CommandResult result) {
+        log.info(CONTENT_LOG, String.join(COMMA, action.getContent()));
+        result.put(CONTENT, String.join(COMMA, action.getContent()));
+        if (action instanceof AssertEqual) {
+            checkContentIsEqual((AssertEqual) action);
+        } else {
+            checkContentNotEqual((AssertNotEqual) action);
+        }
+    }
+
+    private void checkContentIsEqual(final AssertEqual equal) {
+        if (equal.getContent().stream().distinct().count() != 1) {
+            throw new DefaultFrameworkException(String.format(ASSERT_CONTENT_NOT_EQUAL, formatContent(equal)));
+        }
+    }
+
+    private void checkContentNotEqual(final AssertNotEqual notEqual) {
+        List<String> content = notEqual.getContent();
+        if (content.stream().distinct().count() == 1) {
+            throw new DefaultFrameworkException(String.format(ASSERT_CONTENT_IS_EQUAL, formatContent(notEqual)));
+        }
+    }
+
+    private String formatContent(final AssertEquality action) {
+        return String.join(COMMA, action.getContent());
+    }
+
     private void executeTitleCommand(final AssertTitle title, final CommandResult result) {
         LogUtil.logAssertTitleCommand(title);
         String actual = dependencies.getDriver().getTitle();
@@ -98,6 +132,6 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         }
     }
 
-    private interface AssertCmdPredicate extends Predicate<AbstractUiCommand> { }
-    private interface AssertMethod extends BiConsumer<AbstractUiCommand, CommandResult> { }
+    private interface AssertCmdPredicate extends Predicate<AbstractCommand> { }
+    private interface AssertMethod extends BiConsumer<AbstractCommand, CommandResult> { }
 }

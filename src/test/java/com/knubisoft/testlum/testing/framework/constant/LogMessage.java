@@ -111,6 +111,7 @@ public final class LogMessage {
     public static final String SWIPE_DIRECTION = format(TABLE_FORMAT, "Swipe direction", "{}");
     public static final String SWIPE_VALUE = format(TABLE_FORMAT, "Swipe value in %", "{}");
     public static final String SWIPE_TYPE = format(TABLE_FORMAT, "Swipe type", "{}");
+    public static final String WAIT_TYPE = format(TABLE_FORMAT, "Wait for element to be", "{}");
     public static final String DRAGGING_FROM = format(TABLE_FORMAT, "Dragging from locator", "{}");
     public static final String DROPPING_TO = format(TABLE_FORMAT, "Dropping to locator", "{}");
     public static final String DRAGGING_FILE_PATH = format(TABLE_FORMAT, "Dragging file path", "{}");
@@ -130,6 +131,8 @@ public final class LogMessage {
     public static final String HIGHLIGHT_DIFFERENCE_LOG = format(TABLE_FORMAT, "Highlight difference", "{}");
     public static final String IMAGE_FOR_COMPARISON_LOG = format(TABLE_FORMAT, "Image for comparison", "{}");
     public static final String IMAGE_SOURCE_ATT_LOG = format(TABLE_FORMAT, "Image source attribute", "{}");
+    public static final String IMAGE_EXCLUDED_ELEMENT_LOG = format(TABLE_FORMAT, "Excluded elements", "{}");
+    public static final String IMAGE_MATCH_PERCENTAGE_LOG = format(TABLE_FORMAT, "Match percentage", "{}");
     public static final String URL_TO_IMAGE_LOG = format(TABLE_FORMAT, "URL to actual image", "{}");
     public static final String OVERVIEW_INFO_LOG = "{}: {}";
     public static final String MOVE_TO_EMPTY_SPACE = format(TABLE_FORMAT, "Move to empty space", "{}");
@@ -151,6 +154,7 @@ public final class LogMessage {
     public static final String MOBILEBROWSER_APPIUM_INFO = MOBILEBROWSER_INFO + " | udid = %s";
     public static final String NATIVE_INFO = "Device name = %s | platform = %s | version = %s";
     public static final String NATIVE_APPIUM_INFO = NATIVE_INFO + " | udid = %s";
-    public static final String EXTRACT_THEN_COMPARE = "Extract from web element then compare";
-    public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a screenshot then compare";
+    public static final String EXTRACT_THEN_COMPARE = "Extract image from web element then compare";
+    public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a full screenshot then compare";
+    public static final String GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE = "Get element as screenshot then compare";
 }

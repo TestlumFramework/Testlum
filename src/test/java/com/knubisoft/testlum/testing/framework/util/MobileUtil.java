@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl;
 import com.knubisoft.testlum.testing.model.global_config.AbstractDevice;
 import com.knubisoft.testlum.testing.model.global_config.AppiumCapabilities;
 import com.knubisoft.testlum.testing.model.global_config.BrowserStackCapabilities;
@@ -55,25 +56,20 @@ public class MobileUtil {
                 globalTestConfigurationProvider.getDefaultUiConfigs().getNative().getConnection().getAppiumServer());
     }
 
-    public Optional<MobilebrowserDevice> getMobilebrowserDeviceBy(
-            final String env,
-            final String deviceAlias,
-            final GlobalTestConfigurationProvider globalTestConfigurationProvider) {
+    public Optional<MobilebrowserDevice> getMobilebrowserDeviceBy(final String env, final String deviceAlias) {
         return isBlank(deviceAlias)
                 ? Optional.empty()
-                : globalTestConfigurationProvider.getMobilebrowserSettings(env)
+                : GlobalTestConfigurationProviderImpl.ConfigurationProvider.getMobilebrowserSettings(env)
                 .getDevices().getDevice().stream()
                 .filter(MobilebrowserDevice::isEnabled)
                 .filter(device -> device.getAlias().equalsIgnoreCase(deviceAlias))
                 .findFirst();
     }
 
-    public Optional<NativeDevice> getNativeDeviceBy(final String env,
-                                                    final String deviceAlias,
-                                                    final GlobalTestConfigurationProvider configurationProvider) {
+    public Optional<NativeDevice> getNativeDeviceBy(final String env, final String deviceAlias) {
         return isBlank(deviceAlias)
                 ? Optional.empty()
-                : configurationProvider.getNativeSettings(env)
+                : GlobalTestConfigurationProviderImpl.ConfigurationProvider.getNativeSettings(env)
                 .getDevices().getDevice().stream()
                 .filter(device -> device.isEnabled() && device.getAlias().equalsIgnoreCase(deviceAlias))
                 .findFirst();

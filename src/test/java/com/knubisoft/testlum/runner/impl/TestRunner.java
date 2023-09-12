@@ -4,6 +4,7 @@ import com.knubisoft.testlum.runner.Runner;
 import com.knubisoft.testlum.testing.RootTest;
 import com.knubisoft.testlum.testing.framework.SystemInfo;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl;
 import com.knubisoft.testlum.testing.framework.util.ArgumentsUtils;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
@@ -17,6 +18,13 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
 public class TestRunner implements Runner {
+
+    private static final String PARALLEL = "junit.jupiter.execution.parallel.enabled";
+    private static final String STRATEGY = "junit.jupiter.execution.parallel.config.strategy";
+    private static final String CLASS = "junit.jupiter.execution.parallel.config.custom.class";
+    private static final String JUNIT_STRATEGY_CUSTOM = "custom";
+    private static final String JUNIT_PARALLEL_CONFIG =
+            "com.knubisoft.testlum.testing.framework.env.parallel.GlobalParallelExecutionConfigStrategy";
 
     @Override
     public void run(final String[] args) {
@@ -34,6 +42,10 @@ public class TestRunner implements Runner {
         LauncherDiscoveryRequest tests = LauncherDiscoveryRequestBuilder
                 .request()
                 .selectors(selectClass(RootTest.class))
+                .configurationParameter(PARALLEL, GlobalTestConfigurationProviderImpl.ConfigurationProvider.provide()
+                        .isParallelExecution().toString())
+                .configurationParameter(STRATEGY, JUNIT_STRATEGY_CUSTOM)
+                .configurationParameter(CLASS, JUNIT_PARALLEL_CONFIG)
                 .build();
         Launcher launcher = LauncherFactory.create();
         SummaryGeneratingListener listener = new SummaryGeneratingListener();

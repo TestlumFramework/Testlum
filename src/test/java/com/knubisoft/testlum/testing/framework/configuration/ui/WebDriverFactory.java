@@ -36,8 +36,6 @@ import org.openqa.selenium.safari.SafariOptions;
 
 import java.net.URL;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
@@ -52,13 +50,12 @@ public class WebDriverFactory {
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;
 
     static {
-        final Map<BrowserPredicate, WebDriverFunction> map = new HashMap<>(5);
-        map.put(browser -> browser instanceof Chrome, (b, c) -> new ChromeDriverInitializer().init((Chrome) b, c));
-        map.put(browser -> browser instanceof Firefox, (b, c) -> new FirefoxDriverInitializer().init((Firefox) b, c));
-        map.put(browser -> browser instanceof Opera, (b, c) -> new OperaDriverInitializer().init((Opera) b, c));
-        map.put(browser -> browser instanceof Safari, (b, c) -> new SafariDriverInitializer().init((Safari) b, c));
-        map.put(browser -> browser instanceof Edge, (b, c) -> new EdgeDriverInitializer().init((Edge) b, c));
-        DRIVER_INITIALIZER_MAP = Collections.unmodifiableMap(map);
+        DRIVER_INITIALIZER_MAP = Map.of(
+                browser -> browser instanceof Chrome, (b, c) -> new ChromeDriverInitializer().init((Chrome) b, c),
+                browser -> browser instanceof Firefox, (b, c) -> new FirefoxDriverInitializer().init((Firefox) b, c),
+                browser -> browser instanceof Opera, (b, c) -> new OperaDriverInitializer().init((Opera) b, c),
+                browser -> browser instanceof Safari, (b, c) -> new SafariDriverInitializer().init((Safari) b, c),
+                browser -> browser instanceof Edge, (b, c) -> new EdgeDriverInitializer().init((Edge) b, c));
     }
 
     public WebDriver createDriver(final AbstractBrowser browser,
@@ -84,7 +81,7 @@ public class WebDriverFactory {
         setCapabilities(browser, browserOptions);
         switch (BrowserUtil.getBrowserType(browser)) {
             case BROWSER_STACK:
-                return getBrowserStackDriver(browser.getBrowserType().getBrowserStack(), browserOptions, container);
+                return getBrowserStackDriver(browser, browserOptions, container);
             case REMOTE:
                 return getRemoteDriver(browser.getBrowserType().getRemoteBrowser(), browserOptions);
             case IN_DOCKER:
@@ -97,11 +94,16 @@ public class WebDriverFactory {
     }
 
     @SneakyThrows
-    private WebDriver getBrowserStackDriver(final BrowserStackWeb browserStack,
+    private WebDriver getBrowserStackDriver(final AbstractBrowser browser,
                                             final MutableCapabilities browserOptions,
                                             final WebDriverFactoryContainer factoryContainer) {
+        BrowserStackWeb browserStack = browser.getBrowserType().getBrowserStack();
         browserOptions.setCapability("browserstack.local", Boolean.TRUE);
+        browserOptions.setCapability("browserstack.use_w3c", Boolean.TRUE);
+        browserOptions.setCapability(CapabilityType.BROWSER_NAME, browser.getClass().getSimpleName());
         browserOptions.setCapability(CapabilityType.BROWSER_VERSION, browserStack.getBrowserVersion());
+        browserOptions.setCapability("os", browserStack.getOs());
+        browserOptions.setCapability("osVersion", browserStack.getOsVersion());
         String browserStackUrl = SeleniumDriverUtil.getBrowserStackUrl(factoryContainer.getConfigurationProvider()
                 .getUiConfigs().get(factoryContainer.getEnvManager().currentEnv()));
         return new RemoteWebDriver(new URL(browserStackUrl), browserOptions);

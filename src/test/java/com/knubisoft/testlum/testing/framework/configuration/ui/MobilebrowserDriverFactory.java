@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.ui;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.SeleniumDriverUtil;
@@ -25,21 +25,19 @@ import static java.util.Objects.nonNull;
 @UtilityClass
 public class MobilebrowserDriverFactory {
 
-    public WebDriver createDriver(final MobilebrowserDevice mobileDevice,
-                                  final GlobalTestConfigurationProvider configurationProvider,
-                                  final EnvManager envManager) {
+    public WebDriver createDriver(final MobilebrowserDevice mobileDevice, final EnvManager envManager) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
         SeleniumDriverUtil.setDefaultCapabilities(mobileDevice, desiredCapabilities);
         setCommonCapabilities(mobileDevice, desiredCapabilities);
         setPlatformCapabilities(mobileDevice, desiredCapabilities);
-        return getMobilebrowserWebDriver(desiredCapabilities, configurationProvider, envManager);
+        return getMobilebrowserWebDriver(desiredCapabilities, envManager);
     }
 
     @SneakyThrows
     private WebDriver getMobilebrowserWebDriver(final DesiredCapabilities desiredCapabilities,
-                                                final GlobalTestConfigurationProvider configurationProvider,
                                                 final EnvManager envManager) {
-        UiConfig uiConfig = configurationProvider.getUiConfigs().get(envManager.currentEnv());
+        UiConfig uiConfig =
+                GlobalTestConfigurationProviderImpl.ConfigurationProvider.getUiConfigs().get(envManager.currentEnv());
         String serverUrl = SeleniumDriverUtil.getMobilebrowserConnectionUrl(uiConfig);
         Mobilebrowser settings = uiConfig.getMobilebrowser();
         int secondsToWait = settings.getElementAutowait().getSeconds();

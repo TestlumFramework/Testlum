@@ -15,10 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.NoSuchElementException;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -40,23 +37,22 @@ import static java.util.Objects.nonNull;
 public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
 
     private final Map<VarPredicate<WebVar>, VarMethod<WebVar>> varToMethodMap;
-    @Autowired
-    private VariableHelper variableHelper;
+    private final VariableHelper variableHelper;
 
     public WebVariableExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        Map<VarPredicate<WebVar>, VarMethod<WebVar>> webVarMap = new HashMap<>();
-        webVarMap.put(var -> nonNull(var.getElement()), this::getElementResult);
-        webVarMap.put(var -> nonNull(var.getDom()), this::getDomResult);
-        webVarMap.put(var -> nonNull(var.getCookie()), this::getWebCookiesResult);
-        webVarMap.put(var -> nonNull(var.getUrl()), this::getUrlResult);
-        webVarMap.put(var -> nonNull(var.getPath()), this::getPathResult);
-        webVarMap.put(var -> nonNull(var.getConstant()), this::getConstantResult);
-        webVarMap.put(var -> nonNull(var.getExpression()), this::getExpressionResult);
-        webVarMap.put(var -> nonNull(var.getFile()), this::getFileResult);
-        webVarMap.put(var -> nonNull(var.getSql()), this::getSQLResult);
-        webVarMap.put(var -> nonNull(var.getGenerate()), this::getRandomGenerateResult);
-        varToMethodMap = Collections.unmodifiableMap(webVarMap);
+        this.variableHelper = dependencies.getContext().getBean(VariableHelper.class);
+        varToMethodMap = Map.of(
+                var -> nonNull(var.getElement()), this::getElementResult,
+                var -> nonNull(var.getDom()), this::getDomResult,
+                var -> nonNull(var.getCookie()), this::getWebCookiesResult,
+                var -> nonNull(var.getUrl()), this::getUrlResult,
+                var -> nonNull(var.getPath()), this::getPathResult,
+                var -> nonNull(var.getConstant()), this::getConstantResult,
+                var -> nonNull(var.getExpression()), this::getExpressionResult,
+                var -> nonNull(var.getFile()), this::getFileResult,
+                var -> nonNull(var.getSql()), this::getSQLResult,
+                var -> nonNull(var.getGenerate()), this::getRandomGenerateResult);
     }
 
     @Override

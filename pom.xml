@@ -63,7 +63,7 @@
         <tomcat.jdbc.version>10.1.0-M2</tomcat.jdbc.version>
         <postgresql.driver.version>42.2.18</postgresql.driver.version>
         <oracle.database.ojdbc8>21.7.0.0</oracle.database.ojdbc8>
-        <mongodb-driver-sync.version>4.6.1</mongodb-driver-sync.version>
+        <mongodb-java-driver.version>3.12.11</mongodb-java-driver.version>
         <mysql-connector-java.version>8.0.25</mysql-connector-java.version>
         <spring-kafka.version>2.7.1</spring-kafka.version>
         <com.amazonaws.version>1.12.129</com.amazonaws.version>
@@ -71,6 +71,7 @@
         <http-client.version>3.10.0</http-client.version>
         <spring-rabbit.version>2.3.6</spring-rabbit.version>
         <kafka-clients.version>2.7.1</kafka-clients.version>
+        <spring-vault-core.version>2.3.3</spring-vault-core.version>
         <jedis.version>3.3.0</jedis.version>
         <HikariCP.version>4.0.2</HikariCP.version>
         <software.amazon.awssdk.version>2.18.35</software.amazon.awssdk.version>
@@ -93,7 +94,7 @@
         <extent-reports.version>5.0.9</extent-reports.version>
         <jakarta.activation.version>1.2.2</jakarta.activation.version>
         <com.twilio.sdk.version>9.0.0-rc.3</com.twilio.sdk.version>
-        <image-comparison.version>4.4.0</image-comparison.version>
+        <image-comparison.version>4.4.1</image-comparison.version>
         <com.github.curious-odd-man.rgxgen.version>1.4</com.github.curious-odd-man.rgxgen.version>
         <skipGenerateModels>true</skipGenerateModels>
     </properties>
@@ -242,8 +243,8 @@
 
         <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver-sync</artifactId>
-            <version>${mongodb-driver-sync.version}</version>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>${mongodb-java-driver.version}</version>
         </dependency>
 
         <dependency>
@@ -444,6 +445,30 @@
                 <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-tx</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.vault</groupId>
+            <artifactId>spring-vault-core</artifactId>
+            <version>${spring-vault-core.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -874,16 +899,6 @@
             <groupId>com.aventstack</groupId>
             <artifactId>klov-reporter</artifactId>
             <version>${extent-reports.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.mongodb</groupId>
-                    <artifactId>mongodb-driver-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.mongodb</groupId>
-                    <artifactId>bson</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -907,6 +922,8 @@
             <groupId>com.github.romankh3</groupId>
             <artifactId>image-comparison</artifactId>
             <version>${image-comparison.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/test/resources/lib/image-comparison-4.4.1.jar</systemPath>
         </dependency>
 
         <dependency>
@@ -1391,7 +1408,7 @@
                                         <dependencyConvergence/>
                                         <reactorModuleConvergence/>
                                         <requireJavaVersion>
-                                            <version>1.8.0</version>
+                                            <version>${java.version}</version>
                                         </requireJavaVersion>
                                         <!--                                    if you use version for plugin from props as ${version} move this property to root pom-->
                                         <requirePluginVersions>
@@ -1447,29 +1464,36 @@
                         </executions>
                     </plugin>
 
-<!--                    <plugin>-->
-<!--                        <groupId>org.codehaus.mojo</groupId>-->
-<!--                        <artifactId>findbugs-maven-plugin</artifactId>-->
-<!--                        <version>${findbugs.maven.plugin.version}</version>-->
-<!--                        <configuration>-->
-<!--                            <effort>Max</effort>-->
-<!--                            <threshold>Low</threshold>-->
-<!--                            <xmlOutput>true</xmlOutput>-->
-<!--                            <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>-->
-<!--                            <findbugsXmlOutputDirectory>${project.build.directory}/findbugs-->
-<!--                            </findbugsXmlOutputDirectory>-->
-<!--                            <classFilesDirectory>${project.build.testOutputDirectory}</classFilesDirectory>-->
-<!--                        </configuration>-->
-<!--                        <executions>-->
-<!--                            <execution>-->
-<!--                                <id>analyze-code</id>-->
-<!--                                <phase>verify</phase>-->
-<!--                                <goals>-->
-<!--                                    <goal>check</goal>-->
-<!--                                </goals>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
-<!--                    </plugin>-->
+                    <plugin>
+                        <groupId>com.github.spotbugs</groupId>
+                        <artifactId>spotbugs-maven-plugin</artifactId>
+                        <version>4.7.2.1</version>
+                        <configuration>
+                            <effort>Max</effort>
+                            <threshold>Low</threshold>
+                            <xmlOutput>true</xmlOutput>
+                            <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
+                            <spotbugsXmlOutputDirectory>${project.build.directory}/spotbugs
+                            </spotbugsXmlOutputDirectory>
+                            <classFilesDirectory>${project.build.testOutputDirectory}</classFilesDirectory>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.github.spotbugs</groupId>
+                                <artifactId>spotbugs</artifactId>
+                                <version>4.7.3</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>analyze-code</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
 
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>

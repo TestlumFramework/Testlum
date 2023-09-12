@@ -22,7 +22,6 @@ import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.Assert;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -97,7 +96,7 @@ public class ScenarioRunner {
     }
 
     private void runScenarioCommands() {
-        LogUtil.logScenarioDetails(scenarioArguments, scenarioResult.getId(), configurationProvider);
+        LogUtil.logScenarioDetails(scenarioArguments, scenarioResult.getId());
         try {
             runCommands(scenarioArguments.getScenario().getCommands());
         } catch (StopSignalException ignore) {
@@ -143,8 +142,7 @@ public class ScenarioRunner {
     }
 
     private CommandResult prepareCommandResult(final AbstractCommand command) {
-        return command instanceof Assert ? ResultUtil.newUiCommandResultInstance(0, command)
-                : ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
+        return ResultUtil.newCommandResultInstance(idGenerator.incrementAndGet(), command);
     }
 
     @SuppressWarnings("unchecked")
@@ -209,8 +207,7 @@ public class ScenarioRunner {
     }
 
     private WebDriver createWebDriver() {
-        return BrowserUtil.getBrowserBy(scenarioArguments.getEnvironment(), scenarioArguments.getBrowser(),
-                        configurationProvider)
+        return BrowserUtil.getBrowserBy(scenarioArguments.getEnvironment(), scenarioArguments.getBrowser())
                 .map(device -> WebDriverFactory.createDriver(device,
                         new WebDriverFactoryContainer(configurationProvider, envManager)))
                 .orElse(new MockDriver(WEB_DRIVER_NOT_INIT));
@@ -218,14 +215,13 @@ public class ScenarioRunner {
 
     private WebDriver createMobilebrowserDriver() {
         return MobileUtil.getMobilebrowserDeviceBy(scenarioArguments.getEnvironment(),
-                        scenarioArguments.getMobilebrowserDevice(), configurationProvider)
-                .map(device -> MobilebrowserDriverFactory.createDriver(device, configurationProvider, envManager))
+                        scenarioArguments.getMobilebrowserDevice())
+                .map(device -> MobilebrowserDriverFactory.createDriver(device, envManager))
                 .orElse(new MockDriver(MOBILEBROWSER_DRIVER_NOT_INIT));
     }
 
     private WebDriver createNativeDriver() {
-        return MobileUtil.getNativeDeviceBy(scenarioArguments.getEnvironment(), scenarioArguments.getNativeDevice(),
-                        configurationProvider)
+        return MobileUtil.getNativeDeviceBy(scenarioArguments.getEnvironment(), scenarioArguments.getNativeDevice())
                 .map(device -> NativeDriverFactory.createDriver(device, configurationProvider, envManager))
                 .orElse(new MockDriver(NATIVE_DRIVER_NOT_INIT));
     }

@@ -171,7 +171,7 @@
                     <x:element name="input" type="tns:input"/>
                     <x:element name="assert" type="tns:webAssert"/>
                     <x:element name="dropDown" type="tns:dropDown"/>
-                    <x:element name="wait" type="tns:wait"/>
+                    <x:element name="wait" type="tns:uiWait"/>
                     <x:element name="clear" type="tns:clear"/>
                     <x:element name="scroll" type="tns:scroll"/>
                     <x:element name="scrollTo" type="tns:scrollTo"/>
@@ -301,8 +301,9 @@
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:choice>
-                    <x:element name="compareWithFullScreen" type="tns:compareWithFullScreen"/>
-                    <x:element name="compareWith" type="tns:compareWith"/>
+                    <x:element name="fullScreen" type="tns:compareWithFullScreen"/>
+                    <x:element name="element" type="tns:compareWithElement"/>
+                    <x:element name="part" type="tns:compareWithPart"/>
                 </x:choice>
                 <x:attribute name="file" type="tns:imageExtension" use="required"/>
                 <x:attribute name="highlightDifference" type="x:boolean" default="false"/>
@@ -310,11 +311,21 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="compareWithFullScreen"/>
+    <x:complexType name="compareWithFullScreen">
+        <x:choice minOccurs="0" maxOccurs="unbounded">
+            <x:element name="exclude" type="tns:exclude"/>
+        </x:choice>
+        <x:attribute name="percentage" type="tns:positiveDoubleMin0Max100"/>
+    </x:complexType>
 
-    <x:complexType name="compareWith">
+    <x:complexType name="compareWithElement">
         <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
         <x:attribute name="attribute" type="tns:nonEmptyString" default="src"/>
+    </x:complexType>
+
+    <x:complexType name="compareWithPart">
+        <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
+        <x:attribute name="percentage" type="tns:positiveDoubleMin0Max100"/>
     </x:complexType>
 
     <x:complexType name="dragAndDrop">
@@ -338,26 +349,20 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="scrollNative">
-        <x:complexContent>
-            <x:extension base="tns:commandWithOptionalLocator">
-                <x:attribute name="type" type="tns:scrollType" use="required"/>
-                <x:attribute name="direction" type="tns:scrollDirection" default="down"/>
-                <x:attribute name="value" type="x:int" use="required"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="scrollToNative">
-        <x:complexContent>
-            <x:extension base="tns:commandWithLocator"/>
-        </x:complexContent>
-    </x:complexType>
-
     <x:complexType name="refresh">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand"/>
         </x:complexContent>
     </x:complexType>
 
+    <x:complexType name="exclude">
+        <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="positiveDoubleMin0Max100">
+        <x:restriction base="x:double">
+            <x:minInclusive value="0"/>
+            <x:maxInclusive value="100"/>
+        </x:restriction>
+    </x:simpleType>
 </x:schema>

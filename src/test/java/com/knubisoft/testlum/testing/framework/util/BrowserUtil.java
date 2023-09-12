@@ -1,9 +1,11 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.testlum.testing.model.global_config.Web;
+import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
@@ -30,12 +32,10 @@ public class BrowserUtil {
                 : Collections.emptyList();
     }
 
-    public Optional<AbstractBrowser> getBrowserBy(final String env,
-                                                  final String browserAlias,
-                                                  final GlobalTestConfigurationProvider configurationProvider) {
+    public Optional<AbstractBrowser> getBrowserBy(final String env, final String browserAlias) {
         return isBlank(browserAlias)
                 ? Optional.empty()
-                : configurationProvider.getWebSettings(env)
+                : GlobalTestConfigurationProviderImpl.ConfigurationProvider.getWebSettings(env)
                 .getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari().stream()
                 .filter(browser -> browser.isEnabled() && browser.getAlias().equalsIgnoreCase(browserAlias))
                 .findFirst();
@@ -88,6 +88,7 @@ public class BrowserUtil {
         return isBlank(version) ? "No browser version specified (the latest version is used)" : version;
     }
 
+    @Getter
     public enum BrowserType {
         LOCAL("local browser"),
         REMOTE("remote browser"),
@@ -100,8 +101,5 @@ public class BrowserUtil {
             this.typeName = typeName;
         }
 
-        public String getTypeName() {
-            return typeName;
-        }
     }
 }

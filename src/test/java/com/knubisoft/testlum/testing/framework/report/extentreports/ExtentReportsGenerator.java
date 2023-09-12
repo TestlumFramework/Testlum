@@ -3,9 +3,9 @@ package com.knubisoft.testlum.testing.framework.report.extentreports;
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
+import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.report.GlobalScenarioStatCollector;
@@ -19,10 +19,11 @@ import com.knubisoft.testlum.testing.model.global_config.AbstractCapabilities;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
+import lombok.SneakyThrows;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import java.lang.reflect.Field;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -71,13 +72,12 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private static final String SCENARIO_FAILED = "Test scenario failed";
     private static final String SCENARIO_EXECUTION_TIME_TEMPLATE = "Test scenario execution time: %dms";
     private static final String STEP_EXECUTION_TIME_TEMPLATE = "Step execution time: %dms";
-    @Autowired
-    private GlobalTestConfigurationProvider configurationProvider;
+    private static final int SKIP_LEVEL = 15;
 
     @Override
     public void generateReport(final GlobalScenarioStatCollector globalScenarioStatCollector) {
         ExtentReports extentReports = new ExtentReports();
-        ExtentReportsConfigurator.configure(extentReports, configurationProvider);
+        ExtentReportsConfigurator.configure(extentReports);
         globalScenarioStatCollector
                 .getResults().stream()
                 .sorted(Comparator.comparing(ScenarioResult::getId))
@@ -93,8 +93,8 @@ public class ExtentReportsGenerator implements ReportGenerator {
         addBrowserInfo(extentTest, scenarioResult);
         addMobilebrowserDeviceInfo(extentTest, scenarioResult);
         addNativeDeviceInfo(extentTest, scenarioResult);
-        setExecutionResult(extentTest, scenarioResult);
         addScenarioSteps(extentTest, scenarioResult.getCommands());
+        setExecutionResult(extentTest, scenarioResult);
     }
 
     private void addOverviewInfo(final ExtentTest extentTest, final Overview overview, final String filePath) {
@@ -179,7 +179,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private void addBrowserInfo(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
         if (isNotBlank(scenarioResult.getBrowser())) {
             BrowserUtil.getBrowserBy(
-                    scenarioResult.getEnvironment(), scenarioResult.getBrowser(), configurationProvider)
+                            scenarioResult.getEnvironment(), scenarioResult.getBrowser())
                     .ifPresent(browser -> extentTest.info(
                             MarkupHelper.createTable(createTableWithBrowserInfo(browser))));
         }
@@ -188,28 +188,27 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private void addMobilebrowserDeviceInfo(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
         if (isNotBlank(scenarioResult.getMobilebrowserDevice())) {
             MobileUtil.getMobilebrowserDeviceBy(scenarioResult.getEnvironment(),
-                            scenarioResult.getMobilebrowserDevice(), configurationProvider)
-                    .ifPresent(mobilebrowserDevice -> extentTest.info(
-                            MarkupHelper.createTable(createTableWithMobilebrowserDeviceInfo(mobilebrowserDevice))));
+                    scenarioResult.getMobilebrowserDevice()).ifPresent(mobilebrowserDevice -> extentTest.info(
+                    MarkupHelper.createTable(createTableWithMobilebrowserDeviceInfo(mobilebrowserDevice))));
         }
     }
 
     private void addNativeDeviceInfo(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
         if (isNotBlank(scenarioResult.getNativeDevice())) {
-            MobileUtil.getNativeDeviceBy(scenarioResult.getEnvironment(), scenarioResult.getNativeDevice(),
-                            configurationProvider)
+            MobileUtil.getNativeDeviceBy(scenarioResult.getEnvironment(), scenarioResult.getNativeDevice())
                     .ifPresent(nativeDevice -> extentTest.info(
                             MarkupHelper.createTable(createTableWithNativeDeviceInfo(nativeDevice))));
         }
     }
 
     private void setExecutionResult(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
+        extentTest.info(format(SCENARIO_EXECUTION_TIME_TEMPLATE, scenarioResult.getExecutionTime()));
         if (scenarioResult.isSuccess()) {
+            checkIfTestSkipped(extentTest, scenarioResult);
             extentTest.pass(MarkupHelper.createLabel(SCENARIO_SUCCESS, ExtentColor.GREEN));
         } else {
             extentTest.fail(MarkupHelper.createLabel(SCENARIO_FAILED, ExtentColor.RED));
         }
-        extentTest.info(format(SCENARIO_EXECUTION_TIME_TEMPLATE, scenarioResult.getExecutionTime()));
     }
 
     private void addScenarioSteps(final ExtentTest extentTest, final List<CommandResult> steps) {
@@ -283,5 +282,17 @@ public class ExtentReportsGenerator implements ReportGenerator {
             extentTest.fail(stepExecutionInfo.getException());
         }
         extentTest.info(format(STEP_EXECUTION_TIME_TEMPLATE, stepExecutionInfo.getExecutionTime()));
+    }
+
+    @SneakyThrows
+    private void checkIfTestSkipped(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
+        if (extentTest.getStatus().equals(Status.SKIP)
+                && !scenarioResult.getCommands().stream().allMatch(CommandResult::isSkipped)) {
+            Class<Status> statusClass = Status.class;
+            Field level = statusClass.getDeclaredField("level");
+            level.setAccessible(true);
+            level.set(extentTest.getStatus(), SKIP_LEVEL);
+            level.setAccessible(false);
+        }
     }
 }

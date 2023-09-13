@@ -12,7 +12,7 @@ import java.util.Objects;
 public class OnTwilioEnabledCondition implements Condition {
 
     private final TwilioIntegration twilioIntegration =
-        GlobalTestConfigurationProvider.getDefaultIntegrations().getTwilioIntegration();
+            GlobalTestConfigurationProvider.getDefaultIntegrations().getTwilioIntegration();
 
     @Override
     public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {

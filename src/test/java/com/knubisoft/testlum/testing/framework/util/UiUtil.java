@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -103,17 +104,15 @@ public class UiUtil {
     }
 
     private WebDriverWait getWebDriverWait(final ExecutorDependencies dependencies) {
-        int secondsToWait = dependencies.getUiType().getSettings(dependencies.getEnvironment(),
-                        dependencies.getContext()
-                                .getBean(com.knubisoft.testlum.testing.framework.configuration.ConfigProvider.class))
+        ConfigProvider configProvider = dependencies.getContext().getBean(ConfigProvider.class);
+        int secondsToWait = dependencies.getUiType().getSettings(dependencies.getEnvironment(), configProvider)
                 .getElementAutowait().getSeconds();
         return new WebDriverWait(dependencies.getDriver(), Duration.ofSeconds(secondsToWait));
     }
 
     public void takeScreenshotAndSaveIfRequired(final CommandResult result, final ExecutorDependencies dependencies) {
-        boolean isTakeScreenshots = dependencies.getUiType().getSettings(dependencies.getEnvironment(),
-                        dependencies.getContext()
-                                .getBean(com.knubisoft.testlum.testing.framework.configuration.ConfigProvider.class))
+        ConfigProvider configProvider = dependencies.getContext().getBean(ConfigProvider.class);
+        boolean isTakeScreenshots = dependencies.getUiType().getSettings(dependencies.getEnvironment(), configProvider)
                 .getTakeScreenshots().isEnabled();
         if (isTakeScreenshots) {
             File screenshot = takeScreenshot(dependencies.getDriver());

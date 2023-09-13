@@ -36,10 +36,8 @@ public class MongoConfiguration {
                                   final Map<AliasEnv, MongoDatabase> databaseMap) {
         for (Mongo mongo : integrations.getMongoIntegration().getMongo()) {
             if (mongo.isEnabled()) {
-                MongoDatabase mongoDatabase;
-                try (MongoClient mongoClient = createMongoClient(mongo)) {
-                    mongoDatabase = mongoClient.getDatabase(mongo.getDatabase());
-                }
+                MongoClient mongoClient = createMongoClient(mongo);
+                MongoDatabase mongoDatabase = mongoClient.getDatabase(mongo.getDatabase());
                 databaseMap.put(new AliasEnv(mongo.getAlias(), env), mongoDatabase);
             }
         }

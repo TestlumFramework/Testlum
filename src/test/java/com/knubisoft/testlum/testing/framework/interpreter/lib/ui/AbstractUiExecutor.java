@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui;
 
 import com.knubisoft.testlum.testing.framework.ConditionUtil;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
@@ -46,7 +46,7 @@ public abstract class AbstractUiExecutor<T extends AbstractUiCommand> {
     }
 
     protected void checkIfStopScenarioOnFailure(final Exception e) {
-        if (ConfigProvider.provide().isStopScenarioOnFailure()) {
+        if (GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure()) {
             throw new DefaultFrameworkException(e);
         }
     }

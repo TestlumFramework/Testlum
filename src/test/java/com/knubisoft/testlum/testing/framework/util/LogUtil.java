@@ -58,6 +58,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DROPPI
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ENDPOINT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_FRAME;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_WEBVIEW;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXCEPTION_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXPRESSION_LOG;
@@ -240,6 +241,15 @@ public class LogUtil {
     public void logAllQueries(final String dbType, final List<String> queries, final String alias) {
         log.info(DB_TYPE_LOG, dbType);
         logAllQueries(queries, alias);
+    }
+
+    public void logSqlException(final Exception ex, final String query) {
+        if (isNotBlank(ex.getMessage())) {
+            log.error(ERROR_SQL_QUERY, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE),
+                    SqlUtil.getBrokenQuery(ex, query).replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+        } else {
+            log.error(ERROR_SQL_QUERY, ex.toString().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+        }
     }
 
     public void logHttpInfo(final String alias, final String method, final String endpoint) {

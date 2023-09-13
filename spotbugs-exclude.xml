@@ -75,6 +75,16 @@
     </Match>
 
     <Match>
+        <Class name="com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor.NativeVariableExecutor"/>
+        <Bug pattern="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.testlum.testing.framework.util.VariableHelperImpl"/>
+        <Bug pattern="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR"/>
+    </Match>
+
+    <Match>
         <Class name="com.knubisoft.testlum.testing.framework.util.ImageComparisonUtil"/>
         <Bug pattern="BC_UNCONFIRMED_CAST"/>
     </Match>

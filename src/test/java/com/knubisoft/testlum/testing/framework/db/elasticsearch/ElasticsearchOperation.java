@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
+import com.knubisoft.testlum.testing.model.global_config.Elasticsearch;
 import lombok.SneakyThrows;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.client.RequestOptions;
@@ -18,7 +19,7 @@ import java.util.Objects;
 
 @Conditional({OnElasticEnabledCondition.class})
 @Component
-public class ElasticsearchOperation implements StorageOperation {
+public class ElasticsearchOperation extends StorageOperation {
 
     private final Map<AliasEnv, RestHighLevelClient> restHighLevelClient;
 
@@ -37,7 +38,9 @@ public class ElasticsearchOperation implements StorageOperation {
     public void clearSystem() {
         DeleteIndexRequest request = new DeleteIndexRequest("*");
         for (Map.Entry<AliasEnv, RestHighLevelClient> entry : restHighLevelClient.entrySet()) {
-            if (Objects.equals(entry.getKey().getEnvironment(), EnvProvider.currentEnv())) {
+            AliasEnv aliasEnv = entry.getKey();
+            if (isTruncate(Elasticsearch.class, aliasEnv)
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
                 entry.getValue().indices().delete(request, RequestOptions.DEFAULT);
             }
         }

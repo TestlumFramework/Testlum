@@ -178,15 +178,10 @@ public class ExceptionMessage {
     public static final String UNKNOWN_BODY_CONTENT = "Unknown body content provided";
     public static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";
     public static final String REDIS_COMMAND_NOT_FOUND = "Redis command was not provided";
-    public static final String AUTH_WAS_NOT_DEFINED = "<Auth strategy> was not defined in the <api> configuration. "
-            + "Usage example: <auth strategy=\"basic\".../>";
     public static final String TIME_UNIT_UNKNOWN_TYPE = "Time unit unknown type: %s";
     public static final String FAILED_CONNECTION_TO_DATABASE =
             "Connection to database with name \"%s\" failed. "
                     + "Please check global configuration, it may be disabled or doesn't exist";
-    public static final String WEBSOCKET_CONNECTION_FAILURE =
-            "Something went wrong while connecting to websocket with name <%s>";
-    public static final String UNKNOWN_WEBSOCKET_COMMAND = "Unknown websocket command: %s";
     public static final String UNEXPECTED_WEBSOCKET_MESSAGE_TYPE = "Unexpected websocket message type: %s";
 
     // executors

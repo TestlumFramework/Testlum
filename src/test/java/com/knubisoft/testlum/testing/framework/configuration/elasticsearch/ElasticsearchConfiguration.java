@@ -2,7 +2,7 @@ package com.knubisoft.testlum.testing.framework.configuration.elasticsearch;
 
 import com.amazonaws.auth.AWS4Signer;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnElasticEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Elasticsearch;
 import org.apache.http.HttpHost;
@@ -27,13 +27,10 @@ import java.util.stream.Collectors;
 @Conditional({OnElasticEnabledCondition.class})
 public class ElasticsearchConfiguration {
 
-    private final Map<String, List<Elasticsearch>> elasticsearchMap;
-
-    public ElasticsearchConfiguration() {
-        this.elasticsearchMap = ConfigProvider.getIntegrations().entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        entry -> entry.getValue().getElasticsearchIntegration().getElasticsearch()));
-    }
+    private final Map<String, List<Elasticsearch>> elasticsearchMap = GlobalTestConfigurationProvider.getIntegrations()
+            .entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey,
+                    entry -> entry.getValue().getElasticsearchIntegration().getElasticsearch()));
 
     @Bean(name = "restHighLevelClient")
     public Map<AliasEnv, RestHighLevelClient> restHighLevelClient(

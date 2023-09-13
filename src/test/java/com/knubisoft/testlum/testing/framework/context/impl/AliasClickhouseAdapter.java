@@ -1,10 +1,9 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnClickhouseEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
-import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
-import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
+import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.sql.ClickhouseOperation;
 import com.knubisoft.testlum.testing.model.global_config.Clickhouse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,19 +23,12 @@ public class AliasClickhouseAdapter implements AliasAdapter {
     private ClickhouseOperation clickhouseOperation;
 
     @Override
-    public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
+    public void apply(final Map<String, StorageOperation> aliasMap) {
         for (Clickhouse clickhouse
-                : ConfigProvider.getDefaultIntegrations().getClickhouseIntegration().getClickhouse()) {
+                : GlobalTestConfigurationProvider.getDefaultIntegrations().getClickhouseIntegration().getClickhouse()) {
             if (clickhouse.isEnabled()) {
-                aliasMap.put(CLICKHOUSE + UNDERSCORE + clickhouse.getAlias(), getMetadataClickhouse(clickhouse));
+                aliasMap.put(CLICKHOUSE + UNDERSCORE + clickhouse.getAlias(), clickhouseOperation);
             }
         }
-    }
-
-    private NameToAdapterAlias.Metadata getMetadataClickhouse(final Clickhouse clickhouse) {
-        return NameToAdapterAliasImpl.Metadata.builder()
-                .configuration(clickhouse)
-                .storageOperation(clickhouseOperation)
-                .build();
     }
 }

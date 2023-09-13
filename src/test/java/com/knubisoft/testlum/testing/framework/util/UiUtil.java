@@ -1,8 +1,7 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
@@ -105,14 +104,16 @@ public class UiUtil {
 
     private WebDriverWait getWebDriverWait(final ExecutorDependencies dependencies) {
         int secondsToWait = dependencies.getUiType().getSettings(dependencies.getEnvironment(),
-                        dependencies.getContext().getBean(GlobalTestConfigurationProvider.class))
+                        dependencies.getContext()
+                                .getBean(com.knubisoft.testlum.testing.framework.configuration.ConfigProvider.class))
                 .getElementAutowait().getSeconds();
         return new WebDriverWait(dependencies.getDriver(), Duration.ofSeconds(secondsToWait));
     }
 
     public void takeScreenshotAndSaveIfRequired(final CommandResult result, final ExecutorDependencies dependencies) {
         boolean isTakeScreenshots = dependencies.getUiType().getSettings(dependencies.getEnvironment(),
-                        dependencies.getContext().getBean(GlobalTestConfigurationProvider.class))
+                        dependencies.getContext()
+                                .getBean(com.knubisoft.testlum.testing.framework.configuration.ConfigProvider.class))
                 .getTakeScreenshots().isEnabled();
         if (isTakeScreenshots) {
             File screenshot = takeScreenshot(dependencies.getDriver());
@@ -205,9 +206,9 @@ public class UiUtil {
             return path;
         }
         if (UiType.MOBILE_BROWSER == uiType) {
-            return ConfigProvider.getMobilebrowserSettings(env)
+            return GlobalTestConfigurationProvider.getMobilebrowserSettings(env)
                     .getBaseUrl() + path;
         }
-        return ConfigProvider.getWebSettings(env).getBaseUrl() + path;
+        return GlobalTestConfigurationProvider.getWebSettings(env).getBaseUrl() + path;
     }
 }

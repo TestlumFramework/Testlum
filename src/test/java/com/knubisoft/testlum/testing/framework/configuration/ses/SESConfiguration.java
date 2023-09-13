@@ -6,7 +6,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSESEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Ses;
@@ -24,7 +24,8 @@ public class SESConfiguration {
     @Bean
     public Map<AliasEnv, AmazonSimpleEmailService> amazonSimpleEmailService() {
         Map<AliasEnv, AmazonSimpleEmailService> amazonSesMap = new HashMap<>();
-        ConfigProvider.getIntegrations().forEach((env, integrations) -> addAmazonSes(integrations, env, amazonSesMap));
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach((env, integrations) -> addAmazonSes(integrations, env, amazonSesMap));
         return amazonSesMap;
     }
 

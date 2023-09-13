@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecut
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.OracleExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
+import com.knubisoft.testlum.testing.model.global_config.Oracle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,7 +23,7 @@ import java.util.Objects;
 @Slf4j
 @Conditional({OnOracleEnabledCondition.class})
 @Component("oracleOperation")
-public class OracleOperation implements StorageOperation {
+public class OracleOperation extends StorageOperation {
 
     private final Map<AliasEnv, AbstractSqlExecutor> oracleExecutor;
 
@@ -43,7 +44,8 @@ public class OracleOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         oracleExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
+            if (isTruncate(Oracle.class, aliasEnv)
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

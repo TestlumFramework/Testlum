@@ -5,7 +5,7 @@ import com.knubisoft.testlum.testing.framework.db.source.Source;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SESOperation implements StorageOperation {
+public class SESOperation extends StorageOperation {
 
     @Override
     public StorageOperationResult apply(final Source source, final String alias) {

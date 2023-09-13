@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib;
 
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -85,7 +85,7 @@ public class SubCommandRunnerImpl implements SubCommandRunner {
     }
 
     private void checkIfStopScenarioOnFailure(final Exception e) {
-        if (ConfigProvider.provide().isStopScenarioOnFailure()) {
+        if (GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure()) {
             throw new DefaultFrameworkException(e);
         }
     }

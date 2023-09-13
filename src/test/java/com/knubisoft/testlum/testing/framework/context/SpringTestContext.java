@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.context;
 
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl;
 import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
@@ -20,18 +21,18 @@ import java.util.Map;
 public class SpringTestContext {
 
     @Bean
-    public NameToAdapterAlias getNameToAdapterAlias(final List<AliasAdapter> aliasAdapters) {
-        Map<String, NameToAdapterAlias.Metadata> aliasMap = new LinkedCaseInsensitiveMap<>(aliasAdapters.size());
+    public AliasToStorageOperation getAliasToStorageOperation(final List<AliasAdapter> aliasAdapters) {
+        Map<String, StorageOperation> aliasMap = new LinkedCaseInsensitiveMap<>(aliasAdapters.size());
         for (AliasAdapter aliasAdapter : aliasAdapters) {
             aliasAdapter.apply(aliasMap);
         }
-        return new NameToAdapterAliasImpl(aliasMap);
+        return new AliasToStorageOperationImpl(aliasMap);
     }
 
     @Bean
     public EnvManager envManager() {
-        boolean isParallelExecutionEnabled = ConfigProvider.provide().isParallelExecution();
-        List<Environment> enabledEnvList = ConfigProvider.getEnabledEnvironments();
+        boolean isParallelExecutionEnabled = GlobalTestConfigurationProvider.provide().isParallelExecution();
+        List<Environment> enabledEnvList = GlobalTestConfigurationProvider.getEnabledEnvironments();
         final List<Environment> envList = isParallelExecutionEnabled
                 ? enabledEnvList : Collections.singletonList(enabledEnvList.get(0));
         return new EnvManagerImpl(envList);
@@ -39,6 +40,6 @@ public class SpringTestContext {
 
     @Bean
     public ReportGenerator reportGenerator() {
-        return ReportGeneratorFactory.create(ConfigProvider.provide().getReport());
+        return ReportGeneratorFactory.create(GlobalTestConfigurationProvider.provide().getReport());
     }
 }

@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
+import com.knubisoft.testlum.testing.model.global_config.Dynamo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
@@ -29,16 +30,14 @@ import java.util.stream.Collectors;
 @Slf4j
 @Conditional({OnDynamoEnabledCondition.class})
 @Component("dynamoOperation")
-public class DynamoDBOperation implements StorageOperation {
+public class DynamoDBOperation extends StorageOperation {
 
     private static final String FORBIDDEN_DDB_TABLE_NAME = "dynamobee";
 
     private final Map<AliasEnv, DynamoDbClient> dynamoDbClient;
 
-    public DynamoDBOperation(@Autowired(required = false)
-                             final Map<AliasEnv, DynamoDbClient> dynamoDbClient) {
+    public DynamoDBOperation(@Autowired(required = false) final Map<AliasEnv, DynamoDbClient> dynamoDbClient) {
         this.dynamoDbClient = dynamoDbClient;
-
     }
 
     @Override
@@ -49,7 +48,8 @@ public class DynamoDBOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         dynamoDbClient.forEach((aliasEnv, dbClient) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
+            if (isTruncate(Dynamo.class, aliasEnv)
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
                 dbClient.listTables().tableNames().forEach(tableName -> truncate(tableName, dbClient));
             }
         });

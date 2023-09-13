@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.kafka;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Kafka;
@@ -22,7 +22,8 @@ public class KafkaProducerConfiguration {
     @Bean
     public Map<AliasEnv, KafkaProducer<String, String>> kafkaProducer() {
         Map<AliasEnv, KafkaProducer<String, String>> producerMap = new HashMap<>();
-        ConfigProvider.getIntegrations().forEach((env, integrations) -> addConfigProps(integrations, env, producerMap));
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach((env, integrations) -> addConfigProps(integrations, env, producerMap));
         return producerMap;
     }
 

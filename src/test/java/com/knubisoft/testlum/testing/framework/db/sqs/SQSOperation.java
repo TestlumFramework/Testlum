@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
+import com.knubisoft.testlum.testing.model.global_config.Sqs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ import java.util.Objects;
 
 @Conditional({OnSQSEnabledCondition.class})
 @Component
-public class SQSOperation implements StorageOperation {
+public class SQSOperation extends StorageOperation {
 
     private final Map<AliasEnv, AmazonSQS> amazonSQS;
 
@@ -34,7 +35,8 @@ public class SQSOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         amazonSQS.forEach((aliasEnv, amazonSQS) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
+            if (isTruncate(Sqs.class, aliasEnv)
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
                 ListQueuesResult listQueuesResult = amazonSQS.listQueues();
                 List<String> queueUrls = listQueuesResult.getQueueUrls();
                 queueUrls.forEach(queueUrl -> amazonSQS.purgeQueue(new PurgeQueueRequest(queueUrl)));

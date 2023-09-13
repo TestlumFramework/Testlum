@@ -2,9 +2,8 @@ package com.knubisoft.testlum.testing.framework.db.sql.executor;
 
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
-import com.knubisoft.testlum.testing.framework.util.SqlUtil;
+import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -17,14 +16,13 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SUCCESS_QUERY;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.LF;
 import static org.apache.commons.lang3.StringUtils.SPACE;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-@Slf4j
 public abstract class AbstractSqlExecutor {
 
     private static final String INSERT = "INSERT";
@@ -36,14 +34,6 @@ public abstract class AbstractSqlExecutor {
     private static final String DROP = "DROP";
     private static final String SET = "SET";
     private static final String COUNT = "count";
-    private static final String ANSI_RED = "\u001B[31m";
-    private static final String ANSI_RESET = "\u001b[0m";
-    private static final String ANSI_ORANGE = "\u001b[38;5;208m";
-    private static final String NEW_LOG_LINE = format("%n%19s| ", EMPTY);
-    private static final String REGEX_NEW_LINE = "[\\r\\n]";
-    private static final String SUCCESS_QUERY = "Query completed successfully";
-    private static final String ERROR_SQL_QUERY = ANSI_RED + "Error while executing SQL query -> "
-            + "{}" + ANSI_ORANGE + NEW_LOG_LINE + "{}" + ANSI_RESET;
 
     protected final JdbcTemplate template;
 
@@ -78,7 +68,7 @@ public abstract class AbstractSqlExecutor {
             Object result = executeAppropriateQuery(queryResult.getQuery());
             queryResult.setContent(result);
         } catch (InvalidDataAccessResourceUsageException e) {
-            logSqlException(e, queryResult.getQuery());
+            LogUtil.logSqlException(e, queryResult.getQuery());
             throw e;
         }
         return queryResult;
@@ -113,14 +103,5 @@ public abstract class AbstractSqlExecutor {
                 query.toUpperCase().startsWith(s)
                         || query.toUpperCase().startsWith(SPACE + s);
         return Stream.of(operations).anyMatch(validatedQuery);
-    }
-
-    private void logSqlException(final Exception ex, final String query) {
-        if (isNotBlank(ex.getMessage())) {
-            log.error(ERROR_SQL_QUERY, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE),
-                    SqlUtil.getBrokenQuery(ex, query).replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
-        } else {
-            log.error(ERROR_SQL_QUERY, ex.toString().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
-        }
     }
 }

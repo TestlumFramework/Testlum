@@ -3,6 +3,7 @@ package com.knubisoft.testlum.runner.impl;
 import com.knubisoft.testlum.runner.Runner;
 import com.knubisoft.testlum.testing.RootTest;
 import com.knubisoft.testlum.testing.framework.SystemInfo;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.util.ArgumentsUtils;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
@@ -14,7 +15,6 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
-import static com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
 public class TestRunner implements Runner {
@@ -42,7 +42,8 @@ public class TestRunner implements Runner {
         LauncherDiscoveryRequest tests = LauncherDiscoveryRequestBuilder
                 .request()
                 .selectors(selectClass(RootTest.class))
-                .configurationParameter(PARALLEL, ConfigProvider.provide().isParallelExecution().toString())
+                .configurationParameter(PARALLEL,
+                        String.valueOf(GlobalTestConfigurationProvider.provide().isParallelExecution()))
                 .configurationParameter(STRATEGY, JUNIT_STRATEGY_CUSTOM)
                 .configurationParameter(CLASS, JUNIT_PARALLEL_CONFIG)
                 .build();

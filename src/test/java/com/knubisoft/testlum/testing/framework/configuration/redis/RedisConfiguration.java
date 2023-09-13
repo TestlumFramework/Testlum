@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.redis;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRedisEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Redis;
@@ -48,7 +48,7 @@ public class RedisConfiguration {
     @Bean
     public Map<AliasEnv, RedisStandaloneConfiguration> redisStandaloneConfiguration() {
         final Map<AliasEnv, RedisStandaloneConfiguration> redisConfigMap = new HashMap<>();
-        ConfigProvider.getIntegrations()
+        GlobalTestConfigurationProvider.getIntegrations()
                 .forEach((env, integrations) -> addStandaloneConfig(integrations, env, redisConfigMap));
         return redisConfigMap;
     }

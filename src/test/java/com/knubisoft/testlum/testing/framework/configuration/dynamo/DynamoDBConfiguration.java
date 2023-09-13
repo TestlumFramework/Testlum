@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.dynamo;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnDynamoEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Dynamo;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -25,7 +25,7 @@ public class DynamoDBConfiguration {
     @Bean
     public Map<AliasEnv, DynamoDbClient> dynamodb() {
         Map<AliasEnv, DynamoDbClient> dbClientMap = new HashMap<>();
-        ConfigProvider.getIntegrations()
+        GlobalTestConfigurationProvider.getIntegrations()
                 .forEach((env, integrations) -> addDynamoDbClient(integrations, env, dbClientMap));
         return dbClientMap;
     }

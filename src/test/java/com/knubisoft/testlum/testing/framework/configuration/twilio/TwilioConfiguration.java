@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.twilio;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnTwilioEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Twilio;
@@ -19,7 +19,8 @@ public class TwilioConfiguration {
     @Bean
     public Map<AliasEnv, Twilio> twilio() {
         Map<AliasEnv, Twilio> twilioMap = new HashMap<>();
-        ConfigProvider.getIntegrations().forEach((env, integrations) -> addTwilioToMap(integrations, env, twilioMap));
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach((env, integrations) -> addTwilioToMap(integrations, env, twilioMap));
         return twilioMap;
     }
 

@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
-import static com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import static com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG;
@@ -34,7 +34,7 @@ public class KafkaConsumerConfiguration {
     @Bean
     public Map<AliasEnv, KafkaConsumer<String, String>> kafkaConsumer() {
         final Map<AliasEnv, KafkaConsumer<String, String>> consumerMap = new HashMap<>();
-        ConfigProvider.getIntegrations()
+        GlobalTestConfigurationProvider.getIntegrations()
                 .forEach((env, integrations) -> addKafkaConsumer(integrations, env, consumerMap));
         return consumerMap;
     }

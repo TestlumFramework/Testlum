@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.ui;
 
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
@@ -67,7 +67,7 @@ public class WebDriverFactory {
                 .map(function -> function.getValue().apply(browser))
                 .orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
         BrowserUtil.manageWindowSize(browser, webDriver);
-        Web settings = ConfigProvider.getWebSettings(EnvProvider.currentEnv());
+        Web settings = GlobalTestConfigurationProvider.getWebSettings(EnvProvider.currentEnv());
         int secondsToWait = settings.getBrowserSettings().getElementAutowait().getSeconds();
         webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));
         webDriver.get(settings.getBaseUrl());
@@ -102,8 +102,8 @@ public class WebDriverFactory {
         browserOptions.setCapability(CapabilityType.BROWSER_VERSION, browserStack.getBrowserVersion());
         browserOptions.setCapability("os", browserStack.getOs());
         browserOptions.setCapability("osVersion", browserStack.getOsVersion());
-        String browserStackUrl =
-                SeleniumDriverUtil.getBrowserStackUrl(ConfigProvider.getUiConfigs().get(EnvProvider.currentEnv()));
+        String browserStackUrl = SeleniumDriverUtil.getBrowserStackUrl(
+                GlobalTestConfigurationProvider.getUiConfigs().get(EnvProvider.currentEnv()));
         return new RemoteWebDriver(new URL(browserStackUrl), browserOptions);
     }
 

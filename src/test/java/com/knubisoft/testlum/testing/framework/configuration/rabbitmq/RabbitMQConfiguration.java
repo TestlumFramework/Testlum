@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.rabbitmq;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Rabbitmq;
 import com.rabbitmq.http.client.Client;
@@ -31,14 +31,10 @@ public class RabbitMQConfiguration {
 
     private static final String SCHEMA = "http://";
     private static final String API_PATH = "/api";
-    private final Map<String, List<Rabbitmq>> rabbitmqMap;
-
-    public RabbitMQConfiguration() {
-        rabbitmqMap = ConfigProvider.getIntegrations()
-                .entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        entry -> entry.getValue().getRabbitmqIntegration().getRabbitmq()));
-    }
+    private final Map<String, List<Rabbitmq>> rabbitmqMap = GlobalTestConfigurationProvider.getIntegrations()
+            .entrySet().stream()
+            .collect(Collectors.toMap(Map.Entry::getKey,
+                    entry -> entry.getValue().getRabbitmqIntegration().getRabbitmq()));
 
     @Bean("rabbitMqClient")
     public Map<AliasEnv, Client> rabbitMqClient() {

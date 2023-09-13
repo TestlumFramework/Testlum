@@ -1,10 +1,9 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnMysqlEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
-import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
-import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
+import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.sql.MySqlOperation;
 import com.knubisoft.testlum.testing.model.global_config.Mysql;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,18 +23,11 @@ public class AliasMySqlAdapter implements AliasAdapter {
     private MySqlOperation mySqlOperation;
 
     @Override
-    public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Mysql mysql : ConfigProvider.getDefaultIntegrations().getMysqlIntegration().getMysql()) {
+    public void apply(final Map<String, StorageOperation> aliasMap) {
+        for (Mysql mysql : GlobalTestConfigurationProvider.getDefaultIntegrations().getMysqlIntegration().getMysql()) {
             if (mysql.isEnabled()) {
-                aliasMap.put(MYSQL + UNDERSCORE + mysql.getAlias(), getMetadataMySQL(mysql));
+                aliasMap.put(MYSQL + UNDERSCORE + mysql.getAlias(), mySqlOperation);
             }
         }
-    }
-
-    private NameToAdapterAlias.Metadata getMetadataMySQL(final Mysql mysql) {
-        return NameToAdapterAliasImpl.Metadata.builder()
-                .configuration(mysql)
-                .storageOperation(mySqlOperation)
-                .build();
     }
 }

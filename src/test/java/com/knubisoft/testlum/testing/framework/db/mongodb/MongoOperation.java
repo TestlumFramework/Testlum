@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
+import com.knubisoft.testlum.testing.model.global_config.Mongo;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Conditional({OnMongoEnabledCondition.class})
 @Component("mongoOperation")
-public class MongoOperation implements StorageOperation {
+public class MongoOperation extends StorageOperation {
 
     private final Map<AliasEnv, MongoDatabase> mongoDatabases;
 
@@ -35,7 +36,8 @@ public class MongoOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         mongoDatabases.forEach((aliasEnv, database) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
+            if (isTruncate(Mongo.class, aliasEnv)
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
                 for (String collectionName : database.listCollectionNames()) {
                     if (database.getCollection(collectionName).countDocuments() > 0) {
                         database.getCollection(collectionName).drop();

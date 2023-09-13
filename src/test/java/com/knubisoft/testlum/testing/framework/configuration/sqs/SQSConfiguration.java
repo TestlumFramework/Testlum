@@ -6,7 +6,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSQSEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Sqs;
@@ -24,7 +24,8 @@ public class SQSConfiguration {
     @Bean
     public Map<AliasEnv, AmazonSQS> amazonSQS() {
         final Map<AliasEnv, AmazonSQS> amazonSqsMap = new HashMap<>();
-        ConfigProvider.getIntegrations().forEach((env, integrations) -> addAmazonSqs(integrations, env, amazonSqsMap));
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach((env, integrations) -> addAmazonSqs(integrations, env, amazonSqsMap));
         return amazonSqsMap;
     }
 

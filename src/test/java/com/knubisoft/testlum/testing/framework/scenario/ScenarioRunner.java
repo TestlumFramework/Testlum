@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.ui.MobilebrowserDriverFactory;
 import com.knubisoft.testlum.testing.framework.configuration.ui.NativeDriverFactory;
 import com.knubisoft.testlum.testing.framework.configuration.ui.WebDriverFactory;
@@ -65,7 +65,7 @@ public class ScenarioRunner {
 
     private void prepare() {
         this.dependencies = createDependencies();
-        this.stopScenarioOnFailure = ConfigProvider.provide().isStopScenarioOnFailure();
+        this.stopScenarioOnFailure = GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure();
         this.cmdToInterpreterMap = createClassToInterpreterMap(dependencies);
     }
 

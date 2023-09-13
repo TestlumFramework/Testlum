@@ -14,10 +14,6 @@ public final class LogMessage {
     public static final String NEW_LOG_LINE = format("%n%19s| ", EMPTY);
     public static final String REGEX_NEW_LINE = "[\\r\\n]";
 
-    public static final String SEND_ACTION = "send";
-    public static final String RECEIVE_ACTION = "receive";
-    public static final String SUBSCRIBE = "subscribe";
-
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_RESET = "\u001b[0m";
@@ -28,10 +24,10 @@ public final class LogMessage {
     public static final String ANSI_BLUE_UNDERLINED = "\033[4;34m";
 
     public static final String ERROR_LOG = "Error ->";
-    public static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
     public static final String UI_COMMAND_LOG = ANSI_CYAN + "------- UI command #{} - {} -------" + ANSI_RESET;
-    public static final String UI_COMMAND_LOG_WITHOUT_POSITION =
-            ANSI_CYAN + "------- UI command - {} -------" + ANSI_RESET;
+    public static final String UI_COMMAND_LOG_WITHOUT_POSITION = ANSI_CYAN
+            + "------- UI command - {} -------" + ANSI_RESET;
+    public static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
     public static final String REPEAT_FINISHED_LOG = ANSI_CYAN + "------- Repeat is finished -------" + ANSI_RESET;
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
     public static final String COMMAND_SKIPPED_ON_CONDITION_LOG = ANSI_ORANGE
@@ -39,6 +35,8 @@ public final class LogMessage {
     public static final String CONDITION_LOG = format(TABLE_FORMAT, "Condition", "'{}' = {};");
     public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
     public static final String QUERY = format(TABLE_FORMAT, "Query", "{}");
+    public static final String ERROR_SQL_QUERY = ANSI_RED + "Error while executing SQL query -> "
+            + "{}" + ANSI_ORANGE + NEW_LOG_LINE + "{}" + ANSI_RESET;
     public static final String SCENARIO_NUMBER_AND_PATH_LOG = ANSI_GREEN
             + "================== Execute for scenario #{} - {} ==================" + ANSI_RESET;
     public static final String LINE =
@@ -94,6 +92,7 @@ public final class LogMessage {
                     + "{} test successful\n{} test failed\n";
     public static final String FAILED_SCENARIOS_NAME_TEMPLATE =
             ANSI_RED_BOLD + "Scenario %s was failed. Related exception provided below." + ANSI_RED_BOLD;
+    public static final String SUCCESS_QUERY = "Query completed successfully";
 
     public static final String DB_TYPE_LOG = format(TABLE_FORMAT, "DB Type", "{}");
     public static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
@@ -109,7 +108,6 @@ public final class LogMessage {
     public static final String EXPRESSION_LOG = format(TABLE_FORMAT, "Expression", "{}");
     public static final String SCROLL_LOCATOR = format(TABLE_FORMAT, "Scroll locator", "{}");
     public static final String SCROLL_TYPE = format(TABLE_FORMAT, "Scroll type", "{}");
-    public static final String SCROLL_VALUE = format(TABLE_FORMAT, "Scroll value", "{}");
     public static final String SWIPE_QUANTITY = format(TABLE_FORMAT, "Quantity of swipes", "{}");
     public static final String SWIPE_DIRECTION = format(TABLE_FORMAT, "Swipe direction", "{}");
     public static final String SWIPE_VALUE = format(TABLE_FORMAT, "Swipe value in %", "{}");
@@ -124,12 +122,8 @@ public final class LogMessage {
     public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "HTTP method", "{}");
     public static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
     public static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
-    public static final String SKIPPED_BODY_VALIDATION = ANSI_ORANGE
-            + "Validation of the response body was skipped because of no expected file"
-            + ANSI_RESET;
     public static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
     public static final String ATTRIBUTE_LOG = format(TABLE_FORMAT, "Attribute", "{}");
-    public static final String DESTINATION_LOG = format(TABLE_FORMAT, "Destination", "{}");
     public static final String IMAGE_COMPARISON_TYPE_LOG = format(TABLE_FORMAT, "Image comparison type", "{}");
     public static final String HIGHLIGHT_DIFFERENCE_LOG = format(TABLE_FORMAT, "Highlight difference", "{}");
     public static final String IMAGE_FOR_COMPARISON_LOG = format(TABLE_FORMAT, "Image for comparison", "{}");

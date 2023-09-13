@@ -1,14 +1,14 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
 import com.knubisoft.testlum.testing.framework.util.DatasetValidator;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.HttpUtil;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
+import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.SendGridUtil;
 import com.knubisoft.testlum.testing.framework.validator.XMLValidator;
@@ -143,7 +143,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private List<Map<String, String>> variationList = new ArrayList<>();
 
     public ScenarioValidator(final GlobalVariations globalVariations) {
-        this.integrations = ConfigProvider.getDefaultIntegrations();
+        this.integrations = GlobalTestConfigurationProvider.getDefaultIntegrations();
         this.globalVariations = globalVariations;
         Map<AbstractCommandPredicate, AbstractCommandValidator> validatorMap = new HashMap<>();
 
@@ -418,7 +418,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private boolean isSameUrl() {
-        return ConfigProvider.getUiConfigs().values().stream()
+        return GlobalTestConfigurationProvider.getUiConfigs().values().stream()
                 .filter(uiConfig -> allNotNull(uiConfig.getMobilebrowser(), uiConfig.getNative()))
                 .filter(uiConfig -> allNotNull(uiConfig.getNative().getConnection().getAppiumServer(),
                         uiConfig.getMobilebrowser().getConnection().getAppiumServer()))
@@ -428,7 +428,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private boolean isSameNativeAndMobileDevices() {
-        return ConfigProvider.getUiConfigs().values().stream()
+        return GlobalTestConfigurationProvider.getUiConfigs().values().stream()
                 .filter(uiConfig -> allNotNull(uiConfig.getMobilebrowser(), uiConfig.getNative()))
                 .anyMatch(this::isSameNativeAndMobileDevices);
     }
@@ -702,7 +702,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateWebCommands(final Web command, final File xmlFile) {
         if (BrowserUtil.filterDefaultEnabledBrowsers().isEmpty()
-                || !ConfigProvider.getDefaultUiConfigs().getWeb().isEnabled()) {
+                || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getWeb().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_BROWSERS);
         }
         validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);
@@ -710,7 +710,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateMobilebrowserCommands(final Mobilebrowser command, final File xmlFile) {
         if (MobileUtil.filterDefaultEnabledMobilebrowserDevices().isEmpty()
-                || !ConfigProvider.getDefaultUiConfigs().getMobilebrowser().isEnabled()) {
+                || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getMobilebrowser().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_MOBILEBROWSER_DEVICE);
         }
         validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);
@@ -718,7 +718,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateNativeCommands(final Native command, final File xmlFile) {
         if (MobileUtil.filterDefaultEnabledNativeDevices().isEmpty()
-                || !ConfigProvider.getDefaultUiConfigs().getNative().isEnabled()) {
+                || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getNative().isEnabled()) {
             throw new DefaultFrameworkException(NOT_ENABLED_NATIVE_DEVICE);
         }
         validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);

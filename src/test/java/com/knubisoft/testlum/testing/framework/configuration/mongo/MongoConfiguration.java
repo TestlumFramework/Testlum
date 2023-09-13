@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.mongo;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnMongoEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Mongo;
@@ -26,7 +26,7 @@ public class MongoConfiguration {
     @Bean
     public Map<AliasEnv, MongoDatabase> mongoDatabases() {
         final Map<AliasEnv, MongoDatabase> databaseMap = new HashMap<>();
-        ConfigProvider.getIntegrations()
+        GlobalTestConfigurationProvider.getIntegrations()
                 .forEach((env, integrations) -> addMongoDatabase(integrations, env, databaseMap));
         return databaseMap;
     }
@@ -36,8 +36,10 @@ public class MongoConfiguration {
                                   final Map<AliasEnv, MongoDatabase> databaseMap) {
         for (Mongo mongo : integrations.getMongoIntegration().getMongo()) {
             if (mongo.isEnabled()) {
-                MongoClient mongoClient = createMongoClient(mongo);
-                MongoDatabase mongoDatabase = mongoClient.getDatabase(mongo.getDatabase());
+                MongoDatabase mongoDatabase;
+                try (MongoClient mongoClient = createMongoClient(mongo)) {
+                    mongoDatabase = mongoClient.getDatabase(mongo.getDatabase());
+                }
                 databaseMap.put(new AliasEnv(mongo.getAlias(), env), mongoDatabase);
             }
         }

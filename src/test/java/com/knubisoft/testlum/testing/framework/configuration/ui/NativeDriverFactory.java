@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.ui;
 
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.SeleniumDriverUtil;
@@ -41,7 +41,7 @@ public class NativeDriverFactory {
 
     private AppiumDriver getNativeWebDriver(final NativeDevice nativeDevice,
                                             final DesiredCapabilities desiredCapabilities) {
-        UiConfig uiConfig = ConfigProvider.getUiConfigs().get(EnvProvider.currentEnv());
+        UiConfig uiConfig = GlobalTestConfigurationProvider.getUiConfigs().get(EnvProvider.currentEnv());
         String serverUrl = SeleniumDriverUtil.getNativeConnectionUrl(uiConfig);
         AppiumDriver driver = newAppiumDriver(nativeDevice, serverUrl, desiredCapabilities);
         int secondsToWait = uiConfig.getNative().getElementAutowait().getSeconds();

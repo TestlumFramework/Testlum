@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecut
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.ClickhouseExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
+import com.knubisoft.testlum.testing.model.global_config.Clickhouse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,7 +23,7 @@ import java.util.Objects;
 @Slf4j
 @Conditional({OnClickhouseEnabledCondition.class})
 @Component("clickhouseOperation")
-public class ClickhouseOperation implements StorageOperation {
+public class ClickhouseOperation extends StorageOperation {
 
     private final Map<AliasEnv, AbstractSqlExecutor> clickhouseExecutor;
 
@@ -44,7 +45,8 @@ public class ClickhouseOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         clickhouseExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
+            if (isTruncate(Clickhouse.class, aliasEnv)
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

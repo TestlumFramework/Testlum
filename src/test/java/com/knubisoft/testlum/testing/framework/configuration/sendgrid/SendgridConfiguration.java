@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.sendgrid;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSendgridEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Sendgrid;
@@ -20,7 +20,8 @@ public class SendgridConfiguration {
     @Bean
     public Map<AliasEnv, SendGrid> sendGrid() {
         Map<AliasEnv, SendGrid> sendGridMap = new HashMap<>();
-        ConfigProvider.getIntegrations().forEach((env, integrations) -> addToMap(integrations, env, sendGridMap));
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach((env, integrations) -> addToMap(integrations, env, sendGridMap));
         return sendGridMap;
     }
 

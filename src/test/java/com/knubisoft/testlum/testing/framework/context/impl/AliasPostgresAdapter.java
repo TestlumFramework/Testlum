@@ -1,10 +1,9 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnPostgresEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
-import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
-import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
+import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.sql.PostgresSqlOperation;
 import com.knubisoft.testlum.testing.model.global_config.Postgres;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,18 +23,12 @@ public class AliasPostgresAdapter implements AliasAdapter {
     private PostgresSqlOperation postgresSqlOperation;
 
     @Override
-    public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Postgres postgres : ConfigProvider.getDefaultIntegrations().getPostgresIntegration().getPostgres()) {
+    public void apply(final Map<String, StorageOperation> aliasMap) {
+        for (Postgres postgres
+                : GlobalTestConfigurationProvider.getDefaultIntegrations().getPostgresIntegration().getPostgres()) {
             if (postgres.isEnabled()) {
-                aliasMap.put(POSTGRES + UNDERSCORE + postgres.getAlias(), getMetadataPostgres(postgres));
+                aliasMap.put(POSTGRES + UNDERSCORE + postgres.getAlias(), postgresSqlOperation);
             }
         }
-    }
-
-    private NameToAdapterAlias.Metadata getMetadataPostgres(final Postgres postgres) {
-        return NameToAdapterAliasImpl.Metadata.builder()
-                .configuration(postgres)
-                .storageOperation(postgresSqlOperation)
-                .build();
     }
 }

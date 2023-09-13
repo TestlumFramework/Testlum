@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.smtp;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSmtpEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Smtp;
@@ -23,7 +23,8 @@ public class SmtpConfiguration {
     @Bean
     public Map<AliasEnv, JavaMailSenderImpl> javaMailSender() {
         Map<AliasEnv, JavaMailSenderImpl> senderMap = new HashMap<>();
-        ConfigProvider.getIntegrations().forEach((env, integrations) -> addSenderToMap(integrations, env, senderMap));
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach((env, integrations) -> addSenderToMap(integrations, env, senderMap));
         return senderMap;
     }
 

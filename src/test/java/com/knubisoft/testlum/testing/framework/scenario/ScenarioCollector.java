@@ -1,12 +1,12 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.parser.XMLParsers;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
+import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
@@ -138,7 +138,7 @@ public class ScenarioCollector {
 
     private boolean isAutoLogout(final String alias) {
         //todo move to interpreter
-        List<Api> apiList = ConfigProvider.getDefaultIntegrations().getApis().getApi();
+        List<Api> apiList = GlobalTestConfigurationProvider.getDefaultIntegrations().getApis().getApi();
         Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, alias);
         if (nonNull(apiIntegration.getAuth())) {
             return apiIntegration.getAuth().isAutoLogout();

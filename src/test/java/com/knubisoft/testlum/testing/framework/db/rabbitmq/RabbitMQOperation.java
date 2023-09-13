@@ -1,12 +1,12 @@
 package com.knubisoft.testlum.testing.framework.db.rabbitmq;
 
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
+import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Rabbitmq;
 import com.rabbitmq.http.client.Client;
@@ -21,7 +21,7 @@ import java.util.Objects;
 
 @Conditional({OnRabbitMQEnabledCondition.class})
 @Component
-public class RabbitMQOperation implements StorageOperation {
+public class RabbitMQOperation extends StorageOperation {
 
     private final Map<AliasEnv, Client> rabbitMqClient;
     private final Map<String, Integrations> integrations;
@@ -29,7 +29,7 @@ public class RabbitMQOperation implements StorageOperation {
     public RabbitMQOperation(@Autowired(required = false) @Qualifier("rabbitMqClient")
                              final Map<AliasEnv, Client> rabbitMqClient) {
         this.rabbitMqClient = rabbitMqClient;
-        this.integrations = ConfigProvider.getIntegrations();
+        this.integrations = GlobalTestConfigurationProvider.getIntegrations();
     }
 
     @Override
@@ -40,7 +40,8 @@ public class RabbitMQOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         rabbitMqClient.forEach((aliasEnv, client) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
+            if (isTruncate(Rabbitmq.class, aliasEnv)
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
                 String virtualHost = this.findByName(aliasEnv).getVirtualHost();
                 client.getQueues().forEach(queueInfo -> client.purgeQueue(virtualHost, queueInfo.getName()));
             }
@@ -48,8 +49,7 @@ public class RabbitMQOperation implements StorageOperation {
     }
 
     private Rabbitmq findByName(final AliasEnv aliasEnv) {
-        List<Rabbitmq> rabbitmqs = integrations.get(aliasEnv.getEnvironment())
-                .getRabbitmqIntegration().getRabbitmq();
+        List<Rabbitmq> rabbitmqs = integrations.get(aliasEnv.getEnvironment()).getRabbitmqIntegration().getRabbitmq();
         return IntegrationsUtil.findForAlias(rabbitmqs, aliasEnv.getAlias());
     }
 }

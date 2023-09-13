@@ -1,10 +1,9 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRedisEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
-import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
-import com.knubisoft.testlum.testing.framework.context.NameToAdapterAliasImpl;
+import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.redis.RedisOperation;
 import com.knubisoft.testlum.testing.model.global_config.Redis;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,18 +23,11 @@ public class AliasRedisAdapter implements AliasAdapter {
     private RedisOperation redisOperation;
 
     @Override
-    public void apply(final Map<String, NameToAdapterAlias.Metadata> aliasMap) {
-        for (Redis redis : ConfigProvider.getDefaultIntegrations().getRedisIntegration().getRedis()) {
+    public void apply(final Map<String, StorageOperation> aliasMap) {
+        for (Redis redis : GlobalTestConfigurationProvider.getDefaultIntegrations().getRedisIntegration().getRedis()) {
             if (redis.isEnabled()) {
-                aliasMap.put(REDIS + UNDERSCORE + redis.getAlias(), getMetadataRedis(redis));
+                aliasMap.put(REDIS + UNDERSCORE + redis.getAlias(), redisOperation);
             }
         }
-    }
-
-    private NameToAdapterAlias.Metadata getMetadataRedis(final Redis redis) {
-        return NameToAdapterAliasImpl.Metadata.builder()
-                .configuration(redis)
-                .storageOperation(redisOperation)
-                .build();
     }
 }

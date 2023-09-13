@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.vault;
 
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.vault.model.VaultDto;
@@ -29,8 +29,8 @@ public class VaultService {
     private static final VaultTemplate TEMPLATE = vault();
 
     public VaultTemplate vault() {
-        if (Objects.nonNull(GlobalTestConfigurationProviderImpl.ConfigProvider.provide().getVault())) {
-            Vault vault = GlobalTestConfigurationProviderImpl.ConfigProvider.provide().getVault();
+        if (Objects.nonNull(ConfigProviderImpl.GlobalTestConfigurationProvider.provide().getVault())) {
+            Vault vault = ConfigProviderImpl.GlobalTestConfigurationProvider.provide().getVault();
             return new VaultTemplate(vaultEndpoint(vault), new TokenAuthentication(vault.getToken()));
         } else {
             throw new DefaultFrameworkException("Vault is not enabled in global config file");

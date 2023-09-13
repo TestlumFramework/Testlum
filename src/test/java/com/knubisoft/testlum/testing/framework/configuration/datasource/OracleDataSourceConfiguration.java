@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.datasource;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnOracleEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.util.DataSourceUtil;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -21,7 +21,7 @@ public class OracleDataSourceConfiguration {
     @Bean("oracleDataSource")
     public Map<AliasEnv, DataSource> oracleDataSource() {
         Map<AliasEnv, DataSource> dataSourceMap = new HashMap<>();
-        ConfigProvider.getIntegrations()
+        GlobalTestConfigurationProvider.getIntegrations()
                 .forEach((env, integrations) -> collectDataSource(integrations, env, dataSourceMap));
         return dataSourceMap;
     }

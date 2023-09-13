@@ -5,7 +5,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
-import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
+import com.knubisoft.testlum.testing.framework.context.AliasToStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.ListSource;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -62,7 +62,7 @@ public class VariableHelperImpl implements VariableHelper {
 
     private final Map<RandomPredicate, RandomFunction> randomGenerateMethodMap;
     @Autowired
-    private NameToAdapterAlias nameToAdapterAlias;
+    private AliasToStorageOperation aliasToStorageOperation;
 
     public VariableHelperImpl() {
         randomGenerateMethodMap = Map.of(
@@ -191,7 +191,7 @@ public class VariableHelperImpl implements VariableHelper {
                                final String varName,
                                final CommandResult result) {
         String metadataKey = fromSQL.getDbType().name() + DelimiterConstant.UNDERSCORE + fromSQL.getAlias();
-        StorageOperation storageOperation = nameToAdapterAlias.getByNameOrThrow(metadataKey).getStorageOperation();
+        StorageOperation storageOperation = aliasToStorageOperation.getByNameOrThrow(metadataKey);
         String valueResult = getActualQueryResult(fromSQL, storageOperation);
         ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, fromSQL, varName, valueResult, result);
         return valueResult;

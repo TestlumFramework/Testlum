@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecut
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.PostgresExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
+import com.knubisoft.testlum.testing.model.global_config.Postgres;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,7 +23,7 @@ import java.util.Objects;
 @Slf4j
 @Conditional({OnPostgresEnabledCondition.class})
 @Component("postgresOperation")
-public class PostgresSqlOperation implements StorageOperation {
+public class PostgresSqlOperation extends StorageOperation {
 
     private final Map<AliasEnv, AbstractSqlExecutor> postgresExecutor;
 
@@ -44,7 +45,8 @@ public class PostgresSqlOperation implements StorageOperation {
     @Override
     public void clearSystem() {
         postgresExecutor.forEach((aliasEnv, sqlExecutor) -> {
-            if (Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
+            if (isTruncate(Postgres.class, aliasEnv)
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

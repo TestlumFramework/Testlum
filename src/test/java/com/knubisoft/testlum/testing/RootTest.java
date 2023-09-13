@@ -4,8 +4,8 @@ import com.knubisoft.testlum.testing.framework.ConnectionManager;
 import com.knubisoft.testlum.testing.framework.SystemDataStoreCleaner;
 import com.knubisoft.testlum.testing.framework.TestSetCollector;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
-import com.knubisoft.testlum.testing.framework.context.NameToAdapterAlias;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.context.AliasToStorageOperation;
 import com.knubisoft.testlum.testing.framework.context.SpringTestContext;
 import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
 import com.knubisoft.testlum.testing.framework.env.service.LockService;
@@ -60,7 +60,7 @@ public class RootTest {
     private SystemDataStoreCleaner systemDataStoreCleaner;
 
     @Autowired
-    private NameToAdapterAlias nameToAdapterAlias;
+    private AliasToStorageOperation aliasToStorageOperation;
 
     @Autowired
     private GlobalScenarioStatCollector globalScenarioStatCollector;
@@ -110,7 +110,7 @@ public class RootTest {
 
     private void clearDataStorages(final Scenario scenario) {
         if (scenario.getSettings().isTruncateStorages()) {
-            systemDataStoreCleaner.clearAll(this.nameToAdapterAlias);
+            systemDataStoreCleaner.clearAll(this.aliasToStorageOperation);
         }
     }
 
@@ -125,7 +125,7 @@ public class RootTest {
 
     @AfterEach
     public void afterEach() throws Exception {
-        DelayBetweenScenarioRuns delay = ConfigProvider.provide().getDelayBetweenScenarioRuns();
+        DelayBetweenScenarioRuns delay = GlobalTestConfigurationProvider.provide().getDelayBetweenScenarioRuns();
         if (nonNull(delay) && delay.isEnabled()) {
             TimeUnit.SECONDS.sleep(delay.getSeconds());
         }

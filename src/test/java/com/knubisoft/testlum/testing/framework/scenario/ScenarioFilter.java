@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
@@ -26,7 +26,7 @@ public class ScenarioFilter {
 
     public Set<MappingResult> filterScenarios(final Set<MappingResult> original) {
         boolean containsNonParsed = original.removeIf(this::isScenarioNonParsed);
-        if (ConfigProvider.provide().isStopIfInvalidScenario() && containsNonParsed) {
+        if (GlobalTestConfigurationProvider.provide().isStopIfInvalidScenario() && containsNonParsed) {
             throw new DefaultFrameworkException(STOP_IF_NON_PARSED_SCENARIO);
         } else if (original.isEmpty()) {
             throw new DefaultFrameworkException(VALID_SCENARIOS_NOT_FOUND);
@@ -51,7 +51,7 @@ public class ScenarioFilter {
     }
 
     private Set<MappingResult> filterScenariosByTags(final Set<MappingResult> activeScenarios) {
-        RunScenariosByTag runScenariosByTag = ConfigProvider.provide().getRunScenariosByTag();
+        RunScenariosByTag runScenariosByTag = GlobalTestConfigurationProvider.provide().getRunScenariosByTag();
         return runScenariosByTag.isEnabled()
                 ? filterByTags(activeScenarios, getEnabledTags(runScenariosByTag.getTag()))
                 : sortByName(activeScenarios);

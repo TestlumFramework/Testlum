@@ -6,7 +6,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnS3EnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.global.GlobalTestConfigurationProviderImpl.ConfigProvider;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.S3;
@@ -24,7 +24,8 @@ public class S3Configuration {
     @Bean
     public Map<AliasEnv, AmazonS3> amazonS3() {
         Map<AliasEnv, AmazonS3> amazonS3Map = new HashMap<>();
-        ConfigProvider.getIntegrations().forEach((env, integrations) -> addAmazonS3(integrations, env, amazonS3Map));
+        GlobalTestConfigurationProvider.getIntegrations()
+                .forEach((env, integrations) -> addAmazonS3(integrations, env, amazonS3Map));
         return amazonS3Map;
     }
 

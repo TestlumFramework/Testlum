@@ -1,7 +1,5 @@
-package com.knubisoft.testlum.testing.framework.configuration.global;
+package com.knubisoft.testlum.testing.framework.configuration;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -29,56 +27,56 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
-public class GlobalTestConfigurationProviderImpl implements GlobalTestConfigurationProvider {
+public class ConfigProviderImpl implements ConfigProvider {
 
     @Override
     public GlobalTestConfiguration provide() {
-        return ConfigProvider.provide();
+        return GlobalTestConfigurationProvider.provide();
     }
 
     @Override
     public List<Environment> getEnabledEnvironments() {
-        return ConfigProvider.getEnabledEnvironments();
+        return GlobalTestConfigurationProvider.getEnabledEnvironments();
     }
 
     @Override
     public Map<String, Integrations> getIntegrations() {
-        return ConfigProvider.getIntegrations();
+        return GlobalTestConfigurationProvider.getIntegrations();
     }
 
     @Override
     public Map<String, UiConfig> getUiConfigs() {
-        return ConfigProvider.getUiConfigs();
+        return GlobalTestConfigurationProvider.getUiConfigs();
     }
 
     @Override
     public Integrations getDefaultIntegrations() {
-        return ConfigProvider.getDefaultIntegrations();
+        return GlobalTestConfigurationProvider.getDefaultIntegrations();
     }
 
     @Override
     public UiConfig getDefaultUiConfigs() {
-        return ConfigProvider.getDefaultUiConfigs();
+        return GlobalTestConfigurationProvider.getDefaultUiConfigs();
     }
 
     @Override
     public Web getWebSettings(final String env) {
-        return ConfigProvider.getWebSettings(env);
+        return GlobalTestConfigurationProvider.getWebSettings(env);
     }
 
     @Override
     public Mobilebrowser getMobilebrowserSettings(final String env) {
-        return ConfigProvider.getMobilebrowserSettings(env);
+        return GlobalTestConfigurationProvider.getMobilebrowserSettings(env);
     }
 
     @Override
     public Native getNativeSettings(final String env) {
-        return ConfigProvider.getNativeSettings(env);
+        return GlobalTestConfigurationProvider.getNativeSettings(env);
     }
 
     @Slf4j
     @UtilityClass
-    public static class ConfigProvider {
+    public static class GlobalTestConfigurationProvider {
 
         private final GlobalTestConfiguration globalTestConfiguration = init();
         private final List<Environment> environments = filterEnabledEnvironments();
@@ -123,7 +121,8 @@ public class GlobalTestConfigurationProviderImpl implements GlobalTestConfigurat
 
         private Map<String, Integrations> collectIntegrations() {
             Map<String, Integrations> integrationsMap = getEnabledEnvironments().stream()
-                    .collect(Collectors.toMap(Environment::getFolder, ConfigProvider::initIntegration));
+                    .collect(Collectors.toMap(Environment::getFolder,
+                            GlobalTestConfigurationProvider::initIntegration));
             new IntegrationsValidator().validate(integrationsMap);
             return integrationsMap;
         }
@@ -132,7 +131,7 @@ public class GlobalTestConfigurationProviderImpl implements GlobalTestConfigurat
             return FileSearcher
                     .searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
                     .map(configFile -> XMLParsers.forIntegrations().process(configFile))
-                    .map(ConfigProvider::checkIfVaultPresent)
+                    .map(GlobalTestConfigurationProvider::checkIfVaultPresent)
                     .orElseGet(() -> {
                         log.warn(LogMessage.DISABLED_CONFIGURATION, Integrations.class.getSimpleName());
                         return new Integrations();
@@ -141,7 +140,7 @@ public class GlobalTestConfigurationProviderImpl implements GlobalTestConfigurat
 
         private Map<String, UiConfig> collectUiConfigs() {
             Map<String, UiConfig> uiConfigMap = getEnabledEnvironments().stream()
-                    .collect(Collectors.toMap(Environment::getFolder, ConfigProvider::initUiConfig));
+                    .collect(Collectors.toMap(Environment::getFolder, GlobalTestConfigurationProvider::initUiConfig));
             new UiConfigValidator().validate(uiConfigMap);
             return uiConfigMap;
         }
@@ -149,7 +148,7 @@ public class GlobalTestConfigurationProviderImpl implements GlobalTestConfigurat
         private UiConfig initUiConfig(final Environment env) {
             return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.UI_CONFIG_FILENAME)
                     .map(configFile -> XMLParsers.forUiConfig().process(configFile))
-                    .map(ConfigProvider::checkIfVaultPresent)
+                    .map(GlobalTestConfigurationProvider::checkIfVaultPresent)
                     .orElseGet(() -> {
                         log.warn(LogMessage.DISABLED_CONFIGURATION, UiConfig.class.getSimpleName());
                         return new UiConfig();

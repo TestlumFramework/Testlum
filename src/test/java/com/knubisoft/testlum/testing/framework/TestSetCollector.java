@@ -48,8 +48,7 @@ public class TestSetCollector {
 
     public Stream<Arguments> collect() {
         ScenarioCollector.Result result = new ScenarioCollector().collect();
-        Set<MappingResult> validScenarios =
-                new ScenarioFilter().filterScenarios(result.get());
+        Set<MappingResult> validScenarios = new ScenarioFilter().filterScenarios(result.get());
         return validScenarios.stream()
                 .flatMap(this::createArguments);
     }

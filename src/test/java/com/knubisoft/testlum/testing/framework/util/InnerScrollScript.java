@@ -67,10 +67,10 @@ public enum InnerScrollScript {
                 .map(e -> {
                     String selector = e.locatorValue.apply(locator);
                     int value = scroll.getValue();
-                    ScrollDirection direction = scroll.getDirection();
+                    ScrollDirection scrollDirection = scroll.getDirection();
                     return ScrollMeasure.PERCENT == scroll.getMeasure()
-                            ? formatInnerPercentScript(e.getPercentageScript(), selector, value, direction)
-                            : formatInnerPixelScript(e.getPixelScript(), selector, value, direction);
+                            ? formatInnerPercentScript(e.getPercentageScript(), selector, value, scrollDirection)
+                            : formatInnerPixelScript(e.getPixelScript(), selector, value, scrollDirection);
                 })
                 .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.INVALID_LOCATOR, locator));
     }

@@ -138,11 +138,10 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> uiCommandValidatorsMap;
-    private final Integrations integrations;
+    private final Integrations integrations = GlobalTestConfigurationProvider.getDefaultIntegrations();
     private List<Map<String, String>> variationList = new ArrayList<>();
 
     public ScenarioValidator() {
-        this.integrations = GlobalTestConfigurationProvider.getDefaultIntegrations();
         Map<AbstractCommandPredicate, AbstractCommandValidator> validatorMap = new HashMap<>();
 
         validatorMap.put(o -> o instanceof Auth, (xmlFile, command) -> {

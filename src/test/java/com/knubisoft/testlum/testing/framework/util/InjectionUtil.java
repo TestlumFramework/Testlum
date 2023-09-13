@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
-import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
+import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.framework.vault.VaultService;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -19,11 +19,9 @@ public class InjectionUtil {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T injectObjectVariation(final T t,
-                                       final Map<String, String> variation,
-                                       final GlobalVariations globalVariations) {
+    public <T> T injectObjectVariation(final T t, final Map<String, String> variation) {
         String asJson = JacksonMapperUtil.writeValueToCopiedString(t);
-        String injected = globalVariations.getVariationValue(asJson, variation);
+        String injected = GlobalVariationsProvider.getVariationValue(asJson, variation);
         return JacksonMapperUtil.readCopiedValue(injected, (Class<T>) t.getClass());
     }
 

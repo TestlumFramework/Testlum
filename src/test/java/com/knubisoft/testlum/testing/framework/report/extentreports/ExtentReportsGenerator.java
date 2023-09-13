@@ -178,8 +178,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
 
     private void addBrowserInfo(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
         if (isNotBlank(scenarioResult.getBrowser())) {
-            BrowserUtil.getBrowserBy(
-                            scenarioResult.getEnvironment(), scenarioResult.getBrowser())
+            BrowserUtil.getBrowserBy(scenarioResult.getEnvironment(), scenarioResult.getBrowser())
                     .ifPresent(browser -> extentTest.info(
                             MarkupHelper.createTable(createTableWithBrowserInfo(browser))));
         }

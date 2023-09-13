@@ -7,7 +7,7 @@ import com.knubisoft.testlum.testing.framework.parser.XMLParsers;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
-import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
+import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
@@ -34,14 +34,12 @@ public class ScenarioCollector {
 
     private final File rootTestResources;
     private final ScenarioValidator scenarioValidator;
-    private final GlobalVariations globalVariations;
     private String variationFileName;
 
-    public ScenarioCollector(final GlobalVariations globalVariations) {
-        this.globalVariations = globalVariations;
+    public ScenarioCollector() {
         TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
         this.rootTestResources = resourceSettings.getTestResourcesFolder();
-        this.scenarioValidator = new ScenarioValidator(this.globalVariations);
+        this.scenarioValidator = new ScenarioValidator();
     }
 
     public Result collect() {
@@ -92,7 +90,7 @@ public class ScenarioCollector {
 
     private void getScenarioVariations(final File xmlFile, final Scenario scenario) {
         if (nonNull(scenario.getSettings().getVariations())) {
-            globalVariations.process(scenario, xmlFile);
+            GlobalVariationsProvider.process(scenario, xmlFile);
             this.variationFileName = scenario.getSettings().getVariations();
         }
     }
@@ -156,10 +154,9 @@ public class ScenarioCollector {
     private Include getIncludeCommand(final AbstractCommand command) {
         Include include = (Include) command;
         if (StringUtils.isNotBlank(variationFileName)) {
-            List<Map<String, String>> variationList = globalVariations.getVariations(variationFileName);
+            List<Map<String, String>> variationList = GlobalVariationsProvider.getVariations(variationFileName);
             include = variationList.stream()
-                    .map(variationMap ->
-                            (Include) InjectionUtil.injectObjectVariation(command, variationMap, globalVariations))
+                    .map(variationMap -> (Include) InjectionUtil.injectObjectVariation(command, variationMap))
                     .findFirst().get();
             this.variationFileName = null;
         }

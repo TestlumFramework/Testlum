@@ -3,7 +3,6 @@ package com.knubisoft.testlum.testing.framework.context;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
-import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl;
 import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ReportGeneratorFactory;
 import com.knubisoft.testlum.testing.model.global_config.Environment;
@@ -35,7 +34,7 @@ public class SpringTestContext {
         List<Environment> enabledEnvList = GlobalTestConfigurationProvider.getEnabledEnvironments();
         final List<Environment> envList = isParallelExecutionEnabled
                 ? enabledEnvList : Collections.singletonList(enabledEnvList.get(0));
-        return new EnvManagerImpl(envList);
+        return new EnvManager(envList);
     }
 
     @Bean

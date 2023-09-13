@@ -45,10 +45,9 @@ public class MobileUtil {
     }
 
     public boolean isNativeAndMobilebrowserConfigEnabled() {
-        return !filterDefaultEnabledMobilebrowserDevices().isEmpty()
-                && !filterDefaultEnabledNativeDevices().isEmpty()
-                && allNotNull(GlobalTestConfigurationProvider.getDefaultUiConfigs()
-                        .getMobilebrowser().getConnection().getAppiumServer(),
+        return !filterDefaultEnabledMobilebrowserDevices().isEmpty() && !filterDefaultEnabledNativeDevices().isEmpty()
+                && allNotNull(GlobalTestConfigurationProvider.getDefaultUiConfigs().getMobilebrowser()
+                        .getConnection().getAppiumServer(),
                 GlobalTestConfigurationProvider.getDefaultUiConfigs().getNative().getConnection().getAppiumServer());
     }
 

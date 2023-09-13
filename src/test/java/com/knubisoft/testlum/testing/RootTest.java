@@ -7,7 +7,7 @@ import com.knubisoft.testlum.testing.framework.configuration.TestResourceSetting
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.context.AliasToStorageOperation;
 import com.knubisoft.testlum.testing.framework.context.SpringTestContext;
-import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
+import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.env.service.LockService;
 import com.knubisoft.testlum.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
@@ -42,7 +42,7 @@ import java.util.stream.Stream;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-@SpringBootTest(classes = {SpringTestContext.class})
+@SpringBootTest(classes = SpringTestContext.class)
 @Execution(ExecutionMode.CONCURRENT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RootTest {
@@ -89,7 +89,7 @@ public class RootTest {
     }
 
     private void execute(final ScenarioArguments scenarioArguments) {
-        scenarioArguments.setEnvironment(EnvProvider.currentEnv());
+        scenarioArguments.setEnvironment(EnvManager.currentEnv());
         clearDataStorages(scenarioArguments.getScenario());
         StopWatch stopWatch = StopWatch.createStarted();
         ScenarioRunner scenarioRunner = new ScenarioRunner(scenarioArguments, ctx);

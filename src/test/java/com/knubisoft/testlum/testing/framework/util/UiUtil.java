@@ -199,9 +199,7 @@ public class UiUtil {
         return new Point(dimension.width / 2, dimension.height / 2);
     }
 
-    public String getUrl(final String path,
-                         final String env,
-                         final UiType uiType) {
+    public String getUrl(final String path, final String env, final UiType uiType) {
         if (HTTP_PATTERN.matcher(path).matches()) {
             return path;
         }

@@ -8,7 +8,7 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioFilter;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ScenarioStepReader;
-import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
+import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
@@ -32,13 +32,11 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 @Service
 public class TestSetCollector {
 
-    private final GlobalVariations globalVariations;
     private final List<String> browsers;
     private final List<String> mobilebrowsers;
     private final List<String> nativeDevices;
 
-    public TestSetCollector(final GlobalVariations globalVariations) {
-        this.globalVariations = globalVariations;
+    public TestSetCollector() {
         browsers = BrowserUtil.filterDefaultEnabledBrowsers().stream()
                 .map(AbstractBrowser::getAlias).collect(Collectors.toList());
         mobilebrowsers = MobileUtil.filterDefaultEnabledMobilebrowserDevices().stream()
@@ -49,7 +47,7 @@ public class TestSetCollector {
 
 
     public Stream<Arguments> collect() {
-        ScenarioCollector.Result result = new ScenarioCollector(globalVariations).collect();
+        ScenarioCollector.Result result = new ScenarioCollector().collect();
         Set<MappingResult> validScenarios =
                 new ScenarioFilter().filterScenarios(result.get());
         return validScenarios.stream()
@@ -175,6 +173,6 @@ public class TestSetCollector {
     }
 
     private List<Map<String, String>> getVariationList(final MappingResult entry) {
-        return globalVariations.getVariations(entry.scenario.getSettings().getVariations());
+        return GlobalVariationsProvider.getVariations(entry.scenario.getSettings().getVariations());
     }
 }

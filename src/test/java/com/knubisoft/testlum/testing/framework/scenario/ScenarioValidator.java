@@ -12,7 +12,7 @@ import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.Int
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.SendGridUtil;
 import com.knubisoft.testlum.testing.framework.validator.XMLValidator;
-import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
+import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.Api;
 import com.knubisoft.testlum.testing.model.global_config.Apis;
 import com.knubisoft.testlum.testing.model.global_config.AppiumCapabilities;
@@ -136,15 +136,13 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
-    private final GlobalVariations globalVariations;
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> uiCommandValidatorsMap;
     private final Integrations integrations;
     private List<Map<String, String>> variationList = new ArrayList<>();
 
-    public ScenarioValidator(final GlobalVariations globalVariations) {
+    public ScenarioValidator() {
         this.integrations = GlobalTestConfigurationProvider.getDefaultIntegrations();
-        this.globalVariations = globalVariations;
         Map<AbstractCommandPredicate, AbstractCommandValidator> validatorMap = new HashMap<>();
 
         validatorMap.put(o -> o instanceof Auth, (xmlFile, command) -> {
@@ -385,16 +383,16 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateVariationsIfExist(final Scenario scenario, final File xmlFile) {
         if (isNotBlank(scenario.getSettings().getVariations())) {
-            globalVariations.process(scenario, xmlFile);
-            variationList.addAll(globalVariations.getVariations(scenario.getSettings().getVariations()));
+            GlobalVariationsProvider.process(scenario, xmlFile);
+            variationList.addAll(GlobalVariationsProvider.getVariations(scenario.getSettings().getVariations()));
         }
         if (scenario.getCommands().stream().anyMatch(command -> command instanceof Repeat)) {
             Repeat repeat = (Repeat) scenario.getCommands().stream()
                     .filter(command -> command instanceof Repeat)
                     .findFirst().get();
             if (nonNull(repeat.getVariations())) {
-                globalVariations.process(repeat);
-                variationList.addAll(globalVariations.getVariations(repeat.getVariations()));
+                GlobalVariationsProvider.process(repeat);
+                variationList.addAll(GlobalVariationsProvider.getVariations(repeat.getVariations()));
             }
         }
     }
@@ -471,7 +469,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private File validateFileNamesIfVariations(final File xmlFile, final String fileName) {
         String variationValue = variationList.stream()
-                .map(variationsMap -> globalVariations.getVariationValue(fileName, variationsMap))
+                .map(variationsMap -> GlobalVariationsProvider.getVariationValue(fileName, variationsMap))
                 .findFirst().get();
         return nonNull(xmlFile) ? FileSearcher.searchFileFromDir(xmlFile, variationValue)
                 : FileSearcher.searchFileFromDataFolder(variationValue);
@@ -746,6 +744,5 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private interface AbstractCommandPredicate extends Predicate<AbstractCommand> { }
-
     private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> { }
 }

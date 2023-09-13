@@ -1,11 +1,11 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib;
 
-import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorProvider;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
@@ -81,12 +81,6 @@ public class SubCommandRunnerImpl implements SubCommandRunner {
     private void processException(final Exception e, final CommandResult result) {
         ResultUtil.setExceptionResult(result, e);
         LogUtil.logException(e);
-        checkIfStopScenarioOnFailure(e);
-    }
-
-    private void checkIfStopScenarioOnFailure(final Exception e) {
-        if (GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure()) {
-            throw new DefaultFrameworkException(e);
-        }
+        ConfigUtil.checkIfStopScenarioOnFailure(e);
     }
 }

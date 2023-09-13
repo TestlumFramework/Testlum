@@ -39,6 +39,8 @@ public class ExceptionMessage {
 
     // scenario validation
     public static final String INTEGRATION_NOT_FOUND = "Cannot find integration configuration for <%s>";
+    public static final String ALIAS_NOT_FOUND = "Cannot find enabled integration with alias <%s>";
+    public static final String API_NOT_FOUND = "Cannot find api with alias <%s>";
     public static final String AUTH_NOT_FOUND = "Cannot find <auth> configuration for <api> with alias <%s>";
     public static final String AUTH_ALIASES_DOESNT_MATCH = "<Http> command alias doesn't match with <auth> alias";
 

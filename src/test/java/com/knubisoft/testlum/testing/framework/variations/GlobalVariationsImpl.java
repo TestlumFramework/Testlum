@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.parser.CSVParser;
 import com.knubisoft.testlum.testing.model.scenario.Repeat;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
+import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -20,73 +21,93 @@ import static java.util.Objects.isNull;
 @Component
 public class GlobalVariationsImpl implements GlobalVariations {
 
-    private static final String ROUTE_REGEXP = "\\{\\{(.*?)}}";
-    private static final String NO_VALUE_FOUND_FOR_KEY = "Unable to find value for key <%s>. Available keys: %s";
-    private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
-    private static final VariationsMap VARIATIONS = new VariationsMap();
-
-    private static final CSVParser CSV_PARSER = new CSVParser();
-    private static final VariationsValidator VARIATIONS_VALIDATOR = new VariationsValidator();
-
     @Override
     public void process(final Scenario scenario, final File filePath) {
-        String fileName = scenario.getSettings().getVariations();
-        List<Map<String, String>> variationList = VARIATIONS.get(fileName);
-
-        if (isNull(variationList)) {
-            variationList = CSV_PARSER.parseVariations(fileName);
-            VARIATIONS.putIfAbsent(fileName, variationList);
-        }
-        VARIATIONS_VALIDATOR.validateByScenario(variationList, scenario, filePath);
+        GlobalVariationsProvider.process(scenario, filePath);
     }
 
     @Override
     public void process(final Repeat repeat) {
-        if (StringUtils.isNotBlank(repeat.getVariations())) {
-            String fileName = repeat.getVariations();
-            List<Map<String, String>> variationList = VARIATIONS.get(fileName);
-            if (isNull(variationList)) {
-                variationList = CSV_PARSER.parseVariations(repeat.getVariations());
-                VARIATIONS.putIfAbsent(repeat.getVariations(), variationList);
-            }
-        }
+        GlobalVariationsProvider.process(repeat);
     }
 
     @Override
     public List<Map<String, String>> getVariations(final String fileName) {
-        List<Map<String, String>> variationList = VARIATIONS.get(fileName);
-        if (isNull(variationList)) {
-            throw new DefaultFrameworkException(VARIATIONS_NOT_FOUND, fileName);
-        }
-        return variationList;
-    }
-
-    private static class VariationsMap extends HashMap<String, List<Map<String, String>>> {
-        private static final long serialVersionUID = 1;
+        return GlobalVariationsProvider.getVariations(fileName);
     }
 
     @Override
-    public String getVariationValue(final String variation, final Map<String, String> variationMap) {
-        if (StringUtils.isBlank(variation)) {
-            return variation;
-        }
-        Matcher m = ROUTE_PATTERN.matcher(variation);
-        return getVariationFromMap(variation, m, variationMap);
+    public String getVariationValue(String variation, Map<String, String> variationMap) {
+        return GlobalVariationsProvider.getVariationValue(variation, variationMap);
     }
 
-    private String getVariationFromMap(final String variation,
-                                       final Matcher m,
-                                       final Map<String, String> variationMap) {
-        String finalValue = variation;
-        while (m.find()) {
-            String variationKey = m.group(1);
-            String variationKeyInBraces = m.group(0);
-            String variationValue = variationMap.get(variationKey);
-            if (isNull(variationValue)) {
-                throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, variationKey, variationMap));
+    @UtilityClass
+    public static class GlobalVariationsProvider {
+
+        private static final String ROUTE_REGEXP = "\\{\\{(.*?)}}";
+        private static final String NO_VALUE_FOUND_FOR_KEY = "Unable to find value for key <%s>. Available keys: %s";
+        private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
+        private static final VariationsMap VARIATIONS = new VariationsMap();
+
+        private static final CSVParser CSV_PARSER = new CSVParser();
+        private static final VariationsValidator VARIATIONS_VALIDATOR = new VariationsValidator();
+
+        public void process(final Scenario scenario, final File filePath) {
+            String fileName = scenario.getSettings().getVariations();
+            List<Map<String, String>> variationList = VARIATIONS.get(fileName);
+
+            if (isNull(variationList)) {
+                variationList = CSV_PARSER.parseVariations(fileName);
+                VARIATIONS.putIfAbsent(fileName, variationList);
             }
-            finalValue = finalValue.replace(variationKeyInBraces, variationValue);
+            VARIATIONS_VALIDATOR.validateByScenario(variationList, scenario, filePath);
         }
-        return finalValue;
+
+        public void process(final Repeat repeat) {
+            if (StringUtils.isNotBlank(repeat.getVariations())) {
+                String fileName = repeat.getVariations();
+                List<Map<String, String>> variationList = VARIATIONS.get(fileName);
+                if (isNull(variationList)) {
+                    variationList = CSV_PARSER.parseVariations(repeat.getVariations());
+                    VARIATIONS.putIfAbsent(repeat.getVariations(), variationList);
+                }
+            }
+        }
+
+        public List<Map<String, String>> getVariations(final String fileName) {
+            List<Map<String, String>> variationList = VARIATIONS.get(fileName);
+            if (isNull(variationList)) {
+                throw new DefaultFrameworkException(VARIATIONS_NOT_FOUND, fileName);
+            }
+            return variationList;
+        }
+
+        private static class VariationsMap extends HashMap<String, List<Map<String, String>>> {
+            private static final long serialVersionUID = 1;
+        }
+
+        public String getVariationValue(final String variation, final Map<String, String> variationMap) {
+            if (StringUtils.isBlank(variation)) {
+                return variation;
+            }
+            Matcher m = ROUTE_PATTERN.matcher(variation);
+            return getVariationFromMap(variation, m, variationMap);
+        }
+
+        private String getVariationFromMap(final String variation,
+                                           final Matcher m,
+                                           final Map<String, String> variationMap) {
+            String finalValue = variation;
+            while (m.find()) {
+                String variationKey = m.group(1);
+                String variationKeyInBraces = m.group(0);
+                String variationValue = variationMap.get(variationKey);
+                if (isNull(variationValue)) {
+                    throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, variationKey, variationMap));
+                }
+                finalValue = finalValue.replace(variationKeyInBraces, variationValue);
+            }
+            return finalValue;
+        }
     }
 }

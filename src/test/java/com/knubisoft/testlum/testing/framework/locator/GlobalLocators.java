@@ -8,15 +8,14 @@ import lombok.experimental.UtilityClass;
 import java.util.Collections;
 import java.util.Map;
 
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_NAMING_FOR_LOCATOR_ID;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNABLE_TO_FIND_LOCATOR_BY_PATH;
 import static java.util.Objects.isNull;
 
 @UtilityClass
 public class GlobalLocators {
 
     private static final Map<String, Locator> LOCATOR_MAP;
-    private static final String INCORRECT_NAMING_FOR_LOCATOR_ID =
-            "Incorrect naming for %s. Expect format: <pageName.locatorId>";
-    private static final String UNABLE_TO_FIND_LOCATOR_BY_PATH = "Unable to find locator [%s] by path";
 
     static {
         LOCATOR_MAP = Collections.unmodifiableMap(new LocatorCollector().collect());

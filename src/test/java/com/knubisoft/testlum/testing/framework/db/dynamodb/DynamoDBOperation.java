@@ -4,7 +4,7 @@ import com.knubisoft.testlum.testing.framework.configuration.condition.OnDynamoE
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
+import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.model.global_config.Dynamo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +49,7 @@ public class DynamoDBOperation extends StorageOperation {
     public void clearSystem() {
         dynamoDbClient.forEach((aliasEnv, dbClient) -> {
             if (isTruncate(Dynamo.class, aliasEnv)
-                    && Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 dbClient.listTables().tableNames().forEach(tableName -> truncate(tableName, dbClient));
             }
         });
@@ -62,7 +62,7 @@ public class DynamoDBOperation extends StorageOperation {
 
     private QueryResult<List<Map<String, AttributeValue>>> executeSingleQuery(final String query,
                                                                               final String alias) {
-        ExecuteStatementResponse singleResponse = dynamoDbClient.get(new AliasEnv(alias, EnvProvider.currentEnv()))
+        ExecuteStatementResponse singleResponse = dynamoDbClient.get(new AliasEnv(alias, EnvManager.currentEnv()))
                 .executeStatement(builder -> builder.statement(query));
         return new QueryResult<>(query, singleResponse.items());
     }

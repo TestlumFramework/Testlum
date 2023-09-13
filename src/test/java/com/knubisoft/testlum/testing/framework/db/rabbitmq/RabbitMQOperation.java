@@ -5,7 +5,7 @@ import com.knubisoft.testlum.testing.framework.configuration.condition.OnRabbitM
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
+import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Rabbitmq;
@@ -41,7 +41,7 @@ public class RabbitMQOperation extends StorageOperation {
     public void clearSystem() {
         rabbitMqClient.forEach((aliasEnv, client) -> {
             if (isTruncate(Rabbitmq.class, aliasEnv)
-                    && Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 String virtualHost = this.findByName(aliasEnv).getVirtualHost();
                 client.getQueues().forEach(queueInfo -> client.purgeQueue(virtualHost, queueInfo.getName()));
             }

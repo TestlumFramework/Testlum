@@ -6,7 +6,7 @@ import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.PostgresExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
+import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.model.global_config.Postgres;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class PostgresSqlOperation extends StorageOperation {
     public StorageOperationResult apply(final Source source, final String databaseAlias) {
         List<String> queriesPostgres = source.getQueries();
         List<QueryResult<Object>> postgresAppliedRecords =
-                postgresExecutor.get(new AliasEnv(databaseAlias, EnvProvider.currentEnv()))
+                postgresExecutor.get(new AliasEnv(databaseAlias, EnvManager.currentEnv()))
                 .executeQueries(queriesPostgres);
         return new StorageOperationResult(postgresAppliedRecords);
     }
@@ -46,7 +46,7 @@ public class PostgresSqlOperation extends StorageOperation {
     public void clearSystem() {
         postgresExecutor.forEach((aliasEnv, sqlExecutor) -> {
             if (isTruncate(Postgres.class, aliasEnv)
-                    && Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

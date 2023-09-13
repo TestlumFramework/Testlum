@@ -5,7 +5,7 @@ import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.db.StorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
+import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.model.global_config.Redis;
@@ -47,7 +47,7 @@ public class RedisOperation extends StorageOperation {
     public void clearSystem() {
         stringRedisConnection.forEach((aliasEnv, redisConnection) -> {
             if (isTruncate(Redis.class, aliasEnv)
-                    && Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 redisConnection.execute(CLEAR_DATABASE);
             }
         });
@@ -66,7 +66,7 @@ public class RedisOperation extends StorageOperation {
         String[] args = redisQuery.getArg().toArray(new String[0]);
 
         Object response =
-                stringRedisConnection.get(new AliasEnv(databaseAlias, EnvProvider.currentEnv())).execute(command, args);
+                stringRedisConnection.get(new AliasEnv(databaseAlias, EnvManager.currentEnv())).execute(command, args);
         return convertResult(response);
     }
 

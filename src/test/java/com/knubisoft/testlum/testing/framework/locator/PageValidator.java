@@ -9,10 +9,9 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PageValidator implements XMLValidator<Page> {
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.LOCATOR_ID_HAS_DUPLICATE_LOCATOR;
 
-    private static final String LOCATOR_ID_HAS_DUPLICATE_LOCATOR =
-            "Locator id from page <%s> has duplicate locator with id <%s>";
+public class PageValidator implements XMLValidator<Page> {
 
     @Override
     public void validate(final Page page, final File xmlFile) {

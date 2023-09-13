@@ -33,6 +33,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ALIAS_NOT_FOUND;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.API_NOT_FOUND;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INTEGRATION_NOT_FOUND;
+
 @Component
 public class IntegrationsProviderImpl implements IntegrationsProvider {
 
@@ -66,9 +70,6 @@ public class IntegrationsProviderImpl implements IntegrationsProvider {
 
         private static final Function<String, Integrations> TO_INTEGRATIONS =
                 i -> GlobalTestConfigurationProvider.getIntegrations().get(i);
-        private static final String ALIAS_NOT_FOUND = "Cannot find enabled integration with alias <%s>";
-        private static final String API_NOT_FOUND = "Cannot find api with alias <%s>";
-        private static final String INTEGRATION_NOT_FOUND = "Cannot find integration configuration for <%s>";
         private static final Map<IntegrationsPredicate, IntegrationListMethod> CONFIG_TO_INTEGRATION_LIST_MAP;
 
         static {

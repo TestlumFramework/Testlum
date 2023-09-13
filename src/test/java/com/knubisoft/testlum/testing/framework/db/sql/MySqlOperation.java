@@ -6,7 +6,7 @@ import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.MySqlExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
+import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.model.global_config.Mysql;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class MySqlOperation extends StorageOperation {
     public StorageOperationResult apply(final Source source, final String databaseAlias) {
         List<String> queriesMySql = source.getQueries();
         List<QueryResult<Object>> mySqlAppliedRecords =
-                mySqlExecutor.get(new AliasEnv(databaseAlias, EnvProvider.currentEnv())).executeQueries(queriesMySql);
+                mySqlExecutor.get(new AliasEnv(databaseAlias, EnvManager.currentEnv())).executeQueries(queriesMySql);
         return new StorageOperationResult(mySqlAppliedRecords);
     }
 
@@ -45,7 +45,7 @@ public class MySqlOperation extends StorageOperation {
     public void clearSystem() {
         mySqlExecutor.forEach((aliasEnv, sqlExecutor) -> {
             if (isTruncate(Mysql.class, aliasEnv)
-                    && Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

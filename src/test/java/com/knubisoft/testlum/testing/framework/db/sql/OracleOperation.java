@@ -6,7 +6,7 @@ import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.OracleExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.env.EnvManagerImpl.EnvProvider;
+import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.model.global_config.Oracle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class OracleOperation extends StorageOperation {
     public StorageOperationResult apply(final Source source, final String databaseAlias) {
         List<String> queriesOracle = source.getQueries();
         List<QueryResult<Object>> oracleAppliedRecords =
-                oracleExecutor.get(new AliasEnv(databaseAlias, EnvProvider.currentEnv())).executeQueries(queriesOracle);
+                oracleExecutor.get(new AliasEnv(databaseAlias, EnvManager.currentEnv())).executeQueries(queriesOracle);
         return new StorageOperationResult(oracleAppliedRecords);
     }
 
@@ -45,7 +45,7 @@ public class OracleOperation extends StorageOperation {
     public void clearSystem() {
         oracleExecutor.forEach((aliasEnv, sqlExecutor) -> {
             if (isTruncate(Oracle.class, aliasEnv)
-                    && Objects.equals(aliasEnv.getEnvironment(), EnvProvider.currentEnv())) {
+                    && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 sqlExecutor.truncate();
             }
         });

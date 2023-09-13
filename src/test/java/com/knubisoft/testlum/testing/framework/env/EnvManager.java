@@ -9,7 +9,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class EnvManagerImpl implements EnvManager {
+public class EnvManager {
 
     private static final ThreadLocal<Environment> THREAD_ENV = new ThreadLocal<>();
 
@@ -18,15 +18,15 @@ public class EnvManagerImpl implements EnvManager {
     private final Lock lock;
     private final Condition lockCondition;
 
-    public EnvManagerImpl(final List<Environment> environments) {
+    public EnvManager(final List<Environment> environments) {
         this.environments = Collections.unmodifiableList(environments);
         this.keyLocker = new KeyLocker();
         this.lock = new ReentrantLock();
         this.lockCondition = lock.newCondition();
     }
 
-    public String currentEnv() {
-        return EnvProvider.currentEnv();
+    public static String currentEnv() {
+        return THREAD_ENV.get().getFolder();
     }
 
     public String acquireEnv() throws InterruptedException {
@@ -65,13 +65,6 @@ public class EnvManagerImpl implements EnvManager {
             } finally {
                 lock.unlock();
             }
-        }
-    }
-
-    public static class EnvProvider {
-
-        public static String currentEnv() {
-            return THREAD_ENV.get().getFolder();
         }
     }
 }

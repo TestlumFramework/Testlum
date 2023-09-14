@@ -100,8 +100,8 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
                     .withExpected(expected)
                     .exec();
         } catch (Exception e) {
-            LogUtil.logException(e);
             ResultUtil.setExceptionResult(result, e);
+            throw new DefaultFrameworkException(e.getMessage());
         }
     }
 

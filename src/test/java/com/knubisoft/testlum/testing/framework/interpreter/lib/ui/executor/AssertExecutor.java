@@ -33,6 +33,7 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 @ExecutorForClass(WebAssert.class)
 public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
 
+    private final List<String> exceptions = new ArrayList<>();
     private final Map<AssertCmdPredicate, AssertMethod> assertCommandMap;
 
     public AssertExecutor(final ExecutorDependencies dependencies) {
@@ -59,6 +60,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
                 executeSubCommand(command, commandResult);
             }
         });
+        rethrowOnErrors();
     }
 
     private void executeSubCommand(final AbstractCommand command, final CommandResult result) {
@@ -100,8 +102,15 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
                     .withExpected(expected)
                     .exec();
         } catch (Exception e) {
+            exceptions.add(e.getMessage());
+            LogUtil.logException(e);
             ResultUtil.setExceptionResult(result, e);
-            throw new DefaultFrameworkException(e.getMessage());
+        }
+    }
+
+    private void rethrowOnErrors() {
+        if (!exceptions.isEmpty()) {
+            throw new DefaultFrameworkException(exceptions);
         }
     }
 

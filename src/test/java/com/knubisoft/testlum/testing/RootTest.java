@@ -137,7 +137,7 @@ public class RootTest {
         try {
             reportGenerator.generateReport(globalScenarioStatCollector);
         } catch (Exception e) {
-            //ignore
+            e.printStackTrace();
         }
     }
 }

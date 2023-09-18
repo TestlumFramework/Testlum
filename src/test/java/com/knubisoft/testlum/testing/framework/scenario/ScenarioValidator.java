@@ -80,7 +80,6 @@ import com.knubisoft.testlum.testing.model.scenario.S3;
 import com.knubisoft.testlum.testing.model.scenario.S3File;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
-import com.knubisoft.testlum.testing.model.scenario.ScrollNative;
 import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
 import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
@@ -364,9 +363,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             NativeVar var = (NativeVar) command;
             validateVarCommand(xmlFile, var.getFile(), var.getSql());
         });
-
-        uiValidatorMap.put(o -> o instanceof ScrollNative && ScrollType.INNER == ((ScrollNative) o).getType(),
-                (xmlFile, command) -> validateLocator((ScrollNative) command, NO_LOCATOR_FOUND_FOR_INNER_SCROLL));
 
         uiValidatorMap.put(o -> o instanceof SwipeNative && SwipeType.ELEMENT == ((SwipeNative) o).getType(),
                 (xmlFile, command) -> validateLocator((SwipeNative) command, NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE));

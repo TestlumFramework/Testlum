@@ -31,7 +31,6 @@ import javax.xml.bind.annotation.XmlType;
     Scroll.class,
     Paste.class,
     Highlight.class,
-    ScrollNative.class,
     SwipeNative.class
 })
 public abstract class CommandWithOptionalLocator

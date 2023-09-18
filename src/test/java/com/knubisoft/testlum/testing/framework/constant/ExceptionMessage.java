@@ -232,6 +232,7 @@ public class ExceptionMessage {
             + "SIZE_MISMATCH%n" + "Expected image size: %sx%s%n" + "Actual image size: %sx%s";
     public static final String IMAGES_MISMATCH = "The images don't match. Image comparison state is -> MISMATCH. "
             + "Difference percent: %s";
+    public static final String IOS_NOT_SUPPORT_PART_COMMAND = "iOS mobilebrowser does not support <part> command";
     public static final String PAGE_NOT_LOADED = "Page did not load in estimated time!";
     public static final String PAGE_DID_NOT_RELOAD = "Page did not reload in estimated time or no such element "
             + "on the reloaded page";

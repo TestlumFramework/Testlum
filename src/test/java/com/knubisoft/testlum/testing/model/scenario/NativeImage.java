@@ -8,17 +8,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for image complex type.
+ * <p>Java class for nativeImage complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="image"&gt;
+ * &lt;complexType name="nativeImage"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice&gt;
- *         &lt;element name="fullScreen" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webFullScreen"/&gt;
- *         &lt;element name="picture" type="{http://www.knubisoft.com/testlum/testing/model/scenario}picture"/&gt;
+ *         &lt;element name="fullScreen" type="{http://www.knubisoft.com/testlum/testing/model/scenario}fullScreen"/&gt;
  *         &lt;element name="part" type="{http://www.knubisoft.com/testlum/testing/model/scenario}part"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="file" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}imageExtension" /&gt;
@@ -31,17 +30,15 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "image", propOrder = {
+@XmlType(name = "nativeImage", propOrder = {
     "fullScreen",
-    "picture",
     "part"
 })
-public class Image
+public class NativeImage
     extends AbstractUiCommand
 {
 
-    protected WebFullScreen fullScreen;
-    protected Picture picture;
+    protected FullScreen fullScreen;
     protected Part part;
     @XmlAttribute(name = "file", required = true)
     protected String file;
@@ -53,10 +50,10 @@ public class Image
      * 
      * @return
      *     possible object is
-     *     {@link WebFullScreen }
+     *     {@link FullScreen }
      *     
      */
-    public WebFullScreen getFullScreen() {
+    public FullScreen getFullScreen() {
         return fullScreen;
     }
 
@@ -65,35 +62,11 @@ public class Image
      * 
      * @param value
      *     allowed object is
-     *     {@link WebFullScreen }
+     *     {@link FullScreen }
      *     
      */
-    public void setFullScreen(WebFullScreen value) {
+    public void setFullScreen(FullScreen value) {
         this.fullScreen = value;
-    }
-
-    /**
-     * Gets the value of the picture property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Picture }
-     *     
-     */
-    public Picture getPicture() {
-        return picture;
-    }
-
-    /**
-     * Sets the value of the picture property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Picture }
-     *     
-     */
-    public void setPicture(Picture value) {
-        this.picture = value;
     }
 
     /**

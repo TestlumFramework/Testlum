@@ -5,25 +5,22 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for comparisonConditions complex type.
+ * <p>Java class for webFullScreen complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="comparisonConditions"&gt;
+ * &lt;complexType name="webFullScreen"&gt;
  *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}fullScreen"&gt;
  *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
  *         &lt;element name="exclude" type="{http://www.knubisoft.com/testlum/testing/model/scenario}exclude"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="percentage" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveDoubleMin0Max100" /&gt;
- *     &lt;/restriction&gt;
+ *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -31,18 +28,14 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "comparisonConditions", propOrder = {
+@XmlType(name = "webFullScreen", propOrder = {
     "exclude"
 })
-@XmlSeeAlso({
-    CompareWithFullScreen.class,
-    CompareWithPart.class
-})
-public class ComparisonConditions {
+public class WebFullScreen
+    extends FullScreen
+{
 
     protected List<Exclude> exclude;
-    @XmlAttribute(name = "percentage")
-    protected Double percentage;
 
     /**
      * Gets the value of the exclude property.
@@ -71,30 +64,6 @@ public class ComparisonConditions {
             exclude = new ArrayList<Exclude>();
         }
         return this.exclude;
-    }
-
-    /**
-     * Gets the value of the percentage property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
-     */
-    public Double getPercentage() {
-        return percentage;
-    }
-
-    /**
-     * Sets the value of the percentage property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
-     */
-    public void setPercentage(Double value) {
-        this.percentage = value;
     }
 
 }

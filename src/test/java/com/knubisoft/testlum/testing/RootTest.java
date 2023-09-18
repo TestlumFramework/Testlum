@@ -134,6 +134,10 @@ public class RootTest {
     @AfterAll
     public void afterAll() {
         connectionManager.closeConnections();
-        reportGenerator.generateReport(globalScenarioStatCollector);
+        try {
+            reportGenerator.generateReport(globalScenarioStatCollector);
+        } catch (Exception e) {
+            //ignore
+        }
     }
 }

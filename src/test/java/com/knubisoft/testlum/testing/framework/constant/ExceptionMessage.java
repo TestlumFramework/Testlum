@@ -233,8 +233,8 @@ public class ExceptionMessage {
     public static final String IMAGES_MISMATCH = "The images don't match. Image comparison state is -> MISMATCH. "
             + "Difference percent: %s";
     public static final String PAGE_NOT_LOADED = "Page did not load in estimated time!";
-    public static final String PAGE_DID_NOT_RELOAD = "Page did not reload in estimated time or no such element " +
-            "on the reloaded page";
+    public static final String PAGE_DID_NOT_RELOAD = "Page did not reload in estimated time or no such element "
+            + "on the reloaded page";
     public static final String PAGE_DID_NO_RESTART = "Page did not start to reload, time took for that - %s millis";
     public static final String ELEMENT_OUT_OF_BOUNDS = "Element is out of screen bounds";
     public static final String WEB_ELEMENT_ATTRIBUTE_NOT_EXIST = "Web element does not have attribute <%s>";

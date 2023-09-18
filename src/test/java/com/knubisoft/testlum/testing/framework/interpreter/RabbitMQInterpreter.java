@@ -102,7 +102,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         LogUtil.logRabbitSendInfo(send, message);
         ResultUtil.addRabbitMQSendInfo(send, aliasEnv.getAlias(), result);
         result.put(MESSAGE_TO_SEND, message);
-        createQueueIfNotExists(send.getRoutingKey(), aliasEnv);
+        checkQueueExistence(send.getRoutingKey(), aliasEnv);
         sendMessage(send, message, aliasEnv);
     }
 
@@ -138,7 +138,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         String messages = getMessageToReceive(receive);
         LogUtil.logRabbitReceiveInfo(receive, messages);
         ResultUtil.addRabbitMQReceiveInfo(receive, aliasEnv.getAlias(), result);
-        createQueueIfNotExists(receive.getQueue(), aliasEnv);
+        checkQueueExistence(receive.getQueue(), aliasEnv);
         List<RabbitMQMessage> actualRmqMessages = receiveRmqMessages(receive, aliasEnv);
         compareMessages(actualRmqMessages, messages, result);
     }
@@ -192,14 +192,10 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                 : getContentIfFile(file);
     }
 
-    private void createQueueIfNotExists(final String queue, final AliasEnv aliasEnv) {
-        if (checkIsQueueNotExists(queue, aliasEnv)) {
+    private void checkQueueExistence(final String queue, final AliasEnv aliasEnv) {
+        if (isNull(amqpAdmin.get(aliasEnv).getQueueProperties(queue))) {
             throw new DefaultFrameworkException(QUEUE_DOES_NOT_EXIST, queue);
         }
-    }
-
-    private boolean checkIsQueueNotExists(final String queue, final AliasEnv aliasEnv) {
-        return isNull(amqpAdmin.get(aliasEnv).getQueueProperties(queue));
     }
 
     @Data

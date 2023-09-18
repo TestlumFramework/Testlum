@@ -21,7 +21,16 @@ public class InjectionUtil {
     @SuppressWarnings("unchecked")
     public <T> T injectObjectVariation(final T t, final Map<String, String> variation) {
         String asJson = JacksonMapperUtil.writeValueToCopiedString(t);
-        String injected = GlobalVariations.getVariationValue(asJson, variation);
+        String injected = GlobalVariations.getValue(asJson, variation);
+        return JacksonMapperUtil.readCopiedValue(injected, (Class<T>) t.getClass());
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T injectObjectVariation(final T t,
+                                       final Map<String, String> variation,
+                                       final ScenarioContext scenarioContext) {
+        String asJson = JacksonMapperUtil.writeValueToCopiedString(t);
+        String injected = GlobalVariations.getValue(asJson, variation, scenarioContext);
         return JacksonMapperUtil.readCopiedValue(injected, (Class<T>) t.getClass());
     }
 

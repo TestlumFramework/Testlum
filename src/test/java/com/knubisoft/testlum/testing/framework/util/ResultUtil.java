@@ -678,6 +678,7 @@ public class ResultUtil {
 
     @SneakyThrows
     public void writeFullTestCycleExecutionResult(final TestExecutionSummary testExecutionSummary) {
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!" + TestResourceSettings.getInstance().getTestResourcesFolder());
         File executionResultFile = new File(TestResourceSettings.getInstance().getTestResourcesFolder(),
                 EXECUTION_RESULT_FILENAME);
         String result = CollectionUtils.isNotEmpty(testExecutionSummary.getFailures())

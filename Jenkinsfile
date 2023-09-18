@@ -116,19 +116,19 @@ pipeline {
   }
   post {
     always {
-        dir("site") {
-            sh "docker-compose -f docker/docker-compose-jenkins.yaml down || true"
-            sh "docker-compose -f docker/docker-compose-selenium-grid.yaml down || true"
-            sh "docker-compose -f docker/docker-compose-app.yaml down || true"
-        }
-        script {
-            sh "docker rm -f -v \$(docker ps -q) || true"
-            sh "docker rmi ${SERVICE}:${TAG} || true"
-            sh "docker rmi -f ${TEST_API} || true"
-            sh "docker rmi -f ${TEST_SITE} || true"
-            sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
-            sh 'docker volume ls -qf "dangling=true" | xargs docker volume rm || true'
-        }
+//         dir("site") {
+//             sh "docker-compose -f docker/docker-compose-jenkins.yaml down || true"
+//             sh "docker-compose -f docker/docker-compose-selenium-grid.yaml down || true"
+//             sh "docker-compose -f docker/docker-compose-app.yaml down || true"
+//         }
+//         script {
+//             sh "docker rm -f -v \$(docker ps -q) || true"
+//             sh "docker rmi ${SERVICE}:${TAG} || true"
+//             sh "docker rmi -f ${TEST_API} || true"
+//             sh "docker rmi -f ${TEST_SITE} || true"
+//             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'
+//             sh 'docker volume ls -qf "dangling=true" | xargs docker volume rm || true'
+//         }
     }
     success {
         sh "curl -s -X POST https://api.telegram.org/bot1846108211:AAH7Qm_y__ARQXh4q_fXiLEjnMhJyQ-eeok/sendMessage -d chat_id=-1001593036618 -d text='*SUCCESS* %E2%9C%94 \n PR: ${env.BRANCH_NAME} \n Parameters: \n BRANCH_TOOL: ${CHANGE_BRANCH} \n BRANCH_SITE: ${env.BRANCH_SITE} \n BRANCH_SCENARIOS: ${env.BRANCH_SCENARIOS} \n BUILD_URL: ${env.BUILD_URL}'"

@@ -44,6 +44,8 @@ import javax.xml.bind.annotation.XmlType;
     SingleKeyCommand.class,
     CommandWithLocator.class,
     Image.class,
+    MobileImage.class,
+    NativeImage.class,
     DragAndDrop.class,
     DragAndDropNative.class,
     Refresh.class,

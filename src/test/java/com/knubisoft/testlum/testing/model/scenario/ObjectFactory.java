@@ -822,27 +822,51 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link CompareWithFullScreen }
+     * Create an instance of {@link MobileImage }
      * 
      */
-    public CompareWithFullScreen createCompareWithFullScreen() {
-        return new CompareWithFullScreen();
+    public MobileImage createMobileImage() {
+        return new MobileImage();
     }
 
     /**
-     * Create an instance of {@link CompareWithElement }
+     * Create an instance of {@link NativeImage }
      * 
      */
-    public CompareWithElement createCompareWithElement() {
-        return new CompareWithElement();
+    public NativeImage createNativeImage() {
+        return new NativeImage();
     }
 
     /**
-     * Create an instance of {@link CompareWithPart }
+     * Create an instance of {@link FullScreen }
      * 
      */
-    public CompareWithPart createCompareWithPart() {
-        return new CompareWithPart();
+    public FullScreen createFullScreen() {
+        return new FullScreen();
+    }
+
+    /**
+     * Create an instance of {@link WebFullScreen }
+     * 
+     */
+    public WebFullScreen createWebFullScreen() {
+        return new WebFullScreen();
+    }
+
+    /**
+     * Create an instance of {@link Picture }
+     * 
+     */
+    public Picture createPicture() {
+        return new Picture();
+    }
+
+    /**
+     * Create an instance of {@link Part }
+     * 
+     */
+    public Part createPart() {
+        return new Part();
     }
 
     /**

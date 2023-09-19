@@ -5,10 +5,12 @@ import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.ImageComparisonState;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.model.scenario.Image;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FilenameUtils;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -21,18 +23,25 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ADDITIONAL
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.IMAGE_ATTACHED_TO_STEP;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.IMAGE_MISMATCH_PERCENT;
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
 
 @UtilityClass
 public class ImageComparisonUtil {
 
+    private static final String MOBILE_SCREEN_HEIGHT = "return screen.height;";
+    private static final String WINDOW_INNER_HEIGHT = "return window.innerHeight;";
+    private static final String STATUS_BAR_HEIGHT = "statBarHeight";
+
     @SneakyThrows
     public void processImageComparisonResult(final ImageComparisonResult comparisonResult,
-                                             final Image image,
+                                             final String expectedImageFullName,
+                                             final boolean isHighlightDifference,
                                              final File directoryToSave,
                                              final CommandResult result) {
         ImageComparisonState imageComparisonState = comparisonResult.getImageComparisonState();
         if (imageComparisonState != ImageComparisonState.MATCH) {
-            File actualImage = saveActualImage(comparisonResult, image, directoryToSave);
+            File actualImage =
+                    saveActualImage(comparisonResult, expectedImageFullName, isHighlightDifference, directoryToSave);
             UiUtil.putScreenshotToResult(result, actualImage);
             result.put(ADDITIONAL_INFO, IMAGE_ATTACHED_TO_STEP);
             if (imageComparisonState.equals(ImageComparisonState.SIZE_MISMATCH)) {
@@ -53,12 +62,12 @@ public class ImageComparisonUtil {
     }
 
     private File saveActualImage(final ImageComparisonResult comparisonResult,
-                                 final Image image,
+                                 final String expectedImageFullName,
+                                 final boolean isHighlightDifference,
                                  final File directoryToSave) throws IOException {
-        String expectedImageFullName = image.getFile();
         String imageExtension = FilenameUtils.getExtension(expectedImageFullName);
         File fileToSave = getFileToSave(directoryToSave, expectedImageFullName);
-        if (image.isHighlightDifference()) {
+        if (isHighlightDifference) {
             ImageIO.write(comparisonResult.getResult(), imageExtension, fileToSave);
         } else {
             ImageIO.write(comparisonResult.getActual(), imageExtension, fileToSave);
@@ -82,5 +91,15 @@ public class ImageComparisonUtil {
         return format("%s%s.%s", TestResourceSettings.ACTUAL_IMAGE_PREFIX,
                 FilenameUtils.getBaseName(expectedImageFullName),
                 FilenameUtils.getExtension(expectedImageFullName));
+    }
+
+    public int getStatusBarHeight(final WebDriver driver) {
+        Capabilities deviceCapabilities = ((RemoteWebDriver) driver).getCapabilities();
+        if (nonNull(deviceCapabilities.getCapability(STATUS_BAR_HEIGHT))) {
+            return (int) ((long) deviceCapabilities.getCapability(STATUS_BAR_HEIGHT));
+        }
+        long screenHeight = (Long) JavascriptUtil.executeJsScript(MOBILE_SCREEN_HEIGHT, driver);
+        long windowHeight = (Long) JavascriptUtil.executeJsScript(WINDOW_INNER_HEIGHT, driver);
+        return (int) (screenHeight - windowHeight);
     }
 }

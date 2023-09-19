@@ -57,8 +57,6 @@
     <x:complexType name="sendgridGet">
         <x:complexContent>
             <x:extension base="tns:sendgridWithoutBody"/>
-<!--                <x:attribute name="startDate" type="tns:nonEmptyString" use="required"/>-->
-<!--            </x:extension>-->
         </x:complexContent>
     </x:complexType>
 

@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnOracleEnabledCondition;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.OracleExecutor;
@@ -23,7 +23,7 @@ import java.util.Objects;
 @Slf4j
 @Conditional({OnOracleEnabledCondition.class})
 @Component("oracleOperation")
-public class OracleOperation extends StorageOperation {
+public class OracleOperation extends AbstractStorageOperation {
 
     private final Map<AliasEnv, AbstractSqlExecutor> oracleExecutor;
 

@@ -37,7 +37,7 @@ public class GlobalVariationsImpl implements GlobalVariations {
     }
 
     @Override
-    public String getVariationValue(String variation, Map<String, String> variationMap) {
+    public String getVariationValue(final String variation, final Map<String, String> variationMap) {
         return GlobalVariationsProvider.getVariationValue(variation, variationMap);
     }
 
@@ -103,7 +103,8 @@ public class GlobalVariationsImpl implements GlobalVariations {
                 String variationKeyInBraces = m.group(0);
                 String variationValue = variationMap.get(variationKey);
                 if (isNull(variationValue)) {
-                    throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, variationKey, variationMap));
+                    throw new IllegalArgumentException(
+                            String.format(NO_VALUE_FOUND_FOR_KEY, variationKey, variationMap));
                 }
                 finalValue = finalValue.replace(variationKeyInBraces, variationValue);
             }

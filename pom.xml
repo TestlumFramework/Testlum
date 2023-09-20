@@ -57,7 +57,8 @@
         <maven.enforcer.plugin.version>3.0.0-M3</maven.enforcer.plugin.version>
         <checkstyle.maven.plugin.version>3.1.2</checkstyle.maven.plugin.version>
         <com.puppycrawl.tools.checkstyle.version>8.41</com.puppycrawl.tools.checkstyle.version>
-        <findbugs.maven.plugin.version>3.0.5</findbugs.maven.plugin.version>
+        <spotbugs.version>4.7.3</spotbugs.version>
+        <spotbugs.maven.plugin.version>4.7.2.1</spotbugs.maven.plugin.version>
         <maven.pmd.plugin.version>3.14.0</maven.pmd.plugin.version>
         <maven.surefire.failsafe.version>3.0.0-M5</maven.surefire.failsafe.version>
         <tomcat.jdbc.version>10.1.0-M2</tomcat.jdbc.version>
@@ -1467,7 +1468,7 @@
                     <plugin>
                         <groupId>com.github.spotbugs</groupId>
                         <artifactId>spotbugs-maven-plugin</artifactId>
-                        <version>4.7.2.1</version>
+                        <version>${spotbugs.maven.plugin.version}</version>
                         <configuration>
                             <effort>Max</effort>
                             <threshold>Low</threshold>
@@ -1481,7 +1482,7 @@
                             <dependency>
                                 <groupId>com.github.spotbugs</groupId>
                                 <artifactId>spotbugs</artifactId>
-                                <version>4.7.3</version>
+                                <version>${spotbugs.version}</version>
                             </dependency>
                         </dependencies>
                         <executions>

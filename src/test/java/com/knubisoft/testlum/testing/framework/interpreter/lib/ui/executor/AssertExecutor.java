@@ -29,13 +29,14 @@ import java.util.function.Predicate;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ASSERT_TYPE_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_LOG;
-import static com.knubisoft.testlum.testing.framework.interpreter.AssertInterpreter.ASSERT_CONTENT_IS_EQUAL;
-import static com.knubisoft.testlum.testing.framework.interpreter.AssertInterpreter.ASSERT_CONTENT_NOT_EQUAL;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONTENT;
 
 @Slf4j
 @ExecutorForClass(WebAssert.class)
 public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
+
+    private static final String ASSERT_CONTENT_NOT_EQUAL = "Equality content <%s> is not equal.";
+    private static final String ASSERT_CONTENT_IS_EQUAL = "Inequality content <%s> is equal.";
 
     private final Map<AssertCmdPredicate, AssertMethod> assertCommandMap;
 

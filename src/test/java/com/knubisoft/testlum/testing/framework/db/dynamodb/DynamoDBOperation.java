@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.db.dynamodb;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnDynamoEnabledCondition;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Conditional({OnDynamoEnabledCondition.class})
 @Component("dynamoOperation")
-public class DynamoDBOperation extends StorageOperation {
+public class DynamoDBOperation extends AbstractStorageOperation {
 
     private static final String FORBIDDEN_DDB_TABLE_NAME = "dynamobee";
 

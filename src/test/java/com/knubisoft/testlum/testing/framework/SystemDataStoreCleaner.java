@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework;
 
 import com.knubisoft.testlum.testing.framework.context.AliasToStorageOperation;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -10,9 +10,9 @@ import java.util.Map;
 public class SystemDataStoreCleaner {
 
     public void clearAll(final AliasToStorageOperation aliasToStorageOperation) {
-        Map<String, StorageOperation> metadataMap = aliasToStorageOperation.getAlias();
-        for (final StorageOperation storageOperation : metadataMap.values()) {
-            storageOperation.clearSystem();
+        Map<String, AbstractStorageOperation> metadataMap = aliasToStorageOperation.getAlias();
+        for (final AbstractStorageOperation AbstractStorageOperation : metadataMap.values()) {
+            AbstractStorageOperation.clearSystem();
         }
     }
 }

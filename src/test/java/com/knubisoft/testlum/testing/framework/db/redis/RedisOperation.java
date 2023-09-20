@@ -2,7 +2,7 @@ package com.knubisoft.testlum.testing.framework.db.redis;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRedisEnabledCondition;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
@@ -27,7 +27,7 @@ import static java.util.Objects.isNull;
 
 @Conditional({OnRedisEnabledCondition.class})
 @Component("redisOperation")
-public class RedisOperation extends StorageOperation {
+public class RedisOperation extends AbstractStorageOperation {
 
     private static final String CLEAR_DATABASE = "FLUSHALL";
 

@@ -2,7 +2,7 @@ package com.knubisoft.testlum.testing.framework.db.rabbitmq;
 
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
@@ -21,7 +21,7 @@ import java.util.Objects;
 
 @Conditional({OnRabbitMQEnabledCondition.class})
 @Component
-public class RabbitMQOperation extends StorageOperation {
+public class RabbitMQOperation extends AbstractStorageOperation {
 
     private final Map<AliasEnv, Client> rabbitMqClient;
     private final Map<String, Integrations> integrations;

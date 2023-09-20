@@ -3,7 +3,7 @@ package com.knubisoft.testlum.testing.framework.context.impl;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.rabbitmq.RabbitMQOperation;
 import com.knubisoft.testlum.testing.model.global_config.Rabbitmq;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class AliasRabbitAdapter implements AliasAdapter {
     private RabbitMQOperation rabbitMQOperation;
 
     @Override
-    public void apply(final Map<String, StorageOperation> aliasMap) {
+    public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
         for (Rabbitmq rabbitmq
                 : GlobalTestConfigurationProvider.getDefaultIntegrations().getRabbitmqIntegration().getRabbitmq()) {
             if (rabbitmq.isEnabled()) {

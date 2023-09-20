@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.db.sql;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnPostgresEnabledCondition;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.impl.PostgresExecutor;
@@ -23,7 +23,7 @@ import java.util.Objects;
 @Slf4j
 @Conditional({OnPostgresEnabledCondition.class})
 @Component("postgresOperation")
-public class PostgresSqlOperation extends StorageOperation {
+public class PostgresSqlOperation extends AbstractStorageOperation {
 
     private final Map<AliasEnv, AbstractSqlExecutor> postgresExecutor;
 

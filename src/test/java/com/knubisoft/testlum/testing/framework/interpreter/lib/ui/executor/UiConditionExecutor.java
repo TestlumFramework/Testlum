@@ -4,7 +4,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
+import com.knubisoft.testlum.testing.framework.util.ConditionProviderImpl.ConditionUtil;
 import com.knubisoft.testlum.testing.model.scenario.UiCondition;
 import lombok.extern.slf4j.Slf4j;
 

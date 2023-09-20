@@ -6,7 +6,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.context.AliasToStorageOperation;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.ListSource;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
@@ -41,7 +41,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SLASH_SEPARATOR;
@@ -118,7 +118,7 @@ public class VariableHelperImpl implements VariableHelper {
     @Override
     public String getFileResult(final FromFile fromFile,
                                 final String varName,
-                                final Function<String, String> fileToString,
+                                final UnaryOperator<String> fileToString,
                                 final CommandResult result) {
         String valueResult = fileToString.apply(fromFile.getFileName());
         ResultUtil.addVariableMetaData(FILE, varName, NO_EXPRESSION, valueResult, result);
@@ -191,26 +191,26 @@ public class VariableHelperImpl implements VariableHelper {
                                final String varName,
                                final CommandResult result) {
         String metadataKey = fromSQL.getDbType().name() + DelimiterConstant.UNDERSCORE + fromSQL.getAlias();
-        StorageOperation storageOperation = aliasToStorageOperation.getByNameOrThrow(metadataKey);
+        AbstractStorageOperation storageOperation = aliasToStorageOperation.getByNameOrThrow(metadataKey);
         String valueResult = getActualQueryResult(fromSQL, storageOperation);
         ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, fromSQL, varName, valueResult, result);
         return valueResult;
     }
 
-    private String getActualQueryResult(final FromSQL fromSQL, final StorageOperation storageOperation) {
+    private String getActualQueryResult(final FromSQL fromSQL, final AbstractStorageOperation storageOperation) {
         String alias = fromSQL.getAlias();
         List<String> singleQuery = new ArrayList<>(Collections.singletonList(fromSQL.getQuery()));
         LogUtil.logAllQueries(fromSQL.getDbType().name(), singleQuery, alias);
-        StorageOperation.StorageOperationResult queryResult = storageOperation.apply(
+        AbstractStorageOperation.StorageOperationResult queryResult = storageOperation.apply(
                 new ListSource(singleQuery), alias);
         return getResultValue(queryResult, getKeyOfQueryResultValue(queryResult));
     }
 
     @SuppressWarnings("unchecked")
-    private String getResultValue(final StorageOperation.StorageOperationResult storageOperationResult,
+    private String getResultValue(final AbstractStorageOperation.StorageOperationResult storageOperationResult,
                                   final String key) {
-        List<StorageOperation.QueryResult<?>> rawList =
-                (List<StorageOperation.QueryResult<?>>) storageOperationResult.getRaw();
+        List<AbstractStorageOperation.QueryResult<?>> rawList =
+                (List<AbstractStorageOperation.QueryResult<?>>) storageOperationResult.getRaw();
         List<LinkedCaseInsensitiveMap<String>> content =
                 (List<LinkedCaseInsensitiveMap<String>>) rawList.get(0).getContent();
         verifyIfContentNotEmpty(content);
@@ -225,9 +225,9 @@ public class VariableHelperImpl implements VariableHelper {
     }
 
     @SuppressWarnings("unchecked")
-    private String getKeyOfQueryResultValue(final StorageOperation.StorageOperationResult applyRelationalDb) {
-        List<StorageOperation.QueryResult<?>> rawList =
-                (List<StorageOperation.QueryResult<?>>) applyRelationalDb.getRaw();
+    private String getKeyOfQueryResultValue(final AbstractStorageOperation.StorageOperationResult applyRelationalDb) {
+        List<AbstractStorageOperation.QueryResult<?>> rawList =
+                (List<AbstractStorageOperation.QueryResult<?>>) applyRelationalDb.getRaw();
         String[] queryParts = rawList.get(0).getQuery().split(DelimiterConstant.SPACE);
         return queryParts[1];
     }

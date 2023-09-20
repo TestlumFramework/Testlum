@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.context;
 
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ReportGeneratorFactory;
@@ -21,7 +21,7 @@ public class SpringTestContext {
 
     @Bean
     public AliasToStorageOperation getAliasToStorageOperation(final List<AliasAdapter> aliasAdapters) {
-        Map<String, StorageOperation> aliasMap = new LinkedCaseInsensitiveMap<>(aliasAdapters.size());
+        Map<String, AbstractStorageOperation> aliasMap = new LinkedCaseInsensitiveMap<>(aliasAdapters.size());
         for (AliasAdapter aliasAdapter : aliasAdapters) {
             aliasAdapter.apply(aliasMap);
         }

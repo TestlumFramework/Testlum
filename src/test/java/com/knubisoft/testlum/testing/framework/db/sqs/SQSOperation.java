@@ -4,7 +4,7 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.ListQueuesResult;
 import com.amazonaws.services.sqs.model.PurgeQueueRequest;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSQSEnabledCondition;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
@@ -19,7 +19,7 @@ import java.util.Objects;
 
 @Conditional({OnSQSEnabledCondition.class})
 @Component
-public class SQSOperation extends StorageOperation {
+public class SQSOperation extends AbstractStorageOperation {
 
     private final Map<AliasEnv, AmazonSQS> amazonSQS;
 
@@ -28,7 +28,7 @@ public class SQSOperation extends StorageOperation {
     }
 
     @Override
-    public StorageOperation.StorageOperationResult apply(final Source source, final String alias) {
+    public AbstractStorageOperation.StorageOperationResult apply(final Source source, final String alias) {
         return null;
     }
 

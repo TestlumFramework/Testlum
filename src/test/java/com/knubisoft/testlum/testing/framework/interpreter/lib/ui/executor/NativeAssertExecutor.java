@@ -6,7 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.ConditionUtil;
+import com.knubisoft.testlum.testing.framework.util.ConditionProviderImpl.ConditionUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
@@ -24,13 +24,14 @@ import java.util.List;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_LOG;
-import static com.knubisoft.testlum.testing.framework.interpreter.AssertInterpreter.ASSERT_CONTENT_IS_EQUAL;
-import static com.knubisoft.testlum.testing.framework.interpreter.AssertInterpreter.ASSERT_CONTENT_NOT_EQUAL;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONTENT;
 
 @Slf4j
 @ExecutorForClass(NativeAssert.class)
 public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
+
+    private static final String ASSERT_CONTENT_NOT_EQUAL = "Equality content <%s> is not equal.";
+    private static final String ASSERT_CONTENT_IS_EQUAL = "Inequality content <%s> is equal.";
 
     public NativeAssertExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);

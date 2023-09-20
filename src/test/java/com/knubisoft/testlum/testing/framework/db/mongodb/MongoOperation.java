@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.db.mongodb;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnMongoEnabledCondition;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Conditional({OnMongoEnabledCondition.class})
 @Component("mongoOperation")
-public class MongoOperation extends StorageOperation {
+public class MongoOperation extends AbstractStorageOperation {
 
     private final Map<AliasEnv, MongoDatabase> mongoDatabases;
 

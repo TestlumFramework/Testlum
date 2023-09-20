@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.db.kafka;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 @Conditional({OnKafkaEnabledCondition.class})
 @Component
-public class KafkaOperation extends StorageOperation {
+public class KafkaOperation extends AbstractStorageOperation {
 
     private static final int THREAD_SLEEPING_MILLIS = 10;
 

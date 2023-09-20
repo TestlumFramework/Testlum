@@ -3,7 +3,7 @@ package com.knubisoft.testlum.testing.framework.context.impl;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnPostgresEnabledCondition;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.sql.PostgresSqlOperation;
 import com.knubisoft.testlum.testing.model.global_config.Postgres;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class AliasPostgresAdapter implements AliasAdapter {
     private PostgresSqlOperation postgresSqlOperation;
 
     @Override
-    public void apply(final Map<String, StorageOperation> aliasMap) {
+    public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
         for (Postgres postgres
                 : GlobalTestConfigurationProvider.getDefaultIntegrations().getPostgresIntegration().getPostgres()) {
             if (postgres.isEnabled()) {

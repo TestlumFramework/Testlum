@@ -19,7 +19,7 @@ import org.openqa.selenium.NoSuchElementException;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_VARIABLE_LOG;
@@ -130,7 +130,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     private String getFileResult(final WebVar var, final CommandResult result) {
-        Function<String, String> fileToString = this::getContentIfFile;
+        UnaryOperator<String> fileToString = this::getContentIfFile;
         return variableHelper.getFileResult(var.getFile(), var.getName(), fileToString, result);
     }
 

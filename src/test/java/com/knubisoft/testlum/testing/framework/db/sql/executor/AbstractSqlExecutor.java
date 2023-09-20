@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.db.sql.executor;
 
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation.QueryResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -54,13 +54,13 @@ public abstract class AbstractSqlExecutor {
         }
     }
 
-    public List<StorageOperation.QueryResult<Object>> executeQueries(final List<String> queries) {
+    public List<QueryResult<Object>> executeQueries(final List<String> queries) {
         return queries.stream().map(this::executeQuery).collect(Collectors.toList());
     }
 
-    private StorageOperation.QueryResult<Object> executeQuery(final String query) {
-        StorageOperation.QueryResult<Object> queryResult =
-                new StorageOperation.QueryResult<>(query.replaceAll(LF, EMPTY)
+    private QueryResult<Object> executeQuery(final String query) {
+        QueryResult<Object> queryResult =
+                new QueryResult<>(query.replaceAll(LF, EMPTY)
                         .replaceAll(DelimiterConstant.SPACE_WITH_PLUS, SPACE)
                         .trim());
 

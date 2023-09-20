@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.db.elasticsearch;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnElasticEnabledCondition;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
@@ -19,7 +19,7 @@ import java.util.Objects;
 
 @Conditional({OnElasticEnabledCondition.class})
 @Component
-public class ElasticsearchOperation extends StorageOperation {
+public class ElasticsearchOperation extends AbstractStorageOperation {
 
     private final Map<AliasEnv, RestHighLevelClient> restHighLevelClient;
 

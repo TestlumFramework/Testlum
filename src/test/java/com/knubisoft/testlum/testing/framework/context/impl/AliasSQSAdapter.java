@@ -3,7 +3,7 @@ package com.knubisoft.testlum.testing.framework.context.impl;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSQSEnabledCondition;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.sqs.SQSOperation;
 import com.knubisoft.testlum.testing.model.global_config.Sqs;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class AliasSQSAdapter implements AliasAdapter {
     private SQSOperation sqsOperation;
 
     @Override
-    public void apply(final Map<String, StorageOperation> aliasMap) {
+    public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
         for (Sqs sqs : GlobalTestConfigurationProvider.getDefaultIntegrations().getSqsIntegration().getSqs()) {
             if (sqs.isEnabled()) {
                 aliasMap.put(SQS + UNDERSCORE + sqs.getAlias(), sqsOperation);

@@ -4,7 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnS3EnabledCondition;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @Conditional({OnS3EnabledCondition.class})
 @Component
-public class S3Operation extends StorageOperation {
+public class S3Operation extends AbstractStorageOperation {
 
     private final Map<AliasEnv, AmazonS3> amazonS3;
 

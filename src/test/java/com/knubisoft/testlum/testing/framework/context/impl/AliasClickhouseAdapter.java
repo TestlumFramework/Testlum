@@ -3,7 +3,7 @@ package com.knubisoft.testlum.testing.framework.context.impl;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnClickhouseEnabledCondition;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
-import com.knubisoft.testlum.testing.framework.db.StorageOperation;
+import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.sql.ClickhouseOperation;
 import com.knubisoft.testlum.testing.model.global_config.Clickhouse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class AliasClickhouseAdapter implements AliasAdapter {
     private ClickhouseOperation clickhouseOperation;
 
     @Override
-    public void apply(final Map<String, StorageOperation> aliasMap) {
+    public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
         for (Clickhouse clickhouse
                 : GlobalTestConfigurationProvider.getDefaultIntegrations().getClickhouseIntegration().getClickhouse()) {
             if (clickhouse.isEnabled()) {

@@ -1,9 +1,9 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.interpreter.lib.SubCommandRunner;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiRepeatCommandsRunner;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
@@ -26,35 +26,45 @@ import static java.lang.String.format;
 public class MobilebrowserRepeatExecutor extends AbstractUiExecutor<MobilebrowserRepeat> {
 
     @Autowired
-    private UiRepeatCommandsRunner repeatCommandsRunner;
+    private SubCommandRunner repeatCommandsRunner;
 
     public MobilebrowserRepeatExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
     }
 
-    //CHECKSTYLE:OFF
     @Override
-    protected void execute(final MobilebrowserRepeat repeat, final CommandResult result) {
+    public void execute(final MobilebrowserRepeat repeat, final CommandResult result) {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         if (StringUtils.isNotBlank(repeat.getVariations())) {
-            log.info(format(TABLE_FORMAT, "Variations", repeat.getVariations()));
-            result.put("Variations", repeat.getVariations());
-            List<AbstractUiCommand> commands = repeat.getClickOrInputOrAssert();
-            List<AbstractUiCommand> injectedCommand = GlobalVariations.getVariations(repeat.getVariations()).stream()
-                    .flatMap(variation -> commands.stream().map(command ->
-                            InjectionUtil.injectObjectVariation(command, variation)))
-                    .collect(Collectors.toList());
-            this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result, subCommandsResult);
+            runRepeatWithVariations(repeat, result, subCommandsResult);
         } else {
-            log.info(format(TABLE_FORMAT, "Times", repeat.getTimes()));
-            result.put("Times", repeat.getTimes());
-            for (int i = 0; i < repeat.getTimes(); i++) {
-                this.repeatCommandsRunner.runCommands(repeat.getClickOrInputOrAssert(), dependencies, result,
-                        subCommandsResult);
-            }
+            runSimpleRepeat(repeat, result, subCommandsResult);
         }
         log.info(REPEAT_FINISHED_LOG);
     }
-    //CHECKSTYLE:ON
+
+    private void runRepeatWithVariations(final MobilebrowserRepeat repeat,
+                                         final CommandResult result,
+                                         final List<CommandResult> subCommandsResult) {
+        log.info(format(TABLE_FORMAT, "Variations", repeat.getVariations()));
+        result.put("Variations", repeat.getVariations());
+        List<AbstractUiCommand> commands = repeat.getClickOrInputOrAssert();
+        List<AbstractUiCommand> injectedCommand = GlobalVariations.getVariations(repeat.getVariations()).stream()
+                .flatMap(variation -> commands.stream().map(command ->
+                        InjectionUtil.injectObjectVariation(command, variation)))
+                .collect(Collectors.toList());
+        this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result, subCommandsResult);
+    }
+
+    private void runSimpleRepeat(final MobilebrowserRepeat repeat,
+                                 final CommandResult result,
+                                 final List<CommandResult> subCommandsResult) {
+        log.info(format(TABLE_FORMAT, "Times", repeat.getTimes()));
+        result.put("Times", repeat.getTimes());
+        for (int i = 0; i < repeat.getTimes(); i++) {
+            this.repeatCommandsRunner.runCommands(repeat.getClickOrInputOrAssert(), dependencies, result,
+                    subCommandsResult);
+        }
+    }
 }

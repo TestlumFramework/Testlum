@@ -8,7 +8,7 @@
         <groupId>com.knubisoft</groupId>
         <artifactId>testlum-ui</artifactId>
         <version>1.0</version>
-        <relativePath>../../../../testlum-modules/ui/pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>testlum-native</artifactId>

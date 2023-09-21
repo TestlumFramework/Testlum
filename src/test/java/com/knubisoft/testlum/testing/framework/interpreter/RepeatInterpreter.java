@@ -32,29 +32,39 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
         super(dependencies);
     }
 
-    //CHECKSTYLE:OFF
     @Override
     protected void acceptImpl(final Repeat repeat, final CommandResult result) {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         if (StringUtils.isNotBlank(repeat.getVariations())) {
-            log.info(format(TABLE_FORMAT, "Variations", repeat.getVariations()));
-            result.put("Variations", repeat.getVariations());
-            List<AbstractCommand> commands = repeat.getCommands();
-            List<AbstractCommand> injectedCommand = GlobalVariations.getVariations(repeat.getVariations()).stream()
-                    .flatMap(variation -> commands.stream().map(command ->
-                            InjectionUtil.injectObjectVariation(command, variation)))
-                    .collect(Collectors.toList());
-            this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result, subCommandsResult);
+            runRepeatWithVariations(repeat, result, subCommandsResult);
         } else {
-            Repeat repeat1 = injectCommand(repeat);
-            log.info(format(TABLE_FORMAT, "Times", repeat.getTimes()));
-            result.put("Times", repeat.getTimes());
-            for (int i = 0; i < repeat1.getTimes(); i++) {
-                this.repeatCommandsRunner.runCommands(repeat1.getCommands(), dependencies, result, subCommandsResult);
-            }
+           runSimpleRepeat(repeat, result, subCommandsResult);
         }
         log.info(COMMAND_REPEAT_FINISHED_LOG);
     }
-    //CHECKSTYLE:ON
+
+    private void runRepeatWithVariations(final Repeat repeat,
+                                         final CommandResult result,
+                                         final List<CommandResult> subCommandsResult) {
+        log.info(format(TABLE_FORMAT, "Variations", repeat.getVariations()));
+        result.put("Variations", repeat.getVariations());
+        List<AbstractCommand> commands = repeat.getCommands();
+        List<AbstractCommand> injectedCommand = GlobalVariations.getVariations(repeat.getVariations()).stream()
+                .flatMap(variation -> commands.stream().map(command ->
+                        InjectionUtil.injectObjectVariation(command, variation)))
+                .collect(Collectors.toList());
+        this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result, subCommandsResult);
+    }
+
+    private void runSimpleRepeat(final Repeat repeat,
+                                 final CommandResult result,
+                                 final List<CommandResult> subCommandsResult) {
+        Repeat repeat1 = injectCommand(repeat);
+        log.info(format(TABLE_FORMAT, "Times", repeat.getTimes()));
+        result.put("Times", repeat.getTimes());
+        for (int i = 0; i < repeat1.getTimes(); i++) {
+            this.repeatCommandsRunner.runCommands(repeat1.getCommands(), dependencies, result, subCommandsResult);
+        }
+    }
 }

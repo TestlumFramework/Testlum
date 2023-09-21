@@ -39,9 +39,8 @@ import javax.xml.bind.annotation.XmlType;
     "queryParam"
 })
 @XmlSeeAlso({
-    SendgridWithoutBody.class,
     SendgridWithBody.class,
-    SendgridDelete.class
+    SendgridWithoutBody.class
 })
 public abstract class SendgridInfo {
 

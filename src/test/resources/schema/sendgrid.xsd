@@ -80,7 +80,7 @@
 
     <x:complexType name="sendgridDelete">
         <x:complexContent>
-            <x:extension base="tns:sendgridInfo"/>
+            <x:extension base="tns:sendgridWithoutBody"/>
         </x:complexContent>
     </x:complexType>
 

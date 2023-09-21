@@ -33,6 +33,7 @@ import java.util.Objects;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ACTUAL_CODE;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONTENT_TO_SEND;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.EXPECTED_CODE;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 @InterpreterForClass(Sendgrid.class)
@@ -103,7 +104,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     }
 
     private String getBody(final SendgridInfo sendgridInfo, final Method method) {
-        if (method.equals(Method.GET)) {
+        if (method.equals(Method.GET) || method.equals(Method.DELETE)) {
             return null;
         }
         SendgridWithBody commandWithBody = (SendgridWithBody) sendgridInfo;
@@ -118,8 +119,10 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         Request request = new Request();
         request.setMethod(method);
         request.setEndpoint(endpoint);
-        request.setBody(body);
-        if (Objects.nonNull(sendgridInfo.getQueryParam())) {
+        if (nonNull(body)) {
+            request.setBody(body);
+        }
+        if (nonNull(sendgridInfo.getQueryParam())) {
             sendgridInfo.getQueryParam().forEach(queryParam ->
                     request.addQueryParam(queryParam.getKey(), queryParam.getValue()));
         }

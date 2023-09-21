@@ -39,6 +39,8 @@ public final class LogMessage {
             + "------- UI command - {} -------" + ANSI_RESET;
     public static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
     public static final String REPEAT_FINISHED_LOG = ANSI_CYAN + "------- Repeat is finished -------" + ANSI_RESET;
+    public static final String COMMAND_REPEAT_FINISHED_LOG = ANSI_YELLOW + "------- Repeat is finished -------"
+            + ANSI_RESET;
     public static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
     public static final String COMMAND_SKIPPED_ON_CONDITION_LOG = ANSI_ORANGE
             + "Command was skipped because of the condition" + ANSI_RESET;

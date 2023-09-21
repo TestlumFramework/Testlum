@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="tab" type="{http://www.knubisoft.com/testlum/testing/model/scenario}browserTab"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webVar"/&gt;
  *         &lt;element name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiCondition"/&gt;
+ *         &lt;element name="repeat" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webRepeat"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="clearCookiesAfterExecution" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *       &lt;attribute name="clearLocalStorageByKey" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
@@ -75,7 +76,8 @@ public class Web
         @XmlElement(name = "hotKey", type = HotKey.class),
         @XmlElement(name = "tab", type = BrowserTab.class),
         @XmlElement(name = "var", type = WebVar.class),
-        @XmlElement(name = "condition", type = UiCondition.class)
+        @XmlElement(name = "condition", type = UiCondition.class),
+        @XmlElement(name = "repeat", type = WebRepeat.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "clearCookiesAfterExecution")
@@ -119,6 +121,7 @@ public class Web
      * {@link BrowserTab }
      * {@link WebVar }
      * {@link UiCondition }
+     * {@link WebRepeat }
      * 
      * 
      */

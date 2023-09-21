@@ -902,11 +902,35 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link MobilebrowserRepeat }
+     * 
+     */
+    public MobilebrowserRepeat createMobilebrowserRepeat() {
+        return new MobilebrowserRepeat();
+    }
+
+    /**
+     * Create an instance of {@link WebRepeat }
+     * 
+     */
+    public WebRepeat createWebRepeat() {
+        return new WebRepeat();
+    }
+
+    /**
      * Create an instance of {@link WebView }
      * 
      */
     public WebView createWebView() {
         return new WebView();
+    }
+
+    /**
+     * Create an instance of {@link NativeRepeat }
+     * 
+     */
+    public NativeRepeat createNativeRepeat() {
+        return new NativeRepeat();
     }
 
     /**

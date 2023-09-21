@@ -175,6 +175,7 @@ public class ExceptionMessage {
     public static final String VARIATIONS_NOT_FOUND = "Variations for %s not found";
     public static final String VARIATION_FILE_IS_EMPTY = "Variation %s file in the %s is empty";
     public static final String VARIATIONS_NOT_USED = "Variations are present in the %s but not used";
+    public static final String ENV_VARIABLE_NOT_FOUND = "No such environmental variable as <%s>";
 
     public static final String UNABLE_PARSE_FILE_WITH_LOCATORS = "Unable to parse file %s with locators. Error: %s";
     public static final String LOCATOR_ID_HAS_DUPLICATE_LOCATOR =
@@ -216,6 +217,7 @@ public class ExceptionMessage {
     public static final String UNEXPECTED_WEBSOCKET_MESSAGE_TYPE = "Unexpected websocket message type: %s";
     public static final String ASSERT_CONTENT_NOT_EQUAL = "Equality content <%s> is not equal.";
     public static final String ASSERT_CONTENT_IS_EQUAL = "Inequality content <%s> is equal.";
+    public static final String QUEUE_DOES_NOT_EXIST = "Queue with name <%s> does not exist";
 
 
     // executors
@@ -232,7 +234,7 @@ public class ExceptionMessage {
             + "SIZE_MISMATCH%n" + "Expected image size: %sx%s%n" + "Actual image size: %sx%s";
     public static final String IMAGES_MISMATCH = "The images don't match. Image comparison state is -> MISMATCH. "
             + "Difference percent: %s";
-    public static final String ELEMENT_OUT_OF_BOUNDS = "Element is out of screen bounds";
+    public static final String IOS_NOT_SUPPORT_PART_COMMAND = "iOS mobilebrowser does not support <part> command";
     public static final String WEB_ELEMENT_ATTRIBUTE_NOT_EXIST = "Web element does not have attribute <%s>";
     public static final String ELEMENT_NOT_FOUND = "Element with locator <%s> was not found during 'scrollTo'";
     public static final String DRAG_AND_DROP_FILE_NOT_FOUND = "Drag and drop file with name <%s> not found";

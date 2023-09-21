@@ -17,7 +17,7 @@
                     <x:element name="assert" type="tns:nativeAssert"/>
                     <x:element name="wait" type="tns:waitNative"/>
                     <x:element name="clear" type="tns:clear"/>
-                    <x:element name="image" type="tns:image"/>
+                    <x:element name="image" type="tns:nativeImage"/>
                     <x:element name="refresh" type="tns:refresh"/>
                     <x:element name="navigate" type="tns:navigateNative"/>
                     <x:element name="dragAndDrop" type="tns:dragAndDropNative"/>

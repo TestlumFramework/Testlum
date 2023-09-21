@@ -94,6 +94,7 @@ public class GlobalTestConfigurationProvider {
         return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
                 .map(configFile -> XMLParsers.forIntegrations().process(configFile))
                 .map(GlobalTestConfigurationProvider::checkIfVaultPresent)
+                .map(InjectionUtil::injectFromSystem)
                 .orElseGet(() -> {
                     log.warn(LogMessage.DISABLED_CONFIGURATION, Integrations.class.getSimpleName());
                     return new Integrations();
@@ -111,6 +112,7 @@ public class GlobalTestConfigurationProvider {
         return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.UI_CONFIG_FILENAME)
                 .map(configFile -> XMLParsers.forUiConfig().process(configFile))
                 .map(GlobalTestConfigurationProvider::checkIfVaultPresent)
+                .map(InjectionUtil::injectFromSystem)
                 .orElseGet(() -> {
                     log.warn(LogMessage.DISABLED_CONFIGURATION, UiConfig.class.getSimpleName());
                     return new UiConfig();

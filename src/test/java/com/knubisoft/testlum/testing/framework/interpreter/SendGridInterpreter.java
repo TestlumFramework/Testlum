@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ACTUAL_CODE;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONTENT_TO_SEND;

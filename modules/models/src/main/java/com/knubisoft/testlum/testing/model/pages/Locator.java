@@ -1,0 +1,227 @@
+
+package com.knubisoft.testlum.testing.model.pages;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+
+
+/**
+ * HTML DOM element
+ * 
+ * <p>Java class for locator complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+ * <pre>
+ * &lt;complexType name="locator"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;choice&gt;
+ *         &lt;element name="xpath" type="{http://www.knubisoft.com/testlum/testing/model/pages}nonEmptyString"/&gt;
+ *         &lt;element name="id" type="{http://www.knubisoft.com/testlum/testing/model/pages}nonEmptyString"/&gt;
+ *         &lt;element name="class" type="{http://www.knubisoft.com/testlum/testing/model/pages}nonEmptyString"/&gt;
+ *         &lt;element name="cssSelector" type="{http://www.knubisoft.com/testlum/testing/model/pages}nonEmptyString"/&gt;
+ *         &lt;element name="text" type="{http://www.knubisoft.com/testlum/testing/model/pages}text"/&gt;
+ *       &lt;/choice&gt;
+ *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/testlum/testing/model/pages}pagesLocator" /&gt;
+ *       &lt;attribute name="comment" type="{http://www.knubisoft.com/testlum/testing/model/pages}nonEmptyString" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "locator", propOrder = {
+    "xpath",
+    "id",
+    "clazz",
+    "cssSelector",
+    "text"
+})
+public class Locator {
+
+    protected String xpath;
+    protected String id;
+    @XmlElement(name = "class")
+    protected String clazz;
+    protected String cssSelector;
+    protected Text text;
+    @XmlAttribute(name = "locatorId", required = true)
+    protected String locatorId;
+    @XmlAttribute(name = "comment")
+    protected String comment;
+
+    /**
+     * Gets the value of the xpath property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getXpath() {
+        return xpath;
+    }
+
+    /**
+     * Sets the value of the xpath property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setXpath(String value) {
+        this.xpath = value;
+    }
+
+    /**
+     * Gets the value of the id property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * Sets the value of the id property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setId(String value) {
+        this.id = value;
+    }
+
+    /**
+     * Gets the value of the clazz property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getClazz() {
+        return clazz;
+    }
+
+    /**
+     * Sets the value of the clazz property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setClazz(String value) {
+        this.clazz = value;
+    }
+
+    /**
+     * Gets the value of the cssSelector property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getCssSelector() {
+        return cssSelector;
+    }
+
+    /**
+     * Sets the value of the cssSelector property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setCssSelector(String value) {
+        this.cssSelector = value;
+    }
+
+    /**
+     * Gets the value of the text property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Text }
+     *     
+     */
+    public Text getText() {
+        return text;
+    }
+
+    /**
+     * Sets the value of the text property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Text }
+     *     
+     */
+    public void setText(Text value) {
+        this.text = value;
+    }
+
+    /**
+     * Gets the value of the locatorId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getLocatorId() {
+        return locatorId;
+    }
+
+    /**
+     * Sets the value of the locatorId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setLocatorId(String value) {
+        this.locatorId = value;
+    }
+
+    /**
+     * Gets the value of the comment property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getComment() {
+        return comment;
+    }
+
+    /**
+     * Sets the value of the comment property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setComment(String value) {
+        this.comment = value;
+    }
+
+}

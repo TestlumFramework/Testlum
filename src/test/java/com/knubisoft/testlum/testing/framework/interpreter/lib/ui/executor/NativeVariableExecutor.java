@@ -10,6 +10,7 @@ import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.framework.util.VariableHelper;
 import com.knubisoft.testlum.testing.framework.util.VariableHelper.VarMethod;
 import com.knubisoft.testlum.testing.framework.util.VariableHelper.VarPredicate;
+import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import com.knubisoft.testlum.testing.model.scenario.NativeVar;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.NoSuchElementException;
@@ -69,8 +70,9 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
     private String getElementResult(final NativeVar var, final CommandResult result) {
         String valueResult;
         String locatorId = var.getElement().getPresent().getLocatorId();
+        LocatorStrategy locatorStrategy = var.getElement().getPresent().getLocatorStrategy();
         try {
-            UiUtil.findWebElement(dependencies, locatorId);
+            UiUtil.findWebElement(dependencies, locatorId, locatorStrategy);
             valueResult = String.valueOf(true);
         } catch (NoSuchElementException e) {
             valueResult = String.valueOf(false);

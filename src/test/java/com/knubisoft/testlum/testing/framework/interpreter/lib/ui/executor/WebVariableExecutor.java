@@ -82,7 +82,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         String valueResult;
         String locatorId = webVar.getElement().getPresent().getLocatorId();
         try {
-            UiUtil.findWebElement(dependencies, locatorId);
+            UiUtil.findWebElement(dependencies, locatorId, webVar.getElement().getPresent().getLocatorStrategy());
             valueResult = String.valueOf(true);
         } catch (NoSuchElementException e) {
             valueResult = String.valueOf(false);
@@ -94,7 +94,8 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     private String getDomResult(final WebVar webVar, final CommandResult result) {
         String locatorId = webVar.getDom().getLocatorId();
         if (StringUtils.isNotBlank(locatorId)) {
-            String valueResult = UiUtil.findWebElement(dependencies, locatorId).getAttribute("outerHTML");
+            String valueResult = UiUtil.findWebElement(dependencies, locatorId, webVar.getDom().getLocatorStrategy())
+                    .getAttribute("outerHTML");
             ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), LOCATOR_FORM, locatorId, valueResult, result);
             return valueResult;
         }

@@ -64,7 +64,7 @@ public class WaitExecutor extends AbstractUiExecutor<UiWait> {
                                           final CommandResult result) {
         Duration duration = Duration.ofSeconds(seconds);
         WebDriverWait wait = new WebDriverWait(dependencies.getDriver(), duration);
-        WebElement element = UiUtil.findWebElement(dependencies, command.getLocatorId());
+        WebElement element = UiUtil.findWebElement(dependencies, command.getLocatorId(), command.getLocatorStrategy());
         log.info(LOCATOR_LOG, command.getLocatorId());
         result.put(LOCATOR_ID, command.getLocatorId());
         if (command instanceof Visible) {

@@ -21,7 +21,8 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="content" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webAttributeNamePattern" /&gt;
- *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scenarioLocator" /&gt;
+ *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="locatorStrategy" type="{http://www.knubisoft.com/testlum/testing/model/scenario}locatorStrategy" default="locatorId" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -43,6 +44,8 @@ public class AssertAttribute
     protected String name;
     @XmlAttribute(name = "locatorId", required = true)
     protected String locatorId;
+    @XmlAttribute(name = "locatorStrategy")
+    protected LocatorStrategy locatorStrategy;
 
     /**
      * Gets the value of the content property.
@@ -114,6 +117,34 @@ public class AssertAttribute
      */
     public void setLocatorId(String value) {
         this.locatorId = value;
+    }
+
+    /**
+     * Gets the value of the locatorStrategy property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link LocatorStrategy }
+     *     
+     */
+    public LocatorStrategy getLocatorStrategy() {
+        if (locatorStrategy == null) {
+            return LocatorStrategy.LOCATOR_ID;
+        } else {
+            return locatorStrategy;
+        }
+    }
+
+    /**
+     * Sets the value of the locatorStrategy property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link LocatorStrategy }
+     *     
+     */
+    public void setLocatorStrategy(LocatorStrategy value) {
+        this.locatorStrategy = value;
     }
 
 }

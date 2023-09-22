@@ -15,5 +15,5 @@ public interface GlobalVariations {
 
     List<Map<String, String>> getVariations(String fileName);
 
-    String getVariationValue(String variation, Map<String, String> variationMap);
+    String getValue(String variation, Map<String, String> variationMap);
 }

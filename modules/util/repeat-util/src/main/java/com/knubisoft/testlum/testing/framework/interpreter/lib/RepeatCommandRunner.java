@@ -7,5 +7,8 @@ import java.util.List;
 
 public interface RepeatCommandRunner {
 
-    void runCommands(List<AbstractCommand> commandList, InterpreterDependencies dependencies, CommandResult result);
+    void runCommands(List<AbstractCommand> commandList,
+                     InterpreterDependencies dependencies,
+                     CommandResult result,
+                     List<CommandResult> subCommandsResult);
 }

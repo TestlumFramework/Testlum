@@ -16,7 +16,6 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
-import static com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider.provide;
 import static java.util.Objects.nonNull;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 

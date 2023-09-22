@@ -11,7 +11,6 @@ import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
 import com.knubisoft.testlum.testing.model.scenario.NativeRepeat;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -25,11 +24,13 @@ import static java.lang.String.format;
 @ExecutorForClass(NativeRepeat.class)
 public class NativeRepeatExecutor extends AbstractUiExecutor<NativeRepeat> {
 
-    @Autowired
-    private SubCommandRunner repeatCommandsRunner;
+    private final SubCommandRunner repeatCommandsRunner;
+    private final GlobalVariations globalVariations;
 
     public NativeRepeatExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
+        repeatCommandsRunner = dependencies.getContext().getBean(SubCommandRunner.class);
+        globalVariations = dependencies.getContext().getBean(GlobalVariations.class);
     }
 
     @Override
@@ -50,7 +51,7 @@ public class NativeRepeatExecutor extends AbstractUiExecutor<NativeRepeat> {
         log.info(format(TABLE_FORMAT, "Variations", repeat.getVariations()));
         result.put("Variations", repeat.getVariations());
         List<AbstractUiCommand> commands = repeat.getClickOrInputOrAssert();
-        List<AbstractUiCommand> injectedCommand = GlobalVariations.getVariations(repeat.getVariations()).stream()
+        List<AbstractUiCommand> injectedCommand = globalVariations.getVariations(repeat.getVariations()).stream()
                 .flatMap(variation -> commands.stream().map(command ->
                         InjectionUtil.injectObjectVariation(command, variation)))
                 .collect(Collectors.toList());

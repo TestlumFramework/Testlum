@@ -17,13 +17,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_REPEAT_FINISHED_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static java.lang.String.format;
 
 @Slf4j
 @InterpreterForClass(Repeat.class)
 public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
+
+    private static final String TABLE_FORMAT = "%-23s|%-70s";
+    private static final String ANSI_YELLOW = "\u001B[33m";
+    private static final String ANSI_RESET = "\u001b[0m";
+    private static final String COMMAND_REPEAT_FINISHED_LOG = ANSI_YELLOW + "------- Repeat is finished -------"
+            + ANSI_RESET;
 
     private final RepeatCommandRunner repeatCommandsRunner;
     private final GlobalVariations globalVariations;
@@ -54,7 +58,7 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
         List<AbstractCommand> commands = repeat.getCommands();
         List<AbstractCommand> injectedCommand = globalVariations.getVariations(repeat.getVariations()).stream()
                 .flatMap(variation -> commands.stream().map(command ->
-                        InjectionUtil.injectObjectVariation(command, variation)))
+                        injectObjectVariation(command, variation)))
                 .collect(Collectors.toList());
         this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result, subCommandsResult);
     }
@@ -73,7 +77,7 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
     @SuppressWarnings("unchecked")
     private <T> T injectObjectVariation(final T t, final Map<String, String> variation) {
         String asJson = JacksonMapperUtil.writeValueToCopiedString(t);
-        String injected = globalVariations.getVariationValue(asJson, variation);
+        String injected = globalVariations.getValue(asJson, variation);
         return JacksonMapperUtil.readCopiedValue(injected, (Class<T>) t.getClass());
     }
 }

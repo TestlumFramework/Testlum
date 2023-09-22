@@ -22,7 +22,6 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -89,6 +88,8 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     private static final String COMMENT_FOR_RABBIT_RECEIVE_ACTION = "Receive message from RabbitMQ";
     private static final String STEP_FAILED = "Step failed";
 
+    private static final String QUEUE_DOES_NOT_EXIST = "Queue with name <%s> does not exist";
+
     private static final String CORRELATION_ID = "correlationId";
 
     @Autowired(required = false)
@@ -149,7 +150,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         logRabbitSendInfo(send, message);
         addRabbitMQSendInfo(send, aliasEnv.getAlias(), result);
         result.put(MESSAGE_TO_SEND, message);
-        createQueueIfNotExists(send.getRoutingKey(), aliasEnv);
+        checkQueueExistence(send.getRoutingKey(), aliasEnv);
         sendMessage(send, message, aliasEnv);
     }
 
@@ -185,7 +186,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         String messages = getMessageToReceive(receive);
         logRabbitReceiveInfo(receive, messages);
         addRabbitMQReceiveInfo(receive, aliasEnv.getAlias(), result);
-        createQueueIfNotExists(receive.getQueue(), aliasEnv);
+        checkQueueExistence(receive.getQueue(), aliasEnv);
         List<RabbitMQMessage> actualRmqMessages = receiveRmqMessages(receive, aliasEnv);
         compareMessages(actualRmqMessages, messages, result);
     }
@@ -239,14 +240,10 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
                 : getContentIfFile(file);
     }
 
-    private void createQueueIfNotExists(final String queue, final AliasEnv aliasEnv) {
-        if (checkIsQueueNotExists(queue, aliasEnv)) {
-            amqpAdmin.get(aliasEnv).declareQueue(new Queue(queue));
+    private void checkQueueExistence(final String queue, final AliasEnv aliasEnv) {
+        if (isNull(amqpAdmin.get(aliasEnv).getQueueProperties(queue))) {
+            throw new DefaultFrameworkException(QUEUE_DOES_NOT_EXIST, queue);
         }
-    }
-
-    private boolean checkIsQueueNotExists(final String queue, final AliasEnv aliasEnv) {
-        return isNull(amqpAdmin.get(aliasEnv).getQueueProperties(queue));
     }
 
     //LOGS

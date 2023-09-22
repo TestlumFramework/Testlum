@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.variations;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.parser.CSVParser;
+import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.model.scenario.Repeat;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.experimental.UtilityClass;
@@ -17,6 +18,7 @@ import java.util.regex.Pattern;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VARIATIONS_NOT_FOUND;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Component
 public class GlobalVariationsImpl implements GlobalVariations {
@@ -37,8 +39,8 @@ public class GlobalVariationsImpl implements GlobalVariations {
     }
 
     @Override
-    public String getVariationValue(final String variation, final Map<String, String> variationMap) {
-        return GlobalVariationsProvider.getVariationValue(variation, variationMap);
+    public String getValue(final String variation, final Map<String, String> variationMap) {
+        return GlobalVariationsProvider.getValue(variation, variationMap);
     }
 
     @UtilityClass
@@ -86,29 +88,64 @@ public class GlobalVariationsImpl implements GlobalVariations {
             private static final long serialVersionUID = 1;
         }
 
-        public String getVariationValue(final String variation, final Map<String, String> variationMap) {
+        public String getValue(final String variation, final Map<String, String> variationMap) {
             if (StringUtils.isBlank(variation)) {
                 return variation;
             }
             Matcher m = ROUTE_PATTERN.matcher(variation);
-            return getVariationFromMap(variation, m, variationMap);
+            return getVariationFromMap(variation, m, variationMap, null);
+        }
+
+        public String getValue(final String variation,
+                               final Map<String, String> variationMap,
+                               final ScenarioContext scenarioContext) {
+            if (StringUtils.isBlank(variation)) {
+                return variation;
+            }
+            Matcher m = ROUTE_PATTERN.matcher(variation);
+            return getVariationFromMap(variation, m, variationMap, scenarioContext);
         }
 
         private String getVariationFromMap(final String variation,
                                            final Matcher m,
-                                           final Map<String, String> variationMap) {
+                                           final Map<String, String> variationMap,
+                                           final ScenarioContext scenarioContext) {
             String finalValue = variation;
             while (m.find()) {
                 String variationKey = m.group(1);
                 String variationKeyInBraces = m.group(0);
                 String variationValue = variationMap.get(variationKey);
-                if (isNull(variationValue)) {
-                    throw new IllegalArgumentException(
-                            String.format(NO_VALUE_FOUND_FOR_KEY, variationKey, variationMap));
+                if (checkVariationValue(variationKey, variationValue, variationMap, scenarioContext)) {
+                    continue;
                 }
                 finalValue = finalValue.replace(variationKeyInBraces, variationValue);
             }
             return finalValue;
+        }
+
+        private boolean checkVariationValue(final String variationKey,
+                                            final String variationValue,
+                                            final Map<String, String> variationMap,
+                                            final ScenarioContext scenarioContext) {
+            if (isNull(variationValue)) {
+                if (isContextValue(variationKey, scenarioContext)) {
+                    return true;
+                }
+                throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, variationKey, variationMap));
+            }
+            return false;
+        }
+
+        private boolean isContextValue(final String variationKey, final ScenarioContext scenarioContext) {
+            if (nonNull(scenarioContext)) {
+                try {
+                    scenarioContext.inject(variationKey);
+                    return true;
+                } catch (Exception e) {
+                    return false;
+                }
+            }
+            return false;
         }
     }
 }

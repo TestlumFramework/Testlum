@@ -8,6 +8,13 @@ import java.util.List;
 
 public interface SubCommandRunner {
 
-    void runCommands(List<AbstractUiCommand> commandList, CommandResult result, ExecutorDependencies dependencies);
+    void runCommands(List<AbstractUiCommand> commandList,
+                     CommandResult result,
+                     ExecutorDependencies dependencies);
+
+    void runCommands(List<AbstractUiCommand> commandList,
+                     ExecutorDependencies dependencies,
+                     CommandResult result,
+                     List<CommandResult> subCommandsResult);
 
 }

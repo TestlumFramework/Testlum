@@ -186,10 +186,6 @@ public class ExceptionMessage {
             "Connection to database with name \"%s\" failed. "
                     + "Please check global configuration, it may be disabled or doesn't exist";
     public static final String UNEXPECTED_WEBSOCKET_MESSAGE_TYPE = "Unexpected websocket message type: %s";
-    public static final String ASSERT_CONTENT_NOT_EQUAL = "Equality content <%s> is not equal.";
-    public static final String ASSERT_CONTENT_IS_EQUAL = "Inequality content <%s> is equal.";
-    public static final String QUEUE_DOES_NOT_EXIST = "Queue with name <%s> does not exist";
-
 
     // executors
     public static final String VAR_TYPE_NOT_SUPPORTED = "Type of <%s> command is not supported";

@@ -63,9 +63,11 @@ import com.knubisoft.testlum.testing.model.scenario.Lambda;
 import com.knubisoft.testlum.testing.model.scenario.LambdaBody;
 import com.knubisoft.testlum.testing.model.scenario.Migrate;
 import com.knubisoft.testlum.testing.model.scenario.Mobilebrowser;
+import com.knubisoft.testlum.testing.model.scenario.MobilebrowserRepeat;
 import com.knubisoft.testlum.testing.model.scenario.Mongo;
 import com.knubisoft.testlum.testing.model.scenario.Mysql;
 import com.knubisoft.testlum.testing.model.scenario.Native;
+import com.knubisoft.testlum.testing.model.scenario.NativeRepeat;
 import com.knubisoft.testlum.testing.model.scenario.NativeVar;
 import com.knubisoft.testlum.testing.model.scenario.Oracle;
 import com.knubisoft.testlum.testing.model.scenario.Postgres;
@@ -97,6 +99,7 @@ import com.knubisoft.testlum.testing.model.scenario.SwipeType;
 import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.knubisoft.testlum.testing.model.scenario.Var;
 import com.knubisoft.testlum.testing.model.scenario.Web;
+import com.knubisoft.testlum.testing.model.scenario.WebRepeat;
 import com.knubisoft.testlum.testing.model.scenario.WebVar;
 import com.knubisoft.testlum.testing.model.scenario.Websocket;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
@@ -105,8 +108,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -142,232 +143,199 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private List<Map<String, String>> variationList = new ArrayList<>();
 
     public ScenarioValidator() {
-        Map<AbstractCommandPredicate, AbstractCommandValidator> validatorMap = new HashMap<>();
 
-        validatorMap.put(o -> o instanceof Auth, (xmlFile, command) -> {
-            checkIntegrationExistence(integrations.getApis(), Apis.class);
-            Auth auth = (Auth) command;
-            validateFileExistenceInDataFolder(auth.getCredentials());
-            validateAuthCommand(auth);
-        });
+        this.abstractCommandValidatorsMap = Map.ofEntries(
+                Map.entry(o -> o instanceof Auth, (xmlFile, command) -> {
+                    checkIntegrationExistence(integrations.getApis(), Apis.class);
+                    Auth auth = (Auth) command;
+                    validateFileExistenceInDataFolder(auth.getCredentials());
+                    validateAuthCommand(auth);
+                }),
+                Map.entry(o -> o instanceof Http, (xmlFile, command) -> {
+                    checkIntegrationExistence(integrations.getApis(), Apis.class);
+                    Http http = (Http) command;
+                    validateHttpCommand(xmlFile, http);
+                }),
+                Map.entry(o -> o instanceof Migrate, (xmlFile, command) -> {
+                    Migrate migrate = (Migrate) command;
+                    validateExistsDatasets(migrate);
+                }),
+                Map.entry(o -> o instanceof Postgres, (xmlFile, command) -> {
+                    PostgresIntegration postgresIntegration = integrations.getPostgresIntegration();
+                    checkIntegrationExistence(postgresIntegration, PostgresIntegration.class);
+                    Postgres postgres = (Postgres) command;
+                    validateAlias(postgresIntegration.getPostgres(), postgres.getAlias());
+                    validateFileIfExist(xmlFile, postgres.getFile());
+                }),
+                Map.entry(o -> o instanceof Mysql, (xmlFile, command) -> {
+                    MysqlIntegration mysqlIntegration = integrations.getMysqlIntegration();
+                    checkIntegrationExistence(mysqlIntegration, MysqlIntegration.class);
+                    Mysql mysql = (Mysql) command;
+                    validateAlias(mysqlIntegration.getMysql(), mysql.getAlias());
+                    validateFileIfExist(xmlFile, mysql.getFile());
+                }),
+                Map.entry(o -> o instanceof Oracle, (xmlFile, command) -> {
+                    OracleIntegration oracleIntegration = integrations.getOracleIntegration();
+                    checkIntegrationExistence(oracleIntegration, OracleIntegration.class);
+                    Oracle oracle = (Oracle) command;
+                    validateAlias(oracleIntegration.getOracle(), oracle.getAlias());
+                    validateFileIfExist(xmlFile, oracle.getFile());
+                }),
+                Map.entry(o -> o instanceof Clickhouse, (xmlFile, command) -> {
+                    ClickhouseIntegration clickhouseIntegration = integrations.getClickhouseIntegration();
+                    checkIntegrationExistence(clickhouseIntegration, ClickhouseIntegration.class);
+                    Clickhouse clickhouse = (Clickhouse) command;
+                    validateAlias(clickhouseIntegration.getClickhouse(), clickhouse.getAlias());
+                    validateFileIfExist(xmlFile, clickhouse.getFile());
+                }),
+                Map.entry(o -> o instanceof Redis, (xmlFile, command) -> {
+                    RedisIntegration redisIntegration = integrations.getRedisIntegration();
+                    checkIntegrationExistence(redisIntegration, RedisIntegration.class);
+                    Redis redis = (Redis) command;
+                    validateAlias(redisIntegration.getRedis(), redis.getAlias());
+                    validateFileIfExist(xmlFile, redis.getFile());
+                }),
+                Map.entry(o -> o instanceof Mongo, (xmlFile, command) -> {
+                    MongoIntegration mongoIntegration = integrations.getMongoIntegration();
+                    checkIntegrationExistence(mongoIntegration, MongoIntegration.class);
+                    Mongo mongo = (Mongo) command;
+                    validateAlias(mongoIntegration.getMongo(), mongo.getAlias());
+                    validateFileIfExist(xmlFile, mongo.getFile());
+                }),
+                Map.entry(o -> o instanceof Dynamo, (xmlFile, command) -> {
+                    DynamoIntegration dynamoIntegration = integrations.getDynamoIntegration();
+                    checkIntegrationExistence(dynamoIntegration, DynamoIntegration.class);
+                    Dynamo dynamo = (Dynamo) command;
+                    validateAlias(dynamoIntegration.getDynamo(), dynamo.getAlias());
+                    validateFileIfExist(xmlFile, dynamo.getFile());
+                }),
+                Map.entry(o -> o instanceof Rabbit, (xmlFile, command) -> {
+                    RabbitmqIntegration rabbitmqIntegration = integrations.getRabbitmqIntegration();
+                    checkIntegrationExistence(rabbitmqIntegration, RabbitmqIntegration.class);
+                    Rabbit rabbit = (Rabbit) command;
+                    validateAlias(rabbitmqIntegration.getRabbitmq(), rabbit.getAlias());
+                    validateRabbitCommand(xmlFile, rabbit);
+                }),
+                Map.entry(o -> o instanceof Kafka, (xmlFile, command) -> {
+                    KafkaIntegration kafkaIntegration = integrations.getKafkaIntegration();
+                    checkIntegrationExistence(kafkaIntegration, KafkaIntegration.class);
+                    Kafka kafka = (Kafka) command;
+                    validateAlias(kafkaIntegration.getKafka(), kafka.getAlias());
+                    validateKafkaCommand(xmlFile, kafka);
+                }),
+                Map.entry(o -> o instanceof Sqs, (xmlFile, command) -> {
+                    SqsIntegration sqsIntegration = integrations.getSqsIntegration();
+                    checkIntegrationExistence(sqsIntegration, SqsIntegration.class);
+                    Sqs sqs = (Sqs) command;
+                    validateAlias(sqsIntegration.getSqs(), sqs.getAlias());
+                    validateSqsCommand(xmlFile, sqs);
+                }),
+                Map.entry(o -> o instanceof Ses, (xmlFile, command) -> {
+                    SesIntegration sesIntegration = integrations.getSesIntegration();
+                    checkIntegrationExistence(sesIntegration, SesIntegration.class);
+                    Ses ses = (Ses) command;
+                    validateAlias(sesIntegration.getSes(), ses.getAlias());
+                }),
+                Map.entry(o -> o instanceof S3, (xmlFile, command) -> {
+                    S3Integration s3Integration = integrations.getS3Integration();
+                    checkIntegrationExistence(s3Integration, S3Integration.class);
+                    S3 s3 = (S3) command;
+                    validateAlias(s3Integration.getS3(), s3.getAlias());
+                    validateS3Command(xmlFile, s3);
+                }),
+                Map.entry(o -> o instanceof Elasticsearch, (xmlFile, command) -> {
+                    ElasticsearchIntegration elasticsearchIntegration = integrations.getElasticsearchIntegration();
+                    checkIntegrationExistence(elasticsearchIntegration, ElasticsearchIntegration.class);
+                    Elasticsearch elasticsearch = (Elasticsearch) command;
+                    validateAlias(elasticsearchIntegration.getElasticsearch(), elasticsearch.getAlias());
+                    validateElasticsearchCommand(xmlFile, elasticsearch);
+                }),
+                Map.entry(o -> o instanceof Sendgrid, (xmlFile, command) -> {
+                    SendgridIntegration sendgridIntegration = integrations.getSendgridIntegration();
+                    checkIntegrationExistence(sendgridIntegration, SendgridIntegration.class);
+                    Sendgrid sendgrid = (Sendgrid) command;
+                    validateAlias(sendgridIntegration.getSendgrid(), sendgrid.getAlias());
+                    validateSendgridCommand(xmlFile, sendgrid);
+                }),
+                Map.entry(o -> o instanceof Smtp, (xmlFile, command) -> {
+                    SmtpIntegration smtpIntegration = integrations.getSmtpIntegration();
+                    checkIntegrationExistence(smtpIntegration, SmtpIntegration.class);
+                    Smtp smtp = (Smtp) command;
+                    validateAlias(smtpIntegration.getSmtp(), smtp.getAlias());
+                }),
+                Map.entry(o -> o instanceof Twilio, (xmlFile, command) -> {
+                    TwilioIntegration twilioIntegration = integrations.getTwilioIntegration();
+                    checkIntegrationExistence(twilioIntegration, TwilioIntegration.class);
+                    Twilio twilio = (Twilio) command;
+                    validateAlias(twilioIntegration.getTwilio(), twilio.getAlias());
+                }),
+                Map.entry(o -> o instanceof Graphql, (xmlFile, command) -> {
+                    GraphqlIntegration graphqlIntegration = integrations.getGraphqlIntegration();
+                    checkIntegrationExistence(graphqlIntegration, GraphqlIntegration.class);
+                    Graphql graphql = (Graphql) command;
+                    validateAlias(graphqlIntegration.getApi(), graphql.getAlias());
+                    validateGraphqlCommand(xmlFile, graphql);
+                }),
+                Map.entry(o -> o instanceof Websocket, (xmlFile, command) -> {
+                    Websockets wsIntegration = integrations.getWebsockets();
+                    checkIntegrationExistence(wsIntegration, Websockets.class);
+                    Websocket websocket = (Websocket) command;
+                    validateAlias(wsIntegration.getApi(), websocket.getAlias());
+                    validateWebsocketCommand(xmlFile, websocket);
+                }),
+                Map.entry(o -> o instanceof Lambda, (xmlFile, command) -> {
+                    LambdaIntegration lambdaIntegration = integrations.getLambdaIntegration();
+                    checkIntegrationExistence(lambdaIntegration, LambdaIntegration.class);
+                    Lambda lambda = (Lambda) command;
+                    validateAlias(lambdaIntegration.getLambda(), lambda.getAlias());
+                    validateLambdaCommand(xmlFile, lambda);
+                }),
+                Map.entry(o -> o instanceof Shell, (xmlFile, command) -> {
+                    Shell shell = (Shell) command;
+                    validateShellCommand(xmlFile, shell);
+                }),
+                Map.entry(o -> o instanceof Include, (xmlFile, command) -> {
+                    Include include = (Include) command;
+                    validateIncludeAction(include, xmlFile);
+                }),
+                Map.entry(o -> o instanceof Var, (xmlFile, command) -> {
+                    Var var = (Var) command;
+                    validateVarCommand(xmlFile, var.getFile(), var.getSql());
+                }),
+                Map.entry(o -> o instanceof Repeat, (xmlFile, command) ->
+                        validateRepeatCommand(((Repeat) command).getVariations())),
+                Map.entry(o -> o instanceof Web, (xmlFile, command) ->
+                        validateWebCommands((Web) command, xmlFile)),
+                Map.entry(o -> o instanceof Mobilebrowser, (xmlFile, command) ->
+                        validateMobilebrowserCommands((Mobilebrowser) command, xmlFile)),
+                Map.entry(o -> o instanceof Native, (xmlFile, command) ->
+                        validateNativeCommands((Native) command, xmlFile)));
 
-        validatorMap.put(o -> o instanceof Http, (xmlFile, command) -> {
-            checkIntegrationExistence(integrations.getApis(), Apis.class);
-            Http http = (Http) command;
-            validateHttpCommand(xmlFile, http);
-        });
-
-        validatorMap.put(o -> o instanceof Migrate, (xmlFile, command) -> {
-            Migrate migrate = (Migrate) command;
-            validateExistsDatasets(migrate);
-        });
-
-        validatorMap.put(o -> o instanceof Postgres, (xmlFile, command) -> {
-            PostgresIntegration postgresIntegration = integrations.getPostgresIntegration();
-            checkIntegrationExistence(postgresIntegration, PostgresIntegration.class);
-            Postgres postgres = (Postgres) command;
-            validateAlias(postgresIntegration.getPostgres(), postgres.getAlias());
-            validateFileIfExist(xmlFile, postgres.getFile());
-        });
-
-        validatorMap.put(o -> o instanceof Mysql, (xmlFile, command) -> {
-            MysqlIntegration mysqlIntegration = integrations.getMysqlIntegration();
-            checkIntegrationExistence(mysqlIntegration, MysqlIntegration.class);
-            Mysql mysql = (Mysql) command;
-            validateAlias(mysqlIntegration.getMysql(), mysql.getAlias());
-            validateFileIfExist(xmlFile, mysql.getFile());
-        });
-
-        validatorMap.put(o -> o instanceof Oracle, (xmlFile, command) -> {
-            OracleIntegration oracleIntegration = integrations.getOracleIntegration();
-            checkIntegrationExistence(oracleIntegration, OracleIntegration.class);
-            Oracle oracle = (Oracle) command;
-            validateAlias(oracleIntegration.getOracle(), oracle.getAlias());
-            validateFileIfExist(xmlFile, oracle.getFile());
-        });
-
-        validatorMap.put(o -> o instanceof Clickhouse, (xmlFile, command) -> {
-            ClickhouseIntegration clickhouseIntegration = integrations.getClickhouseIntegration();
-            checkIntegrationExistence(clickhouseIntegration, ClickhouseIntegration.class);
-            Clickhouse clickhouse = (Clickhouse) command;
-            validateAlias(clickhouseIntegration.getClickhouse(), clickhouse.getAlias());
-            validateFileIfExist(xmlFile, clickhouse.getFile());
-        });
-
-        validatorMap.put(o -> o instanceof Redis, (xmlFile, command) -> {
-            RedisIntegration redisIntegration = integrations.getRedisIntegration();
-            checkIntegrationExistence(redisIntegration, RedisIntegration.class);
-            Redis redis = (Redis) command;
-            validateAlias(redisIntegration.getRedis(), redis.getAlias());
-            validateFileIfExist(xmlFile, redis.getFile());
-        });
-
-        validatorMap.put(o -> o instanceof Mongo, (xmlFile, command) -> {
-            MongoIntegration mongoIntegration = integrations.getMongoIntegration();
-            checkIntegrationExistence(mongoIntegration, MongoIntegration.class);
-            Mongo mongo = (Mongo) command;
-            validateAlias(mongoIntegration.getMongo(), mongo.getAlias());
-            validateFileIfExist(xmlFile, mongo.getFile());
-        });
-
-        validatorMap.put(o -> o instanceof Dynamo, (xmlFile, command) -> {
-            DynamoIntegration dynamoIntegration = integrations.getDynamoIntegration();
-            checkIntegrationExistence(dynamoIntegration, DynamoIntegration.class);
-            Dynamo dynamo = (Dynamo) command;
-            validateAlias(dynamoIntegration.getDynamo(), dynamo.getAlias());
-            validateFileIfExist(xmlFile, dynamo.getFile());
-        });
-
-        validatorMap.put(o -> o instanceof Rabbit, (xmlFile, command) -> {
-            RabbitmqIntegration rabbitmqIntegration = integrations.getRabbitmqIntegration();
-            checkIntegrationExistence(rabbitmqIntegration, RabbitmqIntegration.class);
-            Rabbit rabbit = (Rabbit) command;
-            validateAlias(rabbitmqIntegration.getRabbitmq(), rabbit.getAlias());
-            validateRabbitCommand(xmlFile, rabbit);
-        });
-
-        validatorMap.put(o -> o instanceof Kafka, (xmlFile, command) -> {
-            KafkaIntegration kafkaIntegration = integrations.getKafkaIntegration();
-            checkIntegrationExistence(kafkaIntegration, KafkaIntegration.class);
-            Kafka kafka = (Kafka) command;
-            validateAlias(kafkaIntegration.getKafka(), kafka.getAlias());
-            validateKafkaCommand(xmlFile, kafka);
-        });
-
-        validatorMap.put(o -> o instanceof Sqs, (xmlFile, command) -> {
-            SqsIntegration sqsIntegration = integrations.getSqsIntegration();
-            checkIntegrationExistence(sqsIntegration, SqsIntegration.class);
-            Sqs sqs = (Sqs) command;
-            validateAlias(sqsIntegration.getSqs(), sqs.getAlias());
-            validateSqsCommand(xmlFile, sqs);
-        });
-
-        validatorMap.put(o -> o instanceof Ses, (xmlFile, command) -> {
-            SesIntegration sesIntegration = integrations.getSesIntegration();
-            checkIntegrationExistence(sesIntegration, SesIntegration.class);
-            Ses ses = (Ses) command;
-            validateAlias(sesIntegration.getSes(), ses.getAlias());
-        });
-
-        validatorMap.put(o -> o instanceof S3, (xmlFile, command) -> {
-            S3Integration s3Integration = integrations.getS3Integration();
-            checkIntegrationExistence(s3Integration, S3Integration.class);
-            S3 s3 = (S3) command;
-            validateAlias(s3Integration.getS3(), s3.getAlias());
-            validateS3Command(xmlFile, s3);
-        });
-
-        validatorMap.put(o -> o instanceof Elasticsearch, (xmlFile, command) -> {
-            ElasticsearchIntegration elasticsearchIntegration = integrations.getElasticsearchIntegration();
-            checkIntegrationExistence(elasticsearchIntegration, ElasticsearchIntegration.class);
-            Elasticsearch elasticsearch = (Elasticsearch) command;
-            validateAlias(elasticsearchIntegration.getElasticsearch(), elasticsearch.getAlias());
-            validateElasticsearchCommand(xmlFile, elasticsearch);
-        });
-
-        validatorMap.put(o -> o instanceof Sendgrid, (xmlFile, command) -> {
-            SendgridIntegration sendgridIntegration = integrations.getSendgridIntegration();
-            checkIntegrationExistence(sendgridIntegration, SendgridIntegration.class);
-            Sendgrid sendgrid = (Sendgrid) command;
-            validateAlias(sendgridIntegration.getSendgrid(), sendgrid.getAlias());
-            validateSendgridCommand(xmlFile, sendgrid);
-        });
-
-        validatorMap.put(o -> o instanceof Smtp, (xmlFile, command) -> {
-            SmtpIntegration smtpIntegration = integrations.getSmtpIntegration();
-            checkIntegrationExistence(smtpIntegration, SmtpIntegration.class);
-            Smtp smtp = (Smtp) command;
-            validateAlias(smtpIntegration.getSmtp(), smtp.getAlias());
-        });
-
-        validatorMap.put(o -> o instanceof Twilio, (xmlFile, command) -> {
-            TwilioIntegration twilioIntegration = integrations.getTwilioIntegration();
-            checkIntegrationExistence(twilioIntegration, TwilioIntegration.class);
-            Twilio twilio = (Twilio) command;
-            validateAlias(twilioIntegration.getTwilio(), twilio.getAlias());
-        });
-
-        validatorMap.put(o -> o instanceof Graphql, (xmlFile, command) -> {
-            GraphqlIntegration graphqlIntegration = integrations.getGraphqlIntegration();
-            checkIntegrationExistence(graphqlIntegration, GraphqlIntegration.class);
-            Graphql graphql = (Graphql) command;
-            validateAlias(graphqlIntegration.getApi(), graphql.getAlias());
-            validateGraphqlCommand(xmlFile, graphql);
-        });
-
-        validatorMap.put(o -> o instanceof Websocket, (xmlFile, command) -> {
-            Websockets wsIntegration = integrations.getWebsockets();
-            checkIntegrationExistence(wsIntegration, Websockets.class);
-            Websocket websocket = (Websocket) command;
-            validateAlias(wsIntegration.getApi(), websocket.getAlias());
-            validateWebsocketCommand(xmlFile, websocket);
-        });
-
-        validatorMap.put(o -> o instanceof Lambda, (xmlFile, command) -> {
-            LambdaIntegration lambdaIntegration = integrations.getLambdaIntegration();
-            checkIntegrationExistence(lambdaIntegration, LambdaIntegration.class);
-            Lambda lambda = (Lambda) command;
-            validateAlias(lambdaIntegration.getLambda(), lambda.getAlias());
-            validateLambdaCommand(xmlFile, lambda);
-        });
-
-        validatorMap.put(o -> o instanceof Shell, (xmlFile, command) -> {
-            Shell shell = (Shell) command;
-            validateShellCommand(xmlFile, shell);
-        });
-
-        validatorMap.put(o -> o instanceof Include, (xmlFile, command) -> {
-            Include include = (Include) command;
-            validateIncludeAction(include, xmlFile);
-        });
-
-        validatorMap.put(o -> o instanceof Var, (xmlFile, command) -> {
-            Var var = (Var) command;
-            validateVarCommand(xmlFile, var.getFile(), var.getSql());
-        });
-
-        validatorMap.put(o -> o instanceof Web, (xmlFile, command) ->
-                validateWebCommands((Web) command, xmlFile)
-        );
-
-        validatorMap.put(o -> o instanceof Mobilebrowser, (xmlFile, command) ->
-                validateMobilebrowserCommands((Mobilebrowser) command, xmlFile)
-        );
-
-        validatorMap.put(o -> o instanceof Native, (xmlFile, command) ->
-                validateNativeCommands((Native) command, xmlFile)
-        );
-
-        this.abstractCommandValidatorsMap = Collections.unmodifiableMap(validatorMap);
-
-        Map<AbstractCommandPredicate, AbstractCommandValidator> uiValidatorMap = new HashMap<>();
-
-        uiValidatorMap.put(o -> o instanceof WebVar, (xmlFile, command) -> {
-            WebVar var = (WebVar) command;
-            validateVarCommand(xmlFile, var.getFile(), var.getSql());
-        });
-
-        uiValidatorMap.put(o -> o instanceof Scroll && ScrollType.INNER == ((Scroll) o).getType(),
-                (xmlFile, command) -> validateLocator((Scroll) command, NO_LOCATOR_FOUND_FOR_INNER_SCROLL));
-
-        uiValidatorMap.put(o -> o instanceof Image, (xmlFile, command) ->
-                validateFileIfExist(xmlFile, ((Image) command).getFile()));
-
-        uiValidatorMap.put(o -> o instanceof DragAndDrop, (xmlFile, command) ->
-                validateFileIfExist(xmlFile, ((DragAndDrop) command).getFileName()));
-
-        uiValidatorMap.put(o -> o instanceof Javascript, (xmlFile, command) ->
-                validateFileExistenceInDataFolder(((Javascript) command).getFile()));
-
-        uiValidatorMap.put(o -> o instanceof NativeVar, (xmlFile, command) -> {
-            NativeVar var = (NativeVar) command;
-            validateVarCommand(xmlFile, var.getFile(), var.getSql());
-        });
-
-        uiValidatorMap.put(o -> o instanceof SwipeNative && SwipeType.ELEMENT == ((SwipeNative) o).getType(),
-                (xmlFile, command) -> validateLocator((SwipeNative) command, NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE));
-
-        this.uiCommandValidatorsMap = Collections.unmodifiableMap(uiValidatorMap);
+        this.uiCommandValidatorsMap = Map.of(
+                o -> o instanceof WebVar, (xmlFile, command) -> {
+                    WebVar var = (WebVar) command;
+                    validateVarCommand(xmlFile, var.getFile(), var.getSql());
+                },
+                o -> o instanceof WebRepeat, (xmlFile, command) ->
+                        validateRepeatCommand(((WebRepeat) command).getVariations()),
+                o -> o instanceof NativeRepeat, (xmlFile, command) ->
+                        validateRepeatCommand(((NativeRepeat) command).getVariations()),
+                o -> o instanceof MobilebrowserRepeat, (xmlFile, command) ->
+                        validateRepeatCommand(((MobilebrowserRepeat) command).getVariations()),
+                o -> o instanceof Scroll && ScrollType.INNER == ((Scroll) o).getType(), (xmlFile, command) ->
+                        validateLocator((Scroll) command, NO_LOCATOR_FOUND_FOR_INNER_SCROLL),
+                o -> o instanceof Image, (xmlFile, command) ->
+                        validateFileIfExist(xmlFile, ((Image) command).getFile()),
+                o -> o instanceof DragAndDrop, (xmlFile, command) ->
+                        validateFileIfExist(xmlFile, ((DragAndDrop) command).getFileName()),
+                o -> o instanceof Javascript, (xmlFile, command) ->
+                        validateFileExistenceInDataFolder(((Javascript) command).getFile()),
+                o -> o instanceof NativeVar, (xmlFile, command) -> {
+                    NativeVar var = (NativeVar) command;
+                    validateVarCommand(xmlFile, var.getFile(), var.getSql());
+                },
+                o -> o instanceof SwipeNative && SwipeType.ELEMENT == ((SwipeNative) o).getType(), (xmlFile, command) ->
+                        validateLocator((SwipeNative) command, NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE));
     }
 
     @Override
@@ -384,15 +352,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         if (isNotBlank(scenario.getSettings().getVariations())) {
             GlobalVariationsProvider.process(scenario, xmlFile);
             variationList.addAll(GlobalVariationsProvider.getVariations(scenario.getSettings().getVariations()));
-        }
-        if (scenario.getCommands().stream().anyMatch(command -> command instanceof Repeat)) {
-            Repeat repeat = (Repeat) scenario.getCommands().stream()
-                    .filter(command -> command instanceof Repeat)
-                    .findFirst().get();
-            if (nonNull(repeat.getVariations())) {
-                GlobalVariationsProvider.process(repeat);
-                variationList.addAll(GlobalVariationsProvider.getVariations(repeat.getVariations()));
-            }
         }
     }
 
@@ -682,6 +641,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         List<String> shellFiles = shell.getShellFile();
         if (!shellFiles.isEmpty()) {
             shellFiles.forEach(this::validateFileExistenceInDataFolder);
+        }
+    }
+
+    private void validateRepeatCommand(final String variationsFileName) {
+        if (StringUtils.isNotBlank(variationsFileName)) {
+            GlobalVariations.process(variationsFileName);
+            variationList.addAll(GlobalVariations.getVariations(variationsFileName));
         }
     }
 

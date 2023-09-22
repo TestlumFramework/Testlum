@@ -27,6 +27,20 @@ public class ExceptionMessage {
 
     public static final String XSDISSUE_TO_STRING =
             "XSDIssue{message='%s', lineNumber=%d, columnNumber=%d, path=%s}";
+    public static final String RETHROWN_ERRORS_TEMPLATE = "Errors:%n%s";
+    public static final String UNABLE_FIND_FILE_IN_ROOT_FOLDER = "Unable to find file by key [%1$s] "
+            + "Initial scan folder [%2$s] with strategy recursive walk to root folder [%3$s]";
+    public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
+    public static final String SCENARIOS_FOLDER_NOT_EXIST = "[scenarios] folder does not exist";
+    public static final String PAGES_FOLDER_NOT_EXIST = "[pages] folder does not exist";
+    public static final String COMPONENTS_FOLDER_NOT_EXIST = "[components] folder does not exist";
+    public static final String DATA_FOLDER_NOT_EXIST = "[data] folder does not exist";
+    public static final String ENV_CONFIG_FOLDER_NOT_EXIST = "[config] folder does not exist";
+    public static final String ENV_FOLDER_NOT_EXIST = "[%s] folder does not exist";
+    public static final String DUPLICATE_FILENAME = ANSI_RED + "The [%s] folder and its subfolders contain "
+            + "files with duplicate filenames - [%s]. Each file should have a unique name" + ANSI_RESET;
+    public static final String DUPLICATE_FOLDER_NAME = ANSI_RED + "The [%s] folder and its subfolders contain "
+            + "folders with duplicate names - [%s]. Each folder should have a unique name" + ANSI_RESET;
 
     public static final String NO_ENABLED_ENVIRONMENTS_FOUND = "No enabled environments found in configuration file";
     public static final String STOP_IF_NON_PARSED_SCENARIO = ANSI_YELLOW

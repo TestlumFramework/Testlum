@@ -646,8 +646,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateRepeatCommand(final String variationsFileName) {
         if (StringUtils.isNotBlank(variationsFileName)) {
-            GlobalVariations.process(variationsFileName);
-            variationList.addAll(GlobalVariations.getVariations(variationsFileName));
+            GlobalVariationsProvider.process(variationsFileName);
+            variationList.addAll(GlobalVariationsProvider.getVariations(variationsFileName));
         }
     }
 

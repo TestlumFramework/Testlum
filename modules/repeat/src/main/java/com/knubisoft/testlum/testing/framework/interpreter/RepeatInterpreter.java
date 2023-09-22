@@ -45,7 +45,7 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
         if (StringUtils.isNotBlank(repeat.getVariations())) {
             runRepeatWithVariations(repeat, result, subCommandsResult);
         } else {
-           runSimpleRepeat(repeat, result, subCommandsResult);
+            runSimpleRepeat(repeat, result, subCommandsResult);
         }
         log.info(COMMAND_REPEAT_FINISHED_LOG);
     }
@@ -58,7 +58,7 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
         List<AbstractCommand> commands = repeat.getCommands();
         List<AbstractCommand> injectedCommand = globalVariations.getVariations(repeat.getVariations()).stream()
                 .flatMap(variation -> commands.stream().map(command ->
-                        InjectionUtil.injectObjectVariation(command, variation, dependencies.getScenarioContext())))
+                        injectObjectVariation(command, variation)))
                 .collect(Collectors.toList());
         this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result, subCommandsResult);
     }
@@ -77,7 +77,7 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
     @SuppressWarnings("unchecked")
     private <T> T injectObjectVariation(final T t, final Map<String, String> variation) {
         String asJson = JacksonMapperUtil.writeValueToCopiedString(t);
-        String injected = globalVariations.getValue(asJson, variation);
+        String injected = globalVariations.getValue(asJson, variation, dependencies.getScenarioContext());
         return JacksonMapperUtil.readCopiedValue(injected, (Class<T>) t.getClass());
     }
 }

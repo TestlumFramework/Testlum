@@ -12,8 +12,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
-import com.knubisoft.testlum.testing.framework.db.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.db.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.Migrate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -29,10 +27,16 @@ import static java.lang.String.format;
 @InterpreterForClass(Migrate.class)
 public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
 
-
+    //LOGS
     private static final String TABLE_FORMAT = "%-23s|%-70s";
+    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
     private static final String NAME_FOR_MIGRATION_MUST_PRESENT = "Data storage name for migration must present";
     private static final String DATASET_PATH_LOG = format(TABLE_FORMAT, "Migration dataset", "{}");
+
+    //RESULT
+    private static final String DATABASE = "Database";
+    private static final String PATCHES = "Patches";
+    private static final String DATABASE_ALIAS = "Database alias";
 
     @Autowired(required = false)
     private AliasToStorageOperation aliasToStorageOperation;
@@ -50,8 +54,8 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
         if (StringUtils.isBlank(storageName)) {
             throw new DefaultFrameworkException(NAME_FOR_MIGRATION_MUST_PRESENT);
         }
-        ResultUtil.addMigrateMetaData(storageName, databaseAlias, datasets, result);
-        LogUtil.logAlias(databaseAlias);
+        addMigrateMetaData(storageName, databaseAlias, datasets, result);
+        logAlias(databaseAlias);
         migrate(datasets, storageName, databaseAlias);
     }
 
@@ -90,5 +94,18 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
             AbstractStorageOperation storageOperation = aliasToStorageOperation.getByNameOrThrow(adapterName);
             storageOperation.apply(datasets, databaseAlias);
         }
+    }
+
+    private void logAlias(final String alias) {
+        log.info(ALIAS_LOG, alias);
+    }
+
+    private void addMigrateMetaData(final String databaseName,
+                                    final String databaseAlias,
+                                    final List<String> patches,
+                                    final CommandResult result) {
+        result.put(DATABASE, databaseName);
+        result.put(DATABASE_ALIAS, databaseAlias);
+        result.put(PATCHES, patches);
     }
 }

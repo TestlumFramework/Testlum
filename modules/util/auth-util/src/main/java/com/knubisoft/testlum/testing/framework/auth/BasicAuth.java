@@ -17,10 +17,18 @@ import java.util.Base64;
 import static com.knubisoft.testlum.testing.framework.auth.AuthorizationConstant.HEADER_BASIC;
 import static com.knubisoft.testlum.testing.framework.auth.AuthorizationConstant.PASSWORD_JPATH;
 import static com.knubisoft.testlum.testing.framework.auth.AuthorizationConstant.USERNAME_JPATH;
+import static java.lang.String.format;
 
 @Slf4j
 public class BasicAuth extends AbstractAuthStrategy {
 
+    //LOGS
+    private static final String TABLE_FORMAT = "%-23s|%-70s";
+    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
+    private static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
+    private static final String CREDENTIALS_LOG = format(TABLE_FORMAT, "Credentials", "{}");
+
+    //RESULT
     private static final String AUTHENTICATION_TYPE = "Authentication type";
 
     public BasicAuth(final InterpreterDependencies dependencies) {
@@ -38,12 +46,18 @@ public class BasicAuth extends AbstractAuthStrategy {
         String credentials = getCredentialsFromFile(auth.getCredentials());
         DocumentContext context = JsonPath.parse(credentials);
         credentials = context.read(USERNAME_JPATH) + DelimiterConstant.COLON + context.read(PASSWORD_JPATH);
-        LogUtil.logAuthInfo(auth);
+        logAuthInfo(auth);
         return Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));
     }
 
     @SneakyThrows
     private String getCredentialsFromFile(final String fileName) {
         return FileUtils.readFileToString(FileSearcher.searchFileFromDataFolder(fileName), StandardCharsets.UTF_8);
+    }
+
+    private void logAuthInfo(final Auth auth) {
+        log.info(ALIAS_LOG, auth.getApiAlias());
+        log.info(ENDPOINT_LOG, auth.getLoginEndpoint());
+        log.info(CREDENTIALS_LOG, auth.getCredentials());
     }
 }

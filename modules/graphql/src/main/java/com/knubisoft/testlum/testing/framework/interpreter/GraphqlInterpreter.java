@@ -9,8 +9,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.http.ApiClient;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.ApiResponse;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.HttpValidator;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProvider;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
@@ -27,6 +25,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.utils.URIBuilder;
@@ -35,6 +34,7 @@ import org.apache.http.entity.StringEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +42,32 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+
 @Slf4j
 @InterpreterForClass(Graphql.class)
 public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
 
+    //LOGS
+    private static final String TABLE_FORMAT = "%-23s|%-70s";
+    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
+    private static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "HTTP method", "{}");
+    private static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
+    private static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
+    private static final String REGEX_NEW_LINE = "[\\r\\n]";
+    private static final String CONTENT_FORMAT = format("%n%19s| %-23s|", EMPTY, EMPTY);
     private static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";
+    private static final String ERROR_LOG = "Error ->";
+    private static final int MAX_CONTENT_LENGTH = 25 * 1024;
+
+    //RESULT
+    private static final String ALIAS = "Alias";
+    private static final String ENDPOINT = "Endpoint";
+    private static final String HTTP_METHOD = "HTTP method";
+    private static final String ADDITIONAL_HEADERS = "Additional headers";
+    private static final String HEADER_TEMPLATE = "%s: %s";
 
     private final Map<Function<Graphql, HttpInfo>, HttpMethod> graphqlMethodMap;
 
@@ -84,11 +105,11 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
                                           final CommandResult result) {
         String endpoint = httpInfo.getEndpoint();
         Map<String, String> headers = getHeaders(httpInfo);
-        LogUtil.logHttpInfo(alias, httpMethod.name(), endpoint);
-        ResultUtil.addGraphQlMetaData(alias, httpMethod, headers, endpoint, result);
+        logHttpInfo(alias, httpMethod.name(), endpoint);
+        addGraphQlMetaData(alias, httpMethod, headers, endpoint, result);
         ContentType contentType = HttpUtil.computeContentType(headers);
         HttpEntity body = getBody(httpInfo, contentType);
-        LogUtil.logBodyContent(body);
+        logBodyContent(body);
         String url = getFullUrl(httpInfo, endpoint, alias);
         return getApiResponse(httpMethod, url, headers, body);
     }
@@ -100,7 +121,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         try {
             return apiClient.call(httpMethod, url, headers, body);
         } catch (Exception e) {
-            LogUtil.logError(e);
+            logError(e);
             throw new DefaultFrameworkException(e);
         }
     }
@@ -185,6 +206,49 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
 
     public String prettifyString(final String string) {
         return string.replaceAll(DelimiterConstant.REGEX_MANY_SPACES, DelimiterConstant.SPACE);
+    }
+
+    //LOGS
+    private void logHttpInfo(final String alias, final String method, final String endpoint) {
+        log.info(ALIAS_LOG, alias);
+        log.info(HTTP_METHOD_LOG, method);
+        log.info(ENDPOINT_LOG, endpoint);
+    }
+
+    @SneakyThrows
+    private void logBodyContent(final HttpEntity body) {
+        if (nonNull(body) && body.getContentLength() < MAX_CONTENT_LENGTH) {
+            String stringBody = IOUtils.toString(body.getContent(), StandardCharsets.UTF_8);
+            if (StringUtils.isNotBlank(stringBody)) {
+                log.info(BODY_LOG,
+                        StringPrettifier.asJsonResult(StringPrettifier.cut(stringBody))
+                                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+            }
+        }
+    }
+
+    private void logError(final Exception ex) {
+        log.error(ERROR_LOG, ex);
+    }
+
+    //RESULT
+    private void addGraphQlMetaData(final String alias,
+                                    final HttpMethod httpMethod,
+                                    final Map<String, String> headers,
+                                    final String endpoint,
+                                    final CommandResult result) {
+        result.put(ALIAS, alias);
+        result.put(HTTP_METHOD, httpMethod);
+        result.put(ENDPOINT, endpoint);
+        if (!headers.isEmpty()) {
+            addHeadersMetaData(headers, result);
+        }
+    }
+
+    private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
+        result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
+                .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
+                .collect(Collectors.toList()));
     }
 
     @RequiredArgsConstructor

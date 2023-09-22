@@ -22,12 +22,26 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
+import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 public class JwtAuth extends AbstractAuthStrategy {
 
+    //LOGS
+    private static final String TABLE_FORMAT = "%-23s|%-70s";
+    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
+    private static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
+    private static final String CREDENTIALS_LOG = format(TABLE_FORMAT, "Credentials", "{}");
+    private static final String INVALID_CREDENTIALS_LOG = format(TABLE_FORMAT, "Invalid credentials", "{}");
+    private static final String SERVER_BAD_GATEWAY_RESPONSE_LOG = format(TABLE_FORMAT, "Server is shutdown", "{}");
+    private static final String SERVER_ERROR_RESPONSE_LOG = format(TABLE_FORMAT, "Request failed", "{}");
+    private static final int NOT_FOUND = 404;
+    private static final int BAD_GATEWAY = 502;
+
+    //RESULT
     private static final String AUTHENTICATION_TYPE = "Authentication type";
+
     private final IntegrationsProvider integrationsProvider;
     private final List<Api> apiList;
 
@@ -39,7 +53,7 @@ public class JwtAuth extends AbstractAuthStrategy {
 
     @Override
     public void authenticate(final Auth auth, final CommandResult result) {
-        LogUtil.logAuthInfo(auth);
+        logAuthInfo(auth);
         String token = getJwtToken(auth);
         result.put(AUTHENTICATION_TYPE, AuthorizationConstant.HEADER_JWT);
         login(token, AuthorizationConstant.HEADER_BEARER);
@@ -79,7 +93,7 @@ public class JwtAuth extends AbstractAuthStrategy {
         try {
             return restTemplate.postForObject(getFullApiUrl(auth), request, String.class);
         } catch (HttpClientErrorException exception) {
-            LogUtil.logResponseStatusError(exception);
+            logResponseStatusError(exception);
         }
         return DelimiterConstant.EMPTY;
     }
@@ -92,5 +106,21 @@ public class JwtAuth extends AbstractAuthStrategy {
     @SneakyThrows
     private String getCredentialsFromFile(final String fileName) {
         return FileUtils.readFileToString(FileSearcher.searchFileFromDataFolder(fileName), StandardCharsets.UTF_8);
+    }
+
+    private void logAuthInfo(final Auth auth) {
+        log.info(ALIAS_LOG, auth.getApiAlias());
+        log.info(ENDPOINT_LOG, auth.getLoginEndpoint());
+        log.info(CREDENTIALS_LOG, auth.getCredentials());
+    }
+
+    private void logResponseStatusError(final HttpClientErrorException exception) {
+        if (NOT_FOUND == exception.getRawStatusCode()) {
+            log.info(INVALID_CREDENTIALS_LOG, exception.getRawStatusCode());
+        } else if (BAD_GATEWAY == exception.getRawStatusCode()) {
+            log.info(SERVER_BAD_GATEWAY_RESPONSE_LOG, exception.getRawStatusCode());
+        } else {
+            log.info(SERVER_ERROR_RESPONSE_LOG, exception.getRawStatusCode());
+        }
     }
 }

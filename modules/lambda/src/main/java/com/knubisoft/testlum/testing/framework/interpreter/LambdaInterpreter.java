@@ -6,8 +6,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpret
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.HttpValidator;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Header;
@@ -27,9 +25,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 @Slf4j
 @InterpreterForClass(Lambda.class)
 public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
+
+    //LOGS
+    private static final String TABLE_FORMAT = "%-23s|%-70s";
+    private static final String REGEX_NEW_LINE = "[\\r\\n]";
+    private static final String CONTENT_FORMAT = format("%n%19s| %-23s|", EMPTY, EMPTY);
+    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
+    private static final String LAMBDA_FUNCTION_LOG = format(TABLE_FORMAT, "Function name", "{}");
+    private static final String LAMBDA_PAYLOAD_LOG = format(TABLE_FORMAT, "Payload", "{}");
+    private static final String ERROR_LOG = "Error ->";
+
+    //RESULT
+    private static final String ALIAS = "Alias";
+    private static final String LAMBDA_FUNCTION_NAME = "Function name";
+    private static final String LAMBDA_PAYLOAD = "Payload";
 
     @Autowired(required = false)
     private Map<AliasEnv, LambdaClient> awsLambdaClients;
@@ -42,8 +58,8 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
     protected void acceptImpl(final Lambda o, final CommandResult result) {
         Lambda lambda = injectCommand(o);
         String payload = getPayload(lambda.getBody());
-        ResultUtil.addLambdaGeneralMetaData(lambda.getAlias(), lambda.getFunctionName(), payload, result);
-        LogUtil.logLambdaInfo(lambda.getAlias(), lambda.getFunctionName(), payload);
+        addLambdaGeneralMetaData(lambda.getAlias(), lambda.getFunctionName(), payload, result);
+        logLambdaInfo(lambda.getAlias(), lambda.getFunctionName(), payload);
 
         InvokeResponse response = getLambdaFunctionResponse(lambda, payload);
         compareResult(lambda.getResponse(), response, result);
@@ -69,7 +85,7 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
             AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
             return awsLambdaClients.get(aliasEnv).invoke(request);
         } catch (LambdaException e) {
-            LogUtil.logError(e);
+            logError(e);
             throw e;
         }
     }
@@ -108,5 +124,29 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
     private Map<String, String> getExpectedHeaders(final Response expected) {
         return expected.getHeader().stream()
                 .collect(Collectors.toMap(Header::getName, Header::getData));
+    }
+
+    //LOGS
+    private void logLambdaInfo(final String alias, final String functionName, final String payload) {
+        log.info(ALIAS_LOG, alias);
+        log.info(LAMBDA_FUNCTION_LOG, functionName);
+        if (isNotBlank(payload)) {
+            log.info(LAMBDA_PAYLOAD_LOG,
+                    StringPrettifier.asJsonResult(payload).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+        }
+    }
+
+    private void logError(final Exception ex) {
+        log.error(ERROR_LOG, ex);
+    }
+
+    //RESULT
+    private void addLambdaGeneralMetaData(final String alias,
+                                          final String functionName,
+                                          final String payload,
+                                          final CommandResult result) {
+        result.put(ALIAS, alias);
+        result.put(LAMBDA_FUNCTION_NAME, functionName);
+        result.put(LAMBDA_PAYLOAD, StringPrettifier.asJsonResult(payload));
     }
 }

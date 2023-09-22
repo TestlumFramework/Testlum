@@ -23,7 +23,7 @@ public class ScrollToWebExecutor extends AbstractUiExecutor<ScrollTo> {
     @Override
     public void execute(final ScrollTo scrollTo, final CommandResult result) {
         String locatorId = scrollTo.getLocatorId();
-        WebElement element = UiUtil.findWebElement(dependencies, locatorId);
+        WebElement element = UiUtil.findWebElement(dependencies, locatorId, scrollTo.getLocatorStrategy());
         result.put(SCROLL_LOCATOR, locatorId);
         JavascriptUtil.executeJsScript(SCROLL_TO_ELEMENT_SCRIPT, dependencies.getDriver(), element);
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);

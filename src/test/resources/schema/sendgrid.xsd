@@ -28,8 +28,14 @@
         <x:sequence>
             <x:element name="response" type="tns:response" minOccurs="0"/>
             <x:element name="header" type="tns:header" minOccurs="0" maxOccurs="unbounded"/>
+            <x:element name="queryParam" type="tns:queryParam" minOccurs="0" maxOccurs="unbounded"/>
         </x:sequence>
-<!--        <x:attribute name="endpoint" type="tns:endpointPattern" use="required"/>-->
+        <x:attribute name="endpoint" type="tns:endpointPattern" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="queryParam">
+        <x:attribute name="key" type="tns:nonEmptyString"/>
+        <x:attribute name="value" type="tns:nonEmptyString"/>
     </x:complexType>
 
     <x:complexType name="sendgridWithBody" abstract="true">
@@ -50,9 +56,7 @@
 
     <x:complexType name="sendgridGet">
         <x:complexContent>
-            <x:extension base="tns:sendgridWithoutBody">
-                <x:attribute name="startDate" type="tns:nonEmptyString" use="required"/>
-            </x:extension>
+            <x:extension base="tns:sendgridWithoutBody"/>
         </x:complexContent>
     </x:complexType>
 
@@ -76,7 +80,7 @@
 
     <x:complexType name="sendgridDelete">
         <x:complexContent>
-            <x:extension base="tns:sendgridInfo"/>
+            <x:extension base="tns:sendgridWithoutBody"/>
         </x:complexContent>
     </x:complexType>
 

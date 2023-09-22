@@ -26,7 +26,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "sendgridWithoutBody")
 @XmlSeeAlso({
-    SendgridGet.class
+    SendgridGet.class,
+    SendgridDelete.class
 })
 public abstract class SendgridWithoutBody
     extends SendgridInfo

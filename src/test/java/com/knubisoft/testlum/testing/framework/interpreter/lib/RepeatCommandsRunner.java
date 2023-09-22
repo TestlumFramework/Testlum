@@ -8,7 +8,6 @@ import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.stereotype.Component;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Component
@@ -16,9 +15,8 @@ public class RepeatCommandsRunner {
 
     public void runCommands(final List<AbstractCommand> commandList,
                             final InterpreterDependencies dependencies,
-                            final CommandResult result) {
-        List<CommandResult> subCommandsResult = new LinkedList<>();
-        result.setSubCommandsResult(subCommandsResult);
+                            final CommandResult result,
+                            final List<CommandResult> subCommandsResult) {
         commandList.forEach(command -> processEachCommand(command, dependencies, subCommandsResult));
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }

@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="sendgridDelete"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}sendgridInfo"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}sendgridWithoutBody"&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "sendgridDelete")
 public class SendgridDelete
-    extends SendgridInfo
+    extends SendgridWithoutBody
 {
 
 

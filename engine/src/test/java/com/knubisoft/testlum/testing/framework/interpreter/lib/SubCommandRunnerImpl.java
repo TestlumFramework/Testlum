@@ -31,6 +31,14 @@ public class SubCommandRunnerImpl implements SubCommandRunner {
         ResultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
+    public void runCommands(final List<AbstractUiCommand> commandList,
+                            final ExecutorDependencies dependencies,
+                            final CommandResult result,
+                            final List<CommandResult> subCommandsResult) {
+        commandList.forEach(command -> processEachCommand(command, subCommandsResult, dependencies));
+        ResultUtil.setExecutionResultIfSubCommandsFailed(result);
+    }
+
     private void processEachCommand(final AbstractUiCommand command,
                                     final List<CommandResult> subCommandsResult,
                                     final ExecutorDependencies dependencies) {

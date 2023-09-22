@@ -38,6 +38,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
     private static final String ASSERT_CONTENT_NOT_EQUAL = "Equality content <%s> is not equal.";
     private static final String ASSERT_CONTENT_IS_EQUAL = "Inequality content <%s> is equal.";
 
+    private final List<String> exceptions = new ArrayList<>();
     private final Map<AssertCmdPredicate, AssertMethod> assertCommandMap;
 
     public AssertExecutor(final ExecutorDependencies dependencies) {
@@ -61,6 +62,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
                 executeSubCommand(command, commandResult);
             }
         });
+        rethrowOnErrors();
     }
 
     private void executeSubCommand(final AbstractCommand command, final CommandResult result) {
@@ -129,8 +131,15 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
                     .withExpected(expected)
                     .exec();
         } catch (Exception e) {
+            exceptions.add(e.getMessage());
             LogUtil.logException(e);
             ResultUtil.setExceptionResult(result, e);
+        }
+    }
+
+    private void rethrowOnErrors() {
+        if (!exceptions.isEmpty()) {
+            throw new DefaultFrameworkException(exceptions);
         }
     }
 

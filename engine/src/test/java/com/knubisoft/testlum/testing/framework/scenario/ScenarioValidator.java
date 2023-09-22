@@ -468,7 +468,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private File validateFileNamesIfVariations(final File xmlFile, final String fileName) {
         String variationValue = variationList.stream()
-                .map(variationsMap -> GlobalVariationsProvider.getVariationValue(fileName, variationsMap))
+                .map(variationsMap -> GlobalVariationsProvider.getValue(fileName, variationsMap))
                 .findFirst().get();
         return nonNull(xmlFile) ? FileSearcher.searchFileFromDir(xmlFile, variationValue)
                 : FileSearcher.searchFileFromDataFolder(variationValue);

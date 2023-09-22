@@ -9,12 +9,19 @@ import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariations;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Repeat;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_REPEAT_FINISHED_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TABLE_FORMAT;
+import static java.lang.String.format;
+
+@Slf4j
 @InterpreterForClass(Repeat.class)
 public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
 
@@ -28,19 +35,38 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
     }
 
     @Override
-    protected void acceptImpl(final Repeat o, final CommandResult result) {
-        if (StringUtils.isNotBlank(o.getVariations())) {
-            List<AbstractCommand> commands = o.getCommands();
-            List<AbstractCommand> injectedCommand = globalVariations.getVariations(o.getVariations()).stream()
-                    .flatMap(variation -> commands.stream().map(command ->
-                            injectObjectVariation(command, variation)))
-                    .collect(Collectors.toList());
-            this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result);
+    protected void acceptImpl(final Repeat repeat, final CommandResult result) {
+        List<CommandResult> subCommandsResult = new LinkedList<>();
+        result.setSubCommandsResult(subCommandsResult);
+        if (StringUtils.isNotBlank(repeat.getVariations())) {
+            runRepeatWithVariations(repeat, result, subCommandsResult);
         } else {
-            Repeat repeat = injectCommand(o);
-            for (int i = 0; i < repeat.getTimes(); i++) {
-                this.repeatCommandsRunner.runCommands(repeat.getCommands(), dependencies, result);
-            }
+           runSimpleRepeat(repeat, result, subCommandsResult);
+        }
+        log.info(COMMAND_REPEAT_FINISHED_LOG);
+    }
+
+    private void runRepeatWithVariations(final Repeat repeat,
+                                         final CommandResult result,
+                                         final List<CommandResult> subCommandsResult) {
+        log.info(format(TABLE_FORMAT, "Variations", repeat.getVariations()));
+        result.put("Variations", repeat.getVariations());
+        List<AbstractCommand> commands = repeat.getCommands();
+        List<AbstractCommand> injectedCommand = globalVariations.getVariations(repeat.getVariations()).stream()
+                .flatMap(variation -> commands.stream().map(command ->
+                        InjectionUtil.injectObjectVariation(command, variation)))
+                .collect(Collectors.toList());
+        this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result, subCommandsResult);
+    }
+
+    private void runSimpleRepeat(final Repeat repeat,
+                                 final CommandResult result,
+                                 final List<CommandResult> subCommandsResult) {
+        Repeat repeat1 = injectCommand(repeat);
+        log.info(format(TABLE_FORMAT, "Times", repeat.getTimes()));
+        result.put("Times", repeat.getTimes());
+        for (int i = 0; i < repeat1.getTimes(); i++) {
+            this.repeatCommandsRunner.runCommands(repeat1.getCommands(), dependencies, result, subCommandsResult);
         }
     }
 

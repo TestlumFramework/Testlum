@@ -41,23 +41,26 @@ public class TestResourceSettings {
     private final File testResourcesFolder;
     private final File configFile;
     private final File envConfigFolder;
-    private final File pagesFolder;
-    private final File componentsFolder;
     private final File scenariosFolder;
     private final File dataFolder;
+    private File pagesFolder;
+    private File componentsFolder;
 
     private TestResourceSettings(final String configFileName, final String pathToTestResources) {
         this.testResourcesFolder = new File(pathToTestResources);
         this.configFile = new File(testResourcesFolder, configFileName);
         this.envConfigFolder = subFolder(ENV_CONFIG_FOLDER, ENV_CONFIG_FOLDER_NOT_EXIST);
-        this.pagesFolder = subFolder(LOCATORS_PAGES_FOLDER, PAGES_FOLDER_NOT_EXIST);
-        this.componentsFolder = subFolder(LOCATORS_COMPONENTS_FOLDER, COMPONENTS_FOLDER_NOT_EXIST);
         this.scenariosFolder = subFolder(SCENARIOS_FOLDER, SCENARIOS_FOLDER_NOT_EXIST);
         this.dataFolder = subFolder(DATA_FOLDER, DATA_FOLDER_NOT_EXIST);
     }
 
     public static void init(final String configFileName, final String pathToTestResources) {
         instance = new TestResourceSettings(configFileName, pathToTestResources);
+    }
+
+    public void initLocatorsFolder() {
+        this.pagesFolder = subFolder(LOCATORS_PAGES_FOLDER, PAGES_FOLDER_NOT_EXIST);
+        this.componentsFolder = subFolder(LOCATORS_COMPONENTS_FOLDER, COMPONENTS_FOLDER_NOT_EXIST);
     }
 
     public static TestResourceSettings getInstance() {

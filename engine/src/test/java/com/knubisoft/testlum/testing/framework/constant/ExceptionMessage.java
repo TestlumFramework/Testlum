@@ -160,6 +160,7 @@ public class ExceptionMessage {
     public static final String VARIATIONS_NOT_FOUND = "Variations for %s not found";
     public static final String VARIATION_FILE_IS_EMPTY = "Variation %s file in the %s is empty";
     public static final String VARIATIONS_NOT_USED = "Variations are present in the %s but not used";
+    public static final String ENV_VARIABLE_NOT_FOUND = "No such environmental variable as <%s>";
 
     public static final String UNABLE_PARSE_FILE_WITH_LOCATORS = "Unable to parse file %s with locators. Error: %s";
     public static final String LOCATOR_ID_HAS_DUPLICATE_LOCATOR =
@@ -185,6 +186,10 @@ public class ExceptionMessage {
             "Connection to database with name \"%s\" failed. "
                     + "Please check global configuration, it may be disabled or doesn't exist";
     public static final String UNEXPECTED_WEBSOCKET_MESSAGE_TYPE = "Unexpected websocket message type: %s";
+    public static final String ASSERT_CONTENT_NOT_EQUAL = "Equality content <%s> is not equal.";
+    public static final String ASSERT_CONTENT_IS_EQUAL = "Inequality content <%s> is equal.";
+    public static final String QUEUE_DOES_NOT_EXIST = "Queue with name <%s> does not exist";
+
 
     // executors
     public static final String VAR_TYPE_NOT_SUPPORTED = "Type of <%s> command is not supported";

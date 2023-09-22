@@ -12,14 +12,14 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for mobilebrowser complex type.
+ * <p>Java class for webRepeat complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="mobilebrowser"&gt;
+ * &lt;complexType name="webRepeat"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}ui"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
  *         &lt;element name="click" type="{http://www.knubisoft.com/testlum/testing/model/scenario}click"/&gt;
  *         &lt;element name="input" type="{http://www.knubisoft.com/testlum/testing/model/scenario}input"/&gt;
@@ -29,19 +29,20 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="clear" type="{http://www.knubisoft.com/testlum/testing/model/scenario}clear"/&gt;
  *         &lt;element name="scroll" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scroll"/&gt;
  *         &lt;element name="scrollTo" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scrollTo"/&gt;
- *         &lt;element name="image" type="{http://www.knubisoft.com/testlum/testing/model/scenario}mobileImage"/&gt;
+ *         &lt;element name="image" type="{http://www.knubisoft.com/testlum/testing/model/scenario}image"/&gt;
  *         &lt;element name="javascript" type="{http://www.knubisoft.com/testlum/testing/model/scenario}javascript"/&gt;
  *         &lt;element name="navigate" type="{http://www.knubisoft.com/testlum/testing/model/scenario}navigate"/&gt;
  *         &lt;element name="hover" type="{http://www.knubisoft.com/testlum/testing/model/scenario}hover"/&gt;
- *         &lt;element name="tab" type="{http://www.knubisoft.com/testlum/testing/model/scenario}browserTab"/&gt;
  *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/testlum/testing/model/scenario}switchToFrame"/&gt;
  *         &lt;element name="dragAndDrop" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dragAndDrop"/&gt;
+ *         &lt;element name="hotKey" type="{http://www.knubisoft.com/testlum/testing/model/scenario}hotKey"/&gt;
+ *         &lt;element name="tab" type="{http://www.knubisoft.com/testlum/testing/model/scenario}browserTab"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webVar"/&gt;
  *         &lt;element name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiCondition"/&gt;
- *         &lt;element name="repeat" type="{http://www.knubisoft.com/testlum/testing/model/scenario}mobilebrowserRepeat"/&gt;
+ *         &lt;element name="repeat" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webRepeat"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="clearCookiesAfterExecution" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
- *       &lt;attribute name="clearLocalStorageByKey" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="times" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveIntegerMin1" /&gt;
+ *       &lt;attribute name="variations" type="{http://www.knubisoft.com/testlum/testing/model/scenario}csv" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -50,11 +51,11 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "mobilebrowser", propOrder = {
+@XmlType(name = "webRepeat", propOrder = {
     "clickOrInputOrAssert"
 })
-public class Mobilebrowser
-    extends Ui
+public class WebRepeat
+    extends AbstractUiCommand
 {
 
     @XmlElements({
@@ -66,22 +67,23 @@ public class Mobilebrowser
         @XmlElement(name = "clear", type = Clear.class),
         @XmlElement(name = "scroll", type = Scroll.class),
         @XmlElement(name = "scrollTo", type = ScrollTo.class),
-        @XmlElement(name = "image", type = MobileImage.class),
+        @XmlElement(name = "image", type = Image.class),
         @XmlElement(name = "javascript", type = Javascript.class),
         @XmlElement(name = "navigate", type = Navigate.class),
         @XmlElement(name = "hover", type = Hover.class),
-        @XmlElement(name = "tab", type = BrowserTab.class),
         @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
         @XmlElement(name = "dragAndDrop", type = DragAndDrop.class),
+        @XmlElement(name = "hotKey", type = HotKey.class),
+        @XmlElement(name = "tab", type = BrowserTab.class),
         @XmlElement(name = "var", type = WebVar.class),
         @XmlElement(name = "condition", type = UiCondition.class),
-        @XmlElement(name = "repeat", type = MobilebrowserRepeat.class)
+        @XmlElement(name = "repeat", type = WebRepeat.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
-    @XmlAttribute(name = "clearCookiesAfterExecution")
-    protected Boolean clearCookiesAfterExecution;
-    @XmlAttribute(name = "clearLocalStorageByKey")
-    protected String clearLocalStorageByKey;
+    @XmlAttribute(name = "times")
+    protected Integer times;
+    @XmlAttribute(name = "variations")
+    protected String variations;
 
     /**
      * Gets the value of the clickOrInputOrAssert property.
@@ -109,16 +111,17 @@ public class Mobilebrowser
      * {@link Clear }
      * {@link Scroll }
      * {@link ScrollTo }
-     * {@link MobileImage }
+     * {@link Image }
      * {@link Javascript }
      * {@link Navigate }
      * {@link Hover }
-     * {@link BrowserTab }
      * {@link SwitchToFrame }
      * {@link DragAndDrop }
+     * {@link HotKey }
+     * {@link BrowserTab }
      * {@link WebVar }
      * {@link UiCondition }
-     * {@link MobilebrowserRepeat }
+     * {@link WebRepeat }
      * 
      * 
      */
@@ -130,55 +133,51 @@ public class Mobilebrowser
     }
 
     /**
-     * Gets the value of the clearCookiesAfterExecution property.
+     * Gets the value of the times property.
      * 
      * @return
      *     possible object is
-     *     {@link Boolean }
+     *     {@link Integer }
      *     
      */
-    public boolean isClearCookiesAfterExecution() {
-        if (clearCookiesAfterExecution == null) {
-            return false;
-        } else {
-            return clearCookiesAfterExecution;
-        }
+    public Integer getTimes() {
+        return times;
     }
 
     /**
-     * Sets the value of the clearCookiesAfterExecution property.
+     * Sets the value of the times property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Boolean }
+     *     {@link Integer }
      *     
      */
-    public void setClearCookiesAfterExecution(Boolean value) {
-        this.clearCookiesAfterExecution = value;
+    public void setTimes(Integer value) {
+        this.times = value;
     }
 
     /**
-     * Gets the value of the clearLocalStorageByKey property.
+     * Gets the value of the variations property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getClearLocalStorageByKey() {
-        return clearLocalStorageByKey;
+    public String getVariations() {
+        return variations;
     }
 
     /**
-     * Sets the value of the clearLocalStorageByKey property.
+     * Sets the value of the variations property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setClearLocalStorageByKey(String value) {
-        this.clearLocalStorageByKey = value;
+    public void setVariations(String value) {
+        this.variations = value;
     }
 
 }

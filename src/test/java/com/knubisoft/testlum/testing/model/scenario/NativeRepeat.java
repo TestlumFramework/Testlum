@@ -23,19 +23,17 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
  *         &lt;element name="click" type="{http://www.knubisoft.com/testlum/testing/model/scenario}click"/&gt;
  *         &lt;element name="input" type="{http://www.knubisoft.com/testlum/testing/model/scenario}input"/&gt;
- *         &lt;element name="assert" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webAssert"/&gt;
- *         &lt;element name="dropDown" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dropDown"/&gt;
- *         &lt;element name="wait" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiWait"/&gt;
+ *         &lt;element name="assert" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeAssert"/&gt;
+ *         &lt;element name="wait" type="{http://www.knubisoft.com/testlum/testing/model/scenario}waitNative"/&gt;
  *         &lt;element name="clear" type="{http://www.knubisoft.com/testlum/testing/model/scenario}clear"/&gt;
- *         &lt;element name="scroll" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scroll"/&gt;
- *         &lt;element name="scrollTo" type="{http://www.knubisoft.com/testlum/testing/model/scenario}scrollTo"/&gt;
- *         &lt;element name="image" type="{http://www.knubisoft.com/testlum/testing/model/scenario}image"/&gt;
- *         &lt;element name="javascript" type="{http://www.knubisoft.com/testlum/testing/model/scenario}javascript"/&gt;
- *         &lt;element name="navigate" type="{http://www.knubisoft.com/testlum/testing/model/scenario}navigate"/&gt;
- *         &lt;element name="hover" type="{http://www.knubisoft.com/testlum/testing/model/scenario}hover"/&gt;
- *         &lt;element name="tab" type="{http://www.knubisoft.com/testlum/testing/model/scenario}browserTab"/&gt;
- *         &lt;element name="switchToFrame" type="{http://www.knubisoft.com/testlum/testing/model/scenario}switchToFrame"/&gt;
+ *         &lt;element name="image" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeImage"/&gt;
+ *         &lt;element name="refresh" type="{http://www.knubisoft.com/testlum/testing/model/scenario}refresh"/&gt;
+ *         &lt;element name="navigate" type="{http://www.knubisoft.com/testlum/testing/model/scenario}navigateNative"/&gt;
+ *         &lt;element name="dragAndDrop" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dragAndDropNative"/&gt;
+ *         &lt;element name="swipe" type="{http://www.knubisoft.com/testlum/testing/model/scenario}swipeNative"/&gt;
+ *         &lt;element name="webView" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webView"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeVar"/&gt;
+ *         &lt;element name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiCondition"/&gt;
  *         &lt;element name="repeat" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeRepeat"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="times" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveIntegerMin1" /&gt;
@@ -58,19 +56,17 @@ public class NativeRepeat
     @XmlElements({
         @XmlElement(name = "click", type = Click.class),
         @XmlElement(name = "input", type = Input.class),
-        @XmlElement(name = "assert", type = WebAssert.class),
-        @XmlElement(name = "dropDown", type = DropDown.class),
-        @XmlElement(name = "wait", type = UiWait.class),
+        @XmlElement(name = "assert", type = NativeAssert.class),
+        @XmlElement(name = "wait", type = WaitNative.class),
         @XmlElement(name = "clear", type = Clear.class),
-        @XmlElement(name = "scroll", type = Scroll.class),
-        @XmlElement(name = "scrollTo", type = ScrollTo.class),
-        @XmlElement(name = "image", type = Image.class),
-        @XmlElement(name = "javascript", type = Javascript.class),
-        @XmlElement(name = "navigate", type = Navigate.class),
-        @XmlElement(name = "hover", type = Hover.class),
-        @XmlElement(name = "tab", type = BrowserTab.class),
-        @XmlElement(name = "switchToFrame", type = SwitchToFrame.class),
+        @XmlElement(name = "image", type = NativeImage.class),
+        @XmlElement(name = "refresh", type = Refresh.class),
+        @XmlElement(name = "navigate", type = NavigateNative.class),
+        @XmlElement(name = "dragAndDrop", type = DragAndDropNative.class),
+        @XmlElement(name = "swipe", type = SwipeNative.class),
+        @XmlElement(name = "webView", type = WebView.class),
         @XmlElement(name = "var", type = NativeVar.class),
+        @XmlElement(name = "condition", type = UiCondition.class),
         @XmlElement(name = "repeat", type = NativeRepeat.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
@@ -99,19 +95,17 @@ public class NativeRepeat
      * Objects of the following type(s) are allowed in the list
      * {@link Click }
      * {@link Input }
-     * {@link WebAssert }
-     * {@link DropDown }
-     * {@link UiWait }
+     * {@link NativeAssert }
+     * {@link WaitNative }
      * {@link Clear }
-     * {@link Scroll }
-     * {@link ScrollTo }
-     * {@link Image }
-     * {@link Javascript }
-     * {@link Navigate }
-     * {@link Hover }
-     * {@link BrowserTab }
-     * {@link SwitchToFrame }
+     * {@link NativeImage }
+     * {@link Refresh }
+     * {@link NavigateNative }
+     * {@link DragAndDropNative }
+     * {@link SwipeNative }
+     * {@link WebView }
      * {@link NativeVar }
+     * {@link UiCondition }
      * {@link NativeRepeat }
      * 
      * 

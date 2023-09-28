@@ -3,7 +3,6 @@ package com.knubisoft.testlum.testing.framework.util;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.framework.locator.GlobalLocators;
 import com.knubisoft.testlum.testing.model.pages.Locator;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollDirection;

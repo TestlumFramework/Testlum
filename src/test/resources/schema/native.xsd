@@ -61,19 +61,17 @@
                 <x:choice maxOccurs="unbounded" minOccurs="0">
                     <x:element name="click" type="tns:click"/>
                     <x:element name="input" type="tns:input"/>
-                    <x:element name="assert" type="tns:webAssert"/>
-                    <x:element name="dropDown" type="tns:dropDown"/>
-                    <x:element name="wait" type="tns:uiWait"/>
+                    <x:element name="assert" type="tns:nativeAssert"/>
+                    <x:element name="wait" type="tns:waitNative"/>
                     <x:element name="clear" type="tns:clear"/>
-                    <x:element name="scroll" type="tns:scroll"/>
-                    <x:element name="scrollTo" type="tns:scrollTo"/>
-                    <x:element name="image" type="tns:image"/>
-                    <x:element name="javascript" type="tns:javascript"/>
-                    <x:element name="navigate" type="tns:navigate"/>
-                    <x:element name="hover" type="tns:hover"/>
-                    <x:element name="tab" type="tns:browserTab"/>
-                    <x:element name="switchToFrame" type="tns:switchToFrame"/>
+                    <x:element name="image" type="tns:nativeImage"/>
+                    <x:element name="refresh" type="tns:refresh"/>
+                    <x:element name="navigate" type="tns:navigateNative"/>
+                    <x:element name="dragAndDrop" type="tns:dragAndDropNative"/>
+                    <x:element name="swipe" type="tns:swipeNative"/>
+                    <x:element name="webView" type="tns:webView"/>
                     <x:element name="var" type="tns:nativeVar"/>
+                    <x:element name="condition" type="tns:uiCondition"/>
                     <x:element name="repeat" type="tns:nativeRepeat"/>
                 </x:choice>
                 <x:attribute name="times" type="tns:positiveIntegerMin1"/>

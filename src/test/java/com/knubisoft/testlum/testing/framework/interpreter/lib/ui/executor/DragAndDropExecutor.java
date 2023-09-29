@@ -33,16 +33,12 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         driver = dependencies.getDriver();
     }
 
-    //CHECKSTYLE:OFF
-    @Override
     public void execute(final DragAndDrop dragAndDrop, final CommandResult result) {
         LogUtil.logDragAndDropInfo(dragAndDrop);
         ResultUtil.addDragAndDropMetaDada(dragAndDrop, result);
-        log.info("WebElement target = UiUtil.findWebElement for dragAndDrop");
         WebElement target = UiUtil.findWebElement(dependencies, dragAndDrop.getToLocatorId(),
                 dragAndDrop.getToLocatorStrategy());
         if (StringUtils.isNotBlank(dragAndDrop.getFileName())) {
-            log.info("File source = FileSearcher.searchFileFromDir for dragAndDrop");
             File source = FileSearcher.searchFileFromDir(
                     dependencies.getFile().getParentFile(), dragAndDrop.getFileName());
             dropFile(target, source);
@@ -52,7 +48,6 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         }
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
-    //CHECKSTYLE:ON
 
     private void dropElement(final WebElement target, final WebElement source) {
         Actions action = new Actions(driver);
@@ -67,6 +62,7 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         }
         log.info("WebElement input = (WebElement) JavascriptUtil.executeJsScript for dragAndDrop");
         WebElement input = (WebElement) JavascriptUtil.executeJsScript(QUERY_FOR_DRAG_AND_DROP, driver, target);
+        log.info("input.sendKeys for dragAndDrop");
         input.sendKeys(source.getAbsolutePath());
     }
 }

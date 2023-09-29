@@ -33,6 +33,7 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         driver = dependencies.getDriver();
     }
 
+    //CHECKSTYLE:OFF
     @Override
     public void execute(final DragAndDrop dragAndDrop, final CommandResult result) {
         LogUtil.logDragAndDropInfo(dragAndDrop);
@@ -51,6 +52,7 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         }
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
+    //CHECKSTYLE:ON
 
     private void dropElement(final WebElement target, final WebElement source) {
         Actions action = new Actions(driver);

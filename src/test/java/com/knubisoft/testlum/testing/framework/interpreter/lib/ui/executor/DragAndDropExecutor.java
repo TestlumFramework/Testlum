@@ -11,6 +11,7 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -21,6 +22,7 @@ import java.io.File;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DRAG_AND_DROP_FILE_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.JavascriptConstant.QUERY_FOR_DRAG_AND_DROP;
 
+@Slf4j
 @ExecutorForClass(DragAndDrop.class)
 public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
 
@@ -35,9 +37,11 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
     public void execute(final DragAndDrop dragAndDrop, final CommandResult result) {
         LogUtil.logDragAndDropInfo(dragAndDrop);
         ResultUtil.addDragAndDropMetaDada(dragAndDrop, result);
+        log.info("WebElement target = UiUtil.findWebElement for dragAndDrop");
         WebElement target = UiUtil.findWebElement(dependencies, dragAndDrop.getToLocatorId(),
                 dragAndDrop.getToLocatorStrategy());
         if (StringUtils.isNotBlank(dragAndDrop.getFileName())) {
+            log.info("File source = FileSearcher.searchFileFromDir for dragAndDrop");
             File source = FileSearcher.searchFileFromDir(
                     dependencies.getFile().getParentFile(), dragAndDrop.getFileName());
             dropFile(target, source);
@@ -59,6 +63,7 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         if (!source.exists() || !source.isFile()) {
             throw new DefaultFrameworkException(DRAG_AND_DROP_FILE_NOT_FOUND, source.getName());
         }
+        log.info("WebElement input = (WebElement) JavascriptUtil.executeJsScript for dragAndDrop");
         WebElement input = (WebElement) JavascriptUtil.executeJsScript(QUERY_FOR_DRAG_AND_DROP, driver, target);
         input.sendKeys(source.getAbsolutePath());
     }

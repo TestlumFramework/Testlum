@@ -208,6 +208,7 @@ public final class LogMessage {
     public static final String SHELL_COMMAND_LOG = format(TABLE_FORMAT, "Shell command", "{}");
     public static final String SCROLL_DIRECTION_LOG = format(TABLE_FORMAT, "Direction", "{}");
     public static final String SCROLL_BY_LOG = format(TABLE_FORMAT, "Scroll by", "{}");
+    public static final String LOCATOR_STRATEGY = format(TABLE_FORMAT, "Locator strategy", "{}");
     public static final String TIMES_LOG = format(TABLE_FORMAT, "Times to repeat", "{}");
     public static final String CREDENTIALS_LOG = format(TABLE_FORMAT, "Credentials", "{}");
     public static final String INVALID_CREDENTIALS_LOG = format(TABLE_FORMAT, "Invalid credentials", "{}");

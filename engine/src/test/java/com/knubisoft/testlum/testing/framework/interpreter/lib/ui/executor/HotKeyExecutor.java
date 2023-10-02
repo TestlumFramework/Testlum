@@ -17,6 +17,7 @@ import com.knubisoft.testlum.testing.model.scenario.Enter;
 import com.knubisoft.testlum.testing.model.scenario.Escape;
 import com.knubisoft.testlum.testing.model.scenario.Highlight;
 import com.knubisoft.testlum.testing.model.scenario.HotKey;
+import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import com.knubisoft.testlum.testing.model.scenario.Paste;
 import com.knubisoft.testlum.testing.model.scenario.Space;
 import com.knubisoft.testlum.testing.model.scenario.Tab;
@@ -100,12 +101,12 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     }
 
     private void highlightCommand(final Highlight highlight, final CommandResult result) {
-        action.keyDown(getWebElement(highlight.getLocatorId(), result), ctrlKey)
+        action.keyDown(getWebElement(highlight.getLocatorId(), result, highlight.getLocatorStrategy()), ctrlKey)
                 .sendKeys("a").keyUp(ctrlKey).build().perform();
     }
 
     private void pasteCommand(final Paste paste, final CommandResult result) {
-        action.keyDown(getWebElement(paste.getLocatorId(), result), ctrlKey)
+        action.keyDown(getWebElement(paste.getLocatorId(), result, paste.getLocatorStrategy()), ctrlKey)
                 .sendKeys("v").keyUp(ctrlKey).build().perform();
     }
 
@@ -118,20 +119,24 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     }
 
 
-    private WebElement getWebElement(final String locator, final CommandResult result) {
+    private WebElement getWebElement(final String locator,
+                                     final CommandResult result,
+                                     final LocatorStrategy locatorStrategy) {
         return StringUtils.isBlank(locator)
                 ? getActiveElement()
-                : getElementForHotKey(locator, result);
+                : getElementForHotKey(locator, result, locatorStrategy);
     }
 
     private WebElement getActiveElement() {
         return dependencies.getDriver().switchTo().activeElement();
     }
 
-    private WebElement getElementForHotKey(final String locatorId, final CommandResult result) {
+    private WebElement getElementForHotKey(final String locatorId,
+                                           final CommandResult result,
+                                           final LocatorStrategy locatorStrategy) {
         result.put(HOTKEY_LOCATOR, locatorId);
         log.info(HOTKEY_COMMAND_LOCATOR, locatorId);
-        return UiUtil.findWebElement(dependencies, locatorId);
+        return UiUtil.findWebElement(dependencies, locatorId, locatorStrategy);
     }
 
     private Keys chooseKeyForOperatingSystem() {

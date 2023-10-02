@@ -31,8 +31,8 @@ public class TestResourceSettings {
     public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
 
     private static final String SCENARIOS_FOLDER_NOT_EXIST = "[scenarios] folder does not exist";
-    private static final String PAGES_FOLDER_NOT_EXIST = "[pages] folder does not exist";
-    private static final String COMPONENTS_FOLDER_NOT_EXIST = "[components] folder does not exist";
+    private static final String PAGES_FOLDER_NOT_EXIST = "[locators/pages] folder does not exist";
+    private static final String COMPONENTS_FOLDER_NOT_EXIST = "[locators/component] folder does not exist";
     private static final String DATA_FOLDER_NOT_EXIST = "[data] folder does not exist";
     private static final String ENV_CONFIG_FOLDER_NOT_EXIST = "[config] folder does not exist";
 

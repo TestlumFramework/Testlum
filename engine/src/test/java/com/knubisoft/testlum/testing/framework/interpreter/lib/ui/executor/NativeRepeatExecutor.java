@@ -53,7 +53,7 @@ public class NativeRepeatExecutor extends AbstractUiExecutor<NativeRepeat> {
         List<AbstractUiCommand> commands = repeat.getClickOrInputOrAssert();
         List<AbstractUiCommand> injectedCommand = globalVariations.getVariations(repeat.getVariations()).stream()
                 .flatMap(variation -> commands.stream().map(command ->
-                        InjectionUtil.injectObjectVariation(command, variation)))
+                        InjectionUtil.injectObjectVariation(command, variation, dependencies.getScenarioContext())))
                 .collect(Collectors.toList());
         this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result, subCommandsResult);
     }

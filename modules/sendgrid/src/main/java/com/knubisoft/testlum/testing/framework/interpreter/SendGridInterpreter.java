@@ -8,8 +8,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.ApiResponse;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.HttpValidator;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.Body;
@@ -27,16 +25,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 @InterpreterForClass(Sendgrid.class)
 public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
+    //LOGS
+    private static final String TABLE_FORMAT = "%-23s|%-70s";
+    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
+    private static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "HTTP method", "{}");
+    private static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
+    private static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
+    private static final String REGEX_NEW_LINE = "[\\r\\n]";
+    private static final String CONTENT_FORMAT = format("%n%19s| %-23s|", EMPTY, EMPTY);
     private static final String CONTENT_TO_SEND = "Content to send";
     private static final String EXPECTED_CODE = "Expected code";
     private static final String ACTUAL_CODE = "Actual code";
+
+    //RESULT
+    private static final String ALIAS = "Alias";
+    private static final String ENDPOINT = "Endpoint";
+    private static final String HTTP_METHOD = "HTTP method";
+    private static final String ADDITIONAL_HEADERS = "Additional headers";
+    private static final String HEADER_TEMPLATE = "%s: %s";
 
     @Autowired(required = false)
     private Map<AliasEnv, SendGrid> sendGrid;
@@ -53,7 +70,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         SendgridInfo sendgridInfo = metadata.getHttpInfo();
         Method method = metadata.getHttpMethod();
         Map<String, String> headers = getHeaders(sendgridInfo);
-        ResultUtil.addSendGridMetaData(sendgrid.getAlias(), method.name(), headers, endpoint, result);
+        addSendGridMetaData(sendgrid.getAlias(), method.name(), headers, endpoint, result);
         Response actual = getActual(sendgridInfo, method, sendgrid.getAlias(), endpoint, result);
         ApiResponse expected = getExpected(sendgridInfo, headers);
         compare(expected, actual, result);
@@ -77,8 +94,8 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         String body = getBody(sendgridInfo, method);
         Request request = getRequest(body, method, sendgridInfo, endpoint);
         result.put(CONTENT_TO_SEND, StringPrettifier.asJsonResult(body));
-        LogUtil.logHttpInfo(alias, method.name(), endpoint);
-        LogUtil.logBody(request.getBody());
+        logHttpInfo(alias, method.name(), endpoint);
+        logBody(request.getBody());
         return sendGrid.get(new AliasEnv(alias, dependencies.getEnvironment())).api(request);
     }
 
@@ -126,5 +143,40 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
                     request.addQueryParam(queryParam.getKey(), queryParam.getValue()));
         }
         return request;
+    }
+
+    //LOGS
+    private void logHttpInfo(final String alias, final String method, final String endpoint) {
+        log.info(ALIAS_LOG, alias);
+        log.info(HTTP_METHOD_LOG, method);
+        log.info(ENDPOINT_LOG, endpoint);
+    }
+
+    private void logBody(final String body) {
+        if (isNotBlank(body)) {
+            log.info(BODY_LOG,
+                    StringPrettifier.asJsonResult(StringPrettifier.cut(body))
+                            .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+        }
+    }
+
+    //RESULT
+    private void addSendGridMetaData(final String alias,
+                                     final String httpMethodName,
+                                     final Map<String, String> headers,
+                                     final String endpoint,
+                                     final CommandResult result) {
+        result.put(ALIAS, alias);
+        result.put(ENDPOINT, endpoint);
+        result.put(HTTP_METHOD, httpMethodName);
+        if (!headers.isEmpty()) {
+            addHeadersMetaData(headers, result);
+        }
+    }
+
+    private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
+        result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
+                .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
+                .collect(Collectors.toList()));
     }
 }

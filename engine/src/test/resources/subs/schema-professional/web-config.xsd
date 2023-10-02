@@ -1,0 +1,150 @@
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:complexType name="web">
+        <x:sequence>
+            <x:element name="baseUrl" type="tns:urlWeb"/>
+            <x:element name="browserSettings" type="tns:browserSettings"/>
+        </x:sequence>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="browserSettings">
+        <x:complexContent>
+            <x:extension base="tns:settings">
+                <x:sequence>
+                    <x:element name="browsers" type="tns:browsers"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="browsers">
+        <x:choice maxOccurs="unbounded">
+            <x:element name="chrome" type="tns:chrome"/>
+            <x:element name="firefox" type="tns:firefox"/>
+            <x:element name="safari" type="tns:safari"/>
+            <x:element name="edge" type="tns:edge"/>
+            <x:element name="opera" type="tns:opera"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="abstractBrowser" abstract="true">
+        <x:sequence>
+            <x:element name="browserType" type="tns:browserType"/>
+            <x:element name="capabilities" type="tns:capabilities" minOccurs="0"/>
+        </x:sequence>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:attribute name="maximizedBrowserWindow" type="x:boolean" use="required"/>
+        <x:attribute name="browserWindowSize" type="tns:windowSize"/>
+        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="browserType">
+        <x:choice>
+            <x:element name="localBrowser" type="tns:localBrowser"/>
+            <x:element name="browserInDocker" type="tns:browserInDocker"/>
+            <x:element name="remoteBrowser" type="tns:remoteBrowser"/>
+            <x:element name="browserStack" type="tns:browserStackWeb"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="localBrowser">
+        <x:attribute name="driverVersion" type="tns:nonEmptyString"/>
+    </x:complexType>
+
+    <x:complexType name="browserInDocker">
+        <x:sequence>
+            <x:element name="screenRecording" type="tns:screenRecording" minOccurs="0"/>
+        </x:sequence>
+        <x:attribute name="browserVersion" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="enableVNC" type="x:boolean" use="required"/>
+        <x:attribute name="dockerNetwork" type="tns:nonEmptyString"/>
+    </x:complexType>
+
+    <x:complexType name="remoteBrowser">
+        <x:attribute name="browserVersion" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="remoteBrowserURL" type="tns:url" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="browserStackWeb">
+        <x:attribute name="browserVersion" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="os" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="osVersion" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="screenRecording">
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:attribute name="outputFolder" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="browserOptionsArguments">
+        <x:annotation>
+            <x:documentation>
+                Additions browser settings:
+
+                options.addArguments("--headless",
+                "--disable-gpu",
+                "--window-size=1920,1200",
+                "--ignore-certificate-errors");
+            </x:documentation>
+        </x:annotation>
+        <x:sequence>
+            <x:element name="argument" type="tns:nonEmptyString" maxOccurs="unbounded"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="chrome">
+        <x:complexContent>
+            <x:extension base="tns:abstractBrowser">
+                <x:sequence>
+                    <x:element name="chromeOptionsArguments" type="tns:browserOptionsArguments" minOccurs="0"/>
+                </x:sequence>
+                <x:attribute name="headlessMode" type="x:boolean" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="firefox">
+        <x:complexContent>
+            <x:extension base="tns:abstractBrowser">
+                <x:sequence>
+                    <x:element name="firefoxOptionsArguments" type="tns:browserOptionsArguments" minOccurs="0"/>
+                </x:sequence>
+                <x:attribute name="headlessMode" type="x:boolean" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="edge">
+        <x:complexContent>
+            <x:extension base="tns:abstractBrowser">
+                <x:sequence>
+                    <x:element name="edgeOptionsArguments" type="tns:browserOptionsArguments" minOccurs="0"/>
+                </x:sequence>
+                <x:attribute name="headlessMode" type="x:boolean" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="opera">
+        <x:complexContent>
+            <x:extension base="tns:abstractBrowser">
+                <x:sequence>
+                    <x:element name="operaOptionsArguments" type="tns:browserOptionsArguments" minOccurs="0"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="safari">
+        <x:complexContent>
+            <x:extension base="tns:abstractBrowser"/>
+        </x:complexContent>
+    </x:complexType>
+</x:schema>

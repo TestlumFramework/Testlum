@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="shell">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:sequence>
+                    <x:element name="shellFile" type="x:string" minOccurs="0" maxOccurs="unbounded"/>
+                    <x:element name="shellCommand" type="x:string" minOccurs="0" maxOccurs="unbounded"/>
+                </x:sequence>
+                <x:attribute name="file" type="tns:expectedPattern"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+</x:schema>

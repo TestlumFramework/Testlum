@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:complexType name="apis">
+        <x:choice>
+            <x:element name="api" type="tns:api" maxOccurs="unbounded"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="api">
+        <x:complexContent>
+            <x:extension base="tns:integration">
+                <x:sequence>
+                    <x:element name="auth" type="tns:auth" minOccurs="0" maxOccurs="1"/>
+                </x:sequence>
+                <x:attribute name="url" type="tns:url" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="auth">
+        <x:attribute name="autoLogout" type="x:boolean" default="true"/>
+        <x:attribute name="authStrategy" type="tns:authStrategies" default="default"/>
+        <x:attribute name="tokenName" type="tns:nonEmptyString" default="token"/>
+        <x:attribute name="authCustomClassName" type="tns:nonEmptyString"/>
+    </x:complexType>
+
+    <x:simpleType name="authStrategies">
+        <x:restriction base="x:string">
+            <x:enumeration value="basic"/>
+            <x:enumeration value="jwt"/>
+            <x:enumeration value="custom"/>
+            <x:enumeration value="default"/>
+        </x:restriction>
+    </x:simpleType>
+
+</x:schema>

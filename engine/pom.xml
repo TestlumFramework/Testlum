@@ -21,6 +21,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <start-class>com.knubisoft.testlum.starter.TESTLUMStarter</start-class>
+        <free-subs-pack>${project.basedir}/src/test/resources/subs/schema-free</free-subs-pack>
+        <standard-subs-pack>${project.basedir}/src/test/resources/subs/schema-standard</standard-subs-pack>
+        <professional-subs-pack>${project.basedir}/src/test/resources/subs/schema-professional</professional-subs-pack>
 
         <selenium-java.version>4.1.4</selenium-java.version>
         <appium-client.version>8.1.1</appium-client.version>
@@ -1011,11 +1014,6 @@
         </dependency>
 
         <!--    DATABASES    -->
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-mysql</artifactId>
-            <version>1.0</version>
-        </dependency>
 
         <dependency>
             <groupId>com.knubisoft</groupId>
@@ -1023,97 +1021,7 @@
             <version>1.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-clickhouse</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-oracle</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-mongo</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-dynamo</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <!--    QUEUES    -->
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-kafka</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-rabbit</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-sqs</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <!--    CACHE AND STORAGE    -->
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-redis</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-s3</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <!--    MESSAGES AND MAILING    -->
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-sendgrid</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-ses</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-smtp</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-twilio</artifactId>
-            <version>1.0</version>
-        </dependency>
-
         <!--    API    -->
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-elasticsearch</artifactId>
-            <version>1.0</version>
-        </dependency>
 
         <dependency>
             <groupId>com.knubisoft</groupId>
@@ -1127,24 +1035,6 @@
             <version>1.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-graphql</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-lambda</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-websocket</artifactId>
-            <version>1.0</version>
-        </dependency>
-
         <!--    TESTLUM UI PLUGINS    -->
 
         <dependency>
@@ -1153,17 +1043,6 @@
             <version>1.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-native</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-mobilebrowser</artifactId>
-            <version>1.0</version>
-        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -1314,33 +1193,6 @@
     <build>
         <finalName>testlum</finalName>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>${jaxb2-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>test-models-generating</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <skipXjc>${skipGenerateModels}</skipXjc>
-                    <skipTestXjc>${skipGenerateModels}</skipTestXjc>
-                    <outputDirectory>src/test/java</outputDirectory>
-                    <clearOutputDir>false</clearOutputDir>
-                    <sources>
-                        <source>${project.basedir}/src/test/resources/schema/scenario.xsd</source>
-                        <source>${project.basedir}/src/test/resources/schema/global-config.xsd</source>
-                        <source>${project.basedir}/src/test/resources/schema/pages.xsd</source>
-                    </sources>
-                    <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -1524,6 +1376,391 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>free</id>
+            <build>
+                <plugins>
+                    <!-- Clean the desired-folder -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.basedir}/src/test/resources/schema</directory>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>clean-desired-folder</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Copy resources to the desired-folder -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.basedir}/src/test/resources/schema</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${free-subs-pack}</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>jaxb2-maven-plugin</artifactId>
+                        <version>${jaxb2-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>test-models-generating</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>xjc</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <skipXjc>${skipGenerateModels}</skipXjc>
+                            <skipTestXjc>${skipGenerateModels}</skipTestXjc>
+                            <outputDirectory>src/test/java</outputDirectory>
+                            <clearOutputDir>false</clearOutputDir>
+                            <sources>
+                                <source>${project.basedir}/src/test/resources/schema/scenario.xsd</source>
+                                <source>${project.basedir}/src/test/resources/schema/global-config.xsd</source>
+                                <source>${project.basedir}/src/test/resources/schema/pages.xsd</source>
+                            </sources>
+                            <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>standard</id>
+            <dependencies>
+                <!--DATABASES-->
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-mysql</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-mongo</artifactId>
+                    <version>1.0</version>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <!-- Clean the desired-folder -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.basedir}/src/test/resources/schema</directory>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>clean-desired-folder</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Copy resources to the desired-folder -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.basedir}/src/test/resources/schema</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${standard-subs-pack}</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>jaxb2-maven-plugin</artifactId>
+                        <version>${jaxb2-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>test-models-generating</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>xjc</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <skipXjc>${skipGenerateModels}</skipXjc>
+                            <skipTestXjc>${skipGenerateModels}</skipTestXjc>
+                            <outputDirectory>src/test/java</outputDirectory>
+                            <clearOutputDir>false</clearOutputDir>
+                            <sources>
+                                <source>${project.basedir}/src/test/resources/schema/scenario.xsd</source>
+                                <source>${project.basedir}/src/test/resources/schema/global-config.xsd</source>
+                                <source>${project.basedir}/src/test/resources/schema/pages.xsd</source>
+                            </sources>
+                            <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>professional</id>
+            <dependencies>
+                <!--DATABASES-->
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-mysql</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-clickhouse</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-oracle</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-mongo</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-dynamo</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <!--    QUEUES    -->
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-kafka</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-rabbit</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-sqs</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <!--    CACHE AND STORAGE    -->
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-redis</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-s3</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <!--    MESSAGES AND MAILING    -->
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-sendgrid</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-ses</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-smtp</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-twilio</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <!--    API    -->
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-elasticsearch</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-graphql</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-lambda</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-websocket</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <!--    TESTLUM UI PLUGINS    -->
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-native</artifactId>
+                    <version>1.0</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-mobilebrowser</artifactId>
+                    <version>1.0</version>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <!-- Clean the desired-folder -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.basedir}/src/test/resources/schema</directory>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>clean-desired-folder</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Copy resources to the desired-folder -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.basedir}/src/test/resources/schema</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${professional-subs-pack}</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>jaxb2-maven-plugin</artifactId>
+                        <version>${jaxb2-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>test-models-generating</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>xjc</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <skipXjc>${skipGenerateModels}</skipXjc>
+                            <skipTestXjc>${skipGenerateModels}</skipTestXjc>
+                            <outputDirectory>src/test/java</outputDirectory>
+                            <clearOutputDir>false</clearOutputDir>
+                            <sources>
+                                <source>${project.basedir}/src/test/resources/schema/scenario.xsd</source>
+                                <source>${project.basedir}/src/test/resources/schema/global-config.xsd</source>
+                                <source>${project.basedir}/src/test/resources/schema/pages.xsd</source>
+                            </sources>
+                            <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

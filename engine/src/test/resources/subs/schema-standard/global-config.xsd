@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/global-config"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/global-config"
+          elementFormDefault="qualified" jaxb:version="2.1">
+
+    <x:include schemaLocation="report.xsd"/>
+    <x:include schemaLocation="ui-config.xsd"/>
+    <x:include schemaLocation="integration-config.xsd"/>
+
+    <x:annotation>
+        <x:appinfo>
+            <jaxb:bindings
+                node="/x:schema/x:element[@name='globalTestConfiguration']//x:complexType//x:sequence">
+            </jaxb:bindings>
+        </x:appinfo>
+    </x:annotation>
+
+    <x:element name="globalTestConfiguration">
+        <x:complexType>
+            <x:sequence>
+                <x:element name="subscription" type="tns:subscription"/>
+                <x:element name="parallelExecution" type="x:boolean" default="false" minOccurs="0"/>
+                <x:element name="stopScenarioOnFailure" type="x:boolean"/>
+                <x:element name="stopIfInvalidScenario" type="x:boolean"/>
+                <x:element name="delayBetweenScenarioRuns" type="tns:delayBetweenScenarioRuns"/>
+                <x:element name="runScenariosByTag" type="tns:runScenariosByTag"/>
+                <x:element name="report" type="tns:report"/>
+                <x:element name="environments" type="tns:environments"/>
+                <x:element name="vault" type="tns:vault" minOccurs="0"/>
+            </x:sequence>
+        </x:complexType>
+    </x:element>
+
+    <x:complexType name="subscription">
+        <x:choice>
+            <x:element name="id" type="tns:nonEmptyString"/>
+        </x:choice>
+        <x:attribute name="type" type="tns:subscriptionType" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="subscriptionType">
+        <x:restriction base="x:string">
+            <x:enumeration value="stripe"/>
+            <x:enumeration value="free"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="delayBetweenScenarioRuns">
+        <x:attribute name="seconds" type="x:int" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="runScenariosByTag">
+        <x:choice>
+            <x:element name="tag" type="tns:tagValue" maxOccurs="unbounded"/>
+        </x:choice>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="environments">
+        <x:sequence>
+            <x:element name="env" type="tns:environment" maxOccurs="unbounded"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="environment">
+        <x:attribute name="folder" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:attribute name="threads" type="x:int" default="1"/>
+    </x:complexType>
+
+    <x:complexType name="vault">
+        <x:sequence>
+            <x:element name="host" type="tns:nonEmptyString"/>
+            <x:element name="port" type="tns:positiveIntegerMin1"/>
+            <x:element name="scheme" type="tns:nonEmptyString"/>
+            <x:element name="token" type="tns:nonEmptyString"/>
+        </x:sequence>
+    </x:complexType>
+</x:schema>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:complexType name="extentReports">
+        <x:choice>
+            <x:sequence>
+                <x:element name="htmlReportGenerator" type="tns:htmlReportGenerator"/>
+                <x:element name="klovServerReportGenerator" type="tns:klovServerReportGenerator" minOccurs="0"/>
+            </x:sequence>
+        </x:choice>
+        <x:attribute name="projectName" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="onlyFailedScenarios" type="x:boolean"/>
+    </x:complexType>
+
+    <x:complexType name="htmlReportGenerator">
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="klovServerReportGenerator">
+        <x:sequence>
+            <x:element name="mongoDB" type="tns:mongodb"/>
+            <x:element name="klovServer" type="tns:klovServer"/>
+        </x:sequence>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="mongodb">
+        <x:attribute name="host" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="port" type="x:nonNegativeInteger" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="klovServer">
+        <x:attribute name="url" type="tns:url" use="required"/>
+    </x:complexType>
+</x:schema>

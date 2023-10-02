@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/pages"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/pages"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+          jaxb:version="2.1">
+
+    <x:include schemaLocation="component.xsd"/>
+    <x:include schemaLocation="locators.xsd"/>
+
+    <x:annotation>
+        <x:appinfo>
+            <jaxb:bindings
+                node="/x:schema/x:element[@name='page']//x:complexType//x:sequence">
+            </jaxb:bindings>
+        </x:appinfo>
+    </x:annotation>
+
+    <x:element name="page">
+        <x:complexType>
+            <x:annotation>
+                <x:documentation>Page what contains locators to use in tests</x:documentation>
+            </x:annotation>
+            <x:sequence>
+                <x:element name="details" type="tns:details"/>
+                <x:element name="include" type="tns:include" minOccurs="0" maxOccurs="unbounded"/>
+                <x:element name="locators" type="tns:locators"/>
+            </x:sequence>
+        </x:complexType>
+    </x:element>
+
+    <x:complexType name="details">
+        <x:sequence>
+            <x:element name="name" type="tns:nonEmptyString"/>
+            <x:element name="url" type="tns:nonEmptyString"/>
+            <x:element name="description" type="tns:stringMin10"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="include">
+        <x:attribute name="component" type="tns:nonEmptyString"/>
+    </x:complexType>
+</x:schema>

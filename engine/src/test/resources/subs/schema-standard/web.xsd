@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="ui-commands.xsd"/>
+    <x:include schemaLocation="settings.xsd"/>
+
+    <x:complexType name="web">
+        <x:complexContent>
+            <x:extension base="tns:ui">
+                <x:choice maxOccurs="unbounded" minOccurs="0">
+                    <x:element name="click" type="tns:click"/>
+                    <x:element name="input" type="tns:input"/>
+                    <x:element name="assert" type="tns:webAssert"/>
+                    <x:element name="dropDown" type="tns:dropDown"/>
+                    <x:element name="wait" type="tns:uiWait"/>
+                    <x:element name="clear" type="tns:clear"/>
+                    <x:element name="scroll" type="tns:scroll"/>
+                    <x:element name="scrollTo" type="tns:scrollTo"/>
+                    <x:element name="image" type="tns:image"/>
+                    <x:element name="javascript" type="tns:javascript"/>
+                    <x:element name="navigate" type="tns:navigate"/>
+                    <x:element name="hover" type="tns:hover"/>
+                    <x:element name="switchToFrame" type="tns:switchToFrame"/>
+                    <x:element name="dragAndDrop" type="tns:dragAndDrop"/>
+                    <x:element name="hotKey" type="tns:hotKey"/>
+                    <x:element name="tab" type="tns:browserTab"/>
+                    <x:element name="var" type="tns:webVar"/>
+                    <x:element name="condition" type="tns:uiCondition"/>
+                    <x:element name="repeat" type="tns:webRepeat"/>
+                </x:choice>
+                <x:attribute name="clearCookiesAfterExecution" type="x:boolean" default="false"/>
+                <x:attribute name="clearLocalStorageByKey" type="tns:nonEmptyString"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="webRepeat">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice maxOccurs="unbounded" minOccurs="0">
+                    <x:element name="click" type="tns:click"/>
+                    <x:element name="input" type="tns:input"/>
+                    <x:element name="assert" type="tns:webAssert"/>
+                    <x:element name="dropDown" type="tns:dropDown"/>
+                    <x:element name="wait" type="tns:uiWait"/>
+                    <x:element name="clear" type="tns:clear"/>
+                    <x:element name="scroll" type="tns:scroll"/>
+                    <x:element name="scrollTo" type="tns:scrollTo"/>
+                    <x:element name="image" type="tns:image"/>
+                    <x:element name="javascript" type="tns:javascript"/>
+                    <x:element name="navigate" type="tns:navigate"/>
+                    <x:element name="hover" type="tns:hover"/>
+                    <x:element name="switchToFrame" type="tns:switchToFrame"/>
+                    <x:element name="dragAndDrop" type="tns:dragAndDrop"/>
+                    <x:element name="hotKey" type="tns:hotKey"/>
+                    <x:element name="tab" type="tns:browserTab"/>
+                    <x:element name="var" type="tns:webVar"/>
+                    <x:element name="condition" type="tns:uiCondition"/>
+                    <x:element name="repeat" type="tns:webRepeat"/>
+                </x:choice>
+                <x:attribute name="times" type="tns:positiveIntegerMin1"/>
+                <x:attribute name="variations" type="tns:csv"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+</x:schema>

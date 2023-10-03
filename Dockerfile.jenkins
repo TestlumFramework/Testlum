@@ -1,8 +1,10 @@
 FROM maven:3.8.5-openjdk-11 as maven-build
 
+ARG PROFILE
+
 WORKDIR /testlum/
 COPY . .
-RUN mvn clean install -DskipTests -Pquality-checking
+RUN mvn clean install -DskipTests -P$PROFILE
 
 FROM openjdk:11
 

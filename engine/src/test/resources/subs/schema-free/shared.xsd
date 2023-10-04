@@ -28,7 +28,8 @@
     <x:complexType name="commandWithLocator" abstract="true">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
-                <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
+                <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
+                <x:attribute name="locatorId" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -36,15 +37,20 @@
     <x:complexType name="commandWithOptionalLocator" abstract="true">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
-                <x:attribute name="locatorId" type="tns:scenarioLocator"/>
+                <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
+                <x:attribute name="locatorId" type="tns:nonEmptyString"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
 
-    <x:simpleType name="scenarioLocator">
+    <x:simpleType name="locatorStrategy">
         <x:restriction base="x:string">
-            <x:pattern value="([a-z0-9]+[A-Z]?[a-z0-9]?)*\.([a-z0-9]+[A-Z]?[a-z0-9]?)*"/>
-            <x:pattern value="\{\{.+\}\}"/>
+            <x:enumeration value="locatorId"/>
+            <x:enumeration value="xpath"/>
+            <x:enumeration value="id"/>
+            <x:enumeration value="class"/>
+            <x:enumeration value="cssSelector"/>
+            <x:enumeration value="text"/>
         </x:restriction>
     </x:simpleType>
 

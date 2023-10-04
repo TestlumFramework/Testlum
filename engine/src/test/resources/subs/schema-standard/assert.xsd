@@ -72,7 +72,8 @@
                     <x:element name="content" type="tns:nonEmptyString"/>
                 </x:sequence>
                 <x:attribute name="name" type="tns:webAttributeNamePattern" use="required"/>
-                <x:attribute name="locatorId" type="tns:scenarioLocator" use="required"/>
+                <x:attribute name="locatorId" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

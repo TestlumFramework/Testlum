@@ -2,6 +2,9 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.Rectangle;
+import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -88,6 +91,10 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         String urlToImage = UiUtil.getElementAttribute(webElement, imageSourceAttribute, dependencies.getDriver());
         if (UiType.MOBILE_BROWSER == dependencies.getUiType()) {
             urlToImage = UiUtil.resolveHostIfNeeded(urlToImage);
+        }
+        if (urlToImage.startsWith(DelimiterConstant.SLASH_SEPARATOR)) {
+            String baseUrl = GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv()).getBaseUrl();
+            urlToImage = baseUrl + urlToImage;
         }
         log.info(URL_TO_IMAGE_LOG, urlToImage);
         result.put(URL_TO_ACTUAL_IMAGE, urlToImage);

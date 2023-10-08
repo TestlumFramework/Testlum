@@ -21,6 +21,8 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_SCENARIOS_FILTERED_BY_TAGS;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.STOP_IF_NON_PARSED_SCENARIO;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VALID_SCENARIOS_NOT_FOUND;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class ScenarioFilter {
 
@@ -50,16 +52,23 @@ public class ScenarioFilter {
         return filterBy(original, e -> e.scenario.getSettings().isOnlyThis());
     }
 
-    private Set<MappingResult> filterScenariosByTags(final Set<MappingResult> activeScenarios) {
+    private Set<MappingResult> filterScenariosByTags(final Set<MappingResult> scenarios) {
         RunScenariosByTag runScenariosByTag = GlobalTestConfigurationProvider.provide().getRunScenariosByTag();
         return runScenariosByTag.isEnabled()
-                ? filterByTags(activeScenarios, getEnabledTags(runScenariosByTag.getTag()))
-                : sortByName(activeScenarios);
+                ? filterByTags(sortByName(scenarios), getEnabledTags(runScenariosByTag.getTag()))
+                : sortByName(scenarios);
+    }
+
+    private Set<MappingResult> sortByName(final Set<MappingResult> scenarios) {
+        return scenarios.stream()
+                .sorted(Comparator.comparing(e -> e.file.getPath()))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private Set<MappingResult> filterByTags(final Set<MappingResult> original, final List<String> enabledTags) {
-        Set<MappingResult> filteredByTags = filterBy(sortByName(original), e -> isMatchesTags(e, enabledTags)).stream()
-                .sorted(Comparator.comparing(mappingResult -> mappingResult.scenario.getSettings().getTags()))
+        Set<MappingResult> filteredByTags = filterBy(original, e -> isMatchesTags(e, enabledTags))
+                .stream()
+                .sorted(Comparator.comparing(e -> e.scenario.getSettings().getTags()))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         if (filteredByTags.isEmpty()) {
             throw new DefaultFrameworkException(NO_SCENARIOS_FILTERED_BY_TAGS);
@@ -67,14 +76,9 @@ public class ScenarioFilter {
         return filteredByTags;
     }
 
-    private LinkedHashSet<MappingResult> sortByName(final Set<MappingResult> activeScenarios) {
-        return activeScenarios.stream()
-                .sorted(Comparator.comparing(mappingResult -> mappingResult.file.getPath()))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
     private boolean isMatchesTags(final MappingResult entry, final List<String> enabledTags) {
-        List<String> scenarioTags = Arrays.asList((entry.scenario.getSettings().getTags()).split(COMMA));
+        String tags = isNotBlank(tags = entry.scenario.getSettings().getTags()) ? tags : EMPTY;
+        List<String> scenarioTags = Arrays.asList(tags.split(COMMA));
         return scenarioTags.stream().anyMatch(enabledTags::contains);
     }
 
@@ -89,8 +93,8 @@ public class ScenarioFilter {
         return enabledTags;
     }
 
-    private LinkedHashSet<MappingResult> filterBy(final Set<MappingResult> scenarios,
-                                                  final Predicate<MappingResult> by) {
+    private Set<MappingResult> filterBy(final Set<MappingResult> scenarios,
+                                        final Predicate<MappingResult> by) {
         return scenarios.stream()
                 .filter(by)
                 .collect(Collectors.toCollection(LinkedHashSet::new));

@@ -95,14 +95,16 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     private String getDomResult(final WebVar webVar, final CommandResult result) {
+        String valueResult;
         String locatorId = webVar.getDom().getLocatorId();
         if (StringUtils.isNotBlank(locatorId)) {
-            String valueResult = UiUtil.findWebElement(dependencies, locatorId).getAttribute("outerHTML");
+            valueResult = UiUtil.findWebElement(dependencies, locatorId).getAttribute("outerHTML");
             ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), LOCATOR_FORM, locatorId, valueResult, result);
-            return valueResult;
+        } else {
+            valueResult = dependencies.getDriver().getPageSource();
+            ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), FULL_DOM, valueResult, result);
         }
-        String valueResult = dependencies.getDriver().getPageSource();
-        ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), FULL_DOM, valueResult, result);
+        dependencies.getScenarioContext().setBody(valueResult);
         return valueResult;
     }
 

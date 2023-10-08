@@ -88,7 +88,8 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private void addScenarioExecutionResult(final ExtentReports extentReports, final ScenarioResult scenarioResult) {
         ExtentTest extentTest = extentReports
                 .createTest(format(SCENARIO_NAME_TEMPLATE, scenarioResult.getId(), scenarioResult.getName()));
-        extentTest.assignCategory(scenarioResult.getTags().split(COMMA));
+        String tags = isNotBlank(tags = scenarioResult.getTags()) ? tags : StringUtils.EMPTY;
+        extentTest.assignCategory(tags.split(COMMA));
         addOverviewInfo(extentTest, scenarioResult.getOverview(), scenarioResult.getPath());
         addBrowserInfo(extentTest, scenarioResult);
         addMobilebrowserDeviceInfo(extentTest, scenarioResult);

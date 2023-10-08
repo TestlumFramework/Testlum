@@ -19,11 +19,11 @@ import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass
 
 public class TestRunner implements Runner {
 
-    private static final String PARALLEL = "junit.jupiter.execution.parallel.enabled";
-    private static final String STRATEGY = "junit.jupiter.execution.parallel.config.strategy";
-    private static final String CLASS = "junit.jupiter.execution.parallel.config.custom.class";
-    private static final String JUNIT_STRATEGY_CUSTOM = "custom";
-    private static final String JUNIT_PARALLEL_CONFIG =
+    private static final String JUNIT_EXECUTION_PARALLEL_ENABLED = "junit.jupiter.execution.parallel.enabled";
+    private static final String JUNIT_EXECUTION_CONFIG_STRATEGY = "junit.jupiter.execution.parallel.config.strategy";
+    private static final String JUNIT_EXECUTION_CONFIG_CLASS = "junit.jupiter.execution.parallel.config.custom.class";
+    private static final String JUNIT_EXECUTION_PARALLEL_STRATEGY = "custom";
+    private static final String JUNIT_EXECUTION_PARALLEL_STRATEGY_CLASS =
             "com.knubisoft.testlum.testing.framework.env.parallel.GlobalParallelExecutionConfigStrategy";
 
     @Override
@@ -42,9 +42,9 @@ public class TestRunner implements Runner {
         LauncherDiscoveryRequest tests = LauncherDiscoveryRequestBuilder
                 .request()
                 .selectors(selectClass(RootTest.class))
-                .configurationParameter(PARALLEL, provide().isParallelExecution().toString())
-                .configurationParameter(STRATEGY, JUNIT_STRATEGY_CUSTOM)
-                .configurationParameter(CLASS, JUNIT_PARALLEL_CONFIG)
+                .configurationParameter(JUNIT_EXECUTION_PARALLEL_ENABLED, provide().isParallelExecution().toString())
+                .configurationParameter(JUNIT_EXECUTION_CONFIG_STRATEGY, JUNIT_EXECUTION_PARALLEL_STRATEGY)
+                .configurationParameter(JUNIT_EXECUTION_CONFIG_CLASS, JUNIT_EXECUTION_PARALLEL_STRATEGY_CLASS)
                 .build();
         Launcher launcher = LauncherFactory.create();
         SummaryGeneratingListener listener = new SummaryGeneratingListener();

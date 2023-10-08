@@ -26,16 +26,15 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
     }
 
     @Override
-    protected void acceptImpl(final Repeat o, final CommandResult result) {
-        if (StringUtils.isNotBlank(o.getVariations())) {
-            List<AbstractCommand> commands = o.getCommands();
-            List<AbstractCommand> injectedCommand = GlobalVariations.getVariations(o.getVariations()).stream()
+    protected void acceptImpl(final Repeat repeat, final CommandResult result) {
+        if (StringUtils.isNotBlank(repeat.getVariations())) {
+            List<AbstractCommand> commands = repeat.getCommands();
+            List<AbstractCommand> injectedCommand = GlobalVariations.getVariations(repeat.getVariations()).stream()
                     .flatMap(variation -> commands.stream().map(command ->
                             InjectionUtil.injectObjectVariation(command, variation)))
                     .collect(Collectors.toList());
             this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result);
         } else {
-            Repeat repeat = injectCommand(o);
             for (int i = 0; i < repeat.getTimes(); i++) {
                 this.repeatCommandsRunner.runCommands(repeat.getCommands(), dependencies, result);
             }

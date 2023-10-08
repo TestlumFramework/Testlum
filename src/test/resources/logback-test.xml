@@ -1,11 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property
-            name="CONSOLE_LOG_PATTERN"
-            value="%clr(%d{HH:mm:ss.SSS}){faint} %clr(%5p) %clr(|){faint} %m%n%wEx"/>
+    <property name="defaultCharset" value="utf-8"/>
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%clr(%d{HH:mm:ss.SSS}){faint} %clr(%5p) %clr(|){faint} %m%n%wEx"/>
 
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
-    <include resource="org/springframework/boot/logging/logback/base.xml" />
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
     <logger name="org.springframework" level="OFF"/>
     <logger name="org.apache" level="OFF"/>
     <logger name="kafka" level="OFF"/>

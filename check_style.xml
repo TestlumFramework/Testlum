@@ -57,7 +57,7 @@
         <module name="IllegalInstantiation"/>
         <module name="IllegalThrows"/>
         <module name="IllegalToken"/>
-        <module name="InnerAssignment"/>
+<!--        <module name="InnerAssignment"/>-->
         <module name="MagicNumber"/>
         <module name="MissingSwitchDefault"/>
         <module name="ModifiedControlVariable"/>

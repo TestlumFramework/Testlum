@@ -11,7 +11,7 @@ function main {
             generate "$@"  # Pass the remaining arguments to the generate function
             ;;
         *)
-          wrongArgument "$SUBCOMMAND"
+          invalidArgument "$SUBCOMMAND"
     esac
 }
 
@@ -24,7 +24,7 @@ function generate {
             getGenerateVal "$@"
             ;;
         *)
-          wrongArgument "$arg"
+          invalidArgument "$arg"
     esac
 }
 
@@ -36,7 +36,7 @@ function getGenerateVal() {
             mvn -P "$arg" -pl ./engine/ --also-make clean package -DskipGenerateModels=false -DskipTests=true
             ;;
         *)
-          wrongArgument "$arg"
+          invalidArgument "$arg"
     esac
 }
 

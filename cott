@@ -1,26 +1,48 @@
 #!/usr/bin/env bash
 
-
 function main {
     local SUBCOMMAND="$1"
 
     case $SUBCOMMAND in
-    generate) generate "${@:2}" ;;
+        generate)
+            shift  # Remove SUBCOMMAND (generate) argument
+            generate "$@"  # Pass the remaining arguments to the generate function
+            ;;
+        *)
+            echo "Usage: sh $0 generate models free/standard/professional"
+            exit 1
+            ;;
     esac
 }
 
 function generate {
-    for var in "$@"
-      do
-        getGenerateVal "$var"
-    done
+    local var="$1"
 
+    case $var in
+        models)
+            shift  # Remove "models" argument
+            getGenerateVal "$@"
+            ;;
+        *)
+            echo "Invalid argument: $var"
+            echo "Usage: sh $0 generate models free/standard/professional"
+            exit 1
+            ;;
+    esac
 }
 
 function getGenerateVal() {
     local arg="$1"
+
     case $arg in
-          models) mvn -pl ./ --also-make clean package -DskipGenerateModels=false -DskipTests=true ;;
+        free|standard|professional)
+            mvn -P "$arg" -pl ./engine/ --also-make clean package -DskipGenerateModels=false -DskipTests=true
+            ;;
+        *)
+            echo "Invalid option: $arg"
+            echo "Usage: sh $0 generate models free/standard/professional"
+            exit 1
+            ;;
     esac
 }
 

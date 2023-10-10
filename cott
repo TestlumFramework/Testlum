@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+usage_message="Usage: sh $0 generate models free/standard/professional"
+
 function main {
     local SUBCOMMAND="$1"
 
@@ -9,25 +11,20 @@ function main {
             generate "$@"  # Pass the remaining arguments to the generate function
             ;;
         *)
-            echo "Usage: sh $0 generate models free/standard/professional"
-            exit 1
-            ;;
+          wrongArgument "$SUBCOMMAND"
     esac
 }
 
 function generate {
-    local var="$1"
+    local arg="$1"
 
-    case $var in
+    case $arg in
         models)
             shift  # Remove "models" argument
             getGenerateVal "$@"
             ;;
         *)
-            echo "Invalid argument: $var"
-            echo "Usage: sh $0 generate models free/standard/professional"
-            exit 1
-            ;;
+          wrongArgument "$arg"
     esac
 }
 
@@ -39,11 +36,14 @@ function getGenerateVal() {
             mvn -P "$arg" -pl ./engine/ --also-make clean package -DskipGenerateModels=false -DskipTests=true
             ;;
         *)
-            echo "Invalid option: $arg"
-            echo "Usage: sh $0 generate models free/standard/professional"
-            exit 1
-            ;;
+          wrongArgument "$arg"
     esac
+}
+
+function invalidArgument {
+  echo "Invalid argument: $1"
+  echo $usage_message
+  exit 1
 }
 
 main "$@"

@@ -21,6 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <start-class>com.knubisoft.testlum.starter.TESTLUMStarter</start-class>
+        <models.dir>../modules/models/src/main/java</models.dir>
         <free-subs-pack>${project.basedir}/src/test/resources/subs/schema-free</free-subs-pack>
         <standard-subs-pack>${project.basedir}/src/test/resources/subs/schema-standard</standard-subs-pack>
         <professional-subs-pack>${project.basedir}/src/test/resources/subs/schema-professional</professional-subs-pack>
@@ -1290,69 +1291,6 @@
                         </executions>
                     </plugin>
 
-<!--                    <plugin>-->
-<!--                        <groupId>org.apache.maven.plugins</groupId>-->
-<!--                        <artifactId>maven-checkstyle-plugin</artifactId>-->
-<!--                        <version>${checkstyle.maven.plugin.version}</version>-->
-<!--                        <dependencies>-->
-<!--                            <dependency>-->
-<!--                                <groupId>com.puppycrawl.tools</groupId>-->
-<!--                                <artifactId>checkstyle</artifactId>-->
-<!--                                <version>${com.puppycrawl.tools.checkstyle.version}</version>-->
-<!--                            </dependency>-->
-<!--                        </dependencies>-->
-<!--                        <configuration>-->
-<!--                            <encoding>UTF-8</encoding>-->
-<!--                            <configLocation>../check_style.xml</configLocation>-->
-<!--                            <consoleOutput>true</consoleOutput>-->
-<!--                            <logViolationsToConsole>true</logViolationsToConsole>-->
-<!--                            <failsOnError>true</failsOnError>-->
-<!--                            <linkXRef>false</linkXRef>-->
-<!--                            <excludes>**/com/knubisoft/testlum/testing/model/**/*</excludes>-->
-<!--                            <includeTestSourceDirectory>true</includeTestSourceDirectory>-->
-<!--                        </configuration>-->
-<!--                        <executions>-->
-<!--                            <execution>-->
-<!--                                <id>check-style</id>-->
-<!--                                <phase>validate</phase>-->
-<!--                                <goals>-->
-<!--                                    <goal>check</goal>-->
-<!--                                </goals>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
-<!--                    </plugin>-->
-
-<!--                    <plugin>-->
-<!--                        <groupId>com.github.spotbugs</groupId>-->
-<!--                        <artifactId>spotbugs-maven-plugin</artifactId>-->
-<!--                        <version>${spotbugs.maven.plugin.version}</version>-->
-<!--                        <configuration>-->
-<!--                            <effort>Max</effort>-->
-<!--                            <threshold>Low</threshold>-->
-<!--                            <xmlOutput>true</xmlOutput>-->
-<!--                            <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>-->
-<!--                            <spotbugsXmlOutputDirectory>target/spotbugs-->
-<!--                            </spotbugsXmlOutputDirectory>-->
-<!--                            <classFilesDirectory>../target/test-classes</classFilesDirectory>-->
-<!--                        </configuration>-->
-<!--                        <dependencies>-->
-<!--                            <dependency>-->
-<!--                                <groupId>com.github.spotbugs</groupId>-->
-<!--                                <artifactId>spotbugs</artifactId>-->
-<!--                                <version>${spotbugs.version}</version>-->
-<!--                            </dependency>-->
-<!--                        </dependencies>-->
-<!--                        <executions>-->
-<!--                            <execution>-->
-<!--                                <id>analyze-code</id>-->
-<!--                                <phase>verify</phase>-->
-<!--                                <goals>-->
-<!--                                    <goal>check</goal>-->
-<!--                                </goals>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
-<!--                    </plugin>-->
-
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-pmd-plugin</artifactId>
@@ -1362,10 +1300,6 @@
                             <sourceEncoding>utf-8</sourceEncoding>
                             <minimumTokens>50</minimumTokens>
                             <targetJdk>${java.version}</targetJdk>
-                            <excludes>
-                                <exclude>**/com/knubisoft/testlum/testing/model/**/*.java
-                                </exclude>
-                            </excludes>
                         </configuration>
                         <executions>
                             <execution>
@@ -1447,12 +1381,12 @@
                         <configuration>
                             <skipXjc>${skipGenerateModels}</skipXjc>
                             <skipTestXjc>${skipGenerateModels}</skipTestXjc>
-                            <outputDirectory>src/test/java</outputDirectory>
-                            <clearOutputDir>false</clearOutputDir>
+                            <outputDirectory>${models.dir}</outputDirectory>
+                            <clearOutputDir>true</clearOutputDir>
                             <sources>
-                                <source>${project.basedir}/src/test/resources/schema/scenario.xsd</source>
-                                <source>${project.basedir}/src/test/resources/schema/global-config.xsd</source>
-                                <source>${project.basedir}/src/test/resources/schema/pages.xsd</source>
+                                <source>${professional-subs-pack}/scenario.xsd</source>
+                                <source>${professional-subs-pack}/global-config.xsd</source>
+                                <source>${professional-subs-pack}/pages.xsd</source>
                             </sources>
                             <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
                         </configuration>
@@ -1541,12 +1475,12 @@
                         <configuration>
                             <skipXjc>${skipGenerateModels}</skipXjc>
                             <skipTestXjc>${skipGenerateModels}</skipTestXjc>
-                            <outputDirectory>src/test/java</outputDirectory>
-                            <clearOutputDir>false</clearOutputDir>
+                            <outputDirectory>${models.dir}</outputDirectory>
+                            <clearOutputDir>true</clearOutputDir>
                             <sources>
-                                <source>${project.basedir}/src/test/resources/schema/scenario.xsd</source>
-                                <source>${project.basedir}/src/test/resources/schema/global-config.xsd</source>
-                                <source>${project.basedir}/src/test/resources/schema/pages.xsd</source>
+                                <source>${professional-subs-pack}/scenario.xsd</source>
+                                <source>${professional-subs-pack}/global-config.xsd</source>
+                                <source>${professional-subs-pack}/pages.xsd</source>
                             </sources>
                             <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
                         </configuration>
@@ -1752,12 +1686,12 @@
                         <configuration>
                             <skipXjc>${skipGenerateModels}</skipXjc>
                             <skipTestXjc>${skipGenerateModels}</skipTestXjc>
-                            <outputDirectory>src/test/java</outputDirectory>
-                            <clearOutputDir>false</clearOutputDir>
+                            <outputDirectory>${models.dir}</outputDirectory>
+                            <clearOutputDir>true</clearOutputDir>
                             <sources>
-                                <source>${project.basedir}/src/test/resources/schema/scenario.xsd</source>
-                                <source>${project.basedir}/src/test/resources/schema/global-config.xsd</source>
-                                <source>${project.basedir}/src/test/resources/schema/pages.xsd</source>
+                                <source>${professional-subs-pack}/scenario.xsd</source>
+                                <source>${professional-subs-pack}/global-config.xsd</source>
+                                <source>${professional-subs-pack}/pages.xsd</source>
                             </sources>
                             <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
                         </configuration>

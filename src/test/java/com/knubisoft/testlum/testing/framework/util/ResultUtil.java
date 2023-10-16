@@ -143,6 +143,7 @@ public class ResultUtil {
     private static final String SCROLL_MEASURE = "Scroll measure";
     private static final String SCROLL_TYPE = "Scroll type";
     private static final String LOCATOR_FOR_SCROLL = "Locator for scroll";
+    private static final String LOCATOR_STRATEGY = "Locator strategy";
     private static final String DESTINATION = "Destination";
     private static final String SUBJECT = "Subject";
     private static final String HTML = "HTML";
@@ -575,6 +576,7 @@ public class ResultUtil {
         result.put(SCROLL_TYPE, scroll.getType());
         if (ScrollType.INNER == scroll.getType()) {
             result.put(LOCATOR_FOR_SCROLL, scroll.getLocatorId());
+            result.put(LOCATOR_STRATEGY, scroll.getLocatorStrategy());
         }
     }
 

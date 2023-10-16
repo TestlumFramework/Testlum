@@ -66,6 +66,11 @@ public class UiUtil {
     public WebElement findWebElement(final ExecutorDependencies dependencies,
                                      final String locatorId,
                                      final LocatorStrategy locatorStrategy) {
+        Locator locator = getLocatorByStrategy(locatorId, locatorStrategy);
+        return WebElementFinder.find(locator, dependencies.getDriver());
+    }
+
+    public Locator getLocatorByStrategy(final String locatorId, final LocatorStrategy locatorStrategy) {
         Locator locator = new Locator();
         locator.setLocatorId(locatorId);
         switch (locatorStrategy) {
@@ -91,7 +96,7 @@ public class UiUtil {
                 locator.setCssSelector(locatorId);
                 break;
         }
-        return WebElementFinder.find(locator, dependencies.getDriver());
+        return locator;
     }
     //CHECKSTYLE:ON
 

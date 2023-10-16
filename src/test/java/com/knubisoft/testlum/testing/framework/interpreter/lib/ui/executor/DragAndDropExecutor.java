@@ -11,7 +11,6 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
@@ -25,7 +24,6 @@ import java.io.File;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DRAG_AND_DROP_FILE_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.JavascriptConstant.QUERY_FOR_DRAG_AND_DROP;
 
-@Slf4j
 @ExecutorForClass(DragAndDrop.class)
 public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
 

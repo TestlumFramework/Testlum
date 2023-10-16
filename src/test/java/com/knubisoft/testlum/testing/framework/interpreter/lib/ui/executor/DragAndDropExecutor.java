@@ -16,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.LocalFileDetector;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.File;
 
@@ -61,8 +63,11 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
             throw new DefaultFrameworkException(DRAG_AND_DROP_FILE_NOT_FOUND, source.getName());
         }
         WebElement input = (WebElement) JavascriptUtil.executeJsScript(QUERY_FOR_DRAG_AND_DROP, driver, target);
-        log.info("Before sendKeys");
-        input.sendKeys(source.getAbsolutePath());
-        log.info("After sendKeys");
+        try {
+            input.sendKeys(source.getAbsolutePath());
+        } catch (Exception e) {
+            ((RemoteWebDriver)driver).setFileDetector(new LocalFileDetector());
+            input.sendKeys(source.getAbsolutePath());
+        }
     }
 }

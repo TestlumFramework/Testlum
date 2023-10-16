@@ -64,8 +64,10 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         }
         WebElement input = (WebElement) JavascriptUtil.executeJsScript(QUERY_FOR_DRAG_AND_DROP, driver, target);
         try {
+            log.info("Try block");
             input.sendKeys(source.getAbsolutePath());
         } catch (Exception e) {
+            log.info("Catch block block");
             ((RemoteWebDriver) driver).setFileDetector(new LocalFileDetector());
             input.sendKeys(source.getAbsolutePath());
         }

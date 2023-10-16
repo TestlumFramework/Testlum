@@ -13,6 +13,7 @@ import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -35,7 +36,6 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         driver = dependencies.getDriver();
     }
 
-    //CHECKSTYLE:OFF
     public void execute(final DragAndDrop dragAndDrop, final CommandResult result) {
         LogUtil.logDragAndDropInfo(dragAndDrop);
         ResultUtil.addDragAndDropMetaDada(dragAndDrop, result);
@@ -49,10 +49,8 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
             dropElement(target, UiUtil.findWebElement(dependencies, dragAndDrop.getFromLocatorId(),
                     dragAndDrop.getToLocatorStrategy()));
         }
-        log.info("after drag n drop block");
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
-    //CHECKSTYLE:ON
 
     private void dropElement(final WebElement target, final WebElement source) {
         Actions action = new Actions(driver);
@@ -67,10 +65,8 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         }
         WebElement input = (WebElement) JavascriptUtil.executeJsScript(QUERY_FOR_DRAG_AND_DROP, driver, target);
         try {
-            log.info("Try block");
             input.sendKeys(source.getAbsolutePath());
-        } catch (Exception e) {
-            log.info("Catch block block");
+        } catch (InvalidArgumentException e) {
             ((RemoteWebElement) input).setFileDetector(new LocalFileDetector());
             input.sendKeys(source.getAbsolutePath());
         }

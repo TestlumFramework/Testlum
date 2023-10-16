@@ -35,6 +35,7 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         driver = dependencies.getDriver();
     }
 
+    //CHECKSTYLE:OFF
     public void execute(final DragAndDrop dragAndDrop, final CommandResult result) {
         LogUtil.logDragAndDropInfo(dragAndDrop);
         ResultUtil.addDragAndDropMetaDada(dragAndDrop, result);
@@ -51,6 +52,7 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         log.info("after drag n drop block");
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
+    //CHECKSTYLE:ON
 
     private void dropElement(final WebElement target, final WebElement source) {
         Actions action = new Actions(driver);

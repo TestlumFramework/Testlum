@@ -66,7 +66,7 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         try {
             input.sendKeys(source.getAbsolutePath());
         } catch (Exception e) {
-            ((RemoteWebDriver)driver).setFileDetector(new LocalFileDetector());
+            ((RemoteWebDriver) driver).setFileDetector(new LocalFileDetector());
             input.sendKeys(source.getAbsolutePath());
         }
     }

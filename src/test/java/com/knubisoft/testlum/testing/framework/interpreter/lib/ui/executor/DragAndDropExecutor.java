@@ -17,7 +17,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.LocalFileDetector;
-import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.File;
 
@@ -48,6 +48,7 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
             dropElement(target, UiUtil.findWebElement(dependencies, dragAndDrop.getFromLocatorId(),
                     dragAndDrop.getToLocatorStrategy()));
         }
+        log.info("after drag n drop block");
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
@@ -68,7 +69,7 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
             input.sendKeys(source.getAbsolutePath());
         } catch (Exception e) {
             log.info("Catch block block");
-            ((RemoteWebDriver) driver).setFileDetector(new LocalFileDetector());
+            ((RemoteWebElement) input).setFileDetector(new LocalFileDetector());
             input.sendKeys(source.getAbsolutePath());
         }
     }

@@ -115,14 +115,6 @@ public class ResultUtil {
     private static final String SCROLL_TYPE = "Scroll type";
     private static final String LOCATOR_FOR_SCROLL = "Locator for scroll";
     private static final String LOCATOR_STRATEGY = "Locator strategy";
-    private static final String DESTINATION = "Destination";
-    private static final String SUBJECT = "Subject";
-    private static final String HTML = "HTML";
-    private static final String TEXT = "Text";
-    private static final String SOURCE = "Source";
-    private static final String QUERIES = "Queries";
-    private static final String ENABLE = "Enable";
-    private static final String DISABLE = "Disable";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
     private static final String ADDITIONAL_HEADERS = "Additional headers";

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.knubisoft</groupId>
+        <artifactId>testlum</artifactId>
+        <version>1.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>modules</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>models</module>
+
+        <module>util/shared-util</module>
+        <module>util/repeat-util</module>
+        <module>util/ui-util</module>
+        <module>util/websocket-util</module>
+        <module>util/storage-util</module>
+        <module>util/db-util</module>
+        <module>util/api-util</module>
+        <module>util/auth-util</module>
+        <module>util/wait-util</module>
+        <module>util/variable-util</module>
+        <module>util</module>
+
+        <module>conditional</module>
+        <module>variable</module>
+        <module>websocket</module>
+        <module>twilio</module>
+        <module>sqs</module>
+        <module>smtp</module>
+        <module>ses</module>
+        <module>sendgrid</module>
+        <module>s3</module>
+        <module>repeat</module>
+        <module>redis</module>
+        <module>rabbit</module>
+        <module>postgres</module>
+        <module>oracle</module>
+        <module>mysql</module>
+        <module>mongo</module>
+        <module>migrate</module>
+        <module>lambda</module>
+        <module>kafka</module>
+        <module>http</module>
+        <module>graphql</module>
+        <module>elasticsearch</module>
+        <module>dynamo</module>
+        <module>clickhouse</module>
+        <module>assert</module>
+        <module>auth</module>
+        <module>shell</module>
+        <module>wait</module>
+
+        <module>ui</module>
+    </modules>
+
+    <properties>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <java.version>11</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <org.spring.version>5.3.4</org.spring.version>
+        <org.spring.boot.version>2.4.3</org.spring.boot.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
+                <version>${org.spring.boot.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

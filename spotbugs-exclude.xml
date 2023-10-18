@@ -30,11 +30,6 @@
     </Match>
 
     <Match>
-        <Class name="com.knubisoft.testlum.testing.framework.interpreter.SmtpInterpreter"/>
-        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
-    </Match>
-
-    <Match>
         <Class name="com.knubisoft.testlum.testing.framework.configuration.websocket.WebsocketStompMessageHandler"/>
         <Bug pattern="DM_DEFAULT_ENCODING"/>
     </Match>
@@ -76,6 +71,16 @@
 
     <Match>
         <Class name="com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor.WebVariableExecutor"/>
+        <Bug pattern="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor.NativeVariableExecutor"/>
+        <Bug pattern="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR"/>
+    </Match>
+
+    <Match>
+        <Class name="com.knubisoft.testlum.testing.framework.util.VariableHelperImpl"/>
         <Bug pattern="MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR"/>
     </Match>
 

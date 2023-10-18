@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:simpleType name="aliasPattern">
+        <x:restriction base="x:string">
+            <x:pattern value="[a-zA-Z_\-/\d]+"/>
+<!--            <x:pattern value="\{\{.+\}\}"/>-->
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="nonEmptyString">
+        <x:restriction base="x:string">
+            <x:minLength value="1"/>
+            <x:pattern value="(\s*[\S*]\s*)*"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="stringMin10">
+        <x:restriction base="x:string">
+            <x:minLength value="10"/>
+            <x:pattern value="(\s*[\S*]\s*)*"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="stringMin30">
+        <x:restriction base="x:string">
+            <x:minLength value="30"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="positiveIntegerMin1">
+        <x:restriction base="x:int">
+            <x:minInclusive value="1"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="jsFileExtension">
+        <x:restriction base="x:string">
+            <x:pattern value=".+(\.js)"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="jsonFileExtension">
+        <x:restriction base="x:string">
+            <x:pattern value=".+(\.json)"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="imageExtension">
+        <x:restriction base="x:string">
+            <x:pattern value=".+(\.(jpg|jpeg|png|JPG|JPEG|PNG|))"/>
+        </x:restriction>
+    </x:simpleType>
+
+</x:schema>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/pages"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/pages"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+          jaxb:version="2.1">
+
+    <x:include schemaLocation="locators.xsd"/>
+
+    <x:element name="component">
+        <x:complexType>
+            <x:annotation>
+                <x:documentation>Component what contains locators to use in tests and can be included to pages</x:documentation>
+            </x:annotation>
+            <x:sequence>
+                <x:element name="locators" type="tns:locators"/>
+            </x:sequence>
+        </x:complexType>
+    </x:element>
+
+</x:schema>

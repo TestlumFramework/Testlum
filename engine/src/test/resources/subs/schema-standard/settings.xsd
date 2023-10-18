@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="settings">
+        <x:sequence>
+            <x:element name="variations" type="tns:csv" minOccurs="0"/>
+            <x:element name="tags" type="tns:nonEmptyString" minOccurs="0"/>
+        </x:sequence>
+        <x:attribute name="active" type="x:boolean" default="true"/>
+        <x:attribute name="onlyThis" type="x:boolean" default="false"/>
+        <x:attribute name="truncateStorages" type="x:boolean" default="false"/>
+    </x:complexType>
+
+    <x:simpleType name="csv">
+        <x:restriction base="x:string">
+            <x:pattern value="[a-zA-Z\d_]+\.csv"/>
+        </x:restriction>
+    </x:simpleType>
+</x:schema>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="var">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:group ref="tns:generalVarType"/>
+                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="webVar">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice>
+                    <x:group ref="tns:generalVarType"/>
+                    <x:element name="cookie" type="tns:fromCookie"/>
+                    <x:element name="dom" type="tns:fromDom"/>
+                    <x:element name="url" type="tns:fromUrl"/>
+                    <x:element name="element" type="tns:fromElement"/>
+                </x:choice>
+                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="nativeVar">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice>
+                    <x:group ref="tns:generalVarType"/>
+                    <x:element name="element" type="tns:fromElement"/>
+                </x:choice>
+                <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:group name="generalVarType">
+        <x:choice>
+            <x:element name="file" type="tns:fromFile"/>
+            <x:element name="path" type="tns:fromPath"/>
+            <x:element name="constant" type="tns:fromConstant"/>
+            <x:element name="expression" type="tns:fromExpression"/>
+            <x:element name="sql" type="tns:fromSQL"/>
+            <x:element name="generate" type="tns:fromRandomGenerate"/>
+        </x:choice>
+    </x:group>
+
+    <x:complexType name="fromFile">
+        <x:attribute name="fileName" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="fromPath">
+        <x:attribute name="value" type="tns:xjpathPattern" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="xjpathPattern">
+        <x:restriction base="x:string">
+            <x:pattern value="/.*|\$.+"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="fromConstant">
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="fromExpression">
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="fromSQL">
+        <x:sequence>
+            <x:element name="query" type="tns:variableQuery"/>
+        </x:sequence>
+        <x:attribute name="dbType" type="tns:relationalDB" use="required"/>
+        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="variableQuery">
+        <x:restriction base="x:string">
+            <x:pattern value="(\s|\n)*SELECT([^\*,]|\n)+FROM(.|\n)+WHERE(.|\n)+"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="relationalDB">
+        <x:restriction base="x:string">
+            <x:enumeration value="POSTGRES"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="fromRandomGenerate">
+        <x:choice>
+            <x:element name="numeric" type="tns:randomNumeric"/>
+            <x:element name="alphabetic" type="tns:randomAlphabetic"/>
+            <x:element name="alphanumeric" type="tns:randomAlphanumeric"/>
+            <x:element name="randomRegexp" type="tns:randomRegexp"/>
+        </x:choice>
+        <x:attribute name="length" type="tns:generateStringLengthPattern" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="randomNumeric"/>
+
+    <x:complexType name="randomAlphabetic"/>
+
+    <x:complexType name="randomAlphanumeric"/>
+
+    <x:complexType name="randomRegexp">
+        <x:attribute name="pattern" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="generateStringLengthPattern">
+        <x:restriction base="x:int">
+            <x:minExclusive value="1"/>
+            <x:maxExclusive value="100000001"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="fromCookie"/>
+
+    <x:complexType name="fromDom">
+        <x:attribute name="locatorId" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
+    </x:complexType>
+
+    <x:complexType name="fromUrl"/>
+
+    <x:complexType name="fromElement">
+        <x:choice>
+            <x:element name="present" type="tns:elementPresent"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="elementPresent">
+        <x:attribute name="locatorId" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
+    </x:complexType>
+
+</x:schema>

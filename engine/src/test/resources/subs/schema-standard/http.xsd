@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="http">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice>
+                    <x:element name="get" type="tns:get"/>
+                    <x:element name="post" type="tns:post"/>
+                    <x:element name="put" type="tns:put"/>
+                    <x:element name="patch" type="tns:patch"/>
+                    <x:element name="delete" type="tns:delete"/>
+                    <x:element name="options" type="tns:options"/>
+                    <x:element name="head" type="tns:head"/>
+                    <x:element name="trace" type="tns:trace"/>
+                </x:choice>
+                <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="httpInfo" abstract="true">
+        <x:sequence>
+            <x:element name="response" type="tns:response"/>
+            <x:element name="header" type="tns:header" minOccurs="0" maxOccurs="unbounded"/>
+        </x:sequence>
+        <x:attribute name="endpoint" type="tns:endpointPattern" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="httpInfoWithBody" abstract="true">
+        <x:complexContent>
+            <x:extension base="tns:httpInfo">
+                <x:sequence>
+                    <x:element name="body" type="tns:body" minOccurs="0"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="get">
+        <x:complexContent>
+            <x:extension base="tns:httpInfo"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="post">
+        <x:complexContent>
+            <x:extension base="tns:httpInfoWithBody"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="put">
+        <x:complexContent>
+            <x:extension base="tns:httpInfoWithBody"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="patch">
+        <x:complexContent>
+            <x:extension base="tns:httpInfoWithBody"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="trace">
+        <x:complexContent>
+            <x:extension base="tns:httpInfoWithBody"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="delete">
+        <x:complexContent>
+            <x:extension base="tns:httpInfo"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="head">
+        <x:complexContent>
+            <x:extension base="tns:httpInfo"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="options">
+        <x:complexContent>
+            <x:extension base="tns:httpInfo"/>
+        </x:complexContent>
+    </x:complexType>
+</x:schema>

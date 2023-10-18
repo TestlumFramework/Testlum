@@ -100,14 +100,14 @@ pipeline {
     stage('build testlum') {
         steps {
             dir("tool") {
-                sh "docker build -f Dockerfile.jenkins -t ${SERVICE}:${TAG} ."
+                sh """docker build -f Dockerfile.jenkins -t ${SERVICE}:professional --build-arg="PROFILE=professional" ."""
             }
         }
     }
     stage('run regression tests') {
         steps {
             dir("tool") {
-                sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -e TZ=Europe/Kiev -v "$(pwd)"/testlum-test-resources:/testlum-test-resources ${SERVICE}:${TAG} -c=config-jenkins.xml -p=/testlum-test-resources/REGRESSION_TESTS_resources'
+                sh 'docker run -u $(id -u):$(id -g) --rm --network=e2e_network -e TZ=Europe/Kiev -v "$(pwd)"/testlum-test-resources:/testlum-test-resources ${SERVICE}:professional -c=config-jenkins.xml -p=/testlum-test-resources/REGRESSION_TESTS_resources'
                 sh "cat testlum-test-resources/REGRESSION_TESTS_resources/scenarios_execution_result.txt | awk '/successfully/{ exit 0 }/failed/{ exit 1 }'"
                 // sh "java -jar ./target/e2e-testing-tool.jar -c=config-jenkins.xml -p=./testlum-test-resources/JENKINS_resources"
             }
@@ -123,7 +123,7 @@ pipeline {
         }
         script {
             sh "docker rm -f -v \$(docker ps -q) || true"
-            sh "docker rmi ${SERVICE}:${TAG} || true"
+            sh "docker rmi ${SERVICE}:professional || true"
             sh "docker rmi -f ${TEST_API} || true"
             sh "docker rmi -f ${TEST_SITE} || true"
             sh 'docker rmi -f $(docker images -f "dangling=true" -q) || true'

@@ -75,6 +75,11 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INVALID_SCENARIO_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCAL_STORAGE_KEY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCATOR_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCATOR_STRATEGY;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MAX_NUMBER_OF_MESSAGES_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MESSAGE_DEDUPLICATION_ID_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MESSAGE_GROUP_ID_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MESSAGE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILEBROWSER_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOVE_TO_EMPTY_SPACE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NAME_LOG;
@@ -90,9 +95,9 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_FRAME;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_WEBVIEW;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_DIRECTION;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SUBJECT_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_QUANTITY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_TYPE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_VALUE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_COMMAND;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_INDEX;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_URL;
@@ -103,6 +108,10 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COM
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VALUE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VARIATION_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VISIBILITY_TIMEOUT_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WAIT_TIME_SECONDS_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_DIRECTION;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_VALUE;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.LAST_TAB;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.OPEN_TAB;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.WITHOUT_URL;
@@ -393,6 +402,7 @@ public class LogUtil {
         log.info(SCROLL_TYPE, scroll.getType());
         if (ScrollType.INNER == scroll.getType()) {
             log.info(SCROLL_LOCATOR, scroll.getLocatorId());
+            log.info(LOCATOR_STRATEGY, scroll.getLocatorStrategy());
         }
     }
 

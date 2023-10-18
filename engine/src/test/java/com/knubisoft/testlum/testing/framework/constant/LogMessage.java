@@ -139,6 +139,7 @@ public final class LogMessage {
     public static final String JS_FILE_LOG = format(TABLE_FORMAT, "JS file", "{}");
     public static final String SCROLL_DIRECTION_LOG = format(TABLE_FORMAT, "Direction", "{}");
     public static final String SCROLL_BY_LOG = format(TABLE_FORMAT, "Scroll by", "{}");
+    public static final String LOCATOR_STRATEGY = format(TABLE_FORMAT, "Locator strategy", "{}");
     public static final String TIMES_LOG = format(TABLE_FORMAT, "Times to repeat", "{}");
     public static final String LOCAL_STORAGE_KEY = format(TABLE_FORMAT, "Local storage key", "{}");
     public static final String CLEAR_COOKIES_AFTER = format(TABLE_FORMAT, "Clear cookies after", "{}");

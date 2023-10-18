@@ -13,9 +13,12 @@ import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.InvalidArgumentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.LocalFileDetector;
+import org.openqa.selenium.remote.RemoteWebElement;
 
 import java.io.File;
 
@@ -32,7 +35,6 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         driver = dependencies.getDriver();
     }
 
-    @Override
     public void execute(final DragAndDrop dragAndDrop, final CommandResult result) {
         LogUtil.logDragAndDropInfo(dragAndDrop);
         ResultUtil.addDragAndDropMetaDada(dragAndDrop, result);
@@ -61,6 +63,11 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
             throw new DefaultFrameworkException(DRAG_AND_DROP_FILE_NOT_FOUND, source.getName());
         }
         WebElement input = (WebElement) JavascriptUtil.executeJsScript(QUERY_FOR_DRAG_AND_DROP, driver, target);
-        input.sendKeys(source.getAbsolutePath());
+        try {
+            input.sendKeys(source.getAbsolutePath());
+        } catch (InvalidArgumentException e) {
+            ((RemoteWebElement) input).setFileDetector(new LocalFileDetector());
+            input.sendKeys(source.getAbsolutePath());
+        }
     }
 }

@@ -6,7 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.InnerScrollScript;
+//import com.knubisoft.testlum.testing.framework.util.InnerScrollScript;
 import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.PageScrollScript;
@@ -33,9 +33,9 @@ public class ScrollWebExecutor extends AbstractUiExecutor<Scroll> {
 
     private void executeScrollScript(final Scroll scroll, final WebDriver webDriver) {
         switch (scroll.getType()) {
-            case INNER:
-                JavascriptUtil.executeJsScript(InnerScrollScript.getInnerScrollScript(scroll), webDriver);
-                break;
+//            case INNER:
+//                JavascriptUtil.executeJsScript(InnerScrollScript.getInnerScrollScript(scroll), webDriver);
+//                break;
             case PAGE:
                 JavascriptUtil.executeJsScript(PageScrollScript.getPageScrollScript(scroll), webDriver);
                 break;

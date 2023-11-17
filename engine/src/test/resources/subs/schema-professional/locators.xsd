@@ -18,12 +18,12 @@
         <x:annotation>
             <x:documentation>HTML DOM element</x:documentation>
         </x:annotation>
-        <x:choice>
-            <x:element name="xpath" type="tns:nonEmptyString"/>
-            <x:element name="id" type="tns:nonEmptyString"/>
-            <x:element name="class" type="tns:nonEmptyString"/>
-            <x:element name="cssSelector" type="tns:nonEmptyString"/>
-            <x:element name="text" type="tns:text"/>
+        <x:choice maxOccurs="5">
+            <x:element name="xpath" type="tns:xpath" maxOccurs="unbounded"/>
+            <x:element name="id" type="tns:id" maxOccurs="unbounded"/>
+            <x:element name="className" type="tns:className" maxOccurs="unbounded"/>
+            <x:element name="cssSelector" type="tns:cssSelector" maxOccurs="unbounded"/>
+            <x:element name="text" type="tns:text" maxOccurs="unbounded"/>
         </x:choice>
         <x:attribute name="locatorId" type="tns:pagesLocator" use="required"/>
         <x:attribute name="comment" type="tns:nonEmptyString"/>
@@ -34,6 +34,30 @@
             <x:extension base="tns:nonEmptyString">
                 <x:attribute name="placeholder" type="x:boolean" default="false"/>
             </x:extension>
+        </x:simpleContent>
+    </x:complexType>
+
+    <x:complexType name="xpath">
+        <x:simpleContent>
+            <x:extension base="tns:nonEmptyString"/>
+        </x:simpleContent>
+    </x:complexType>
+
+    <x:complexType name="id">
+        <x:simpleContent>
+            <x:extension base="tns:nonEmptyString"/>
+        </x:simpleContent>
+    </x:complexType>
+
+    <x:complexType name="className">
+        <x:simpleContent>
+            <x:extension base="tns:nonEmptyString"/>
+        </x:simpleContent>
+    </x:complexType>
+
+    <x:complexType name="cssSelector">
+        <x:simpleContent>
+            <x:extension base="tns:nonEmptyString"/>
         </x:simpleContent>
     </x:complexType>
 

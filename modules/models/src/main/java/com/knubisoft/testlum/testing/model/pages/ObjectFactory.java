@@ -85,4 +85,36 @@ public class ObjectFactory {
         return new Text();
     }
 
+    /**
+     * Create an instance of {@link Xpath }
+     * 
+     */
+    public Xpath createXpath() {
+        return new Xpath();
+    }
+
+    /**
+     * Create an instance of {@link Id }
+     * 
+     */
+    public Id createId() {
+        return new Id();
+    }
+
+    /**
+     * Create an instance of {@link ClassName }
+     * 
+     */
+    public ClassName createClassName() {
+        return new ClassName();
+    }
+
+    /**
+     * Create an instance of {@link CssSelector }
+     * 
+     */
+    public CssSelector createCssSelector() {
+        return new CssSelector();
+    }
+
 }

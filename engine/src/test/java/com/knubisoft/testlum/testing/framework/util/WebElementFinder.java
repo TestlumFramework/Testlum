@@ -53,14 +53,11 @@ public final class WebElementFinder {
     public WebElement getElementFromLocatorList(final List<org.openqa.selenium.By> byList, final WebDriver driver) {
         boolean anyLocatorSucceeded = false;
         WebElement element = null;
-
         for (org.openqa.selenium.By by : byList) {
             try {
                 element = driver.findElement(by);
                 anyLocatorSucceeded = true;
-            } catch (NoSuchElementException ignored) {
-
-            }
+            } catch (NoSuchElementException ignored) { }
         }
         if (!anyLocatorSucceeded) {
             throw new DefaultFrameworkException("No such element");

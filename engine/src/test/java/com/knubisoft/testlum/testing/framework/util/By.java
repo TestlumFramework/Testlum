@@ -46,7 +46,7 @@ public class By {
             @Override
             public List<WebElement> findElements(final SearchContext context) {
                 List<String> xpathForSearch = className.stream()
-                        .map(c -> format(XPATH_TEMPLATE_FOR_CLASS_NAME_SEARCH, c))
+                        .map(c -> format(XPATH_TEMPLATE_FOR_CLASS_NAME_SEARCH, c.getValue()))
                         .collect(Collectors.toList());
                 return findElementsByCustomXpath(transformToXpathList(xpathForSearch), context);
             }

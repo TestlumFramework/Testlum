@@ -95,7 +95,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         }
     }
 
-    private void selectAll(Select select, CommandResult result) {
+    private void selectAll(final Select select, final CommandResult result) {
         for (int i = 0; i < select.getOptions().size(); i++) {
             select.selectByIndex(i);
         }
@@ -103,7 +103,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         result.put(DROP_DOWN_FOR, ALL_VALUES_SELECT);
     }
 
-    private void deselectAll(Select select, CommandResult result) {
+    private void deselectAll(final Select select, final CommandResult result) {
         log.info(COMMAND_TYPE_LOG, ALL_VALUES_DESELECT);
         result.put(DROP_DOWN_FOR, ALL_VALUES_DESELECT);
         select.deselectAll();

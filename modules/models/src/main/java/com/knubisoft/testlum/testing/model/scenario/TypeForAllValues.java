@@ -24,6 +24,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum TypeForAllValues {
 
+    @XmlEnumValue("select")
+    SELECT("select"),
     @XmlEnumValue("deselect")
     DESELECT("deselect");
     private final String value;

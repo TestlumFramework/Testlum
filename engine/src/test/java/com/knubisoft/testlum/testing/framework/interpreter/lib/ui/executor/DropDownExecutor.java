@@ -8,9 +8,11 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
+import com.knubisoft.testlum.testing.model.scenario.AllValues;
 import com.knubisoft.testlum.testing.model.scenario.DropDown;
 import com.knubisoft.testlum.testing.model.scenario.OneValue;
 import com.knubisoft.testlum.testing.model.scenario.SelectOrDeselectBy;
+import com.knubisoft.testlum.testing.model.scenario.TypeForAllValues;
 import com.knubisoft.testlum.testing.model.scenario.TypeForOneValue;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.support.ui.Select;
@@ -20,9 +22,7 @@ import java.util.Objects;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_TYPE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VALUE_LOG;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALL_VALUES_DESELECT;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_FOR;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_LOCATOR;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
 
 @Slf4j
 @ExecutorForClass(DropDown.class)
@@ -41,9 +41,8 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         if (Objects.nonNull(oneValue)) {
             processOneValueFromDropDown(oneValue, select, result);
         } else {
-            log.info(COMMAND_TYPE_LOG, ALL_VALUES_DESELECT);
-            result.put(DROP_DOWN_FOR, ALL_VALUES_DESELECT);
-            select.deselectAll();
+            AllValues allValues = dropDown.getAllValues();
+            processAllValuesFromDropDown(allValues, select, result);
         }
     }
 
@@ -60,6 +59,16 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
             deselectByMethod(select, method, value);
         }
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+    }
+
+    private void processAllValuesFromDropDown(final AllValues allValues, final Select select,
+                                              final CommandResult result) {
+        TypeForAllValues type = allValues.getType();
+        if (type == TypeForAllValues.DESELECT) {
+            deselectAll(select, result);
+        } else {
+            selectAll(select, result);
+        }
     }
 
     private void selectByMethod(final Select select, final SelectOrDeselectBy method, final String value) {
@@ -84,5 +93,19 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
                 break;
             default: throw new DefaultFrameworkException(DROP_DOWN_NOT_SUPPORTED, method.value());
         }
+    }
+
+    private void selectAll(final Select select, final CommandResult result) {
+        for (int i = 0; i < select.getOptions().size(); i++) {
+            select.selectByIndex(i);
+        }
+        log.info(COMMAND_TYPE_LOG, ALL_VALUES_SELECT);
+        result.put(DROP_DOWN_FOR, ALL_VALUES_SELECT);
+    }
+
+    private void deselectAll(final Select select, final CommandResult result) {
+        log.info(COMMAND_TYPE_LOG, ALL_VALUES_DESELECT);
+        result.put(DROP_DOWN_FOR, ALL_VALUES_DESELECT);
+        select.deselectAll();
     }
 }

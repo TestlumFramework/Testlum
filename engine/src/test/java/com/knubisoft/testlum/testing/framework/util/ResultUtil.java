@@ -97,6 +97,7 @@ public class ResultUtil {
     public static final String DROP_DOWN_BY = "Process by";
     public static final String NATIVE_NAVIGATE_TO = "Navigate to destination";
     public static final String ALL_VALUES_DESELECT = "all values (deselect)";
+    public static final String ALL_VALUES_SELECT = "all values (select)";
     public static final String ONE_VALUE_TEMPLATE = "one value (%s)";
     public static final String URL_TO_ACTUAL_IMAGE = "URL to actual image";
     public static final String ADDITIONAL_INFO = "Additional info";

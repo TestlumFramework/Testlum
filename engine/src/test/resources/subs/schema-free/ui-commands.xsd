@@ -117,6 +117,7 @@
     <x:simpleType name="typeForAllValues">
         <x:restriction base="x:string">
             <x:enumeration value="deselect"/>
+            <x:enumeration value="select"/>
         </x:restriction>
     </x:simpleType>
 

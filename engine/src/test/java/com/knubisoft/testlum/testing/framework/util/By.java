@@ -41,54 +41,19 @@ public class By {
                 .collect(Collectors.toList());
     }
 
-    public List<org.openqa.selenium.By> className(final List<ClassName> className) {
-        return Collections.singletonList(new org.openqa.selenium.By() {
-            @Override
-            public List<WebElement> findElements(final SearchContext context) {
-                List<String> xpathForSearch = className.stream()
-                        .map(c -> format(XPATH_TEMPLATE_FOR_CLASS_NAME_SEARCH, c.getValue()))
-                        .collect(Collectors.toList());
-                return findElementsByCustomXpath(transformToXpathList(xpathForSearch), context);
-            }
-        });
+    public List<org.openqa.selenium.By> className(final List<ClassName> classNameList) {
+        return classNameList.stream()
+                .map(className -> org.openqa.selenium.By.xpath(
+                        format(XPATH_TEMPLATE_FOR_CLASS_NAME_SEARCH, className.getValue())
+                ))
+                .collect(Collectors.toList());
     }
 
     public static List<org.openqa.selenium.By> text(final List<Text> textList) {
-        return Collections.singletonList(new org.openqa.selenium.By() {
-            @Override
-            public List<WebElement> findElements(final SearchContext context) {
-                List<String> xpathForSearch = textList.stream()
-                        .map(text -> text.isPlaceholder()
-                                ? format(XPATH_TEMPLATE_FOR_TEXT_SEARCH_FROM_PLACEHOLDER, text.getValue())
-                                : format(XPATH_TEMPLATE_FOR_TEXT_SEARCH, text.getValue()))
-                        .collect(Collectors.toList());
-                return findElementsByCustomXpath(transformToXpathList(xpathForSearch), context);
-            }
-        });
-    }
-
-    /*TESTLUM restricts the user and prevents the use of locator
-        that is present in more than one element. In this case the exception is thrown.*/
-
-    private List<WebElement> findElementsByCustomXpath(final List<Xpath> xpath,
-                                                       final SearchContext context) {
-        List<org.openqa.selenium.By> byXpath = By.xpath(xpath);
-        return byXpath.stream()
-                .map(context::findElement)
+        return textList.stream()
+                .map(text -> org.openqa.selenium.By.xpath(text.isPlaceholder()
+                        ? format(XPATH_TEMPLATE_FOR_TEXT_SEARCH_FROM_PLACEHOLDER, text.getValue())
+                        : format(XPATH_TEMPLATE_FOR_TEXT_SEARCH, text.getValue())))
                 .collect(Collectors.toList());
-//        if (elements.size() > 1) {
-//            throw new DefaultFrameworkException(ExceptionMessage.FOUND_MORE_THEN_ONE_ELEMENT, locator);
-//        }
-//        return elements;
-    }
-
-    private List<Xpath> transformToXpathList(final List<String> list) {
-        List<Xpath> xpathList = new ArrayList<>();
-        for (String locator : list) {
-            Xpath xpath = new Xpath();
-            xpath.setValue(locator);
-            xpathList.add(xpath);
-        }
-        return xpathList;
     }
 }

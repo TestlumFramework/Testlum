@@ -85,28 +85,28 @@ public class UiUtil {
             case XPATH:
                 Xpath xpath = new Xpath();
                 xpath.setValue(locatorId);
-                locator.getXpathOrIdOrClassName().add(xpath);
+                locator.getElementSelectors().add(xpath);
                 break;
             case ID:
                 Id id = new Id();
                 id.setValue(locatorId);
-                locator.getXpathOrIdOrClassName().add(id);
+                locator.getElementSelectors().add(id);
                 break;
             case TEXT:
                 Text text = new Text();
                 text.setPlaceholder(false);
                 text.setValue(locatorId);
-                locator.getXpathOrIdOrClassName().add(text);
+                locator.getElementSelectors().add(text);
                 break;
             case CLASS:
                 ClassName className = new ClassName();
                 className.setValue(locatorId);
-                locator.getXpathOrIdOrClassName().add(className);
+                locator.getElementSelectors().add(className);
                 break;
             case CSS_SELECTOR:
                 CssSelector cssSelector = new CssSelector();
                 cssSelector.setValue(locatorId);
-                locator.getXpathOrIdOrClassName().add(cssSelector);
+                locator.getElementSelectors().add(cssSelector);
                 break;
         }
         return locator;

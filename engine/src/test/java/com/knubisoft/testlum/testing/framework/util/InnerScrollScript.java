@@ -69,7 +69,7 @@ public enum InnerScrollScript {
     }
 
     public static List<String> getInnerScrollScript(final Scroll scroll) {
-        Locator locator = UiUtil.getLocatorByStrategy(scroll.getLocatorId(), scroll.getLocatorStrategy());
+        Locator locator = UiUtil.getLocatorByStrategy(scroll.getLocator(), scroll.getLocatorStrategy());
         return Arrays.stream(InnerScrollScript.values())
                 .filter(e -> e.getLocatorTypePredicate().test(locator))
                 .findFirst()

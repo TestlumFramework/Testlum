@@ -268,7 +268,7 @@ public class ResultUtil {
         result.put(VALUE, scroll.getValue());
         result.put(SCROLL_TYPE, scroll.getType());
         if (ScrollType.INNER == scroll.getType()) {
-            result.put(LOCATOR_FOR_SCROLL, scroll.getLocatorId());
+            result.put(LOCATOR_FOR_SCROLL, scroll.getLocator());
             result.put(LOCATOR_STRATEGY, scroll.getLocatorStrategy());
         }
     }
@@ -277,21 +277,21 @@ public class ResultUtil {
                                        final CommandResult result) {
         if (isNotBlank(dragAndDrop.getFileName())) {
             result.put(FROM_LOCAL_FILE, dragAndDrop.getFileName());
-        } else if (isNotBlank(dragAndDrop.getFromLocatorId())) {
-            result.put(FROM_LOCATOR, dragAndDrop.getFromLocatorId());
+        } else if (isNotBlank(dragAndDrop.getFromLocator())) {
+            result.put(FROM_LOCATOR, dragAndDrop.getFromLocator());
         }
-        result.put(TO_LOCATOR, dragAndDrop.getToLocatorId());
+        result.put(TO_LOCATOR, dragAndDrop.getToLocator());
     }
 
     public void addDragAndDropNativeMetaDada(final DragAndDropNative dragAndDropNative,
                                              final CommandResult result) {
-        result.put(FROM_LOCATOR, dragAndDropNative.getFromLocatorId());
-        result.put(TO_LOCATOR, dragAndDropNative.getToLocatorId());
+        result.put(FROM_LOCATOR, dragAndDropNative.getFromLocator());
+        result.put(TO_LOCATOR, dragAndDropNative.getToLocator());
     }
 
     public void addHoverMetaData(final Hover hover, final CommandResult result) {
         result.setComment(hover.getComment());
-        result.put(LOCATOR_ID, hover.getLocatorId());
+        result.put(LOCATOR_ID, hover.getLocator());
         result.put(MOVE_TO_EMPTY_SPACE, hover.isMoveToEmptySpace());
     }
 
@@ -357,7 +357,7 @@ public class ResultUtil {
 
     private void addCompareWithElementMetaData(final Picture element, final CommandResult result) {
         result.put(IMAGE_COMPARISON_TYPE, EXTRACT_THEN_COMPARE);
-        result.put(IMAGE_LOCATOR, element.getLocatorId());
+        result.put(IMAGE_LOCATOR, element.getLocator());
         result.put(IMAGE_SOURCE_ATT, element.getAttribute());
     }
 
@@ -368,7 +368,7 @@ public class ResultUtil {
         }
         if (!fullScreen.getExclude().isEmpty()) {
             result.put(EXCLUDED_ELEMENT, StringUtils.join(fullScreen.getExclude().stream()
-                    .map(Exclude::getLocatorId)
+                    .map(Exclude::getLocator)
                     .collect(Collectors.joining(COMMA + SPACE))));
         }
     }
@@ -383,7 +383,7 @@ public class ResultUtil {
     private void addCompareWithPartMetaData(final Part part,
                                             final CommandResult result) {
         result.put(IMAGE_COMPARISON_TYPE, GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
-        result.put(IMAGE_LOCATOR, part.getLocatorId());
+        result.put(IMAGE_LOCATOR, part.getLocator());
         if (nonNull(part.getPercentage())) {
             result.put(MATCH_PERCENTAGE, part.getPercentage());
         }
@@ -397,7 +397,7 @@ public class ResultUtil {
     }
 
     public void addAssertAttributeMetaData(final AssertAttribute attribute, final CommandResult result) {
-        result.put(ASSERT_LOCATOR, attribute.getLocatorId());
+        result.put(ASSERT_LOCATOR, attribute.getLocator());
         result.put(ASSERT_ATTRIBUTE, attribute.getName());
     }
 
@@ -406,8 +406,8 @@ public class ResultUtil {
         result.put(SWIPE_QUANTITY, swipeNative.getQuantity());
         result.put(PERFORM_SWIPE, swipeNative.getDirection());
         result.put(SWIPE_VALUE, swipeNative.getPercent());
-        if (isNotBlank(swipeNative.getLocatorId())) {
-            result.put(SWIPE_LOCATOR, swipeNative.getLocatorId());
+        if (isNotBlank(swipeNative.getLocator())) {
+            result.put(SWIPE_LOCATOR, swipeNative.getLocator());
         }
     }
 

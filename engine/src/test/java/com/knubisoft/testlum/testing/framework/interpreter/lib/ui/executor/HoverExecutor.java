@@ -36,7 +36,7 @@ public class HoverExecutor extends AbstractUiExecutor<Hover> {
     }
 
     private void executeHoverCommand(final Actions actions, final Hover hover) {
-        WebElement webElement = UiUtil.findWebElement(dependencies, hover.getLocatorId(), hover.getLocatorStrategy());
+        WebElement webElement = UiUtil.findWebElement(dependencies, hover.getLocator(), hover.getLocatorStrategy());
         performMovement(actions, webElement);
     }
 

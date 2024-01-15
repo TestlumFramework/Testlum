@@ -290,7 +290,7 @@ public class LogUtil {
             log.info(COMMENT_LOG, action.getComment());
         }
         if (action instanceof CommandWithLocator) {
-            log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocatorId());
+            log.info(LOCATOR_LOG, ((CommandWithLocator) action).getLocator());
         }
     }
     public void logUiAttributes(final boolean isClearCookies, final String storageKey) {
@@ -356,7 +356,7 @@ public class LogUtil {
 
     private void logCompareWithElementInfo(final Picture element) {
         log.info(IMAGE_COMPARISON_TYPE_LOG, EXTRACT_THEN_COMPARE);
-        log.info(LOCATOR_LOG, element.getLocatorId());
+        log.info(LOCATOR_LOG, element.getLocator());
         log.info(IMAGE_SOURCE_ATT_LOG, element.getAttribute());
     }
 
@@ -367,7 +367,7 @@ public class LogUtil {
         }
         if (!fullScreen.getExclude().isEmpty()) {
             log.info(IMAGE_EXCLUDED_ELEMENT_LOG, StringUtils.join(fullScreen.getExclude().stream()
-                    .map(Exclude::getLocatorId)
+                    .map(Exclude::getLocator)
                     .collect(Collectors.joining(COMMA + SPACE))));
         }
     }
@@ -381,7 +381,7 @@ public class LogUtil {
 
     private void logCompareWithPart(final Part part) {
         log.info(IMAGE_COMPARISON_TYPE_LOG, GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE);
-        log.info(LOCATOR_LOG, part.getLocatorId());
+        log.info(LOCATOR_LOG, part.getLocator());
         if (nonNull(part.getPercentage())) {
             log.info(IMAGE_MATCH_PERCENTAGE_LOG, part.getPercentage());
         }
@@ -393,7 +393,7 @@ public class LogUtil {
         log.info(VALUE_LOG, scroll.getValue());
         log.info(SCROLL_TYPE, scroll.getType());
         if (ScrollType.INNER == scroll.getType()) {
-            log.info(SCROLL_LOCATOR, scroll.getLocatorId());
+            log.info(SCROLL_LOCATOR, scroll.getLocator());
             log.info(LOCATOR_STRATEGY, scroll.getLocatorStrategy());
         }
     }
@@ -431,7 +431,7 @@ public class LogUtil {
     }
 
     public void logAssertAttributeInfo(final AssertAttribute attribute) {
-        log.info(LOCATOR_LOG, attribute.getLocatorId());
+        log.info(LOCATOR_LOG, attribute.getLocator());
         log.info(ATTRIBUTE_LOG, attribute.getName());
         log.info(CONTENT_LOG, StringPrettifier.cut(attribute.getContent()));
     }
@@ -443,15 +443,15 @@ public class LogUtil {
     public void logDragAndDropInfo(final DragAndDrop dragAndDrop) {
         if (isNotBlank(dragAndDrop.getFileName())) {
             log.info(DRAGGING_FILE_PATH, dragAndDrop.getFileName());
-        } else if (isNotBlank(dragAndDrop.getFromLocatorId())) {
-            log.info(DRAGGING_FROM, dragAndDrop.getFromLocatorId());
+        } else if (isNotBlank(dragAndDrop.getFromLocator())) {
+            log.info(DRAGGING_FROM, dragAndDrop.getFromLocator());
         }
-        log.info(DROPPING_TO, dragAndDrop.getToLocatorId());
+        log.info(DROPPING_TO, dragAndDrop.getToLocator());
     }
 
     public void logDragAndDropNativeInfo(final DragAndDropNative dragAndDropNative) {
-        log.info(DRAGGING_FROM, dragAndDropNative.getFromLocatorId());
-        log.info(DROPPING_TO, dragAndDropNative.getToLocatorId());
+        log.info(DRAGGING_FROM, dragAndDropNative.getFromLocator());
+        log.info(DROPPING_TO, dragAndDropNative.getToLocator());
     }
 
     public void logSwipeNativeInfo(final SwipeNative swipeNative) {
@@ -459,8 +459,8 @@ public class LogUtil {
         log.info(SWIPE_QUANTITY, swipeNative.getQuantity());
         log.info(SWIPE_DIRECTION, swipeNative.getDirection());
         log.info(SWIPE_VALUE, swipeNative.getPercent());
-        if (isNotBlank(swipeNative.getLocatorId())) {
-            log.info(LOCATOR_LOG, swipeNative.getLocatorId());
+        if (isNotBlank(swipeNative.getLocator())) {
+            log.info(LOCATOR_LOG, swipeNative.getLocator());
         }
     }
 }

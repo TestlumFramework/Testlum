@@ -101,12 +101,12 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
     }
 
     private void highlightCommand(final Highlight highlight, final CommandResult result) {
-        action.keyDown(getWebElement(highlight.getLocatorId(), result, highlight.getLocatorStrategy()), ctrlKey)
+        action.keyDown(getWebElement(highlight.getLocator(), result, highlight.getLocatorStrategy()), ctrlKey)
                 .sendKeys("a").keyUp(ctrlKey).build().perform();
     }
 
     private void pasteCommand(final Paste paste, final CommandResult result) {
-        action.keyDown(getWebElement(paste.getLocatorId(), result, paste.getLocatorStrategy()), ctrlKey)
+        action.keyDown(getWebElement(paste.getLocator(), result, paste.getLocatorStrategy()), ctrlKey)
                 .sendKeys("v").keyUp(ctrlKey).build().perform();
     }
 

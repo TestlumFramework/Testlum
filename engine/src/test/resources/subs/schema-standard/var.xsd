@@ -127,8 +127,8 @@
     <x:complexType name="fromCookie"/>
 
     <x:complexType name="fromDom">
-        <x:attribute name="locatorId" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
+        <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locator"/>
     </x:complexType>
 
     <x:complexType name="fromUrl"/>
@@ -140,8 +140,8 @@
     </x:complexType>
 
     <x:complexType name="elementPresent">
-        <x:attribute name="locatorId" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
+        <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locator"/>
     </x:complexType>
 
 </x:schema>

@@ -25,7 +25,7 @@
             <x:element name="cssSelector" type="tns:nonEmptyString"/>
             <x:element name="text" type="tns:text"/>
         </x:choice>
-        <x:attribute name="locatorId" type="tns:pagesLocator" use="required"/>
+        <x:attribute name="locator" type="tns:pagesLocator" use="required"/>
         <x:attribute name="comment" type="tns:nonEmptyString"/>
     </x:complexType>
 

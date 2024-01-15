@@ -16,10 +16,10 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="dragAndDropNative"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
- *       &lt;attribute name="fromLocatorId" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="fromLocatorStrategy" type="{http://www.knubisoft.com/testlum/testing/model/scenario}locatorStrategy" default="locatorId" /&gt;
- *       &lt;attribute name="toLocatorId" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="toLocatorStrategy" type="{http://www.knubisoft.com/testlum/testing/model/scenario}locatorStrategy" default="locatorId" /&gt;
+ *       &lt;attribute name="fromLocator" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="fromLocatorStrategy" type="{http://www.knubisoft.com/testlum/testing/model/scenario}locatorStrategy" default="locator" /&gt;
+ *       &lt;attribute name="toLocator" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="toLocatorStrategy" type="{http://www.knubisoft.com/testlum/testing/model/scenario}locatorStrategy" default="locator" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -33,37 +33,37 @@ public class DragAndDropNative
     extends AbstractUiCommand
 {
 
-    @XmlAttribute(name = "fromLocatorId", required = true)
-    protected String fromLocatorId;
+    @XmlAttribute(name = "fromLocator", required = true)
+    protected String fromLocator;
     @XmlAttribute(name = "fromLocatorStrategy")
     protected LocatorStrategy fromLocatorStrategy;
-    @XmlAttribute(name = "toLocatorId", required = true)
-    protected String toLocatorId;
+    @XmlAttribute(name = "toLocator", required = true)
+    protected String toLocator;
     @XmlAttribute(name = "toLocatorStrategy")
     protected LocatorStrategy toLocatorStrategy;
 
     /**
-     * Gets the value of the fromLocatorId property.
+     * Gets the value of the fromLocator property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getFromLocatorId() {
-        return fromLocatorId;
+    public String getFromLocator() {
+        return fromLocator;
     }
 
     /**
-     * Sets the value of the fromLocatorId property.
+     * Sets the value of the fromLocator property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setFromLocatorId(String value) {
-        this.fromLocatorId = value;
+    public void setFromLocator(String value) {
+        this.fromLocator = value;
     }
 
     /**
@@ -76,7 +76,7 @@ public class DragAndDropNative
      */
     public LocatorStrategy getFromLocatorStrategy() {
         if (fromLocatorStrategy == null) {
-            return LocatorStrategy.LOCATOR_ID;
+            return LocatorStrategy.LOCATOR;
         } else {
             return fromLocatorStrategy;
         }
@@ -95,27 +95,27 @@ public class DragAndDropNative
     }
 
     /**
-     * Gets the value of the toLocatorId property.
+     * Gets the value of the toLocator property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getToLocatorId() {
-        return toLocatorId;
+    public String getToLocator() {
+        return toLocator;
     }
 
     /**
-     * Sets the value of the toLocatorId property.
+     * Sets the value of the toLocator property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setToLocatorId(String value) {
-        this.toLocatorId = value;
+    public void setToLocator(String value) {
+        this.toLocator = value;
     }
 
     /**
@@ -128,7 +128,7 @@ public class DragAndDropNative
      */
     public LocatorStrategy getToLocatorStrategy() {
         if (toLocatorStrategy == null) {
-            return LocatorStrategy.LOCATOR_ID;
+            return LocatorStrategy.LOCATOR;
         } else {
             return toLocatorStrategy;
         }

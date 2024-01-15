@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="locatorStrategy"&gt;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *     &lt;enumeration value="locatorId"/&gt;
+ *     &lt;enumeration value="locator"/&gt;
  *     &lt;enumeration value="xpath"/&gt;
  *     &lt;enumeration value="id"/&gt;
  *     &lt;enumeration value="class"/&gt;
@@ -29,8 +29,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum LocatorStrategy {
 
-    @XmlEnumValue("locatorId")
-    LOCATOR_ID("locatorId"),
+    @XmlEnumValue("locator")
+    LOCATOR("locator"),
     @XmlEnumValue("xpath")
     XPATH("xpath"),
     @XmlEnumValue("id")

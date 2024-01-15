@@ -59,7 +59,7 @@ public final class WebElementFinder {
             Class<?> clazz = obj.getClass();
             bySet.addAll(SEARCH_TYPES.get(clazz).apply(locator));
         });
-        return getElementFromLocatorList(bySet, driver, locator.getLocatorId());
+        return getElementFromLocatorList(bySet, driver, locator.getLocator());
     }
 
     public WebElement getElementFromLocatorList(final Set<org.openqa.selenium.By> bySet, final WebDriver driver,

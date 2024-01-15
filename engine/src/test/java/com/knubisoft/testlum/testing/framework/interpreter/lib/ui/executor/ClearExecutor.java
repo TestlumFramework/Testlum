@@ -20,7 +20,7 @@ public class ClearExecutor extends AbstractUiExecutor<Clear> {
 
     @Override
     public void execute(final Clear clear, final CommandResult result) {
-        String locatorId = clear.getLocatorId();
+        String locatorId = clear.getLocator();
         result.put(CLEAR_LOCATOR, locatorId);
         WebElement element = UiUtil.findWebElement(dependencies, locatorId, clear.getLocatorStrategy());
         UiUtil.waitForElementVisibility(dependencies, element);

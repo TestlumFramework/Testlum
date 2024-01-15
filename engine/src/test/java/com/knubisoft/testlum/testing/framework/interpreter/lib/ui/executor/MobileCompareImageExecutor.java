@@ -60,7 +60,7 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
                                          final MobileImage image,
                                          final CommandResult result) throws IOException {
         if (nonNull(image.getPicture())) {
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPicture().getLocatorId(),
+            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
                     image.getPicture().getLocatorStrategy());
             return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
         }
@@ -68,7 +68,7 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
             if (UiType.MOBILE_BROWSER.equals(dependencies.getUiType()) && isIosDevice(webDriver)) {
                 throw new DefaultFrameworkException(IOS_NOT_SUPPORT_PART_COMMAND);
             }
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocatorId(),
+            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocator(),
                     image.getPart().getLocatorStrategy());
             return ImageIO.read(UiUtil.takeScreenshot(webElement));
         }

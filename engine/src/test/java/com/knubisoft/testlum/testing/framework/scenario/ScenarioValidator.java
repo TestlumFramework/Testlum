@@ -688,7 +688,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateLocator(final CommandWithOptionalLocator command, final String exceptionMessage) {
-        if (!isNotBlank(command.getLocatorId())) {
+        if (!isNotBlank(command.getLocator())) {
             throw new DefaultFrameworkException(exceptionMessage);
         }
     }

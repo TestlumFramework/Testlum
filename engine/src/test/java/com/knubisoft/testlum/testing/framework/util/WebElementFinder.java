@@ -78,7 +78,6 @@ public final class WebElementFinder {
             }
         }
         if (initialSearching) {
-            System.out.println("Wait and try one more time");
             Web settings = ConfigProviderImpl.GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv());
             int secondsToWait = settings.getBrowserSettings().getElementAutowait().getSeconds();
             Thread.sleep(secondsToWait * 1000L);

@@ -373,7 +373,7 @@
                     <x:element name="fileName" type="tns:nonEmptyString"/>
                 </x:choice>
                 <x:attribute name="toLocator" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="toLocatorStrategy" type="tns:locatorStrategy" default="locator"/>
+                <x:attribute name="toLocatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>
@@ -382,9 +382,9 @@
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:attribute name="fromLocator" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="fromLocatorStrategy" type="tns:locatorStrategy" default="locator"/>
+                <x:attribute name="fromLocatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
                 <x:attribute name="toLocator" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="toLocatorStrategy" type="tns:locatorStrategy" default="locator"/>
+                <x:attribute name="toLocatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

@@ -21,14 +21,7 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.FluentWait;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,30 +53,51 @@ public final class WebElementFinder {
             Class<?> clazz = obj.getClass();
             bySet.addAll(SEARCH_TYPES.get(clazz).apply(locator));
         });
-        return getElementFromLocatorList(bySet, driver, locator.getLocatorId(), true);
+        return getElementFromLocatorList(bySet, driver, locator.getLocatorId());
     }
 
-    @SneakyThrows(InterruptedException.class)
-    public WebElement getElementFromLocatorList(final Set<org.openqa.selenium.By> bySet, final WebDriver driver,
-                                                final String locatorId, final boolean initialSearching) {
-        int checkedLocatorCount = 0;
-        List<String> logMessages = new LinkedList<>();
+    private WebElement getElementFromLocatorList(final Set<org.openqa.selenium.By> bySet, final WebDriver driver,
+                                                final String locatorId) {
         waitForDomToComplete(driver);
+
+        Optional<WebElement> optionalElement = findElement(bySet, driver);
+
+        return optionalElement.orElseGet(() -> tryToFindElementIfNotFoundBeforeAfterAutoWait(bySet, driver, locatorId));
+    }
+
+    private Optional<WebElement> findElement(final Set<org.openqa.selenium.By> bySet, final WebDriver driver) {
+        List<String> logMessages = new LinkedList<>();
+        int checkedLocatorCount = 0;
         for (org.openqa.selenium.By by : bySet) {
             try {
-                return findElementByLocator(driver, by, logMessages, checkedLocatorCount);
+                return Optional.of(findElementByLocator(driver, by, logMessages, checkedLocatorCount));
             } catch (NoSuchElementException e) {
                 checkedLocatorCount++;
                 logMessages.add(String.format(UNABLE_TO_FIND_ELEMENT_BY_LOCATOR_TYPE, extractLocatorValue(by)));
             }
         }
-        if (initialSearching) {
-            Web settings = ConfigProviderImpl.GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv());
-            int secondsToWait = settings.getBrowserSettings().getElementAutowait().getSeconds();
-            Thread.sleep(secondsToWait * 1000L);
-            getElementFromLocatorList(bySet, driver, locatorId, false);
+        return Optional.empty();
+    }
+
+    private static WebElement tryToFindElementIfNotFoundBeforeAfterAutoWait(final Set<org.openqa.selenium.By> bySet,
+                                                                            final WebDriver driver,
+                                                                            final String locatorId) {
+        waitForSecondsDefinedInConfig();
+
+        Optional<WebElement> optionalElement = findElement(bySet, driver);
+
+        if (optionalElement.isEmpty()) {
+            throw new DefaultFrameworkException(String.format(UNABLE_TO_FIND_ELEMENT_BY_LOCATOR, locatorId));
         }
-        throw new DefaultFrameworkException(String.format(UNABLE_TO_FIND_ELEMENT_BY_LOCATOR, locatorId));
+        return optionalElement.get();
+    }
+
+
+    @SneakyThrows(InterruptedException.class)
+    private static void waitForSecondsDefinedInConfig() {
+        Web settings = ConfigProviderImpl.GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv());
+        int secondsToWait = settings.getBrowserSettings().getElementAutowait().getSeconds();
+        Thread.sleep(secondsToWait * 1000L);
     }
 
     @SuppressWarnings("unchecked")

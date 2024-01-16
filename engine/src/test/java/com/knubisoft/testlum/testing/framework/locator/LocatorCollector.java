@@ -81,6 +81,6 @@ public class LocatorCollector {
 
     private String getKeyName(final Map.Entry<File, Page> each, final Locator locator) {
         String prefix = each.getKey().getName().replace(TestResourceSettings.XML_SUFFIX, DelimiterConstant.EMPTY);
-        return prefix + DelimiterConstant.DOT + locator.getLocator();
+        return prefix + DelimiterConstant.DOT + locator.getLocatorId();
     }
 }

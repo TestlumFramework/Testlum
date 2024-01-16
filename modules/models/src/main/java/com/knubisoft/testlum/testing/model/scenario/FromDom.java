@@ -68,7 +68,7 @@ public class FromDom {
      */
     public LocatorStrategy getLocatorStrategy() {
         if (locatorStrategy == null) {
-            return LocatorStrategy.LOCATOR;
+            return LocatorStrategy.LOCATOR_ID;
         } else {
             return locatorStrategy;
         }

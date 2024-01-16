@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="commandWithLocator"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
- *       &lt;attribute name="locatorStrategy" type="{http://www.knubisoft.com/testlum/testing/model/scenario}locatorStrategy" default="locator" /&gt;
+ *       &lt;attribute name="locatorStrategy" type="{http://www.knubisoft.com/testlum/testing/model/scenario}locatorStrategy" default="locatorId" /&gt;
  *       &lt;attribute name="locator" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -58,7 +58,7 @@ public abstract class CommandWithLocator
      */
     public LocatorStrategy getLocatorStrategy() {
         if (locatorStrategy == null) {
-            return LocatorStrategy.LOCATOR;
+            return LocatorStrategy.LOCATOR_ID;
         } else {
             return locatorStrategy;
         }

@@ -127,7 +127,7 @@ public class DragAndDrop
      */
     public LocatorStrategy getToLocatorStrategy() {
         if (toLocatorStrategy == null) {
-            return LocatorStrategy.LOCATOR;
+            return LocatorStrategy.LOCATOR_ID;
         } else {
             return toLocatorStrategy;
         }

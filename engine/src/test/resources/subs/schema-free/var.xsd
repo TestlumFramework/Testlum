@@ -127,7 +127,7 @@
 
     <x:complexType name="fromDom">
         <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locator"/>
+        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
     </x:complexType>
 
     <x:complexType name="fromUrl"/>
@@ -140,7 +140,7 @@
 
     <x:complexType name="elementPresent">
         <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locator"/>
+        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
     </x:complexType>
 
 </x:schema>

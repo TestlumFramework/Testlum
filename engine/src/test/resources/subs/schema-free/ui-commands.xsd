@@ -355,13 +355,13 @@
 
     <x:complexType name="picture">
         <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locator"/>
+        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
         <x:attribute name="attribute" type="tns:nonEmptyString" default="src"/>
     </x:complexType>
 
     <x:complexType name="part">
         <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locator"/>
+        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
         <x:attribute name="percentage" type="tns:positiveDoubleMin0Max100"/>
     </x:complexType>
 
@@ -397,7 +397,7 @@
 
     <x:complexType name="exclude">
         <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
-        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locator"/>
+        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
     </x:complexType>
 
     <x:simpleType name="positiveDoubleMin0Max100">

@@ -17,7 +17,7 @@ public class PageValidator implements XMLValidator<Page> {
     public void validate(final Page page, final File xmlFile) {
         Set<String> ids = new HashSet<>();
         for (Locator each : page.getLocators().getLocator()) {
-            String locatorId = each.getLocator();
+            String locatorId = each.getLocatorId();
             throwIfDuplicateLocators(ids.contains(locatorId), page, locatorId);
             ids.add(locatorId);
         }

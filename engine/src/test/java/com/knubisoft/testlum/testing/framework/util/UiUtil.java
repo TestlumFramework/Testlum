@@ -77,9 +77,9 @@ public class UiUtil {
 
     public Locator getLocatorByStrategy(final String locatorId, final LocatorStrategy locatorStrategy) {
         Locator locator = new Locator();
-        locator.setLocator(locatorId);
+        locator.setLocatorId(locatorId);
         switch (locatorStrategy) {
-            case LOCATOR:
+            case LOCATOR_ID:
                 locator = GlobalLocators.getLocator(locatorId);
                 break;
             case XPATH:

@@ -73,7 +73,7 @@
                 </x:sequence>
                 <x:attribute name="name" type="tns:webAttributeNamePattern" use="required"/>
                 <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
-                <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locator"/>
+                <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

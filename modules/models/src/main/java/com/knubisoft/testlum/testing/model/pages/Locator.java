@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="cssSelector" type="{http://www.knubisoft.com/testlum/testing/model/pages}cssSelector" maxOccurs="unbounded"/&gt;
  *         &lt;element name="text" type="{http://www.knubisoft.com/testlum/testing/model/pages}text" maxOccurs="unbounded"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="locator" use="required" type="{http://www.knubisoft.com/testlum/testing/model/pages}pagesLocator" /&gt;
+ *       &lt;attribute name="locatorId" use="required" type="{http://www.knubisoft.com/testlum/testing/model/pages}pagesLocator" /&gt;
  *       &lt;attribute name="comment" type="{http://www.knubisoft.com/testlum/testing/model/pages}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -52,8 +52,8 @@ public class Locator {
         @XmlElement(name = "text", type = Text.class)
     })
     protected List<Object> elementSelectors;
-    @XmlAttribute(name = "locator", required = true)
-    protected String locator;
+    @XmlAttribute(name = "locatorId", required = true)
+    protected String locatorId;
     @XmlAttribute(name = "comment")
     protected String comment;
 
@@ -91,27 +91,27 @@ public class Locator {
     }
 
     /**
-     * Gets the value of the locator property.
+     * Gets the value of the locatorId property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getLocator() {
-        return locator;
+    public String getLocatorId() {
+        return locatorId;
     }
 
     /**
-     * Sets the value of the locator property.
+     * Sets the value of the locatorId property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setLocator(String value) {
-        this.locator = value;
+    public void setLocatorId(String value) {
+        this.locatorId = value;
     }
 
     /**

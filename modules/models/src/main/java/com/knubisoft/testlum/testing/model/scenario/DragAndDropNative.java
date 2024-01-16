@@ -76,7 +76,7 @@ public class DragAndDropNative
      */
     public LocatorStrategy getFromLocatorStrategy() {
         if (fromLocatorStrategy == null) {
-            return LocatorStrategy.LOCATOR;
+            return LocatorStrategy.LOCATOR_ID;
         } else {
             return fromLocatorStrategy;
         }
@@ -128,7 +128,7 @@ public class DragAndDropNative
      */
     public LocatorStrategy getToLocatorStrategy() {
         if (toLocatorStrategy == null) {
-            return LocatorStrategy.LOCATOR;
+            return LocatorStrategy.LOCATOR_ID;
         } else {
             return toLocatorStrategy;
         }

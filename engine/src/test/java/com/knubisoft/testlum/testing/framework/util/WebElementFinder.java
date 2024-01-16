@@ -60,7 +60,7 @@ public final class WebElementFinder {
             Class<?> clazz = obj.getClass();
             bySet.addAll(SEARCH_TYPES.get(clazz).apply(locator));
         });
-        return getElementFromLocatorList(bySet, driver, locator.getLocator(), true);
+        return getElementFromLocatorList(bySet, driver, locator.getLocatorId(), true);
     }
 
     @SneakyThrows(InterruptedException.class)

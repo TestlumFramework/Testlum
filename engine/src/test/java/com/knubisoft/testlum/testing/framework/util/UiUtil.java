@@ -8,8 +8,12 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.locator.GlobalLocators;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.model.pages.ClassName;
+import com.knubisoft.testlum.testing.model.pages.CssSelector;
+import com.knubisoft.testlum.testing.model.pages.Id;
 import com.knubisoft.testlum.testing.model.pages.Locator;
 import com.knubisoft.testlum.testing.model.pages.Text;
+import com.knubisoft.testlum.testing.model.pages.Xpath;
 import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import io.appium.java_client.AppiumDriver;
 import lombok.SneakyThrows;
@@ -79,22 +83,30 @@ public class UiUtil {
                 locator = GlobalLocators.getLocator(locatorId);
                 break;
             case XPATH:
-                locator.setXpath(locatorId);
+                Xpath xpath = new Xpath();
+                xpath.setValue(locatorId);
+                locator.getElementSelectors().add(xpath);
                 break;
             case ID:
-                locator.setId(locatorId);
+                Id id = new Id();
+                id.setValue(locatorId);
+                locator.getElementSelectors().add(id);
                 break;
             case TEXT:
                 Text text = new Text();
                 text.setPlaceholder(false);
                 text.setValue(locatorId);
-                locator.setText(text);
+                locator.getElementSelectors().add(text);
                 break;
             case CLASS:
-                locator.setClazz(locatorId);
+                ClassName className = new ClassName();
+                className.setValue(locatorId);
+                locator.getElementSelectors().add(className);
                 break;
             case CSS_SELECTOR:
-                locator.setCssSelector(locatorId);
+                CssSelector cssSelector = new CssSelector();
+                cssSelector.setValue(locatorId);
+                locator.getElementSelectors().add(cssSelector);
                 break;
         }
         return locator;

@@ -34,7 +34,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
 
     @Override
     public void execute(final DropDown dropDown, final CommandResult result) {
-        String locatorId = dropDown.getLocatorId();
+        String locatorId = dropDown.getLocator();
         result.put(DROP_DOWN_LOCATOR, locatorId);
         Select select = new Select(UiUtil.findWebElement(dependencies, locatorId, dropDown.getLocatorStrategy()));
         OneValue oneValue = dropDown.getOneValue();

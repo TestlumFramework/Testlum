@@ -66,7 +66,7 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
 
     private String getElementResult(final NativeVar var, final CommandResult result) {
         String valueResult;
-        String locatorId = var.getElement().getPresent().getLocatorId();
+        String locatorId = var.getElement().getPresent().getLocator();
         LocatorStrategy locatorStrategy = var.getElement().getPresent().getLocatorStrategy();
         try {
             UiUtil.findWebElement(dependencies, locatorId, locatorStrategy);

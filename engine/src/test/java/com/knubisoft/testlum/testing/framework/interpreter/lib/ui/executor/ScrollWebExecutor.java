@@ -16,6 +16,8 @@ import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import org.openqa.selenium.WebDriver;
 
+import java.util.List;
+
 @ExecutorForClass(Scroll.class)
 public class ScrollWebExecutor extends AbstractUiExecutor<Scroll> {
 
@@ -34,13 +36,29 @@ public class ScrollWebExecutor extends AbstractUiExecutor<Scroll> {
     private void executeScrollScript(final Scroll scroll, final WebDriver webDriver) {
         switch (scroll.getType()) {
             case INNER:
-                JavascriptUtil.executeJsScript(InnerScrollScript.getInnerScrollScript(scroll), webDriver);
+                List<String> scrollScripts = InnerScrollScript.getInnerScrollScript(scroll);
+                tryToScroll(scrollScripts, webDriver);
                 break;
             case PAGE:
                 JavascriptUtil.executeJsScript(PageScrollScript.getPageScrollScript(scroll), webDriver);
                 break;
             default:
                 throw new DefaultFrameworkException(ExceptionMessage.SCROLL_TYPE_NOT_FOUND, scroll.getType());
+        }
+    }
+
+    private void tryToScroll(final List<String> scrollScripts, final WebDriver driver) {
+        boolean anyLocatorSucceeded = false;
+        for (String script : scrollScripts) {
+            try {
+                JavascriptUtil.executeJsScript(script, driver);
+                anyLocatorSucceeded = true;
+            } catch (DefaultFrameworkException ignored) {
+
+            }
+        }
+        if (!anyLocatorSucceeded) {
+            throw new DefaultFrameworkException("Can't perform inner scroll");
         }
     }
 

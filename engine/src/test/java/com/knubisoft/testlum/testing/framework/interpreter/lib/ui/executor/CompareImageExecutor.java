@@ -63,12 +63,12 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
                                          final Image image,
                                          final CommandResult result) throws IOException {
         if (nonNull(image.getPicture())) {
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPicture().getLocatorId(),
+            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
                     image.getPicture().getLocatorStrategy());
             return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
         }
         if (nonNull(image.getPart())) {
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocatorId(),
+            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocator(),
                     image.getPart().getLocatorStrategy());
             return ImageIO.read(UiUtil.takeScreenshot(webElement));
         }
@@ -91,7 +91,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         if (nonNull(fullScreen) && !fullScreen.getExclude().isEmpty()) {
             Scale scale = getScaling(expected, driver);
             return fullScreen.getExclude().stream()
-                    .map(element -> getElementArea(element.getLocatorId(), scale, element.getLocatorStrategy()))
+                    .map(element -> getElementArea(element.getLocator(), scale, element.getLocatorStrategy()))
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();

@@ -58,7 +58,7 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
     private BufferedImage getActualImage(final WebDriver webDriver,
                                          final NativeImage image) throws IOException {
         if (nonNull(image.getPart())) {
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocatorId(),
+            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocator(),
                     image.getPart().getLocatorStrategy());
             return ImageIO.read(webElement.getScreenshotAs(OutputType.FILE));
         }

@@ -354,13 +354,13 @@
     </x:complexType>
 
     <x:complexType name="picture">
-        <x:attribute name="locatorId" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
         <x:attribute name="attribute" type="tns:nonEmptyString" default="src"/>
     </x:complexType>
 
     <x:complexType name="part">
-        <x:attribute name="locatorId" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
         <x:attribute name="percentage" type="tns:positiveDoubleMin0Max100"/>
     </x:complexType>
@@ -369,10 +369,10 @@
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:choice>
-                    <x:element name="fromLocatorId" type="tns:nonEmptyString"/>
+                    <x:element name="fromLocator" type="tns:nonEmptyString"/>
                     <x:element name="fileName" type="tns:nonEmptyString"/>
                 </x:choice>
-                <x:attribute name="toLocatorId" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="toLocator" type="tns:nonEmptyString" use="required"/>
                 <x:attribute name="toLocatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
             </x:extension>
         </x:complexContent>
@@ -381,9 +381,9 @@
     <x:complexType name="dragAndDropNative">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
-                <x:attribute name="fromLocatorId" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="fromLocator" type="tns:nonEmptyString" use="required"/>
                 <x:attribute name="fromLocatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
-                <x:attribute name="toLocatorId" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="toLocator" type="tns:nonEmptyString" use="required"/>
                 <x:attribute name="toLocatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
             </x:extension>
         </x:complexContent>
@@ -396,7 +396,7 @@
     </x:complexType>
 
     <x:complexType name="exclude">
-        <x:attribute name="locatorId" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
     </x:complexType>
 

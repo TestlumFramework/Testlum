@@ -68,8 +68,8 @@ public class WebDriverFactory {
                 .orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
         BrowserUtil.manageWindowSize(browser, webDriver);
         Web settings = GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv());
-        int secondsToWait = settings.getBrowserSettings().getElementAutowait().getSeconds();
-        webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));
+//        int secondsToWait = settings.getBrowserSettings().getElementAutowait().getSeconds();
+//        webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));
         webDriver.get(settings.getBaseUrl());
         return webDriver;
     }

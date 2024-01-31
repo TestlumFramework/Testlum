@@ -11,10 +11,13 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
+import com.knubisoft.testlum.testing.model.scenario.AssertAlert;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertChecked;
 import com.knubisoft.testlum.testing.model.scenario.AssertEqual;
 import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.AssertNotEqual;
+import com.knubisoft.testlum.testing.model.scenario.AssertPresent;
 import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
 import com.knubisoft.testlum.testing.model.scenario.WebAssert;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +40,8 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
 
     private static final String ASSERT_CONTENT_NOT_EQUAL = "Equality content <%s> is not equal.";
     private static final String ASSERT_CONTENT_IS_EQUAL = "Inequality content <%s> is equal.";
+    private static final String ASSERT_NOT_PRESENT = "Element with locator <%s> should not be present.";
+    private static final String ASSERT_CHECKED = "Element with locator <%s> failed check assertion.";
 
     private final List<String> exceptions = new ArrayList<>();
     private final Map<AssertCmdPredicate, AssertMethod> assertCommandMap;
@@ -46,7 +51,10 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         assertCommandMap = Map.of(
                 AssertAttribute.class::isInstance, (a, result) -> executeAttributeCommand((AssertAttribute) a, result),
                 a -> a instanceof AssertEquality, (a, result) -> executeEqualityCommand((AssertEquality) a, result),
-                AssertTitle.class::isInstance, (a, result) -> executeTitleCommand((AssertTitle) a, result));
+                AssertTitle.class::isInstance, (a, result) -> executeTitleCommand((AssertTitle) a, result),
+                AssertAlert.class::isInstance, (a, result) -> executeAssertAlert((AssertAlert) a, result),
+                AssertChecked.class::isInstance, (a, result) -> executeAssertChecked((AssertChecked) a, result),
+                AssertPresent.class::isInstance, (a, result) -> executeAssertPresent((AssertPresent) a, result));
     }
 
     @Override
@@ -80,7 +88,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         String actual = getActualValue(attribute);
         String expected = attribute.getContent();
         ResultUtil.setExpectedActual(expected, actual, result);
-        executeComparison(actual, expected, result);
+        executeComparison(actual, expected, result, attribute.isNegative());
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
@@ -121,21 +129,68 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         LogUtil.logAssertTitleCommand(title);
         String actual = dependencies.getDriver().getTitle();
         ResultUtil.setExpectedActual(title.getContent(), actual, result);
-        executeComparison(actual, title.getContent(), result);
+        executeComparison(actual, title.getContent(), result, title.isNegative());
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
-    private void executeComparison(final String actual, final String expected, final CommandResult result) {
+    private void executeAssertAlert(final AssertAlert alert, final CommandResult result) {
+        LogUtil.logAssertAlertCommand(alert);
+        String actual = dependencies.getDriver().switchTo().alert().getText();
+        ResultUtil.setExpectedActual(alert.getText(), actual, result);
+        executeComparison(actual, alert.getText(), result, alert.isNegative());
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+    }
+
+    private void executeAssertPresent(final AssertPresent present, final CommandResult result) {
         try {
-            new CompareBuilder(dependencies.getFile(), dependencies.getPosition().get())
-                    .withActual(actual)
-                    .withExpected(expected)
-                    .exec();
-        } catch (Exception e) {
-            exceptions.add(e.getMessage());
-            LogUtil.logException(e);
-            ResultUtil.setExceptionResult(result, e);
+            LogUtil.logAssertPresent(present);
+            ResultUtil.addAssertPresentMetadata(present, result);
+            UiUtil.findWebElement(dependencies, present.getLocator(), present.getLocatorStrategy());
+            if (present.isNegative()) {
+                Exception e = new DefaultFrameworkException(String.format(ASSERT_NOT_PRESENT, present.getLocator()));
+                onException(result, e);
+            }
+        } catch (DefaultFrameworkException e) {
+            if (!present.isNegative()) {
+                onException(result, e);
+            }
         }
+
+    }
+
+    private void executeAssertChecked(final AssertChecked checked, final CommandResult result) {
+        LogUtil.logAssertChecked(checked);
+        ResultUtil.addAssertCheckedMetadata(checked, result);
+        boolean isSelected =
+                UiUtil.findWebElement(dependencies, checked.getLocator(), checked.getLocatorStrategy()).isSelected();
+        if ((checked.isNegative() && isSelected) || (!checked.isNegative() && !isSelected)) {
+            Exception e = new DefaultFrameworkException(String
+                    .format(ASSERT_CHECKED, checked.getLocator()));
+            onException(result, e);
+        }
+    }
+
+    private void executeComparison(final String actual, final String expected, final CommandResult result,
+                                   final boolean isNegative) {
+        try {
+            new CompareBuilder(dependencies.getFile(), dependencies.getPosition().get()).withActual(actual)
+                    .withExpected(expected).exec();
+            if (isNegative) {
+                Exception e = new DefaultFrameworkException(String
+                        .format(ASSERT_CONTENT_IS_EQUAL, String.join(COMMA, expected, actual)));
+                onException(result, e);
+            }
+        } catch (Exception e) {
+            if (!isNegative) {
+                onException(result, e);
+            }
+        }
+    }
+
+    private void onException(final CommandResult result, final Exception e) {
+        exceptions.add(e.getMessage());
+        LogUtil.logException(e);
+        ResultUtil.setExceptionResult(result, e);
     }
 
     private void rethrowOnErrors() {

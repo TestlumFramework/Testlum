@@ -598,6 +598,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AssertAlert }
+     * 
+     */
+    public AssertAlert createAssertAlert() {
+        return new AssertAlert();
+    }
+
+    /**
+     * Create an instance of {@link AssertChecked }
+     * 
+     */
+    public AssertChecked createAssertChecked() {
+        return new AssertChecked();
+    }
+
+    /**
+     * Create an instance of {@link AssertPresent }
+     * 
+     */
+    public AssertPresent createAssertPresent() {
+        return new AssertPresent();
+    }
+
+    /**
      * Create an instance of {@link Click }
      * 
      */

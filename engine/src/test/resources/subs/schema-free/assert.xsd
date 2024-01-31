@@ -48,6 +48,9 @@
                     <x:element name="title" type="tns:assertTitle"/>
                     <x:element name="equal" type="tns:assertEqual"/>
                     <x:element name="notEqual" type="tns:assertNotEqual"/>
+                    <x:element name="alert" type="tns:assertAlert"/>
+                    <x:element name="checked" type="tns:assertChecked"/>
+                    <x:element name="present" type="tns:assertPresent"/>
                 </x:choice>
             </x:extension>
         </x:complexContent>
@@ -72,6 +75,7 @@
                     <x:element name="content" type="tns:nonEmptyString"/>
                 </x:sequence>
                 <x:attribute name="name" type="tns:webAttributeNamePattern" use="required"/>
+                <x:attribute name="negative" type="x:boolean" default="false"/>
                 <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
                 <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
             </x:extension>
@@ -91,6 +95,34 @@
                 <x:sequence>
                     <x:element name="content" type="tns:nonEmptyString"/>
                 </x:sequence>
+                <x:attribute name="negative" type="x:boolean" default="false"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="assertAlert">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:sequence>
+                    <x:element name="text" type="tns:nonEmptyString"/>
+                </x:sequence>
+                <x:attribute name="negative" type="x:boolean" default="false"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="assertChecked">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
+                <x:attribute name="negative" type="x:boolean" default="false"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="assertPresent">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
+                <x:attribute name="negative" type="x:boolean" default="false"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

@@ -6,11 +6,6 @@ import com.knubisoft.testlum.testing.model.pages.Id;
 import com.knubisoft.testlum.testing.model.pages.Text;
 import com.knubisoft.testlum.testing.model.pages.Xpath;
 import lombok.experimental.UtilityClass;
-import org.openqa.selenium.SearchContext;
-import org.openqa.selenium.WebElement;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 

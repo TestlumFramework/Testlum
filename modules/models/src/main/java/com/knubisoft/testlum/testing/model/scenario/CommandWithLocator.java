@@ -31,6 +31,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlSeeAlso({
     Clickable.class,
     Visible.class,
+    AssertChecked.class,
+    AssertPresent.class,
     Click.class,
     Hover.class,
     Input.class,

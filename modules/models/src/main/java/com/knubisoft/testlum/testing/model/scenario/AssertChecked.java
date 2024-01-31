@@ -4,22 +4,18 @@ package com.knubisoft.testlum.testing.model.scenario;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for assertTitle complex type.
+ * <p>Java class for assertChecked complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="assertTitle"&gt;
+ * &lt;complexType name="assertChecked"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="content" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
- *       &lt;/sequence&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}commandWithLocator"&gt;
  *       &lt;attribute name="negative" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -29,41 +25,13 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "assertTitle", propOrder = {
-    "content"
-})
-public class AssertTitle
-    extends AbstractUiCommand
+@XmlType(name = "assertChecked")
+public class AssertChecked
+    extends CommandWithLocator
 {
 
-    @XmlElement(required = true)
-    protected String content;
     @XmlAttribute(name = "negative")
     protected Boolean negative;
-
-    /**
-     * Gets the value of the content property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getContent() {
-        return content;
-    }
-
-    /**
-     * Sets the value of the content property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setContent(String value) {
-        this.content = value;
-    }
 
     /**
      * Gets the value of the negative property.

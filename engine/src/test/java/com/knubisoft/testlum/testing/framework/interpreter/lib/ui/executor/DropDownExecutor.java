@@ -22,7 +22,10 @@ import java.util.Objects;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_TYPE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VALUE_LOG;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALL_VALUES_DESELECT;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALL_VALUES_SELECT;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_FOR;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_LOCATOR;
 
 @Slf4j
 @ExecutorForClass(DropDown.class)

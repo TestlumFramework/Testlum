@@ -40,7 +40,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "locator", propOrder = {
-    "elementSelectors"
+    "xpathOrIdOrClassName"
 })
 public class Locator {
 
@@ -51,25 +51,25 @@ public class Locator {
         @XmlElement(name = "cssSelector", type = CssSelector.class),
         @XmlElement(name = "text", type = Text.class)
     })
-    protected List<Object> elementSelectors;
+    protected List<Object> xpathOrIdOrClassName;
     @XmlAttribute(name = "locatorId", required = true)
     protected String locatorId;
     @XmlAttribute(name = "comment")
     protected String comment;
 
     /**
-     * Gets the value of the elementSelectors property.
+     * Gets the value of the xpathOrIdOrClassName property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the elementSelectors property.
+     * This is why there is not a <CODE>set</CODE> method for the xpathOrIdOrClassName property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getElementSelectors().add(newItem);
+     *    getXpathOrIdOrClassName().add(newItem);
      * </pre>
      * 
      * 
@@ -83,11 +83,11 @@ public class Locator {
      * 
      * 
      */
-    public List<Object> getElementSelectors() {
-        if (elementSelectors == null) {
-            elementSelectors = new ArrayList<Object>();
+    public List<Object> getXpathOrIdOrClassName() {
+        if (xpathOrIdOrClassName == null) {
+            xpathOrIdOrClassName = new ArrayList<Object>();
         }
-        return this.elementSelectors;
+        return this.xpathOrIdOrClassName;
     }
 
     /**

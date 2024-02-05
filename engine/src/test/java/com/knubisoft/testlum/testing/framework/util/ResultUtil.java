@@ -67,12 +67,14 @@ public class ResultUtil {
     public static final String LOCATOR_ID = "Locator ID";
     public static final String LOCATOR_FORM = "Locator ID = %s";
     public static final String ELEMENT_PRESENT = "Is the web element present";
+    public static final String ELEMENT_ATTRIBUTE = "Value of element attribute";
     public static final String CONDITION = "Condition";
     public static final String GENERATED_STRING = "Randomly generated string";
     public static final String ASSERT_LOCATOR = "Locator for assert command";
     public static final String ASSERT_ATTRIBUTE = "Assert command attribute";
     public static final String ASSERT_NEGATIVE = "Is assert negative";
     public static final String CLICK_LOCATOR = "Locator for click command";
+    public static final String DOUBLE_CLICK_LOCATOR = "Locator for click command";
     public static final String INPUT_LOCATOR = "Locator for input command";
     public static final String CLEAR_LOCATOR = "Locator for clear command";
     public static final String SCROLL_LOCATOR = "Locator for scroll-to command";

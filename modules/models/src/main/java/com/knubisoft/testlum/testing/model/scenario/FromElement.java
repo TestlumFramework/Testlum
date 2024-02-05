@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;choice&gt;
  *         &lt;element name="present" type="{http://www.knubisoft.com/testlum/testing/model/scenario}elementPresent"/&gt;
+ *         &lt;element name="attribute" type="{http://www.knubisoft.com/testlum/testing/model/scenario}elementAttribute"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -27,11 +28,13 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "fromElement", propOrder = {
-    "present"
+    "present",
+    "attribute"
 })
 public class FromElement {
 
     protected ElementPresent present;
+    protected ElementAttribute attribute;
 
     /**
      * Gets the value of the present property.
@@ -55,6 +58,30 @@ public class FromElement {
      */
     public void setPresent(ElementPresent value) {
         this.present = value;
+    }
+
+    /**
+     * Gets the value of the attribute property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ElementAttribute }
+     *     
+     */
+    public ElementAttribute getAttribute() {
+        return attribute;
+    }
+
+    /**
+     * Sets the value of the attribute property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ElementAttribute }
+     *     
+     */
+    public void setAttribute(ElementAttribute value) {
+        this.attribute = value;
     }
 
 }

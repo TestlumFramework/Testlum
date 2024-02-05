@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -11,11 +12,13 @@ import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarMethod;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarPredicate;
+import com.knubisoft.testlum.testing.model.scenario.ElementAttribute;
+import com.knubisoft.testlum.testing.model.scenario.ElementPresent;
 import com.knubisoft.testlum.testing.model.scenario.WebVar;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Cookie;
-import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebElement;
 
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_VARIABLE_LOG;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.COOKIES;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ELEMENT_ATTRIBUTE;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ELEMENT_PRESENT;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.FULL_DOM;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.HTML_DOM;
@@ -78,16 +82,35 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     private String getElementResult(final WebVar webVar, final CommandResult result) {
+        ElementAttribute attribute = webVar.getElement().getAttribute();
+        ElementPresent present = webVar.getElement().getPresent();
         String valueResult;
-        String locatorId = webVar.getElement().getPresent().getLocator();
-        try {
-            UiUtil.findWebElement(dependencies, locatorId, webVar.getElement().getPresent().getLocatorStrategy());
-            valueResult = String.valueOf(true);
-        } catch (NoSuchElementException e) {
-            valueResult = String.valueOf(false);
+        if (nonNull(attribute)) {
+            valueResult = getAttributeValue(attribute, webVar.getName(), result);
+        } else {
+            valueResult = getPresentValue(present, webVar.getName(), result);
         }
-        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, webVar.getName(), LOCATOR_FORM, locatorId, valueResult, result);
         return valueResult;
+    }
+
+    private String getPresentValue(final ElementPresent present, final String varName, final CommandResult r) {
+        String value;
+        try {
+            UiUtil.findWebElement(dependencies, present.getLocator(), present.getLocatorStrategy());
+            value = String.valueOf(true);
+        } catch (DefaultFrameworkException e) {
+            value = String.valueOf(false);
+        }
+        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, varName, LOCATOR_FORM, present.getLocator(), value, r);
+        return value;
+    }
+
+    private String getAttributeValue(final ElementAttribute attribute, final String varName, final CommandResult r) {
+        WebElement webElement = UiUtil.findWebElement(dependencies, attribute.getLocator(),
+                attribute.getLocatorStrategy());
+        String value = UiUtil.getElementAttribute(webElement, attribute.getName(), dependencies.getDriver());
+        ResultUtil.addVariableMetaData(ELEMENT_ATTRIBUTE, varName, LOCATOR_FORM, attribute.getLocator(), value, r);
+        return value;
     }
 
     private String getDomResult(final WebVar webVar, final CommandResult result) {

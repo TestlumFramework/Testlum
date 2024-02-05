@@ -101,7 +101,7 @@ public final class WebElementFinder {
         return optionalElement.get();
     }
 
-
+//CHECKSTYLE:OFF
     @SneakyThrows(InterruptedException.class)
     private static void waitForSecondsDefinedInConfig() {
         Web settings = ConfigProviderImpl.GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv());
@@ -167,6 +167,8 @@ public final class WebElementFinder {
 
         return "No match found";
     }
+
+    //CHECKSTYLE:ON
 
     private interface ByType extends Function<Locator, List<org.openqa.selenium.By>> {
     }

@@ -42,6 +42,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
     private static final String ASSERT_CONTENT_IS_EQUAL = "Inequality content <%s> is equal.";
     private static final String ASSERT_NOT_PRESENT = "Element with locator <%s> should not be present.";
     private static final String ASSERT_CHECKED = "Element with locator <%s> failed check assertion.";
+    private static final String ASSERT_FAILED_EQUAL = "Property [%s] is equal to [%s]";
 
     private final List<String> exceptions = new ArrayList<>();
     private final Map<AssertCmdPredicate, AssertMethod> assertCommandMap;
@@ -177,7 +178,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
                     .withExpected(expected).exec();
             if (isNegative) {
                 Exception e = new DefaultFrameworkException(String
-                        .format(ASSERT_CONTENT_IS_EQUAL, String.join(COMMA, expected, actual)));
+                        .format(ASSERT_FAILED_EQUAL, expected, actual));
                 onException(result, e);
             }
         } catch (Exception e) {

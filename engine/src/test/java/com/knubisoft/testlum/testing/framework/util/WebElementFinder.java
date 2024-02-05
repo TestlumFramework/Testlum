@@ -21,7 +21,16 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.FluentWait;
 
 import java.time.Duration;
-import java.util.*;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,7 +58,7 @@ public final class WebElementFinder {
 
     public WebElement find(final Locator locator, final WebDriver driver) {
         Set<org.openqa.selenium.By> bySet = new LinkedHashSet<>();
-        locator.getElementSelectors().forEach(obj -> {
+        locator.getXpathOrIdOrClassName().forEach(obj -> {
             Class<?> clazz = obj.getClass();
             bySet.addAll(SEARCH_TYPES.get(clazz).apply(locator));
         });
@@ -92,7 +101,7 @@ public final class WebElementFinder {
         return optionalElement.get();
     }
 
-
+//CHECKSTYLE:OFF
     @SneakyThrows(InterruptedException.class)
     private static void waitForSecondsDefinedInConfig() {
         Web settings = ConfigProviderImpl.GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv());
@@ -111,7 +120,7 @@ public final class WebElementFinder {
     }
 
     public Map<Class<?>, List<Object>> splitByLocatorType(final Locator locator) {
-        List<Object> locators = locator.getElementSelectors();
+        List<Object> locators = locator.getXpathOrIdOrClassName();
         return locators.stream()
                 .collect(Collectors.groupingBy(Object::getClass));
     }
@@ -158,6 +167,8 @@ public final class WebElementFinder {
 
         return "No match found";
     }
+
+    //CHECKSTYLE:ON
 
     private interface ByType extends Function<Locator, List<org.openqa.selenium.By>> {
     }

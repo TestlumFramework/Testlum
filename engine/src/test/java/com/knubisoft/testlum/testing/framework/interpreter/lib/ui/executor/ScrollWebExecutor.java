@@ -54,7 +54,7 @@ public class ScrollWebExecutor extends AbstractUiExecutor<Scroll> {
                 JavascriptUtil.executeJsScript(script, driver);
                 anyLocatorSucceeded = true;
             } catch (DefaultFrameworkException ignored) {
-
+                //ignored
             }
         }
         if (!anyLocatorSucceeded) {

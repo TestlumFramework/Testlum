@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlType;
     NativeAssert.class,
     AssertAttribute.class,
     AssertTitle.class,
+    AssertAlert.class,
     Javascript.class,
     Navigate.class,
     BrowserTab.class,

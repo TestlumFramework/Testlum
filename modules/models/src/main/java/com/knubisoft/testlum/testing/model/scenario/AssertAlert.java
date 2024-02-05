@@ -9,16 +9,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for assertTitle complex type.
+ * <p>Java class for assertAlert complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="assertTitle"&gt;
+ * &lt;complexType name="assertAlert"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="content" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="text" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="negative" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *     &lt;/extension&gt;
@@ -29,40 +29,40 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "assertTitle", propOrder = {
-    "content"
+@XmlType(name = "assertAlert", propOrder = {
+    "text"
 })
-public class AssertTitle
+public class AssertAlert
     extends AbstractUiCommand
 {
 
     @XmlElement(required = true)
-    protected String content;
+    protected String text;
     @XmlAttribute(name = "negative")
     protected Boolean negative;
 
     /**
-     * Gets the value of the content property.
+     * Gets the value of the text property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getContent() {
-        return content;
+    public String getText() {
+        return text;
     }
 
     /**
-     * Sets the value of the content property.
+     * Sets the value of the text property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setContent(String value) {
-        this.content = value;
+    public void setText(String value) {
+        this.text = value;
     }
 
     /**

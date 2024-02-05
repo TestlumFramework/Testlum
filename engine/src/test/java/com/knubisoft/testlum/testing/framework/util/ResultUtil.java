@@ -6,6 +6,8 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertChecked;
+import com.knubisoft.testlum.testing.model.scenario.AssertPresent;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import com.knubisoft.testlum.testing.model.scenario.Exclude;
@@ -69,6 +71,7 @@ public class ResultUtil {
     public static final String GENERATED_STRING = "Randomly generated string";
     public static final String ASSERT_LOCATOR = "Locator for assert command";
     public static final String ASSERT_ATTRIBUTE = "Assert command attribute";
+    public static final String ASSERT_NEGATIVE = "Is assert negative";
     public static final String CLICK_LOCATOR = "Locator for click command";
     public static final String INPUT_LOCATOR = "Locator for input command";
     public static final String CLEAR_LOCATOR = "Locator for clear command";
@@ -399,6 +402,17 @@ public class ResultUtil {
     public void addAssertAttributeMetaData(final AssertAttribute attribute, final CommandResult result) {
         result.put(ASSERT_LOCATOR, attribute.getLocator());
         result.put(ASSERT_ATTRIBUTE, attribute.getName());
+        result.put(ASSERT_NEGATIVE, attribute.isNegative());
+    }
+
+    public void addAssertPresentMetadata(final AssertPresent present, final CommandResult result) {
+        result.put(ASSERT_LOCATOR, present.getLocator());
+        result.put(ASSERT_NEGATIVE, present.isNegative());
+    }
+
+    public void addAssertCheckedMetadata(final AssertChecked assertChecked, final CommandResult result) {
+        result.put(ASSERT_LOCATOR, assertChecked.getLocator());
+        result.put(ASSERT_NEGATIVE, assertChecked.isNegative());
     }
 
     public void addSwipeMetaData(final SwipeNative swipeNative, final CommandResult result) {

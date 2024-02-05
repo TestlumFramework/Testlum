@@ -99,12 +99,13 @@ public final class LogMessage {
     public static final String EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Execution time ", "{} ms");
     public static final String WAIT_INFO_LOG = format(TABLE_FORMAT, "Wait time & unit", "{} {}");
     public static final String LOCATOR_LOG = format(TABLE_FORMAT, "Locator", "{}");
+    public static final String NEGATIVE_LOG = format(TABLE_FORMAT, "Is negative", "{}");
     public static final String UNABLE_TO_FIND_ELEMENT_BY_LOCATOR_TYPE =
             ANSI_YELLOW + "Unable to find element by: %s. Locator was skipped" + ANSI_RESET;
     public static final String ELEMENT_WAS_FOUND_BY_LOCATOR = ANSI_GREEN + "Element was found by: {}" + ANSI_RESET;
     public static final String UNABLE_TO_FIND_ELEMENT_BY_LOCATOR =
-            "No such element: The element not found using any of the provided locators. " +
-            "Please verify the locator - %s!";
+            "No such element: The element not found using any of the provided locators. "
+                    + "Please verify the locator - %s!";
     public static final String VARIATION_LOG = "Variation - {}";
     public static final String BROWSER_NAME_LOG = "Browser: {}";
     public static final String NATIVE_LOG = "Native device: {}";

@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;simpleType name="typeForAllValues"&gt;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
  *     &lt;enumeration value="deselect"/&gt;
+ *     &lt;enumeration value="select"/&gt;
  *   &lt;/restriction&gt;
  * &lt;/simpleType&gt;
  * </pre>
@@ -24,10 +25,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum TypeForAllValues {
 
-    @XmlEnumValue("select")
-    SELECT("select"),
     @XmlEnumValue("deselect")
-    DESELECT("deselect");
+    DESELECT("deselect"),
+    @XmlEnumValue("select")
+    SELECT("select");
     private final String value;
 
     TypeForAllValues(String v) {

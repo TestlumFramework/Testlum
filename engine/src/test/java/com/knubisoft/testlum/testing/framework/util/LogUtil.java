@@ -4,7 +4,10 @@ import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
+import com.knubisoft.testlum.testing.model.scenario.AssertAlert;
 import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
+import com.knubisoft.testlum.testing.model.scenario.AssertChecked;
+import com.knubisoft.testlum.testing.model.scenario.AssertPresent;
 import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
 import com.knubisoft.testlum.testing.model.scenario.CommandWithLocator;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
@@ -80,6 +83,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILE
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOVE_TO_EMPTY_SPACE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NAME_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NEGATIVE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NEW_LOG_LINE;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUERY;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
@@ -431,13 +435,20 @@ public class LogUtil {
     }
 
     public void logAssertAttributeInfo(final AssertAttribute attribute) {
+        log.info(NEGATIVE_LOG, attribute.isNegative());
         log.info(LOCATOR_LOG, attribute.getLocator());
         log.info(ATTRIBUTE_LOG, attribute.getName());
         log.info(CONTENT_LOG, StringPrettifier.cut(attribute.getContent()));
     }
 
     public void logAssertTitleCommand(final AssertTitle title) {
+        log.info(NEGATIVE_LOG, title.isNegative());
         log.info(CONTENT_LOG, title.getContent());
+    }
+
+    public void logAssertAlertCommand(final AssertAlert alert) {
+        log.info(NEGATIVE_LOG, alert.isNegative());
+        log.info(CONTENT_LOG, alert.getText());
     }
 
     public void logDragAndDropInfo(final DragAndDrop dragAndDrop) {
@@ -462,5 +473,15 @@ public class LogUtil {
         if (isNotBlank(swipeNative.getLocator())) {
             log.info(LOCATOR_LOG, swipeNative.getLocator());
         }
+    }
+
+    public void logAssertPresent(final AssertPresent command) {
+        log.info(LOCATOR_LOG, command.getLocator());
+        log.info(NEGATIVE_LOG, command.isNegative());
+    }
+
+    public void logAssertChecked(final AssertChecked command) {
+        log.info(LOCATOR_LOG, command.getLocator());
+        log.info(NEGATIVE_LOG, command.isNegative());
     }
 }

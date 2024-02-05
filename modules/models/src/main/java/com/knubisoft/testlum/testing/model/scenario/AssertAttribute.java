@@ -21,8 +21,9 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="content" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webAttributeNamePattern" /&gt;
+ *       &lt;attribute name="negative" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *       &lt;attribute name="locator" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="locatorStrategy" type="{http://www.knubisoft.com/testlum/testing/model/scenario}locatorStrategy" default="locator" /&gt;
+ *       &lt;attribute name="locatorStrategy" type="{http://www.knubisoft.com/testlum/testing/model/scenario}locatorStrategy" default="locatorId" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -42,6 +43,8 @@ public class AssertAttribute
     protected String content;
     @XmlAttribute(name = "name", required = true)
     protected String name;
+    @XmlAttribute(name = "negative")
+    protected Boolean negative;
     @XmlAttribute(name = "locator", required = true)
     protected String locator;
     @XmlAttribute(name = "locatorStrategy")
@@ -93,6 +96,34 @@ public class AssertAttribute
      */
     public void setName(String value) {
         this.name = value;
+    }
+
+    /**
+     * Gets the value of the negative property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isNegative() {
+        if (negative == null) {
+            return false;
+        } else {
+            return negative;
+        }
+    }
+
+    /**
+     * Sets the value of the negative property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setNegative(Boolean value) {
+        this.negative = value;
     }
 
     /**

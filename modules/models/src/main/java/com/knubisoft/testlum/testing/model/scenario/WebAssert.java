@@ -24,6 +24,9 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="title" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertTitle"/&gt;
  *         &lt;element name="equal" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertEqual"/&gt;
  *         &lt;element name="notEqual" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertNotEqual"/&gt;
+ *         &lt;element name="alert" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertAlert"/&gt;
+ *         &lt;element name="checked" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertChecked"/&gt;
+ *         &lt;element name="present" type="{http://www.knubisoft.com/testlum/testing/model/scenario}assertPresent"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -44,7 +47,10 @@ public class WebAssert
         @XmlElement(name = "attribute", type = AssertAttribute.class),
         @XmlElement(name = "title", type = AssertTitle.class),
         @XmlElement(name = "equal", type = AssertEqual.class),
-        @XmlElement(name = "notEqual", type = AssertNotEqual.class)
+        @XmlElement(name = "notEqual", type = AssertNotEqual.class),
+        @XmlElement(name = "alert", type = AssertAlert.class),
+        @XmlElement(name = "checked", type = AssertChecked.class),
+        @XmlElement(name = "present", type = AssertPresent.class)
     })
     protected List<AbstractCommand> attributeOrTitleOrEqual;
 
@@ -70,6 +76,9 @@ public class WebAssert
      * {@link AssertTitle }
      * {@link AssertEqual }
      * {@link AssertNotEqual }
+     * {@link AssertAlert }
+     * {@link AssertChecked }
+     * {@link AssertPresent }
      * 
      * 
      */

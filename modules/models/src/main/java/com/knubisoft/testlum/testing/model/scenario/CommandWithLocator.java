@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlType;
     AssertChecked.class,
     AssertPresent.class,
     Click.class,
+    DoubleClick.class,
     Hover.class,
     Input.class,
     DropDown.class,

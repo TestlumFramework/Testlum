@@ -542,6 +542,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ElementAttribute }
+     * 
+     */
+    public ElementAttribute createElementAttribute() {
+        return new ElementAttribute();
+    }
+
+    /**
      * Create an instance of {@link UiCondition }
      * 
      */
@@ -627,6 +635,14 @@ public class ObjectFactory {
      */
     public Click createClick() {
         return new Click();
+    }
+
+    /**
+     * Create an instance of {@link DoubleClick }
+     * 
+     */
+    public DoubleClick createDoubleClick() {
+        return new DoubleClick();
     }
 
     /**

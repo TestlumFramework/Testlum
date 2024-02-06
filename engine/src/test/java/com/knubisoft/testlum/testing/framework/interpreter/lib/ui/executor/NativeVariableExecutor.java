@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -13,7 +14,6 @@ import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarP
 import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import com.knubisoft.testlum.testing.model.scenario.NativeVar;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
@@ -71,7 +71,7 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
         try {
             UiUtil.findWebElement(dependencies, locatorId, locatorStrategy);
             valueResult = String.valueOf(true);
-        } catch (NoSuchElementException e) {
+        } catch (DefaultFrameworkException e) {
             valueResult = String.valueOf(false);
         }
         ResultUtil.addVariableMetaData(ELEMENT_PRESENT, var.getName(), LOCATOR_FORM, locatorId, valueResult, result);

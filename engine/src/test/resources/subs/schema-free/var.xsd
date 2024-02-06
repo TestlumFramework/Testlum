@@ -135,10 +135,17 @@
     <x:complexType name="fromElement">
         <x:choice>
             <x:element name="present" type="tns:elementPresent"/>
+            <x:element name="attribute" type="tns:elementAttribute"/>
         </x:choice>
     </x:complexType>
 
     <x:complexType name="elementPresent">
+        <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
+    </x:complexType>
+
+    <x:complexType name="elementAttribute">
+        <x:attribute name="name" type="tns:webAttributeNamePattern" use="required"/>
         <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
     </x:complexType>

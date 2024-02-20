@@ -9,7 +9,6 @@ import com.knubisoft.testlum.testing.model.global_config.Mobilebrowser;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.testlum.testing.model.global_config.Platform;
 import com.knubisoft.testlum.testing.model.global_config.UiConfig;
-import io.appium.java_client.remote.MobileCapabilityType;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.WebDriver;
@@ -50,7 +49,7 @@ public class MobilebrowserDriverFactory {
         if (nonNull(mobileDevice.getAppiumCapabilities())) {
             AppiumCapabilities capabilities = mobileDevice.getAppiumCapabilities();
             SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, mobileDevice, capabilities);
-            desiredCapabilities.setCapability(MobileCapabilityType.UDID, capabilities.getUdid());
+            desiredCapabilities.setCapability("udid", capabilities.getUdid());
         } else if (nonNull(mobileDevice.getBrowserStackCapabilities())) {
             SeleniumDriverUtil.setCommonCapabilities(
                     desiredCapabilities, mobileDevice, mobileDevice.getBrowserStackCapabilities());
@@ -62,11 +61,11 @@ public class MobilebrowserDriverFactory {
     private void setPlatformCapabilities(final MobilebrowserDevice mobileDevice,
                                          final DesiredCapabilities desiredCapabilities) {
         if (Platform.ANDROID == mobileDevice.getPlatformName()) {
-            desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, "uiautomator2");
-            desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Chrome");
+            desiredCapabilities.setCapability("automationName", "uiautomator2");
+            desiredCapabilities.setCapability("browserName", "Chrome");
         } else if (Platform.IOS == mobileDevice.getPlatformName()) {
-            desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, "XCUITest");
-            desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, "Safari");
+            desiredCapabilities.setCapability("automationName", "XCUITest");
+            desiredCapabilities.setCapability("browserName", "Safari");
         } else {
             throw new DefaultFrameworkException(UNKNOWN_MOBILE_PLATFORM_NAME, mobileDevice.getPlatformName().value());
         }

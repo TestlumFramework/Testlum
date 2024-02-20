@@ -13,11 +13,10 @@ import com.knubisoft.testlum.testing.model.global_config.UiConfig;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;
-import io.appium.java_client.remote.AndroidMobileCapabilityType;
-import io.appium.java_client.remote.MobileCapabilityType;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.net.URL;
@@ -74,7 +73,7 @@ public class NativeDriverFactory {
             setGooglePlayStoreCredentials(desiredCapabilities,
                     nativeDevice.getBrowserStackCapabilities().getGooglePlayLogin());
         }
-        desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, "uiautomator2");
+        desiredCapabilities.setCapability("automationName", "uiautomator2");
     }
 
     private void setIosCapabilities(final NativeDevice nativeDevice,
@@ -84,16 +83,16 @@ public class NativeDriverFactory {
         } else if (nonNull(nativeDevice.getBrowserStackCapabilities())) {
             setBrowserStackCapabilities(nativeDevice, desiredCapabilities);
         }
-        desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, "XCUITest");
+        desiredCapabilities.setCapability("automationName", "XCUITest");
     }
 
     private void setAppiumCapabilities(final NativeDevice nativeDevice,
                                        final DesiredCapabilities desiredCapabilities) {
         AppiumNativeCapabilities capabilities = nativeDevice.getAppiumCapabilities();
         SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
-        desiredCapabilities.setCapability(MobileCapabilityType.UDID, capabilities.getUdid());
+        desiredCapabilities.setCapability("udid", capabilities.getUdid());
         if (isNotBlank(capabilities.getApp())) {
-            desiredCapabilities.setCapability(MobileCapabilityType.APP, capabilities.getApp());
+            desiredCapabilities.setCapability("app", capabilities.getApp());
         }
     }
 
@@ -101,15 +100,15 @@ public class NativeDriverFactory {
                                              final DesiredCapabilities desiredCapabilities) {
         BrowserStackNativeCapabilities capabilities = nativeDevice.getBrowserStackCapabilities();
         SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
-        desiredCapabilities.setCapability(MobileCapabilityType.APP, capabilities.getApp());
+        desiredCapabilities.setCapability("app", capabilities.getApp());
         desiredCapabilities.setCapability("browserstack.local", Boolean.TRUE);
     }
 
     private void setAppiumAndroidApp(final DesiredCapabilities desiredCapabilities,
                                      final AppiumNativeCapabilities capabilities) {
         if (isNoneBlank(capabilities.getAppPackage(), capabilities.getAppActivity())) {
-            desiredCapabilities.setCapability(AndroidMobileCapabilityType.APP_PACKAGE, capabilities.getAppPackage());
-            desiredCapabilities.setCapability(AndroidMobileCapabilityType.APP_ACTIVITY, capabilities.getAppActivity());
+            desiredCapabilities.setCapability("appPackage", capabilities.getAppPackage());
+            desiredCapabilities.setCapability("appActivity", capabilities.getAppActivity());
         }
     }
 

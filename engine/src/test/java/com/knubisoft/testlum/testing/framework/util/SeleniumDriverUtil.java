@@ -7,7 +7,6 @@ import com.knubisoft.testlum.testing.model.global_config.BrowserStackLogin;
 import com.knubisoft.testlum.testing.model.global_config.Capabilities;
 import com.knubisoft.testlum.testing.model.global_config.ConnectionType;
 import com.knubisoft.testlum.testing.model.global_config.UiConfig;
-import io.appium.java_client.remote.MobileCapabilityType;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -50,7 +49,7 @@ public class SeleniumDriverUtil {
 
     public void setDefaultCapabilities(final AbstractDevice abstractDevice,
                                        final DesiredCapabilities desiredCapabilities) {
-        desiredCapabilities.setCapability(MobileCapabilityType.NEW_COMMAND_TIMEOUT, "5000");
+        desiredCapabilities.setCapability("newCommandTimeout", "5000");
         Capabilities capabilities = abstractDevice.getCapabilities();
         if (nonNull(capabilities)) {
             capabilities.getCapability()
@@ -61,8 +60,8 @@ public class SeleniumDriverUtil {
     public void setCommonCapabilities(final DesiredCapabilities desiredCapabilities,
                                       final AbstractDevice abstractDevice,
                                       final AbstractCapabilities capabilities) {
-        desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, abstractDevice.getPlatformName().value());
-        desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, capabilities.getPlatformVersion());
-        desiredCapabilities.setCapability(MobileCapabilityType.DEVICE_NAME, capabilities.getDeviceName());
+        desiredCapabilities.setCapability("platformName", abstractDevice.getPlatformName().value());
+        desiredCapabilities.setCapability("platformVersion", capabilities.getPlatformVersion());
+        desiredCapabilities.setCapability("deviceName", capabilities.getDeviceName());
     }
 }

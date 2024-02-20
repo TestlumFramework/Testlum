@@ -37,6 +37,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariOptions;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -147,9 +148,11 @@ public class WebDriverFactory {
 
     private void setCapabilities(final AbstractBrowser browser, final MutableCapabilities driverOptions) {
         Capabilities capabilities = browser.getCapabilities();
+        Map<String, Object> cloudOptions = new HashMap<>();
         if (nonNull(capabilities)) {
-            capabilities.getCapability().forEach(cap -> driverOptions.setCapability(cap.getName(), cap.getValue()));
+            capabilities.getCapability().forEach(cap -> cloudOptions.put(cap.getName(), cap.getValue()));
         }
+        driverOptions.setCapability("cloud:options", cloudOptions);
     }
 
     private interface WebDriverInitializer<T extends AbstractBrowser> {

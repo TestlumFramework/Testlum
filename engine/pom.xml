@@ -26,9 +26,9 @@
         <standard-subs-pack>${project.basedir}/src/test/resources/subs/schema-standard</standard-subs-pack>
         <professional-subs-pack>${project.basedir}/src/test/resources/subs/schema-professional</professional-subs-pack>
 
-        <selenium-java.version>4.1.4</selenium-java.version>
-        <appium-client.version>8.1.1</appium-client.version>
-        <webdrivermanager.version>5.4.1</webdrivermanager.version>
+        <selenium-java.version>4.17.0</selenium-java.version>
+        <appium-client.version>9.1.0</appium-client.version>
+        <webdrivermanager.version>5.6.3</webdrivermanager.version>
         <org.spring.boot.version>2.4.3</org.spring.boot.version>
         <org.spring.version>5.3.4</org.spring.version>
         <io.jsonwebtoken.version>0.11.2</io.jsonwebtoken.version>

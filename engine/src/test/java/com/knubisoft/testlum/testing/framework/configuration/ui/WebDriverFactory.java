@@ -164,7 +164,9 @@ public class WebDriverFactory {
 
         private ChromeOptions getChromeOptions(final Chrome browser) {
             ChromeOptions chromeOptions = new ChromeOptions();
-            chromeOptions.setHeadless(browser.isHeadlessMode());
+            if (browser.isHeadlessMode()) {
+                chromeOptions.addArguments("--headless=new");
+            }
             BrowserOptionsArguments browserOptionsArguments = browser.getChromeOptionsArguments();
             if (nonNull(browserOptionsArguments)) {
                 chromeOptions.addArguments(browserOptionsArguments.getArgument());
@@ -181,7 +183,9 @@ public class WebDriverFactory {
 
         private FirefoxOptions getFirefoxOptions(final Firefox browser) {
             FirefoxOptions firefoxOptions = new FirefoxOptions();
-            firefoxOptions.setHeadless(browser.isHeadlessMode());
+            if (browser.isHeadlessMode()) {
+                firefoxOptions.addArguments("--headless=new");
+            }
             BrowserOptionsArguments browserOptionsArguments = browser.getFirefoxOptionsArguments();
             if (nonNull(browserOptionsArguments)) {
                 firefoxOptions.addArguments(browserOptionsArguments.getArgument());
@@ -198,7 +202,9 @@ public class WebDriverFactory {
 
         private EdgeOptions getEdgeOptions(final Edge browser) {
             EdgeOptions edgeOptions = new EdgeOptions();
-            edgeOptions.setHeadless(browser.isHeadlessMode());
+            if (browser.isHeadlessMode()) {
+                edgeOptions.addArguments("--headless=new");
+            }
             BrowserOptionsArguments browserOptionsArguments = browser.getEdgeOptionsArguments();
             if (nonNull(browserOptionsArguments)) {
                 edgeOptions.addArguments(browserOptionsArguments.getArgument());

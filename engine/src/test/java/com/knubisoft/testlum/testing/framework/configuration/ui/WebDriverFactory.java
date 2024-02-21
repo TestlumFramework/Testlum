@@ -28,7 +28,9 @@ import io.github.bonigarcia.wdm.managers.SafariDriverManager;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.MutableCapabilities;
+import org.openqa.selenium.UnexpectedAlertBehaviour;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
@@ -148,11 +150,9 @@ public class WebDriverFactory {
 
     private void setCapabilities(final AbstractBrowser browser, final MutableCapabilities driverOptions) {
         Capabilities capabilities = browser.getCapabilities();
-        Map<String, Object> cloudOptions = new HashMap<>();
         if (nonNull(capabilities)) {
-            capabilities.getCapability().forEach(cap -> cloudOptions.put(cap.getName(), cap.getValue()));
+            capabilities.getCapability().forEach(cap -> driverOptions.setCapability(cap.getName(), cap.getValue()));
         }
-        driverOptions.setCapability("cloud:options", cloudOptions);
     }
 
     private interface WebDriverInitializer<T extends AbstractBrowser> {

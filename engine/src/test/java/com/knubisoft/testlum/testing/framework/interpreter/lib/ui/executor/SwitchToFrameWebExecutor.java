@@ -35,6 +35,6 @@ public class SwitchToFrameWebExecutor extends AbstractUiExecutor<SwitchToFrame> 
         LogUtil.startUiCommandsInFrame();
         this.subCommandRunner.runCommands(switchToFrame.getClickOrInputOrAssert(), result, dependencies);
         LogUtil.endUiCommandsInFrame();
-        dependencies.getDriver().switchTo().defaultContent();
+        dependencies.getDriver().switchTo().parentFrame();
     }
 }

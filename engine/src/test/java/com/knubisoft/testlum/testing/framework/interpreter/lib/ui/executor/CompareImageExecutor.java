@@ -2,6 +2,9 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.Rectangle;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -23,6 +26,7 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -80,8 +84,15 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
                                                   final String imageSourceAttribute,
                                                   final CommandResult result) throws IOException {
         String urlToImage = UiUtil.getElementAttribute(webElement, imageSourceAttribute, dependencies.getDriver());
-        log.info(URL_TO_IMAGE_LOG, urlToImage);
-        result.put(URL_TO_ACTUAL_IMAGE, urlToImage);
+        if (urlToImage.startsWith(DelimiterConstant.SLASH_SEPARATOR)) {
+            try {
+                urlToImage = getImageURLStartsWithCurrentPageURL(result, urlToImage);
+                return ImageIO.read(new URL(urlToImage));
+            } catch (final IIOException e) {
+                urlToImage = getImageURLStartsWithBaseURL(result, urlToImage);
+                return ImageIO.read(new URL(urlToImage));
+            }
+        }
         return ImageIO.read(new URL(urlToImage));
     }
 
@@ -114,6 +125,24 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         double width = (seleniumRectangle.getX() + seleniumRectangle.getWidth()) * scale.getScaleX();
         double height = (seleniumRectangle.getY() + seleniumRectangle.getHeight()) * scale.getScaleY();
         return new Rectangle((int) x, (int) y, (int) width, (int) height);
+    }
+
+    private String getImageURLStartsWithBaseURL(final CommandResult result, final String urlToImage) {
+        String imageURL;
+        String baseUrl = GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv()).getBaseUrl();
+        imageURL = baseUrl + urlToImage;
+        log.info(URL_TO_IMAGE_LOG, imageURL);
+        result.put(URL_TO_ACTUAL_IMAGE, imageURL);
+        return imageURL;
+    }
+
+    private String getImageURLStartsWithCurrentPageURL(final CommandResult result, final String urlToImage) {
+        String imageURL;
+        String basePageUrl = UiUtil.getBasePageURL(dependencies.getDriver().getCurrentUrl());
+        imageURL = basePageUrl + urlToImage;
+        log.info(URL_TO_IMAGE_LOG, imageURL);
+        result.put(URL_TO_ACTUAL_IMAGE, imageURL);
+        return imageURL;
     }
 
     @Getter

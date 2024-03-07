@@ -34,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.Base64;
@@ -255,5 +256,17 @@ public class UiUtil {
                     .getBaseUrl() + path;
         }
         return GlobalTestConfigurationProvider.getWebSettings(env).getBaseUrl() + path;
+    }
+
+    public String getBasePageURL(final String currentPageURL) {
+        try {
+            URL url = new URL(currentPageURL);
+            String protocol = url.getProtocol();
+            String host = url.getHost();
+
+            return protocol + "://" + host;
+        } catch (Exception e) {
+            throw new DefaultFrameworkException("Unable to extract base URL from page: " + currentPageURL);
+        }
     }
 }

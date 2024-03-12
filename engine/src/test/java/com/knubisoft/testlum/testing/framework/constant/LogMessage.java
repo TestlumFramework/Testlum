@@ -143,6 +143,7 @@ public final class LogMessage {
 
     public static final String UI_EXECUTION_TIME_LOG = format(TABLE_FORMAT, "Step execution time", "{} ms");
     public static final String COMMAND_TYPE_LOG = format(TABLE_FORMAT, "Command type", "{}");
+    public static final String BY_LOG = format(TABLE_FORMAT, "By", "{}");
     public static final String JS_FILE_LOG = format(TABLE_FORMAT, "JS file", "{}");
     public static final String SCROLL_DIRECTION_LOG = format(TABLE_FORMAT, "Direction", "{}");
     public static final String SCROLL_BY_LOG = format(TABLE_FORMAT, "Scroll by", "{}");

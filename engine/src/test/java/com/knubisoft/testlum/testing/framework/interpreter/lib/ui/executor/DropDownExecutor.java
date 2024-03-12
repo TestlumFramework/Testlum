@@ -26,12 +26,8 @@ import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.CUSTOM_DROP_DOWN_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_TYPE_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VALUE_LOG;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALL_VALUES_DESELECT;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALL_VALUES_SELECT;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_FOR;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_LOCATOR;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
 import static java.lang.String.format;
 
 @Slf4j
@@ -50,14 +46,15 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         if (dropDownElement.getTagName().equals("select")) {
             processSelectDropDown(dropDown, result, dropDownElement);
         } else {
-            processCustomDropDown(dropDownElement, dropDown);
+            processCustomDropDown(dropDownElement, dropDown, result);
         }
     }
 
-    private void processCustomDropDown(final WebElement dropDownElement, final DropDown dropDown) {
+    private void processCustomDropDown(final WebElement dropDownElement, final DropDown dropDown,
+                                       final CommandResult result) {
         OneValue oneValue = dropDown.getOneValue();
         if (Objects.nonNull(oneValue)) {
-            processOneValueForCustomDropDown(dropDownElement, dropDown);
+            processOneValueForCustomDropDown(dropDownElement, dropDown, result);
         } else {
             throw new DefaultFrameworkException(CUSTOM_DROP_DOWN_NOT_SUPPORTED,
                     dropDown.getAllValues().getType().value());
@@ -77,15 +74,23 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         }
     }
 
-    private void processOneValueForCustomDropDown(final WebElement dropDownElement, final DropDown dropDown) {
-        validateByMethodForCustomDropDown(dropDown.getOneValue().getBy());
+    private void processOneValueForCustomDropDown(final WebElement dropDownElement, final DropDown dropDown,
+                                                  final CommandResult result) {
+        OneValue oneValue = dropDown.getOneValue();
+        TypeForOneValue type = oneValue.getType();
+        SelectOrDeselectBy method = oneValue.getBy();
+        String value = oneValue.getValue();
+        validateByMethodForCustomDropDown(method);
+        ResultUtil.addDropDownForOneValueMetaData(oneValue.getType().value(), oneValue.getBy().value(), value, result);
+        log.info(COMMAND_TYPE_LOG, format(ONE_VALUE_TEMPLATE, type.value()));
+        log.info(BY_LOG, oneValue.getBy().value());
+        log.info(VALUE_LOG, value);
         dropDownElement.click();
-        String value = dropDown.getOneValue().getValue();
         List<WebElement> dropDownParentElements = dropDownElement.findElements(By.xpath("ancestor::*"));
-        selectSearchableOption(dropDownParentElements, value);
+        selectSearchableOptionForCustomDropDown(dropDownParentElements, value);
     }
 
-    private void selectSearchableOption(List<WebElement> dropDownParentElements, String value) {
+    private void selectSearchableOptionForCustomDropDown(List<WebElement> dropDownParentElements, String value) {
         Collections.reverse(dropDownParentElements);
 
         for (int i = 0; i < dropDownParentElements.size(); i++) {
@@ -108,7 +113,8 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         SelectOrDeselectBy method = oneValue.getBy();
         String value = oneValue.getValue();
         ResultUtil.addDropDownForOneValueMetaData(type.value(), method.value(), value, result);
-        log.info(COMMAND_TYPE_LOG, type.value());
+        log.info(COMMAND_TYPE_LOG, format(ONE_VALUE_TEMPLATE, type.value()));
+        log.info(BY_LOG, oneValue.getBy().value());
         log.info(VALUE_LOG, value);
         if (type == TypeForOneValue.SELECT) {
             selectByMethod(select, method, value);

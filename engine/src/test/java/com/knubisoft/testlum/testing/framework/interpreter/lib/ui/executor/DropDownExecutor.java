@@ -15,10 +15,16 @@ import com.knubisoft.testlum.testing.model.scenario.SelectOrDeselectBy;
 import com.knubisoft.testlum.testing.model.scenario.TypeForAllValues;
 import com.knubisoft.testlum.testing.model.scenario.TypeForOneValue;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.CUSTOM_DROP_DOWN_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_TYPE_LOG;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VALUE_LOG;
@@ -26,6 +32,7 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALL_VALUES
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALL_VALUES_SELECT;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_FOR;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_LOCATOR;
+import static java.lang.String.format;
 
 @Slf4j
 @ExecutorForClass(DropDown.class)
@@ -39,17 +46,64 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
     public void execute(final DropDown dropDown, final CommandResult result) {
         String locatorId = dropDown.getLocator();
         result.put(DROP_DOWN_LOCATOR, locatorId);
-        Select select = new Select(UiUtil.findWebElement(dependencies, locatorId, dropDown.getLocatorStrategy()));
-        OneValue oneValue = dropDown.getOneValue();
-        if (Objects.nonNull(oneValue)) {
-            processOneValueFromDropDown(oneValue, select, result);
+        WebElement dropDownElement = UiUtil.findWebElement(dependencies, locatorId, dropDown.getLocatorStrategy());
+        if (dropDownElement.getTagName().equals("select")) {
+            processSelectDropDown(dropDown, result, dropDownElement);
         } else {
-            AllValues allValues = dropDown.getAllValues();
-            processAllValuesFromDropDown(allValues, select, result);
+            processCustomDropDown(dropDownElement, dropDown);
         }
     }
 
-    private void processOneValueFromDropDown(final OneValue oneValue, final Select select, final CommandResult result) {
+    private void processCustomDropDown(final WebElement dropDownElement, final DropDown dropDown) {
+        OneValue oneValue = dropDown.getOneValue();
+        if (Objects.nonNull(oneValue)) {
+            processOneValueForCustomDropDown(dropDownElement, dropDown);
+        } else {
+            throw new DefaultFrameworkException(CUSTOM_DROP_DOWN_NOT_SUPPORTED,
+                    dropDown.getAllValues().getType().value());
+        }
+
+    }
+
+    private void processSelectDropDown(final DropDown dropDown, final CommandResult result,
+                                       final WebElement dropDownElement) {
+        Select select = new Select(dropDownElement);
+        OneValue oneValue = dropDown.getOneValue();
+        if (Objects.nonNull(oneValue)) {
+            processOneValueFromSelectDropDown(oneValue, select, result);
+        } else {
+            AllValues allValues = dropDown.getAllValues();
+            processAllValuesFromSelectDropDown(allValues, select, result);
+        }
+    }
+
+    private void processOneValueForCustomDropDown(final WebElement dropDownElement, final DropDown dropDown) {
+        validateByMethodForCustomDropDown(dropDown.getOneValue().getBy());
+        dropDownElement.click();
+        String value = dropDown.getOneValue().getValue();
+        List<WebElement> dropDownParentElements = dropDownElement.findElements(By.xpath("ancestor::*"));
+        selectSearchableOption(dropDownParentElements, value);
+    }
+
+    private void selectSearchableOption(List<WebElement> dropDownParentElements, String value) {
+        Collections.reverse(dropDownParentElements);
+
+        for (int i = 0; i < dropDownParentElements.size(); i++) {
+            WebElement element = dropDownParentElements.get(i);
+            try {
+                WebElement searchableOption = element.findElement(By.xpath(
+                        format(".//*[contains(text(), '%s')]", value)));
+                searchableOption.click();
+                break;
+            } catch (NoSuchElementException e) {
+                if (i == dropDownParentElements.size() - 1) {
+                    throw e;
+                }
+            }
+        }
+    }
+
+    private void processOneValueFromSelectDropDown(final OneValue oneValue, final Select select, final CommandResult result) {
         TypeForOneValue type = oneValue.getType();
         SelectOrDeselectBy method = oneValue.getBy();
         String value = oneValue.getValue();
@@ -64,8 +118,20 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
-    private void processAllValuesFromDropDown(final AllValues allValues, final Select select,
-                                              final CommandResult result) {
+    private void validateByMethodForCustomDropDown(final SelectOrDeselectBy method) {
+        switch (method) {
+            case TEXT:
+                break;
+            case INDEX:
+            case VALUE:
+                throw new DefaultFrameworkException(CUSTOM_DROP_DOWN_NOT_SUPPORTED, method.value());
+            default:
+                throw new DefaultFrameworkException(DROP_DOWN_NOT_SUPPORTED, method.value());
+        }
+    }
+
+    private void processAllValuesFromSelectDropDown(final AllValues allValues, final Select select,
+                                                    final CommandResult result) {
         TypeForAllValues type = allValues.getType();
         if (type == TypeForAllValues.DESELECT) {
             deselectAll(select, result);
@@ -76,25 +142,33 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
 
     private void selectByMethod(final Select select, final SelectOrDeselectBy method, final String value) {
         switch (method) {
-            case INDEX: select.selectByIndex(Integer.parseInt(value));
+            case INDEX:
+                select.selectByIndex(Integer.parseInt(value));
                 break;
-            case TEXT: select.selectByVisibleText(value);
+            case TEXT:
+                select.selectByVisibleText(value);
                 break;
-            case VALUE: select.selectByValue(value);
+            case VALUE:
+                select.selectByValue(value);
                 break;
-            default: throw new DefaultFrameworkException(DROP_DOWN_NOT_SUPPORTED, method.value());
+            default:
+                throw new DefaultFrameworkException(DROP_DOWN_NOT_SUPPORTED, method.value());
         }
     }
 
     private void deselectByMethod(final Select select, final SelectOrDeselectBy method, final String value) {
         switch (method) {
-            case INDEX: select.deselectByIndex(Integer.parseInt(value));
+            case INDEX:
+                select.deselectByIndex(Integer.parseInt(value));
                 break;
-            case TEXT: select.deselectByVisibleText(value);
+            case TEXT:
+                select.deselectByVisibleText(value);
                 break;
-            case VALUE: select.deselectByValue(value);
+            case VALUE:
+                select.deselectByValue(value);
                 break;
-            default: throw new DefaultFrameworkException(DROP_DOWN_NOT_SUPPORTED, method.value());
+            default:
+                throw new DefaultFrameworkException(DROP_DOWN_NOT_SUPPORTED, method.value());
         }
     }
 

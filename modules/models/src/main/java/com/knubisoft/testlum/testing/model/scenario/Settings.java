@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="active" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
  *       &lt;attribute name="onlyThis" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *       &lt;attribute name="showInRecorder" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *       &lt;attribute name="truncateStorages" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -43,6 +44,8 @@ public class Settings {
     protected Boolean active;
     @XmlAttribute(name = "onlyThis")
     protected Boolean onlyThis;
+    @XmlAttribute(name = "showInRecorder")
+    protected Boolean showInRecorder;
     @XmlAttribute(name = "truncateStorages")
     protected Boolean truncateStorages;
 
@@ -148,6 +151,34 @@ public class Settings {
      */
     public void setOnlyThis(Boolean value) {
         this.onlyThis = value;
+    }
+
+    /**
+     * Gets the value of the showInRecorder property.
+     *
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *
+     */
+    public boolean isShowInRecorder() {
+        if (showInRecorder == null) {
+            return false;
+        } else {
+            return showInRecorder;
+        }
+    }
+
+    /**
+     * Sets the value of the showInRecorder property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *
+     */
+    public void setShowInRecorder(Boolean value) {
+        this.showInRecorder = value;
     }
 
     /**

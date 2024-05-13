@@ -141,7 +141,7 @@ public class LogUtil {
         logOverviewPartInfo(OverviewPart.DESCRIPTION, overview.getDescription());
         logOverviewPartInfo(OverviewPart.JIRA, overview.getJira());
         logOverviewPartInfo(OverviewPart.DEVELOPER, overview.getDeveloper());
-        overview.getLink().forEach(link -> logOverviewPartInfo(OverviewPart.LINK, link));
+        logOverviewPartInfo(OverviewPart.LINK, overview.getLink());
     }
 
     private void logOverviewPartInfo(final OverviewPart overviewPart, final String data) {

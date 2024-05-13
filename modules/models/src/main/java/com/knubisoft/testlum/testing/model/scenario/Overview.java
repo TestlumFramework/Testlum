@@ -1,8 +1,6 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -18,13 +16,13 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="overview"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
+ *       &lt;all&gt;
  *         &lt;element name="description" type="{http://www.knubisoft.com/testlum/testing/model/scenario}stringMin10"/&gt;
  *         &lt;element name="name" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *         &lt;element name="jira" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" minOccurs="0"/&gt;
  *         &lt;element name="developer" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" minOccurs="0"/&gt;
- *         &lt;element name="link" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" maxOccurs="unbounded" minOccurs="0"/&gt;
- *       &lt;/sequence&gt;
+ *         &lt;element name="link" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" minOccurs="0"/&gt;
+ *       &lt;/all&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -34,11 +32,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "overview", propOrder = {
-    "description",
-    "name",
-    "jira",
-    "developer",
-    "link"
+
 })
 public class Overview {
 
@@ -48,7 +42,7 @@ public class Overview {
     protected String name;
     protected String jira;
     protected String developer;
-    protected List<String> link;
+    protected String link;
 
     /**
      * Gets the value of the description property.
@@ -149,30 +143,25 @@ public class Overview {
     /**
      * Gets the value of the link property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the link property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getLink().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link String }
-     * 
-     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
      */
-    public List<String> getLink() {
-        if (link == null) {
-            link = new ArrayList<String>();
-        }
-        return this.link;
+    public String getLink() {
+        return link;
+    }
+
+    /**
+     * Sets the value of the link property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setLink(String value) {
+        this.link = value;
     }
 
 }

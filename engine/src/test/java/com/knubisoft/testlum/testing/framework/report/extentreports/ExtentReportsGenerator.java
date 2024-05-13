@@ -111,11 +111,10 @@ public class ExtentReportsGenerator implements ReportGenerator {
         }
     }
 
-    private void addLinks(final ExtentTest extentTest, final List<String> linksForReport) {
-        if (!linksForReport.isEmpty()) {
-            List<String> clickableLinks = linksForReport.stream()
-                    .map(link -> format(LINK_TEMPLATE, link, link)).collect(Collectors.toList());
-            extentTest.info(MarkupHelper.createUnorderedList(clickableLinks));
+    private void addLinks(final ExtentTest extentTest, final String linkForReport) {
+        if (isNotBlank(linkForReport)) {
+            String clickableLink = format(LINK_TEMPLATE, linkForReport, linkForReport);
+            extentTest.info(MarkupHelper.createUnorderedList(List.of(clickableLink)));
         }
     }
 

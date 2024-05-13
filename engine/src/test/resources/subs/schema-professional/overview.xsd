@@ -8,13 +8,13 @@
     <x:include schemaLocation="shared.xsd"/>
 
     <x:complexType name="overview">
-        <x:sequence>
+        <x:all>
             <x:element name="description" type="tns:stringMin10"/>
             <x:element name="name" type="tns:nonEmptyString"/>
             <x:element name="jira" type="tns:nonEmptyString" minOccurs="0"/>
             <x:element name="developer" type="tns:nonEmptyString" minOccurs="0"/>
-            <x:element name="link" type="tns:nonEmptyString" minOccurs="0" maxOccurs="unbounded"/>
-        </x:sequence>
+            <x:element name="link" type="tns:nonEmptyString" minOccurs="0"/>
+        </x:all>
     </x:complexType>
 
     <x:simpleType name="overviewPart">

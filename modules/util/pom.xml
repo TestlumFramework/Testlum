@@ -12,6 +12,7 @@
     </parent>
 
     <artifactId>testlum-util</artifactId>
+    <packaging>pom</packaging>
 
     <dependencies>
         <dependency>

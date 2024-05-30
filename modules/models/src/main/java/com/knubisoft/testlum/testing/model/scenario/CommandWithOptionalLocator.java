@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "commandWithOptionalLocator")
 @XmlSeeAlso({
     Scroll.class,
+    SwitchToFrame.class,
     Paste.class,
     Highlight.class,
     SwipeNative.class

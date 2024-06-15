@@ -64,10 +64,10 @@
         <jaxb2-maven-plugin.version>2.5.0</jaxb2-maven-plugin.version>
         <exec.maven.plugin.version>3.0.0</exec.maven.plugin.version>
         <maven.enforcer.plugin.version>3.0.0-M3</maven.enforcer.plugin.version>
-<!--        <checkstyle.maven.plugin.version>3.1.2</checkstyle.maven.plugin.version>-->
-<!--        <com.puppycrawl.tools.checkstyle.version>8.41</com.puppycrawl.tools.checkstyle.version>-->
-<!--        <spotbugs.version>4.7.3</spotbugs.version>-->
-<!--        <spotbugs.maven.plugin.version>4.7.2.1</spotbugs.maven.plugin.version>-->
+        <!--        <checkstyle.maven.plugin.version>3.1.2</checkstyle.maven.plugin.version>-->
+        <!--        <com.puppycrawl.tools.checkstyle.version>8.41</com.puppycrawl.tools.checkstyle.version>-->
+        <!--        <spotbugs.version>4.7.3</spotbugs.version>-->
+        <!--        <spotbugs.maven.plugin.version>4.7.2.1</spotbugs.maven.plugin.version>-->
         <maven.pmd.plugin.version>3.14.0</maven.pmd.plugin.version>
         <maven.surefire.failsafe.version>3.0.0-M5</maven.surefire.failsafe.version>
         <tomcat.jdbc.version>10.1.0-M2</tomcat.jdbc.version>
@@ -219,6 +219,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <dependency>
             <groupId>com.sendgrid</groupId>
             <artifactId>sendgrid-java</artifactId>
@@ -313,53 +314,24 @@
             </exclusions>
         </dependency>
 
+        <!-- AWS SDK for Amazon S3 -->
         <dependency>
             <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk</artifactId>
+            <artifactId>aws-java-sdk-s3</artifactId>
             <version>${com.amazonaws.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-transport</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-buffer</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.amazonaws</groupId>
-                    <artifactId>aws-java-sdk-simpleworkflow</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.amazonaws</groupId>
-                    <artifactId>aws-java-sdk-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-handler</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-core</artifactId>
-            <version>${com.amazonaws.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>joda-time</groupId>
-                    <artifactId>joda-time</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
+        <!-- AWS SDK for Amazon SQS -->
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-sqs</artifactId>
+            <version>${com.amazonaws.version}</version>
+        </dependency>
+
+        <!-- AWS SDK for Amazon SES -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-ses</artifactId>
             <version>${com.amazonaws.version}</version>
         </dependency>
 

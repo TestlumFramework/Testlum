@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
@@ -18,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="switchToFrame"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}commandWithLocator"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}commandWithOptionalLocator"&gt;
  *       &lt;choice maxOccurs="unbounded" minOccurs="0"&gt;
  *         &lt;element name="click" type="{http://www.knubisoft.com/testlum/testing/model/scenario}click"/&gt;
  *         &lt;element name="input" type="{http://www.knubisoft.com/testlum/testing/model/scenario}input"/&gt;
@@ -39,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webVar"/&gt;
  *         &lt;element name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiCondition"/&gt;
  *       &lt;/choice&gt;
+ *       &lt;attribute name="index" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -49,7 +51,8 @@ import javax.xml.bind.annotation.XmlType;
         "clickOrInputOrAssert"
 })
 public class SwitchToFrame
-        extends CommandWithLocator {
+    extends CommandWithOptionalLocator
+{
 
     @XmlElements({
             @XmlElement(name = "click", type = Click.class),
@@ -73,6 +76,8 @@ public class SwitchToFrame
             @XmlElement(name = "doubleClick", type = DoubleClick.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
+    @XmlAttribute(name = "index")
+    protected String index;
 
     /**
      * Gets the value of the clickOrInputOrAssert property.
@@ -117,6 +122,30 @@ public class SwitchToFrame
             clickOrInputOrAssert = new ArrayList<AbstractUiCommand>();
         }
         return this.clickOrInputOrAssert;
+    }
+
+    /**
+     * Gets the value of the index property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getIndex() {
+        return index;
+    }
+
+    /**
+     * Sets the value of the index property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setIndex(String value) {
+        this.index = value;
     }
 
 }

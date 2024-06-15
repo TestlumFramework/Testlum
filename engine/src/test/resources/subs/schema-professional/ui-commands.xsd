@@ -174,7 +174,7 @@
 
     <x:complexType name="switchToFrame">
         <x:complexContent>
-            <x:extension base="tns:commandWithLocator">
+            <x:extension base="tns:commandWithOptionalLocator">
                 <x:choice maxOccurs="unbounded" minOccurs="0">
                     <x:element name="click" type="tns:click"/>
                     <x:element name="input" type="tns:input"/>
@@ -196,6 +196,7 @@
                     <x:element name="condition" type="tns:uiCondition"/>
                     <x:element name="doubleClick" type="tns:doubleClick"/>
                 </x:choice>
+                <x:attribute name="index" type="x:string"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

@@ -12,6 +12,7 @@ import com.knubisoft.testlum.testing.model.scenario.SwitchToFrame;
 import org.openqa.selenium.WebElement;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.SWITCH_INDEX;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.SWITCH_LOCATOR;
 
 @ExecutorForClass(SwitchToFrame.class)
@@ -27,9 +28,14 @@ public class SwitchToFrameWebExecutor extends AbstractUiExecutor<SwitchToFrame> 
     @Override
     public void execute(final SwitchToFrame switchToFrame, final CommandResult result) {
         String locatorId = switchToFrame.getLocator();
-        result.put(SWITCH_LOCATOR, locatorId);
-        WebElement element = UiUtil.findWebElement(dependencies, locatorId, switchToFrame.getLocatorStrategy());
-        dependencies.getDriver().switchTo().frame(element);
+        if (locatorId != null) {
+            result.put(SWITCH_LOCATOR, locatorId);
+            WebElement element = UiUtil.findWebElement(dependencies, locatorId, switchToFrame.getLocatorStrategy());
+            dependencies.getDriver().switchTo().frame(element);
+        } else {
+            result.put(SWITCH_INDEX, switchToFrame.getIndex());
+            dependencies.getDriver().switchTo().frame(switchToFrame.getIndex());
+        }
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
 
         LogUtil.startUiCommandsInFrame();

@@ -155,11 +155,11 @@ public class Settings {
 
     /**
      * Gets the value of the showInRecorder property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link Boolean }
-     *
+     *     
      */
     public boolean isShowInRecorder() {
         if (showInRecorder == null) {
@@ -171,11 +171,11 @@ public class Settings {
 
     /**
      * Sets the value of the showInRecorder property.
-     *
+     * 
      * @param value
      *     allowed object is
      *     {@link Boolean }
-     *
+     *     
      */
     public void setShowInRecorder(Boolean value) {
         this.showInRecorder = value;

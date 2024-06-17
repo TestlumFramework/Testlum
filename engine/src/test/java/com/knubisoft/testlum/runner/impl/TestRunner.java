@@ -33,6 +33,7 @@ public class TestRunner implements Runner {
         String configFileName = ArgumentsUtils.getConfigurationFileName(args[0]);
         String pathToTestResources = ArgumentsUtils.getPathToTestResources(args[1]);
         String username = ArgumentsUtils.getUsername(args[2]);
+        System.setProperty("resource", args[1]);
         TestResourceSettings.init(configFileName, pathToTestResources, username);
         initLocatorsFolder();
         TestExecutionSummary testExecutionSummary = runTests();

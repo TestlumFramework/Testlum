@@ -1430,7 +1430,7 @@
                         <configuration>
                             <filesets>
                                 <fileset>
-                                    <directory>${project.basedir}/src/test/resources/schema</directory>
+                                    <directory>${project.basedir}${file.separator}src${file.separator}test${file.separator}resources${file.separator}schema</directory>
                                 </fileset>
                             </filesets>
                         </configuration>
@@ -1458,7 +1458,7 @@
                                     <goal>copy-resources</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${project.basedir}/src/test/resources/schema</outputDirectory>
+                                    <outputDirectory>${project.basedir}${file.separator}src${file.separator}test${file.separator}resources${file.separator}schema</outputDirectory>
                                     <resources>
                                         <resource>
                                             <directory>${professional-subs-pack}</directory>
@@ -1487,9 +1487,9 @@
                             <outputDirectory>${models.dir}</outputDirectory>
                             <clearOutputDir>true</clearOutputDir>
                             <sources>
-                                <source>${professional-subs-pack}/scenario.xsd</source>
-                                <source>${professional-subs-pack}/global-config.xsd</source>
-                                <source>${professional-subs-pack}/pages.xsd</source>
+                                <source>${professional-subs-pack}${file.separator}scenario.xsd</source>
+                                <source>${professional-subs-pack}${file.separator}global-config.xsd</source>
+                                <source>${professional-subs-pack}${file.separator}pages.xsd</source>
                             </sources>
                             <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
                         </configuration>

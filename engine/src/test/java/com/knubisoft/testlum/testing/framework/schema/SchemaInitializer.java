@@ -5,27 +5,28 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 
 import javax.xml.XMLConstants;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import java.io.InputStream;
-
-import static java.io.File.separator;
+import java.io.File;
 
 @UtilityClass
 public class SchemaInitializer {
 
-    public static final Schema GLOBAL_CONFIG_SCHEMA = initSchema("schema" + separator + "global-config.xsd");
-    public static final Schema INTEGRATION_SCHEMA = initSchema("schema" + separator + "integration-config.xsd");
-    public static final Schema UI_SCHEMA = initSchema("schema" + separator + "ui-config.xsd");
-    public static final Schema PAGES_SCHEMA = initSchema("schema" + separator + "pages.xsd");
-    public static final Schema SCENARIO_SCHEMA = initSchema("schema" + separator + "scenario.xsd");
+    public static final Schema GLOBAL_CONFIG_SCHEMA = initSchema("global-config.xsd");
+    public static final Schema INTEGRATION_SCHEMA = initSchema("integration-config.xsd");
+    public static final Schema UI_SCHEMA = initSchema("ui-config.xsd");
+    public static final Schema PAGES_SCHEMA = initSchema("pages.xsd");
+    public static final Schema SCENARIO_SCHEMA = initSchema("scenario.xsd");
 
     @SneakyThrows
     public Schema initSchema(final String path) {
+        String fullPathToResourceFolder = System.getProperty("resource").replace("-p=", "");
+        int indexOfLastFolderSeparator = fullPathToResourceFolder.lastIndexOf(File.separator);
+        String projectRootDirectoryFullPath = fullPathToResourceFolder.substring(0, indexOfLastFolderSeparator);
+        String pathToSchemaFolder = projectRootDirectoryFullPath + File.separator + "schema";
+
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         factory.setResourceResolver(new LSResourceResolverImpl(TestResourceSettings.SCHEMAS_FOLDER));
-        InputStream xsdFileInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
-        return factory.newSchema(new StreamSource(xsdFileInputStream));
+        return factory.newSchema(new File(pathToSchemaFolder + File.separator + path));
     }
 }

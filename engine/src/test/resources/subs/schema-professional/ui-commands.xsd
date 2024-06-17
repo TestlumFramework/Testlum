@@ -194,6 +194,7 @@
                     <x:element name="hotKey" type="tns:hotKey"/>
                     <x:element name="var" type="tns:webVar"/>
                     <x:element name="condition" type="tns:uiCondition"/>
+                    <x:element name="doubleClick" type="tns:doubleClick"/>
                 </x:choice>
                 <x:attribute name="index" type="x:string"/>
             </x:extension>

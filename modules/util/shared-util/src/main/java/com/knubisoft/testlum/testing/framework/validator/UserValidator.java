@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.validator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,12 +36,19 @@ public class UserValidator {
     }
 
     private static HttpRequest buildCheckUsernameRequest(final String username) {
+        String escapedUsername = escapeCharacters(username);
         return HttpRequest.newBuilder()
-                .uri(URI.create(String.format(API_BASE_URL + USERNAME_CHECK_URL + "?userKey=%s", username)))
+                .uri(URI.create(String.format(API_BASE_URL + USERNAME_CHECK_URL + "?userKey=%s", escapedUsername)))
                 .header(API_KEY_HEADER, API_KEY)
                 .header("Content-Type", "application/json")
                 .GET()
                 .build();
     }
 
+    private static String escapeCharacters(final String username) {
+        if (StringUtils.isNotBlank(username) && username.contains("+")) {
+            return username.replace("+", "%2B");
+        }
+        return username;
+    }
 }

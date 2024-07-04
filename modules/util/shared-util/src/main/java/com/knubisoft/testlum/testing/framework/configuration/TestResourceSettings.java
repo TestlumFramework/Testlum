@@ -48,7 +48,7 @@ public class TestResourceSettings {
     private File pagesFolder;
     private File componentsFolder;
 
-    private TestResourceSettings(final String configFileName, final String pathToTestResources, final String username) {
+    private TestResourceSettings(final String configFileName, final String pathToTestResources) {
         this.testResourcesFolder = new File(pathToTestResources);
         this.configFile = new File(testResourcesFolder, configFileName);
         this.envConfigFolder = subFolder(ENV_CONFIG_FOLDER, ENV_CONFIG_FOLDER_NOT_EXIST);
@@ -56,8 +56,8 @@ public class TestResourceSettings {
         this.dataFolder = subFolder(DATA_FOLDER, DATA_FOLDER_NOT_EXIST);
     }
 
-    public static void init(final String configFileName, final String pathToTestResources, final String username) {
-        instance = new TestResourceSettings(configFileName, pathToTestResources, username);
+    public static void init(final String configFileName, final String pathToTestResources) {
+        instance = new TestResourceSettings(configFileName, pathToTestResources);
     }
 
     public void initLocatorsFolder() {

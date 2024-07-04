@@ -36,8 +36,6 @@ public class TestResourceSettings {
     private static final String DATA_FOLDER_NOT_EXIST = "[data] folder does not exist";
     private static final String ENV_CONFIG_FOLDER_NOT_EXIST = "[config] folder does not exist";
 
-    private static final String USER_NOT_EXISTS_ERROR_MESSAGE = "User [%s] does not exist. Log in with an existing user to continue using Testlum or change [-u | --username] program arguments in Testlum run configuration";
-
     private static TestResourceSettings instance;
 
     private final File testResourcesFolder;

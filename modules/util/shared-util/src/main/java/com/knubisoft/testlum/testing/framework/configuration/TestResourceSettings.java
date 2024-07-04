@@ -36,8 +36,6 @@ public class TestResourceSettings {
     private static final String DATA_FOLDER_NOT_EXIST = "[data] folder does not exist";
     private static final String ENV_CONFIG_FOLDER_NOT_EXIST = "[config] folder does not exist";
 
-    private static final String USER_NOT_EXISTS_ERROR_MESSAGE = "User [%s] does not exist. Log in with an existing user to continue using Testlum or change [-u | --username] program arguments in Testlum run configuration";
-
     private static TestResourceSettings instance;
 
     private final File testResourcesFolder;
@@ -48,7 +46,7 @@ public class TestResourceSettings {
     private File pagesFolder;
     private File componentsFolder;
 
-    private TestResourceSettings(final String configFileName, final String pathToTestResources, final String username) {
+    private TestResourceSettings(final String configFileName, final String pathToTestResources) {
         this.testResourcesFolder = new File(pathToTestResources);
         this.configFile = new File(testResourcesFolder, configFileName);
         this.envConfigFolder = subFolder(ENV_CONFIG_FOLDER, ENV_CONFIG_FOLDER_NOT_EXIST);
@@ -56,8 +54,8 @@ public class TestResourceSettings {
         this.dataFolder = subFolder(DATA_FOLDER, DATA_FOLDER_NOT_EXIST);
     }
 
-    public static void init(final String configFileName, final String pathToTestResources, final String username) {
-        instance = new TestResourceSettings(configFileName, pathToTestResources, username);
+    public static void init(final String configFileName, final String pathToTestResources) {
+        instance = new TestResourceSettings(configFileName, pathToTestResources);
     }
 
     public void initLocatorsFolder() {

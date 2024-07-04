@@ -197,30 +197,6 @@ public class LogUtil {
                     format(LogMessage.FAILED_SCENARIOS_NAME_TEMPLATE, e.getTestIdentifier().getDisplayName()),
                     e.getException()));
         }
-        sendTestsStatistics(testExecutionSummary.getTestsStartedCount());
-    }
-
-    private static void sendTestsStatistics(final long testsStartedCount) {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = buildSendTestRunStatisticRequest(testsStartedCount);
-        try {
-            client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static HttpRequest buildSendTestRunStatisticRequest(long testsStartedCount) {
-        TestResourceSettings testResourceSettings = TestResourceSettings.getInstance();
-        return HttpRequest.newBuilder()
-                .uri(URI.create(StatisticsConstant.API_BASE_URL + StatisticsConstant.TEST_RUN_INFO_URL))
-                .header(StatisticsConstant.API_KEY_HEADER, StatisticsConstant.API_KEY)
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(String.format("{\n" +
-                                                          "  \"userKey\": \"%s\",\n" +
-                                                          "  \"testAmount\": %d\n" +
-                                                          "}", testResourceSettings.getUsername(), testsStartedCount)))
-                .build();
     }
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {

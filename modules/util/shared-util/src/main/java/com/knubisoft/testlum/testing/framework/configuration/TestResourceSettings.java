@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.configuration;
 
-import com.knubisoft.testlum.testing.framework.validator.UserValidator;
 import lombok.Getter;
 
 import java.io.File;
@@ -46,7 +45,6 @@ public class TestResourceSettings {
     private final File envConfigFolder;
     private final File scenariosFolder;
     private final File dataFolder;
-    private final String username;
     private File pagesFolder;
     private File componentsFolder;
 
@@ -56,7 +54,6 @@ public class TestResourceSettings {
         this.envConfigFolder = subFolder(ENV_CONFIG_FOLDER, ENV_CONFIG_FOLDER_NOT_EXIST);
         this.scenariosFolder = subFolder(SCENARIOS_FOLDER, SCENARIOS_FOLDER_NOT_EXIST);
         this.dataFolder = subFolder(DATA_FOLDER, DATA_FOLDER_NOT_EXIST);
-        this.username = UserValidator.validateUsername(username, USER_NOT_EXISTS_ERROR_MESSAGE);
     }
 
     public static void init(final String configFileName, final String pathToTestResources, final String username) {

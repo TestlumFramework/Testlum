@@ -36,7 +36,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -58,6 +60,7 @@ public class UiUtil {
     private static final String LOCALHOST = "localhost";
     private static final int MAX_PERCENTS_VALUE = 100;
     private static final Pattern HTTP_PATTERN = Pattern.compile("https?://.+");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH-mm-ss");
 
     public String resolveSendKeysType(final String value, final WebElement element, final File fromDir) {
         if (value.startsWith(FILE_PATH_PREFIX)) {
@@ -186,8 +189,9 @@ public class UiUtil {
     private void copyScreenshotFileToFolder(final File screenshot,
                                             final File screenshotsFolder,
                                             final ExecutorDependencies dependencies) throws IOException {
+        LocalTime dateTime = LocalTime.now();
         String screenshotFileName = format(TestResourceSettings.SCREENSHOT_NAME_TO_SAVE,
-                LocalTime.now(),
+                dateTime.format(TIME_FORMATTER),
                 dependencies.getPosition().get());
         File newScreenshot = new File(screenshotsFolder.getPath(), screenshotFileName);
         FileUtils.copyFile(screenshot, newScreenshot);

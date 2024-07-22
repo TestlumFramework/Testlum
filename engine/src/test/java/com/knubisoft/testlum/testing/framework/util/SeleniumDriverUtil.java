@@ -65,7 +65,6 @@ public class SeleniumDriverUtil {
         Map<String, Object> browserStackOptions = new HashMap<>();
         browserStackOptions.put("osVersion", capabilities.getPlatformVersion());
         browserStackOptions.put("deviceName", capabilities.getDeviceName());
-//        browserStackOptions.put("platformName", abstractDevice.getPlatformName().value());
         desiredCapabilities.setCapability("bstack:options", browserStackOptions);
     }
 }

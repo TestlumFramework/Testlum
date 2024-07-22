@@ -98,8 +98,8 @@ public class WebDriverFactory {
     private WebDriver getBrowserStackDriver(final AbstractBrowser browser,
                                             final MutableCapabilities browserOptions) {
         BrowserStackWeb browserStack = browser.getBrowserType().getBrowserStack();
-        browserOptions.setCapability("browserstack.local", Boolean.TRUE);
-        browserOptions.setCapability("browserstack.use_w3c", Boolean.TRUE);
+        browserOptions.setCapability("appium:browserstack.local", Boolean.TRUE);
+        browserOptions.setCapability("appium:browserstack.use_w3c", Boolean.TRUE);
         browserOptions.setCapability(CapabilityType.BROWSER_NAME, browser.getClass().getSimpleName());
         browserOptions.setCapability(CapabilityType.BROWSER_VERSION, browserStack.getBrowserVersion());
         browserOptions.setCapability("os", browserStack.getOs());

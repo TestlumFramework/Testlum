@@ -73,7 +73,7 @@ public class NativeDriverFactory {
             setGooglePlayStoreCredentials(desiredCapabilities,
                     nativeDevice.getBrowserStackCapabilities().getGooglePlayLogin());
         }
-        desiredCapabilities.setCapability("automationName", "uiautomator2");
+        desiredCapabilities.setCapability("appium:automationName", "uiautomator2");
     }
 
     private void setIosCapabilities(final NativeDevice nativeDevice,
@@ -83,7 +83,7 @@ public class NativeDriverFactory {
         } else if (nonNull(nativeDevice.getBrowserStackCapabilities())) {
             setBrowserStackCapabilities(nativeDevice, desiredCapabilities);
         }
-        desiredCapabilities.setCapability("automationName", "XCUITest");
+        desiredCapabilities.setCapability("appium:automationName", "XCUITest");
     }
 
     private void setAppiumCapabilities(final NativeDevice nativeDevice,

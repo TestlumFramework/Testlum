@@ -10,6 +10,8 @@ import com.knubisoft.testlum.testing.model.global_config.UiConfig;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.BROWSER_STACK_CONFIGURATION_NOT_FOUND;
@@ -49,7 +51,7 @@ public class SeleniumDriverUtil {
 
     public void setDefaultCapabilities(final AbstractDevice abstractDevice,
                                        final DesiredCapabilities desiredCapabilities) {
-        desiredCapabilities.setCapability("newCommandTimeout", "5000");
+        desiredCapabilities.setCapability("appium:newCommandTimeout", "5000");
         Capabilities capabilities = abstractDevice.getCapabilities();
         if (nonNull(capabilities)) {
             capabilities.getCapability()
@@ -60,8 +62,9 @@ public class SeleniumDriverUtil {
     public void setCommonCapabilities(final DesiredCapabilities desiredCapabilities,
                                       final AbstractDevice abstractDevice,
                                       final AbstractCapabilities capabilities) {
-        desiredCapabilities.setCapability("platformName", abstractDevice.getPlatformName().value());
-        desiredCapabilities.setCapability("platformVersion", capabilities.getPlatformVersion());
-        desiredCapabilities.setCapability("deviceName", capabilities.getDeviceName());
+        Map<String, Object> browserStackOptions = new HashMap<>();
+        browserStackOptions.put("osVersion", capabilities.getPlatformVersion());
+        browserStackOptions.put("deviceName", capabilities.getDeviceName());
+        desiredCapabilities.setCapability("bstack:options", browserStackOptions);
     }
 }

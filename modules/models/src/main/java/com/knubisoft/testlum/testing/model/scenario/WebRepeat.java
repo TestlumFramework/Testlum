@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webVar"/&gt;
  *         &lt;element name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiCondition"/&gt;
  *         &lt;element name="repeat" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webRepeat"/&gt;
+ *         &lt;element name="tokenInput" type="{http://www.knubisoft.com/testlum/testing/model/scenario}tokenInput"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="times" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveIntegerMin1" /&gt;
  *       &lt;attribute name="variations" type="{http://www.knubisoft.com/testlum/testing/model/scenario}csv" /&gt;
@@ -77,7 +78,8 @@ public class WebRepeat
         @XmlElement(name = "tab", type = BrowserTab.class),
         @XmlElement(name = "var", type = WebVar.class),
         @XmlElement(name = "condition", type = UiCondition.class),
-        @XmlElement(name = "repeat", type = WebRepeat.class)
+        @XmlElement(name = "repeat", type = WebRepeat.class),
+        @XmlElement(name = "tokenInput", type = TokenInput.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "times")
@@ -122,6 +124,7 @@ public class WebRepeat
      * {@link WebVar }
      * {@link UiCondition }
      * {@link WebRepeat }
+     * {@link TokenInput }
      * 
      * 
      */

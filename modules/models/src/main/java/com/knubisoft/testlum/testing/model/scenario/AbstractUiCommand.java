@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlType;
     AssertTitle.class,
     AssertAlert.class,
     Javascript.class,
+    TokenInput.class,
     Navigate.class,
     BrowserTab.class,
     HotKey.class,

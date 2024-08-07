@@ -61,6 +61,25 @@
         </x:complexContent>
     </x:complexType>
 
+    <x:complexType name="tokenInput">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:sequence>
+                    <x:element name="tokenInputPlace" type="tns:tokenInputPlace" minOccurs="0" maxOccurs="unbounded"/>
+                </x:sequence>
+                <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
+                <x:attribute name="parentLocator" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="highlight" type="x:boolean" default="true"/>
+                <x:attribute name="token" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="tokenInputPlace">
+        <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
+        <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
     <x:complexType name="navigate">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">

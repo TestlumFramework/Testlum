@@ -76,6 +76,7 @@ public class ResultUtil {
     public static final String CLICK_LOCATOR = "Locator for click command";
     public static final String DOUBLE_CLICK_LOCATOR = "Locator for click command";
     public static final String INPUT_LOCATOR = "Locator for input command";
+    public static final String TOKEN_INPUT_LOCATOR = "Parent locator for token input command";
     public static final String CLEAR_LOCATOR = "Locator for clear command";
     public static final String SCROLL_LOCATOR = "Locator for scroll-to command";
     public static final String SWITCH_LOCATOR = "Locator for switch command";

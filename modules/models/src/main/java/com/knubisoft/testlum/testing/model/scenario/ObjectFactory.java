@@ -670,6 +670,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link TokenInput }
+     * 
+     */
+    public TokenInput createTokenInput() {
+        return new TokenInput();
+    }
+
+    /**
+     * Create an instance of {@link TokenInputPlace }
+     * 
+     */
+    public TokenInputPlace createTokenInputPlace() {
+        return new TokenInputPlace();
+    }
+
+    /**
      * Create an instance of {@link Navigate }
      * 
      */

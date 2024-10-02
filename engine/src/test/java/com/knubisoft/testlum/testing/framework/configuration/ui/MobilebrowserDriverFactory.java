@@ -49,7 +49,7 @@ public class MobilebrowserDriverFactory {
         if (nonNull(mobileDevice.getAppiumCapabilities())) {
             AppiumCapabilities capabilities = mobileDevice.getAppiumCapabilities();
             SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, mobileDevice, capabilities);
-            desiredCapabilities.setCapability("udid", capabilities.getUdid());
+            desiredCapabilities.setCapability("appium:udid", capabilities.getUdid());
         } else if (nonNull(mobileDevice.getBrowserStackCapabilities())) {
             SeleniumDriverUtil.setCommonCapabilities(
                     desiredCapabilities, mobileDevice, mobileDevice.getBrowserStackCapabilities());
@@ -63,9 +63,11 @@ public class MobilebrowserDriverFactory {
         if (Platform.ANDROID == mobileDevice.getPlatformName()) {
             desiredCapabilities.setCapability("appium:automationName", "uiautomator2");
             desiredCapabilities.setCapability("browserName", "chrome");
+            desiredCapabilities.setCapability("platformName", mobileDevice.getPlatformName());
         } else if (Platform.IOS == mobileDevice.getPlatformName()) {
             desiredCapabilities.setCapability("appium:automationName", "XCUITest");
             desiredCapabilities.setCapability("browserName", "safari");
+            desiredCapabilities.setCapability("platformName", mobileDevice.getPlatformName());
         } else {
             throw new DefaultFrameworkException(UNKNOWN_MOBILE_PLATFORM_NAME, mobileDevice.getPlatformName().value());
         }

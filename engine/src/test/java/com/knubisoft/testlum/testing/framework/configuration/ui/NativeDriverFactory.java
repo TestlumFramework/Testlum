@@ -90,7 +90,7 @@ public class NativeDriverFactory {
                                        final DesiredCapabilities desiredCapabilities) {
         AppiumNativeCapabilities capabilities = nativeDevice.getAppiumCapabilities();
         SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
-        desiredCapabilities.setCapability("udid", capabilities.getUdid());
+        desiredCapabilities.setCapability("appium:udid", capabilities.getUdid());
         if (isNotBlank(capabilities.getApp())) {
             desiredCapabilities.setCapability("app", capabilities.getApp());
         }

@@ -30,6 +30,8 @@ public class TestRunner implements Runner {
 
     @Override
     public void run(final String[] args) {
+        System.setProperty("otel.traces.exporter", "none");
+        System.setProperty("otel.metrics.exporter", "none");
         String configFileName = ArgumentsUtils.getConfigurationFileName(args[0]);
         String pathToTestResources = ArgumentsUtils.getPathToTestResources(args[1]);
         System.setProperty("resource", args[1]);

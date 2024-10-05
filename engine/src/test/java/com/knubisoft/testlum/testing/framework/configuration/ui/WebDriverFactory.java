@@ -106,14 +106,14 @@ public class WebDriverFactory {
         browserOptions.setCapability("osVersion", browserStack.getOsVersion());
         String browserStackUrl = SeleniumDriverUtil.getBrowserStackUrl(
                 GlobalTestConfigurationProvider.getUiConfigs().get(EnvManager.currentEnv()));
-        return new RemoteWebDriver(new URL(browserStackUrl), browserOptions, false);
+        return new RemoteWebDriver(new URL(browserStackUrl), browserOptions);
     }
 
     @SneakyThrows
     private WebDriver getRemoteDriver(final RemoteBrowser remoteBrowserSettings,
                                       final MutableCapabilities browserOptions) {
         browserOptions.setCapability(CapabilityType.BROWSER_VERSION, remoteBrowserSettings.getBrowserVersion());
-        return new RemoteWebDriver(new URL(remoteBrowserSettings.getRemoteBrowserURL()), browserOptions, false);
+        return new RemoteWebDriver(new URL(remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
     }
 
     private WebDriverManager setScreenResolution(final AbstractBrowser browser,

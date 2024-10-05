@@ -38,7 +38,7 @@ public class MobilebrowserDriverFactory {
         String serverUrl = SeleniumDriverUtil.getMobilebrowserConnectionUrl(uiConfig);
         Mobilebrowser settings = uiConfig.getMobilebrowser();
         int secondsToWait = settings.getElementAutowait().getSeconds();
-        WebDriver driver = new RemoteWebDriver(new URL(serverUrl), desiredCapabilities, false);
+        WebDriver driver = new RemoteWebDriver(new URL(serverUrl), desiredCapabilities);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));
         driver.get(settings.getBaseUrl());
         return driver;

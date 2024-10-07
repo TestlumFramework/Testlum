@@ -92,7 +92,7 @@ public class NativeDriverFactory {
         SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
         desiredCapabilities.setCapability("appium:udid", capabilities.getUdid());
         if (isNotBlank(capabilities.getApp())) {
-            desiredCapabilities.setCapability("app", capabilities.getApp());
+            desiredCapabilities.setCapability("appium:app", capabilities.getApp());
         }
     }
 
@@ -100,15 +100,15 @@ public class NativeDriverFactory {
                                              final DesiredCapabilities desiredCapabilities) {
         BrowserStackNativeCapabilities capabilities = nativeDevice.getBrowserStackCapabilities();
         SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
-        desiredCapabilities.setCapability("app", capabilities.getApp());
+        desiredCapabilities.setCapability("appium:app", capabilities.getApp());
         desiredCapabilities.setCapability("browserstack.local", Boolean.TRUE);
     }
 
     private void setAppiumAndroidApp(final DesiredCapabilities desiredCapabilities,
                                      final AppiumNativeCapabilities capabilities) {
         if (isNoneBlank(capabilities.getAppPackage(), capabilities.getAppActivity())) {
-            desiredCapabilities.setCapability("appPackage", capabilities.getAppPackage());
-            desiredCapabilities.setCapability("appActivity", capabilities.getAppActivity());
+            desiredCapabilities.setCapability("appium:appPackage", capabilities.getAppPackage());
+            desiredCapabilities.setCapability("appium:appActivity", capabilities.getAppActivity());
         }
     }
 

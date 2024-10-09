@@ -101,7 +101,7 @@ public class NativeDriverFactory {
         BrowserStackNativeCapabilities capabilities = nativeDevice.getBrowserStackCapabilities();
         SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
         desiredCapabilities.setCapability("appium:app", capabilities.getApp());
-        desiredCapabilities.setCapability("browserstack.local", Boolean.TRUE);
+        desiredCapabilities.setCapability("appium:browserstack.local", Boolean.TRUE);
     }
 
     private void setAppiumAndroidApp(final DesiredCapabilities desiredCapabilities,

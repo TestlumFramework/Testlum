@@ -103,7 +103,7 @@
         <netty-reactive-streams.version>2.0.6</netty-reactive-streams.version>
         <extent-reports.version>5.0.9</extent-reports.version>
         <jakarta.activation.version>1.2.2</jakarta.activation.version>
-        <com.twilio.sdk.version>9.0.0-rc.3</com.twilio.sdk.version>
+        <com.twilio.sdk.version>10.6.0</com.twilio.sdk.version>
         <image-comparison.version>4.4.1</image-comparison.version>
         <com.github.curious-odd-man.rgxgen.version>1.4</com.github.curious-odd-man.rgxgen.version>
         <skipGenerateModels>true</skipGenerateModels>

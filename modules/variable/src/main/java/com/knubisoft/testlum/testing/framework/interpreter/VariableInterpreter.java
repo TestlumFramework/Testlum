@@ -55,7 +55,6 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     private void setContextVariable(final Var var, final CommandResult result) {
         String value = getValueForContext(var, result);
         dependencies.getScenarioContext().set(var.getName(), value);
-        dependencies.getScenarioContext().setBody(value);
         logVarInfo(var.getName(), value);
     }
 

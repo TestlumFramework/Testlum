@@ -155,11 +155,13 @@ public class VariableHelperImpl implements VariableHelper {
                                 final ScenarioContext scenarioContext,
                                 final CommandResult result) {
         String path = fromPath.getValue();
+        String body = fromPath.getFrom() == null
+                ? scenarioContext.getBody() : scenarioContext.get(fromPath.getFrom());
         if (path.startsWith(DOLLAR_SIGN)) {
-            return evaluateJPath(path, varName, scenarioContext, result);
+            return evaluateJPath(path, varName, body, result);
         }
         if (path.startsWith(SLASH_SEPARATOR)) {
-            return evaluateXPath(path, varName, scenarioContext, result);
+            return evaluateXPath(path, varName, body, result);
         }
         throw new DefaultFrameworkException("Path <%s> is not supported", path);
     }
@@ -167,9 +169,9 @@ public class VariableHelperImpl implements VariableHelper {
 
     private String evaluateXPath(final String path,
                                  final String varName,
-                                 final ScenarioContext scenarioContext,
+                                 final String body,
                                  final CommandResult result) throws Exception {
-        Document jsoupDoc = Jsoup.parse(scenarioContext.getBody(), "", Parser.xmlParser());
+        Document jsoupDoc = Jsoup.parse(body, "", Parser.xmlParser());
         org.w3c.dom.Document w3cDocument = convertJsoupToW3CDocument(jsoupDoc);
         XPath xPath = XPathFactory.newInstance().newXPath();
         String valueResult = (String) xPath.evaluate(path, w3cDocument, XPathConstants.STRING);
@@ -187,9 +189,9 @@ public class VariableHelperImpl implements VariableHelper {
 
     private String evaluateJPath(final String path,
                                  final String varName,
-                                 final ScenarioContext scenarioContext,
+                                 final String body,
                                  final CommandResult result) {
-        DocumentContext contextBody = JsonPath.parse(scenarioContext.getBody());
+        DocumentContext contextBody = JsonPath.parse(body);
         String valueResult = Objects.nonNull(contextBody.read(path)) ? contextBody.read(path).toString() : null;
         ResultUtil.addVariableMetaData(JSON_PATH, varName, path, valueResult, result);
         return valueResult;

@@ -76,7 +76,7 @@ public class UiUtil {
                                      final String locatorId,
                                      final LocatorStrategy locatorStrategy) {
         Locator locator = getLocatorByStrategy(locatorId, locatorStrategy);
-        return WebElementFinder.find(locator, dependencies.getDriver());
+        return WebElementFinder.find(locator, dependencies);
     }
 
     public Locator getLocatorByStrategy(final String locatorId, final LocatorStrategy locatorStrategy) {

@@ -3,6 +3,8 @@ package com.knubisoft.testlum.testing.framework.util;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.model.global_config.Web;
 import com.knubisoft.testlum.testing.model.pages.ClassName;
 import com.knubisoft.testlum.testing.model.pages.CssSelector;
@@ -10,6 +12,7 @@ import com.knubisoft.testlum.testing.model.pages.Id;
 import com.knubisoft.testlum.testing.model.pages.Locator;
 import com.knubisoft.testlum.testing.model.pages.Text;
 import com.knubisoft.testlum.testing.model.pages.Xpath;
+import io.appium.java_client.android.AndroidDriver;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -56,22 +59,23 @@ public final class WebElementFinder {
         SEARCH_TYPES = Collections.unmodifiableMap(map);
     }
 
-    public WebElement find(final Locator locator, final WebDriver driver) {
+    public WebElement find(final Locator locator, final ExecutorDependencies dependencies) {
         Set<org.openqa.selenium.By> bySet = new LinkedHashSet<>();
         locator.getXpathOrIdOrClassName().forEach(obj -> {
             Class<?> clazz = obj.getClass();
             bySet.addAll(SEARCH_TYPES.get(clazz).apply(locator));
         });
-        return getElementFromLocatorList(bySet, driver, locator.getLocatorId());
+        return getElementFromLocatorList(bySet, dependencies, locator.getLocatorId());
     }
 
-    private WebElement getElementFromLocatorList(final Set<org.openqa.selenium.By> bySet, final WebDriver driver,
-                                                final String locatorId) {
-        waitForDomToComplete(driver);
+    private WebElement getElementFromLocatorList(final Set<org.openqa.selenium.By> bySet,
+                                                 final ExecutorDependencies dependencies, final String locatorId) {
+        waitForDomToComplete(dependencies);
 
-        Optional<WebElement> optionalElement = findElement(bySet, driver);
+        Optional<WebElement> optionalElement = findElement(bySet, dependencies.getDriver());
 
-        return optionalElement.orElseGet(() -> tryToFindElementIfNotFoundBeforeAfterAutoWait(bySet, driver, locatorId));
+        return optionalElement.orElseGet(() ->
+                tryToFindElementIfNotFoundBeforeAfterAutoWait(bySet, dependencies.getDriver(), locatorId));
     }
 
     private Optional<WebElement> findElement(final Set<org.openqa.selenium.By> bySet, final WebDriver driver) {
@@ -135,10 +139,13 @@ public final class WebElementFinder {
         return element;
     }
 
-    private static void waitForDomToComplete(final WebDriver webDriver) {
+    private static void waitForDomToComplete(final ExecutorDependencies dependencies) {
+        if (dependencies.getUiType().equals(UiType.NATIVE)) {
+            return;
+        }
         Web settings = ConfigProviderImpl.GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv());
         int secondsToWait = settings.getBrowserSettings().getElementAutowait().getSeconds();
-        FluentWait<WebDriver> wait = new FluentWait<>(webDriver)
+        FluentWait<WebDriver> wait = new FluentWait<>(dependencies.getDriver())
                 .withTimeout(Duration.ofSeconds(secondsToWait))
                 .pollingEvery(Duration.ofMillis(500L))
                 .withMessage("Time out is reached. Page is not loaded!");

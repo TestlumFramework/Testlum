@@ -73,7 +73,6 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     private void setContextVariable(final WebVar var, final CommandResult result) {
         String value = getValueForContext(var, result);
         dependencies.getScenarioContext().set(var.getName(), value);
-        dependencies.getScenarioContext().setBody(value);
         LogUtil.logVarInfo(var.getName(), value);
     }
 

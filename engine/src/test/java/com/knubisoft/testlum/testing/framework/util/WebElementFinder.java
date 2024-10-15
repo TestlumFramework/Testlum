@@ -12,7 +12,6 @@ import com.knubisoft.testlum.testing.model.pages.Id;
 import com.knubisoft.testlum.testing.model.pages.Locator;
 import com.knubisoft.testlum.testing.model.pages.Text;
 import com.knubisoft.testlum.testing.model.pages.Xpath;
-import io.appium.java_client.android.AndroidDriver;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;

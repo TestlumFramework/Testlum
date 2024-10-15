@@ -79,7 +79,7 @@ public class ResultUtil {
     public static final String CLEAR_LOCATOR = "Locator for clear command";
     public static final String SCROLL_LOCATOR = "Locator for scroll-to command";
     public static final String SWITCH_LOCATOR = "Locator for switch command";
-    public static String SWITCH_INDEX = "Index for switch command";
+    public static final String SWITCH_INDEX = "Index for switch command";
     public static final String HOTKEY_LOCATOR = "Locator for hotkey command";
     public static final String HOTKEY_TIMES = "Times to repeat hotkey command";
     public static final String INPUT_VALUE = "Value for input";

@@ -29,12 +29,9 @@ public class SwitchToFrameWebExecutor extends AbstractUiExecutor<SwitchToFrame> 
     public void execute(final SwitchToFrame switchToFrame, final CommandResult result) {
         String locatorId = switchToFrame.getLocator();
         if (locatorId != null) {
-            result.put(SWITCH_LOCATOR, locatorId);
-            WebElement element = UiUtil.findWebElement(dependencies, locatorId, switchToFrame.getLocatorStrategy());
-            dependencies.getDriver().switchTo().frame(element);
+            switchToFrameByLocator(switchToFrame, result, locatorId);
         } else {
-            result.put(SWITCH_INDEX, switchToFrame.getIndex());
-            dependencies.getDriver().switchTo().frame(switchToFrame.getIndex());
+            switchToFrameByIndex(switchToFrame, result);
         }
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
 
@@ -42,5 +39,17 @@ public class SwitchToFrameWebExecutor extends AbstractUiExecutor<SwitchToFrame> 
         this.subCommandRunner.runCommands(switchToFrame.getClickOrInputOrAssert(), result, dependencies);
         LogUtil.endUiCommandsInFrame();
         dependencies.getDriver().switchTo().parentFrame();
+    }
+
+    private void switchToFrameByLocator(final SwitchToFrame switchToFrame, final CommandResult result,
+                                        final String locatorId) {
+        result.put(SWITCH_LOCATOR, locatorId);
+        WebElement element = UiUtil.findWebElement(dependencies, locatorId, switchToFrame.getLocatorStrategy());
+        dependencies.getDriver().switchTo().frame(element);
+    }
+
+    private void switchToFrameByIndex(final SwitchToFrame switchToFrame, final CommandResult result) {
+        result.put(SWITCH_INDEX, switchToFrame.getIndex());
+        dependencies.getDriver().switchTo().frame(switchToFrame.getIndex());
     }
 }

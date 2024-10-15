@@ -211,8 +211,8 @@ public class ExceptionMessage {
     public static final String NAVIGATE_NOT_SUPPORTED = "Navigate command %s not supported";
     public static final String DROP_DOWN_NOT_SUPPORTED = "Drop down by method by %s not supported";
     public static final String CUSTOM_DROP_DOWN_NOT_SUPPORTED =
-            "Provided drop down by method %s not supported.\n" +
-            "For custom drop down You can select only one value by text per scenario step";
+            "Provided drop down by method %s not supported.\n"
+            + "For custom drop down You can select only one value by text per scenario step";
     public static final String JS_FILE_UNREADABLE = "The .js file by path ./javascript/%s unreadable";
     public static final String IMAGES_SIZE_MISMATCH = "The images don't match. Image comparison state is -> "
                                                       + "SIZE_MISMATCH%n" + "Expected image size: %sx%s%n" + "Actual image size: %sx%s";

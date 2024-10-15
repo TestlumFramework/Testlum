@@ -36,7 +36,7 @@ public class ScenarioContext {
         contextMap.put(key, value);
     }
 
-    private String get(final String key) {
+    public String get(final String key) {
         String result = contextMap.get(key);
         //must be isNull
         if (isNull(result)) {

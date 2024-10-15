@@ -26,13 +26,21 @@ import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.CUSTOM_DROP_DOWN_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BY_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_TYPE_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VALUE_LOG;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALL_VALUES_DESELECT;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALL_VALUES_SELECT;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_FOR;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_LOCATOR;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ONE_VALUE_TEMPLATE;
 import static java.lang.String.format;
 
 @Slf4j
 @ExecutorForClass(DropDown.class)
 public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
+
+    private static final String CONTAINS_TEXT_PATTERN = ".//*[contains(text(), '%s')]";
 
     public DropDownExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
@@ -78,9 +86,8 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
                                                   final CommandResult result) {
         OneValue oneValue = dropDown.getOneValue();
         TypeForOneValue type = oneValue.getType();
-        SelectOrDeselectBy method = oneValue.getBy();
         String value = oneValue.getValue();
-        validateByMethodForCustomDropDown(method);
+        validateByMethodForCustomDropDown(oneValue.getBy());
         ResultUtil.addDropDownForOneValueMetaData(oneValue.getType().value(), oneValue.getBy().value(), value, result);
         log.info(COMMAND_TYPE_LOG, format(ONE_VALUE_TEMPLATE, type.value()));
         log.info(BY_LOG, oneValue.getBy().value());
@@ -90,14 +97,14 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         selectSearchableOptionForCustomDropDown(dropDownParentElements, value);
     }
 
-    private void selectSearchableOptionForCustomDropDown(List<WebElement> dropDownParentElements, String value) {
+    private void selectSearchableOptionForCustomDropDown(final List<WebElement> dropDownParentElements,
+                                                         final String value) {
         Collections.reverse(dropDownParentElements);
 
         for (int i = 0; i < dropDownParentElements.size(); i++) {
             WebElement element = dropDownParentElements.get(i);
             try {
-                WebElement searchableOption = element.findElement(By.xpath(
-                        format(".//*[contains(text(), '%s')]", value)));
+                WebElement searchableOption = element.findElement(By.xpath(format(CONTAINS_TEXT_PATTERN, value)));
                 searchableOption.click();
                 break;
             } catch (NoSuchElementException e) {
@@ -108,7 +115,8 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         }
     }
 
-    private void processOneValueFromSelectDropDown(final OneValue oneValue, final Select select, final CommandResult result) {
+    private void processOneValueFromSelectDropDown(final OneValue oneValue, final Select select,
+                                                   final CommandResult result) {
         TypeForOneValue type = oneValue.getType();
         SelectOrDeselectBy method = oneValue.getBy();
         String value = oneValue.getValue();

@@ -18,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Platform;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -60,7 +62,12 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
         if (nonNull(image.getPart())) {
             WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocator(),
                     image.getPart().getLocatorStrategy());
-            return ImageIO.read(webElement.getScreenshotAs(OutputType.FILE));
+            File screenshotFile = ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.FILE);
+            BufferedImage fullImage = ImageIO.read(screenshotFile);
+            Point point = webElement.getLocation();
+            int elementWidth = webElement.getSize().getWidth();
+            int elementHeight = webElement.getSize().getHeight();
+            return fullImage.getSubimage(point.getX(), point.getY(), elementWidth, elementHeight);
         }
         BufferedImage fullScreen = ImageIO.read(UiUtil.takeScreenshot(webDriver));
         return cutStatusBar(image.getFullScreen(), fullScreen, webDriver);

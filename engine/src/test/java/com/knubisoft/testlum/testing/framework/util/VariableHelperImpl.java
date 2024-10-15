@@ -22,18 +22,20 @@ import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.parser.Parser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedCaseInsensitiveMap;
-import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -153,11 +155,13 @@ public class VariableHelperImpl implements VariableHelper {
                                 final ScenarioContext scenarioContext,
                                 final CommandResult result) {
         String path = fromPath.getValue();
+        String body = fromPath.getFrom() == null
+                ? scenarioContext.getBody() : scenarioContext.get(fromPath.getFrom());
         if (path.startsWith(DOLLAR_SIGN)) {
-            return evaluateJPath(path, varName, scenarioContext, result);
+            return evaluateJPath(path, varName, body, result);
         }
         if (path.startsWith(SLASH_SEPARATOR)) {
-            return evaluateXPath(path, varName, scenarioContext, result);
+            return evaluateXPath(path, varName, body, result);
         }
         throw new DefaultFrameworkException("Path <%s> is not supported", path);
     }
@@ -165,22 +169,29 @@ public class VariableHelperImpl implements VariableHelper {
 
     private String evaluateXPath(final String path,
                                  final String varName,
-                                 final ScenarioContext scenarioContext,
+                                 final String body,
                                  final CommandResult result) throws Exception {
-        DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        InputSource body = new InputSource(new StringReader(scenarioContext.getBody()));
-        Document document = documentBuilder.parse(body);
+        Document jsoupDoc = Jsoup.parse(body, "", Parser.xmlParser());
+        org.w3c.dom.Document w3cDocument = convertJsoupToW3CDocument(jsoupDoc);
         XPath xPath = XPathFactory.newInstance().newXPath();
-        String valueResult = xPath.evaluate(path, document);
+        String valueResult = (String) xPath.evaluate(path, w3cDocument, XPathConstants.STRING);
         ResultUtil.addVariableMetaData(XML_PATH, varName, path, valueResult, result);
         return valueResult;
     }
 
+    private org.w3c.dom.Document convertJsoupToW3CDocument(final Document jsoupDoc) throws Exception {
+        String htmlContent = jsoupDoc.html();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        InputSource inputSource = new InputSource(new StringReader(htmlContent));
+        return factory.newDocumentBuilder().parse(inputSource);
+    }
+
     private String evaluateJPath(final String path,
                                  final String varName,
-                                 final ScenarioContext scenarioContext,
+                                 final String body,
                                  final CommandResult result) {
-        DocumentContext contextBody = JsonPath.parse(scenarioContext.getBody());
+        DocumentContext contextBody = JsonPath.parse(body);
         String valueResult = Objects.nonNull(contextBody.read(path)) ? contextBody.read(path).toString() : null;
         ResultUtil.addVariableMetaData(JSON_PATH, varName, path, valueResult, result);
         return valueResult;

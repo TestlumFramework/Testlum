@@ -1,16 +1,20 @@
 def createDir(String dirPath) {
     sh """
-        install -d -o 1000 -g 1000 ${dirPath}
+        install -d -o jenkins -g jenkins ${dirPath}
     """
 }
 
 def removeUnusedImage() {
-    sh "docker rmi ${ecr}/${repo}:${tag}-${buildVersion} && docker rmi ${ecr}/${repo}:${tag} && docker rmi ${repo}:${tag}"
+    sh "docker rmi ${ecr}/${repo}:${tag} && docker rmi ${repo}:${tag}"
+}
+
+def removeUnusedNewTagImage() {
+    sh "docker rmi ${ecr}/${repo}:${tag}-${buildVersion} && docker rmi ${repo}:${tag}"
 }
 
 def pushImage() {
     sh """
-        aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${ecr}
+        aws ecr-public get-login-password --region ${region} | docker login --username AWS --password-stdin ${ecr}
         docker tag ${repo}:${tag} ${ecr}/${repo}:${tag}
         docker push ${ecr}/${repo}:${tag}
     """
@@ -18,7 +22,7 @@ def pushImage() {
 
 def pushNewTagImage() {
     sh """
-        aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${ecr}
+        aws ecr-public get-login-password --region ${region} | docker login --username AWS --password-stdin ${ecr}
         docker tag ${repo}:${tag} ${ecr}/${repo}:${tag}-${buildVersion}
         docker push ${ecr}/${repo}:${tag}-${buildVersion}
     """
@@ -56,10 +60,10 @@ pipeline {
         accountId = '044415721934' // AWS account ID
         awsRoleArn = 'deploy' // AWS role for deployment
         credentialsId = 'aws_general_jenkins_user' // AWS credentials
-        gitCredentialsId = 'jenkins_ci_demo_id_rsa' // Git credentials for bucket
+        gitCredenatialsId = 'jenkins_ci_demo_id_rsa' // Git credentials for bucket
         repo = 'testlum' // AWS ECR repo for service
-        ecr = "${accountId}.dkr.ecr.${region}.amazonaws.com" // AWS ECR url
-        region = 'eu-central-1' // AWS region
+        ecr = "public.ecr.aws/f1r2a3f3" // AWS ECR url
+        region = 'us-east-1' // AWS region
         appBucketUrl = "ssh://git@bitbucket.knubisoft.com:7999/cott/testlum.git" // App bucket url
         tag = "${project}" // docker tag
     }
@@ -89,17 +93,21 @@ pipeline {
         }
         stage('Build image') {
             steps {
-                withCredentials([[$class           : 'AmazonWebServicesCredentialsBinding',
-                                  credentialsId    : "$credentialsId",
-                                  accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                                  secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                    dockerImage = docker.build("${repo}:${tag}", "--build-arg CHROME_DRIVER_VERSION=${cromeDriverVersion} -f Dockerfile .")
+                dir("testlum") {
+                    script {
+                        withCredentials([[$class           : 'AmazonWebServicesCredentialsBinding',
+                                          credentialsId    : "$credentialsId",
+                                          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                                          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                            dockerImage = docker.build("${repo}:${tag}", "--build-arg CHROME_DRIVER_VERSION=${cromeDriverVersion} -f Dockerfile .")
+                        }
+                    }
                 }
             }
         }
         stage('Push to ECR with Main Tag') {
             when {
-                expression { params.pushToECR.toBoolean() || params.pushToECRWithNewTag.toBoolean() }
+                expression { params.pushToECR.toBoolean() && !params.pushToECRWithNewTag.toBoolean() }
             }
             steps {
                 script {
@@ -117,7 +125,7 @@ pipeline {
         }
         stage('Push to ECR with New Tag') {
             when {
-                expression { params.pushToECRWithNewTag.toBoolean() || params.pushToECR.toBoolean() }
+                expression { params.pushToECRWithNewTag.toBoolean() && !params.pushToECR.toBoolean() }
             }
             steps {
                 script {
@@ -126,7 +134,7 @@ pipeline {
                                       accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                                       secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
                         pushNewTagImage()
-                        removeUnusedImage()
+                        removeUnusedNewTagImage()
                         currentBuild.displayName = "${BUILD_NUMBER}-${repo}:${tag}-${buildVersion}"
                         println("Image ${ecr}/${repo}:${tag}-${buildVersion} successfuly builded and pushed to ECR")
                     }

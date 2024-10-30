@@ -1,69 +1,49 @@
-FROM maven:3.8.5-openjdk-8 as maven-build
+# Multi-Stage build
+ARG MAVEN_TAG=3.8.6-jdk-11
+ARG JDK_TAG=11.0-jdk
+  # Build container
+FROM maven:${MAVEN_TAG} AS maven-build
 
 WORKDIR /testlum/
 COPY . .
-RUN mvn clean install -DskipTests -Pquality-checking
+RUN mvn clean install -P professional -DskipTests
 
-FROM openjdk:8
+# Target container
+FROM  openjdk:${JDK_TAG}
 
+# Install essential tools and dependencies
 RUN apt-get update -y \
     && apt-get -qqy dist-upgrade \
-    && apt-get -qqy install software-properties-common gettext-base unzip \
-    wget \
-    curl \
-    firefox-esr \
-	&& rm -rf /var/lib/apt/lists/* /var/cache/apt/*
+    && apt-get -qqy install wget unzip curl gnupg ca-certificates software-properties-common gettext-base xdg-utils firefox-esr xvfb \
+    && apt-get -f install
 
 #Version numbers
-ARG CHROME_DRIVER_VERSION=104.0.5112.79
-ARG FIREFOX_DRIVER_VERSION=0.31.0
-ARG FIREFOX_VERSION=102.0.1
+ARG CHROME_DRIVER_VERSION=123.0.6312.58
 
 # Google Chrome
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-	&& echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
-	&& apt-get update -qqy \
-	&& apt-get -qqy install google-chrome-stable \
-	&& rm /etc/apt/sources.list.d/google-chrome.list \
-	&& rm -rf /var/lib/apt/lists/* /var/cache/apt/* \
-	&& sed -i 's/"$HERE\/chrome"/"$HERE\/chrome" --no-sandbox --disable-dev-shm-usage/g' /opt/google/chrome/google-chrome
-
+RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && apt-get update \
+    && apt-get install -y ./google-chrome-stable_current_amd64.deb || apt --fix-broken install -y \
+    && rm ./google-chrome-stable_current_amd64.deb
 
 # ChromeDriver
-RUN wget --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip \
-	&& rm -rf /opt/chromedriver \
-	&& unzip /tmp/chromedriver_linux64.zip -d /opt \
-	&& rm /tmp/chromedriver_linux64.zip \
-	&& mv /opt/chromedriver /opt/chromedriver-$CHROME_DRIVER_VERSION \
-	&& chmod 755 /opt/chromedriver-$CHROME_DRIVER_VERSION \
-	&& ln -fs /opt/chromedriver-$CHROME_DRIVER_VERSION /usr/bin/chromedriver
-
-# FireFox
-RUN set -x \
-   && apt install -y \
-       libx11-xcb1 \
-       libdbus-glib-1-2 \
-   && curl -sSLO https://download-installer.cdn.mozilla.net/pub/firefox/releases/${FIREFOX_VERSION}/linux-x86_64/en-US/firefox-${FIREFOX_VERSION}.tar.bz2 \
-   && tar -jxf firefox-* \
-   && mv firefox /opt/ \
-   && chmod 755 /opt/firefox \
-   && chmod 755 /opt/firefox/firefox
-
-# FirefoxDriver
-RUN set -x \
-   && curl -sSLO https://github.com/mozilla/geckodriver/releases/download/v${FIREFOX_DRIVER_VERSION}/geckodriver-v${FIREFOX_DRIVER_VERSION}-linux64.tar.gz \
-   && tar zxf geckodriver-*.tar.gz \
-   && mv geckodriver /usr/bin/
+RUN wget --no-verbose -O /tmp/chromedriver_linux64.zip https://storage.googleapis.com/chrome-for-testing-public/$CHROME_DRIVER_VERSION/linux64/chromedriver-linux64.zip \
+	&& unzip /tmp/chromedriver_linux64.zip -d /tmp \
+	&& mv /tmp/chromedriver-linux64/chromedriver /usr/bin/chromedriver \
+	&& chmod 755 /usr/bin/chromedriver
 
 # Xvfb
 RUN apt-get update -qqy \
 	&& apt-get -qqy install xvfb \
 	&& rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
-ARG JAR_FILE=target/testlum-with-dependencies.jar
+RUN mkdir -p ~/.cache/selenium/ && touch ~/.cache/selenium/resolution.properties && chmod 766 ~/.cache/selenium/resolution.properties
 
 WORKDIR /testlum/
 
+ARG JAR_FILE=engine/target/testlum-with-dependencies.jar
+
 COPY --from=maven-build /testlum/${JAR_FILE} testlum.jar
 
-ENTRYPOINT ["java", "-jar", "testlum.jar"]
+#ENTRYPOINT ["java", "-jar", "testlum.jar"]
+ENTRYPOINT ["java", "-DTESTING_IN_PIPELINE=true", "-jar", "testlum.jar"]

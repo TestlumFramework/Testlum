@@ -72,6 +72,20 @@ public final class HttpValidator {
         }
     }
 
+    public void validateBody(final String expectedBody, final String actualBody, final String mode) {
+        try {
+            interpreter.newCompare()
+                    .withExpected(expectedBody)
+                    .withActual(actualBody)
+                    .withMode(mode)
+                    .exec();
+        } catch (ComparisonException e) {
+            result.add(format(HTTP_BODY_EXPECTED_BUT_WAS,
+                    StringPrettifier.asJsonResult(StringPrettifier.cut(expectedBody)),
+                    StringPrettifier.asJsonResult(StringPrettifier.cut(actualBody))));
+        }
+    }
+
     public void rethrowOnErrors() {
         if (!result.isEmpty()) {
             throw new DefaultFrameworkException(result);

@@ -60,7 +60,16 @@
         </x:sequence>
         <x:attribute name="code" type="tns:codePattern" default="200"/>
         <x:attribute name="file" type="tns:expectedPattern"/>
+        <x:attribute name="mode" type="tns:mode" default="strict"/>
     </x:complexType>
+
+    <x:simpleType name="mode">
+        <x:restriction base="x:string">
+            <x:enumeration value="strict"/>
+            <x:enumeration value="lenient"/>
+        </x:restriction>
+    </x:simpleType>
+
 
     <x:complexType name="header">
         <x:attribute name="name" type="tns:headerName" use="required"/>

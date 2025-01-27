@@ -28,7 +28,8 @@ public interface VariableHelper {
 
     String getExpressionResult(FromExpression fromExpression, String varName, CommandResult result);
 
-    String getPathResult(FromPath fromPath, String varName, ScenarioContext scenarioContext, CommandResult result);
+    String getPathResult(FromPath fromPath, String varName, String scenarioPath, ScenarioContext scenarioContext,
+                         CommandResult result);
 
     String getSQLResult(FromSQL fromSQL, String varName, CommandResult result);
 

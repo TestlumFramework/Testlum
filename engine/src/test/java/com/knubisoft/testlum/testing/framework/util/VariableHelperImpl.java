@@ -38,6 +38,11 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -152,11 +157,24 @@ public class VariableHelperImpl implements VariableHelper {
     @SneakyThrows
     public String getPathResult(final FromPath fromPath,
                                 final String varName,
+                                final String scenarioPath,
                                 final ScenarioContext scenarioContext,
                                 final CommandResult result) {
+        if (fromPath.getFromVar() != null & fromPath.getFromFile() != null) {
+            throw new DefaultFrameworkException("Use only one of fromVar and fromFile");
+        }
+
         String path = fromPath.getValue();
-        String body = fromPath.getFromVar() == null
-                ? scenarioContext.getBody() : scenarioContext.get(fromPath.getFromVar());
+        String body = null;
+
+        if (fromPath.getFromVar() != null) {
+            body = scenarioContext.get(fromPath.getFromVar());
+        } else if (fromPath.getFromFile() != null) {
+            body = readBodyFromFile(scenarioPath, fromPath.getFromFile());
+        } else {
+            body = scenarioContext.getBody();
+        }
+
         if (path.startsWith(DOLLAR_SIGN)) {
             return evaluateJPath(path, varName, body, result);
         }
@@ -166,6 +184,18 @@ public class VariableHelperImpl implements VariableHelper {
         throw new DefaultFrameworkException("Path <%s> is not supported", path);
     }
 
+    private String readBodyFromFile(final String scenarioPath, final String fileName) {
+        Path scenarioDir = Paths.get(scenarioPath).getParent();
+        Path filePath = scenarioDir.resolve(fileName);
+        if (!filePath.toFile().exists()) {
+            throw new DefaultFrameworkException("File not found: " + filePath.toAbsolutePath());
+        }
+        try {
+            return Files.readString(filePath, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new DefaultFrameworkException("Failed to read file: " + filePath.toAbsolutePath(), e);
+        }
+    }
 
     private String evaluateXPath(final String path,
                                  final String varName,

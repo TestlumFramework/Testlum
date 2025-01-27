@@ -79,7 +79,8 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
     }
 
     private String getPathResult(final NativeVar var, final CommandResult result) {
-        return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result);
+        return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getFile().getPath(),
+                dependencies.getScenarioContext(), result);
     }
 
     private String getConstantResult(final NativeVar var, final CommandResult result) {

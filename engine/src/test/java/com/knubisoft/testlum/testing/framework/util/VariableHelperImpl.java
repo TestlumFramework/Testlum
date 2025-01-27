@@ -155,8 +155,8 @@ public class VariableHelperImpl implements VariableHelper {
                                 final ScenarioContext scenarioContext,
                                 final CommandResult result) {
         String path = fromPath.getValue();
-        String body = fromPath.getFrom() == null
-                ? scenarioContext.getBody() : scenarioContext.get(fromPath.getFrom());
+        String body = fromPath.getFromVar() == null
+                ? scenarioContext.getBody() : scenarioContext.get(fromPath.getFromVar());
         if (path.startsWith(DOLLAR_SIGN)) {
             return evaluateJPath(path, varName, body, result);
         }

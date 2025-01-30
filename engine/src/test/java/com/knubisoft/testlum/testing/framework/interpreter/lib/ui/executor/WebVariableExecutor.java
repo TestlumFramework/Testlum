@@ -143,7 +143,8 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     private String getPathResult(final WebVar var, final CommandResult result) {
-        return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result);
+        return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getFile().getPath(),
+                dependencies.getScenarioContext(), result);
     }
 
     private String getConstantResult(final WebVar var, final CommandResult result) {

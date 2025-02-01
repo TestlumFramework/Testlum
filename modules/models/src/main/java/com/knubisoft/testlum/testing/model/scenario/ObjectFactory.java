@@ -990,6 +990,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link SwipeElement }
+     * 
+     */
+    public SwipeElement createSwipeElement() {
+        return new SwipeElement();
+    }
+
+    /**
+     * Create an instance of {@link SwipePage }
+     * 
+     */
+    public SwipePage createSwipePage() {
+        return new SwipePage();
+    }
+
+    /**
      * Create an instance of {@link SendRmqMessage }
      * 
      */

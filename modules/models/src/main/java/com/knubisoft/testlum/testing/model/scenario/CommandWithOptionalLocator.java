@@ -32,8 +32,7 @@ import javax.xml.bind.annotation.XmlType;
     Scroll.class,
     SwitchToFrame.class,
     Paste.class,
-    Highlight.class,
-    SwipeNative.class
+    Highlight.class
 })
 public abstract class CommandWithOptionalLocator
     extends AbstractUiCommand

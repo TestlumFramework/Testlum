@@ -3,7 +3,6 @@ package com.knubisoft.testlum.testing.model.scenario;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -15,11 +14,11 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="swipeNative"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}commandWithOptionalLocator"&gt;
- *       &lt;attribute name="direction" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}swipeDirection" /&gt;
- *       &lt;attribute name="type" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}swipeType" /&gt;
- *       &lt;attribute name="percent" type="{http://www.knubisoft.com/testlum/testing/model/scenario}percentsPattern" default="70" /&gt;
- *       &lt;attribute name="quantity" type="{http://www.w3.org/2001/XMLSchema}int" default="1" /&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
+ *       &lt;choice&gt;
+ *         &lt;element name="element" type="{http://www.knubisoft.com/testlum/testing/model/scenario}swipeElement"/&gt;
+ *         &lt;element name="page" type="{http://www.knubisoft.com/testlum/testing/model/scenario}swipePage"/&gt;
+ *       &lt;/choice&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -28,122 +27,63 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "swipeNative")
+@XmlType(name = "swipeNative", propOrder = {
+    "element",
+    "page"
+})
 public class SwipeNative
-    extends CommandWithOptionalLocator
+    extends AbstractUiCommand
 {
 
-    @XmlAttribute(name = "direction", required = true)
-    protected SwipeDirection direction;
-    @XmlAttribute(name = "type", required = true)
-    protected SwipeType type;
-    @XmlAttribute(name = "percent")
-    protected Integer percent;
-    @XmlAttribute(name = "quantity")
-    protected Integer quantity;
+    protected SwipeElement element;
+    protected SwipePage page;
 
     /**
-     * Gets the value of the direction property.
+     * Gets the value of the element property.
      * 
      * @return
      *     possible object is
-     *     {@link SwipeDirection }
+     *     {@link SwipeElement }
      *     
      */
-    public SwipeDirection getDirection() {
-        return direction;
+    public SwipeElement getElement() {
+        return element;
     }
 
     /**
-     * Sets the value of the direction property.
+     * Sets the value of the element property.
      * 
      * @param value
      *     allowed object is
-     *     {@link SwipeDirection }
+     *     {@link SwipeElement }
      *     
      */
-    public void setDirection(SwipeDirection value) {
-        this.direction = value;
+    public void setElement(SwipeElement value) {
+        this.element = value;
     }
 
     /**
-     * Gets the value of the type property.
+     * Gets the value of the page property.
      * 
      * @return
      *     possible object is
-     *     {@link SwipeType }
+     *     {@link SwipePage }
      *     
      */
-    public SwipeType getType() {
-        return type;
+    public SwipePage getPage() {
+        return page;
     }
 
     /**
-     * Sets the value of the type property.
+     * Sets the value of the page property.
      * 
      * @param value
      *     allowed object is
-     *     {@link SwipeType }
+     *     {@link SwipePage }
      *     
      */
-    public void setType(SwipeType value) {
-        this.type = value;
-    }
-
-    /**
-     * Gets the value of the percent property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public int getPercent() {
-        if (percent == null) {
-            return  70;
-        } else {
-            return percent;
-        }
-    }
-
-    /**
-     * Sets the value of the percent property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setPercent(Integer value) {
-        this.percent = value;
-    }
-
-    /**
-     * Gets the value of the quantity property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public int getQuantity() {
-        if (quantity == null) {
-            return  1;
-        } else {
-            return quantity;
-        }
-    }
-
-    /**
-     * Sets the value of the quantity property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setQuantity(Integer value) {
-        this.quantity = value;
+    public void setPage(SwipePage value) {
+        this.page = value;
     }
 
 }

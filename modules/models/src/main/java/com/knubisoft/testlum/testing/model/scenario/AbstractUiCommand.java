@@ -42,8 +42,8 @@ import javax.xml.bind.annotation.XmlType;
     HotKey.class,
     Copy.class,
     Cut.class,
+    CommandWithOptionalLocator.class,
     SingleKeyCommand.class,
-    CommandWithLocator.class,
     Image.class,
     MobileImage.class,
     NativeImage.class,
@@ -55,7 +55,9 @@ import javax.xml.bind.annotation.XmlType;
     WebView.class,
     NativeRepeat.class,
     NavigateNative.class,
-    CommandWithOptionalLocator.class
+    SwipeNative.class,
+    CommandWithLocator.class,
+    SwipePage.class
 })
 public abstract class AbstractUiCommand
     extends AbstractCommand

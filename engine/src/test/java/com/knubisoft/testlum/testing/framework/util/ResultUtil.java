@@ -40,9 +40,7 @@ import java.util.stream.Collectors;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.X;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -419,12 +417,17 @@ public class ResultUtil {
     }
 
     public void addSwipeMetaData(final SwipeNative swipeNative, final CommandResult result) {
-        result.put(SWIPE_TYPE, swipeNative.getType().value());
-        result.put(SWIPE_QUANTITY, swipeNative.getQuantity());
-        result.put(PERFORM_SWIPE, swipeNative.getDirection());
-        result.put(SWIPE_VALUE, swipeNative.getPercent());
-        if (isNotBlank(swipeNative.getLocator())) {
-            result.put(SWIPE_LOCATOR, swipeNative.getLocator());
+        if (swipeNative.getElement() != null) {
+            result.put(SWIPE_TYPE, "ELEMENT");
+            result.put(SWIPE_QUANTITY, swipeNative.getElement().getQuantity());
+            result.put(SWIPE_DIRECTION, swipeNative.getElement().getDirection());
+            result.put(SWIPE_VALUE, swipeNative.getElement().getPercent());
+            result.put(LOCATOR_LOG, swipeNative.getElement().getLocator());
+        } else {
+            result.put(SWIPE_TYPE, "PAGE");
+            result.put(SWIPE_QUANTITY, swipeNative.getPage().getQuantity());
+            result.put(SWIPE_DIRECTION, swipeNative.getPage().getDirection());
+            result.put(SWIPE_VALUE, swipeNative.getPage().getPercent());
         }
     }
 

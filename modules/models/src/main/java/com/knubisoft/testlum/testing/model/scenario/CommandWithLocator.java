@@ -39,7 +39,8 @@ import javax.xml.bind.annotation.XmlType;
     Input.class,
     DropDown.class,
     Clear.class,
-    ScrollTo.class
+    ScrollTo.class,
+    SwipeElement.class
 })
 public abstract class CommandWithLocator
     extends AbstractUiCommand

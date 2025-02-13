@@ -466,12 +466,17 @@ public class LogUtil {
     }
 
     public void logSwipeNativeInfo(final SwipeNative swipeNative) {
-        log.info(SWIPE_TYPE, swipeNative.getType());
-        log.info(SWIPE_QUANTITY, swipeNative.getQuantity());
-        log.info(SWIPE_DIRECTION, swipeNative.getDirection());
-        log.info(SWIPE_VALUE, swipeNative.getPercent());
-        if (isNotBlank(swipeNative.getLocator())) {
-            log.info(LOCATOR_LOG, swipeNative.getLocator());
+        if (swipeNative.getElement() != null) {
+            log.info(SWIPE_TYPE, "ELEMENT");
+            log.info(SWIPE_QUANTITY, swipeNative.getElement().getQuantity());
+            log.info(SWIPE_DIRECTION, swipeNative.getElement().getDirection());
+            log.info(SWIPE_VALUE, swipeNative.getElement().getPercent());
+            log.info(LOCATOR_LOG, swipeNative.getElement().getLocator());
+        } else {
+            log.info(SWIPE_TYPE, "PAGE");
+            log.info(SWIPE_QUANTITY, swipeNative.getPage().getQuantity());
+            log.info(SWIPE_DIRECTION, swipeNative.getPage().getDirection());
+            log.info(SWIPE_VALUE, swipeNative.getPage().getPercent());
         }
     }
 

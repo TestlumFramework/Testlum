@@ -94,8 +94,6 @@ import com.knubisoft.testlum.testing.model.scenario.Shell;
 import com.knubisoft.testlum.testing.model.scenario.Smtp;
 import com.knubisoft.testlum.testing.model.scenario.Sqs;
 import com.knubisoft.testlum.testing.model.scenario.StorageName;
-import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
-import com.knubisoft.testlum.testing.model.scenario.SwipeType;
 import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.knubisoft.testlum.testing.model.scenario.Var;
 import com.knubisoft.testlum.testing.model.scenario.Web;
@@ -333,9 +331,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 o -> o instanceof NativeVar, (xmlFile, command) -> {
                     NativeVar var = (NativeVar) command;
                     validateVarCommand(xmlFile, var.getFile(), var.getSql());
-                },
-                o -> o instanceof SwipeNative && SwipeType.ELEMENT == ((SwipeNative) o).getType(), (xmlFile, command) ->
-                        validateLocator((SwipeNative) command, NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE));
+                });
     }
 
     @Override

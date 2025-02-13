@@ -98,9 +98,29 @@
 
     <x:complexType name="swipeNative">
         <x:complexContent>
-            <x:extension base="tns:commandWithOptionalLocator">
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice minOccurs="1" maxOccurs="1">
+                    <x:element name="element" type="tns:swipeElement"/>
+                    <x:element name="page" type="tns:swipePage"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="swipeElement">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
                 <x:attribute name="direction" type="tns:swipeDirection" use="required"/>
-                <x:attribute name="type" type="tns:swipeType" use="required"/>
+                <x:attribute name="percent" type="tns:percentsPattern" default="70"/>
+                <x:attribute name="quantity" type="x:int" default="1"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="swipePage">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:attribute name="direction" type="tns:swipeDirection" use="required"/>
                 <x:attribute name="percent" type="tns:percentsPattern" default="70"/>
                 <x:attribute name="quantity" type="x:int" default="1"/>
             </x:extension>
@@ -113,13 +133,6 @@
             <x:enumeration value="left"/>
             <x:enumeration value="up"/>
             <x:enumeration value="down"/>
-        </x:restriction>
-    </x:simpleType>
-
-    <x:simpleType name="swipeType">
-        <x:restriction base="x:string">
-            <x:enumeration value="element"/>
-            <x:enumeration value="page"/>
         </x:restriction>
     </x:simpleType>
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-usage_message="Usage: sh $0 generate models free/standard/professional"
+usage_message="Usage: sh $0 generate models professional"
 
 function main {
     local SUBCOMMAND="$1"
@@ -32,7 +32,7 @@ function getGenerateVal() {
     local arg="$1"
 
     case $arg in
-        free|standard|professional)
+        professional)
             mvn -P "$arg" -pl ./engine/ --also-make clean package -DskipGenerateModels=false -DskipTests=true
             ;;
         *)

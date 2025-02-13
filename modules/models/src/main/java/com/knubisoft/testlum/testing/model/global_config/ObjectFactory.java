@@ -246,14 +246,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Subscription }
-     * 
-     */
-    public Subscription createSubscription() {
-        return new Subscription();
-    }
-
-    /**
      * Create an instance of {@link DelayBetweenScenarioRuns }
      * 
      */

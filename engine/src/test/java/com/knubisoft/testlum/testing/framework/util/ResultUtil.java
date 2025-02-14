@@ -25,6 +25,7 @@ import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +46,7 @@ import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+@Slf4j
 @UtilityClass
 public class ResultUtil {
 
@@ -323,6 +325,7 @@ public class ResultUtil {
         String result = CollectionUtils.isNotEmpty(testExecutionSummary.getFailures())
                 || testExecutionSummary.getTestsAbortedCount() > 0 ? FAILED : SUCCESSFULLY;
         FileUtils.write(executionResultFile, result, StandardCharsets.UTF_8);
+        log.info("ALL TESTS RESULT: " + result);
     }
 
     public void addImageComparisonMetaData(final Image image, final CommandResult result) {

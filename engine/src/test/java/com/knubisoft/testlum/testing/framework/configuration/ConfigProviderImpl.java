@@ -6,7 +6,6 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.parser.XMLParsers;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
-import com.knubisoft.testlum.testing.framework.validator.GlobalTestConfigValidator;
 import com.knubisoft.testlum.testing.framework.validator.IntegrationsValidator;
 import com.knubisoft.testlum.testing.framework.validator.UiConfigValidator;
 import com.knubisoft.testlum.testing.model.global_config.Environment;
@@ -111,7 +110,7 @@ public class ConfigProviderImpl implements ConfigProvider {
 
         private GlobalTestConfiguration init() {
             return XMLParsers.forGlobalTestConfiguration()
-                    .process(TestResourceSettings.getInstance().getConfigFile(), new GlobalTestConfigValidator());
+                    .process(TestResourceSettings.getInstance().getConfigFile());
         }
 
         private List<Environment> filterEnabledEnvironments() {

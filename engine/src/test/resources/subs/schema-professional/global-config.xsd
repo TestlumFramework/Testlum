@@ -20,7 +20,6 @@
     <x:element name="globalTestConfiguration">
         <x:complexType>
             <x:sequence>
-                <x:element name="subscription" type="tns:subscription"/>
                 <x:element name="parallelExecution" type="x:boolean" default="false" minOccurs="0"/>
                 <x:element name="stopScenarioOnFailure" type="x:boolean"/>
                 <x:element name="stopIfInvalidScenario" type="x:boolean"/>
@@ -32,20 +31,6 @@
             </x:sequence>
         </x:complexType>
     </x:element>
-
-    <x:complexType name="subscription">
-        <x:choice>
-            <x:element name="id" type="tns:nonEmptyString"/>
-        </x:choice>
-        <x:attribute name="type" type="tns:subscriptionType" use="required"/>
-    </x:complexType>
-
-    <x:simpleType name="subscriptionType">
-        <x:restriction base="x:string">
-            <x:enumeration value="stripe"/>
-            <x:enumeration value="free"/>
-        </x:restriction>
-    </x:simpleType>
 
     <x:complexType name="delayBetweenScenarioRuns">
         <x:attribute name="seconds" type="x:int" use="required"/>

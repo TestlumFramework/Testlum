@@ -222,7 +222,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
         addExpectedAndActual(step, stepExecutionInfo);
         setStepExecutionResult(step, stepExecutionInfo);
         if (CollectionUtils.isNotEmpty(stepExecutionInfo.getSubCommandsResult())) {
-            addScenarioSteps(step, stepExecutionInfo.getSubCommandsResult());
+            addScenarioSteps(extentTest, stepExecutionInfo.getSubCommandsResult());
         }
     }
 

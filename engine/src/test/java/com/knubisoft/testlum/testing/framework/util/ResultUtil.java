@@ -25,7 +25,6 @@ import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
@@ -320,7 +319,7 @@ public class ResultUtil {
     public void writeFullTestCycleExecutionResult(final TestExecutionSummary testExecutionSummary) {
         File executionResultFile = new File(TestResourceSettings.getInstance().getTestResourcesFolder(),
                 EXECUTION_RESULT_FILENAME);
-        String result = CollectionUtils.isNotEmpty(testExecutionSummary.getFailures())
+        String result = testExecutionSummary.getTestsFailedCount() > 0
                 || testExecutionSummary.getTestsAbortedCount() > 0 ? FAILED : SUCCESSFULLY;
         FileUtils.write(executionResultFile, result, StandardCharsets.UTF_8);
     }

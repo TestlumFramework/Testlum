@@ -323,7 +323,7 @@ public class ResultUtil {
     public void writeFullTestCycleExecutionResult(final TestExecutionSummary testExecutionSummary) {
         File executionResultFile = new File(TestResourceSettings.getInstance().getTestResourcesFolder(),
                 EXECUTION_RESULT_FILENAME);
-        log.info("Tests failed = " + String.valueOf(testExecutionSummary.getTestsFailedCount()));
+        log.info("Tests failed = " + String.valueOf(testExecutionSummary.getFailures().size()));
         log.info("Tests aborted = " + String.valueOf(testExecutionSummary.getTestsAbortedCount()));
         log.info("AAA {}", CollectionUtils.isNotEmpty(testExecutionSummary.getFailures()));
         String result = CollectionUtils.isNotEmpty(testExecutionSummary.getFailures())

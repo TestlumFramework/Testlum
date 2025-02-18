@@ -323,13 +323,9 @@ public class ResultUtil {
     public void writeFullTestCycleExecutionResult(final TestExecutionSummary testExecutionSummary) {
         File executionResultFile = new File(TestResourceSettings.getInstance().getTestResourcesFolder(),
                 EXECUTION_RESULT_FILENAME);
-        log.info("Tests failed = " + String.valueOf(testExecutionSummary.getFailures().size()));
-        log.info("Tests aborted = " + String.valueOf(testExecutionSummary.getTestsAbortedCount()));
-        log.info("AAA {}", CollectionUtils.isNotEmpty(testExecutionSummary.getFailures()));
-        String result = CollectionUtils.isNotEmpty(testExecutionSummary.getFailures())
+        String result = testExecutionSummary.getTestsFailedCount() > 0
                 || testExecutionSummary.getTestsAbortedCount() > 0 ? FAILED : SUCCESSFULLY;
         FileUtils.write(executionResultFile, result, StandardCharsets.UTF_8);
-        log.info("ALL TESTS RESULT: " + result);
     }
 
     public void addImageComparisonMetaData(final Image image, final CommandResult result) {

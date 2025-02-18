@@ -177,17 +177,16 @@ public class LogUtil {
     }
 
     private void logTestsStatistics(final TestExecutionSummary testExecutionSummary) {
-        long failedScenarios = testExecutionSummary.getTestsFailedCount();
         log.info(LogMessage.TEST_EXECUTION_SUMMARY_TEMPLATE,
                 testExecutionSummary.getTestsFoundCount(),
                 testExecutionSummary.getTestsSkippedCount(),
                 testExecutionSummary.getTestsStartedCount(),
                 testExecutionSummary.getTestsAbortedCount(),
                 testExecutionSummary.getTestsSucceededCount(),
-                failedScenarios);
-            testExecutionSummary.getFailures().forEach(e -> log.error(
-                    format(LogMessage.FAILED_SCENARIOS_NAME_TEMPLATE, e.getTestIdentifier().getDisplayName()),
-                    e.getException()));
+                testExecutionSummary.getTestsFailedCount());
+        testExecutionSummary.getFailures().forEach(e -> log.error(
+                format(LogMessage.FAILED_SCENARIOS_NAME_TEMPLATE, e.getTestIdentifier().getDisplayName()),
+                e.getException()));
     }
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {

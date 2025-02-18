@@ -33,6 +33,7 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -324,6 +325,7 @@ public class ResultUtil {
                 EXECUTION_RESULT_FILENAME);
         log.info("Tests failed = " + String.valueOf(testExecutionSummary.getTestsFailedCount()));
         log.info("Tests aborted = " + String.valueOf(testExecutionSummary.getTestsAbortedCount()));
+        log.info("AAA {}", CollectionUtils.isNotEmpty(testExecutionSummary.getFailures()));
         String result = CollectionUtils.isNotEmpty(testExecutionSummary.getFailures())
                 || testExecutionSummary.getTestsAbortedCount() > 0 ? FAILED : SUCCESSFULLY;
         FileUtils.write(executionResultFile, result, StandardCharsets.UTF_8);

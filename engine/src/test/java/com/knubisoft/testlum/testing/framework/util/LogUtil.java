@@ -185,11 +185,9 @@ public class LogUtil {
                 testExecutionSummary.getTestsAbortedCount(),
                 testExecutionSummary.getTestsSucceededCount(),
                 failedScenarios);
-        if (failedScenarios > 0) {
             testExecutionSummary.getFailures().forEach(e -> log.error(
                     format(LogMessage.FAILED_SCENARIOS_NAME_TEMPLATE, e.getTestIdentifier().getDisplayName()),
                     e.getException()));
-        }
     }
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {

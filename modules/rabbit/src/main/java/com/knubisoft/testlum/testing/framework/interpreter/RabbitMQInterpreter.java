@@ -227,7 +227,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     }
 
     private String getMessageToSend(final SendRmqMessage send) {
-        return getValue(send.getBody(), send.getFile());
+        return getValue(send.getValue(), send.getFile());
     }
 
     private String getMessageToReceive(final ReceiveRmqMessage receive) {

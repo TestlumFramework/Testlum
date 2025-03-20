@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;choice&gt;
- *           &lt;element name="body" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
+ *           &lt;element name="value" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *           &lt;element name="file" type="{http://www.knubisoft.com/testlum/testing/model/scenario}bodyFile"/&gt;
  *         &lt;/choice&gt;
  *         &lt;element name="headers" type="{http://www.knubisoft.com/testlum/testing/model/scenario}rmqHeaders" minOccurs="0"/&gt;
@@ -35,13 +35,13 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "sendRmqMessage", propOrder = {
-    "body",
+    "value",
     "file",
     "headers"
 })
 public class SendRmqMessage {
 
-    protected String body;
+    protected String value;
     protected String file;
     protected RmqHeaders headers;
     @XmlAttribute(name = "routingKey", required = true)
@@ -52,27 +52,27 @@ public class SendRmqMessage {
     protected String correlationId;
 
     /**
-     * Gets the value of the body property.
+     * Gets the value of the value property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getBody() {
-        return body;
+    public String getValue() {
+        return value;
     }
 
     /**
-     * Sets the value of the body property.
+     * Sets the value of the value property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setBody(String value) {
-        this.body = value;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     /**

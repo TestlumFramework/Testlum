@@ -24,7 +24,7 @@
   <x:complexType name="sendRmqMessage">
     <x:sequence>
       <x:choice>
-        <x:element name="body" type="tns:nonEmptyString"/>
+        <x:element name="value" type="tns:nonEmptyString"/>
         <x:element name="file" type="tns:bodyFile"/>
       </x:choice>
       <x:element name="headers" type="tns:rmqHeaders" minOccurs="0"/>
@@ -36,7 +36,7 @@
 
   <x:complexType name="receiveRmqMessage">
     <x:choice>
-      <x:element name="message" type="tns:nonEmptyString"/>
+      <x:element name="value" type="tns:nonEmptyString"/>
       <x:element name="file" type="tns:expectedPattern"/>
     </x:choice>
     <x:attribute name="queue" type="tns:nonEmptyString" use="required"/>

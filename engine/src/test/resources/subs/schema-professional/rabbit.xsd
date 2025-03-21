@@ -36,7 +36,7 @@
 
   <x:complexType name="receiveRmqMessage">
     <x:choice>
-      <x:element name="message" type="tns:nonEmptyString"/>
+      <x:element name="value" type="tns:nonEmptyString"/>
       <x:element name="file" type="tns:expectedPattern"/>
     </x:choice>
     <x:attribute name="queue" type="tns:nonEmptyString" use="required"/>

@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;choice&gt;
- *         &lt;element name="message" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="value" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *         &lt;element name="file" type="{http://www.knubisoft.com/testlum/testing/model/scenario}expectedPattern"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="queue" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
@@ -33,12 +33,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "receiveRmqMessage", propOrder = {
-    "message",
+    "value",
     "file"
 })
 public class ReceiveRmqMessage {
 
-    protected String message;
+    protected String value;
     protected String file;
     @XmlAttribute(name = "queue", required = true)
     protected String queue;
@@ -50,27 +50,27 @@ public class ReceiveRmqMessage {
     protected Boolean headers;
 
     /**
-     * Gets the value of the message property.
+     * Gets the value of the value property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getMessage() {
-        return message;
+    public String getValue() {
+        return value;
     }
 
     /**
-     * Sets the value of the message property.
+     * Sets the value of the value property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setMessage(String value) {
-        this.message = value;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     /**

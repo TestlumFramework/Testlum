@@ -44,7 +44,6 @@
                 <x:element name="message" type="tns:nonEmptyString"/>
                 <x:element name="file" type="tns:bodyFile"/>
             </x:choice>
-            <x:element name="receive" type="tns:websocketReceive" minOccurs="0"/>
         </x:sequence>
         <x:attribute name="comment" type="tns:stringMin10" use="required"/>
         <x:attribute name="endpoint" type="tns:endpointPattern"/>

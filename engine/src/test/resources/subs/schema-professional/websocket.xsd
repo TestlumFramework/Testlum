@@ -41,7 +41,7 @@
     <x:complexType name="websocketSend">
         <x:sequence>
             <x:choice>
-                <x:element name="value" type="tns:nonEmptyString"/>
+                <x:element name="message" type="tns:nonEmptyString"/>
                 <x:element name="file" type="tns:bodyFile"/>
             </x:choice>
         </x:sequence>
@@ -51,7 +51,7 @@
 
     <x:complexType name="websocketReceive">
         <x:choice>
-            <x:element name="value" type="tns:nonEmptyString"/>
+            <x:element name="message" type="tns:nonEmptyString"/>
             <x:element name="file" type="tns:expectedPattern"/>
         </x:choice>
         <x:attribute name="comment" type="tns:stringMin10" use="required"/>

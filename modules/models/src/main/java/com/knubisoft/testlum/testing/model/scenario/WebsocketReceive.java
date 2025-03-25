@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;choice&gt;
- *         &lt;element name="value" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
+ *         &lt;element name="message" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *         &lt;element name="file" type="{http://www.knubisoft.com/testlum/testing/model/scenario}expectedPattern"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="comment" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}stringMin10" /&gt;
@@ -35,12 +35,12 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "websocketReceive", propOrder = {
-    "value",
+    "message",
     "file"
 })
 public class WebsocketReceive {
 
-    protected String value;
+    protected String message;
     protected String file;
     @XmlAttribute(name = "comment", required = true)
     protected String comment;
@@ -53,27 +53,27 @@ public class WebsocketReceive {
     protected Long timeoutMillis;
 
     /**
-     * Gets the value of the value property.
+     * Gets the value of the message property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getValue() {
-        return value;
+    public String getMessage() {
+        return message;
     }
 
     /**
-     * Sets the value of the value property.
+     * Sets the value of the message property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setValue(String value) {
-        this.value = value;
+    public void setMessage(String value) {
+        this.message = value;
     }
 
     /**

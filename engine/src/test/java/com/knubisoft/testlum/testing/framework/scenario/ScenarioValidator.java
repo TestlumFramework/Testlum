@@ -517,8 +517,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void addWebsocketCommandsToCheck(final List<Object> commandList, final List<Object> commands) {
         commandList.stream()
                 .peek(commands::add)
-                .filter(ws -> ws instanceof WebsocketSend && nonNull(((WebsocketSend) ws).getReceive()))
-                .map(o -> ((WebsocketSend) o).getReceive())
+                .filter(ws -> ws instanceof WebsocketSend)
                 .forEach(commands::add);
     }
 

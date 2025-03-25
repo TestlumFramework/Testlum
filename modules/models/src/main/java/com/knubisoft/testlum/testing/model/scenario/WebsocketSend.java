@@ -21,7 +21,6 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;element name="message" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString"/&gt;
  *           &lt;element name="file" type="{http://www.knubisoft.com/testlum/testing/model/scenario}bodyFile"/&gt;
  *         &lt;/choice&gt;
- *         &lt;element name="receive" type="{http://www.knubisoft.com/testlum/testing/model/scenario}websocketReceive" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="comment" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}stringMin10" /&gt;
  *       &lt;attribute name="endpoint" type="{http://www.knubisoft.com/testlum/testing/model/scenario}endpointPattern" /&gt;
@@ -35,14 +34,12 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "websocketSend", propOrder = {
     "message",
-    "file",
-    "receive"
+    "file"
 })
 public class WebsocketSend {
 
     protected String message;
     protected String file;
-    protected WebsocketReceive receive;
     @XmlAttribute(name = "comment", required = true)
     protected String comment;
     @XmlAttribute(name = "endpoint")
@@ -94,30 +91,6 @@ public class WebsocketSend {
      */
     public void setFile(String value) {
         this.file = value;
-    }
-
-    /**
-     * Gets the value of the receive property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link WebsocketReceive }
-     *     
-     */
-    public WebsocketReceive getReceive() {
-        return receive;
-    }
-
-    /**
-     * Sets the value of the receive property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link WebsocketReceive }
-     *     
-     */
-    public void setReceive(WebsocketReceive value) {
-        this.receive = value;
     }
 
     /**

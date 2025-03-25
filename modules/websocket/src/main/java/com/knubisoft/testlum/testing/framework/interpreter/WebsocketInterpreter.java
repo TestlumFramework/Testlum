@@ -237,11 +237,11 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     }
 
     private String getMessageToSend(final WebsocketSend wsSend) {
-        return getValue(wsSend.getMessage(), wsSend.getFile());
+        return getValue(wsSend.getValue(), wsSend.getFile());
     }
 
     private String getExpectedContent(final WebsocketReceive wsReceive) {
-        return getValue(wsReceive.getMessage(), wsReceive.getFile());
+        return getValue(wsReceive.getValue(), wsReceive.getFile());
     }
 
     private String getValue(final String message, final String file) {

@@ -1014,6 +1014,12 @@
             <version>1.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-websocket</artifactId>
+            <version>1.0</version>
+        </dependency>
+
         <!--    TESTLUM UI PLUGINS    -->
 
         <dependency>
@@ -1404,12 +1410,6 @@
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-lambda</artifactId>
-                    <version>1.0</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-websocket</artifactId>
                     <version>1.0</version>
                 </dependency>
 

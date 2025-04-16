@@ -238,6 +238,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link SqlDatabaseIntegration }
+     * 
+     */
+    public SqlDatabaseIntegration createSqlDatabaseIntegration() {
+        return new SqlDatabaseIntegration();
+    }
+
+    /**
      * Create an instance of {@link GlobalTestConfiguration }
      * 
      */
@@ -763,6 +771,14 @@ public class ObjectFactory {
      */
     public Twilio createTwilio() {
         return new Twilio();
+    }
+
+    /**
+     * Create an instance of {@link SqlDatabase }
+     * 
+     */
+    public SqlDatabase createSqlDatabase() {
+        return new SqlDatabase();
     }
 
     /**

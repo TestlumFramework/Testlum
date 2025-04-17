@@ -53,7 +53,7 @@ public class OracleInterpreter extends AbstractInterpreter<Oracle> {
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
 
         comparator.exec();
-        setContextBody(actual);
+        setContextBody(getContextBodyKey(oracle.getFile()), actual);
     }
 
     protected String getActual(final Oracle oracle, final CommandResult result) {

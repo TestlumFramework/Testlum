@@ -53,7 +53,7 @@ public class MongoDBInterpreter extends AbstractInterpreter<Mongo> {
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
 
         comparator.exec();
-        setContextBody(actual);
+        setContextBody(getContextBodyKey(mongo.getFile()), actual);
     }
 
     private String getActual(final Mongo mongo, final CommandResult result) {

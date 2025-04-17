@@ -15,6 +15,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
@@ -102,8 +103,15 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         return fileOrContent;
     }
 
-    protected void setContextBody(final String o) {
-        dependencies.getScenarioContext().setBody(o);
+    public String getContextBodyKey(final String fileOrContent) {
+        if (isNotBlank(fileOrContent)) {
+            return fileOrContent;
+        }
+        return UUID.randomUUID().toString();
+    }
+
+    protected void setContextBody(final String key, final String body) {
+        dependencies.getScenarioContext().set(key, body);
     }
 
     @SuppressWarnings("unchecked")

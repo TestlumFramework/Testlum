@@ -838,12 +838,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.mariadb.jdbc</groupId>
-            <artifactId>mariadb-java-client</artifactId>
-            <version>3.5.3</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.oracle.database.jdbc</groupId>
             <artifactId>ojdbc8</artifactId>
             <version>${oracle.database.ojdbc8}</version>
@@ -1003,6 +997,14 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-postgres</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <!--    SQL_DATABASE    -->
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-sqlDatabase</artifactId>
             <version>1.0</version>
         </dependency>
 

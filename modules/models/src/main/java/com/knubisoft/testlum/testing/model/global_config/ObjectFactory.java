@@ -782,6 +782,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link CustomTruncateConfig }
+     * 
+     */
+    public CustomTruncateConfig createCustomTruncateConfig() {
+        return new CustomTruncateConfig();
+    }
+
+    /**
      * Create an instance of {@link Environment }
      * 
      */

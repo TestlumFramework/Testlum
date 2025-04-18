@@ -30,7 +30,9 @@ public class SqlDatabaseOperation extends AbstractStorageOperation {
     public SqlDatabaseOperation(@Autowired(required = false) @Qualifier("sqlDatabaseDataSource")
                                 final Map<AliasEnv, DataSource> sqlDatabaseDataSource) {
         sqlExecutors = new HashMap<>();
-        sqlDatabaseDataSource.forEach((key, value) -> sqlExecutors.put(key, new SqlDatabaseExecutor(value)));
+        sqlDatabaseDataSource.forEach((key, value) ->
+                sqlExecutors.put(key, new SqlDatabaseExecutor(value, key))
+        );
     }
 
     @Override

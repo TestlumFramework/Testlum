@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="http" type="{http://www.knubisoft.com/testlum/testing/model/scenario}http"/&gt;
  *         &lt;element name="migrate" type="{http://www.knubisoft.com/testlum/testing/model/scenario}migrate"/&gt;
  *         &lt;element name="postgres" type="{http://www.knubisoft.com/testlum/testing/model/scenario}postgres"/&gt;
-```` *         &lt;element name="sqlDatabase" type="{http://www.knubisoft.com/testlum/testing/model/scenario}sqlDatabase"/&gt;
+ *         &lt;element name="sqlDatabase" type="{http://www.knubisoft.com/testlum/testing/model/scenario}sqlDatabase"/&gt;
  *         &lt;element name="mysql" type="{http://www.knubisoft.com/testlum/testing/model/scenario}mysql"/&gt;
  *         &lt;element name="oracle" type="{http://www.knubisoft.com/testlum/testing/model/scenario}oracle"/&gt;
  *         &lt;element name="mongo" type="{http://www.knubisoft.com/testlum/testing/model/scenario}mongo"/&gt;

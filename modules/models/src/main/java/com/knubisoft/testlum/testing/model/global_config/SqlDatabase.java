@@ -15,6 +15,9 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="sqlDatabase"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/global-config}databaseConfig"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="customTruncate" type="{http://www.knubisoft.com/testlum/testing/model/global-config}customTruncateConfig" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -23,10 +26,37 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "sqlDatabase")
+@XmlType(name = "sqlDatabase", propOrder = {
+    "customTruncate"
+})
 public class SqlDatabase
     extends DatabaseConfig
 {
 
+    protected CustomTruncateConfig customTruncate;
+
+    /**
+     * Gets the value of the customTruncate property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CustomTruncateConfig }
+     *     
+     */
+    public CustomTruncateConfig getCustomTruncate() {
+        return customTruncate;
+    }
+
+    /**
+     * Sets the value of the customTruncate property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CustomTruncateConfig }
+     *     
+     */
+    public void setCustomTruncate(CustomTruncateConfig value) {
+        this.customTruncate = value;
+    }
 
 }

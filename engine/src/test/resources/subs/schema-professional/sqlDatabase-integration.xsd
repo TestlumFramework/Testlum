@@ -15,8 +15,18 @@
 
     <x:complexType name="sqlDatabase">
         <x:complexContent>
-            <x:extension base="tns:databaseConfig"/>
+            <x:extension base="tns:databaseConfig">
+                <x:sequence>
+                    <x:element name="customTruncate" type="tns:customTruncateConfig" minOccurs="0"/>
+                </x:sequence>
+            </x:extension>
         </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="customTruncateConfig">
+        <x:sequence>
+            <x:element name="truncateFile" type="x:string" minOccurs="1" maxOccurs="1"/>
+        </x:sequence>
     </x:complexType>
 
 </x:schema>

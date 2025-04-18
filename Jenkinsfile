@@ -39,17 +39,14 @@ pipeline {
                 name: 'branch',
                 type: 'PT_BRANCH',
                 selectedValue: 'DEFAULT')
-        choice(name: 'project',
-                choices: ['PME', 'Immunotec'],
-                description: 'Target project to build testlum docker image')
         booleanParam(name: 'pushToECR',
                 defaultValue: false,
                 description: 'Push image to ECR for Main Version?')
         booleanParam(name: 'pushToECRWithNewTag',
                 defaultValue: false,
                 description: 'Push image to ECR New Version?')
-        string(name: 'buildVersion',
-                defaultValue: '1.0.0',
+        string(name: 'mainBuildVersion',
+                defaultValue: '1.0',
                 description: 'Put image version if needed')
         string(name: 'cromeDriverVersion',
                 defaultValue: '123.0.6312.58',
@@ -57,15 +54,14 @@ pipeline {
     }
 
     environment {
-        accountId = '044415721934' // AWS account ID
         awsRoleArn = 'deploy' // AWS role for deployment
         credentialsId = 'aws_general_jenkins_user' // AWS credentials
-        gitCredenatialsId = 'jenkins_ci_demo_id_rsa' // Git credentials for bucket
+        gitCredenatialsId = 'jenkins_ssh_for_git' // Git credentials for bucket
         repo = 'testlum' // AWS ECR repo for service
         ecr = "public.ecr.aws/f1r2a3f3" // AWS ECR url
         region = 'us-east-1' // AWS region
-        appBucketUrl = "ssh://git@bitbucket.knubisoft.com:7999/cott/testlum.git" // App bucket url
-        tag = "${project}" // docker tag
+        appBucketUrl = "git@github.com:TestlumFramework/Testlum.git" // App bucket url
+        buildVersion = "${mainBuildVersion}.${env.BUILD_ID}"
     }
 
     stages {

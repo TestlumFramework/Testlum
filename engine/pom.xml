@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.knubisoft</groupId>
         <artifactId>testlum</artifactId>
-        <version>1.0</version>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -953,43 +953,43 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-migrate</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-repeat</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-assert</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-conditional</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-wait</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-shell</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-variable</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!--    DATABASES    -->
@@ -997,7 +997,7 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-postgres</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!--    API    -->
@@ -1005,19 +1005,19 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-http</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-auth</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-websocket</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!--    TESTLUM UI PLUGINS    -->
@@ -1025,7 +1025,7 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-web</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
     </dependencies>
@@ -1306,31 +1306,31 @@
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-mysql</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-clickhouse</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-oracle</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-mongo</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-dynamo</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <!--    QUEUES    -->
@@ -1338,19 +1338,19 @@
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-kafka</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-rabbit</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-sqs</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <!--    CACHE AND STORAGE    -->
@@ -1358,13 +1358,13 @@
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-redis</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-s3</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <!--    MESSAGES AND MAILING    -->
@@ -1372,25 +1372,25 @@
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-sendgrid</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-ses</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-smtp</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-twilio</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <!--    API    -->
@@ -1398,32 +1398,32 @@
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-elasticsearch</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-graphql</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-lambda</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <!--    TESTLUM UI PLUGINS    -->
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-native</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
 
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-mobilebrowser</artifactId>
-                    <version>1.0</version>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
             <build>

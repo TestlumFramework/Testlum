@@ -41,7 +41,7 @@ RUN mkdir -p ~/.cache/selenium/ && touch ~/.cache/selenium/resolution.properties
 
 WORKDIR /testlum/
 
-ARG JAR_FILE=engine/target/testlum-with-dependencies.jar
+ARG JAR_FILE=engine/target/testlum-1.0.0.jar
 
 COPY --from=maven-build /testlum/${JAR_FILE} testlum.jar
 

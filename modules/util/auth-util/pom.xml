@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.knubisoft</groupId>
         <artifactId>modules</artifactId>
-        <version>1.0</version>
+        <version>1.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -21,13 +21,13 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-shared-util</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-api-util</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

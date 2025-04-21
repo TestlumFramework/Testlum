@@ -4,11 +4,8 @@
 </h1>
 <h2 align="center">Run tests fast and easy</h2>
 
----
-
 [![License](http://img.shields.io/:license-Apache%202-red.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
----
 # Table of Contents
 - [Key Features](#key-features)
 - [Contributing](#contributing)
@@ -17,11 +14,8 @@
 - [Social Media](#social-media)
 - [License](#license)
 
----
 # Testlum
 Codeless end-to-end testing framework which makes your testing easier and faster
-
----
 
 # Key Features
 
@@ -46,11 +40,9 @@ Codeless end-to-end testing framework which makes your testing easier and faster
 - 🔄 **CI/CD Integration**  
   Seamlessly plug into pipelines with rich CLI support and flexible reporting.
 
----
 # Contributing
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting your pull requests
 
----
 # Running
 Prerequisites
 
@@ -81,7 +73,7 @@ After cloning repository to your local machine:
   sh run-docker-local imageName configFileName testResourcesPath
   sh run-docker-local testlum:1.0 global-config.xml ~/Users/user/test-resources 
 ```
----
+
 # Documentation
 
 Full user documentation for this project is currently available on:
@@ -90,7 +82,7 @@ Full user documentation for this project is currently available on:
 We are in the process of migrating the documentation to the [GitHub Wiki](../../wiki).  
 Once the migration is complete, the current documentation link will be deprecated.
 
----
+
 # Social Media
 
 ## 🌐 Explore More at [Testlum.com](https://testlum.com)
@@ -154,7 +146,7 @@ Hit that **subscribe** button and never miss an update!
 
 🔗 [Testlum YouTube](https://www.youtube.com/channel/UC5F7ZWCL-hzYz6Sr2zv2MQA)
 
----
+
 # License
 Testlum's source code is made available under the [Apache 2.0 license](LICENSE).
 

@@ -4,6 +4,7 @@
 </h1>
 <h2 align="center">Run tests fast and easy</h2>
 
+[![Build Status](https://jenkins.testlum.com/buildStatus/icon?job=Testlum%2FFullRegression)](https://jenkins.testlum.com/job/Testlum/job/FullRegression/)
 [![License](http://img.shields.io/:license-Apache%202-red.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 # Table of Contents
@@ -58,6 +59,30 @@ After cloning repository to your local machine:
 - and run it by passing test resources location ```java -jar engine/target/testlum-1.0.0.jar -c="global-config-file-name.xml" -p"=absolute path to folder with test resources"```
 - examples of test resources can be found in our [Wiki](https://testlum.com)
 
+Or You can use our official maven artifact:
+```xml
+<repositories>
+    <repository>
+        <id>testlum</id>
+        <name>Testlum Releases</name>
+        <url>https://mvnrepository.knubisoft.com/artifactory/testlum</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+      <groupId>com.testlum</groupId>
+      <artifactId>tesltum-engine</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+</dependencies>
+```
+```java
+public static void main(String[] args) {
+    TESTLUMStarter.main(new String[]{"-c=global-config.xml", "-p=/path-to-resources"});
+}
+```
+
 ### Run in docker
 After cloning repository to your local machine:
 - navigate to root project folder
@@ -72,6 +97,12 @@ After cloning repository to your local machine:
 ```shell 
   sh run-docker-local imageName configFileName testResourcesPath
   sh run-docker-local testlum:1.0 global-config.xml ~/Users/user/test-resources 
+```
+
+Or You can use our official docker image from [Docker Hub](https://hub.docker.com/r/testlum/testlum)
+
+```shell
+  docker pull testlum/testlum
 ```
 
 # Documentation
@@ -89,7 +120,9 @@ Once the migration is complete, the current documentation link will be deprecate
 
 Want to learn more about our vision, tools, and everything we’re building around modern testing automation?
 
-Check out our official website 👉 [**testlum.com**](https://testlum.com)
+👇 Check out our official website
+
+<a href="https://testlum.com"><img src="https://testlum.com/img/logo.27745238.svg" alt="Testlum" width="50"></a>
 
 ### 🔍 What you’ll find there:
 - 📘 **Documentation & Tutorials** – Dive deep into how our testing framework works and how to get started in minutes.
@@ -131,7 +164,11 @@ We can’t wait to meet you there!
 Prefer learning by watching?  
 We’ve got you covered with hands-on video content on our official **YouTube channel**!
 
-👉 [**Subscribe here**](https://www.youtube.com/channel/UC5F7ZWCL-hzYz6Sr2zv2MQA)
+👇 **Subscribe here**
+
+<a href="https://www.youtube.com/channel/UC5F7ZWCL-hzYz6Sr2zv2MQA">
+<img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" width="120" alt="YouTube"/>
+</a>
 
 ### 📺 What you’ll find:
 - ✅ **Step-by-step tutorials** on using our testing framework
@@ -143,9 +180,6 @@ We’ve got you covered with hands-on video content on our official **YouTube ch
 Whether you're just starting out or you're a test automation pro, there’s something valuable waiting for you.
 
 Hit that **subscribe** button and never miss an update!
-
-🔗 [Testlum YouTube](https://www.youtube.com/channel/UC5F7ZWCL-hzYz6Sr2zv2MQA)
-
 
 # License
 Testlum's source code is made available under the [Apache 2.0 license](LICENSE).

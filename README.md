@@ -154,7 +154,7 @@ Whether you're a developer, tester, or team lead — **Testlum** is your go-to p
 ### ✅ It’s totally free.
 ### 💙 Super welcoming and beginner-friendly.
 
-<a target="_blank" href="https://discord.gg/YJKQcZ4c"><img src="https://dcbadge.limes.pink/api/server/YJKQcZ4c" alt=""></a>
+<a target="_blank" href="https://discord.gg/JxfcZPqBNY"><img src="https://dcbadge.limes.pink/api/server/JxfcZPqBNY" alt=""></a>
 
 We can’t wait to meet you there!
 

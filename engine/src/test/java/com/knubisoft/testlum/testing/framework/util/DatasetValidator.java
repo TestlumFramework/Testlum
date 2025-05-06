@@ -24,6 +24,7 @@ public class DatasetValidator {
             case CLICKHOUSE:
             case POSTGRES:
             case ORACLE:
+            case SQLDATABASE:
             case MYSQL:
                 checkRelationDbDatasetExtension(datasetFileName);
                 break;

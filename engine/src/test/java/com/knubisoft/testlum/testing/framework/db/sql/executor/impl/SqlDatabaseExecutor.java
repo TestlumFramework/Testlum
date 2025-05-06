@@ -66,10 +66,9 @@ public class SqlDatabaseExecutor extends AbstractSqlExecutor {
     }
 
     private List<String> splitSqlStatements(String sql) {
-        return Arrays.stream(sql.split(";"))
+        return Arrays.stream(sql.split(";\\s*(\\r?\\n)?"))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .collect(Collectors.toList());
     }
-
 }

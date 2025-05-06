@@ -982,11 +982,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link SwipeNative }
+     * Create an instance of {@link Swipe }
      * 
      */
-    public SwipeNative createSwipeNative() {
-        return new SwipeNative();
+    public Swipe createSwipe() {
+        return new Swipe();
     }
 
     /**

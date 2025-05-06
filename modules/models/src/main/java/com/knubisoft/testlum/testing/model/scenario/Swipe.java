@@ -7,12 +7,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for swipeNative complex type.
+ * <p>Java class for swipe complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="swipeNative"&gt;
+ * &lt;complexType name="swipe"&gt;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
  *       &lt;choice&gt;
@@ -27,11 +27,11 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "swipeNative", propOrder = {
+@XmlType(name = "swipe", propOrder = {
     "element",
     "page"
 })
-public class SwipeNative
+public class Swipe
     extends AbstractUiCommand
 {
 

@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="refresh" type="{http://www.knubisoft.com/testlum/testing/model/scenario}refresh"/&gt;
  *         &lt;element name="navigate" type="{http://www.knubisoft.com/testlum/testing/model/scenario}navigateNative"/&gt;
  *         &lt;element name="dragAndDrop" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dragAndDropNative"/&gt;
- *         &lt;element name="swipe" type="{http://www.knubisoft.com/testlum/testing/model/scenario}swipe"/&gt;
+ *         &lt;element name="swipeNative" type="{http://www.knubisoft.com/testlum/testing/model/scenario}swipeNative"/&gt;
  *         &lt;element name="webView" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webView"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeVar"/&gt;
  *         &lt;element name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiCondition"/&gt;
@@ -60,7 +60,7 @@ public class Native
         @XmlElement(name = "refresh", type = Refresh.class),
         @XmlElement(name = "navigate", type = NavigateNative.class),
         @XmlElement(name = "dragAndDrop", type = DragAndDropNative.class),
-        @XmlElement(name = "swipe", type = Swipe.class),
+        @XmlElement(name = "swipeNative", type = SwipeNative.class),
         @XmlElement(name = "webView", type = WebView.class),
         @XmlElement(name = "var", type = NativeVar.class),
         @XmlElement(name = "condition", type = UiCondition.class),
@@ -95,7 +95,7 @@ public class Native
      * {@link Refresh }
      * {@link NavigateNative }
      * {@link DragAndDropNative }
-     * {@link Swipe }
+     * {@link SwipeNative }
      * {@link WebView }
      * {@link NativeVar }
      * {@link UiCondition }

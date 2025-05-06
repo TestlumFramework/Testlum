@@ -55,7 +55,7 @@ import javax.xml.bind.annotation.XmlType;
     WebView.class,
     NativeRepeat.class,
     NavigateNative.class,
-    Swipe.class,
+    SwipeNative.class,
     CommandWithLocator.class,
     SwipePage.class
 })

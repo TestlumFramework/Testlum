@@ -14,6 +14,8 @@ import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioRunner;
+import com.knubisoft.testlum.testing.framework.testRail.TestRailService;
+import com.knubisoft.testlum.testing.framework.testRail.util.TestRailUtil;
 import com.knubisoft.testlum.testing.framework.util.FileRemover;
 import com.knubisoft.testlum.testing.model.global_config.DelayBetweenScenarioRuns;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
@@ -36,6 +38,7 @@ import org.springframework.test.context.TestContextManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -70,6 +73,9 @@ public class RootTest {
 
     @Autowired
     private ConnectionManager connectionManager;
+
+    @Autowired
+    private TestRailService testRailService;
 
     @BeforeAll
     public void beforeAll() throws Exception {
@@ -135,5 +141,12 @@ public class RootTest {
     public void afterAll() {
         connectionManager.closeConnections();
         reportGenerator.generateReport(globalScenarioStatCollector);
+        if (GlobalTestConfigurationProvider.provide().getTestRailsApi().isEnable()) {
+            List<ScenarioResult> testRailScenarios =
+                    TestRailUtil.getScenarioWithTestRailIntegrations(globalScenarioStatCollector.getResults());
+            if (!testRailScenarios.isEmpty()) {
+                testRailService.sendTestResultToTestRail(testRailScenarios);
+            }
+        }
     }
 }

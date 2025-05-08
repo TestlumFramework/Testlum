@@ -286,6 +286,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link TestRailsApi }
+     * 
+     */
+    public TestRailsApi createTestRailsApi() {
+        return new TestRailsApi();
+    }
+
+    /**
      * Create an instance of {@link TagValue }
      * 
      */

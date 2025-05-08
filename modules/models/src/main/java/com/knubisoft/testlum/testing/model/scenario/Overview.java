@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="jira" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" minOccurs="0"/&gt;
  *         &lt;element name="developer" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" minOccurs="0"/&gt;
  *         &lt;element name="link" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" minOccurs="0"/&gt;
+ *         &lt;element name="testRails" type="{http://www.knubisoft.com/testlum/testing/model/scenario}testRails" minOccurs="0"/&gt;
  *       &lt;/all&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -43,6 +44,7 @@ public class Overview {
     protected String jira;
     protected String developer;
     protected String link;
+    protected TestRails testRails;
 
     /**
      * Gets the value of the description property.
@@ -162,6 +164,30 @@ public class Overview {
      */
     public void setLink(String value) {
         this.link = value;
+    }
+
+    /**
+     * Gets the value of the testRails property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TestRails }
+     *     
+     */
+    public TestRails getTestRails() {
+        return testRails;
+    }
+
+    /**
+     * Sets the value of the testRails property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TestRails }
+     *     
+     */
+    public void setTestRails(TestRails value) {
+        this.testRails = value;
     }
 
 }

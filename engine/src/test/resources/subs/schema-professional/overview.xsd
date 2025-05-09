@@ -30,7 +30,7 @@
 
     <x:complexType name="testRails">
         <x:attribute name="enable" type="x:boolean" use="optional" default="false"/>
-        <x:attribute name="testRailRun" type="x:int" use="optional"/>
-        <x:attribute name="testCase" type="x:int" use="optional"/>
+        <x:attribute name="testRailRunId" type="x:int" use="optional"/>
+        <x:attribute name="testCaseId" type="x:int" use="required"/>
     </x:complexType>
 </x:schema>

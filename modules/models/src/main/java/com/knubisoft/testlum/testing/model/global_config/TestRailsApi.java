@@ -21,6 +21,9 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="username" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="apiKey" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
  *         &lt;element name="url" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString"/&gt;
+ *         &lt;element name="projectId" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
+ *         &lt;element name="defaultRunName" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
+ *         &lt;element name="defaultRunDescription" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="enable" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *     &lt;/restriction&gt;
@@ -34,7 +37,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "testRailsApi", propOrder = {
     "username",
     "apiKey",
-    "url"
+    "url",
+    "projectId",
+    "defaultRunName",
+    "defaultRunDescription"
 })
 public class TestRailsApi {
 
@@ -44,6 +50,9 @@ public class TestRailsApi {
     protected String apiKey;
     @XmlElement(required = true)
     protected String url;
+    protected String projectId;
+    protected String defaultRunName;
+    protected String defaultRunDescription;
     @XmlAttribute(name = "enable")
     protected Boolean enable;
 
@@ -117,6 +126,78 @@ public class TestRailsApi {
      */
     public void setUrl(String value) {
         this.url = value;
+    }
+
+    /**
+     * Gets the value of the projectId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getProjectId() {
+        return projectId;
+    }
+
+    /**
+     * Sets the value of the projectId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setProjectId(String value) {
+        this.projectId = value;
+    }
+
+    /**
+     * Gets the value of the defaultRunName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDefaultRunName() {
+        return defaultRunName;
+    }
+
+    /**
+     * Sets the value of the defaultRunName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDefaultRunName(String value) {
+        this.defaultRunName = value;
+    }
+
+    /**
+     * Gets the value of the defaultRunDescription property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDefaultRunDescription() {
+        return defaultRunDescription;
+    }
+
+    /**
+     * Sets the value of the defaultRunDescription property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDefaultRunDescription(String value) {
+        this.defaultRunDescription = value;
     }
 
     /**

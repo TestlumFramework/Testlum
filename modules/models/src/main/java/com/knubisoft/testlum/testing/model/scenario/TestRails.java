@@ -17,8 +17,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="enable" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
- *       &lt;attribute name="testRailRun" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
- *       &lt;attribute name="testCase" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
+ *       &lt;attribute name="testRailRunId" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
+ *       &lt;attribute name="testCaseId" use="required" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -32,10 +32,10 @@ public class TestRails {
 
     @XmlAttribute(name = "enable")
     protected Boolean enable;
-    @XmlAttribute(name = "testRailRun")
-    protected Integer testRailRun;
-    @XmlAttribute(name = "testCase")
-    protected Integer testCase;
+    @XmlAttribute(name = "testRailRunId")
+    protected Integer testRailRunId;
+    @XmlAttribute(name = "testCaseId", required = true)
+    protected int testCaseId;
 
     /**
      * Gets the value of the enable property.
@@ -66,51 +66,43 @@ public class TestRails {
     }
 
     /**
-     * Gets the value of the testRailRun property.
+     * Gets the value of the testRailRunId property.
      * 
      * @return
      *     possible object is
      *     {@link Integer }
      *     
      */
-    public Integer getTestRailRun() {
-        return testRailRun;
+    public Integer getTestRailRunId() {
+        return testRailRunId;
     }
 
     /**
-     * Sets the value of the testRailRun property.
+     * Sets the value of the testRailRunId property.
      * 
      * @param value
      *     allowed object is
      *     {@link Integer }
      *     
      */
-    public void setTestRailRun(Integer value) {
-        this.testRailRun = value;
+    public void setTestRailRunId(Integer value) {
+        this.testRailRunId = value;
     }
 
     /**
-     * Gets the value of the testCase property.
+     * Gets the value of the testCaseId property.
      * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
      */
-    public Integer getTestCase() {
-        return testCase;
+    public int getTestCaseId() {
+        return testCaseId;
     }
 
     /**
-     * Sets the value of the testCase property.
+     * Sets the value of the testCaseId property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
      */
-    public void setTestCase(Integer value) {
-        this.testCase = value;
+    public void setTestCaseId(int value) {
+        this.testCaseId = value;
     }
 
 }

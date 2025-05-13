@@ -34,5 +34,5 @@ public final class TestRailConstants {
     public static final String LOG_TEST_RUN_CREATION_FAILED = "Failed to create Test Run '{}': {}";
 
     public static final String COMMENT_PASSED_TEMPLATE = "Test case '%s' passed successfully.";
-    public static final String COMMENT_FAILED_TEMPLATE = "Failure: %s";
+    public static final String COMMENT_FAILED_TEMPLATE = "Test cast '%s' failed.\nFailure: %s";
 }

@@ -86,7 +86,7 @@ public class TestRailUtil {
         String cause = scenarioResult.getCause();
 
         return (cause != null && !cause.isEmpty())
-                ? String.format(TestRailConstants.COMMENT_FAILED_TEMPLATE, cause)
+                ? String.format(TestRailConstants.COMMENT_FAILED_TEMPLATE, scenarioName, cause)
                 : String.format(TestRailConstants.COMMENT_PASSED_TEMPLATE, scenarioName);
     }
 

@@ -57,7 +57,7 @@ After cloning repository to your local machine:
 - navigate to root project folder
 - build executable jar file ```mvn clean package -Pprofessional -DskipTests```
 - and run it by passing test resources location ```java -jar engine/target/testlum-1.0.0.jar -c="global-config-file-name.xml" -p"=absolute path to folder with test resources"```
-- examples of test resources can be found in our [Wiki](https://testlum.com)
+- examples of test resources can be found in our [Wiki](https://github.com/TestlumFramework/Testlum/releases)
 
 Or You can use our official maven artifact:
 ```xml

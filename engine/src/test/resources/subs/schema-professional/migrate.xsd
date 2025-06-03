@@ -28,6 +28,7 @@
             <x:enumeration value="MONGODB"/>
             <x:enumeration value="DYNAMO"/>
             <x:enumeration value="CLICKHOUSE"/>
+            <x:enumeration value="SQLDATABASE"/>
         </x:restriction>
     </x:simpleType>
 </x:schema>

@@ -80,7 +80,7 @@
         <spring-rabbit.version>3.2.5</spring-rabbit.version>
         <kafka-clients.version>4.0.0</kafka-clients.version>
         <spring-vault-core.version>2.3.3</spring-vault-core.version>
-        <jedis.version>6.0.0</jedis.version>
+        <jedis.version>3.3.0</jedis.version>
         <HikariCP.version>6.3.0</HikariCP.version>
         <software.amazon.awssdk.version>2.31.65</software.amazon.awssdk.version>
         <elasticsearch-rest-client.version>9.0.2</elasticsearch-rest-client.version>

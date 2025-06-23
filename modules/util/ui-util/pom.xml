@@ -14,8 +14,8 @@
     <artifactId>testlum-ui-util</artifactId>
 
     <properties>
-        <org.spring.version>5.3.4</org.spring.version>
-        <appium-client.version>8.1.1</appium-client.version>
+        <org.spring.version>6.2.8</org.spring.version>
+        <appium-client.version>9.4.0</appium-client.version>
     </properties>
 
     <dependencies>

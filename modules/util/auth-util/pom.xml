@@ -14,7 +14,7 @@
     <artifactId>testlum-auth-util</artifactId>
 
     <properties>
-        <com.jayway.json-path.version>2.5.0</com.jayway.json-path.version>
+        <com.jayway.json-path.version>2.9.0</com.jayway.json-path.version>
     </properties>
 
     <dependencies>

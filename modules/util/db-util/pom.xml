@@ -14,9 +14,9 @@
     <artifactId>testlum-db-util</artifactId>
 
     <properties>
-        <org.apache.poi.version>4.0.0</org.apache.poi.version>
-        <HikariCP.version>4.0.2</HikariCP.version>
-        <lombok.version>1.18.24</lombok.version>
+        <org.apache.poi.version>5.4.1</org.apache.poi.version>
+        <HikariCP.version>6.3.0</HikariCP.version>
+        <lombok.version>1.18.38</lombok.version>
     </properties>
 
     <dependencies>

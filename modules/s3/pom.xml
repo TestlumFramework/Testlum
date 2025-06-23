@@ -14,7 +14,7 @@
     <artifactId>testlum-s3</artifactId>
 
     <properties>
-        <com.amazonaws.version>1.12.129</com.amazonaws.version>
+        <com.amazonaws.version>1.12.787</com.amazonaws.version>
     </properties>
 
     <dependencies>

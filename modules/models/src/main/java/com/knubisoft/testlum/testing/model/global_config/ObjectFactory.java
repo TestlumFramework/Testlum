@@ -1,7 +1,7 @@
 
 package com.knubisoft.testlum.testing.model.global_config;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**

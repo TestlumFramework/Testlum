@@ -32,6 +32,8 @@ public class RedisConfiguration {
             final Map<AliasEnv, JedisConnectionFactory> redisConnectionFactory) {
         final Map<AliasEnv, StringRedisConnection> redisConnectionMap = new HashMap<>();
         redisConnectionFactory.forEach((aliasEnv, jedisConnectionFactory) -> {
+            jedisConnectionFactory.afterPropertiesSet();
+
             JedisConnection connection = (JedisConnection) jedisConnectionFactory.getConnection();
             redisConnectionMap.put(aliasEnv, new DefaultStringRedisConnection(connection, new StringRedisSerializer()));
         });
@@ -58,7 +60,10 @@ public class RedisConfiguration {
                 .usePooling()
                 .build();
 
-        return new JedisConnectionFactory(redisConfig, clientConfig);
+        JedisConnectionFactory factory = new JedisConnectionFactory(redisConfig, clientConfig);
+        factory.afterPropertiesSet();
+
+        return factory;
     }
 
     private void addStandaloneConfig(final Integrations integrations,

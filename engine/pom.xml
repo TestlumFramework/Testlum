@@ -72,13 +72,13 @@
         <oracle.database.ojdbc11>23.8.0.25.04</oracle.database.ojdbc11>
         <mongodb-java-driver.version>5.5.1</mongodb-java-driver.version>
         <mysql-connector-j.version>9.3.0</mysql-connector-j.version>
-        <spring-kafka.version>2.7.4</spring-kafka.version>
+        <spring-kafka.version>3.3.7</spring-kafka.version>
         <com.amazonaws.version>1.12.787</com.amazonaws.version>
         <software.amazon.awssdk.version>2.31.65</software.amazon.awssdk.version>
         <amqp-client.version>5.25.0</amqp-client.version>
         <http-client.version>5.4.0</http-client.version>
         <spring-rabbit.version>3.2.5</spring-rabbit.version>
-        <kafka-clients.version>4.0.0</kafka-clients.version>
+        <kafka-clients.version>3.9.1</kafka-clients.version>
         <spring-vault-core.version>2.3.3</spring-vault-core.version>
         <jedis.version>6.0.0</jedis.version>
         <HikariCP.version>6.3.0</HikariCP.version>

@@ -1,10 +1,5 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.model.QueueDoesNotExistException;
-import com.amazonaws.services.sqs.model.ReceiveMessageRequest;
-import com.amazonaws.services.sqs.model.ReceiveMessageResult;
-import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -23,6 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
+import software.amazon.awssdk.services.sqs.SqsClient;
+import software.amazon.awssdk.services.sqs.model.QueueDoesNotExistException;
+import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
+import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -65,9 +65,9 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
     private static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
     private static final String EXCEPTION_LOG = ANSI_RED
-            + "----------------    EXCEPTION    -----------------"
-            + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
-            + "--------------------------------------------------" + ANSI_RESET;
+                                                + "----------------    EXCEPTION    -----------------"
+                                                + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
+                                                + "--------------------------------------------------" + ANSI_RESET;
 
     //RESULT
     private static final String MESSAGE_TO_SEND = "Message to send";
@@ -90,7 +90,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     private static final String INCORRECT_SQS_PROCESSING = "Incorrect SQS processing";
 
     @Autowired(required = false)
-    private Map<AliasEnv, AmazonSQS> amazonSQS;
+    private Map<AliasEnv, SqsClient> sqsClient;
 
     public SQSInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -138,22 +138,22 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
 
     private void sendMessage(final SendSqsMessage send, final AliasEnv aliasEnv, final CommandResult result) {
         SendMessageRequest sendRequest = createSendRequest(send, aliasEnv);
-        String message = sendRequest.getMessageBody();
+        String message = sendRequest.messageBody();
         logSQSSendInfo(send, message);
         addSqsSendInfo(send, aliasEnv.getAlias(), result);
         result.put(MESSAGE_TO_SEND, StringPrettifier.asJsonResult(message));
-        this.amazonSQS.get(aliasEnv).sendMessage(sendRequest);
+        this.sqsClient.get(aliasEnv).sendMessage(sendRequest);
     }
 
     private SendMessageRequest createSendRequest(final SendSqsMessage send, final AliasEnv aliasEnv) {
-        SendMessageRequest sendRequest = new SendMessageRequest();
         String queue = createQueueIfNotExists(send.getQueue(), aliasEnv);
-        sendRequest.setQueueUrl(queue);
-        sendRequest.setMessageBody(getMessageToSend(send));
-        sendRequest.setDelaySeconds(send.getDelaySeconds());
-        sendRequest.setMessageDeduplicationId(send.getMessageDeduplicationId());
-        sendRequest.setMessageGroupId(send.getMessageGroupId());
-        return sendRequest;
+        return SendMessageRequest.builder()
+                .queueUrl(queue)
+                .messageBody(getMessageToSend(send))
+                .delaySeconds(send.getDelaySeconds())
+                .messageDeduplicationId(send.getMessageDeduplicationId())
+                .messageGroupId(send.getMessageGroupId())
+                .build();
     }
 
     private void receiveMessages(final ReceiveSqsMessage receive,
@@ -168,24 +168,24 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
 
     private List<Object> receiveMessages(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
         ReceiveMessageRequest receiveMessageRequest = createReceiveRequest(receive, aliasEnv);
-        ReceiveMessageResult receiveMessageResult = this.amazonSQS.get(aliasEnv).receiveMessage(receiveMessageRequest);
-        return receiveMessageResult.getMessages()
+        ReceiveMessageResponse receiveMessageResult = this.sqsClient.get(aliasEnv).receiveMessage(receiveMessageRequest);
+        return receiveMessageResult.messages()
                 .stream()
                 .map(message ->
-                        message.getBody().replaceAll(DelimiterConstant.REGEX_MANY_SPACES, DelimiterConstant.EMPTY))
+                        message.body().replaceAll(REGEX_MANY_SPACES, DelimiterConstant.EMPTY))
                 .map(JacksonMapperUtil::toJsonObject)
                 .collect(Collectors.toList());
     }
 
     private ReceiveMessageRequest createReceiveRequest(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
-        ReceiveMessageRequest receiveRequest = new ReceiveMessageRequest();
         String queue = createQueueIfNotExists(receive.getQueue(), aliasEnv);
-        receiveRequest.setQueueUrl(queue);
-        receiveRequest.setMaxNumberOfMessages(receive.getMaxNumberOfMessages());
-        receiveRequest.setVisibilityTimeout(receive.getVisibilityTimeout());
-        receiveRequest.setWaitTimeSeconds(receive.getWaitTimeSeconds());
-        receiveRequest.setReceiveRequestAttemptId(receive.getReceiveRequestAttemptId());
-        return receiveRequest;
+        return ReceiveMessageRequest.builder()
+                .queueUrl(queue)
+                .maxNumberOfMessages(receive.getMaxNumberOfMessages())
+                .visibilityTimeout(receive.getVisibilityTimeout())
+                .waitTimeSeconds(receive.getWaitTimeSeconds())
+                .receiveRequestAttemptId(receive.getReceiveRequestAttemptId())
+                .build();
     }
 
     private void compareMessage(final String expectedContent, final List<Object> messages, final CommandResult result) {
@@ -199,9 +199,13 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
 
     private String createQueueIfNotExists(final String queue, final AliasEnv aliasEnv) {
         try {
-            return amazonSQS.get(aliasEnv).getQueueUrl(queue).getQueueUrl();
-        } catch (QueueDoesNotExistException e) {
-            return this.amazonSQS.get(aliasEnv).createQueue(queue).getQueueUrl();
+            return sqsClient.get(aliasEnv)
+                    .getQueueUrl(getQueueUrlRequest -> getQueueUrlRequest.queueName(queue))
+                    .queueUrl();
+        } catch (final QueueDoesNotExistException e) {
+            return this.sqsClient.get(aliasEnv)
+                    .createQueue(createQueueRequest -> createQueueRequest.queueName(queue))
+                    .queueUrl();
         }
     }
 

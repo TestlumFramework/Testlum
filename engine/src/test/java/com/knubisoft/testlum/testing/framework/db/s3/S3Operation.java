@@ -1,8 +1,5 @@
 package com.knubisoft.testlum.testing.framework.db.s3;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnS3EnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -12,6 +9,7 @@ import com.knubisoft.testlum.testing.model.global_config.S3;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
+import software.amazon.awssdk.services.s3.S3Client;
 
 import java.util.Map;
 import java.util.Objects;
@@ -20,10 +18,10 @@ import java.util.Objects;
 @Component
 public class S3Operation extends AbstractStorageOperation {
 
-    private final Map<AliasEnv, AmazonS3> amazonS3;
+    private final Map<AliasEnv, S3Client> s3Client;
 
-    public S3Operation(@Autowired(required = false) final Map<AliasEnv, AmazonS3> amazonS3) {
-        this.amazonS3 = amazonS3;
+    public S3Operation(@Autowired(required = false) final Map<AliasEnv, S3Client> s3Client) {
+        this.s3Client = s3Client;
     }
 
     @Override
@@ -33,7 +31,7 @@ public class S3Operation extends AbstractStorageOperation {
 
     @Override
     public void clearSystem() {
-        this.amazonS3.forEach((aliasEnv, amazonS3) -> {
+        this.s3Client.forEach((aliasEnv, amazonS3) -> {
             if (isTruncate(S3.class, aliasEnv) && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 amazonS3.listBuckets().forEach(bucket -> {
                     ListObjectsV2Result objectsInBucket = amazonS3.listObjectsV2(bucket.getName());

@@ -1,10 +1,5 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.CreateBucketRequest;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.S3Object;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.ComparisonException;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -24,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -81,7 +78,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     private static final String FILE_VALUE_COMPARISON_ERROR = "Actual file <%s> is not the same as expected value <%s>";
 
     @Autowired(required = false)
-    private Map<AliasEnv, AmazonS3> amazonS3;
+    private Map<AliasEnv, S3Client> s3Client;
 
     public S3Interpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -132,7 +129,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     private void processBucketAction(final S3Bucket bucketCommand,
                                      final AliasEnv aliasEnv,
                                      final CommandResult result) {
-        String region = amazonS3.get(aliasEnv).getRegionName();
+        String region = s3Client.get(aliasEnv).getRegionName();
         if (isNotBlank(bucketCommand.getCreate())) {
             logS3BucketActionInfo(CREATE_BUCKET, bucketCommand.getCreate());
             addS3BucketMetaData(CREATE_BUCKET, bucketCommand.getCreate(), result);
@@ -145,22 +142,22 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     }
 
     private void createBucket(final String bucketName, final String region, final AliasEnv aliasEnv) {
-        if (amazonS3.get(aliasEnv).doesBucketExistV2(bucketName)) {
+        if (s3Client.get(aliasEnv).doesBucketExistV2(bucketName)) {
             throw new DefaultFrameworkException(String.format(BUCKET_EXISTS, bucketName));
         }
-        amazonS3.get(aliasEnv).createBucket(new CreateBucketRequest(bucketName, region));
+        s3Client.get(aliasEnv).createBucket(new CreateBucketRequest(bucketName, region));
     }
 
     private void removeBucket(final AliasEnv aliasEnv, final String bucketName) {
         checkBucketExist(aliasEnv, bucketName);
-        ListObjectsV2Result listOfFiles = amazonS3.get(aliasEnv).listObjectsV2(bucketName);
+        ListObjectsV2Result listOfFiles = s3Client.get(aliasEnv).listObjectsV2(bucketName);
         listOfFiles.getObjectSummaries()
-                .forEach(object -> amazonS3.get(aliasEnv).deleteObject(bucketName, object.getKey()));
-        amazonS3.get(aliasEnv).deleteBucket(bucketName);
+                .forEach(object -> s3Client.get(aliasEnv).deleteObject(bucketName, object.getKey()));
+        s3Client.get(aliasEnv).deleteBucket(bucketName);
     }
 
     private void checkBucketExist(final AliasEnv aliasEnv, final String bucketName) {
-        if (!amazonS3.get(aliasEnv).doesBucketExistV2(bucketName)) {
+        if (!s3Client.get(aliasEnv).doesBucketExistV2(bucketName)) {
             throw new DefaultFrameworkException(String.format(BUCKET_NOT_FOUND, bucketName));
         }
     }
@@ -193,7 +190,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileCommand.getUpload());
         result.put(FILE_NAME, fileCommand.getUpload());
         checkBucketExist(aliasEnv, bucketName);
-        amazonS3.get(aliasEnv).putObject(bucketName, key, file);
+        s3Client.get(aliasEnv).putObject(bucketName, key, file);
     }
 
     private void processDownloadFileAction(final S3File fileCommand,
@@ -238,7 +235,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                                 final AliasEnv aliasEnv) {
         try {
             checkBucketFileExists(bucketName, key, aliasEnv);
-            S3Object s3Object = amazonS3.get(aliasEnv).getObject(bucketName, key);
+            S3Object s3Object = s3Client.get(aliasEnv).getObject(bucketName, key);
             return IOUtils.toString(s3Object.getObjectContent(), StandardCharsets.UTF_8);
         } catch (AmazonS3Exception e) {
             throw new DefaultFrameworkException(String.format(FILE_PROCESSING_ERROR, key, bucketName));
@@ -247,7 +244,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
 
     private void checkBucketFileExists(final String bucketName, final String key, final AliasEnv aliasEnv) {
         checkBucketExist(aliasEnv, bucketName);
-        if (!amazonS3.get(aliasEnv).doesObjectExist(bucketName, key)) {
+        if (!s3Client.get(aliasEnv).doesObjectExist(bucketName, key)) {
             throw new DefaultFrameworkException(String.format(FILE_NOT_FOUND, key, bucketName));
         }
     }
@@ -261,7 +258,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                 REMOVE_FILE, fileCommand.getBucket(), fileCommand.getKey());
         addS3FileMetaData(REMOVE_FILE, fileCommand.getBucket(), fileCommand.getKey(), result);
         checkBucketFileExists(bucketName, key, aliasEnv);
-        amazonS3.get(aliasEnv).deleteObject(bucketName, key);
+        s3Client.get(aliasEnv).deleteObject(bucketName, key);
     }
 
     private CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {

@@ -29,7 +29,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "storageIntegration")
 @XmlSeeAlso({
     Clickhouse.class,
-    DatabaseConfig.class,
     Redis.class,
     Mongo.class,
     S3 .class,
@@ -37,7 +36,8 @@ import javax.xml.bind.annotation.XmlType;
     Kafka.class,
     Rabbitmq.class,
     Dynamo.class,
-    Elasticsearch.class
+    Elasticsearch.class,
+    DatabaseConfig.class
 })
 public class StorageIntegration
     extends Integration

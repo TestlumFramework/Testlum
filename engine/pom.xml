@@ -70,6 +70,7 @@
         <maven.surefire.failsafe.version>3.0.0-M5</maven.surefire.failsafe.version>
         <tomcat.jdbc.version>10.1.0-M2</tomcat.jdbc.version>
         <postgresql.driver.version>42.2.18</postgresql.driver.version>
+        <maria.driver.version>3.1.4</maria.driver.version>
         <oracle.database.ojdbc8>21.7.0.0</oracle.database.ojdbc8>
         <mongodb-java-driver.version>3.12.11</mongodb-java-driver.version>
         <mysql-connector-java.version>8.0.25</mysql-connector-java.version>
@@ -129,6 +130,12 @@
     </repositories>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>${maria.driver.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.jsoup</groupId>
@@ -997,6 +1004,14 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-postgres</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <!--    SQL_DATABASE    -->
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-sqlDatabase</artifactId>
             <version>1.0</version>
         </dependency>
 

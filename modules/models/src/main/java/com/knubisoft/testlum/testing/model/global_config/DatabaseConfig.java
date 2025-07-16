@@ -44,7 +44,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlSeeAlso({
     Postgres.class,
     Mysql.class,
-    Oracle.class
+    Oracle.class,
+    SqlDatabase.class
 })
 public abstract class DatabaseConfig
     extends StorageIntegration

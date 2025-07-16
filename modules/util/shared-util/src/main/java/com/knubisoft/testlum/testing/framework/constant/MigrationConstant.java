@@ -20,4 +20,5 @@ public class MigrationConstant {
     public static final String SES = "Ses";
     public static final String SQS = "Sqs";
     public static final String SENDGRID = "Sendgrid";
+    public static final String SQL_DATABASE = "SQLDATABASE";
 }

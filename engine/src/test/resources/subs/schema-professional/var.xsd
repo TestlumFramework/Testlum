@@ -60,7 +60,8 @@
 
     <x:complexType name="fromPath">
         <x:attribute name="value" type="tns:xjpathPattern" use="required"/>
-        <x:attribute name="from" type="tns:nonEmptyString"/>
+        <x:attribute name="fromFile" type="tns:nonEmptyString"/>
+        <x:attribute name="fromVar" type="tns:nonEmptyString"/>
     </x:complexType>
 
     <x:simpleType name="xjpathPattern">

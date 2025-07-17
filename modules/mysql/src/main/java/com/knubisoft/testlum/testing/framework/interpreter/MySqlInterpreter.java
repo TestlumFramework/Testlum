@@ -53,7 +53,7 @@ public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
         result.setActual(StringPrettifier.asJsonResult(actual));
 
         comparator.exec();
-        setContextBody(actual);
+        setContextBody(getContextBodyKey(mysql.getFile()), actual);
     }
 
     protected String getActual(final Mysql mysql, final CommandResult result) {

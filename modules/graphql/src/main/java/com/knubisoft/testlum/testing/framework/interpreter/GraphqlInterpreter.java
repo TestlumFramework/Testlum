@@ -173,7 +173,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         HttpValidator httpValidator = new HttpValidator(this);
         httpValidator.validateCode(expected.getCode(), actual.getCode());
         String actualBody = String.valueOf(actual.getBody());
-        setContextBody(actualBody);
+        setContextBody(getContextBodyKey(expected.getFile()), actualBody);
         validateBody(expected, actualBody, httpValidator, result);
         validateHeaders(expected, actual, httpValidator);
         httpValidator.rethrowOnErrors();

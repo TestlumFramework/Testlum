@@ -52,7 +52,7 @@ public class SqlDatabaseInterpreter extends AbstractInterpreter<SqlDatabase> {
         result.setExpected(StringPrettifier.asJsonResult(compare.getExpected()));
         result.setActual(StringPrettifier.asJsonResult(actualSqlDatabase));
         compare.exec();
-        setContextBody(actualSqlDatabase);
+        setContextBody(getContextBodyKey(database.getFile()), actualSqlDatabase);
     }
 
     protected String getActual(final SqlDatabase sqlDatabase, final CommandResult result) {

@@ -39,7 +39,7 @@ public class MongoOperation extends AbstractStorageOperation {
             if (isTruncate(Mongo.class, aliasEnv)
                     && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 for (String collectionName : database.listCollectionNames()) {
-                    if (database.getCollection(collectionName).countDocuments() > 0) {
+                    if (database.getCollection(collectionName).count() > 0) {
                         database.getCollection(collectionName).drop();
                     }
                 }

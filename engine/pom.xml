@@ -72,7 +72,7 @@
         <tomcat.jdbc.version>11.0.8</tomcat.jdbc.version>
         <postgresql.driver.version>42.7.7</postgresql.driver.version>
         <oracle.database.ojdbc11>23.8.0.25.04</oracle.database.ojdbc11>
-        <mongodb-java-driver.version>5.5.1</mongodb-java-driver.version>
+        <mongodb-java-driver.version>3.12.11</mongodb-java-driver.version>
         <mysql-connector-j.version>9.3.0</mysql-connector-j.version>
         <spring-kafka.version>3.3.7</spring-kafka.version>
         <com.amazonaws.version>1.12.787</com.amazonaws.version>

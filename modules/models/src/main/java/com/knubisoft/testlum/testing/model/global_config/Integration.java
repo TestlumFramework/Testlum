@@ -32,12 +32,12 @@ import javax.xml.bind.annotation.XmlType;
     Api.class,
     GraphqlApi.class,
     WebsocketApi.class,
-    StorageIntegration.class,
     Lambda.class,
     Sendgrid.class,
     Ses.class,
     Smtp.class,
-    Twilio.class
+    Twilio.class,
+    StorageIntegration.class
 })
 public abstract class Integration {
 

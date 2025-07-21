@@ -126,6 +126,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link SqlDatabase }
+     * 
+     */
+    public SqlDatabase createSqlDatabase() {
+        return new SqlDatabase();
+    }
+
+    /**
      * Create an instance of {@link Mysql }
      * 
      */

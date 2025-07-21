@@ -994,6 +994,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-sql-database</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!--    API    -->
 
         <dependency>

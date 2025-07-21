@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:complexType name="sqlDatabaseIntegration">
+        <x:choice maxOccurs="unbounded">
+            <x:element name="sqlDatabase" type="tns:sqlDatabase"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="sqlDatabase">
+        <x:complexContent>
+            <x:extension base="tns:databaseConfig">
+                <x:sequence>
+                    <x:element name="customTruncate" type="tns:customTruncateConfig" minOccurs="0"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="customTruncateConfig">
+        <x:sequence>
+            <x:element name="truncateFile" type="x:string" minOccurs="1" maxOccurs="1"/>
+        </x:sequence>
+    </x:complexType>
+
+</x:schema>

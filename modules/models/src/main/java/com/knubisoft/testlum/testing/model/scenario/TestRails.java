@@ -17,8 +17,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="enable" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
- *       &lt;attribute name="testRailRunId" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
- *       &lt;attribute name="testCaseId" use="required" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
+ *       &lt;attribute name="testRailRunId" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="testCaseId" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -33,9 +33,9 @@ public class TestRails {
     @XmlAttribute(name = "enable")
     protected Boolean enable;
     @XmlAttribute(name = "testRailRunId")
-    protected Integer testRailRunId;
+    protected String testRailRunId;
     @XmlAttribute(name = "testCaseId", required = true)
-    protected int testCaseId;
+    protected String testCaseId;
 
     /**
      * Gets the value of the enable property.
@@ -70,10 +70,10 @@ public class TestRails {
      * 
      * @return
      *     possible object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
-    public Integer getTestRailRunId() {
+    public String getTestRailRunId() {
         return testRailRunId;
     }
 
@@ -82,26 +82,34 @@ public class TestRails {
      * 
      * @param value
      *     allowed object is
-     *     {@link Integer }
+     *     {@link String }
      *     
      */
-    public void setTestRailRunId(Integer value) {
+    public void setTestRailRunId(String value) {
         this.testRailRunId = value;
     }
 
     /**
      * Gets the value of the testCaseId property.
      * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
      */
-    public int getTestCaseId() {
+    public String getTestCaseId() {
         return testCaseId;
     }
 
     /**
      * Sets the value of the testCaseId property.
      * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
      */
-    public void setTestCaseId(int value) {
+    public void setTestCaseId(String value) {
         this.testCaseId = value;
     }
 

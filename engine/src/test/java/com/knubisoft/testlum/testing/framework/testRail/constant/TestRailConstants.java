@@ -35,4 +35,7 @@ public final class TestRailConstants {
 
     public static final String COMMENT_PASSED_TEMPLATE = "Test case '%s' passed successfully.";
     public static final String COMMENT_FAILED_TEMPLATE = "Test cast '%s' failed.\nFailure: %s";
+
+    public static final String CASE_ID_ERROR_RESPONSE = "Failed to parse Case ID '{}' for TestRail.";
+    public static final String RUN_ID_ERROR_RESPONSE = "Failed to parse Run ID '{}' for TestRail.";
 }

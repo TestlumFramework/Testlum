@@ -5,13 +5,16 @@ import com.knubisoft.testlum.testing.framework.testRail.constant.TestRailConstan
 import com.knubisoft.testlum.testing.framework.testRail.model.GroupedScenarios;
 import com.knubisoft.testlum.testing.model.global_config.TestRailsApi;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 @UtilityClass
 public class TestRailUtil {
 
@@ -32,11 +35,11 @@ public class TestRailUtil {
                 .filter(scenarioResult -> {
                     var testRails = scenarioResult.getOverview().getTestRails();
                     Boolean enable = testRails.isEnable();
-                    Integer runId = testRails.getTestRailRunId();
-                    Integer testCase = testRails.getTestCaseId();
+                    String runId = testRails.getTestRailRunId();
+                    String testCase = testRails.getTestCaseId();
                     return Boolean.TRUE.equals(enable)
-                            && (runId == null || runId <= 0)
-                            && (testCase != null && testCase > 0);
+                            && (StringUtils.isEmpty(runId) || Integer.parseInt(runId) <= 0)
+                            && (NumberUtils.isParsable(testCase) && Integer.parseInt(testCase) > 0);
                 })
                 .collect(Collectors.toList());
     }
@@ -44,7 +47,8 @@ public class TestRailUtil {
     public List<Integer> extractCaseIds(List<ScenarioResult> scenarioResults) {
         return scenarioResults.stream()
                 .map(scenarioResult -> scenarioResult.getOverview().getTestRails().getTestCaseId())
-                .filter(Objects::nonNull)
+                .filter(id -> parseId(id, "caseId"))
+                .map(Integer::parseInt)
                 .filter(caseId -> caseId > 0)
                 .distinct()
                 .collect(Collectors.toList());
@@ -55,11 +59,11 @@ public class TestRailUtil {
         return scenarioResults.stream()
                 .filter(scenarioResult -> {
                     Boolean enable = scenarioResult.getOverview().getTestRails().isEnable();
-                    Integer runId = scenarioResult.getOverview().getTestRails().getTestRailRunId();
-                    return Boolean.TRUE.equals(enable) && runId != null && runId > 0;
+                    String runId = scenarioResult.getOverview().getTestRails().getTestRailRunId();
+                    return Boolean.TRUE.equals(enable) && parseId(runId, "runId") && Integer.parseInt(runId) > 0;
                 })
                 .collect(Collectors.groupingBy(
-                        scenarioResult -> scenarioResult.getOverview().getTestRails().getTestRailRunId()
+                        scenarioResult -> Integer.parseInt(scenarioResult.getOverview().getTestRails().getTestRailRunId())
                 ));
     }
 
@@ -98,5 +102,16 @@ public class TestRailUtil {
         request.put(TestRailConstants.RUN_INCLUDE_ALL, false);
         request.put(TestRailConstants.RUN_CASE_IDS, caseIds);
         return request;
+    }
+
+    private boolean parseId(final String idStr, final String idType) {
+        if (NumberUtils.isParsable(idStr)) {
+            return Boolean.TRUE;
+        } else {
+            String idLogError = idType.equalsIgnoreCase("caseId") ? TestRailConstants.CASE_ID_ERROR_RESPONSE
+                    : TestRailConstants.RUN_ID_ERROR_RESPONSE;
+            log.error(idLogError, idStr);
+            return Boolean.FALSE;
+        }
     }
 }

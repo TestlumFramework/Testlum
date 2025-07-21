@@ -100,7 +100,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         String expectedBody = getContentIfFile(expectedResponse.getFile());
         if (StringUtils.isNotBlank(expectedBody)) {
             String actualBody = nonNull(actual.getEntity()) ? EntityUtils.toString(actual.getEntity()) : null;
-            setContextBody(actualBody);
+            setContextBody(getContextBodyKey(expectedResponse.getFile()), actualBody);
             result.setActual(StringPrettifier.asJsonResult(actualBody));
             result.setExpected(StringPrettifier.asJsonResult(expectedBody));
             httpValidator.validateBody(expectedBody, actualBody);

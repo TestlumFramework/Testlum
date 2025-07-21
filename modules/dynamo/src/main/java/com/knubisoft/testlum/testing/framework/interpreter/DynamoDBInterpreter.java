@@ -54,7 +54,7 @@ public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
 
         comparator.exec();
-        setContextBody(actual);
+        setContextBody(getContextBodyKey(ddb.getFile()), actual);
     }
 
     protected String getActual(final Dynamo ddb, final CommandResult result) {

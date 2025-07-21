@@ -15,6 +15,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
@@ -32,11 +33,11 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     private static final String TABLE_FORMAT = "%-23s|%-70s";
     private static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
     private static final String SLOW_COMMAND_PROCESSING = "Slow command processing detected. "
-            + "Took %d ms, threshold %d ms";
+                                                          + "Took %d ms, threshold %d ms";
     private static final String POSITION_COMMAND_LOG = ANSI_YELLOW
-            + "--------- Scenario step #{} - {} ---------" + ANSI_RESET;
+                                                       + "--------- Scenario step #{} - {} ---------" + ANSI_RESET;
     private static final String COMMAND_LOG_WITHOUT_POSITION = ANSI_YELLOW
-            + "--------- Scenario step - {} ---------" + ANSI_RESET;
+                                                               + "--------- Scenario step - {} ---------" + ANSI_RESET;
     protected final InterpreterDependencies dependencies;
     protected final ConfigProvider configurationProvider;
     protected final ConditionProvider conditionProvider;
@@ -102,8 +103,15 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
         return fileOrContent;
     }
 
-    protected void setContextBody(final String o) {
-        dependencies.getScenarioContext().setBody(o);
+    public String getContextBodyKey(final String fileOrContent) {
+        if (isNotBlank(fileOrContent)) {
+            return fileOrContent;
+        }
+        return UUID.randomUUID().toString();
+    }
+
+    protected void setContextBody(final String key, final String body) {
+        dependencies.getScenarioContext().set(key, body);
     }
 
     @SuppressWarnings("unchecked")

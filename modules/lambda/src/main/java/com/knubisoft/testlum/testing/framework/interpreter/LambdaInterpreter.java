@@ -63,7 +63,7 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
 
         InvokeResponse response = getLambdaFunctionResponse(lambda, payload);
         compareResult(lambda.getResponse(), response, result);
-        setContextBody(response.payload().asUtf8String());
+        setContextBody(getContextBodyKey(lambda.getResponse().getFile()), response.payload().asUtf8String());
     }
 
     private String getPayload(final LambdaBody body) {

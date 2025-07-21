@@ -51,17 +51,17 @@ public class NativeCompareImageExecutor extends AbstractUiExecutor<NativeImage> 
         ResultUtil.addImageComparisonMetaData(image, result);
         File scenarioFile = dependencies.getFile();
         BufferedImage expected = ImageIO.read(FileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
-        BufferedImage actual = getActualImage(dependencies.getDriver(), image);
+        BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
         ImageComparisonResult comparisonResult = ImageComparator.compare(image, expected, actual);
         ImageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
                 image.isHighlightDifference(), scenarioFile.getParentFile(), result);
     }
 
     private BufferedImage getActualImage(final WebDriver webDriver,
-                                         final NativeImage image) throws IOException {
+                                         final NativeImage image, final CommandResult result) throws IOException {
         if (nonNull(image.getPart())) {
             WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocator(),
-                    image.getPart().getLocatorStrategy());
+                    image.getPart().getLocatorStrategy(), result);
             File screenshotFile = ((TakesScreenshot) webDriver).getScreenshotAs(OutputType.FILE);
             BufferedImage fullImage = ImageIO.read(screenshotFile);
             Point point = webElement.getLocation();

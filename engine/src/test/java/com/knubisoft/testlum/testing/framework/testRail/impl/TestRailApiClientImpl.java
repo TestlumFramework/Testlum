@@ -32,7 +32,7 @@ public class TestRailApiClientImpl implements TestRailApiClient {
     private final RestTemplate restTemplate;
 
     @Override
-    public void sendResultsInBatch(final int runId, final List<Map<String, Object>> results) {
+    public void sendResultsInBatch(final int runId, final List<Map<String, Object>> results, final Map<Integer, String> screenshotOfLastUnsuccessfulStep) {
         String url = testRails.getUrl() + TestRailConstants.ADD_RESULTS_FOR_CASES_URL + runId;
         Map<String, Object> request = new HashMap<>();
         request.put(TestRailConstants.RESULTS, results);
@@ -42,6 +42,9 @@ public class TestRailApiClientImpl implements TestRailApiClient {
             log.info(TestRailConstants.LOG_SENDING_RESULTS, runId, results.size());
             var response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
             log.info(TestRailConstants.LOG_SUCCESS_RESPONSE, runId, response.getBody());
+
+//            List<Integer> resultIds = TestRailUtil.extractResultIds(response.getBody());
+
         } catch (Exception e) {
             log.error(TestRailConstants.LOG_ERROR_RESPONSE, runId, e.getMessage(), e);
         }

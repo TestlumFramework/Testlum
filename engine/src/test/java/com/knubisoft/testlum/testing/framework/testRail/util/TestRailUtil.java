@@ -1,5 +1,8 @@
 package com.knubisoft.testlum.testing.framework.testRail.util;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.testRail.constant.TestRailConstants;
 import com.knubisoft.testlum.testing.framework.testRail.model.GroupedScenarios;
@@ -9,10 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @UtilityClass
@@ -113,5 +119,57 @@ public class TestRailUtil {
             log.error(idLogError, idStr);
             return Boolean.FALSE;
         }
+    }
+
+    public static Map<Integer, String> getScreenshotOfLastUnsuccessfulStep(final List<ScenarioResult> scenarioResults) {
+//        scenarioList.stream()
+//                .map(scenarioResult -> {
+//                    Map<String, Object> result = new HashMap<>();
+//                    result.put(TestRailConstants.CASE_ID, scenarioResult.getOverview().getTestRails().getTestCaseId());
+//                    result.put(TestRailConstants.STATUS_ID, determineStatus(scenarioResult));
+//                    result.put(TestRailConstants.COMMENT, generateComment(scenarioResult));
+//                    return result;
+//                })
+//                .collect(Collectors.toList());
+        return scenarioResults.stream()
+                .map(scenarioResult ->
+                    Map.entry(Integer.parseInt(scenarioResult.getOverview().getTestRails().getTestCaseId()),
+                            scenarioResult.getCommands().stream()
+                            .filter(command -> !command.isSuccess())
+                            .map(CommandResult::getBase64Screenshot)
+                            .reduce((first, second) -> second)
+                            .orElse(null))
+                ).collect(Collectors.toMap(
+                Map.Entry::getKey,
+                Map.Entry::getValue
+        ));
+//        return scenarioResults.stream()
+//                .flatMap(scenarioResult -> scenarioResult.getCommands().stream())
+//                .filter(command -> !command.isSuccess())
+//                .map(CommandResult::getBase64Screenshot)
+//                .reduce((first, second) -> second)
+//                .map(base64 -> Map.entry(sc))
+//                .orElse(null);
+    }
+
+    public static List<Integer> extractResultIds(String jsonResponse) {
+        List<Integer> resultIds = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            JsonNode root = mapper.readTree(jsonResponse);
+            if (root.isArray()) {
+                for (JsonNode node : root) {
+                    JsonNode idNode = node.get("id");
+                    if (idNode != null && idNode.isInt()) {
+                        resultIds.add(idNode.asInt());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return resultIds;
     }
 }

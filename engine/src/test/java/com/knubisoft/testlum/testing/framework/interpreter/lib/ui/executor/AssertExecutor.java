@@ -86,16 +86,16 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
     private void executeAttributeCommand(final AssertAttribute attribute, final CommandResult result) {
         LogUtil.logAssertAttributeInfo(attribute);
         ResultUtil.addAssertAttributeMetaData(attribute, result);
-        String actual = getActualValue(attribute);
+        String actual = getActualValue(attribute, result);
         String expected = attribute.getContent();
         ResultUtil.setExpectedActual(expected, actual, result);
         executeComparison(actual, expected, result, attribute.isNegative());
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
-    private String getActualValue(final AssertAttribute attribute) {
+    private String getActualValue(final AssertAttribute attribute, final CommandResult result) {
         WebElement webElement = UiUtil.findWebElement(dependencies, attribute.getLocator(),
-                attribute.getLocatorStrategy());
+                attribute.getLocatorStrategy(), result);
         return UiUtil.getElementAttribute(webElement, attribute.getName(), dependencies.getDriver());
     }
 
@@ -146,7 +146,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         try {
             LogUtil.logAssertPresent(present);
             ResultUtil.addAssertPresentMetadata(present, result);
-            UiUtil.findWebElement(dependencies, present.getLocator(), present.getLocatorStrategy());
+            UiUtil.findWebElement(dependencies, present.getLocator(), present.getLocatorStrategy(), result);
             if (present.isNegative()) {
                 Exception e = new DefaultFrameworkException(String.format(ASSERT_NOT_PRESENT, present.getLocator()));
                 onException(result, e);
@@ -163,7 +163,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         LogUtil.logAssertChecked(checked);
         ResultUtil.addAssertCheckedMetadata(checked, result);
         boolean isSelected =
-                UiUtil.findWebElement(dependencies, checked.getLocator(), checked.getLocatorStrategy()).isSelected();
+                UiUtil.findWebElement(dependencies, checked.getLocator(), checked.getLocatorStrategy(), result).isSelected();
         if ((checked.isNegative() && isSelected) || (!checked.isNegative() && !isSelected)) {
             Exception e = new DefaultFrameworkException(String
                     .format(ASSERT_CHECKED, checked.getLocator()));

@@ -61,7 +61,7 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
                                          final CommandResult result) throws IOException {
         if (nonNull(image.getPicture())) {
             WebElement webElement = UiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
-                    image.getPicture().getLocatorStrategy());
+                    image.getPicture().getLocatorStrategy(), result);
             return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
         }
         if (nonNull(image.getPart())) {
@@ -69,7 +69,7 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
                 throw new DefaultFrameworkException(IOS_NOT_SUPPORT_PART_COMMAND);
             }
             WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocator(),
-                    image.getPart().getLocatorStrategy());
+                    image.getPart().getLocatorStrategy(), result);
             return ImageIO.read(UiUtil.takeScreenshot(webElement));
         }
         return ImageIO.read(UiUtil.takeScreenshot(webDriver));

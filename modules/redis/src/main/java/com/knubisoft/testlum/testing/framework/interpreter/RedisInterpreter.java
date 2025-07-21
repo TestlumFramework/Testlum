@@ -51,7 +51,7 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
         result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
 
         comparator.exec();
-        setContextBody(actual);
+        setContextBody(getContextBodyKey(redis.getFile()), actual);
     }
 
     protected String getActual(final Redis redis, final CommandResult result) {

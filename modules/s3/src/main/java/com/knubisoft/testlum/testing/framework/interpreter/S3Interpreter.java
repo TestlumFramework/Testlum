@@ -210,7 +210,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         String actual = downloadFile(bucketName, key, aliasEnv);
         setExpectedActual(expected, actual, result);
         compare(expected, actual, fileCommand.getDownload(), key, result);
-        setContextBody(actual);
+        setContextBody(getContextBodyKey(getFileOrDownloadValue(fileCommand)), actual);
     }
 
     private void compare(final String expected,
@@ -326,6 +326,11 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     private void setExpectedActual(final String expected, final String actual, final CommandResult result) {
         result.setExpected(expected);
         result.setActual(actual);
+    }
+
+    private String getFileOrDownloadValue(final S3File fileCommand) {
+        return fileCommand.getDownload().getFile() == null
+                ? fileCommand.getDownload().getValue() : fileCommand.getDownload().getFile();
     }
 
 }

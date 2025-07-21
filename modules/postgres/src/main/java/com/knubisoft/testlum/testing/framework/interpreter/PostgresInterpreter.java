@@ -52,7 +52,7 @@ public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
         result.setExpected(StringPrettifier.asJsonResult(compare.getExpected()));
         result.setActual(StringPrettifier.asJsonResult(actualPostgres));
         compare.exec();
-        setContextBody(actualPostgres);
+        setContextBody(getContextBodyKey(postgres.getFile()), actualPostgres);
     }
 
     protected String getActual(final Postgres postgres, final CommandResult result) {

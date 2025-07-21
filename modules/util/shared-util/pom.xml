@@ -16,7 +16,7 @@
     <properties>
         <selenium-java.version>4.33.0</selenium-java.version>
         <imagination.comparator.version>2.2</imagination.comparator.version>
-        <commons-io.version>2.14.0</commons-io.version>
+        <commons-io.version>2.19.0</commons-io.version>
         <org.apache.commons.version>3.17.0</org.apache.commons.version>
         <jackson.version>2.19.0</jackson.version>
         <lombok.version>1.18.38</lombok.version>

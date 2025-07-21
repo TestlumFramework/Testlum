@@ -74,7 +74,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         Response actual = getActual(sendgridInfo, method, sendgrid.getAlias(), endpoint, result);
         ApiResponse expected = getExpected(sendgridInfo, headers);
         compare(expected, actual, result);
-        setContextBody(actual.getBody());
+        setContextBody(getContextBodyKey(sendgridInfo.getResponse().getFile()), actual.getBody());
     }
 
     private ApiResponse getExpected(final SendgridInfo sendgridInfo, final Map<String, String> headers) {

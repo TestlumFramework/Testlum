@@ -430,11 +430,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link TestRailsReports }
+     * Create an instance of {@link TestRailReports }
      * 
      */
-    public TestRailsReports createTestRailsReports() {
-        return new TestRailsReports();
+    public TestRailReports createTestRailReports() {
+        return new TestRailReports();
     }
 
     /**

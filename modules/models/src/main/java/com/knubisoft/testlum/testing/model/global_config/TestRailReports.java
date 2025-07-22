@@ -9,12 +9,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for testRailsReports complex type.
+ * <p>Java class for testRailReports complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="testRailsReports"&gt;
+ * &lt;complexType name="testRailReports"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
@@ -25,7 +25,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="defaultRunName" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
  *         &lt;element name="defaultRunDescription" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="enable" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "testRailsReports", propOrder = {
+@XmlType(name = "testRailReports", propOrder = {
     "username",
     "apiKey",
     "url",
@@ -42,7 +42,7 @@ import javax.xml.bind.annotation.XmlType;
     "defaultRunName",
     "defaultRunDescription"
 })
-public class TestRailsReports {
+public class TestRailReports {
 
     @XmlElement(required = true)
     protected String username;
@@ -53,8 +53,8 @@ public class TestRailsReports {
     protected String projectId;
     protected String defaultRunName;
     protected String defaultRunDescription;
-    @XmlAttribute(name = "enable")
-    protected Boolean enable;
+    @XmlAttribute(name = "enabled")
+    protected Boolean enabled;
 
     /**
      * Gets the value of the username property.
@@ -201,31 +201,31 @@ public class TestRailsReports {
     }
 
     /**
-     * Gets the value of the enable property.
+     * Gets the value of the enabled property.
      * 
      * @return
      *     possible object is
      *     {@link Boolean }
      *     
      */
-    public boolean isEnable() {
-        if (enable == null) {
+    public boolean isEnabled() {
+        if (enabled == null) {
             return false;
         } else {
-            return enable;
+            return enabled;
         }
     }
 
     /**
-     * Sets the value of the enable property.
+     * Sets the value of the enabled property.
      * 
      * @param value
      *     allowed object is
      *     {@link Boolean }
      *     
      */
-    public void setEnable(Boolean value) {
-        this.enable = value;
+    public void setEnabled(Boolean value) {
+        this.enabled = value;
     }
 
 }

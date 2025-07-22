@@ -8,11 +8,11 @@
     <x:include schemaLocation="shared-config.xsd"/>
 
     <x:complexType name="extentReports">
-        <x:choice>
-            <x:element name="htmlReportGenerator" type="tns:htmlReportGenerator"/>
-            <x:element name="klovServerReportGenerator" type="tns:klovServerReportGenerator"/>
-            <x:element name="testRailsReports" type="tns:testRailsReports"/>
-        </x:choice>
+        <x:sequence>
+            <x:element name="htmlReportGenerator" type="tns:htmlReportGenerator" minOccurs="0"/>
+            <x:element name="klovServerReportGenerator" type="tns:klovServerReportGenerator" minOccurs="0"/>
+            <x:element name="testRailReports" type="tns:testRailReports" minOccurs="0"/>
+        </x:sequence>
         <x:attribute name="projectName" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="onlyFailedScenarios" type="x:boolean"/>
     </x:complexType>
@@ -38,7 +38,7 @@
         <x:attribute name="url" type="tns:url" use="required"/>
     </x:complexType>
 
-    <x:complexType name="testRailsReports">
+    <x:complexType name="testRailReports">
         <x:sequence>
             <x:element name="username" type="tns:nonEmptyString"/>
             <x:element name="apiKey" type="tns:nonEmptyString"/>
@@ -47,6 +47,6 @@
             <x:element name="defaultRunName" type="tns:nonEmptyString" minOccurs="0"/>
             <x:element name="defaultRunDescription" type="tns:nonEmptyString" minOccurs="0"/>
         </x:sequence>
-        <x:attribute name="enable" type="x:boolean" use="optional" default="false"/>
+        <x:attribute name="enabled" type="x:boolean" use="optional" default="false"/>
     </x:complexType>
 </x:schema>

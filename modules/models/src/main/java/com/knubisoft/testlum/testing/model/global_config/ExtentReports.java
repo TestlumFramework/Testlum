@@ -16,11 +16,11 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="extentReports"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;choice&gt;
- *         &lt;element name="htmlReportGenerator" type="{http://www.knubisoft.com/testlum/testing/model/global-config}htmlReportGenerator"/&gt;
- *         &lt;element name="klovServerReportGenerator" type="{http://www.knubisoft.com/testlum/testing/model/global-config}klovServerReportGenerator"/&gt;
- *         &lt;element name="testRailsReports" type="{http://www.knubisoft.com/testlum/testing/model/global-config}testRailsReports"/&gt;
- *       &lt;/choice&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="htmlReportGenerator" type="{http://www.knubisoft.com/testlum/testing/model/global-config}htmlReportGenerator" minOccurs="0"/&gt;
+ *         &lt;element name="klovServerReportGenerator" type="{http://www.knubisoft.com/testlum/testing/model/global-config}klovServerReportGenerator" minOccurs="0"/&gt;
+ *         &lt;element name="testRailReports" type="{http://www.knubisoft.com/testlum/testing/model/global-config}testRailReports" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
  *       &lt;attribute name="projectName" use="required" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" /&gt;
  *       &lt;attribute name="onlyFailedScenarios" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/restriction&gt;
@@ -34,13 +34,13 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "extentReports", propOrder = {
     "htmlReportGenerator",
     "klovServerReportGenerator",
-    "testRailsReports"
+    "testRailReports"
 })
 public class ExtentReports {
 
     protected HtmlReportGenerator htmlReportGenerator;
     protected KlovServerReportGenerator klovServerReportGenerator;
-    protected TestRailsReports testRailsReports;
+    protected TestRailReports testRailReports;
     @XmlAttribute(name = "projectName", required = true)
     protected String projectName;
     @XmlAttribute(name = "onlyFailedScenarios")
@@ -95,27 +95,27 @@ public class ExtentReports {
     }
 
     /**
-     * Gets the value of the testRailsReports property.
+     * Gets the value of the testRailReports property.
      * 
      * @return
      *     possible object is
-     *     {@link TestRailsReports }
+     *     {@link TestRailReports }
      *     
      */
-    public TestRailsReports getTestRailsReports() {
-        return testRailsReports;
+    public TestRailReports getTestRailReports() {
+        return testRailReports;
     }
 
     /**
-     * Sets the value of the testRailsReports property.
+     * Sets the value of the testRailReports property.
      * 
      * @param value
      *     allowed object is
-     *     {@link TestRailsReports }
+     *     {@link TestRailReports }
      *     
      */
-    public void setTestRailsReports(TestRailsReports value) {
-        this.testRailsReports = value;
+    public void setTestRailReports(TestRailReports value) {
+        this.testRailReports = value;
     }
 
     /**

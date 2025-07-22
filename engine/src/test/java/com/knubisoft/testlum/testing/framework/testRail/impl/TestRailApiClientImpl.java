@@ -5,7 +5,7 @@ import com.knubisoft.testlum.testing.framework.testRail.TestRailApiClient;
 import com.knubisoft.testlum.testing.framework.testRail.constant.TestRailConstants;
 import com.knubisoft.testlum.testing.framework.testRail.model.ResultResponseDto;
 import com.knubisoft.testlum.testing.framework.testRail.util.TestRailUtil;
-import com.knubisoft.testlum.testing.model.global_config.TestRailsApi;
+import com.knubisoft.testlum.testing.model.global_config.TestRailReports;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
@@ -30,8 +30,8 @@ import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant
 @RequiredArgsConstructor
 public class TestRailApiClientImpl implements TestRailApiClient {
 
-    private final TestRailsApi testRails =
-            ConfigProviderImpl.GlobalTestConfigurationProvider.provide().getTestRailsApi();
+    private final TestRailReports testRails =
+            ConfigProviderImpl.GlobalTestConfigurationProvider.provide().getReport().getExtentReports().getTestRailReports();
 
     private final RestTemplate restTemplate;
 

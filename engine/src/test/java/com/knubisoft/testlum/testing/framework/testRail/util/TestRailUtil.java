@@ -7,7 +7,7 @@ import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.testRail.constant.TestRailConstants;
 import com.knubisoft.testlum.testing.framework.testRail.model.GroupedScenarios;
 import com.knubisoft.testlum.testing.framework.testRail.model.ResultResponseDto;
-import com.knubisoft.testlum.testing.model.global_config.TestRailsApi;
+import com.knubisoft.testlum.testing.model.global_config.TestRailReports;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -99,7 +99,7 @@ public class TestRailUtil {
                 : String.format(TestRailConstants.COMMENT_PASSED_TEMPLATE, scenarioName);
     }
 
-    public static Map<String, Object> buildCreateTestRunRequest(final TestRailsApi testRails,
+    public static Map<String, Object> buildCreateTestRunRequest(final TestRailReports testRails,
                                                                 final List<Integer> caseIds) {
         Map<String, Object> request = new HashMap<>();
         request.put(TestRailConstants.RUN_NAME, testRails.getDefaultRunName());
@@ -122,10 +122,15 @@ public class TestRailUtil {
 
     public static Map<Integer, String> getScreenshotsOfUnsuccessfulTests(final List<ScenarioResult> scenarioResults) {
         Map<Integer, String> caseIdAttachmentsMap = new HashMap<>();
-        scenarioResults.forEach(scenarioResult -> caseIdAttachmentsMap.put(
-                Integer.parseInt(scenarioResult.getOverview().getTestRails().getTestCaseId()),
-                getScreenshotOfLastUnsuccessfulCommand(scenarioResult)
-        ));
+        scenarioResults.forEach(scenarioResult -> {
+            String screenshotOfLastUnsuccessfulCommand = getScreenshotOfLastUnsuccessfulCommand(scenarioResult);
+            if (screenshotOfLastUnsuccessfulCommand != null) {
+                caseIdAttachmentsMap.put(
+                        Integer.parseInt(scenarioResult.getOverview().getTestRails().getTestCaseId()),
+                        screenshotOfLastUnsuccessfulCommand
+                );
+            }
+        });
         return caseIdAttachmentsMap;
     }
 

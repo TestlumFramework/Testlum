@@ -12,6 +12,7 @@
     <x:include schemaLocation="native.xsd"/>
     <x:include schemaLocation="migrate.xsd"/>
     <x:include schemaLocation="postgres.xsd"/>
+    <x:include schemaLocation="sqlDatabase.xsd"/>
     <x:include schemaLocation="mongo.xsd"/>
     <x:include schemaLocation="rabbit.xsd"/>
     <x:include schemaLocation="clickhouse.xsd"/>
@@ -73,6 +74,7 @@
                     <x:element name="http" type="tns:http"/>
                     <x:element name="migrate" type="tns:migrate"/>
                     <x:element name="postgres" type="tns:postgres"/>
+                    <x:element name="sqlDatabase" type="tns:sqlDatabase"/>
                     <x:element name="mysql" type="tns:mysql"/>
                     <x:element name="oracle" type="tns:oracle"/>
                     <x:element name="mongo" type="tns:mongo"/>
@@ -114,6 +116,7 @@
                     <x:element name="http" type="tns:http"/>
                     <x:element name="migrate" type="tns:migrate"/>
                     <x:element name="postgres" type="tns:postgres"/>
+                    <x:element name="sqlDatabase" type="tns:sqlDatabase"/>
                     <x:element name="mysql" type="tns:mysql"/>
                     <x:element name="oracle" type="tns:oracle"/>
                     <x:element name="mongo" type="tns:mongo"/>
@@ -152,6 +155,7 @@
                     <x:element name="http" type="tns:http"/>
                     <x:element name="migrate" type="tns:migrate"/>
                     <x:element name="postgres" type="tns:postgres"/>
+                    <x:element name="sqlDatabase" type="tns:sqlDatabase"/>
                     <x:element name="mysql" type="tns:mysql"/>
                     <x:element name="oracle" type="tns:oracle"/>
                     <x:element name="mongo" type="tns:mongo"/>

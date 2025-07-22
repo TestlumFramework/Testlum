@@ -53,7 +53,7 @@ public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
         result.setActual(StringPrettifier.asJsonResult(actual));
 
         comparator.exec();
-        setContextBody(actual);
+        setContextBody(getContextBodyKey(clickhouse.getFile()), actual);
     }
 
     protected String getActual(final Clickhouse clickhouse, final CommandResult result) {

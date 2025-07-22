@@ -36,6 +36,7 @@ import jakarta.xml.bind.annotation.XmlType;
     Http.class,
     Migrate.class,
     Postgres.class,
+    SqlDatabase.class,
     Mysql.class,
     Oracle.class,
     Mongo.class,

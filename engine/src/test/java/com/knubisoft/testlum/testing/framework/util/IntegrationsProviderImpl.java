@@ -22,6 +22,7 @@ import com.knubisoft.testlum.testing.model.global_config.S3;
 import com.knubisoft.testlum.testing.model.global_config.Sendgrid;
 import com.knubisoft.testlum.testing.model.global_config.Ses;
 import com.knubisoft.testlum.testing.model.global_config.Smtp;
+import com.knubisoft.testlum.testing.model.global_config.SqlDatabase;
 import com.knubisoft.testlum.testing.model.global_config.Sqs;
 import com.knubisoft.testlum.testing.model.global_config.Twilio;
 import com.knubisoft.testlum.testing.model.global_config.WebsocketApi;
@@ -91,6 +92,7 @@ public class IntegrationsProviderImpl implements IntegrationsProvider {
                     Map.entry(c -> c.equals(Lambda.class), i -> i.getLambdaIntegration().getLambda()),
                     Map.entry(c -> c.equals(Sendgrid.class), i -> i.getSendgridIntegration().getSendgrid()),
                     Map.entry(c -> c.equals(Postgres.class), i -> i.getPostgresIntegration().getPostgres()),
+                    Map.entry(c -> c.equals(SqlDatabase.class), i -> i.getSqlDatabaseIntegration().getSqlDatabase()),
                     Map.entry(c -> c.equals(Rabbitmq.class), i -> i.getRabbitmqIntegration().getRabbitmq()),
                     Map.entry(c -> c.equals(Clickhouse.class), i -> i.getClickhouseIntegration().getClickhouse()),
                     Map.entry(c -> c.equals(Elasticsearch.class),

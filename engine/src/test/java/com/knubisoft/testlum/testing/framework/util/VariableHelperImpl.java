@@ -48,6 +48,7 @@ import java.util.function.UnaryOperator;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SLASH_SEPARATOR;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VAR_QUERY_RESULT_ERROR;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONSTANT;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.EXPRESSION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.FILE;
@@ -56,11 +57,14 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.JSON_PATH;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.NO_EXPRESSION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.RELATIONAL_DB_QUERY;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.XML_PATH;
+import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 
 @Slf4j
 @Component
 public class VariableHelperImpl implements VariableHelper {
+
+    private static final String VAR_CONTEXT_LOG = format(TABLE_FORMAT, "Created from", "{}");
 
     private final Map<RandomPredicate, RandomFunction> randomGenerateMethodMap;
     @Autowired
@@ -155,8 +159,7 @@ public class VariableHelperImpl implements VariableHelper {
                                 final ScenarioContext scenarioContext,
                                 final CommandResult result) {
         String path = fromPath.getValue();
-        String body = fromPath.getFrom() == null
-                ? scenarioContext.getBody() : scenarioContext.get(fromPath.getFrom());
+        String body = getBodyFromContext(fromPath, scenarioContext);
         if (path.startsWith(DOLLAR_SIGN)) {
             return evaluateJPath(path, varName, body, result);
         }
@@ -164,6 +167,25 @@ public class VariableHelperImpl implements VariableHelper {
             return evaluateXPath(path, varName, body, result);
         }
         throw new DefaultFrameworkException("Path <%s> is not supported", path);
+    }
+
+    private String getBodyFromContext(final FromPath fromPath, final ScenarioContext scenarioContext) {
+        String body = resolveBodySource(fromPath, scenarioContext);
+        logVarContextInfo(body);
+        return body;
+    }
+
+    private void logVarContextInfo(final String body) {
+        log.info(VAR_CONTEXT_LOG, body);
+    }
+
+    private String resolveBodySource(final FromPath fromPath, final ScenarioContext scenarioContext) {
+        if (fromPath.getFromFile() == null && fromPath.getFromVar() == null) {
+            return scenarioContext.getBody().getValue();
+        }
+        return fromPath.getFromFile() == null
+                ? scenarioContext.get(fromPath.getFromVar())
+                : scenarioContext.get(fromPath.getFromFile());
     }
 
 

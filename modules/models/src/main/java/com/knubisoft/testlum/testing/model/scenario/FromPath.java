@@ -32,8 +32,11 @@ public class FromPath {
     @XmlAttribute(name = "value", required = true)
     protected String value;
 
-    @XmlAttribute(name = "from")
-    protected String from;
+    @XmlAttribute(name = "fromFile")
+    protected String fromFile;
+
+    @XmlAttribute(name = "fromVar")
+    protected String fromVar;
 
     /**
      * Gets the value of the value property.
@@ -60,27 +63,51 @@ public class FromPath {
     }
 
     /**
-     * Gets the value of the from property.
+     * Gets the value of the fromFile property.
      *
      * @return
      *     possible object is
      *     {@link String }
      *
      */
-    public String getFrom() {
-        return from;
+    public String getFromFile() {
+        return fromFile;
     }
 
     /**
-     * Sets the value of the from property.
+     * Sets the value of the fromFile property.
      *
-     * @param from
+     * @param fromFile
      *     allowed object is
      *     {@link String }
      *
      */
-    public void setFrom(String from) {
-        this.from = from;
+    public void setFromFile(String fromFile) {
+        this.fromFile = fromFile;
+    }
+
+    /**
+     * Gets the value of the fromVar property.
+     *
+     * @return
+     *     possible object is
+     *     {@link String }
+     *
+     */
+    public String getFromVar() {
+        return fromVar;
+    }
+
+    /**
+     * Sets the value of the fromVar property.
+     *
+     * @param fromVar
+     *     allowed object is
+     *     {@link String }
+     *
+     */
+    public void setFromVar(String fromVar) {
+        this.fromVar = fromVar;
     }
 
 }

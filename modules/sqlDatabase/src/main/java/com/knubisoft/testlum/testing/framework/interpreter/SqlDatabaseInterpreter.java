@@ -7,9 +7,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
-import com.knubisoft.testlum.testing.model.scenario.Dynamo;
+import com.knubisoft.testlum.testing.model.scenario.SqlDatabase;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,8 +21,8 @@ import static com.knubisoft.testlum.testing.framework.db.AbstractStorageOperatio
 import static java.lang.String.format;
 
 @Slf4j
-@InterpreterForClass(Dynamo.class)
-public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
+@InterpreterForClass(SqlDatabase.class)
+public class SqlDatabaseInterpreter extends AbstractInterpreter<SqlDatabase> {
 
     //LOGS
     private static final String TABLE_FORMAT = "%-23s|%-70s";
@@ -35,35 +34,34 @@ public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
     private static final String DATABASE_ALIAS = "Database alias";
 
     @Autowired(required = false)
-    @Qualifier("dynamoOperation")
-    private AbstractStorageOperation dynamoDBOperation;
+    @Qualifier("sqlDatabaseOperation")
+    private AbstractStorageOperation sqlDatabaseOperation;
 
-    public DynamoDBInterpreter(final InterpreterDependencies dependencies) {
+    public SqlDatabaseInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
     }
 
     @Override
-    protected void acceptImpl(final Dynamo o, final CommandResult result) {
-        Dynamo ddb = injectCommand(o);
-        String actual = getActual(ddb, result);
-        CompareBuilder comparator = newCompare()
-                .withActual(actual)
-                .withExpected(getContentIfFile(ddb.getFile()));
+    protected void acceptImpl(final SqlDatabase o, final CommandResult result) {
+        SqlDatabase database = injectCommand(o);
+        String actualSqlDatabase = getActual(database, result);
+        CompareBuilder compare = newCompare()
+                .withActual(actualSqlDatabase)
+                .withExpected(getContentIfFile(database.getFile()));
 
-        result.setActual(StringPrettifier.asJsonResult(actual));
-        result.setExpected(StringPrettifier.asJsonResult(comparator.getExpected()));
-
-        comparator.exec();
-        setContextBody(getContextBodyKey(ddb.getFile()), actual);
+        result.setExpected(StringPrettifier.asJsonResult(compare.getExpected()));
+        result.setActual(StringPrettifier.asJsonResult(actualSqlDatabase));
+        compare.exec();
+        setContextBody(getContextBodyKey(database.getFile()), actualSqlDatabase);
     }
 
-    protected String getActual(final Dynamo ddb, final CommandResult result) {
-        String alias = ddb.getAlias();
-        List<String> queries = ddb.getQuery();
+    protected String getActual(final SqlDatabase sqlDatabase, final CommandResult result) {
+        String alias = sqlDatabase.getAlias();
+        List<String> queries = sqlDatabase.getQuery();
         logAllQueries(queries, alias);
         addDatabaseMetaData(alias, queries, result);
-        StorageOperationResult apply = dynamoDBOperation.apply(new ListSource(queries), alias);
-        return JacksonMapperUtil.writeAsStringForDynamoDbOnly(apply.getRaw());
+        StorageOperationResult applySqlDatabase = sqlDatabaseOperation.apply(new ListSource(queries), alias);
+        return toString(applySqlDatabase.getRaw());
     }
 
     private void logAllQueries(final List<String> queries, final String alias) {

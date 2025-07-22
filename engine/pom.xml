@@ -71,6 +71,7 @@
         <maven.surefire.failsafe.version>3.0.0-M5</maven.surefire.failsafe.version>
         <tomcat.jdbc.version>11.0.8</tomcat.jdbc.version>
         <postgresql.driver.version>42.7.7</postgresql.driver.version>
+        <maria.driver.version>3.1.4</maria.driver.version>
         <oracle.database.ojdbc11>23.8.0.25.04</oracle.database.ojdbc11>
         <mongodb-java-driver.version>3.12.11</mongodb-java-driver.version>
         <mysql-connector-j.version>9.3.0</mysql-connector-j.version>
@@ -90,7 +91,7 @@
         <com.clickhouse.version>0.9.0</com.clickhouse.version>
         <sendgrid-java.version>4.10.3</sendgrid-java.version>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
-        <junit-platform-launcher.version>1.13.1</junit-platform-launcher.version>
+        <junit-platform-launcher.version>1.8.2</junit-platform-launcher.version>
         <json-simple.version>1.1.1</json-simple.version>
         <netty-handler.version>4.2.2.Final</netty-handler.version>
         <netty-common.version>4.2.2.Final</netty-common.version>
@@ -140,6 +141,12 @@
     </repositories>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>${maria.driver.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.jsoup</groupId>
@@ -1101,6 +1108,14 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-postgres</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <!--    SQL_DATABASE    -->
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-sqlDatabase</artifactId>
             <version>1.0</version>
         </dependency>
 

@@ -57,6 +57,7 @@
         <module>auth</module>
         <module>shell</module>
         <module>wait</module>
+        <module>sqlDatabase</module>
 
         <module>ui</module>
     </modules>

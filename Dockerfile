@@ -1,6 +1,6 @@
 # Multi-Stage build
-ARG MAVEN_TAG=3.8.6-jdk-11
-ARG JDK_TAG=11.0-jdk
+ARG MAVEN_TAG=3.8.5-openjdk-17
+ARG JDK_TAG=17
   # Build container
 FROM maven:${MAVEN_TAG} AS maven-build
 
@@ -13,7 +13,7 @@ FROM  openjdk:${JDK_TAG}
 
 WORKDIR /testlum/
 
-ARG JAR_FILE=engine/target/testlum-1.0.0.jar
+ARG JAR_FILE=engine/target/testlum-1.0.1.jar
 
 COPY --from=maven-build /testlum/${JAR_FILE} testlum.jar
 

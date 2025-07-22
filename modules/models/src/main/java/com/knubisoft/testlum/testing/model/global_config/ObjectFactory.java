@@ -286,14 +286,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link TestRailsApi }
-     * 
-     */
-    public TestRailsApi createTestRailsApi() {
-        return new TestRailsApi();
-    }
-
-    /**
      * Create an instance of {@link TagValue }
      * 
      */
@@ -435,6 +427,14 @@ public class ObjectFactory {
      */
     public KlovServer createKlovServer() {
         return new KlovServer();
+    }
+
+    /**
+     * Create an instance of {@link TestRailsReports }
+     * 
+     */
+    public TestRailsReports createTestRailsReports() {
+        return new TestRailsReports();
     }
 
     /**

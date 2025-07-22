@@ -17,10 +17,9 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;choice&gt;
- *         &lt;sequence&gt;
- *           &lt;element name="htmlReportGenerator" type="{http://www.knubisoft.com/testlum/testing/model/global-config}htmlReportGenerator"/&gt;
- *           &lt;element name="klovServerReportGenerator" type="{http://www.knubisoft.com/testlum/testing/model/global-config}klovServerReportGenerator" minOccurs="0"/&gt;
- *         &lt;/sequence&gt;
+ *         &lt;element name="htmlReportGenerator" type="{http://www.knubisoft.com/testlum/testing/model/global-config}htmlReportGenerator"/&gt;
+ *         &lt;element name="klovServerReportGenerator" type="{http://www.knubisoft.com/testlum/testing/model/global-config}klovServerReportGenerator"/&gt;
+ *         &lt;element name="testRailsReports" type="{http://www.knubisoft.com/testlum/testing/model/global-config}testRailsReports"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="projectName" use="required" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" /&gt;
  *       &lt;attribute name="onlyFailedScenarios" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
@@ -34,12 +33,14 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "extentReports", propOrder = {
     "htmlReportGenerator",
-    "klovServerReportGenerator"
+    "klovServerReportGenerator",
+    "testRailsReports"
 })
 public class ExtentReports {
 
     protected HtmlReportGenerator htmlReportGenerator;
     protected KlovServerReportGenerator klovServerReportGenerator;
+    protected TestRailsReports testRailsReports;
     @XmlAttribute(name = "projectName", required = true)
     protected String projectName;
     @XmlAttribute(name = "onlyFailedScenarios")
@@ -91,6 +92,30 @@ public class ExtentReports {
      */
     public void setKlovServerReportGenerator(KlovServerReportGenerator value) {
         this.klovServerReportGenerator = value;
+    }
+
+    /**
+     * Gets the value of the testRailsReports property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TestRailsReports }
+     *     
+     */
+    public TestRailsReports getTestRailsReports() {
+        return testRailsReports;
+    }
+
+    /**
+     * Sets the value of the testRailsReports property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TestRailsReports }
+     *     
+     */
+    public void setTestRailsReports(TestRailsReports value) {
+        this.testRailsReports = value;
     }
 
     /**

@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="report" type="{http://www.knubisoft.com/testlum/testing/model/global-config}report"/&gt;
  *         &lt;element name="environments" type="{http://www.knubisoft.com/testlum/testing/model/global-config}environments"/&gt;
  *         &lt;element name="vault" type="{http://www.knubisoft.com/testlum/testing/model/global-config}vault" minOccurs="0"/&gt;
- *         &lt;element name="testRailsApi" type="{http://www.knubisoft.com/testlum/testing/model/global-config}testRailsApi" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -44,8 +43,7 @@ import javax.xml.bind.annotation.XmlType;
     "runScenariosByTag",
     "report",
     "environments",
-    "vault",
-    "testRailsApi"
+    "vault"
 })
 @XmlRootElement(name = "globalTestConfiguration")
 public class GlobalTestConfiguration {
@@ -63,7 +61,6 @@ public class GlobalTestConfiguration {
     @XmlElement(required = true)
     protected Environments environments;
     protected Vault vault;
-    protected TestRailsApi testRailsApi;
 
     /**
      * Gets the value of the parallelExecution property.
@@ -239,30 +236,6 @@ public class GlobalTestConfiguration {
      */
     public void setVault(Vault value) {
         this.vault = value;
-    }
-
-    /**
-     * Gets the value of the testRailsApi property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TestRailsApi }
-     *     
-     */
-    public TestRailsApi getTestRailsApi() {
-        return testRailsApi;
-    }
-
-    /**
-     * Sets the value of the testRailsApi property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TestRailsApi }
-     *     
-     */
-    public void setTestRailsApi(TestRailsApi value) {
-        this.testRailsApi = value;
     }
 
 }

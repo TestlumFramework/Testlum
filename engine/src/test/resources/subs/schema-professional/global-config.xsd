@@ -28,7 +28,6 @@
                 <x:element name="report" type="tns:report"/>
                 <x:element name="environments" type="tns:environments"/>
                 <x:element name="vault" type="tns:vault" minOccurs="0"/>
-                <x:element name="testRailsApi" type="tns:testRailsApi" minOccurs="0"/>
             </x:sequence>
         </x:complexType>
     </x:element>
@@ -64,17 +63,5 @@
             <x:element name="scheme" type="tns:nonEmptyString"/>
             <x:element name="token" type="tns:nonEmptyString"/>
         </x:sequence>
-    </x:complexType>
-
-    <x:complexType name="testRailsApi">
-        <x:sequence>
-            <x:element name="username" type="tns:nonEmptyString"/>
-            <x:element name="apiKey" type="tns:nonEmptyString"/>
-            <x:element name="url" type="tns:nonEmptyString"/>
-            <x:element name="projectId" type="tns:nonEmptyString" minOccurs="0"/>
-            <x:element name="defaultRunName" type="tns:nonEmptyString" minOccurs="0"/>
-            <x:element name="defaultRunDescription" type="tns:nonEmptyString" minOccurs="0"/>
-        </x:sequence>
-        <x:attribute name="enable" type="x:boolean" use="optional" default="false"/>
     </x:complexType>
 </x:schema>

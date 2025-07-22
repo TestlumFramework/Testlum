@@ -13,7 +13,7 @@ FROM  openjdk:${JDK_TAG}
 
 WORKDIR /testlum/
 
-ARG JAR_FILE=engine/target/testlum-1.0.1.jar
+ARG JAR_FILE=engine/target/testlum-1.0.2.jar
 
 COPY --from=maven-build /testlum/${JAR_FILE} testlum.jar
 

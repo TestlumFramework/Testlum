@@ -11,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
 
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_REPORT_GENERATOR_ENABLED;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_REPORT_GENERATOR_PRESENT;
+
 @Slf4j
 @UtilityClass
 public class ReportGeneratorFactory {
@@ -19,7 +22,7 @@ public class ReportGeneratorFactory {
         if (Objects.nonNull(report.getExtentReports())) {
             checkExtentReportsGenerators(report.getExtentReports());
         } else { //add a new branch if another implementation is needed
-            log.warn("No Report Generator is present");
+            log.warn(NO_REPORT_GENERATOR_PRESENT);
         }
         return new ExtentReportsGenerator();
     }
@@ -31,7 +34,7 @@ public class ReportGeneratorFactory {
         if ((Objects.isNull(htmlReportGenerator) || !htmlReportGenerator.isEnabled()) &&
              (Objects.isNull(klovServerReportGenerator) || !klovServerReportGenerator.isEnabled()) &&
               (Objects.isNull(testRailReports) || !testRailReports.isEnabled())) {
-                    log.warn("No Report Generator is enabled");
+                    log.warn(NO_REPORT_GENERATOR_ENABLED);
             }
     }
 }

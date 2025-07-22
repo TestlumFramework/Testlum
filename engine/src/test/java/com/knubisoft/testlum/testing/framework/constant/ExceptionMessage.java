@@ -50,6 +50,8 @@ public class ExceptionMessage {
                                                                + "There are no active scenarios by enabled tags" + ANSI_RESET;
     public static final String NO_ENABLED_TAGS_CONFIG = ANSI_RED
                                                         + "No enabled tags in runScenariosByTag configuration" + ANSI_RESET;
+    public static final String NO_REPORT_GENERATOR_PRESENT = "No Report Generator is present";
+    public static final String NO_REPORT_GENERATOR_ENABLED = "No Report Generator is enabled";
 
     // scenario validation
     public static final String INTEGRATION_NOT_FOUND = "Cannot find integration configuration for <%s>";

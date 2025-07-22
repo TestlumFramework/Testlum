@@ -30,6 +30,7 @@ import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNKNOWN_HTTP_METHOD;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HTTP_STATUS_CODE;
+import static org.springframework.http.HttpMethod.*;
 
 @Slf4j
 @Component
@@ -79,18 +80,24 @@ public class ApiClient {
     private HttpUriRequest getHttpRequest(final HttpMethod httpMethod,
                                           final String url,
                                           final HttpEntity body) {
-        switch (httpMethod) {
-            case GET: return new HttpGet(url);
-            case DELETE: return new HttpDelete(url);
-            case HEAD: return new HttpHead(url);
-            case OPTIONS: return new HttpOptions(url);
-            case TRACE: return new HttpTrace(url);
-            case POST: return setRequestBody(new HttpPost(url), body);
-            case PUT: return setRequestBody(new HttpPut(url), body);
-            case PATCH: return setRequestBody(new HttpPatch(url), body);
-            default:
-                throw new DefaultFrameworkException(UNKNOWN_HTTP_METHOD, httpMethod);
+        if (httpMethod.equals(GET)) {
+            return new HttpGet(url);
+        } else if (httpMethod.equals(DELETE)) {
+            return new HttpDelete(url);
+        } else if (httpMethod.equals(HEAD)) {
+            return new HttpHead(url);
+        } else if (httpMethod.equals(OPTIONS)) {
+            return new HttpOptions(url);
+        } else if (httpMethod.equals(TRACE)) {
+            return new HttpTrace(url);
+        } else if (httpMethod.equals(POST)) {
+            return setRequestBody(new HttpPost(url), body);
+        } else if (httpMethod.equals(PUT)) {
+            return setRequestBody(new HttpPut(url), body);
+        } else if (httpMethod.equals(PATCH)) {
+            return setRequestBody(new HttpPatch(url), body);
         }
+        throw new DefaultFrameworkException(UNKNOWN_HTTP_METHOD, httpMethod);
     }
 
     private void addRequestHeaders(final HttpUriRequest request,

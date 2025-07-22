@@ -14,7 +14,7 @@
     <artifactId>testlum-sendgrid</artifactId>
 
     <properties>
-        <sendgrid-java.version>4.4.1</sendgrid-java.version>
+        <sendgrid-java.version>4.10.3</sendgrid-java.version>
     </properties>
 
     <dependencies>

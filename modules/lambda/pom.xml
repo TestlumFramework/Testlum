@@ -14,7 +14,7 @@
     <artifactId>testlum-lambda</artifactId>
 
     <properties>
-        <software.amazon.awssdk.version>2.18.35</software.amazon.awssdk.version>
+        <software.amazon.awssdk.version>2.31.65</software.amazon.awssdk.version>
     </properties>
 
     <dependencies>

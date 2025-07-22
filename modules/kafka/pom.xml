@@ -14,8 +14,8 @@
     <artifactId>testlum-kafka</artifactId>
 
     <properties>
-        <spring-kafka.version>2.7.1</spring-kafka.version>
-        <kafka-clients.version>2.7.1</kafka-clients.version>
+        <spring-kafka.version>3.3.7</spring-kafka.version>
+        <kafka-clients.version>3.9.1</kafka-clients.version>
     </properties>
 
     <dependencies>

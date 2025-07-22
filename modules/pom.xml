@@ -57,20 +57,20 @@
         <module>auth</module>
         <module>shell</module>
         <module>wait</module>
-        <module>sql-database</module>
+        <module>sqlDatabase</module>
 
         <module>ui</module>
     </modules>
 
     <properties>
-        <maven.compiler.target>11</maven.compiler.target>
-        <maven.compiler.source>11</maven.compiler.source>
-        <java.version>11</java.version>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <org.spring.version>5.3.4</org.spring.version>
-        <org.spring.boot.version>2.4.3</org.spring.boot.version>
+        <org.spring.version>6.2.8</org.spring.version>
+        <org.spring.boot.version>3.5.1</org.spring.boot.version>
     </properties>
 
     <dependencyManagement>

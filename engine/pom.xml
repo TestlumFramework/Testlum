@@ -15,50 +15,51 @@
     <name>TESTLUM</name>
 
     <properties>
-        <maven.compiler.target>11</maven.compiler.target>
-        <maven.compiler.source>11</maven.compiler.source>
-        <java.version>11</java.version>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <start-class>com.knubisoft.testlum.starter.TESTLUMStarter</start-class>
         <models.dir>../modules/models/src/main/java</models.dir>
         <professional-subs-pack>${project.basedir}/src/test/resources/subs/schema-professional</professional-subs-pack>
 
-        <selenium-java.version>4.25.0</selenium-java.version>
-        <appium-client.version>9.3.0</appium-client.version>
-        <webdrivermanager.version>5.9.2</webdrivermanager.version>
-        <org.spring.boot.version>2.4.3</org.spring.boot.version>
-        <org.spring.version>5.3.4</org.spring.version>
-        <io.jsonwebtoken.version>0.11.2</io.jsonwebtoken.version>
+        <selenium-java.version>4.33.0</selenium-java.version>
+        <appium-client.version>9.4.0</appium-client.version>
+        <webdrivermanager.version>6.2.0</webdrivermanager.version>
+        <org.spring.boot.version>3.5.1</org.spring.boot.version>
+        <org.spring.version>6.2.8</org.spring.version>
+        <io.jsonwebtoken.version>0.12.6</io.jsonwebtoken.version>
         <com.stripe-java.version>22.3.0</com.stripe-java.version>
+        <json-smart.version>2.5.2</json-smart.version>
 
-        <jackson.version>2.15.0</jackson.version>
+        <jackson.version>2.19.0</jackson.version>
         <javax.xml.jaxp-api.version>1.4.2</javax.xml.jaxp-api.version>
-        <javax.xml.version>2.3.1</javax.xml.version>
-        <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
+        <javax.xml.version>4.0.5</javax.xml.version>
+        <jakarta.xml.bind-api.version>4.0.2</jakarta.xml.bind-api.version>
         <xerces.version>2.12.2</xerces.version>
-        <scala.version>2.13.5</scala.version>
-        <commons-io.version>2.7</commons-io.version>
-        <org.json.version>20220320</org.json.version>
-        <com.jayway.json-path.version>2.5.0</com.jayway.json-path.version>
-        <org.apache.commons.version>3.12.0</org.apache.commons.version>
-        <org.apache.httpcomponents.client.version>4.5.13</org.apache.httpcomponents.client.version>
-        <org.apache.httpcomponents.client5.version>5.2.1</org.apache.httpcomponents.client5.version>
-        <org.apache.poi.version>4.0.0</org.apache.poi.version>
-        <com.google.guava>31.1-jre</com.google.guava>
-        <com.google.code.gson.version>2.9.0</com.google.code.gson.version>
-        <commons-codec.version>1.15</commons-codec.version>
-        <commons-dbutils.version>1.7</commons-dbutils.version>
-        <org.junit.jupiter.version>5.8.0</org.junit.jupiter.version>
+        <scala.version>3.7.0</scala.version>
+        <commons-io.version>2.19.0</commons-io.version>
+        <org.json.version>20250517</org.json.version>
+        <com.jayway.json-path.version>2.9.0</com.jayway.json-path.version>
+        <org.apache.commons.version>3.17.0</org.apache.commons.version>
+        <org.apache.httpcomponents.client.version>4.5.14</org.apache.httpcomponents.client.version>
+        <org.apache.httpcomponents.client5.version>5.5</org.apache.httpcomponents.client5.version>
+        <httpcore5.version>5.3.4</httpcore5.version>
+        <org.apache.poi.version>5.4.1</org.apache.poi.version>
+        <com.google.guava>33.4.8-jre</com.google.guava>
+        <com.google.code.gson.version>2.13.1</com.google.code.gson.version>
+        <commons-codec.version>1.17.1</commons-codec.version>
+        <commons-dbutils.version>1.8.1</commons-dbutils.version>
+        <org.junit.jupiter.version>5.13.1</org.junit.jupiter.version>
         <org.junit.version>4.13.2</org.junit.version>
-        <lombok.version>1.18.24</lombok.version>
-        <imagination.comparator.version>2.0</imagination.comparator.version>
-        <org.slf4j.api.version>1.7.30</org.slf4j.api.version>
-        <com.opencsv.version>5.5.1</com.opencsv.version>
-        <io.micrometer.version>1.6.6</io.micrometer.version>
+        <lombok.version>1.18.38</lombok.version>
+        <imagination.comparator.version>2.2</imagination.comparator.version>
+        <org.slf4j.api.version>2.0.17</org.slf4j.api.version>
+        <com.opencsv.version>5.11.1</com.opencsv.version>
+        <io.micrometer.version>1.15.0</io.micrometer.version>
 
         <pl.project13.maven.plugin.version>4.0.0</pl.project13.maven.plugin.version>
-        <org.spring.version>5.3.4</org.spring.version>
         <jaxb2-maven-plugin.version>2.5.0</jaxb2-maven-plugin.version>
         <exec.maven.plugin.version>3.0.0</exec.maven.plugin.version>
         <maven.enforcer.plugin.version>3.0.0-M3</maven.enforcer.plugin.version>
@@ -68,44 +69,55 @@
         <!--        <spotbugs.maven.plugin.version>4.7.2.1</spotbugs.maven.plugin.version>-->
         <maven.pmd.plugin.version>3.14.0</maven.pmd.plugin.version>
         <maven.surefire.failsafe.version>3.0.0-M5</maven.surefire.failsafe.version>
-        <tomcat.jdbc.version>10.1.0-M2</tomcat.jdbc.version>
-        <postgresql.driver.version>42.2.18</postgresql.driver.version>
-        <oracle.database.ojdbc8>21.7.0.0</oracle.database.ojdbc8>
+        <tomcat.jdbc.version>11.0.8</tomcat.jdbc.version>
+        <postgresql.driver.version>42.7.7</postgresql.driver.version>
+        <maria.driver.version>3.1.4</maria.driver.version>
+        <oracle.database.ojdbc11>23.8.0.25.04</oracle.database.ojdbc11>
         <mongodb-java-driver.version>3.12.11</mongodb-java-driver.version>
-        <mysql-connector-java.version>8.0.25</mysql-connector-java.version>
-        <spring-kafka.version>2.7.1</spring-kafka.version>
-        <com.amazonaws.version>1.12.129</com.amazonaws.version>
-        <amqp-client.version>5.12.0</amqp-client.version>
-        <http-client.version>3.10.0</http-client.version>
-        <spring-rabbit.version>2.3.6</spring-rabbit.version>
-        <kafka-clients.version>2.7.1</kafka-clients.version>
+        <mysql-connector-j.version>9.3.0</mysql-connector-j.version>
+        <spring-kafka.version>3.3.7</spring-kafka.version>
+        <com.amazonaws.version>1.12.787</com.amazonaws.version>
+        <software.amazon.awssdk.version>2.31.65</software.amazon.awssdk.version>
+        <amqp-client.version>5.25.0</amqp-client.version>
+        <http-client.version>5.4.0</http-client.version>
+        <spring-rabbit.version>3.2.5</spring-rabbit.version>
+        <kafka-clients.version>3.9.1</kafka-clients.version>
         <spring-vault-core.version>2.3.3</spring-vault-core.version>
-        <jedis.version>3.3.0</jedis.version>
-        <HikariCP.version>4.0.2</HikariCP.version>
-        <software.amazon.awssdk.version>2.18.35</software.amazon.awssdk.version>
-        <elasticsearch-rest-client.version>7.13.1</elasticsearch-rest-client.version>
-        <elasticsearch-rest-high-level-client.version>7.13.1</elasticsearch-rest-high-level-client.version>
-        <ru.yandex.clickhouse.version>0.3.1</ru.yandex.clickhouse.version>
-        <sendgrid-java.version>4.4.1</sendgrid-java.version>
+        <jedis.version>6.0.0</jedis.version>
+        <HikariCP.version>6.3.0</HikariCP.version>
+        <software.amazon.awssdk.version>2.31.65</software.amazon.awssdk.version>
+        <elasticsearch-rest-client.version>7.17.28</elasticsearch-rest-client.version>
+        <elasticsearch-rest-high-level-client.version>7.17.28</elasticsearch-rest-high-level-client.version>
+        <com.clickhouse.version>0.9.0</com.clickhouse.version>
+        <sendgrid-java.version>4.10.3</sendgrid-java.version>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
         <junit-platform-launcher.version>1.8.2</junit-platform-launcher.version>
         <json-simple.version>1.1.1</json-simple.version>
-        <netty-handler.version>4.1.77.Final</netty-handler.version>
-        <netty-common.version>4.1.77.Final</netty-common.version>
-        <netty-buffer.version>4.1.77.Final</netty-buffer.version>
-        <netty-transport.version>4.1.77.Final</netty-transport.version>
-        <netty-transport-native-kqueue.version>4.1.77.Final</netty-transport-native-kqueue.version>
-        <netty-transport-native-epoll.version>4.1.77.Final</netty-transport-native-epoll.version>
-        <netty-codec.version>4.1.77.Final</netty-codec.version>
-        <netty-codec-http.version>4.1.77.Final</netty-codec-http.version>
+        <netty-handler.version>4.2.2.Final</netty-handler.version>
+        <netty-common.version>4.2.2.Final</netty-common.version>
+        <netty-buffer.version>4.2.2.Final</netty-buffer.version>
+        <netty-transport.version>4.2.2.Final</netty-transport.version>
+        <netty-transport-native-kqueue.version>4.2.2.Final</netty-transport-native-kqueue.version>
+        <netty-transport-native-epoll.version>4.2.2.Final</netty-transport-native-epoll.version>
+        <netty-codec.version>4.2.2.Final</netty-codec.version>
+        <netty-codec-http.version>4.2.2.Final</netty-codec-http.version>
         <netty-reactive-streams.version>2.0.6</netty-reactive-streams.version>
-        <extent-reports.version>5.0.9</extent-reports.version>
+        <extent-reports.version>5.1.0</extent-reports.version>
+        <klov-reporter.version>5.1.0</klov-reporter.version>
         <jakarta.activation.version>1.2.2</jakarta.activation.version>
-        <com.twilio.sdk.version>10.6.0</com.twilio.sdk.version>
+        <com.twilio.sdk.version>10.9.2</com.twilio.sdk.version>
         <image-comparison.version>4.4.1</image-comparison.version>
-        <com.github.curious-odd-man.rgxgen.version>1.4</com.github.curious-odd-man.rgxgen.version>
-        <org.jsoup.version>1.18.1</org.jsoup.version>
+        <com.github.curious-odd-man.rgxgen.version>3.0</com.github.curious-odd-man.rgxgen.version>
+        <org.jsoup.version>1.20.1</org.jsoup.version>
+        <org.asynchttpclient>3.0.2</org.asynchttpclient>
+
+        <org.jetbrains.annotations.version>26.0.2</org.jetbrains.annotations.version>
+        <org.reflections.version>0.10.2</org.reflections.version>
+        <com.typesafe.version>1.4.3</com.typesafe.version>
+
         <skipGenerateModels>true</skipGenerateModels>
+        <log4j-api.version>2.24.3</log4j-api.version>
+        <log4j-core.version>2.24.3</log4j-core.version>
     </properties>
 
     <repositories>
@@ -131,6 +143,12 @@
     <dependencies>
 
         <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>${maria.driver.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>${org.jsoup.version}</version>
@@ -149,9 +167,9 @@
         </dependency>
 
         <dependency>
-            <groupId>ru.yandex.clickhouse</groupId>
+            <groupId>com.clickhouse</groupId>
             <artifactId>clickhouse-jdbc</artifactId>
-            <version>${ru.yandex.clickhouse.version}</version>
+            <version>${com.clickhouse.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
@@ -221,6 +239,18 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j-api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j-core.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.sendgrid</groupId>
             <artifactId>sendgrid-java</artifactId>
             <version>${sendgrid-java.version}</version>
@@ -259,15 +289,15 @@
         </dependency>
 
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql-connector-java.version}</version>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>${mysql-connector-j.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>5.3.4</version>
+            <version>${org.spring.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -316,23 +346,23 @@
 
         <!-- AWS SDK for Amazon S3 -->
         <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-s3</artifactId>
-            <version>${com.amazonaws.version}</version>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>${software.amazon.awssdk.version}</version>
         </dependency>
 
         <!-- AWS SDK for Amazon SQS -->
         <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-sqs</artifactId>
-            <version>${com.amazonaws.version}</version>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sqs</artifactId>
+            <version>${software.amazon.awssdk.version}</version>
         </dependency>
 
         <!-- AWS SDK for Amazon SES -->
         <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-ses</artifactId>
-            <version>${com.amazonaws.version}</version>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>ses</artifactId>
+            <version>${software.amazon.awssdk.version}</version>
         </dependency>
 
         <dependency>
@@ -592,6 +622,16 @@
                     <groupId>com.vaadin.external.google</groupId>
                     <artifactId>android-json</artifactId>
                 </exclusion>
+
+                <exclusion>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter-engine</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter-params</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -688,13 +728,13 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>13.0</version>
+            <version>${org.jetbrains.annotations.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.9</version>
+            <version>${org.reflections.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
@@ -706,7 +746,7 @@
         <dependency>
             <groupId>com.typesafe</groupId>
             <artifactId>config</artifactId>
-            <version>1.4.1</version>
+            <version>${com.typesafe.version}</version>
         </dependency>
 
         <dependency>
@@ -722,6 +762,30 @@
         </dependency>
 
         <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>${jakarta.xml.bind-api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+            <version>2.1.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>${javax.xml.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
             <version>${javax.xml.version}</version>
@@ -729,7 +793,7 @@
 
         <dependency>
             <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
+            <artifactId>scala3-library_3</artifactId>
             <version>${scala.version}</version>
             <scope>compile</scope>
         </dependency>
@@ -738,6 +802,18 @@
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>${com.jayway.json-path.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.minidev</groupId>
+                    <artifactId>json-smart</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+            <version>${json-smart.version}</version>
         </dependency>
 
         <dependency>
@@ -782,6 +858,18 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
             <version>${org.apache.httpcomponents.client.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons-codec.version}</version>
         </dependency>
 
         <dependency>
@@ -801,6 +889,24 @@
                     <artifactId>junit-platform-commons</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${org.junit.jupiter.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${org.junit.jupiter.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${org.junit.jupiter.version}</version>
         </dependency>
 
         <dependency>
@@ -833,8 +939,8 @@
 
         <dependency>
             <groupId>com.oracle.database.jdbc</groupId>
-            <artifactId>ojdbc8</artifactId>
-            <version>${oracle.database.ojdbc8}</version>
+            <artifactId>ojdbc11</artifactId>
+            <version>${oracle.database.ojdbc11}</version>
         </dependency>
 
         <dependency>
@@ -845,6 +951,11 @@
                 <exclusion>
                     <groupId>org.apache.commons</groupId>
                     <artifactId>commons-lang3</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -859,6 +970,12 @@
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
             <version>${json-simple.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -880,7 +997,7 @@
         <dependency>
             <groupId>com.aventstack</groupId>
             <artifactId>klov-reporter</artifactId>
-            <version>${extent-reports.version}</version>
+            <version>${klov-reporter.version}</version>
         </dependency>
 
         <dependency>
@@ -994,9 +1111,11 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!--    SQL_DATABASE    -->
+
         <dependency>
             <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-sql-database</artifactId>
+            <artifactId>testlum-sqlDatabase</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -1011,12 +1130,6 @@
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-auth</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>testlum-websocket</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -1040,7 +1153,7 @@
             <dependency>
                 <groupId>org.asynchttpclient</groupId>
                 <artifactId>async-http-client</artifactId>
-                <version>2.12.3</version>
+                <version>${org.asynchttpclient}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>io.netty</groupId>
@@ -1091,6 +1204,11 @@
                 <groupId>org.apache.httpcomponents.client5</groupId>
                 <artifactId>httpclient5</artifactId>
                 <version>${org.apache.httpcomponents.client5.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5</artifactId>
+                <version>${httpcore5.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
@@ -1153,11 +1271,6 @@
                 <version>${jakarta.activation.version}</version>
             </dependency>
             <dependency>
-                <groupId>javax.xml.bind</groupId>
-                <artifactId>jaxb-api</artifactId>
-                <version>${javax.xml.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
@@ -1172,6 +1285,7 @@
                 <artifactId>jakarta.xml.bind-api</artifactId>
                 <version>${jakarta.xml.bind-api.version}</version>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -1410,6 +1524,12 @@
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-lambda</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.knubisoft</groupId>
+                    <artifactId>testlum-websocket</artifactId>
                     <version>${project.version}</version>
                 </dependency>
 

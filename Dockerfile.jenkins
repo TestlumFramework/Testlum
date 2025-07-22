@@ -1,4 +1,4 @@
-FROM maven:3.8.5-openjdk-11 as maven-build
+FROM maven:3.8.5-openjdk-17 as maven-build
 
 ARG PROFILE
 
@@ -6,9 +6,9 @@ WORKDIR /testlum/
 COPY . .
 RUN mvn clean install -DskipTests -P$PROFILE
 
-FROM openjdk:11
+FROM openjdk:17
 
-ARG JAR_FILE=target/testlum-1.0.0.jar
+ARG JAR_FILE=target/testlum-with-dependencies.jar
 
 WORKDIR /testlum/
 

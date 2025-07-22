@@ -14,8 +14,8 @@
     <artifactId>testlum-storage-util</artifactId>
 
     <properties>
-        <org.apache.poi.version>4.0.0</org.apache.poi.version>
-        <com.zaxxer.HikariCP.version>4.0.2</com.zaxxer.HikariCP.version>
+        <org.apache.poi.version>5.4.1</org.apache.poi.version>
+        <com.zaxxer.HikariCP.version>6.3.0</com.zaxxer.HikariCP.version>
     </properties>
 
 

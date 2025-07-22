@@ -6,7 +6,6 @@ import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Rabbitmq;
 import com.rabbitmq.http.client.Client;
 import com.rabbitmq.http.client.ClientParameters;
-import com.rabbitmq.http.client.HttpComponentsRestTemplateConfigurator;
 import lombok.SneakyThrows;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -60,8 +59,7 @@ public class RabbitMQConfiguration {
         return new ClientParameters()
                 .url(url)
                 .username(rabbitmq.getUsername())
-                .password(rabbitmq.getPassword())
-                .restTemplateConfigurator(new HttpComponentsRestTemplateConfigurator());
+                .password(rabbitmq.getPassword());
     }
 
     @Bean

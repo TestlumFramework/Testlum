@@ -1,10 +1,5 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.CreateBucketRequest;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.S3Object;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.ComparisonException;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -24,6 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -59,9 +59,9 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     private static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
     private static final String NEW_LOG_LINE = format("%n%19s| ", EMPTY);
     private static final String EXCEPTION_LOG = ANSI_RED
-            + "----------------    EXCEPTION    -----------------"
-            + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
-            + "--------------------------------------------------" + ANSI_RESET;
+                                                + "----------------    EXCEPTION    -----------------"
+                                                + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
+                                                + "--------------------------------------------------" + ANSI_RESET;
     private static final String REGEX_NEW_LINE = "[\\r\\n]";
     private static final String TABLE_FORMAT = "%-23s|%-70s";
     public static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
@@ -81,7 +81,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     private static final String FILE_VALUE_COMPARISON_ERROR = "Actual file <%s> is not the same as expected value <%s>";
 
     @Autowired(required = false)
-    private Map<AliasEnv, AmazonS3> amazonS3;
+    private Map<AliasEnv, S3Client> s3Client;
 
     public S3Interpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -132,11 +132,10 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     private void processBucketAction(final S3Bucket bucketCommand,
                                      final AliasEnv aliasEnv,
                                      final CommandResult result) {
-        String region = amazonS3.get(aliasEnv).getRegionName();
         if (isNotBlank(bucketCommand.getCreate())) {
             logS3BucketActionInfo(CREATE_BUCKET, bucketCommand.getCreate());
             addS3BucketMetaData(CREATE_BUCKET, bucketCommand.getCreate(), result);
-            createBucket(bucketCommand.getCreate(), region, aliasEnv);
+            createBucket(bucketCommand.getCreate(), aliasEnv);
         } else if (isNotBlank(bucketCommand.getRemove())) {
             logS3BucketActionInfo(REMOVE_BUCKET, bucketCommand.getRemove());
             addS3BucketMetaData(REMOVE_BUCKET, bucketCommand.getRemove(), result);
@@ -144,24 +143,34 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         }
     }
 
-    private void createBucket(final String bucketName, final String region, final AliasEnv aliasEnv) {
-        if (amazonS3.get(aliasEnv).doesBucketExistV2(bucketName)) {
+    private void createBucket(final String bucketName, final AliasEnv aliasEnv) {
+        if (doesBucketExist(aliasEnv, bucketName)) {
             throw new DefaultFrameworkException(String.format(BUCKET_EXISTS, bucketName));
         }
-        amazonS3.get(aliasEnv).createBucket(new CreateBucketRequest(bucketName, region));
+        s3Client.get(aliasEnv).createBucket(request -> request.bucket(bucketName));
     }
 
     private void removeBucket(final AliasEnv aliasEnv, final String bucketName) {
         checkBucketExist(aliasEnv, bucketName);
-        ListObjectsV2Result listOfFiles = amazonS3.get(aliasEnv).listObjectsV2(bucketName);
-        listOfFiles.getObjectSummaries()
-                .forEach(object -> amazonS3.get(aliasEnv).deleteObject(bucketName, object.getKey()));
-        amazonS3.get(aliasEnv).deleteBucket(bucketName);
+        ListObjectsV2Response listOfFiles = s3Client.get(aliasEnv).listObjectsV2(builder -> builder.bucket(bucketName));
+        listOfFiles.contents().forEach(object -> s3Client.get(aliasEnv)
+                .deleteObject(builder -> builder.bucket(bucketName).key(object.key())));
+        s3Client.get(aliasEnv).deleteBucket(request -> request.bucket(bucketName));
     }
 
     private void checkBucketExist(final AliasEnv aliasEnv, final String bucketName) {
-        if (!amazonS3.get(aliasEnv).doesBucketExistV2(bucketName)) {
+        if (!doesBucketExist(aliasEnv, bucketName)) {
             throw new DefaultFrameworkException(String.format(BUCKET_NOT_FOUND, bucketName));
+        }
+    }
+
+    private boolean doesBucketExist(final AliasEnv aliasEnv, final String bucketName) {
+        try {
+            s3Client.get(aliasEnv).headBucket(request -> request.bucket(bucketName));
+            return true;
+        }
+        catch (final NoSuchBucketException exception) {
+            return false;
         }
     }
 
@@ -193,7 +202,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         File file = FileSearcher.searchFileFromDir(dependencies.getFile(), fileCommand.getUpload());
         result.put(FILE_NAME, fileCommand.getUpload());
         checkBucketExist(aliasEnv, bucketName);
-        amazonS3.get(aliasEnv).putObject(bucketName, key, file);
+        s3Client.get(aliasEnv).putObject(builder -> builder.bucket(bucketName).key(key), file.toPath());
     }
 
     private void processDownloadFileAction(final S3File fileCommand,
@@ -238,17 +247,27 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                                 final AliasEnv aliasEnv) {
         try {
             checkBucketFileExists(bucketName, key, aliasEnv);
-            S3Object s3Object = amazonS3.get(aliasEnv).getObject(bucketName, key);
-            return IOUtils.toString(s3Object.getObjectContent(), StandardCharsets.UTF_8);
-        } catch (AmazonS3Exception e) {
+            ResponseInputStream<GetObjectResponse> s3Object = s3Client.get(aliasEnv)
+                    .getObject(builder ->  builder.bucket(bucketName).key(key));
+            return IOUtils.toString(s3Object, StandardCharsets.UTF_8);
+        } catch (S3Exception e) {
             throw new DefaultFrameworkException(String.format(FILE_PROCESSING_ERROR, key, bucketName));
         }
     }
 
     private void checkBucketFileExists(final String bucketName, final String key, final AliasEnv aliasEnv) {
         checkBucketExist(aliasEnv, bucketName);
-        if (!amazonS3.get(aliasEnv).doesObjectExist(bucketName, key)) {
+        if (!doesObjectExist(aliasEnv, bucketName, key)) {
             throw new DefaultFrameworkException(String.format(FILE_NOT_FOUND, key, bucketName));
+        }
+    }
+
+    private boolean doesObjectExist(final AliasEnv aliasEnv, final String bucketName, final String key) {
+        try {
+            s3Client.get(aliasEnv).headObject(builder -> builder.bucket(bucketName).key(key));
+            return true;
+        } catch (S3Exception e) {
+            return false;
         }
     }
 
@@ -261,7 +280,11 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                 REMOVE_FILE, fileCommand.getBucket(), fileCommand.getKey());
         addS3FileMetaData(REMOVE_FILE, fileCommand.getBucket(), fileCommand.getKey(), result);
         checkBucketFileExists(bucketName, key, aliasEnv);
-        amazonS3.get(aliasEnv).deleteObject(bucketName, key);
+        s3Client.get(aliasEnv).deleteObject(builder ->
+                builder.bucket(bucketName)
+                        .key(key)
+                        .build()
+        );
     }
 
     private CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
@@ -308,17 +331,15 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         log.info(S3_FILE_ACTION_INFO_LOG, action.toUpperCase(Locale.ROOT), bucket, key);
     }
 
-    private void addS3BucketMetaData(final String action,
-                                    final String bucket,
-                                    final CommandResult result) {
+    private void addS3BucketMetaData(final String action, final String bucket, final CommandResult result) {
         result.put(ACTION, action);
         result.put(BUCKET, bucket);
     }
 
     private void addS3FileMetaData(final String action,
-                                  final String bucket,
-                                  final String key,
-                                  final CommandResult result) {
+                                   final String bucket,
+                                   final String key,
+                                   final CommandResult result) {
         addS3BucketMetaData(action, bucket, result);
         result.put(KEY, key);
     }
@@ -329,8 +350,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     }
 
     private String getFileOrDownloadValue(final S3File fileCommand) {
-        return fileCommand.getDownload().getFile() == null
-                ? fileCommand.getDownload().getValue() : fileCommand.getDownload().getFile();
+        return fileCommand.getDownload().getFile() == null ? fileCommand.getDownload().getValue() : fileCommand.getDownload().getFile();
     }
 
 }

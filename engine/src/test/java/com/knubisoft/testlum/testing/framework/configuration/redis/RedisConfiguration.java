@@ -11,9 +11,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.DefaultStringRedisConnection;
-import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.StringRedisConnection;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -27,11 +28,12 @@ public class RedisConfiguration {
 
     @Bean
     public Map<AliasEnv, StringRedisConnection> stringRedisConnection(
-            @Autowired @Qualifier("redisConnectionFactory")
-            final Map<AliasEnv, JedisConnectionFactory> redisConnectionFactory) {
+            @Autowired @Qualifier("redisConnectionFactory") final Map<AliasEnv, JedisConnectionFactory> redisConnectionFactory) {
         final Map<AliasEnv, StringRedisConnection> redisConnectionMap = new HashMap<>();
         redisConnectionFactory.forEach((aliasEnv, jedisConnectionFactory) -> {
-            RedisConnection connection = jedisConnectionFactory.getConnection();
+            jedisConnectionFactory.afterPropertiesSet();
+
+            JedisConnection connection = (JedisConnection) jedisConnectionFactory.getConnection();
             redisConnectionMap.put(aliasEnv, new DefaultStringRedisConnection(connection, new StringRedisSerializer()));
         });
         return redisConnectionMap;
@@ -41,8 +43,7 @@ public class RedisConfiguration {
     public Map<AliasEnv, JedisConnectionFactory> jedisConnectionFactory(
             final Map<AliasEnv, RedisStandaloneConfiguration> redisStandaloneConfiguration) {
         return redisStandaloneConfiguration.entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey,
-                        e -> new JedisConnectionFactory(e.getValue())));
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> createJedisConnectionFactory(e.getValue())));
     }
 
     @Bean
@@ -51,6 +52,17 @@ public class RedisConfiguration {
         GlobalTestConfigurationProvider.getIntegrations()
                 .forEach((env, integrations) -> addStandaloneConfig(integrations, env, redisConfigMap));
         return redisConfigMap;
+    }
+
+    private JedisConnectionFactory createJedisConnectionFactory(final RedisStandaloneConfiguration redisConfig) {
+        JedisClientConfiguration clientConfig = JedisClientConfiguration.builder()
+                .usePooling()
+                .build();
+
+        JedisConnectionFactory factory = new JedisConnectionFactory(redisConfig, clientConfig);
+        factory.afterPropertiesSet();
+
+        return factory;
     }
 
     private void addStandaloneConfig(final Integrations integrations,

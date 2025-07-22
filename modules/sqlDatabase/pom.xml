@@ -9,7 +9,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>testlum-sql-database</artifactId>
+    <artifactId>testlum-sqlDatabase</artifactId>
 
     <dependencies>
         <dependency>

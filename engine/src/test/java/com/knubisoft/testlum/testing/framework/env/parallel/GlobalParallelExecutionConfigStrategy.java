@@ -33,12 +33,12 @@ public class GlobalParallelExecutionConfigStrategy implements ParallelExecutionC
 
         @Override
         public int getMinimumRunnable() {
-            return parallelism;
+            return Math.max(1, parallelism / 2);
         }
 
         @Override
         public int getMaxPoolSize() {
-            return parallelism;
+            return parallelism * 2;
         }
 
         @Override

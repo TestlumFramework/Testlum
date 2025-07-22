@@ -20,8 +20,8 @@ public class TestRailSenderServiceImpl implements TestRailSenderService {
     public void sendGroupedResultsToApi(final Map<Integer, List<ScenarioResult>> groupedResults) {
         groupedResults.forEach((runId, scenarioList) -> {
             List<Map<String, Object>> results = TestRailUtil.buildBatchResults(scenarioList);
-            Map<Integer, String> screenshotOfLastUnsuccessfulStep = TestRailUtil.getScreenshotOfLastUnsuccessfulStep(scenarioList);
-            testRailApiClient.sendResultsInBatch(runId, results, screenshotOfLastUnsuccessfulStep);
+            Map<Integer, String> screenshotsOfUnsuccessfulTests = TestRailUtil.getScreenshotsOfUnsuccessfulTests(scenarioList);
+            testRailApiClient.sendResultsInBatch(runId, results, screenshotsOfUnsuccessfulTests);
         });
     }
 }

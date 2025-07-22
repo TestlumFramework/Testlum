@@ -7,6 +7,8 @@ public final class TestRailConstants {
 
     public static final String ADD_RESULTS_FOR_CASES_URL = "add_results_for_cases/";
     public static final String CREATE_NEW_TEST_RUN_URL = "add_run/";
+    public static final String GET_TEST_URL = "get_test/";
+    public static final String ADD_ATTACHMENT_TO_RESULT_URL = "add_attachment_to_result/";
 
     public static final String CASE_ID = "case_id";
     public static final String STATUS_ID = "status_id";
@@ -33,9 +35,21 @@ public final class TestRailConstants {
     public static final String LOG_TEST_RUN_CREATED = "Test Run '{}' created successfully with ID {}";
     public static final String LOG_TEST_RUN_CREATION_FAILED = "Failed to create Test Run '{}': {}";
 
+    public static final String LOG_FETCHING_TEST = "Fetching test data for Test ID: {}";
+    public static final String LOG_FETCHING_TEST_SUCCESS_RESPONSE = "TestRail response for fetching test data with Test ID {}: {}";
+    public static final String LOG_FETCHING_TEST_ERROR_RESPONSE = "Failed to get test data for Test ID: {}. Error: {}";
+
+    public static final String ATTACHMENT_KEY = "attachment";
+    public static final String ATTACHMENT_DEFAULT_FILENAME = "error_screenshot.jpg";
+    public static final String LOG_SENDING_ATTACHMENT = "Sending attachment to TestRail Result ID: {}";
+    public static final String LOG_ATTACHMENT_SUCCESS_RESPONSE = "TestRail response for attachment for Result ID {}: {}";
+    public static final String LOG_ATTACHMENT_ERROR_RESPONSE = "Failed to send screenshot to TestRail (Result ID: {}). Error: {}";
+
     public static final String COMMENT_PASSED_TEMPLATE = "Test case '%s' passed successfully.";
     public static final String COMMENT_FAILED_TEMPLATE = "Test case '%s' failed.\nFailure: %s";
 
     public static final String CASE_ID_ERROR_RESPONSE = "Failed to parse Case ID '{}' for TestRail.";
     public static final String RUN_ID_ERROR_RESPONSE = "Failed to parse Run ID '{}' for TestRail.";
+
+    public static final String ID_FETCH_ERROR_RESPONSE = "Failed to obtain field '{}' from JSON response.";
 }

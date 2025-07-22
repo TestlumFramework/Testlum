@@ -3,15 +3,19 @@ package com.knubisoft.testlum.testing.framework.testRail.impl;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl;
 import com.knubisoft.testlum.testing.framework.testRail.TestRailApiClient;
 import com.knubisoft.testlum.testing.framework.testRail.constant.TestRailConstants;
+import com.knubisoft.testlum.testing.framework.testRail.model.ResultResponseDto;
 import com.knubisoft.testlum.testing.framework.testRail.util.TestRailUtil;
 import com.knubisoft.testlum.testing.model.global_config.TestRailsApi;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Base64;
@@ -32,7 +36,8 @@ public class TestRailApiClientImpl implements TestRailApiClient {
     private final RestTemplate restTemplate;
 
     @Override
-    public void sendResultsInBatch(final int runId, final List<Map<String, Object>> results, final Map<Integer, String> screenshotOfLastUnsuccessfulStep) {
+    public void sendResultsInBatch(final int runId, final List<Map<String, Object>> results,
+                                   final Map<Integer, String> screenshotsOfUnsuccessfulTests) {
         String url = testRails.getUrl() + TestRailConstants.ADD_RESULTS_FOR_CASES_URL + runId;
         Map<String, Object> request = new HashMap<>();
         request.put(TestRailConstants.RESULTS, results);
@@ -42,11 +47,56 @@ public class TestRailApiClientImpl implements TestRailApiClient {
             log.info(TestRailConstants.LOG_SENDING_RESULTS, runId, results.size());
             var response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
             log.info(TestRailConstants.LOG_SUCCESS_RESPONSE, runId, response.getBody());
-
-//            List<Integer> resultIds = TestRailUtil.extractResultIds(response.getBody());
-
+            if (!screenshotsOfUnsuccessfulTests.isEmpty()) {
+                attachScreenshotsForFailedScenarios(response.getBody(), screenshotsOfUnsuccessfulTests);
+            }
         } catch (Exception e) {
             log.error(TestRailConstants.LOG_ERROR_RESPONSE, runId, e.getMessage(), e);
+        }
+    }
+
+    private void attachScreenshotsForFailedScenarios(final String responseBody, final Map<Integer, String> screenshotOfLastUnsuccessfulStep) {
+        List<ResultResponseDto> resultDTOs = TestRailUtil.extractResultsDTOs(responseBody);
+        for (ResultResponseDto resultDTO : resultDTOs) {
+            String getTestUrl = testRails.getUrl() + TestRailConstants.GET_TEST_URL + resultDTO.getTestId();
+            try {
+                log.info(TestRailConstants.LOG_FETCHING_TEST, resultDTO.getTestId());
+                var getTestResponse = restTemplate.exchange(getTestUrl, HttpMethod.GET, new HttpEntity<>(buildHeaders()), String.class);
+                log.info(TestRailConstants.LOG_FETCHING_TEST_SUCCESS_RESPONSE, resultDTO.getTestId(), getTestResponse.getBody());
+                Integer caseId = TestRailUtil.extractIdFieldFromJson(getTestResponse.getBody(), "case_id");
+                if(caseId != null && caseId > 0) {
+                    screenshotOfLastUnsuccessfulStep.entrySet().stream()
+                            .filter(attachmentEntry -> attachmentEntry.getKey().equals(caseId))
+                            .findFirst()
+                            .ifPresent(attachmentEntry -> sendAttachment(resultDTO.getId(), attachmentEntry));
+                }
+            } catch (Exception e){
+                log.error(TestRailConstants.LOG_FETCHING_TEST_ERROR_RESPONSE, resultDTO.getTestId(), e.getMessage(), e);
+            }
+        }
+    }
+
+    private void sendAttachment(Integer resultId, Map.Entry<Integer, String> entry) {
+        String addAttachmentUrl = testRails.getUrl() + TestRailConstants.ADD_ATTACHMENT_TO_RESULT_URL + resultId;
+        HttpHeaders httpHeaders = buildHeaders();
+        httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+        byte[] imageBytes = Base64.getDecoder().decode(entry.getValue());
+        ByteArrayResource resource = new ByteArrayResource(imageBytes) {
+            @Override
+            public String getFilename() {
+                return TestRailConstants.ATTACHMENT_DEFAULT_FILENAME;
+            }
+        };
+
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add(TestRailConstants.ATTACHMENT_KEY, resource);
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, httpHeaders);
+        try {
+            log.info(TestRailConstants.LOG_SENDING_ATTACHMENT, resource);
+            var response = restTemplate.postForEntity(addAttachmentUrl, requestEntity, String.class);
+            log.info(TestRailConstants.LOG_ATTACHMENT_SUCCESS_RESPONSE, resultId, response.getBody());
+        } catch (Exception e){
+            log.error(TestRailConstants.LOG_ATTACHMENT_ERROR_RESPONSE, resultId, e.getMessage(), e);
         }
     }
 

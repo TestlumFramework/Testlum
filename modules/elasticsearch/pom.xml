@@ -14,8 +14,10 @@
     <artifactId>testlum-elasticsearch</artifactId>
 
     <properties>
-        <elasticsearch-rest-client.version>7.13.1</elasticsearch-rest-client.version>
-        <elasticsearch-rest-high-level-client.version>7.13.1</elasticsearch-rest-high-level-client.version>
+        <elasticsearch-rest-client.version>7.17.28</elasticsearch-rest-client.version>
+        <elasticsearch-rest-high-level-client.version>7.17.28</elasticsearch-rest-high-level-client.version>
+        <log4j-api.version>2.24.3</log4j-api.version>
+        <log4j-core.version>2.24.3</log4j-core.version>
     </properties>
 
     <dependencies>
@@ -71,6 +73,18 @@
                     <artifactId>snakeyaml</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j-api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j-core.version}</version>
         </dependency>
     </dependencies>
 </project>

@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.configuration.elasticsearch;
 
-import com.amazonaws.auth.AWS4Signer;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnElasticEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
@@ -17,6 +16,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import software.amazon.awssdk.http.auth.aws.signer.AwsV4HttpSigner;
 
 import java.util.HashMap;
 import java.util.List;
@@ -129,27 +129,24 @@ public class ElasticsearchConfiguration {
     }
 
     @Bean
-    public Map<AliasEnv, AWS4Signer> aws4Signer() {
-        Map<AliasEnv, AWS4Signer> signerMap = new HashMap<>();
+    public Map<AliasEnv, AwsV4HttpSigner> aws4Signer() {
+        Map<AliasEnv, AwsV4HttpSigner> signerMap = new HashMap<>();
         elasticsearchMap.forEach((env, elasticsearchList) -> addAWS4Signer(elasticsearchList, env, signerMap));
         return signerMap;
     }
 
     private void addAWS4Signer(final List<Elasticsearch> elasticsearchList,
                                final String env,
-                               final Map<AliasEnv, AWS4Signer> signerMap) {
+                               final Map<AliasEnv, AwsV4HttpSigner> signerMap) {
         for (Elasticsearch elasticsearch : elasticsearchList) {
             if (elasticsearch.isEnabled()) {
-                AWS4Signer signer = createAWS4Signer(elasticsearch);
+                AwsV4HttpSigner signer = createAWS4Signer(elasticsearch);
                 signerMap.put(new AliasEnv(elasticsearch.getAlias(), env), signer);
             }
         }
     }
 
-    private AWS4Signer createAWS4Signer(final Elasticsearch elasticsearch) {
-        AWS4Signer signer = new AWS4Signer();
-        signer.setServiceName(elasticsearch.getServiceName());
-        signer.setRegionName(elasticsearch.getRegion());
-        return signer;
+    private AwsV4HttpSigner createAWS4Signer(final Elasticsearch elasticsearch) {
+        return AwsV4HttpSigner.create();
     }
 }

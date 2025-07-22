@@ -14,7 +14,7 @@
     <artifactId>testlum-rabbit</artifactId>
 
     <properties>
-        <spring-rabbit.version>2.3.6</spring-rabbit.version>
+        <spring-rabbit.version>3.2.5</spring-rabbit.version>
     </properties>
 
     <dependencies>

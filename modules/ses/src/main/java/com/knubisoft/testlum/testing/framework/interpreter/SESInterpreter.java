@@ -1,12 +1,5 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-import com.amazonaws.services.simpleemail.model.Body;
-import com.amazonaws.services.simpleemail.model.Content;
-import com.amazonaws.services.simpleemail.model.Destination;
-import com.amazonaws.services.simpleemail.model.Message;
-import com.amazonaws.services.simpleemail.model.SendEmailRequest;
-import com.amazonaws.services.simpleemail.model.VerifyEmailAddressRequest;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -18,6 +11,13 @@ import com.knubisoft.testlum.testing.model.scenario.SesMessage;
 import com.knubisoft.testlum.testing.model.scenario.SesTextContent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import software.amazon.awssdk.services.ses.SesClient;
+import software.amazon.awssdk.services.ses.model.Body;
+import software.amazon.awssdk.services.ses.model.Content;
+import software.amazon.awssdk.services.ses.model.Destination;
+import software.amazon.awssdk.services.ses.model.Message;
+import software.amazon.awssdk.services.ses.model.SendEmailRequest;
+import software.amazon.awssdk.services.ses.model.VerifyEmailAddressRequest;
 
 import java.util.Map;
 
@@ -45,7 +45,7 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
     private static final String REGEX_NEW_LINE = "[\\r\\n]";
 
     @Autowired(required = false)
-    private Map<AliasEnv, AmazonSimpleEmailService> amazonSimpleEmailService;
+    private Map<AliasEnv, SesClient> sesClient;
 
     public SESInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
@@ -63,49 +63,55 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
 
     private void verify(final Ses ses, final AliasEnv aliasEnv) {
         VerifyEmailAddressRequest verifyEmailAddressRequest = createVerifyEmailAddress(ses);
-        amazonSimpleEmailService.get(aliasEnv).verifyEmailAddress(verifyEmailAddressRequest);
+        sesClient.get(aliasEnv).verifyEmailAddress(verifyEmailAddressRequest);
     }
 
     private void sendEmail(final Ses ses, final AliasEnv aliasEnv) {
         SendEmailRequest sendEmailRequest = createSendEmailRequest(ses);
-        logSESMessage(sendEmailRequest.getMessage());
-        amazonSimpleEmailService.get(aliasEnv).sendEmail(sendEmailRequest);
+        logSESMessage(sendEmailRequest.message());
+        sesClient.get(aliasEnv).sendEmail(sendEmailRequest);
     }
 
     private VerifyEmailAddressRequest createVerifyEmailAddress(final Ses ses) {
-        return new VerifyEmailAddressRequest()
-                .withEmailAddress(ses.getSource());
+        return VerifyEmailAddressRequest.builder()
+                .emailAddress(ses.getSource())
+                .build();
     }
 
     private SendEmailRequest createSendEmailRequest(final Ses ses) {
-        return new SendEmailRequest()
-                .withDestination(createDestination(ses))
-                .withMessage(createMessage(ses))
-                .withSource(ses.getSource());
+        return SendEmailRequest.builder()
+                .destination(createDestination(ses))
+                .message(createMessage(ses))
+                .source(ses.getSource())
+                .build();
     }
 
     private Destination createDestination(final Ses ses) {
-        return new Destination()
-                .withToAddresses(ses.getDestination());
+        return Destination.builder()
+                .toAddresses(ses.getDestination())
+                .build();
     }
 
     private Message createMessage(final Ses ses) {
         SesMessage message = ses.getMessage();
-        return new Message()
-                .withBody(createBody(message.getBody()))
-                .withSubject(createContent(message.getSubject()));
+        return Message.builder()
+                .body(createBody(message.getBody()))
+                .subject(createContent(message.getSubject()))
+                .build();
     }
 
     private Body createBody(final SesBody body) {
-        return new Body()
-                .withHtml(createContent(body.getHtml()))
-                .withText(createContent(body.getText()));
+        return Body.builder()
+                .html(createContent(body.getHtml()))
+                .text(createContent(body.getText()))
+                .build();
     }
 
     private Content createContent(final SesTextContent textContent) {
-        return new Content()
-                .withCharset(textContent.getCharset())
-                .withData(textContent.getValue());
+        return Content.builder()
+                .charset(textContent.getCharset())
+                .data(textContent.getValue())
+                .build();
     }
 
     private void logSesInfo(final Ses ses) {
@@ -127,9 +133,9 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
 
     private void logSESMessage(final Message sesMessage) {
         StringBuilder message = new StringBuilder();
-        if (nonNull(sesMessage.getBody())) {
-            appendBodyContentIfNotBlank(sesMessage.getBody().getHtml().getData(), "HTML", message);
-            appendBodyContentIfNotBlank(sesMessage.getBody().getText().getData(), "Text", message);
+        if (nonNull(sesMessage.body())) {
+            appendBodyContentIfNotBlank(sesMessage.body().html().data(), "HTML", message);
+            appendBodyContentIfNotBlank(sesMessage.body().text().data(), "Text", message);
         } else {
             message.append("Message body is empty");
         }

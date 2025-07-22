@@ -1,8 +1,5 @@
 package com.knubisoft.testlum.testing.framework.db.s3;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnS3EnabledCondition;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.Source;
@@ -12,6 +9,8 @@ import com.knubisoft.testlum.testing.model.global_config.S3;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 
 import java.util.Map;
 import java.util.Objects;
@@ -20,10 +19,10 @@ import java.util.Objects;
 @Component
 public class S3Operation extends AbstractStorageOperation {
 
-    private final Map<AliasEnv, AmazonS3> amazonS3;
+    private final Map<AliasEnv, S3Client> s3Client;
 
-    public S3Operation(@Autowired(required = false) final Map<AliasEnv, AmazonS3> amazonS3) {
-        this.amazonS3 = amazonS3;
+    public S3Operation(@Autowired(required = false) final Map<AliasEnv, S3Client> s3Client) {
+        this.s3Client = s3Client;
     }
 
     @Override
@@ -33,22 +32,21 @@ public class S3Operation extends AbstractStorageOperation {
 
     @Override
     public void clearSystem() {
-        this.amazonS3.forEach((aliasEnv, amazonS3) -> {
+        this.s3Client.forEach((aliasEnv, amazonS3) -> {
             if (isTruncate(S3.class, aliasEnv) && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
-                amazonS3.listBuckets().forEach(bucket -> {
-                    ListObjectsV2Result objectsInBucket = amazonS3.listObjectsV2(bucket.getName());
-                    this.deleteObjectsInBucket(amazonS3, objectsInBucket, bucket.getName());
-                    amazonS3.deleteBucket(bucket.getName());
+                amazonS3.listBuckets().buckets().forEach(bucket -> {
+                    ListObjectsV2Response objectsInBucket = amazonS3.listObjectsV2(builder -> builder.bucket(bucket.name()));
+                    this.deleteObjectsInBucket(amazonS3, objectsInBucket, bucket.name());
+                    amazonS3.deleteBucket(builder -> builder.bucket(bucket.name()));
                 });
             }
         });
     }
 
-    private void deleteObjectsInBucket(final AmazonS3 amazonS3,
-                                       final ListObjectsV2Result objectsInBucket,
+    private void deleteObjectsInBucket(final S3Client amazonS3,
+                                       final ListObjectsV2Response objectsInBucket,
                                        final String bucketName) {
-        for (final S3ObjectSummary objectSummary : objectsInBucket.getObjectSummaries()) {
-            amazonS3.deleteObject(bucketName, objectSummary.getKey());
-        }
+        objectsInBucket.contents().forEach(object -> amazonS3
+                .deleteObject(builder -> builder.bucket(bucketName).key(object.key())));
     }
 }

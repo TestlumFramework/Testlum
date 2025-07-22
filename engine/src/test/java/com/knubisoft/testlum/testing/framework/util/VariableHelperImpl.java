@@ -109,7 +109,7 @@ public class VariableHelperImpl implements VariableHelper {
     }
 
     private String generateStringByRegexp(final FromRandomGenerate randomGenerate) {
-        RgxGen rgxGen = new RgxGen(randomGenerate.getRandomRegexp().getPattern());
+        RgxGen rgxGen = RgxGen.parse(randomGenerate.getRandomRegexp().getPattern());
         int requiredLength = randomGenerate.getLength();
         StringBuilder randomString = new StringBuilder();
         while (randomString.length() < requiredLength) {

@@ -14,8 +14,8 @@
     <artifactId>testlum-variable-util</artifactId>
 
     <properties>
-        <com.github.curious-odd-man.rgxgen.version>1.4</com.github.curious-odd-man.rgxgen.version>
-        <com.jayway.json-path.version>2.5.0</com.jayway.json-path.version>
+        <com.github.curious-odd-man.rgxgen.version>3.0</com.github.curious-odd-man.rgxgen.version>
+        <com.jayway.json-path.version>2.9.0</com.jayway.json-path.version>
     </properties>
 
     <dependencies>

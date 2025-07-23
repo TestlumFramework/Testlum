@@ -1129,6 +1129,12 @@
 
         <dependency>
             <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-websocket</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
             <artifactId>testlum-auth</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -1524,12 +1530,6 @@
                 <dependency>
                     <groupId>com.knubisoft</groupId>
                     <artifactId>testlum-lambda</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-websocket</artifactId>
                     <version>${project.version}</version>
                 </dependency>
 

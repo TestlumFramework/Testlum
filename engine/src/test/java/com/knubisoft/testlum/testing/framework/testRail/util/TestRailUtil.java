@@ -2,6 +2,7 @@ package com.knubisoft.testlum.testing.framework.testRail.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.testRail.constant.TestRailConstants;
@@ -19,9 +20,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ERROR_ON_PARSING_JSON;
+
 @Slf4j
 @UtilityClass
 public class TestRailUtil {
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public List<ScenarioResult> getScenarioWithTestRailIntegrations(final List<ScenarioResult> allScenarioResults) {
         return allScenarioResults.stream()
@@ -33,6 +38,101 @@ public class TestRailUtil {
         Map<Integer, List<ScenarioResult>> withRunId = getAllScenarioWithRunId(scenarioResults);
         List<ScenarioResult> withoutRunId = getAllScenarioWithoutRunId(scenarioResults);
         return new GroupedScenarios(withRunId, withoutRunId);
+    }
+
+    public List<Map<String, Object>> buildBatchResults(final List<ScenarioResult> scenarioList) {
+        return scenarioList.stream()
+                .map(scenarioResult -> {
+                    Map<String, Object> result = new HashMap<>();
+                    result.put(TestRailConstants.CASE_ID, scenarioResult.getOverview().getTestRails().getTestCaseId());
+                    result.put(TestRailConstants.STATUS_ID, determineStatus(scenarioResult));
+                    result.put(TestRailConstants.COMMENT, generateComment(scenarioResult));
+                    return result;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<Integer> extractCaseIds(List<ScenarioResult> scenarioResults) {
+        return scenarioResults.stream()
+                .map(scenarioResult -> scenarioResult.getOverview().getTestRails().getTestCaseId())
+                .filter(id -> parseId(id, "caseId"))
+                .map(Integer::parseInt)
+                .filter(caseId -> caseId > 0)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public Map<String, Object> buildCreateTestRunRequest(final TestRailReports testRails,
+                                                                final List<Integer> caseIds) {
+        Map<String, Object> request = new HashMap<>();
+        request.put(TestRailConstants.RUN_NAME, testRails.getDefaultRunName());
+        request.put(TestRailConstants.RUN_DESCRIPTION, testRails.getDefaultRunDescription());
+        request.put(TestRailConstants.RUN_INCLUDE_ALL, false);
+        request.put(TestRailConstants.RUN_CASE_IDS, caseIds);
+        return request;
+    }
+
+    public Map<Integer, String> getScreenshotsOfUnsuccessfulTests(final List<ScenarioResult> scenarioResults) {
+        Map<Integer, String> caseIdAttachmentsMap = new HashMap<>();
+        scenarioResults.forEach(scenarioResult -> {
+            String screenshotOfLastUnsuccessfulCommand = getScreenshotOfLastUnsuccessfulCommand(scenarioResult);
+            if (screenshotOfLastUnsuccessfulCommand != null) {
+                caseIdAttachmentsMap.put(
+                        Integer.parseInt(scenarioResult.getOverview().getTestRails().getTestCaseId()),
+                        screenshotOfLastUnsuccessfulCommand
+                );
+            }
+        });
+        return caseIdAttachmentsMap;
+    }
+
+    public List<ResultResponseDto> extractResultsDTOs(String jsonResponse) {
+        List<ResultResponseDto> results = new ArrayList<>();
+        try {
+            JsonNode root = OBJECT_MAPPER.readTree(jsonResponse);
+            if (root.isArray()) {
+                for (JsonNode resultNode : root) {
+                    ResultResponseDto resultDto = ResultResponseDto.builder()
+                            .id(resultNode.get("id").asInt())
+                            .testId(resultNode.get("test_id").asInt())
+                            .statusId(resultNode.get("status_id").asInt())
+                            .build();
+                    results.add(resultDto);
+                }
+            }
+        } catch (Exception e) {
+            throw new DefaultFrameworkException(ERROR_ON_PARSING_JSON, e);
+        }
+
+        return results;
+    }
+
+    public Integer extractIdFieldFromJson(String jsonResponse, String idField) {
+        try {
+            JsonNode root = OBJECT_MAPPER.readTree(jsonResponse);
+            if (!root.isArray()) {
+                JsonNode idNode = root.get(idField);
+                if (idNode != null && idNode.isInt()) {
+                    return idNode.asInt();
+                }
+            }
+        } catch (Exception e) {
+            log.error(TestRailConstants.ID_FETCH_ERROR_RESPONSE, idField);
+            return null;
+        }
+        return null;
+    }
+
+    private Map<Integer, List<ScenarioResult>> getAllScenarioWithRunId(final List<ScenarioResult> scenarioResults) {
+        return scenarioResults.stream()
+                .filter(scenarioResult -> {
+                    Boolean enable = scenarioResult.getOverview().getTestRails().isEnable();
+                    String runId = scenarioResult.getOverview().getTestRails().getTestRailRunId();
+                    return Boolean.TRUE.equals(enable) && parseId(runId, "runId") && Integer.parseInt(runId) > 0;
+                })
+                .collect(Collectors.groupingBy(
+                        scenarioResult -> Integer.parseInt(scenarioResult.getOverview().getTestRails().getTestRailRunId())
+                ));
     }
 
     private List<ScenarioResult> getAllScenarioWithoutRunId(final List<ScenarioResult> scenarioResults) {
@@ -49,48 +149,25 @@ public class TestRailUtil {
                 .collect(Collectors.toList());
     }
 
-    public List<Integer> extractCaseIds(List<ScenarioResult> scenarioResults) {
-        return scenarioResults.stream()
-                .map(scenarioResult -> scenarioResult.getOverview().getTestRails().getTestCaseId())
-                .filter(id -> parseId(id, "caseId"))
-                .map(Integer::parseInt)
-                .filter(caseId -> caseId > 0)
-                .distinct()
-                .collect(Collectors.toList());
+    private boolean parseId(final String idStr, final String idType) {
+        if (NumberUtils.isParsable(idStr)) {
+            return Boolean.TRUE;
+        } else {
+            String idLogError = "caseId".equalsIgnoreCase(idType)
+                    ? TestRailConstants.CASE_ID_ERROR_RESPONSE
+                    : TestRailConstants.RUN_ID_ERROR_RESPONSE;
+            log.error(idLogError, idStr);
+            return Boolean.FALSE;
+        }
     }
 
-
-    private Map<Integer, List<ScenarioResult>> getAllScenarioWithRunId(final List<ScenarioResult> scenarioResults) {
-        return scenarioResults.stream()
-                .filter(scenarioResult -> {
-                    Boolean enable = scenarioResult.getOverview().getTestRails().isEnable();
-                    String runId = scenarioResult.getOverview().getTestRails().getTestRailRunId();
-                    return Boolean.TRUE.equals(enable) && parseId(runId, "runId") && Integer.parseInt(runId) > 0;
-                })
-                .collect(Collectors.groupingBy(
-                        scenarioResult -> Integer.parseInt(scenarioResult.getOverview().getTestRails().getTestRailRunId())
-                ));
-    }
-
-    public static List<Map<String, Object>> buildBatchResults(final List<ScenarioResult> scenarioList) {
-        return scenarioList.stream()
-                .map(scenarioResult -> {
-                    Map<String, Object> result = new HashMap<>();
-                    result.put(TestRailConstants.CASE_ID, scenarioResult.getOverview().getTestRails().getTestCaseId());
-                    result.put(TestRailConstants.STATUS_ID, determineStatus(scenarioResult));
-                    result.put(TestRailConstants.COMMENT, generateComment(scenarioResult));
-                    return result;
-                })
-                .collect(Collectors.toList());
-    }
-
-    private static int determineStatus(final ScenarioResult scenarioResult) {
+    private int determineStatus(final ScenarioResult scenarioResult) {
         return scenarioResult.isSuccess()
                 ? TestRailConstants.STATUS_PASSED
                 : TestRailConstants.STATUS_FAILED;
     }
 
-    private static String generateComment(final ScenarioResult scenarioResult) {
+    private String generateComment(final ScenarioResult scenarioResult) {
         String scenarioName = scenarioResult.getOverview().getName();
         String cause = scenarioResult.getCause();
 
@@ -99,48 +176,13 @@ public class TestRailUtil {
                 : String.format(TestRailConstants.COMMENT_PASSED_TEMPLATE, scenarioName);
     }
 
-    public static Map<String, Object> buildCreateTestRunRequest(final TestRailReports testRails,
-                                                                final List<Integer> caseIds) {
-        Map<String, Object> request = new HashMap<>();
-        request.put(TestRailConstants.RUN_NAME, testRails.getDefaultRunName());
-        request.put(TestRailConstants.RUN_DESCRIPTION, testRails.getDefaultRunDescription());
-        request.put(TestRailConstants.RUN_INCLUDE_ALL, false);
-        request.put(TestRailConstants.RUN_CASE_IDS, caseIds);
-        return request;
-    }
-
-    private boolean parseId(final String idStr, final String idType) {
-        if (NumberUtils.isParsable(idStr)) {
-            return Boolean.TRUE;
-        } else {
-            String idLogError = idType.equalsIgnoreCase("caseId") ? TestRailConstants.CASE_ID_ERROR_RESPONSE
-                    : TestRailConstants.RUN_ID_ERROR_RESPONSE;
-            log.error(idLogError, idStr);
-            return Boolean.FALSE;
-        }
-    }
-
-    public static Map<Integer, String> getScreenshotsOfUnsuccessfulTests(final List<ScenarioResult> scenarioResults) {
-        Map<Integer, String> caseIdAttachmentsMap = new HashMap<>();
-        scenarioResults.forEach(scenarioResult -> {
-            String screenshotOfLastUnsuccessfulCommand = getScreenshotOfLastUnsuccessfulCommand(scenarioResult);
-            if (screenshotOfLastUnsuccessfulCommand != null) {
-                caseIdAttachmentsMap.put(
-                        Integer.parseInt(scenarioResult.getOverview().getTestRails().getTestCaseId()),
-                        screenshotOfLastUnsuccessfulCommand
-                );
-            }
-        });
-        return caseIdAttachmentsMap;
-    }
-
-    private static String getScreenshotOfLastUnsuccessfulCommand(final ScenarioResult scenarioResult) {
+    private String getScreenshotOfLastUnsuccessfulCommand(final ScenarioResult scenarioResult) {
         List<CommandResult> result = new ArrayList<>();
         scenarioResult.getCommands().forEach(c -> collectUnsuccessfulCommandsRecursive(c, result));
         return result.isEmpty() ? null : result.get(result.size() - 1).getBase64Screenshot();
     }
 
-    private static void collectUnsuccessfulCommandsRecursive(CommandResult command, List<CommandResult> result) {
+    private void collectUnsuccessfulCommandsRecursive(CommandResult command, List<CommandResult> result) {
         if (command == null) {
             return;
         }
@@ -152,43 +194,5 @@ public class TestRailUtil {
                 collectUnsuccessfulCommandsRecursive(subCommand, result);
             }
         }
-    }
-
-    public static List<ResultResponseDto> extractResultsDTOs(String jsonResponse) {
-        List<ResultResponseDto> results = new ArrayList<>();
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            JsonNode root = mapper.readTree(jsonResponse);
-            if (root.isArray()) {
-                for (JsonNode resultNode : root) {
-                    ResultResponseDto resultDto = new ResultResponseDto();
-                    resultDto.setId(resultNode.get("id").asInt());
-                    resultDto.setTestId(resultNode.get("test_id").asInt());
-                    resultDto.setStatusId(resultNode.get("status_id").asInt());
-                    results.add(resultDto);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return results;
-    }
-
-    public static Integer extractIdFieldFromJson(String jsonResponse, String idField) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            JsonNode root = mapper.readTree(jsonResponse);
-            if (!root.isArray()) {
-                JsonNode idNode = root.get(idField);
-                if (idNode != null && idNode.isInt()) {
-                    return idNode.asInt();
-                }
-            }
-        } catch (Exception e) {
-            log.error(TestRailConstants.ID_FETCH_ERROR_RESPONSE, idField);
-            return null;
-        }
-        return null;
     }
 }

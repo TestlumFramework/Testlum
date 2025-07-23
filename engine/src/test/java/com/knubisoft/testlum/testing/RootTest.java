@@ -76,9 +76,6 @@ public class RootTest {
     @Autowired
     private ConnectionManager connectionManager;
 
-    @Autowired
-    private TestRailService testRailService;
-
     @BeforeAll
     public void beforeAll() throws Exception {
         prepareTestInstance();
@@ -143,13 +140,5 @@ public class RootTest {
     public void afterAll() {
         connectionManager.closeConnections();
         reportGenerator.generateReport(globalScenarioStatCollector);
-        TestRailReports testRailsReportsSettings = GlobalTestConfigurationProvider.provide().getReport().getExtentReports().getTestRailReports();
-        if (Objects.nonNull(testRailsReportsSettings) && testRailsReportsSettings.isEnabled()) {
-            List<ScenarioResult> testRailScenarios =
-                    TestRailUtil.getScenarioWithTestRailIntegrations(globalScenarioStatCollector.getResults());
-            if (!testRailScenarios.isEmpty()) {
-                testRailService.sendTestResultToTestRail(testRailScenarios);
-            }
-        }
     }
 }

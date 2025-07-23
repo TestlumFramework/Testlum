@@ -6,18 +6,22 @@ import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.markuputils.ExtentColor;
 import com.aventstack.extentreports.markuputils.MarkupHelper;
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.report.extentreports.model.ResultForComparison;
+import com.knubisoft.testlum.testing.framework.testRail.TestRailService;
+import com.knubisoft.testlum.testing.framework.testRail.util.TestRailUtil;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.testlum.testing.model.global_config.AbstractCapabilities;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
+import com.knubisoft.testlum.testing.model.global_config.TestRailReports;
 import com.knubisoft.testlum.testing.model.scenario.Overview;
 import lombok.SneakyThrows;
 import org.apache.commons.collections.CollectionUtils;
@@ -27,6 +31,7 @@ import java.lang.reflect.Field;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static java.lang.String.format;
@@ -73,6 +78,8 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private static final String STEP_EXECUTION_TIME_TEMPLATE = "Step execution time: %dms";
     private static final int SKIP_LEVEL = 15;
 
+    private TestRailService testRailService;
+
     @Override
     public void generateReport(final GlobalScenarioStatCollector globalScenarioStatCollector) {
         ExtentReports extentReports = new ExtentReports();
@@ -82,6 +89,8 @@ public class ExtentReportsGenerator implements ReportGenerator {
                 .sorted(Comparator.comparing(ScenarioResult::getId))
                 .forEach(scenarioExecutionResult -> addScenarioExecutionResult(extentReports, scenarioExecutionResult));
         extentReports.flush();
+
+        generateTestRailReportsIfRequired(globalScenarioStatCollector);
     }
 
     private void addScenarioExecutionResult(final ExtentReports extentReports, final ScenarioResult scenarioResult) {
@@ -94,6 +103,17 @@ public class ExtentReportsGenerator implements ReportGenerator {
         addNativeDeviceInfo(extentTest, scenarioResult);
         addScenarioSteps(extentTest, scenarioResult.getCommands());
         setExecutionResult(extentTest, scenarioResult);
+    }
+
+    private void generateTestRailReportsIfRequired(GlobalScenarioStatCollector globalScenarioStatCollector) {
+        TestRailReports testRailsReportsSettings = ConfigProviderImpl.GlobalTestConfigurationProvider.provide().getReport().getExtentReports().getTestRailReports();
+        if (Objects.nonNull(testRailsReportsSettings) && testRailsReportsSettings.isEnabled()) {
+            List<ScenarioResult> testRailScenarios =
+                    TestRailUtil.getScenarioWithTestRailIntegrations(globalScenarioStatCollector.getResults());
+            if (!testRailScenarios.isEmpty() && testRailService != null) {
+                testRailService.sendTestResultToTestRail(testRailScenarios);
+            }
+        }
     }
 
     private void addOverviewInfo(final ExtentTest extentTest, final Overview overview, final String filePath) {
@@ -291,5 +311,9 @@ public class ExtentReportsGenerator implements ReportGenerator {
             level.set(extentTest.getStatus(), SKIP_LEVEL);
             level.setAccessible(false);
         }
+    }
+
+    public void setTestRailService(TestRailService testRailService) {
+        this.testRailService = testRailService;
     }
 }

@@ -52,6 +52,7 @@ public class ExceptionMessage {
                                                         + "No enabled tags in runScenariosByTag configuration" + ANSI_RESET;
     public static final String NO_REPORT_GENERATOR_PRESENT = "No Report Generator is present";
     public static final String NO_REPORT_GENERATOR_ENABLED = "No Report Generator is enabled";
+    public static final String ERROR_ON_PARSING_JSON = "Error in deserialization of JSON content";
 
     // scenario validation
     public static final String INTEGRATION_NOT_FOUND = "Cannot find integration configuration for <%s>";

@@ -186,7 +186,7 @@ public class WebDriverFactory {
         private FirefoxOptions getFirefoxOptions(final Firefox browser) {
             FirefoxOptions firefoxOptions = new FirefoxOptions();
             if (browser.isHeadlessMode()) {
-                firefoxOptions.addArguments("--headless=new");
+                firefoxOptions.addArguments("-headless");
             }
             BrowserOptionsArguments browserOptionsArguments = browser.getFirefoxOptionsArguments();
             if (nonNull(browserOptionsArguments)) {

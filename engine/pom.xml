@@ -1147,6 +1147,129 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-mysql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-clickhouse</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-oracle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-mongo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-dynamo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--    QUEUES    -->
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-kafka</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-rabbit</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-sqs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--    CACHE AND STORAGE    -->
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-redis</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-s3</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--    MESSAGES AND MAILING    -->
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-sendgrid</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-ses</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-smtp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-twilio</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--    API    -->
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-elasticsearch</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-graphql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-lambda</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--    TESTLUM UI PLUGINS    -->
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-native</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-mobilebrowser</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -1423,128 +1546,6 @@
             <id>professional</id>
             <dependencies>
                 <!--DATABASES-->
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-mysql</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-clickhouse</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-oracle</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-mongo</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-dynamo</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <!--    QUEUES    -->
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-kafka</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-rabbit</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-sqs</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <!--    CACHE AND STORAGE    -->
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-redis</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-s3</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <!--    MESSAGES AND MAILING    -->
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-sendgrid</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-ses</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-smtp</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-twilio</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <!--    API    -->
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-elasticsearch</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-graphql</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-lambda</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <!--    TESTLUM UI PLUGINS    -->
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-native</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-
-                <dependency>
-                    <groupId>com.knubisoft</groupId>
-                    <artifactId>testlum-mobilebrowser</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
             </dependencies>
             <build>
                 <plugins>

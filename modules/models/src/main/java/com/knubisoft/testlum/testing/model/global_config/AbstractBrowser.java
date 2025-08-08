@@ -37,7 +37,6 @@ import jakarta.xml.bind.annotation.*;
     Chrome.class,
     Firefox.class,
     Edge.class,
-    Opera.class,
     Safari.class
 })
 public abstract class AbstractBrowser {

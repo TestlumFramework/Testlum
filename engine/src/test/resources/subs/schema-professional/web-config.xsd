@@ -30,7 +30,6 @@
             <x:element name="firefox" type="tns:firefox"/>
             <x:element name="safari" type="tns:safari"/>
             <x:element name="edge" type="tns:edge"/>
-            <x:element name="opera" type="tns:opera"/>
         </x:choice>
     </x:complexType>
 
@@ -128,16 +127,6 @@
                     <x:element name="edgeOptionsArguments" type="tns:browserOptionsArguments" minOccurs="0"/>
                 </x:sequence>
                 <x:attribute name="headlessMode" type="x:boolean" use="required"/>
-            </x:extension>
-        </x:complexContent>
-    </x:complexType>
-
-    <x:complexType name="opera">
-        <x:complexContent>
-            <x:extension base="tns:abstractBrowser">
-                <x:sequence>
-                    <x:element name="operaOptionsArguments" type="tns:browserOptionsArguments" minOccurs="0"/>
-                </x:sequence>
             </x:extension>
         </x:complexContent>
     </x:complexType>

@@ -534,14 +534,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Opera }
-     * 
-     */
-    public Opera createOpera() {
-        return new Opera();
-    }
-
-    /**
      * Create an instance of {@link Safari }
      * 
      */

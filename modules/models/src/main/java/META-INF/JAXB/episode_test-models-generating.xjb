@@ -216,9 +216,6 @@ Generated on: 2025.06.03 at 12:57:07 PM EEST
     <bindings scd="~tns:edge">
       <class ref="com.knubisoft.testlum.testing.model.global_config.Edge"/>
     </bindings>
-    <bindings scd="~tns:opera">
-      <class ref="com.knubisoft.testlum.testing.model.global_config.Opera"/>
-    </bindings>
     <bindings scd="~tns:safari">
       <class ref="com.knubisoft.testlum.testing.model.global_config.Safari"/>
     </bindings>

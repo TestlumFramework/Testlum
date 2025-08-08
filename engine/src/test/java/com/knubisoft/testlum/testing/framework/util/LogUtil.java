@@ -43,71 +43,7 @@ import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ALIAS_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ATTRIBUTE_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BODY_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BROWSER_NAME_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CLEAR_COOKIES_AFTER;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_SKIPPED_ON_CONDITION_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMENT_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONDITION_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_FORMAT;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONTENT_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DB_TYPE_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DRAGGING_FILE_PATH;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DRAGGING_FROM;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.DROPPING_TO;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ENDPOINT_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_FRAME;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.END_UI_COMMANDS_IN_WEBVIEW;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ERROR_SQL_QUERY;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXCEPTION_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUTION_TIME_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXPRESSION_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXTRACT_THEN_COMPARE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HIGHLIGHT_DIFFERENCE_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HOTKEY_COMMAND_TIMES;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.HTTP_METHOD_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_COMPARISON_TYPE_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_EXCLUDED_ELEMENT_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_FOR_COMPARISON_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_MATCH_PERCENTAGE_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.IMAGE_SOURCE_ATT_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.INVALID_SCENARIO_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCAL_STORAGE_KEY;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCATOR_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCATOR_STRATEGY;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILEBROWSER_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOVE_TO_EMPTY_SPACE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NAME_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NEGATIVE_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NEW_LOG_LINE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.QUERY;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REGEX_NEW_LINE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCENARIO_NUMBER_AND_PATH_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_BY_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_DIRECTION_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_LOCATOR;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SCROLL_TYPE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_FRAME;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.START_UI_COMMANDS_IN_WEBVIEW;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_DIRECTION;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_QUANTITY;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_TYPE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SWIPE_VALUE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_COMMAND;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_INDEX;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAB_URL;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TAKE_SCREENSHOT_THEN_COMPARE;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TESTS_RUN_FAILED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COMMAND_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_COMMAND_LOG_WITHOUT_POSITION;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UI_EXECUTION_TIME_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VALUE_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VARIATION_LOG;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.LAST_TAB;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.OPEN_TAB;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.WITHOUT_URL;
@@ -485,5 +421,9 @@ public class LogUtil {
     public void logAssertChecked(final AssertChecked command) {
         log.info(LOCATOR_LOG, command.getLocator());
         log.info(NEGATIVE_LOG, command.isNegative());
+    }
+
+    public static void logScenarioWithoutTags(final String scenarioPath) {
+        log.warn(SCENARIO_WITH_EMPTY_TAG_LOG, scenarioPath);
     }
 }

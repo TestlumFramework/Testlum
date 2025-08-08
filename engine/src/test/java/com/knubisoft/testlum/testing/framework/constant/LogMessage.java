@@ -56,6 +56,10 @@ public final class LogMessage {
             + NEW_LOG_LINE + format(TABLE_FORMAT, "Exception", "{}") + NEW_LOG_LINE
             + LINE + ANSI_RESET + "\n";
 
+    public static final String SCENARIO_WITH_EMPTY_TAG_LOG = ANSI_YELLOW + LINE
+                                                      + NEW_LOG_LINE + format(TABLE_FORMAT, "Scenario was skipped because of empty tag", "{}") + NEW_LOG_LINE
+                                                      + LINE + ANSI_RESET + "\n";
+
     public static final String DISABLED_CONFIGURATION = ANSI_YELLOW
             + LINE + NEW_LOG_LINE
             + "<{}> configuration not found or disabled. Scenarios that depend on this config will be invalid"

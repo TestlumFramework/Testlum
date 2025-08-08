@@ -74,6 +74,10 @@ public class ScenarioFilter {
     }
 
     private boolean isMatchesTags(final MappingResult entry, final List<String> enabledTags) {
+        if (entry.scenario.getSettings().getTags() == null) {
+            LogUtil.logScenarioWithoutTags(entry.file.getPath());
+            return false;
+        }
         List<String> scenarioTags = Arrays.asList((entry.scenario.getSettings().getTags()).split(COMMA));
         return scenarioTags.stream().anyMatch(enabledTags::contains);
     }

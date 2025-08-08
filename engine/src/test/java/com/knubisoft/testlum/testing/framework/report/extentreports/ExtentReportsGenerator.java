@@ -22,6 +22,7 @@ import com.knubisoft.testlum.testing.model.scenario.Overview;
 import lombok.SneakyThrows;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.Comparator;
@@ -87,7 +88,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private void addScenarioExecutionResult(final ExtentReports extentReports, final ScenarioResult scenarioResult) {
         ExtentTest extentTest = extentReports
                 .createTest(format(SCENARIO_NAME_TEMPLATE, scenarioResult.getId(), scenarioResult.getName()));
-        extentTest.assignCategory(scenarioResult.getTags().split(COMMA));
+        extentTest.assignCategory(evaluateCategories(scenarioResult));
         addOverviewInfo(extentTest, scenarioResult.getOverview(), scenarioResult.getPath());
         addBrowserInfo(extentTest, scenarioResult);
         addMobilebrowserDeviceInfo(extentTest, scenarioResult);
@@ -291,5 +292,15 @@ public class ExtentReportsGenerator implements ReportGenerator {
             level.set(extentTest.getStatus(), SKIP_LEVEL);
             level.setAccessible(false);
         }
+    }
+
+    private String[] evaluateCategories(final ScenarioResult scenarioResult) {
+        String[] categories;
+        if (scenarioResult.getTags() == null) {
+            categories = new String[0];
+        } else {
+            categories = scenarioResult.getTags().split(COMMA);
+        }
+        return categories;
     }
 }

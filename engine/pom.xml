@@ -24,8 +24,8 @@
         <models.dir>../modules/models/src/main/java</models.dir>
         <professional-subs-pack>${project.basedir}/src/test/resources/subs/schema-professional</professional-subs-pack>
 
-        <selenium-java.version>4.33.0</selenium-java.version>
-        <appium-client.version>9.4.0</appium-client.version>
+        <selenium-java.version>4.34.0</selenium-java.version>
+        <appium-client.version>9.5.0</appium-client.version>
         <webdrivermanager.version>6.2.0</webdrivermanager.version>
         <org.spring.boot.version>3.5.1</org.spring.boot.version>
         <org.spring.version>6.2.8</org.spring.version>

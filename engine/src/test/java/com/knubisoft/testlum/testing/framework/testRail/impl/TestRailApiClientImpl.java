@@ -47,7 +47,7 @@ public class TestRailApiClientImpl implements TestRailApiClient {
             log.info(TestRailConstants.LOG_SENDING_RESULTS, runId, results.size());
             var response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
             log.info(TestRailConstants.LOG_SUCCESS_RESPONSE, runId, response.getBody());
-            if (!screenshotsOfUnsuccessfulTests.isEmpty()) {
+            if (screenshotsEnabled() && !screenshotsOfUnsuccessfulTests.isEmpty()) {
                 attachScreenshotsForFailedScenarios(response.getBody(), screenshotsOfUnsuccessfulTests);
             }
         } catch (Exception e) {
@@ -58,6 +58,9 @@ public class TestRailApiClientImpl implements TestRailApiClient {
     private void attachScreenshotsForFailedScenarios(final String responseBody, final Map<Integer, String> screenshotOfLastUnsuccessfulStep) {
         List<ResultResponseDto> resultDTOs = TestRailUtil.extractResultsDTOs(responseBody);
         for (ResultResponseDto resultDTO : resultDTOs) {
+            if (resultDTO.getStatusId() != TestRailConstants.STATUS_FAILED) {
+                continue;
+            }
             String getTestUrl = testRails.getUrl() + TestRailConstants.GET_TEST_URL + resultDTO.getTestId();
             try {
                 log.info(TestRailConstants.LOG_FETCHING_TEST, resultDTO.getTestId());
@@ -131,5 +134,15 @@ public class TestRailApiClientImpl implements TestRailApiClient {
                 TestRailConstants.AUTH_BASIC_PREFIX + encodedAuth);
 
         return headers;
+    }
+
+    private boolean screenshotsEnabled() {
+        try {
+            return testRails != null
+                    && testRails.isEnabled()
+                    && testRails.isAddScreenshotForFailure();
+        } catch (Throwable t) {
+            return false;
+        }
     }
 }

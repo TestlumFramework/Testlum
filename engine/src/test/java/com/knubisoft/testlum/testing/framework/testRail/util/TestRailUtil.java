@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ERROR_ON_PARSING_JSON;
@@ -27,6 +28,12 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 public class TestRailUtil {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final Pattern EX_PREFIX = Pattern.compile(
+            "^(?:(?:[\\p{Alpha}_$][\\w$]*\\.)*[\\p{Alpha}_$][\\w$]*(?:Exception|Error|Failure|Throwable)\\s*:\\s*)+"
+    );
+    private static final Pattern STACK_TRACE_LINE = Pattern.compile(
+            "(?m)^\\s*(?:at\\s+.+|Suppressed:\\s+.+|\\.\\.\\.\\s+\\d+\\s+more)\\s*$"
+    );
 
     public List<ScenarioResult> getScenarioWithTestRailIntegrations(final List<ScenarioResult> allScenarioResults) {
         return allScenarioResults.stream()
@@ -169,9 +176,8 @@ public class TestRailUtil {
 
     private String generateComment(final ScenarioResult scenarioResult) {
         String scenarioName = scenarioResult.getOverview().getName();
-        String cause = scenarioResult.getCause();
-
-        return (cause != null && !cause.isEmpty())
+        String cause = sanitizeFailureMessage(scenarioResult.getCause());
+        return StringUtils.isNotBlank(cause)
                 ? String.format(TestRailConstants.COMMENT_FAILED_TEMPLATE, scenarioName, cause)
                 : String.format(TestRailConstants.COMMENT_PASSED_TEMPLATE, scenarioName);
     }
@@ -194,5 +200,22 @@ public class TestRailUtil {
                 collectUnsuccessfulCommandsRecursive(subCommand, result);
             }
         }
+    }
+
+    private static String sanitizeFailureMessage(final String cause) {
+        if (StringUtils.isBlank(cause)) return "";
+
+        String msg = cause.replace('\r', '\n');
+
+        int idx = msg.lastIndexOf("Caused by:");
+        if (idx >= 0) {
+            msg = msg.substring(idx + "Caused by:".length()).trim();
+        }
+
+        msg = STACK_TRACE_LINE.matcher(msg).replaceAll("");
+        msg = EX_PREFIX.matcher(msg).replaceFirst("");
+        msg = msg.replace('\n', ' ').replaceAll("\\s+", " ").trim();
+
+        return msg;
     }
 }

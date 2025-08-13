@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="defaultRunDescription" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *       &lt;attribute name="addScreenshotForFailure" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false"/&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -55,6 +56,8 @@ public class TestRailReports {
     protected String defaultRunDescription;
     @XmlAttribute(name = "enabled")
     protected Boolean enabled;
+    @XmlAttribute(name = "addScreenshotForFailure")
+    protected Boolean addScreenshotForFailure;
 
     /**
      * Gets the value of the username property.
@@ -226,6 +229,34 @@ public class TestRailReports {
      */
     public void setEnabled(Boolean value) {
         this.enabled = value;
+    }
+
+    /**
+     * Gets the value of the addScreenshotForFailure property.
+     *
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *
+     */
+    public boolean isAddScreenshotForFailure() {
+        if (addScreenshotForFailure == null) {
+            return false;
+        } else {
+            return addScreenshotForFailure;
+        }
+    }
+
+    /**
+     * Sets the value of the addScreenshotForFailure property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *
+     */
+    public void setAddScreenshotForFailure(Boolean value) {
+        this.addScreenshotForFailure = value;
     }
 
 }

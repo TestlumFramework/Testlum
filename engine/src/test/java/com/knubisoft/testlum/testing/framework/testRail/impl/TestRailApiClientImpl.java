@@ -137,12 +137,8 @@ public class TestRailApiClientImpl implements TestRailApiClient {
     }
 
     private boolean screenshotsEnabled() {
-        try {
-            return testRails != null
+        return testRails != null
                     && testRails.isEnabled()
                     && testRails.isAddScreenshotForFailure();
-        } catch (Throwable t) {
-            return false;
-        }
     }
 }

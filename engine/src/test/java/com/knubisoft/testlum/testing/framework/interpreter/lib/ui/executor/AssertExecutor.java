@@ -86,11 +86,16 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
     private void executeAttributeCommand(final AssertAttribute attribute, final CommandResult result) {
         LogUtil.logAssertAttributeInfo(attribute);
         ResultUtil.addAssertAttributeMetaData(attribute, result);
-        String actual = getActualValue(attribute, result);
-        String expected = attribute.getContent();
-        ResultUtil.setExpectedActual(expected, actual, result);
-        executeComparison(actual, expected, result, attribute.isNegative());
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        String actual;
+        try {
+            actual = getActualValue(attribute, result);
+            String expected = attribute.getContent();
+            ResultUtil.setExpectedActual(expected, actual, result);
+            executeComparison(actual, expected, result, attribute.isNegative());
+        } catch (DefaultFrameworkException exception) {
+            onException(result, exception);
+            UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        }
     }
 
     private String getActualValue(final AssertAttribute attribute, final CommandResult result) {

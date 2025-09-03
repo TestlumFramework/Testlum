@@ -43,6 +43,7 @@ public class WaitExecutor extends AbstractUiExecutor<UiWait> {
         log.info(WAIT_INFO_LOG, time, uiWait.getUnit());
         TimeUnit timeUnit = waitUtil.getTimeUnit(uiWait.getUnit());
         ResultUtil.addWaitMetaData(time, timeUnit, result);
+        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         wait(uiWait, time, timeUnit, result);
     }
 

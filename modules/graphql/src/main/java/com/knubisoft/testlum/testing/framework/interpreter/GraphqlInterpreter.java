@@ -13,14 +13,7 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProvider;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.global_config.GraphqlApi;
-import com.knubisoft.testlum.testing.model.scenario.Graphql;
-import com.knubisoft.testlum.testing.model.scenario.GraphqlBody;
-import com.knubisoft.testlum.testing.model.scenario.GraphqlGet;
-import com.knubisoft.testlum.testing.model.scenario.GraphqlPost;
-import com.knubisoft.testlum.testing.model.scenario.Header;
-import com.knubisoft.testlum.testing.model.scenario.HttpInfo;
-import com.knubisoft.testlum.testing.model.scenario.Param;
-import com.knubisoft.testlum.testing.model.scenario.Response;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -68,6 +61,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     private static final String HTTP_METHOD = "HTTP method";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
     private static final String HEADER_TEMPLATE = "%s: %s";
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     private final Map<Function<Graphql, HttpInfo>, HttpMethod> graphqlMethodMap;
 
@@ -84,11 +78,18 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     @Override
     public void acceptImpl(final Graphql o, final CommandResult result) {
         Graphql graphql = injectCommand(o);
+        checkAlias(graphql);
         GraphqlMetadata graphqlMetadata = getGraphqlMetaData(graphql);
         HttpInfo httpInfo = graphqlMetadata.httpInfo;
         HttpMethod httpMethod = graphqlMetadata.getHttpMethod();
         ApiResponse response = getActualResponse(httpInfo, httpMethod, graphql.getAlias(), result);
         compareResult(graphqlMetadata.getHttpInfo().getResponse(), response, result);
+    }
+
+    private void checkAlias(final Graphql graphql) {
+        if (graphql.getAlias() == null) {
+            graphql.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     private GraphqlMetadata getGraphqlMetaData(final Graphql graphql) {

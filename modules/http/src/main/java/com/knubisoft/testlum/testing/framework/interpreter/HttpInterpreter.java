@@ -12,12 +12,7 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProvider;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.global_config.Api;
-import com.knubisoft.testlum.testing.model.scenario.Body;
-import com.knubisoft.testlum.testing.model.scenario.Header;
-import com.knubisoft.testlum.testing.model.scenario.Http;
-import com.knubisoft.testlum.testing.model.scenario.HttpInfo;
-import com.knubisoft.testlum.testing.model.scenario.HttpInfoWithBody;
-import com.knubisoft.testlum.testing.model.scenario.Response;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -61,6 +56,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     private static final String HTTP_METHOD = "HTTP method";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
     private static final String HEADER_TEMPLATE = "%s: %s";
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired
     private ApiClient apiClient;
@@ -74,11 +70,18 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     @Override
     protected void acceptImpl(final Http o, final CommandResult result) {
         Http http = injectCommand(o);
+        checkAlias(http);
         HttpUtil.HttpMethodMetadata metadata = HttpUtil.getHttpMethodMetadata(http);
         HttpInfo httpInfo = metadata.getHttpInfo();
         HttpMethod httpMethod = metadata.getHttpMethod();
         ApiResponse actual = getActual(httpInfo, httpMethod, http.getAlias(), result);
         compareResult(httpInfo.getResponse(), actual, result);
+    }
+
+    private void checkAlias(final Http http) {
+        if (http.getAlias() == null) {
+            http.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     private void compareResult(final Response expected,

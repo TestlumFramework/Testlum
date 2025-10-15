@@ -32,6 +32,7 @@ public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
     //RESULT
     private static final String QUERIES = "Queries";
     private static final String DATABASE_ALIAS = "Database alias";
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)
     @Qualifier("postgresOperation")
@@ -44,6 +45,7 @@ public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
     @Override
     protected void acceptImpl(final Postgres o, final CommandResult result) {
         Postgres postgres = injectCommand(o);
+        checkAlias(postgres);
         String actualPostgres = getActual(postgres, result);
         CompareBuilder compare = newCompare()
                 .withActual(actualPostgres)
@@ -53,6 +55,12 @@ public class PostgresInterpreter extends AbstractInterpreter<Postgres> {
         result.setActual(StringPrettifier.asJsonResult(actualPostgres));
         compare.exec();
         setContextBody(getContextBodyKey(postgres.getFile()), actualPostgres);
+    }
+
+    private void checkAlias(final Postgres postgres) {
+        if (postgres.getAlias() == null) {
+            postgres.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     protected String getActual(final Postgres postgres, final CommandResult result) {

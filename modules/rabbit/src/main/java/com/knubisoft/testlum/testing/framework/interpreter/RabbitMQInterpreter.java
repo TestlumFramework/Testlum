@@ -9,12 +9,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.Rabbit;
-import com.knubisoft.testlum.testing.model.scenario.ReceiveRmqMessage;
-import com.knubisoft.testlum.testing.model.scenario.RmqHeader;
-import com.knubisoft.testlum.testing.model.scenario.RmqHeaders;
-import com.knubisoft.testlum.testing.model.scenario.SendRmqMessage;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -92,6 +87,8 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
 
     private static final String CORRELATION_ID = "correlationId";
 
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
+
     @Autowired(required = false)
     private Map<AliasEnv, RabbitTemplate> rabbitTemplate;
     @Autowired(required = false)
@@ -104,6 +101,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     @Override
     protected void acceptImpl(final Rabbit o, final CommandResult result) {
         Rabbit rabbit = injectCommand(o);
+        checkAlias(rabbit);
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         for (Object action : rabbit.getSendOrReceive()) {
@@ -113,6 +111,12 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
             processEachAction(action, rabbit.getAlias(), commandResult);
         }
         setExecutionResultIfSubCommandsFailed(result);
+    }
+
+    private void checkAlias(final Rabbit rabbit) {
+        if (rabbit.getAlias() == null) {
+            rabbit.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     private void processEachAction(final Object action,

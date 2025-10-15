@@ -10,10 +10,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.http.HttpValidato
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
-import com.knubisoft.testlum.testing.model.scenario.Body;
-import com.knubisoft.testlum.testing.model.scenario.Sendgrid;
-import com.knubisoft.testlum.testing.model.scenario.SendgridInfo;
-import com.knubisoft.testlum.testing.model.scenario.SendgridWithBody;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
 import com.sendgrid.Response;
@@ -54,6 +51,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     private static final String HTTP_METHOD = "HTTP method";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
     private static final String HEADER_TEMPLATE = "%s: %s";
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)
     private Map<AliasEnv, SendGrid> sendGrid;
@@ -65,6 +63,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     @Override
     protected void acceptImpl(final Sendgrid o, final CommandResult result) {
         Sendgrid sendgrid = injectCommand(o);
+        checkAlias(sendgrid);
         SendGridUtil.SendGridMethodMetadata metadata = SendGridUtil.getSendgridMethodMetadata(sendgrid);
         String endpoint = metadata.getHttpInfo().getEndpoint();
         SendgridInfo sendgridInfo = metadata.getHttpInfo();
@@ -75,6 +74,12 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         ApiResponse expected = getExpected(sendgridInfo, headers);
         compare(expected, actual, result);
         setContextBody(getContextBodyKey(sendgridInfo.getResponse().getFile()), actual.getBody());
+    }
+
+    private void checkAlias(final Sendgrid sendgrid) {
+        if (sendgrid.getAlias() == null) {
+            sendgrid.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     private ApiResponse getExpected(final SendgridInfo sendgridInfo, final Map<String, String> headers) {

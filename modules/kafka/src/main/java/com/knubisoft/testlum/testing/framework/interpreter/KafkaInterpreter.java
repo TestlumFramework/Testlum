@@ -9,12 +9,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.Kafka;
-import com.knubisoft.testlum.testing.model.scenario.KafkaHeader;
-import com.knubisoft.testlum.testing.model.scenario.KafkaHeaders;
-import com.knubisoft.testlum.testing.model.scenario.ReceiveKafkaMessage;
-import com.knubisoft.testlum.testing.model.scenario.SendKafkaMessage;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -100,6 +95,8 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     private static final String CORRELATION_ID = "correlationId";
     private static final int NUM_PARTITIONS = 1;
 
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
+
     @Autowired(required = false)
     private Map<AliasEnv, KafkaProducer<String, String>> kafkaProducer;
     @Autowired(required = false)
@@ -114,6 +111,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     @Override
     protected void acceptImpl(final Kafka o, final CommandResult result) {
         Kafka kafka = injectCommand(o);
+        checkAlias(kafka);
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         for (Object action : kafka.getSendOrReceive()) {
@@ -123,6 +121,12 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
             processEachAction(action, kafka.getAlias(), commandResult);
         }
         setExecutionResultIfSubCommandsFailed(result);
+    }
+
+    private void checkAlias(final Kafka kafka) {
+        if (kafka.getAlias() == null) {
+            kafka.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     private void processEachAction(final Object action,

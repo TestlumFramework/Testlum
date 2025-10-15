@@ -32,6 +32,7 @@ public class SqlDatabaseInterpreter extends AbstractInterpreter<SqlDatabase> {
     //RESULT
     private static final String QUERIES = "Queries";
     private static final String DATABASE_ALIAS = "Database alias";
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)
     @Qualifier("sqlDatabaseOperation")
@@ -53,6 +54,12 @@ public class SqlDatabaseInterpreter extends AbstractInterpreter<SqlDatabase> {
         result.setActual(StringPrettifier.asJsonResult(actualSqlDatabase));
         compare.exec();
         setContextBody(getContextBodyKey(database.getFile()), actualSqlDatabase);
+    }
+
+    private void checkAlias(final SqlDatabase sqlDatabase) {
+        if (sqlDatabase.getAlias() == null) {
+            sqlDatabase.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     protected String getActual(final SqlDatabase sqlDatabase, final CommandResult result) {

@@ -104,11 +104,12 @@ public class IntegrationsProviderImpl implements IntegrationsProvider {
         private <T extends Integration> T filterIntegrationByAlias(final List<T> integrations,
                                                                    final String alias,
                                                                    final String message) {
+            String computedAlias = alias == null ? "DEFAULT" : alias;
             return integrations.stream()
                     .filter(Integration::isEnabled)
-                    .filter(integration -> integration.getAlias().equals(alias))
+                    .filter(integration -> integration.getAlias().equals(computedAlias))
                     .findFirst()
-                    .orElseThrow(() -> new DefaultFrameworkException(message, alias));
+                    .orElseThrow(() -> new DefaultFrameworkException(message, computedAlias));
         }
 
         public <T extends Integration> boolean isEnabled(final List<T> integrations) {

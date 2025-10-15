@@ -5,10 +5,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpret
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.model.scenario.Ses;
-import com.knubisoft.testlum.testing.model.scenario.SesBody;
-import com.knubisoft.testlum.testing.model.scenario.SesMessage;
-import com.knubisoft.testlum.testing.model.scenario.SesTextContent;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import software.amazon.awssdk.services.ses.SesClient;
@@ -43,6 +40,7 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
     private static final String SOURCE = "Source";
     private static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
     private static final String REGEX_NEW_LINE = "[\\r\\n]";
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)
     private Map<AliasEnv, SesClient> sesClient;
@@ -54,11 +52,18 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
     @Override
     protected void acceptImpl(final Ses o, final CommandResult result) {
         Ses ses = injectCommand(o);
+        checkAlias(ses);
         logSesInfo(ses);
         addSesMetaData(ses, result);
         AliasEnv aliasEnv = new AliasEnv(ses.getAlias(), dependencies.getEnvironment());
         verify(ses, aliasEnv);
         sendEmail(ses, aliasEnv);
+    }
+
+    private void checkAlias(final Ses ses) {
+        if (ses.getAlias() == null) {
+            ses.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     private void verify(final Ses ses, final AliasEnv aliasEnv) {

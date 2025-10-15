@@ -3,6 +3,7 @@ package com.knubisoft.testlum.testing.framework.configuration;
 import lombok.Getter;
 
 import java.io.File;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.io.File.separator;
@@ -31,6 +32,7 @@ public class TestResourceSettings {
     public static final String FOLDER_LOCATION_ERROR_MESSAGE = "%s. Expected location -> %s";
 
     private static final String SCENARIOS_FOLDER_NOT_EXIST = "[scenarios] folder does not exist";
+    private static final String SPECIFIED_SCENARIOS_FOLDER_NOT_EXIST = "[specified scenarios] folder does not exist";
     private static final String PAGES_FOLDER_NOT_EXIST = "[locators/pages] folder does not exist";
     private static final String COMPONENTS_FOLDER_NOT_EXIST = "[locators/component] folder does not exist";
     private static final String DATA_FOLDER_NOT_EXIST = "[data] folder does not exist";
@@ -43,32 +45,37 @@ public class TestResourceSettings {
     private final File envConfigFolder;
     private final File scenariosFolder;
     private final File dataFolder;
+    private final Optional<File> scenarioScopeFolder;
     private File pagesFolder;
     private File componentsFolder;
 
-    private TestResourceSettings(final String configFileName, final String pathToTestResources) {
+    private TestResourceSettings(final String configFileName, final String pathToTestResources,
+                                 final Optional<String> scenarioScope) {
         this.testResourcesFolder = new File(pathToTestResources);
         this.configFile = new File(testResourcesFolder, configFileName);
-        this.envConfigFolder = subFolder(ENV_CONFIG_FOLDER, ENV_CONFIG_FOLDER_NOT_EXIST);
-        this.scenariosFolder = subFolder(SCENARIOS_FOLDER, SCENARIOS_FOLDER_NOT_EXIST);
-        this.dataFolder = subFolder(DATA_FOLDER, DATA_FOLDER_NOT_EXIST);
+        this.envConfigFolder = subFolder(testResourcesFolder, ENV_CONFIG_FOLDER, ENV_CONFIG_FOLDER_NOT_EXIST);
+        this.scenariosFolder = subFolder(testResourcesFolder, SCENARIOS_FOLDER, SCENARIOS_FOLDER_NOT_EXIST);
+        this.dataFolder = subFolder(testResourcesFolder, DATA_FOLDER, DATA_FOLDER_NOT_EXIST);
+        this.scenarioScopeFolder = scenarioScope
+                .map(s -> subFolder(scenariosFolder, s, SPECIFIED_SCENARIOS_FOLDER_NOT_EXIST));
     }
 
-    public static void init(final String configFileName, final String pathToTestResources) {
-        instance = new TestResourceSettings(configFileName, pathToTestResources);
+    public static void init(final String configFileName, final String pathToTestResources,
+                            final Optional<String> scenarioScope) {
+        instance = new TestResourceSettings(configFileName, pathToTestResources, scenarioScope);
     }
 
     public void initLocatorsFolder() {
-        this.pagesFolder = subFolder(LOCATORS_PAGES_FOLDER, PAGES_FOLDER_NOT_EXIST);
-        this.componentsFolder = subFolder(LOCATORS_COMPONENTS_FOLDER, COMPONENTS_FOLDER_NOT_EXIST);
+        this.pagesFolder = subFolder(testResourcesFolder, LOCATORS_PAGES_FOLDER, PAGES_FOLDER_NOT_EXIST);
+        this.componentsFolder = subFolder(testResourcesFolder, LOCATORS_COMPONENTS_FOLDER, COMPONENTS_FOLDER_NOT_EXIST);
     }
 
     public static TestResourceSettings getInstance() {
         return instance;
     }
 
-    private File subFolder(final String name, final String errorMessage) {
-        File folder = new File(testResourcesFolder, name);
+    private File subFolder(final File sourceDirectory, final String name, final String errorMessage) {
+        File folder = new File(sourceDirectory, name);
         checkArgument(folder.exists(),
                 String.format(FOLDER_LOCATION_ERROR_MESSAGE, errorMessage, folder.getAbsolutePath()));
         return folder;

@@ -22,8 +22,14 @@ public class SchemaInitializer {
     public Schema initSchema(final String path) {
         String fullPathToResourceFolder = System.getProperty("resource").replace("-p=", "");
         int indexOfLastFolderSeparator = fullPathToResourceFolder.lastIndexOf(File.separator);
-        String projectRootDirectoryFullPath = fullPathToResourceFolder.substring(0, indexOfLastFolderSeparator);
-        String pathToSchemaFolder = projectRootDirectoryFullPath + File.separator + "schema";
+        String projectRootDirectoryFullPath;
+        String pathToSchemaFolder;
+        if (indexOfLastFolderSeparator == -1) {
+            pathToSchemaFolder = "schema";
+        } else {
+             projectRootDirectoryFullPath = fullPathToResourceFolder.substring(0, indexOfLastFolderSeparator);
+             pathToSchemaFolder = projectRootDirectoryFullPath + File.separator + "schema";
+        }
 
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         factory.setResourceResolver(new LSResourceResolverImpl(TestResourceSettings.SCHEMAS_FOLDER));

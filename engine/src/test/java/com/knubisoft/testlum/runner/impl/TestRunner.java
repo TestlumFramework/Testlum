@@ -16,6 +16,10 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
+import javax.swing.text.html.Option;
+
+import java.util.Optional;
+
 import static java.util.Objects.nonNull;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
 
@@ -32,8 +36,9 @@ public class TestRunner implements Runner {
     public void run(final String[] args) {
         String configFileName = ArgumentsUtils.getConfigurationFileName(args[0]);
         String pathToTestResources = ArgumentsUtils.getPathToTestResources(args[1]);
+        Optional<String> scenarioScope = ArgumentsUtils.getScenarioScope(args);
         System.setProperty("resource", args[1]);
-        TestResourceSettings.init(configFileName, pathToTestResources);
+        TestResourceSettings.init(configFileName, pathToTestResources, scenarioScope);
         initLocatorsFolder();
         TestExecutionSummary testExecutionSummary = runTests();
         LogUtil.logTestExecutionSummary(testExecutionSummary);

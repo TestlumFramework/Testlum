@@ -32,6 +32,7 @@ public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
     //RESULT
     private static final String QUERIES = "Queries";
     private static final String DATABASE_ALIAS = "Database alias";
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)
     @Qualifier("clickhouseOperation")
@@ -44,6 +45,7 @@ public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
     @Override
     protected void acceptImpl(final Clickhouse o, final CommandResult result) {
         Clickhouse clickhouse = injectCommand(o);
+        checkAlias(clickhouse);
         String actual = getActual(clickhouse, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
@@ -55,6 +57,13 @@ public class ClickhouseInterpreter extends AbstractInterpreter<Clickhouse> {
         comparator.exec();
         setContextBody(getContextBodyKey(clickhouse.getFile()), actual);
     }
+
+    private void checkAlias(final Clickhouse clickhouse) {
+        if (clickhouse.getAlias() == null) {
+            clickhouse.setAlias(DEFAULT_ALIAS_VALUE);
+        }
+    }
+
 
     protected String getActual(final Clickhouse clickhouse, final CommandResult result) {
         String alias = clickhouse.getAlias();

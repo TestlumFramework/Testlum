@@ -19,7 +19,7 @@
                         <x:element name="receive" type="tns:websocketReceive"/>
                     </x:choice>
                 </x:choice>
-                <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+                <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
                 <x:attribute name="disconnect" type="x:boolean" default="true"/>
             </x:extension>
         </x:complexContent>

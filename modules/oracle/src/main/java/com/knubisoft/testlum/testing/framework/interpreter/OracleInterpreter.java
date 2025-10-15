@@ -32,6 +32,7 @@ public class OracleInterpreter extends AbstractInterpreter<Oracle> {
     //RESULT
     private static final String QUERIES = "Queries";
     private static final String DATABASE_ALIAS = "Database alias";
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)
     @Qualifier("oracleOperation")
@@ -44,6 +45,7 @@ public class OracleInterpreter extends AbstractInterpreter<Oracle> {
     @Override
     protected void acceptImpl(final Oracle o, final CommandResult result) {
         Oracle oracle = injectCommand(o);
+        checkAlias(oracle);
         String actual = getActual(oracle, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
@@ -54,6 +56,12 @@ public class OracleInterpreter extends AbstractInterpreter<Oracle> {
 
         comparator.exec();
         setContextBody(getContextBodyKey(oracle.getFile()), actual);
+    }
+
+    private void checkAlias(final Oracle oracle) {
+        if (oracle.getAlias() == null) {
+            oracle.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     protected String getActual(final Oracle oracle, final CommandResult result) {

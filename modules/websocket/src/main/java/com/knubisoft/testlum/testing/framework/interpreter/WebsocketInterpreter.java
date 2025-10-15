@@ -9,11 +9,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.Websocket;
-import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
-import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
-import com.knubisoft.testlum.testing.model.scenario.WebsocketSubscribe;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -78,6 +74,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     private static final String NUMBER_OF_MESSAGES = "Number of messages";
     private static final String TIMEOUT_MILLIS = "Timeout millis";
     private static final String ACTION = "Action";
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     //EXCEPTIONS
     private static final String WEBSOCKET_CONNECTION_FAILURE =
@@ -94,10 +91,17 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     @Override
     protected void acceptImpl(final Websocket o, final CommandResult result) {
         Websocket websocket = injectCommand(o);
+        checkAlias(websocket);
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         processWebsockets(websocket, subCommandsResult);
         setExecutionResultIfSubCommandsFailed(result);
+    }
+
+    private void checkAlias(final Websocket websocket) {
+        if (websocket.getAlias() == null) {
+            websocket.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     private void processWebsockets(final Websocket websocket, final List<CommandResult> subCommandsResult) {

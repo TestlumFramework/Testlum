@@ -65,6 +65,7 @@ import static java.util.Objects.nonNull;
 public class VariableHelperImpl implements VariableHelper {
 
     private static final String VAR_CONTEXT_LOG = format(TABLE_FORMAT, "Created from", "{}");
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     private final Map<RandomPredicate, RandomFunction> randomGenerateMethodMap;
     @Autowired
@@ -223,11 +224,18 @@ public class VariableHelperImpl implements VariableHelper {
     public String getSQLResult(final FromSQL fromSQL,
                                final String varName,
                                final CommandResult result) {
+        checkAlias(fromSQL);
         String metadataKey = fromSQL.getDbType().name() + DelimiterConstant.UNDERSCORE + fromSQL.getAlias();
         AbstractStorageOperation storageOperation = aliasToStorageOperation.getByNameOrThrow(metadataKey);
         String valueResult = getActualQueryResult(fromSQL, storageOperation);
         ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, fromSQL, varName, valueResult, result);
         return valueResult;
+    }
+
+    private void checkAlias(final FromSQL fromSQL) {
+        if (fromSQL.getAlias() == null) {
+            fromSQL.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     private String getActualQueryResult(final FromSQL fromSQL, final AbstractStorageOperation storageOperation) {

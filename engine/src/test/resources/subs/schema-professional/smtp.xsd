@@ -14,7 +14,7 @@
                     <x:element name="subject" type="tns:nonEmptyString"/>
                     <x:element name="text" type="tns:nonEmptyString"/>
                 </x:sequence>
-                <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+                <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
                 <x:attribute name="recipientEmail" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>

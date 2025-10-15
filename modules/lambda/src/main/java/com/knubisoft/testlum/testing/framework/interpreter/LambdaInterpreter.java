@@ -8,10 +8,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.HttpValidator;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
-import com.knubisoft.testlum.testing.model.scenario.Header;
-import com.knubisoft.testlum.testing.model.scenario.Lambda;
-import com.knubisoft.testlum.testing.model.scenario.LambdaBody;
-import com.knubisoft.testlum.testing.model.scenario.Response;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +44,8 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
     private static final String LAMBDA_FUNCTION_NAME = "Function name";
     private static final String LAMBDA_PAYLOAD = "Payload";
 
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
+
     @Autowired(required = false)
     private Map<AliasEnv, LambdaClient> awsLambdaClients;
 
@@ -57,6 +56,7 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
     @Override
     protected void acceptImpl(final Lambda o, final CommandResult result) {
         Lambda lambda = injectCommand(o);
+        checkAlias(lambda);
         String payload = getPayload(lambda.getBody());
         addLambdaGeneralMetaData(lambda.getAlias(), lambda.getFunctionName(), payload, result);
         logLambdaInfo(lambda.getAlias(), lambda.getFunctionName(), payload);
@@ -64,6 +64,12 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
         InvokeResponse response = getLambdaFunctionResponse(lambda, payload);
         compareResult(lambda.getResponse(), response, result);
         setContextBody(getContextBodyKey(lambda.getResponse().getFile()), response.payload().asUtf8String());
+    }
+
+    private void checkAlias(final Lambda lambda) {
+        if (lambda.getAlias() == null) {
+            lambda.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     private String getPayload(final LambdaBody body) {

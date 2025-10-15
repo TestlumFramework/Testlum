@@ -36,6 +36,7 @@ public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
     private static final String SUBJECT = "Subject";
     private static final String TEXT = "Text";
     private static final String SOURCE = "Source";
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)
     private Map<AliasEnv, JavaMailSenderImpl> javaMailSenderMap;
@@ -47,11 +48,18 @@ public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
     @Override
     protected void acceptImpl(final Smtp o, final CommandResult result) {
         Smtp smtp = injectCommand(o);
+        checkAlias(smtp);
         AliasEnv aliasEnv = new AliasEnv(smtp.getAlias(), dependencies.getEnvironment());
         JavaMailSenderImpl javaMailSender = javaMailSenderMap.get(aliasEnv);
         logSmtpInfo(smtp, javaMailSender);
         addSmtpMetaData(smtp, javaMailSender, result);
         sendEmail(smtp, javaMailSender);
+    }
+
+    private void checkAlias(final Smtp smtp) {
+        if (smtp.getAlias() == null) {
+            smtp.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     private void sendEmail(final Smtp smtp, final JavaMailSenderImpl javaMailSender) {

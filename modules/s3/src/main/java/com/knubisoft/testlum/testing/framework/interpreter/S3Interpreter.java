@@ -19,9 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
-import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
@@ -79,6 +77,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     private static final String FILE_PROCESSING_ERROR = "File with key <%s> in bucket <%s> can not be processed";
     private static final String FILE_COMPARISON_ERROR = "Actual file <%s> is not the same as expected file <%s>";
     private static final String FILE_VALUE_COMPARISON_ERROR = "Actual file <%s> is not the same as expected value <%s>";
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)
     private Map<AliasEnv, S3Client> s3Client;
@@ -90,6 +89,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     @Override
     protected void acceptImpl(final S3 o, final CommandResult result) {
         S3 s3 = injectCommand(o);
+        checkAlias(s3);
         log.info(ALIAS_LOG, s3.getAlias());
         result.put(ALIAS, s3.getAlias());
         List<CommandResult> subCommandsResult = new LinkedList<>();
@@ -102,6 +102,12 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
             processEachAction(action, new AliasEnv(s3.getAlias(), dependencies.getEnvironment()), commandResult);
         }
         setExecutionResultIfSubCommandsFailed(result);
+    }
+
+    private void checkAlias(final S3 s3) {
+        if (s3.getAlias() == null) {
+            s3.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     private void processEachAction(final AbstractCommand action, final AliasEnv aliasEnv, final CommandResult result) {

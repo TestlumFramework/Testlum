@@ -30,6 +30,7 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
     private static final String TABLE_FORMAT = "%-23s|%-70s";
     private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
     private static final String REDIS_QUERY = format(TABLE_FORMAT, "Query", "{} {}");
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)
     @Qualifier("redisOperation")
@@ -42,6 +43,7 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
     @Override
     protected void acceptImpl(final Redis o, final CommandResult result) {
         Redis redis = injectCommand(o);
+        checkAlias(redis);
         String actual = getActual(redis, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
@@ -52,6 +54,12 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
 
         comparator.exec();
         setContextBody(getContextBodyKey(redis.getFile()), actual);
+    }
+
+    private void checkAlias(final Redis redis) {
+        if (redis.getAlias() == null) {
+            redis.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     protected String getActual(final Redis redis, final CommandResult result) {

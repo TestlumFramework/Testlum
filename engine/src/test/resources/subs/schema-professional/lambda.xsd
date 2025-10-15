@@ -14,7 +14,7 @@
                     <x:element name="body" type="tns:lambdaBody"/>
                     <x:element name="response" type="tns:response"/>
                 </x:sequence>
-                <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+                <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
                 <x:attribute name="functionName" type="tns:nonEmptyString" use="required"/>
             </x:extension>
         </x:complexContent>

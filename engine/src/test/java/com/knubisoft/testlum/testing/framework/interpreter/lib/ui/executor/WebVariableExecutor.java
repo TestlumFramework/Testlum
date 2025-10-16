@@ -47,17 +47,18 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     public WebVariableExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         this.variableHelper = dependencies.getContext().getBean(VariableHelper.class);
-        varToMethodMap = Map.of(
-                var -> nonNull(var.getElement()), this::getElementResult,
-                var -> nonNull(var.getDom()), this::getDomResult,
-                var -> nonNull(var.getCookie()), this::getWebCookiesResult,
-                var -> nonNull(var.getUrl()), this::getUrlResult,
-                var -> nonNull(var.getPath()), this::getPathResult,
-                var -> nonNull(var.getConstant()), this::getConstantResult,
-                var -> nonNull(var.getExpression()), this::getExpressionResult,
-                var -> nonNull(var.getFile()), this::getFileResult,
-                var -> nonNull(var.getSql()), this::getSQLResult,
-                var -> nonNull(var.getGenerate()), this::getRandomGenerateResult);
+        varToMethodMap = Map.ofEntries(
+		        Map.entry(var -> nonNull(var.getElement()), this::getElementResult),
+		        Map.entry(var -> nonNull(var.getDom()), this::getDomResult),
+		        Map.entry(var -> nonNull(var.getCookie()), this::getWebCookiesResult),
+		        Map.entry( var -> nonNull(var.getUrl()), this::getUrlResult),
+		        Map.entry( var -> nonNull(var.getPath()), this::getPathResult),
+		        Map.entry( var -> nonNull(var.getConstant()), this::getConstantResult),
+		        Map.entry( var -> nonNull(var.getExpression()), this::getExpressionResult),
+		        Map.entry( var -> nonNull(var.getFile()), this::getFileResult),
+		        Map.entry( var -> nonNull(var.getSql()), this::getSQLResult),
+		        Map.entry( var -> nonNull(var.getGenerate()), this::getRandomGenerateResult),
+		        Map.entry( var -> nonNull(var.getGoogleAuthToken()), this::getGoogleAuthToken));
     }
 
     @Override
@@ -72,7 +73,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
 
     private void setContextVariable(final WebVar var, final CommandResult result) {
         String value = getValueForContext(var, result);
-        dependencies.getScenarioContext().set(var.getName(), value);
+        dependencies.getScenarioContext().set(var.getName(), () -> value);
         LogUtil.logVarInfo(var.getName(), value);
     }
 
@@ -165,4 +166,9 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     private String getRandomGenerateResult(final WebVar var, final CommandResult result) {
         return variableHelper.getRandomGenerateResult(var.getGenerate(), var.getName(), result);
     }
+
+	private String getGoogleAuthToken(final WebVar var, final CommandResult result) {
+		return variableHelper.getGoogleAuthToken(var.getGoogleAuthToken(), dependencies.getContext(), dependencies.getScenarioContext(), dependencies.getEnvironment(),  var.getName(), result)
+				.get();
+	}
 }

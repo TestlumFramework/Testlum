@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.io.File;
 import java.util.Map;
+import java.util.function.Supplier;
 
 @Builder
 @Getter
@@ -20,7 +21,7 @@ public class ScenarioArguments {
     private final String browser;
     private final String mobilebrowserDevice;
     private final String nativeDevice;
-    private final Map<String, String> variations;
+    private final Map<String, Supplier<String>> variations;
     private final boolean containsUiSteps;
 
     private String environment;

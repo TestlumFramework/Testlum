@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlType;
     "expression",
     "sql",
     "generate",
+    "googleAuthToken",
     "element"
 })
 public class NativeVar
@@ -48,6 +49,7 @@ public class NativeVar
     protected FromExpression expression;
     protected FromSQL sql;
     protected FromRandomGenerate generate;
+    protected GoogleAuthToken googleAuthToken;
     protected FromElement element;
     @XmlAttribute(name = "name", required = true)
     protected String name;
@@ -194,6 +196,30 @@ public class NativeVar
      */
     public void setGenerate(FromRandomGenerate value) {
         this.generate = value;
+    }
+
+    /**
+     * Gets the value of the googleAuthToken property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link GoogleAuthToken }
+     *     
+     */
+    public GoogleAuthToken getGoogleAuthToken() {
+        return googleAuthToken;
+    }
+
+    /**
+     * Sets the value of the googleAuthToken property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link GoogleAuthToken }
+     *     
+     */
+    public void setGoogleAuthToken(GoogleAuthToken value) {
+        this.googleAuthToken = value;
     }
 
     /**

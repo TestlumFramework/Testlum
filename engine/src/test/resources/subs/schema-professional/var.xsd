@@ -51,6 +51,7 @@
             <x:element name="expression" type="tns:fromExpression"/>
             <x:element name="sql" type="tns:fromSQL"/>
             <x:element name="generate" type="tns:fromRandomGenerate"/>
+            <x:element name="googleAuthToken" type="tns:googleAuthToken"/>
         </x:choice>
     </x:group>
 
@@ -152,6 +153,10 @@
         <x:attribute name="name" type="tns:webAttributeNamePattern" use="required"/>
         <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
+    </x:complexType>
+
+    <x:complexType name="googleAuthToken">
+        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
     </x:complexType>
 
 </x:schema>

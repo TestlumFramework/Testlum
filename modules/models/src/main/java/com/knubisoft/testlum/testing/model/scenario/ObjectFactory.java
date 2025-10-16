@@ -550,6 +550,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GoogleAuthToken }
+     * 
+     */
+    public GoogleAuthToken createGoogleAuthToken() {
+        return new GoogleAuthToken();
+    }
+
+    /**
      * Create an instance of {@link UiCondition }
      * 
      */
@@ -939,6 +947,14 @@ public class ObjectFactory {
      */
     public Exclude createExclude() {
         return new Exclude();
+    }
+
+    /**
+     * Create an instance of {@link InputGoogleAuthToken }
+     * 
+     */
+    public InputGoogleAuthToken createInputGoogleAuthToken() {
+        return new InputGoogleAuthToken();
     }
 
     /**

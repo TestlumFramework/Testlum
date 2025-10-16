@@ -12,20 +12,17 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.FromConstant;
-import com.knubisoft.testlum.testing.model.scenario.FromExpression;
-import com.knubisoft.testlum.testing.model.scenario.FromFile;
-import com.knubisoft.testlum.testing.model.scenario.FromPath;
-import com.knubisoft.testlum.testing.model.scenario.FromRandomGenerate;
-import com.knubisoft.testlum.testing.model.scenario.FromSQL;
+import com.knubisoft.testlum.testing.model.global_config.GoogleAuth;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -33,16 +30,22 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 import org.xml.sax.InputSource;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
@@ -61,6 +64,9 @@ import static java.util.Objects.nonNull;
 @Slf4j
 @Component
 public class VariableHelperImpl implements VariableHelper {
+
+	private static final String HMAC_ALGORITHM = "HmacSHA1";
+	private static final String SIX_DIGITS_FORMAT = "%06d";
 
     private final Map<RandomPredicate, RandomFunction> randomGenerateMethodMap;
     @Autowired
@@ -156,7 +162,7 @@ public class VariableHelperImpl implements VariableHelper {
                                 final CommandResult result) {
         String path = fromPath.getValue();
         String body = fromPath.getFrom() == null
-                ? scenarioContext.getBody() : scenarioContext.get(fromPath.getFrom());
+                ? scenarioContext.getBody() : scenarioContext.get(fromPath.getFrom()).get();
         if (path.startsWith(DOLLAR_SIGN)) {
             return evaluateJPath(path, varName, body, result);
         }
@@ -208,6 +214,15 @@ public class VariableHelperImpl implements VariableHelper {
         return valueResult;
     }
 
+	@Override
+	public Supplier<String> getGoogleAuthToken(GoogleAuthToken googleAuthToken, ApplicationContext context, ScenarioContext scenarioContext, String env, String varName, CommandResult result) {
+		IntegrationsProvider integrationsProvider = context.getBean(IntegrationsProvider.class);
+		List<GoogleAuth> list = integrationsProvider.findListByEnv(GoogleAuth.class, env);
+
+		GoogleAuth googleAuth = integrationsProvider.findForAlias(list, googleAuthToken.getAlias());
+		return () -> generateCode(googleAuth.getSecretKey());
+	}
+
     private String getActualQueryResult(final FromSQL fromSQL, final AbstractStorageOperation storageOperation) {
         String alias = fromSQL.getAlias();
         List<String> singleQuery = new ArrayList<>(Collections.singletonList(fromSQL.getQuery()));
@@ -242,4 +257,32 @@ public class VariableHelperImpl implements VariableHelper {
         String[] queryParts = rawList.get(0).getQuery().split(DelimiterConstant.SPACE);
         return queryParts[1];
     }
+
+	private String generateCode(String secretKey) {
+		try {
+			long timeStep = 30L;
+			long counter = Instant.now().getEpochSecond() / timeStep;
+
+			Base32 base32 = new Base32();
+			byte[] key = base32.decode(secretKey.toUpperCase().getBytes(StandardCharsets.UTF_8));
+
+			Mac mac = Mac.getInstance(HMAC_ALGORITHM);
+			mac.init(new SecretKeySpec(key, HMAC_ALGORITHM));
+			byte[] hash = mac.doFinal(ByteBuffer.allocate(8).putLong(counter).array());
+
+			int offset = hash[hash.length - 1] & 0xF;
+			int binary =
+					((hash[offset] & 0x7F) << 24) |
+							((hash[offset + 1] & 0xFF) << 16) |
+							((hash[offset + 2] & 0xFF) << 8) |
+							(hash[offset + 3] & 0xFF);
+
+			int otp = binary % 1_000_000;
+			return String.format(SIX_DIGITS_FORMAT, otp);
+
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }

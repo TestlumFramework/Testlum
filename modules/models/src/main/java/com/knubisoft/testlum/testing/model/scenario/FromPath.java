@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="value" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}xjpathPattern" /&gt;
- *       &lt;attribute name="context" type="{http://www.knubisoft.com/testlum/testing/model/scenario}xjpathPattern" /&gt;
+ *       &lt;attribute name="from" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -31,7 +31,6 @@ public class FromPath {
 
     @XmlAttribute(name = "value", required = true)
     protected String value;
-
     @XmlAttribute(name = "from")
     protected String from;
 
@@ -61,11 +60,11 @@ public class FromPath {
 
     /**
      * Gets the value of the from property.
-     *
+     * 
      * @return
      *     possible object is
      *     {@link String }
-     *
+     *     
      */
     public String getFrom() {
         return from;
@@ -73,14 +72,14 @@ public class FromPath {
 
     /**
      * Sets the value of the from property.
-     *
-     * @param from
+     * 
+     * @param value
      *     allowed object is
      *     {@link String }
-     *
+     *     
      */
-    public void setFrom(String from) {
-        this.from = from;
+    public void setFrom(String value) {
+        this.from = value;
     }
 
 }

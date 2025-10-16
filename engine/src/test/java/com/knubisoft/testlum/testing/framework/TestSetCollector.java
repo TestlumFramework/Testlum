@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -143,7 +144,12 @@ public class TestSetCollector {
                 .browser(browserAlias)
                 .mobilebrowserDevice(mobilebrowserAlias)
                 .nativeDevice(nativeAlias)
-                .variations(variations)
+                .variations(variations
+		                .entrySet()
+		                .stream().collect(Collectors.toMap(
+				                Map.Entry::getKey,
+				                ent -> ent::getValue)
+		                ))
                 .containsUiSteps(true)
                 .build();
     }
@@ -154,7 +160,12 @@ public class TestSetCollector {
                 .file(entry.file)
                 .scenario(entry.scenario)
                 .exception(entry.exception)
-                .variations(variations)
+                .variations(variations
+		                .entrySet()
+		                .stream().collect(Collectors.toMap(
+								Map.Entry::getKey,
+				                ent -> ent::getValue)
+		                ))
                 .build();
     }
 

@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlType;
     "expression",
     "sql",
     "generate",
+    "googleAuthToken",
     "cookie",
     "dom",
     "url",
@@ -54,6 +55,7 @@ public class WebVar
     protected FromExpression expression;
     protected FromSQL sql;
     protected FromRandomGenerate generate;
+    protected GoogleAuthToken googleAuthToken;
     protected FromCookie cookie;
     protected FromDom dom;
     protected FromUrl url;
@@ -203,6 +205,30 @@ public class WebVar
      */
     public void setGenerate(FromRandomGenerate value) {
         this.generate = value;
+    }
+
+    /**
+     * Gets the value of the googleAuthToken property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link GoogleAuthToken }
+     *     
+     */
+    public GoogleAuthToken getGoogleAuthToken() {
+        return googleAuthToken;
+    }
+
+    /**
+     * Sets the value of the googleAuthToken property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link GoogleAuthToken }
+     *     
+     */
+    public void setGoogleAuthToken(GoogleAuthToken value) {
+        this.googleAuthToken = value;
     }
 
     /**

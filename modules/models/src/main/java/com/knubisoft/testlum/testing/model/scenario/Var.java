@@ -32,7 +32,8 @@ import javax.xml.bind.annotation.XmlType;
     "constant",
     "expression",
     "sql",
-    "generate"
+    "generate",
+    "googleAuthToken"
 })
 public class Var
     extends AbstractCommand
@@ -44,6 +45,7 @@ public class Var
     protected FromExpression expression;
     protected FromSQL sql;
     protected FromRandomGenerate generate;
+    protected GoogleAuthToken googleAuthToken;
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
@@ -189,6 +191,30 @@ public class Var
      */
     public void setGenerate(FromRandomGenerate value) {
         this.generate = value;
+    }
+
+    /**
+     * Gets the value of the googleAuthToken property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link GoogleAuthToken }
+     *     
+     */
+    public GoogleAuthToken getGoogleAuthToken() {
+        return googleAuthToken;
+    }
+
+    /**
+     * Sets the value of the googleAuthToken property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link GoogleAuthToken }
+     *     
+     */
+    public void setGoogleAuthToken(GoogleAuthToken value) {
+        this.googleAuthToken = value;
     }
 
     /**

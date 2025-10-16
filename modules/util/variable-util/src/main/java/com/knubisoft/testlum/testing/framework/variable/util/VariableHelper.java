@@ -2,19 +2,11 @@ package com.knubisoft.testlum.testing.framework.variable.util;
 
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.FromConstant;
-import com.knubisoft.testlum.testing.model.scenario.FromExpression;
-import com.knubisoft.testlum.testing.model.scenario.FromFile;
-import com.knubisoft.testlum.testing.model.scenario.FromPath;
-import com.knubisoft.testlum.testing.model.scenario.FromRandomGenerate;
-import com.knubisoft.testlum.testing.model.scenario.FromSQL;
+import com.knubisoft.testlum.testing.model.scenario.*;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Map;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
+import java.util.function.*;
 
 public interface VariableHelper {
 
@@ -32,6 +24,7 @@ public interface VariableHelper {
 
     String getSQLResult(FromSQL fromSQL, String varName, CommandResult result);
 
+	Supplier<String> getGoogleAuthToken(GoogleAuthToken googleAuthToken, ApplicationContext context, ScenarioContext scenarioContext, String env, String varName, CommandResult result);
 
 
 

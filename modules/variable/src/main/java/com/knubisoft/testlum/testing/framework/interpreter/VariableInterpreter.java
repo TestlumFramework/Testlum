@@ -5,12 +5,15 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
+import com.knubisoft.testlum.testing.framework.util.IntegrationsProvider;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
+import com.knubisoft.testlum.testing.model.global_config.GoogleAuth;
 import com.knubisoft.testlum.testing.model.scenario.Var;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.UnaryOperator;
 
@@ -38,7 +41,8 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
                 variable -> nonNull(variable.getConstant()), this::getConstantResult,
                 variable -> nonNull(variable.getExpression()), this::getExpressionResult,
                 variable -> nonNull(variable.getPath()), this::getPathResult,
-                variable -> nonNull(variable.getGenerate()), this::getRandomGenerateResult);
+                variable -> nonNull(variable.getGenerate()), this::getRandomGenerateResult,
+		        variable -> nonNull(variable.getGoogleAuthToken()), this::getGoogleAuthToken);
     }
 
     @Override
@@ -54,7 +58,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
 
     private void setContextVariable(final Var var, final CommandResult result) {
         String value = getValueForContext(var, result);
-        dependencies.getScenarioContext().set(var.getName(), value);
+        dependencies.getScenarioContext().set(var.getName(), () -> value);
         logVarInfo(var.getName(), value);
     }
 
@@ -90,6 +94,11 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     private String getRandomGenerateResult(final Var var, final CommandResult result) {
         return variableHelper.getRandomGenerateResult(var.getGenerate(), var.getName(), result);
     }
+
+	private String getGoogleAuthToken(final Var var, final CommandResult result) {
+		return variableHelper.getGoogleAuthToken(var.getGoogleAuthToken(), dependencies.getContext(), dependencies.getScenarioContext(), dependencies.getEnvironment(), var.getName(), result)
+				.get();
+	}
 
     private void logVarInfo(final String name, final String value) {
         log.info(NAME_LOG, name);

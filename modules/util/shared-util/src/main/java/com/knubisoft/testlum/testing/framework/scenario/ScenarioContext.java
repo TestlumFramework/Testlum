@@ -7,6 +7,7 @@ import org.apache.commons.text.StringEscapeUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,27 +20,27 @@ public class ScenarioContext {
     private static final String NO_VALUE_FOUND_FOR_KEY = "Unable to find value for key <%s>. Available keys: %s";
     private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
 
-    private final Map<String, String> contextMap;
+    private final Map<String, Supplier<String>> contextMap;
     private final Map<String, Boolean> conditionMap = new HashMap<>();
 
     private final String bodyKeyUUID = UUID.randomUUID().toString();
 
     public void setBody(final String value) {
-        set(bodyKeyUUID, value);
+        set(bodyKeyUUID, () -> value);
     }
 
     public String getBody() {
-        return contextMap.get(bodyKeyUUID);
+        return contextMap.get(bodyKeyUUID).get();
     }
 
-    public void set(final String key, final String value) {
+    public void set(final String key, final Supplier<String> value) {
         contextMap.put(key, value);
     }
 
-    public String get(final String key) {
-        String result = contextMap.get(key);
+    public Supplier<String> get(final String key) {
+        Supplier<String> result = contextMap.get(key);
         //must be isNull
-        if (isNull(result)) {
+        if (isNull(result.get())) {
             throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, key, contextMap));
         }
         return result;
@@ -72,7 +73,7 @@ public class ScenarioContext {
         while (m.find()) {
             String firstSubsequence = m.group(1);
             String zeroSubsequence = m.group(0);
-            String value = get(firstSubsequence);
+            String value = get(firstSubsequence).get();
             value = StringEscapeUtils.escapeJson(value);
             formatted = formatted.replace(zeroSubsequence, value);
         }

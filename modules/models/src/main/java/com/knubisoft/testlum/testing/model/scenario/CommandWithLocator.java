@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlType;
     DropDown.class,
     Clear.class,
     ScrollTo.class,
+    InputGoogleAuthToken.class,
     SwipeElement.class
 })
 public abstract class CommandWithLocator

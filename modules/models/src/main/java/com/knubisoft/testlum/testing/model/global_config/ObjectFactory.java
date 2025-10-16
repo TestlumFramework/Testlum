@@ -238,6 +238,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GoogleAuthIntegration }
+     * 
+     */
+    public GoogleAuthIntegration createGoogleAuthIntegration() {
+        return new GoogleAuthIntegration();
+    }
+
+    /**
      * Create an instance of {@link GlobalTestConfiguration }
      * 
      */
@@ -763,6 +771,14 @@ public class ObjectFactory {
      */
     public Twilio createTwilio() {
         return new Twilio();
+    }
+
+    /**
+     * Create an instance of {@link GoogleAuth }
+     * 
+     */
+    public GoogleAuth createGoogleAuth() {
+        return new GoogleAuth();
     }
 
     /**

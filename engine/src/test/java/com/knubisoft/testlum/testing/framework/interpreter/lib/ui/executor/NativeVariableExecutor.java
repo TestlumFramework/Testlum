@@ -56,7 +56,7 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
 
     private void setContextVariable(final NativeVar var, final CommandResult result) {
         String value = getValueForContext(var, result);
-        dependencies.getScenarioContext().set(var.getName(), value);
+        dependencies.getScenarioContext().set(var.getName(), () -> value);
         LogUtil.logVarInfo(var.getName(), value);
     }
 

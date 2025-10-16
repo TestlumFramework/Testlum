@@ -92,14 +92,14 @@ public class VariableHelperImpl implements VariableHelper {
     }
 
     @Override
-    public String getRandomGenerateResult(final FromRandomGenerate randomGenerate,
+    public Supplier<String> getRandomGenerateResult(final FromRandomGenerate randomGenerate,
                                           final String varName,
                                           final CommandResult result) {
         String valueResult = getRandomGeneratedString(randomGenerate);
         String exp = nonNull(randomGenerate.getRandomRegexp())
                 ? randomGenerate.getRandomRegexp().getPattern() : NO_EXPRESSION;
         ResultUtil.addVariableMetaData(GENERATED_STRING, varName, exp, valueResult, result);
-        return valueResult;
+        return () -> valueResult;
     }
 
     private String getRandomGeneratedString(final FromRandomGenerate randomGenerate) {
@@ -124,26 +124,26 @@ public class VariableHelperImpl implements VariableHelper {
     }
 
     @Override
-    public String getFileResult(final FromFile fromFile,
+    public Supplier<String> getFileResult(final FromFile fromFile,
                                 final String varName,
                                 final UnaryOperator<String> fileToString,
                                 final CommandResult result) {
         String valueResult = fileToString.apply(fromFile.getFileName());
         ResultUtil.addVariableMetaData(FILE, varName, NO_EXPRESSION, valueResult, result);
-        return valueResult;
+        return () -> valueResult;
     }
 
     @Override
-    public String getConstantResult(final FromConstant fromConstant,
+    public Supplier<String> getConstantResult(final FromConstant fromConstant,
                                     final String varName,
                                     final CommandResult result) {
         String valueResult = fromConstant.getValue();
         ResultUtil.addVariableMetaData(CONSTANT, varName, NO_EXPRESSION, valueResult, result);
-        return valueResult;
+        return () -> valueResult;
     }
 
     @Override
-    public String getExpressionResult(final FromExpression fromExpression,
+    public Supplier<String> getExpressionResult(final FromExpression fromExpression,
                                       final String varName,
                                       final CommandResult result) {
         String expression = fromExpression.getValue();
@@ -151,12 +151,12 @@ public class VariableHelperImpl implements VariableHelper {
         Expression exp = parser.parseExpression(expression);
         String valueResult = exp.getValue(String.class);
         ResultUtil.addVariableMetaData(EXPRESSION, varName, expression, valueResult, result);
-        return valueResult;
+        return () -> valueResult;
     }
 
     @Override
     @SneakyThrows
-    public String getPathResult(final FromPath fromPath,
+    public Supplier<String> getPathResult(final FromPath fromPath,
                                 final String varName,
                                 final ScenarioContext scenarioContext,
                                 final CommandResult result) {
@@ -173,7 +173,7 @@ public class VariableHelperImpl implements VariableHelper {
     }
 
 
-    private String evaluateXPath(final String path,
+    private Supplier<String> evaluateXPath(final String path,
                                  final String varName,
                                  final String body,
                                  final CommandResult result) throws Exception {
@@ -182,7 +182,7 @@ public class VariableHelperImpl implements VariableHelper {
         XPath xPath = XPathFactory.newInstance().newXPath();
         String valueResult = (String) xPath.evaluate(path, w3cDocument, XPathConstants.STRING);
         ResultUtil.addVariableMetaData(XML_PATH, varName, path, valueResult, result);
-        return valueResult;
+        return () -> valueResult;
     }
 
     private org.w3c.dom.Document convertJsoupToW3CDocument(final Document jsoupDoc) throws Exception {
@@ -193,25 +193,25 @@ public class VariableHelperImpl implements VariableHelper {
         return factory.newDocumentBuilder().parse(inputSource);
     }
 
-    private String evaluateJPath(final String path,
+    private Supplier<String> evaluateJPath(final String path,
                                  final String varName,
                                  final String body,
                                  final CommandResult result) {
         DocumentContext contextBody = JsonPath.parse(body);
         String valueResult = Objects.nonNull(contextBody.read(path)) ? contextBody.read(path).toString() : null;
         ResultUtil.addVariableMetaData(JSON_PATH, varName, path, valueResult, result);
-        return valueResult;
+        return () -> valueResult;
     }
 
     @Override
-    public String getSQLResult(final FromSQL fromSQL,
+    public Supplier<String> getSQLResult(final FromSQL fromSQL,
                                final String varName,
                                final CommandResult result) {
         String metadataKey = fromSQL.getDbType().name() + DelimiterConstant.UNDERSCORE + fromSQL.getAlias();
         AbstractStorageOperation storageOperation = aliasToStorageOperation.getByNameOrThrow(metadataKey);
         String valueResult = getActualQueryResult(fromSQL, storageOperation);
         ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, fromSQL, varName, valueResult, result);
-        return valueResult;
+        return () -> valueResult;
     }
 
 	@Override

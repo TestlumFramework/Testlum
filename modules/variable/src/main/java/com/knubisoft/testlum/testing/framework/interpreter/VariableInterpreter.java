@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import static java.lang.String.format;
@@ -57,21 +58,21 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     private void setContextVariable(final Var var, final CommandResult result) {
-        String value = getValueForContext(var, result);
-        dependencies.getScenarioContext().set(var.getName(), () -> value);
-        logVarInfo(var.getName(), value);
+	    Supplier<String> value = getValueForContext(var, result);
+        dependencies.getScenarioContext().set(var.getName(), value);
+        logVarInfo(var.getName(), value.get());
     }
 
-    private String getValueForContext(final Var var, final CommandResult result) {
+    private Supplier<String> getValueForContext(final Var var, final CommandResult result) {
         return variableHelper.lookupVarMethod(varToMethodMap, var)
                 .apply(var, result);
     }
 
-    private String getSQLResult(final Var var, final CommandResult result) {
+    private Supplier<String> getSQLResult(final Var var, final CommandResult result) {
         return variableHelper.getSQLResult(var.getSql(), var.getName(), result);
     }
 
-    private String getFileResult(final Var var, final CommandResult result) {
+    private Supplier<String> getFileResult(final Var var, final CommandResult result) {
         UnaryOperator<String> fileToString = fileName -> {
             String content = FileSearcher.searchFileToString(fileName, dependencies.getFile());
             return inject(content);
@@ -79,25 +80,25 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
         return variableHelper.getFileResult(var.getFile(), var.getName(), fileToString, result);
     }
 
-    private String getConstantResult(final Var var, final CommandResult result) {
+    private Supplier<String> getConstantResult(final Var var, final CommandResult result) {
         return variableHelper.getConstantResult(var.getConstant(), var.getName(), result);
     }
 
-    private String getExpressionResult(final Var var, final CommandResult result) {
+    private Supplier<String> getExpressionResult(final Var var, final CommandResult result) {
         return variableHelper.getExpressionResult(var.getExpression(), var.getName(), result);
     }
 
-    private String getPathResult(final Var var, final CommandResult result) {
+    private Supplier<String> getPathResult(final Var var, final CommandResult result) {
         return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result);
     }
 
-    private String getRandomGenerateResult(final Var var, final CommandResult result) {
+    private Supplier<String> getRandomGenerateResult(final Var var, final CommandResult result) {
         return variableHelper.getRandomGenerateResult(var.getGenerate(), var.getName(), result);
     }
 
-	private String getGoogleAuthToken(final Var var, final CommandResult result) {
-		return variableHelper.getGoogleAuthToken(var.getGoogleAuthToken(), dependencies.getContext(), dependencies.getScenarioContext(), dependencies.getEnvironment(), var.getName(), result)
-				.get();
+	private Supplier<String> getGoogleAuthToken(final Var var, final CommandResult result) {
+		return variableHelper.getGoogleAuthToken(var.getGoogleAuthToken(), dependencies.getContext(),
+				dependencies.getScenarioContext(), dependencies.getEnvironment(), var.getName(), result);
 	}
 
     private void logVarInfo(final String name, final String value) {

@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_VARIABLE_LOG;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ELEMENT_PRESENT;
@@ -55,16 +56,16 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
     }
 
     private void setContextVariable(final NativeVar var, final CommandResult result) {
-        String value = getValueForContext(var, result);
-        dependencies.getScenarioContext().set(var.getName(), () -> value);
-        LogUtil.logVarInfo(var.getName(), value);
+	    Supplier<String> value = getValueForContext(var, result);
+        dependencies.getScenarioContext().set(var.getName(), value);
+        LogUtil.logVarInfo(var.getName(), value.get());
     }
 
-    private String getValueForContext(final NativeVar var, final CommandResult result) {
+    private Supplier<String> getValueForContext(final NativeVar var, final CommandResult result) {
         return variableHelper.lookupVarMethod(varToMethodMap, var).apply(var, result);
     }
 
-    private String getElementResult(final NativeVar var, final CommandResult result) {
+    private Supplier<String> getElementResult(final NativeVar var, final CommandResult result) {
         String valueResult;
         String locatorId = var.getElement().getPresent().getLocator();
         LocatorStrategy locatorStrategy = var.getElement().getPresent().getLocatorStrategy();
@@ -75,30 +76,31 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
             valueResult = String.valueOf(false);
         }
         ResultUtil.addVariableMetaData(ELEMENT_PRESENT, var.getName(), LOCATOR_FORM, locatorId, valueResult, result);
-        return valueResult;
+	    String finalValueResult = valueResult;
+	    return () -> finalValueResult;
     }
 
-    private String getPathResult(final NativeVar var, final CommandResult result) {
+    private Supplier<String> getPathResult(final NativeVar var, final CommandResult result) {
         return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result);
     }
 
-    private String getConstantResult(final NativeVar var, final CommandResult result) {
+    private Supplier<String> getConstantResult(final NativeVar var, final CommandResult result) {
         return variableHelper.getConstantResult(var.getConstant(), var.getName(), result);
     }
 
-    private String getExpressionResult(final NativeVar var, final CommandResult result) {
+    private Supplier<String> getExpressionResult(final NativeVar var, final CommandResult result) {
         return variableHelper.getExpressionResult(var.getExpression(), var.getName(), result);
     }
 
-    private String getFileResult(final NativeVar var, final CommandResult result) {
+    private Supplier<String> getFileResult(final NativeVar var, final CommandResult result) {
         return variableHelper.getFileResult(var.getFile(), var.getName(), this::getContentIfFile, result);
     }
 
-    private String getSQLResult(final NativeVar var, final CommandResult result) {
+    private Supplier<String> getSQLResult(final NativeVar var, final CommandResult result) {
         return variableHelper.getSQLResult(var.getSql(), var.getName(), result);
     }
 
-    private String getRandomGenerateResult(final NativeVar var, final CommandResult result) {
+    private Supplier<String> getRandomGenerateResult(final NativeVar var, final CommandResult result) {
         return variableHelper.getRandomGenerateResult(var.getGenerate(), var.getName(), result);
     }
 }

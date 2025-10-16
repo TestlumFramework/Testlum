@@ -22,6 +22,7 @@ import org.openqa.selenium.WebElement;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
@@ -72,17 +73,17 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     private void setContextVariable(final WebVar var, final CommandResult result) {
-        String value = getValueForContext(var, result);
-        dependencies.getScenarioContext().set(var.getName(), () -> value);
-        LogUtil.logVarInfo(var.getName(), value);
+        Supplier<String> value = getValueForContext(var, result);
+        dependencies.getScenarioContext().set(var.getName(), value);
+        LogUtil.logVarInfo(var.getName(), value.get());
     }
 
-    private String getValueForContext(final WebVar var, final CommandResult result) {
+    private Supplier<String> getValueForContext(final WebVar var, final CommandResult result) {
         return variableHelper.lookupVarMethod(varToMethodMap, var)
                 .apply(var, result);
     }
 
-    private String getElementResult(final WebVar webVar, final CommandResult result) {
+    private Supplier<String> getElementResult(final WebVar webVar, final CommandResult result) {
         ElementAttribute attribute = webVar.getElement().getAttribute();
         ElementPresent present = webVar.getElement().getPresent();
         String valueResult;
@@ -91,7 +92,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         } else {
             valueResult = getPresentValue(present, webVar.getName(), result);
         }
-        return valueResult;
+        return () -> valueResult;
     }
 
     private String getPresentValue(final ElementPresent present, final String varName, final CommandResult r) {
@@ -114,61 +115,61 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         return value;
     }
 
-    private String getDomResult(final WebVar webVar, final CommandResult result) {
+    private Supplier<String> getDomResult(final WebVar webVar, final CommandResult result) {
         String locatorId = webVar.getDom().getLocator();
         if (StringUtils.isNotBlank(locatorId)) {
             String valueResult = UiUtil.findWebElement(dependencies, locatorId, webVar.getDom().getLocatorStrategy())
                     .getAttribute("outerHTML");
             ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), LOCATOR_FORM, locatorId, valueResult, result);
-            return valueResult;
+            return () -> valueResult;
         }
         String valueResult = dependencies.getDriver().getPageSource();
         ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), FULL_DOM, valueResult, result);
-        return valueResult;
+        return () -> valueResult;
     }
 
-    private String getWebCookiesResult(final WebVar var, final CommandResult result) {
+    private Supplier<String> getWebCookiesResult(final WebVar var, final CommandResult result) {
         Set<Cookie> cookies = dependencies.getDriver().manage().getCookies();
         String valueResult = cookies.stream()
                 .map(cookie -> String.join(DelimiterConstant.EQUALS_MARK, cookie.getName(), cookie.getValue()))
                 .collect(Collectors.joining(DelimiterConstant.SEMICOLON));
         ResultUtil.addVariableMetaData(COOKIES, var.getName(), NO_EXPRESSION, valueResult, result);
-        return valueResult;
+        return () -> valueResult;
     }
 
-    private String getUrlResult(final WebVar var, final CommandResult result) {
+    private Supplier<String> getUrlResult(final WebVar var, final CommandResult result) {
         String valueResult = dependencies.getDriver().getCurrentUrl();
         ResultUtil.addVariableMetaData(URL, var.getName(), NO_EXPRESSION, valueResult, result);
-        return valueResult;
+        return () -> valueResult;
     }
 
-    private String getPathResult(final WebVar var, final CommandResult result) {
+    private Supplier<String> getPathResult(final WebVar var, final CommandResult result) {
         return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result);
     }
 
-    private String getConstantResult(final WebVar var, final CommandResult result) {
+    private Supplier<String> getConstantResult(final WebVar var, final CommandResult result) {
         return variableHelper.getConstantResult(var.getConstant(), var.getName(), result);
     }
 
-    private String getExpressionResult(final WebVar var, final CommandResult result) {
+    private Supplier<String> getExpressionResult(final WebVar var, final CommandResult result) {
         return variableHelper.getExpressionResult(var.getExpression(), var.getName(), result);
     }
 
-    private String getFileResult(final WebVar var, final CommandResult result) {
+    private Supplier<String> getFileResult(final WebVar var, final CommandResult result) {
         UnaryOperator<String> fileToString = this::getContentIfFile;
         return variableHelper.getFileResult(var.getFile(), var.getName(), fileToString, result);
     }
 
-    private String getSQLResult(final WebVar var, final CommandResult result) {
+    private Supplier<String> getSQLResult(final WebVar var, final CommandResult result) {
         return variableHelper.getSQLResult(var.getSql(), var.getName(), result);
     }
 
-    private String getRandomGenerateResult(final WebVar var, final CommandResult result) {
+    private Supplier<String> getRandomGenerateResult(final WebVar var, final CommandResult result) {
         return variableHelper.getRandomGenerateResult(var.getGenerate(), var.getName(), result);
     }
 
-	private String getGoogleAuthToken(final WebVar var, final CommandResult result) {
-		return variableHelper.getGoogleAuthToken(var.getGoogleAuthToken(), dependencies.getContext(), dependencies.getScenarioContext(), dependencies.getEnvironment(),  var.getName(), result)
-				.get();
+	private Supplier<String> getGoogleAuthToken(final WebVar var, final CommandResult result) {
+		return variableHelper.getGoogleAuthToken(var.getGoogleAuthToken(), dependencies.getContext(),
+				dependencies.getScenarioContext(), dependencies.getEnvironment(),  var.getName(), result);
 	}
 }

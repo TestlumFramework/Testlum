@@ -16,7 +16,7 @@
     <properties>
         <org.apache.poi.version>4.0.0</org.apache.poi.version>
         <HikariCP.version>4.0.2</HikariCP.version>
-        <lombok.version>1.18.24</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
     </properties>
 
     <dependencies>

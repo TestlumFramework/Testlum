@@ -51,7 +51,7 @@
         <commons-dbutils.version>1.7</commons-dbutils.version>
         <org.junit.jupiter.version>5.8.0</org.junit.jupiter.version>
         <org.junit.version>4.13.2</org.junit.version>
-        <lombok.version>1.18.24</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <imagination.comparator.version>2.0</imagination.comparator.version>
         <org.slf4j.api.version>1.7.30</org.slf4j.api.version>
         <com.opencsv.version>5.5.1</com.opencsv.version>
@@ -1020,6 +1020,12 @@
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-web</artifactId>
             <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-websocket-util</artifactId>
+            <version>1.0</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

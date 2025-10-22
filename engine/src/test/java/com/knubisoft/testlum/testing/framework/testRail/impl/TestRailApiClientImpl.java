@@ -3,11 +3,15 @@ package com.knubisoft.testlum.testing.framework.testRail.impl;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl;
 import com.knubisoft.testlum.testing.framework.testRail.TestRailApiClient;
 import com.knubisoft.testlum.testing.framework.testRail.constant.TestRailConstants;
+import com.knubisoft.testlum.testing.framework.testRail.model.Project;
 import com.knubisoft.testlum.testing.framework.testRail.model.ResultResponseDto;
+import com.knubisoft.testlum.testing.framework.testRail.model.Run;
+import com.knubisoft.testlum.testing.framework.testRail.model.Suite;
 import com.knubisoft.testlum.testing.framework.testRail.util.TestRailUtil;
 import com.knubisoft.testlum.testing.model.global_config.TestRailReports;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -106,15 +110,15 @@ public class TestRailApiClientImpl implements TestRailApiClient {
     @Override
     public Integer createNewTestRailRun(final List<Integer> caseIds) {
         String url = testRails.getUrl() + TestRailConstants.CREATE_NEW_TEST_RUN_URL + testRails.getProjectId();
-        Map<String, Object> request = TestRailUtil.buildCreateTestRunRequest(testRails, caseIds);
+        Run request = TestRailUtil.buildTestRunRequest(testRails, caseIds);
         HttpHeaders headers = buildHeaders();
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
+        HttpEntity<Run> entity = new HttpEntity<>(request, headers);
         try {
             log.info(TestRailConstants.LOG_CREATING_TEST_RUN, testRails.getDefaultRunName(), caseIds.size());
-            var response = restTemplate.exchange(url, HttpMethod.POST, entity, Map.class);
-            Map<String, Object> body = response.getBody();
-            if (body != null && body.containsKey(TestRailConstants.ID)) {
-                Integer id = (Integer) body.get(TestRailConstants.ID);
+            var response = restTemplate.exchange(url, HttpMethod.POST, entity, Run.class);
+            Run body = response.getBody();
+            if (body != null && body.getId() != null) {
+                Integer id = body.getId();
                 log.info(TestRailConstants.LOG_TEST_RUN_CREATED, testRails.getDefaultRunName(), id);
                 return id;
             }
@@ -124,17 +128,102 @@ public class TestRailApiClientImpl implements TestRailApiClient {
         return null;
     }
 
-    private HttpHeaders buildHeaders() {
-        HttpHeaders headers = new HttpHeaders();
+	@Override
+	public Project getProject(Integer projectId) {
+		String url = testRails.getUrl() + TestRailConstants.GET_PROJECT_URL + projectId;
+		HttpHeaders headers = authHeaders();
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(headers);
+
+		try {
+			log.info(TestRailConstants.LOG_GET_PROJECT, projectId, testRails.getUrl());
+			var response = restTemplate.exchange(url, HttpMethod.GET, entity, Project.class);
+			return response.getBody();
+		} catch (Exception e) {
+			log.error(TestRailConstants.LOG_GET_PROJECT_FAILED, projectId, testRails.getUrl(), e.getMessage(), e);
+		}
+		return null;
+	}
+
+	@Override
+	public Suite getSuite(Integer suiteId) {
+		String url = testRails.getUrl() + TestRailConstants.GET_SUITE_URL + suiteId;
+		HttpHeaders headers = authHeaders();
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(headers);
+
+		try {
+			log.info(TestRailConstants.LOG_GET_SUITE, suiteId, testRails.getUrl());
+			var response = restTemplate.exchange(url, HttpMethod.GET, entity, Suite.class);
+			return response.getBody();
+		} catch (Exception e) {
+			log.error(TestRailConstants.LOG_GET_SUITE_FAILED, suiteId, testRails.getUrl(), e.getMessage(), e);
+		}
+		return null;
+	}
+
+	@Override
+	public Run getRun(Integer runId) {
+		String url = testRails.getUrl() + TestRailConstants.GET_RUN_URL + runId;
+		HttpHeaders headers = authHeaders();
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(headers);
+
+		try {
+			log.info(TestRailConstants.LOG_GET_RUN, runId, testRails.getUrl());
+			var response = restTemplate.exchange(url, HttpMethod.GET, entity, Run.class);
+			return response.getBody();
+		} catch (Exception e) {
+			log.error(TestRailConstants.LOG_GET_RUN_FAILED, runId, testRails.getUrl(), e.getMessage(), e);
+		}
+		return null;
+	}
+
+	@Override
+	public Run updateRun(Integer runId, List<Integer> caseIds) {
+		String url = testRails.getUrl() + TestRailConstants.UPDATE_RUN_URL + runId;
+		Run request = TestRailUtil.buildTestRunRequest(testRails, caseIds);
+		HttpHeaders headers = buildHeaders();
+		HttpEntity<Run> entity = new HttpEntity<>(request, headers);
+		try {
+			log.info(TestRailConstants.LOG_UPDATING_TEST_RUN, runId, caseIds.size());
+			var response = restTemplate.exchange(url, HttpMethod.POST, entity, Run.class);
+			return response.getBody();
+		} catch (Exception e) {
+			log.error(TestRailConstants.LOG_TEST_RUN_UPDATING_FAILED, runId, e.getMessage(), e);
+		}
+		return null;
+	}
+
+	@Override
+	public List<Run> getRunsByProject(Integer projectId) {
+		String url = testRails.getUrl() + TestRailConstants.GET_RUNS_URL + projectId;
+		HttpHeaders headers = authHeaders();
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(headers);
+
+		try {
+			log.info(TestRailConstants.LOG_GET_RUNS, projectId, testRails.getUrl());
+			var response = restTemplate.exchange(url, HttpMethod.GET, entity, new ParameterizedTypeReference<List<Run>>() {});
+			return response.getBody();
+		} catch (Exception e) {
+			log.error(TestRailConstants.LOG_GET_RUNS_FAILED, projectId, testRails.getUrl(), e.getMessage(), e);
+		}
+		return List.of();
+	}
+
+	private HttpHeaders buildHeaders() {
+        HttpHeaders headers = authHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        String auth = testRails.getUsername() + COLON + testRails.getApiKey();
-        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
-        headers.set(TestRailConstants.HEADER_AUTHORIZATION,
-                TestRailConstants.AUTH_BASIC_PREFIX + encodedAuth);
-
         return headers;
     }
+
+	private HttpHeaders authHeaders() {
+		HttpHeaders headers = new HttpHeaders();
+
+		String auth = testRails.getUsername() + COLON + testRails.getApiKey();
+		String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+		headers.set(TestRailConstants.HEADER_AUTHORIZATION,
+				TestRailConstants.AUTH_BASIC_PREFIX + encodedAuth);
+
+		return headers;
+	}
 
     private boolean screenshotsEnabled() {
         return testRails != null

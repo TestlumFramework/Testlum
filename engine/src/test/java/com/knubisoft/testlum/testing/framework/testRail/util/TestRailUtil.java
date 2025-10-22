@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.testRail.constant.TestRailConstants;
 import com.knubisoft.testlum.testing.framework.testRail.model.GroupedScenarios;
 import com.knubisoft.testlum.testing.framework.testRail.model.ResultResponseDto;
+import com.knubisoft.testlum.testing.framework.testRail.model.Run;
 import com.knubisoft.testlum.testing.model.global_config.TestRailReports;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -69,14 +70,13 @@ public class TestRailUtil {
                 .collect(Collectors.toList());
     }
 
-    public Map<String, Object> buildCreateTestRunRequest(final TestRailReports testRails,
-                                                                final List<Integer> caseIds) {
-        Map<String, Object> request = new HashMap<>();
-        request.put(TestRailConstants.RUN_NAME, testRails.getDefaultRunName());
-        request.put(TestRailConstants.RUN_DESCRIPTION, testRails.getDefaultRunDescription());
-        request.put(TestRailConstants.RUN_INCLUDE_ALL, false);
-        request.put(TestRailConstants.RUN_CASE_IDS, caseIds);
-        return request;
+    public Run buildTestRunRequest(final TestRailReports testRails,
+                                   final List<Integer> caseIds) {
+	    return Run.builder()
+			    .name(testRails.getDefaultRunName())
+			    .description(testRails.getDefaultRunDescription())
+			    .includeAll(false)
+			    .caseIds(caseIds).build();
     }
 
     public Map<Integer, String> getScreenshotsOfUnsuccessfulTests(final List<ScenarioResult> scenarioResults) {

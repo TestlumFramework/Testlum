@@ -15,6 +15,7 @@ public final class TestRailConstants {
     public static final String STATUS_ID = "status_id";
     public static final String COMMENT = "comment";
     public static final String RESULTS = "results";
+    public static final String ELAPSED = "elapsed";
 
     public static final int STATUS_PASSED = 1;
     public static final int STATUS_FAILED = 5;
@@ -31,18 +32,8 @@ public final class TestRailConstants {
 	public static final String LOG_CONNECTION_FAILED = "TestRail connection failed: {}";
 	public static final String LOG_CONNECTION_ERROR = "Error validating TestRail connection: {}";
     public static final String LOG_CREATING_TEST_RUN = "Creating Test Run: '{}', number of cases: {}";
-    public static final String LOG_UPDATING_TEST_RUN = "Updating Test Run: '{}', number of cases: {}";
     public static final String LOG_TEST_RUN_CREATED = "Test Run '{}' created successfully with ID {}";
     public static final String LOG_TEST_RUN_CREATION_FAILED = "Failed to create Test Run '{}': {}";
-    public static final String LOG_TEST_RUN_UPDATING_FAILED = "Failed to update Test Run '{}': {}";
-	public static final String LOG_GET_PROJECT = "Getting Project {} from test rail: '{}'";
-	public static final String LOG_GET_PROJECT_FAILED = "Failed to get Project {} from test rail: '{}' : {}";
-	public static final String LOG_GET_SUITE = "Getting Suite {} from test rail: '{}'";
-	public static final String LOG_GET_SUITE_FAILED = "Failed to get Suite {} from test rail: '{}' : {}";
-	public static final String LOG_GET_RUN = "Getting Run {} from test rail: '{}'";
-	public static final String LOG_GET_RUN_FAILED = "Failed to get Run {} from test rail: '{}' : {}";
-	public static final String LOG_GET_RUNS = "Getting Runs by project {} from test rail: '{}'";
-	public static final String LOG_GET_RUNS_FAILED = "Failed to get Runs by project {} from test rail: '{}' : {}";
 
     public static final String LOG_FETCHING_TEST = "Fetching test data for Test ID: {}";
     public static final String LOG_FETCHING_TEST_SUCCESS_RESPONSE = "TestRail response for fetching test data with Test ID {}: {}";

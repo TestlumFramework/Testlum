@@ -55,6 +55,7 @@ public class TestRailUtil {
                     result.put(TestRailConstants.CASE_ID, scenarioResult.getOverview().getTestRails().getTestCaseId());
                     result.put(TestRailConstants.STATUS_ID, determineStatus(scenarioResult));
                     result.put(TestRailConstants.COMMENT, generateComment(scenarioResult));
+					result.put(TestRailConstants.ELAPSED, durationOfExecution(scenarioResult.getExecutionTime()));
                     return result;
                 })
                 .collect(Collectors.toList());
@@ -129,6 +130,20 @@ public class TestRailUtil {
         }
         return null;
     }
+
+	public String durationOfExecution(long executionTime) {
+		long totalSeconds = executionTime / 1000;
+		long hours = totalSeconds / 3600;
+		long minutes = (totalSeconds % 3600) / 60;
+		long seconds = totalSeconds % 60;
+
+		StringBuilder duration = new StringBuilder();
+		if (hours > 0) duration.append(hours).append("h ");
+		if (minutes > 0) duration.append(minutes).append("m ");
+		if (seconds > 0) duration.append(seconds).append("s");
+
+		return duration.toString().trim();
+	}
 
     private Map<Integer, List<ScenarioResult>> getAllScenarioWithRunId(final List<ScenarioResult> scenarioResults) {
         return scenarioResults.stream()

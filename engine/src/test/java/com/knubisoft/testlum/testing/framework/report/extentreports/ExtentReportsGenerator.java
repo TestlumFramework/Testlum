@@ -108,6 +108,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
     private void generateTestRailReportsIfRequired(GlobalScenarioStatCollector globalScenarioStatCollector) {
         TestRailReports testRailsReportsSettings = ConfigProviderImpl.GlobalTestConfigurationProvider.provide().getReport().getExtentReports().getTestRailReports();
         if (Objects.nonNull(testRailsReportsSettings) && testRailsReportsSettings.isEnabled()) {
+			testRailService.validateConnection();
             List<ScenarioResult> testRailScenarios =
                     TestRailUtil.getScenarioWithTestRailIntegrations(globalScenarioStatCollector.getResults());
             if (!testRailScenarios.isEmpty() && testRailService != null) {

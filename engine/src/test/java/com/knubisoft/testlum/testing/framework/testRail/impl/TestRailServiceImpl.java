@@ -20,7 +20,12 @@ public class TestRailServiceImpl implements TestRailService {
     private final TestRailApiClient testRailApiClient;
 
 
-    @Override
+	@Override
+	public void validateConnection() {
+		testRailApiClient.validateConnection();
+	}
+
+	@Override
     public void sendTestResultToTestRail(final List<ScenarioResult> results) {
         GroupedScenarios grouped = TestRailUtil.splitScenariosByRunId(results);
         processWithRunId(grouped.getWithRunId());

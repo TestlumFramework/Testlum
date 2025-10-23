@@ -10,6 +10,7 @@ public final class TestRailConstants {
     public static final String GET_TEST_URL = "get_test/";
     public static final String ADD_ATTACHMENT_TO_RESULT_URL = "add_attachment_to_result/";
 	public static final String GET_PROJECT_URL = "get_project/";
+	public static final String GET_PROJECTS_URL = "get_projects";
 	public static final String GET_SUITE_URL = "get_suite/";
 	public static final String GET_RUN_URL = "get_run/";
 	public static final String UPDATE_RUN_URL = "update_run/";
@@ -36,6 +37,10 @@ public final class TestRailConstants {
     public static final String LOG_SUCCESS_RESPONSE = "TestRail response for Run ID {}: {}";
     public static final String LOG_ERROR_RESPONSE = "Failed to send results to TestRail (Run ID: {}). Error: {}";
 
+	public static final String LOG_VALIDATE_CONNECTION = "Validating TestRail connection: {}";
+	public static final String LOG_CONNECTION_SUCCESSFUL = "TestRail connection and authentication validated successfully";
+	public static final String LOG_CONNECTION_FAILED = "TestRail connection failed: {}";
+	public static final String LOG_CONNECTION_ERROR = "Error validating TestRail connection: {}";
     public static final String LOG_CREATING_TEST_RUN = "Creating Test Run: '{}', number of cases: {}";
     public static final String LOG_UPDATING_TEST_RUN = "Updating Test Run: '{}', number of cases: {}";
     public static final String LOG_TEST_RUN_CREATED = "Test Run '{}' created successfully with ID {}";

@@ -129,6 +129,27 @@ public class TestRailApiClientImpl implements TestRailApiClient {
     }
 
 	@Override
+	public void validateConnection() {
+		String url = testRails.getUrl() + TestRailConstants.GET_PROJECTS_URL;
+		HttpHeaders headers = authHeaders();
+		HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+		try {
+			log.info(TestRailConstants.LOG_VALIDATE_CONNECTION, url);
+			var response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				log.info(TestRailConstants.LOG_CONNECTION_SUCCESSFUL);
+			} else {
+				log.warn(TestRailConstants.LOG_CONNECTION_FAILED, response.getStatusCode());
+			}
+
+		} catch (Exception e) {
+			log.error(TestRailConstants.LOG_CONNECTION_ERROR, e.getMessage(), e);
+		}
+	}
+
+	@Override
 	public Project getProject(Integer projectId) {
 		String url = testRails.getUrl() + TestRailConstants.GET_PROJECT_URL + projectId;
 		HttpHeaders headers = authHeaders();

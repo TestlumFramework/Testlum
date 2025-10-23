@@ -13,6 +13,8 @@ public interface TestRailApiClient {
 
     Integer createNewTestRailRun(List<Integer> caseIds);
 
+	void validateConnection();
+
 	Project getProject(Integer projectId);
 
 	Suite getSuite(Integer suiteId);

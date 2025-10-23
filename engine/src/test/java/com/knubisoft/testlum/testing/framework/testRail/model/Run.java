@@ -1,16 +1,12 @@
 package com.knubisoft.testlum.testing.framework.testRail.model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
 @Setter
 @Builder
-@RequiredArgsConstructor
 public class Run {
 	private Integer id;
 	private Integer projectId;

@@ -1,17 +1,15 @@
 package com.knubisoft.testlum.testing.framework.testRail.impl;
 
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.testRail.TestRailApiClient;
 import com.knubisoft.testlum.testing.framework.testRail.constant.TestRailConstants;
-import com.knubisoft.testlum.testing.framework.testRail.model.Project;
 import com.knubisoft.testlum.testing.framework.testRail.model.ResultResponseDto;
 import com.knubisoft.testlum.testing.framework.testRail.model.Run;
-import com.knubisoft.testlum.testing.framework.testRail.model.Suite;
 import com.knubisoft.testlum.testing.framework.testRail.util.TestRailUtil;
 import com.knubisoft.testlum.testing.model.global_config.TestRailReports;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -142,91 +140,13 @@ public class TestRailApiClientImpl implements TestRailApiClient {
 				log.info(TestRailConstants.LOG_CONNECTION_SUCCESSFUL);
 			} else {
 				log.warn(TestRailConstants.LOG_CONNECTION_FAILED, response.getStatusCode());
+				throw new DefaultFrameworkException(TestRailConstants.LOG_CONNECTION_FAILED, response.getStatusCode());
 			}
 
 		} catch (Exception e) {
 			log.error(TestRailConstants.LOG_CONNECTION_ERROR, e.getMessage(), e);
+			throw new DefaultFrameworkException(TestRailConstants.LOG_CONNECTION_ERROR, e.getMessage(), e);
 		}
-	}
-
-	@Override
-	public Project getProject(Integer projectId) {
-		String url = testRails.getUrl() + TestRailConstants.GET_PROJECT_URL + projectId;
-		HttpHeaders headers = authHeaders();
-		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(headers);
-
-		try {
-			log.info(TestRailConstants.LOG_GET_PROJECT, projectId, testRails.getUrl());
-			var response = restTemplate.exchange(url, HttpMethod.GET, entity, Project.class);
-			return response.getBody();
-		} catch (Exception e) {
-			log.error(TestRailConstants.LOG_GET_PROJECT_FAILED, projectId, testRails.getUrl(), e.getMessage(), e);
-		}
-		return null;
-	}
-
-	@Override
-	public Suite getSuite(Integer suiteId) {
-		String url = testRails.getUrl() + TestRailConstants.GET_SUITE_URL + suiteId;
-		HttpHeaders headers = authHeaders();
-		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(headers);
-
-		try {
-			log.info(TestRailConstants.LOG_GET_SUITE, suiteId, testRails.getUrl());
-			var response = restTemplate.exchange(url, HttpMethod.GET, entity, Suite.class);
-			return response.getBody();
-		} catch (Exception e) {
-			log.error(TestRailConstants.LOG_GET_SUITE_FAILED, suiteId, testRails.getUrl(), e.getMessage(), e);
-		}
-		return null;
-	}
-
-	@Override
-	public Run getRun(Integer runId) {
-		String url = testRails.getUrl() + TestRailConstants.GET_RUN_URL + runId;
-		HttpHeaders headers = authHeaders();
-		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(headers);
-
-		try {
-			log.info(TestRailConstants.LOG_GET_RUN, runId, testRails.getUrl());
-			var response = restTemplate.exchange(url, HttpMethod.GET, entity, Run.class);
-			return response.getBody();
-		} catch (Exception e) {
-			log.error(TestRailConstants.LOG_GET_RUN_FAILED, runId, testRails.getUrl(), e.getMessage(), e);
-		}
-		return null;
-	}
-
-	@Override
-	public Run updateRun(Integer runId, List<Integer> caseIds) {
-		String url = testRails.getUrl() + TestRailConstants.UPDATE_RUN_URL + runId;
-		Run request = TestRailUtil.buildTestRunRequest(testRails, caseIds);
-		HttpHeaders headers = buildHeaders();
-		HttpEntity<Run> entity = new HttpEntity<>(request, headers);
-		try {
-			log.info(TestRailConstants.LOG_UPDATING_TEST_RUN, runId, caseIds.size());
-			var response = restTemplate.exchange(url, HttpMethod.POST, entity, Run.class);
-			return response.getBody();
-		} catch (Exception e) {
-			log.error(TestRailConstants.LOG_TEST_RUN_UPDATING_FAILED, runId, e.getMessage(), e);
-		}
-		return null;
-	}
-
-	@Override
-	public List<Run> getRunsByProject(Integer projectId) {
-		String url = testRails.getUrl() + TestRailConstants.GET_RUNS_URL + projectId;
-		HttpHeaders headers = authHeaders();
-		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(headers);
-
-		try {
-			log.info(TestRailConstants.LOG_GET_RUNS, projectId, testRails.getUrl());
-			var response = restTemplate.exchange(url, HttpMethod.GET, entity, new ParameterizedTypeReference<List<Run>>() {});
-			return response.getBody();
-		} catch (Exception e) {
-			log.error(TestRailConstants.LOG_GET_RUNS_FAILED, projectId, testRails.getUrl(), e.getMessage(), e);
-		}
-		return List.of();
 	}
 
 	private HttpHeaders buildHeaders() {

@@ -7,6 +7,8 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Run {
 	private Integer id;
 	private Integer projectId;

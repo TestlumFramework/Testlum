@@ -9,23 +9,12 @@ public final class TestRailConstants {
     public static final String CREATE_NEW_TEST_RUN_URL = "add_run/";
     public static final String GET_TEST_URL = "get_test/";
     public static final String ADD_ATTACHMENT_TO_RESULT_URL = "add_attachment_to_result/";
-	public static final String GET_PROJECT_URL = "get_project/";
 	public static final String GET_PROJECTS_URL = "get_projects";
-	public static final String GET_SUITE_URL = "get_suite/";
-	public static final String GET_RUN_URL = "get_run/";
-	public static final String UPDATE_RUN_URL = "update_run/";
-	public static final String GET_RUNS_URL = "get_runs/";
 
     public static final String CASE_ID = "case_id";
     public static final String STATUS_ID = "status_id";
     public static final String COMMENT = "comment";
     public static final String RESULTS = "results";
-    public static final String ID = "id";
-
-    public static final String RUN_NAME = "name";
-    public static final String RUN_DESCRIPTION = "description";
-    public static final String RUN_INCLUDE_ALL = "include_all";
-    public static final String RUN_CASE_IDS = "case_ids";
 
     public static final int STATUS_PASSED = 1;
     public static final int STATUS_FAILED = 5;

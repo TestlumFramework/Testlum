@@ -6,19 +6,19 @@ This document provides a detailed guide on how to set up and use TestRail integr
 
 ## 1️⃣ Configuration in `global-config`
 
-To enable TestRail integration, you must add a `<testRailsApi>` section inside your `global-config` XML file.
+To enable TestRail integration, you must add a `<testRailReports>` section inside your `global-config` XML file (`<report>` -> `<extentReports>` section).
 
 ### Example:
 
 ```xml
-<testRailsApi>
+<testRailReports enabled="true" addScreenshotForFailure="true">
     <username>your_email@example.com</username> <!-- required -->
     <apiKey>your_api_key</apiKey> <!-- required -->
     <url>https://yourdomain.testrail.io/</url> <!-- required -->
     <projectId>1</projectId> <!-- optional -->
     <defaultRunName>Auto Test Run</defaultRunName> <!-- optional -->
     <defaultRunDescription>Run generated automatically</defaultRunDescription> <!-- optional -->
-</testRailsApi>
+</testRailReports>
 ```
 
 * **username**: Your TestRail account email.
@@ -78,7 +78,7 @@ This will send the result of the test to the **existing run (ID=1)** and associa
 
 2️⃣ **Tests without `testRailRunId`:**
 
-* A new Test Run is created (if `projectId` is set in `testRailsApi`).
+* A new Test Run is created (if `projectId` is set in `testRailReports`).
 * All scenarios with `enable=true` and a valid `testCaseId` are added to the new Test Run.
 * Test results are submitted to the newly created run.
 
@@ -86,10 +86,10 @@ This will send the result of the test to the **existing run (ID=1)** and associa
 
 ## 4️⃣ XML Schema Updates
 
-### `<testRailsApi>` (Global Config)
+### `<testRailReports>` (Global Config)
 
 ```xml
-<x:complexType name="testRailsApi">
+<x:complexType name="testRailReports">
     <x:sequence>
         <x:element name="username" type="tns:nonEmptyString"/>
         <x:element name="apiKey" type="tns:nonEmptyString"/>

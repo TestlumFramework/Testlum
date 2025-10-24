@@ -7,17 +7,24 @@
     <parent>
         <groupId>com.knubisoft</groupId>
         <artifactId>modules</artifactId>
-        <version>1.0</version>
+        <version>1.0.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>testlum-models</artifactId>
 
     <properties>
+        <jakarta.xml.bind.version>4.0.2</jakarta.xml.bind.version>
         <javax.xml.version>2.3.1</javax.xml.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>${jakarta.xml.bind.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>

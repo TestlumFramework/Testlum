@@ -1,7 +1,7 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**
@@ -123,6 +123,14 @@ public class ObjectFactory {
      */
     public Postgres createPostgres() {
         return new Postgres();
+    }
+
+    /**
+     * Create an instance of {@link SqlDatabase }
+     * 
+     */
+    public SqlDatabase createSqlDatabase() {
+        return new SqlDatabase();
     }
 
     /**

@@ -7,22 +7,22 @@
     <parent>
         <groupId>com.knubisoft</groupId>
         <artifactId>modules</artifactId>
-        <version>1.0</version>
+        <version>1.0.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>testlum-kafka</artifactId>
 
     <properties>
-        <spring-kafka.version>2.7.1</spring-kafka.version>
-        <kafka-clients.version>2.7.1</kafka-clients.version>
+        <spring-kafka.version>3.3.7</spring-kafka.version>
+        <kafka-clients.version>3.9.1</kafka-clients.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-shared-util</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.kafka</groupId>

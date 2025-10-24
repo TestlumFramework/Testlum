@@ -7,33 +7,46 @@
     <parent>
         <groupId>com.knubisoft</groupId>
         <artifactId>modules</artifactId>
-        <version>1.0</version>
+        <version>1.0.2</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>testlum-auth-util</artifactId>
 
     <properties>
-        <com.jayway.json-path.version>2.5.0</com.jayway.json-path.version>
+        <com.jayway.json-path.version>2.9.0</com.jayway.json-path.version>
+        <json-smart.version>2.5.2</json-smart.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-shared-util</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-api-util</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>${com.jayway.json-path.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.minidev</groupId>
+                    <artifactId>json-smart</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+            <version>${json-smart.version}</version>
         </dependency>
     </dependencies>
 </project>

@@ -19,12 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_NOT_FOUND;
 import static java.util.Objects.nonNull;
@@ -33,18 +28,24 @@ import static java.util.Objects.nonNull;
 public class ScenarioCollector {
 
     private final File rootTestResources;
+    private final Optional<File> scenarioScopeFolder;
     private final ScenarioValidator scenarioValidator;
     private String variationFileName;
 
     public ScenarioCollector() {
         TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
         this.rootTestResources = resourceSettings.getTestResourcesFolder();
+        this.scenarioScopeFolder = resourceSettings.getScenarioScopeFolder();
         this.scenarioValidator = new ScenarioValidator();
     }
 
     public Result collect() {
         List<File> scenarios = new ArrayList<>();
-        walk(rootTestResources, scenarios);
+        if (scenarioScopeFolder.isPresent()) {
+            walk(scenarioScopeFolder.get(), scenarios);
+        } else {
+            walk(rootTestResources, scenarios);
+        }
         Result result = new Result();
         for (File each : scenarios) {
             applyXml(each, result);

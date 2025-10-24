@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing;
 
 import com.knubisoft.testlum.testing.framework.ConnectionManager;
+import com.knubisoft.testlum.testing.framework.ScenarioArgumentsToNamedConverter;
 import com.knubisoft.testlum.testing.framework.SystemDataStoreCleaner;
 import com.knubisoft.testlum.testing.framework.TestSetCollector;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +91,7 @@ public class RootTest {
     @DisplayName("Execution of test scenarios:")
     @ParameterizedTest(name = "[{index}] path -- {0}")
     @MethodSource("prepareTestData")
-    void execution(final Named<ScenarioArguments> arguments) {
+    void execution(@ConvertWith(ScenarioArgumentsToNamedConverter.class) final Named<ScenarioArguments> arguments) {
         envLockService.runLocked(() -> execute(arguments.getPayload()));
     }
 

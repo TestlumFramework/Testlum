@@ -1,8 +1,8 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlEnum;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="MONGODB"/&gt;
  *     &lt;enumeration value="DYNAMO"/&gt;
  *     &lt;enumeration value="CLICKHOUSE"/&gt;
+ *     &lt;enumeration value="SQLDATABASE"/&gt;
  *   &lt;/restriction&gt;
  * &lt;/simpleType&gt;
  * </pre>
@@ -35,7 +36,8 @@ public enum StorageName {
     REDIS,
     MONGODB,
     DYNAMO,
-    CLICKHOUSE;
+    CLICKHOUSE,
+    SQLDATABASE;
 
     public String value() {
         return name();

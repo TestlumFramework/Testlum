@@ -1,7 +1,7 @@
 
 package com.knubisoft.testlum.testing.model.global_config;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**
@@ -235,6 +235,14 @@ public class ObjectFactory {
      */
     public TwilioIntegration createTwilioIntegration() {
         return new TwilioIntegration();
+    }
+
+    /**
+     * Create an instance of {@link SqlDatabaseIntegration }
+     * 
+     */
+    public SqlDatabaseIntegration createSqlDatabaseIntegration() {
+        return new SqlDatabaseIntegration();
     }
 
     /**
@@ -534,14 +542,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Opera }
-     * 
-     */
-    public Opera createOpera() {
-        return new Opera();
-    }
-
-    /**
      * Create an instance of {@link Safari }
      * 
      */
@@ -771,6 +771,22 @@ public class ObjectFactory {
      */
     public Twilio createTwilio() {
         return new Twilio();
+    }
+
+    /**
+     * Create an instance of {@link SqlDatabase }
+     * 
+     */
+    public SqlDatabase createSqlDatabase() {
+        return new SqlDatabase();
+    }
+
+    /**
+     * Create an instance of {@link CustomTruncateConfig }
+     * 
+     */
+    public CustomTruncateConfig createCustomTruncateConfig() {
+        return new CustomTruncateConfig();
     }
 
     /**

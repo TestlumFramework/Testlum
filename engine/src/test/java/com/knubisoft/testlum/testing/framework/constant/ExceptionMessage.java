@@ -43,6 +43,8 @@ public class ExceptionMessage {
                                                        + "folders with duplicate names - [%s]. Each folder should have a unique name" + ANSI_RESET;
 
     public static final String NO_ENABLED_ENVIRONMENTS_FOUND = "No enabled environments found in configuration file";
+    public static final String NO_ENABLED_REPORT_GENERATORS_FOUND = ANSI_RED +
+                                                                    "At least one report generator must be enabled" + ANSI_RESET;
     public static final String STOP_IF_NON_PARSED_SCENARIO = ANSI_YELLOW
                                                              + "The execution has been stopped because of the enabled <StopIfInvalidScenario>" + ANSI_RESET;
     public static final String VALID_SCENARIOS_NOT_FOUND = ANSI_RED + "Valid scenarios are not found" + ANSI_RESET;

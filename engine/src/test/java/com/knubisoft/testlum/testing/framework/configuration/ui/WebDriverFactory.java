@@ -14,7 +14,6 @@ import com.knubisoft.testlum.testing.model.global_config.Chrome;
 import com.knubisoft.testlum.testing.model.global_config.Edge;
 import com.knubisoft.testlum.testing.model.global_config.Firefox;
 import com.knubisoft.testlum.testing.model.global_config.LocalBrowser;
-import com.knubisoft.testlum.testing.model.global_config.Opera;
 import com.knubisoft.testlum.testing.model.global_config.RemoteBrowser;
 import com.knubisoft.testlum.testing.model.global_config.Safari;
 import com.knubisoft.testlum.testing.model.global_config.ScreenRecording;
@@ -23,7 +22,6 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.managers.ChromeDriverManager;
 import io.github.bonigarcia.wdm.managers.EdgeDriverManager;
 import io.github.bonigarcia.wdm.managers.FirefoxDriverManager;
-import io.github.bonigarcia.wdm.managers.OperaDriverManager;
 import io.github.bonigarcia.wdm.managers.SafariDriverManager;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -54,7 +52,6 @@ public class WebDriverFactory {
         DRIVER_INITIALIZER_MAP = Map.of(
                 browser -> browser instanceof Chrome, b -> new ChromeDriverInitializer().init((Chrome) b),
                 browser -> browser instanceof Firefox, b -> new FirefoxDriverInitializer().init((Firefox) b),
-                browser -> browser instanceof Opera, b -> new OperaDriverInitializer().init((Opera) b),
                 browser -> browser instanceof Safari, b -> new SafariDriverInitializer().init((Safari) b),
                 browser -> browser instanceof Edge, b -> new EdgeDriverInitializer().init((Edge) b));
     }
@@ -171,6 +168,8 @@ public class WebDriverFactory {
             if (nonNull(browserOptionsArguments)) {
                 chromeOptions.addArguments(browserOptionsArguments.getArgument());
             }
+            chromeOptions.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+            chromeOptions.setExperimentalOption("useAutomationExtension", false);
             return chromeOptions;
         }
     }
@@ -184,7 +183,7 @@ public class WebDriverFactory {
         private FirefoxOptions getFirefoxOptions(final Firefox browser) {
             FirefoxOptions firefoxOptions = new FirefoxOptions();
             if (browser.isHeadlessMode()) {
-                firefoxOptions.addArguments("--headless=new");
+                firefoxOptions.addArguments("-headless");
             }
             BrowserOptionsArguments browserOptionsArguments = browser.getFirefoxOptionsArguments();
             if (nonNull(browserOptionsArguments)) {
@@ -217,22 +216,6 @@ public class WebDriverFactory {
 
         public WebDriver init(final Safari browser) {
             return getWebDriver(browser, new SafariOptions(), new SafariDriverManager());
-        }
-    }
-
-    private class OperaDriverInitializer implements WebDriverInitializer<Opera> {
-
-        public WebDriver init(final Opera browser) {
-            return getWebDriver(browser, getOperaOptions(browser), new OperaDriverManager());
-        }
-
-        private ChromeOptions getOperaOptions(final Opera browser) {
-            ChromeOptions operaOptions = new ChromeOptions();
-            BrowserOptionsArguments browserOptionsArguments = browser.getOperaOptionsArguments();
-            if (nonNull(browserOptionsArguments)) {
-                operaOptions.addArguments(browserOptionsArguments.getArgument());
-            }
-            return operaOptions;
         }
     }
 

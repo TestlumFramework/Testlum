@@ -1,11 +1,7 @@
 
 package com.knubisoft.testlum.testing.model.global_config;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 
 
 /**
@@ -32,12 +28,12 @@ import javax.xml.bind.annotation.XmlType;
     Api.class,
     GraphqlApi.class,
     WebsocketApi.class,
-    StorageIntegration.class,
     Lambda.class,
     Sendgrid.class,
     Ses.class,
     Smtp.class,
-    Twilio.class
+    Twilio.class,
+    StorageIntegration.class
 })
 public abstract class Integration {
 

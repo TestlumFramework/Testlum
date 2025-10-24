@@ -50,6 +50,6 @@ public class SwitchToFrameWebExecutor extends AbstractUiExecutor<SwitchToFrame> 
 
     private void switchToFrameByIndex(final SwitchToFrame switchToFrame, final CommandResult result) {
         result.put(SWITCH_INDEX, switchToFrame.getIndex());
-        dependencies.getDriver().switchTo().frame(switchToFrame.getIndex());
+        dependencies.getDriver().switchTo().frame(Integer.parseInt(switchToFrame.getIndex()));
     }
 }

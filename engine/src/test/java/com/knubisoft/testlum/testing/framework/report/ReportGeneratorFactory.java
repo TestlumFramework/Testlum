@@ -1,5 +1,7 @@
 package com.knubisoft.testlum.testing.framework.report;
 
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.extentreports.ExtentReportsGenerator;
 import com.knubisoft.testlum.testing.framework.testRail.TestRailService;
 import com.knubisoft.testlum.testing.model.global_config.ExtentReports;
@@ -22,25 +24,24 @@ public class ReportGeneratorFactory {
     public ReportGenerator create(final Report report, final TestRailService testRailService) {
         if (Objects.nonNull(report.getExtentReports())) {
             checkExtentReportsGenerators(report.getExtentReports());
-        } else { //add a new branch if another implementation is needed
-            log.warn(NO_REPORT_GENERATOR_PRESENT);
-        }
-        ExtentReportsGenerator reportsGenerator = new ExtentReportsGenerator();
-        reportsGenerator.setTestRailService(testRailService);
-        return reportsGenerator;
+	        ExtentReportsGenerator reportsGenerator = new ExtentReportsGenerator();
+	        reportsGenerator.setTestRailService(testRailService);
+	        return reportsGenerator;
+        } //add a new branch if another implementation is needed
+        throw new UnsupportedOperationException("Report generator type is not supported");
     }
 
     private void checkExtentReportsGenerators(final ExtentReports extentReports) {
         HtmlReportGenerator htmlReportGenerator = extentReports.getHtmlReportGenerator();
         KlovServerReportGenerator klovServerReportGenerator = extentReports.getKlovServerReportGenerator();
-        TestRailReports testRailReports = extentReports.getTestRailReports();
+	    TestRailReports testRailReports = extentReports.getTestRailReports();
 
-        boolean isHtmlReportGeneratorDisabled = Objects.isNull(htmlReportGenerator) || !htmlReportGenerator.isEnabled();
-        boolean isKlovServerReportGeneratorDisabled = Objects.isNull(klovServerReportGenerator) || !klovServerReportGenerator.isEnabled();
-        boolean isTestRailReportGeneratorDisabled = Objects.isNull(testRailReports) || !testRailReports.isEnabled();
-
-        if (isHtmlReportGeneratorDisabled && isKlovServerReportGeneratorDisabled && isTestRailReportGeneratorDisabled) {
-            log.warn(NO_REPORT_GENERATOR_ENABLED);
+	    if (!htmlReportGenerator.isEnabled()) {
+            if (Objects.isNull(klovServerReportGenerator) || !klovServerReportGenerator.isEnabled()
+            || Objects.isNull(testRailReports) || !testRailReports.isEnabled()) {
+                log.error(ExceptionMessage.NO_ENABLED_REPORT_GENERATORS_FOUND);
+                throw new DefaultFrameworkException("At least one report generator must be enabled");
+            }
         }
     }
 }

@@ -1,13 +1,10 @@
 
 package com.knubisoft.testlum.testing.model.global_config;
 
+import jakarta.xml.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -24,7 +21,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="firefox" type="{http://www.knubisoft.com/testlum/testing/model/global-config}firefox"/&gt;
  *         &lt;element name="safari" type="{http://www.knubisoft.com/testlum/testing/model/global-config}safari"/&gt;
  *         &lt;element name="edge" type="{http://www.knubisoft.com/testlum/testing/model/global-config}edge"/&gt;
- *         &lt;element name="opera" type="{http://www.knubisoft.com/testlum/testing/model/global-config}opera"/&gt;
  *       &lt;/choice&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -44,7 +40,6 @@ public class Browsers {
         @XmlElement(name = "firefox", type = Firefox.class),
         @XmlElement(name = "safari", type = Safari.class),
         @XmlElement(name = "edge", type = Edge.class),
-        @XmlElement(name = "opera", type = Opera.class)
     })
     protected List<AbstractBrowser> chromeOrFirefoxOrSafari;
 
@@ -70,8 +65,7 @@ public class Browsers {
      * {@link Firefox }
      * {@link Safari }
      * {@link Edge }
-     * {@link Opera }
-     * 
+     *
      * 
      */
     public List<AbstractBrowser> getChromeOrFirefoxOrSafari() {

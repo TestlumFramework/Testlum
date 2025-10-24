@@ -1,13 +1,10 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
+import jakarta.xml.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlType;
 
 
 /**
@@ -29,7 +26,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="refresh" type="{http://www.knubisoft.com/testlum/testing/model/scenario}refresh"/&gt;
  *         &lt;element name="navigate" type="{http://www.knubisoft.com/testlum/testing/model/scenario}navigateNative"/&gt;
  *         &lt;element name="dragAndDrop" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dragAndDropNative"/&gt;
- *         &lt;element name="swipe" type="{http://www.knubisoft.com/testlum/testing/model/scenario}swipeNative"/&gt;
+ *         &lt;element name="swipeNative" type="{http://www.knubisoft.com/testlum/testing/model/scenario}swipeNative"/&gt;
  *         &lt;element name="webView" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webView"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nativeVar"/&gt;
  *         &lt;element name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiCondition"/&gt;
@@ -60,7 +57,7 @@ public class Native
         @XmlElement(name = "refresh", type = Refresh.class),
         @XmlElement(name = "navigate", type = NavigateNative.class),
         @XmlElement(name = "dragAndDrop", type = DragAndDropNative.class),
-        @XmlElement(name = "swipe", type = SwipeNative.class),
+        @XmlElement(name = "swipeNative", type = SwipeNative.class),
         @XmlElement(name = "webView", type = WebView.class),
         @XmlElement(name = "var", type = NativeVar.class),
         @XmlElement(name = "condition", type = UiCondition.class),

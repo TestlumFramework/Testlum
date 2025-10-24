@@ -7,27 +7,40 @@
     <parent>
         <groupId>com.knubisoft</groupId>
         <artifactId>modules</artifactId>
-        <version>1.0</version>
+        <version>1.0.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>testlum-sqs</artifactId>
 
     <properties>
-        <com.amazonaws.version>1.12.129</com.amazonaws.version>
+        <software.amazon.awssdk.version>2.31.65</software.amazon.awssdk.version>
+        <commons-codec.version>1.17.1</commons-codec.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-shared-util</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-sqs</artifactId>
-            <version>${com.amazonaws.version}</version>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sqs</artifactId>
+            <version>${software.amazon.awssdk.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons-codec.version}</version>
         </dependency>
     </dependencies>
 </project>

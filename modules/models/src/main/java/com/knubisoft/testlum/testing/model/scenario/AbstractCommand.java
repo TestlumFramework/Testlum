@@ -1,11 +1,7 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 
 
 /**
@@ -36,6 +32,7 @@ import javax.xml.bind.annotation.XmlType;
     Http.class,
     Migrate.class,
     Postgres.class,
+    SqlDatabase.class,
     Mysql.class,
     Oracle.class,
     Mongo.class,

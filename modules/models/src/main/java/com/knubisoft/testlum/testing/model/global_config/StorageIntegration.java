@@ -1,11 +1,7 @@
 
 package com.knubisoft.testlum.testing.model.global_config;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.*;
 
 
 /**
@@ -29,7 +25,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "storageIntegration")
 @XmlSeeAlso({
     Clickhouse.class,
-    DatabaseConfig.class,
     Redis.class,
     Mongo.class,
     S3 .class,
@@ -37,7 +32,8 @@ import javax.xml.bind.annotation.XmlType;
     Kafka.class,
     Rabbitmq.class,
     Dynamo.class,
-    Elasticsearch.class
+    Elasticsearch.class,
+    DatabaseConfig.class
 })
 public class StorageIntegration
     extends Integration

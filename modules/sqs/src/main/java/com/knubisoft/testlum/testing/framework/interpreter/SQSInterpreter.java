@@ -10,10 +10,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
-import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
-import com.knubisoft.testlum.testing.model.scenario.Sqs;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -89,6 +86,8 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
 
     private static final String INCORRECT_SQS_PROCESSING = "Incorrect SQS processing";
 
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
+
     @Autowired(required = false)
     private Map<AliasEnv, SqsClient> sqsClient;
 
@@ -99,6 +98,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     @Override
     protected void acceptImpl(final Sqs o, final CommandResult result) {
         Sqs sqs = injectCommand(o);
+        checkAlias(sqs);
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         for (Object action : sqs.getSendOrReceive()) {
@@ -108,6 +108,12 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
             processEachAction(action, sqs.getAlias(), commandResult);
         }
         setExecutionResultIfSubCommandsFailed(result);
+    }
+
+    private void checkAlias(final Sqs sqs) {
+        if (sqs.getAlias() == null) {
+            sqs.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     private void processEachAction(final Object action, final String alias, final CommandResult result) {

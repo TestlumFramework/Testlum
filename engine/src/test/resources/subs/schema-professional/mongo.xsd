@@ -13,7 +13,7 @@
         <x:sequence>
           <x:element name="query" type="x:string" minOccurs="1" maxOccurs="unbounded"/>
         </x:sequence>
-        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+        <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
         <x:attribute name="file" type="tns:expectedPattern" use="required"/>
       </x:extension>
     </x:complexContent>

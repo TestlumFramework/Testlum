@@ -32,6 +32,7 @@ public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
     //RESULT
     private static final String QUERIES = "Queries";
     private static final String DATABASE_ALIAS = "Database alias";
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)
     @Qualifier("mySqlOperation")
@@ -44,6 +45,7 @@ public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
     @Override
     protected void acceptImpl(final Mysql o, final CommandResult result) {
         Mysql mysql = injectCommand(o);
+        checkAlias(mysql);
         String actual = getActual(mysql, result);
         CompareBuilder comparator = newCompare()
                 .withActual(actual)
@@ -54,6 +56,12 @@ public class MySqlInterpreter extends AbstractInterpreter<Mysql> {
 
         comparator.exec();
         setContextBody(getContextBodyKey(mysql.getFile()), actual);
+    }
+
+    private void checkAlias(final Mysql mysql) {
+        if (mysql.getAlias() == null) {
+            mysql.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     protected String getActual(final Mysql mysql, final CommandResult result) {

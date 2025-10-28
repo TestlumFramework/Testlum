@@ -8,13 +8,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.http.HttpValidato
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
-import com.knubisoft.testlum.testing.model.scenario.Body;
-import com.knubisoft.testlum.testing.model.scenario.ElasticSearchRequest;
-import com.knubisoft.testlum.testing.model.scenario.ElasticSearchRequestWithBody;
-import com.knubisoft.testlum.testing.model.scenario.ElasticSearchResponse;
-import com.knubisoft.testlum.testing.model.scenario.Elasticsearch;
-import com.knubisoft.testlum.testing.model.scenario.Header;
-import com.knubisoft.testlum.testing.model.scenario.Param;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -64,6 +58,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     private static final String HTTP_METHOD = "HTTP method";
     private static final String ADDITIONAL_HEADERS = "Additional headers";
     private static final String HEADER_TEMPLATE = "%s: %s";
+    private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)
     @Qualifier("restClient")
@@ -76,12 +71,19 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     @Override
     protected void acceptImpl(final Elasticsearch o, final CommandResult result) {
         Elasticsearch elasticsearch = injectCommand(o);
+        checkAlias(elasticsearch);
         HttpUtil.ESHttpMethodMetadata esHttpMethodMetadata = HttpUtil.getESHttpMethodMetadata(elasticsearch);
         ElasticSearchRequest elasticSearchRequest = esHttpMethodMetadata.getElasticSearchRequest();
         HttpMethod httpMethod = esHttpMethodMetadata.getHttpMethod();
         Response actual = getActual(elasticSearchRequest, httpMethod, elasticsearch.getAlias(), result);
         ElasticSearchResponse expected = elasticSearchRequest.getResponse();
         compare(expected, actual, result);
+    }
+
+    private void checkAlias(final Elasticsearch elasticsearch) {
+        if (elasticsearch.getAlias() == null) {
+            elasticsearch.setAlias(DEFAULT_ALIAS_VALUE);
+        }
     }
 
     private void compare(final ElasticSearchResponse expected, final Response actual, final CommandResult result) {

@@ -29,14 +29,14 @@ public class HoverExecutor extends AbstractUiExecutor<Hover> {
         LogUtil.logHover(hover);
         Actions actions = new Actions(dependencies.getDriver());
         if (ConditionUtil.isTrue(hover.getCondition(), dependencies.getScenarioContext(), result)) {
-            executeHoverCommand(actions, hover);
+            executeHoverCommand(actions, hover, result);
         }
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         moveToEmptySpace(hover.isMoveToEmptySpace(), actions);
     }
 
-    private void executeHoverCommand(final Actions actions, final Hover hover) {
-        WebElement webElement = UiUtil.findWebElement(dependencies, hover.getLocator(), hover.getLocatorStrategy());
+    private void executeHoverCommand(final Actions actions, final Hover hover, final CommandResult result) {
+        WebElement webElement = UiUtil.findWebElement(dependencies, hover.getLocator(), hover.getLocatorStrategy(), result);
         performMovement(actions, webElement);
     }
 

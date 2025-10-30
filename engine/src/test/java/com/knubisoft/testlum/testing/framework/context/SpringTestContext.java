@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ReportGeneratorFactory;
+import com.knubisoft.testlum.testing.framework.testRail.TestRailService;
 import com.knubisoft.testlum.testing.model.global_config.Environment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -38,7 +39,7 @@ public class SpringTestContext {
     }
 
     @Bean
-    public ReportGenerator reportGenerator() {
-        return ReportGeneratorFactory.create(GlobalTestConfigurationProvider.provide().getReport());
+    public ReportGenerator reportGenerator(TestRailService testRailService) {
+        return ReportGeneratorFactory.create(GlobalTestConfigurationProvider.provide().getReport(), testRailService);
     }
 }

@@ -16,12 +16,11 @@ import jakarta.xml.bind.annotation.XmlType;
  * &lt;complexType name="extentReports"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;choice&gt;
- *         &lt;sequence&gt;
- *           &lt;element name="htmlReportGenerator" type="{http://www.knubisoft.com/testlum/testing/model/global-config}htmlReportGenerator"/&gt;
- *           &lt;element name="klovServerReportGenerator" type="{http://www.knubisoft.com/testlum/testing/model/global-config}klovServerReportGenerator" minOccurs="0"/&gt;
- *         &lt;/sequence&gt;
- *       &lt;/choice&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="htmlReportGenerator" type="{http://www.knubisoft.com/testlum/testing/model/global-config}htmlReportGenerator" minOccurs="0"/&gt;
+ *         &lt;element name="klovServerReportGenerator" type="{http://www.knubisoft.com/testlum/testing/model/global-config}klovServerReportGenerator" minOccurs="0"/&gt;
+ *         &lt;element name="testRailReports" type="{http://www.knubisoft.com/testlum/testing/model/global-config}testRailReports" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
  *       &lt;attribute name="projectName" use="required" type="{http://www.knubisoft.com/testlum/testing/model/global-config}nonEmptyString" /&gt;
  *       &lt;attribute name="onlyFailedScenarios" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *     &lt;/restriction&gt;
@@ -34,12 +33,14 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "extentReports", propOrder = {
     "htmlReportGenerator",
-    "klovServerReportGenerator"
+    "klovServerReportGenerator",
+    "testRailReports"
 })
 public class ExtentReports {
 
     protected HtmlReportGenerator htmlReportGenerator;
     protected KlovServerReportGenerator klovServerReportGenerator;
+    protected TestRailReports testRailReports;
     @XmlAttribute(name = "projectName", required = true)
     protected String projectName;
     @XmlAttribute(name = "onlyFailedScenarios")
@@ -91,6 +92,30 @@ public class ExtentReports {
      */
     public void setKlovServerReportGenerator(KlovServerReportGenerator value) {
         this.klovServerReportGenerator = value;
+    }
+
+    /**
+     * Gets the value of the testRailReports property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TestRailReports }
+     *     
+     */
+    public TestRailReports getTestRailReports() {
+        return testRailReports;
+    }
+
+    /**
+     * Sets the value of the testRailReports property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TestRailReports }
+     *     
+     */
+    public void setTestRailReports(TestRailReports value) {
+        this.testRailReports = value;
     }
 
     /**

@@ -69,7 +69,7 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
         String locatorId = var.getElement().getPresent().getLocator();
         LocatorStrategy locatorStrategy = var.getElement().getPresent().getLocatorStrategy();
         try {
-            UiUtil.findWebElement(dependencies, locatorId, locatorStrategy);
+            UiUtil.findWebElement(dependencies, locatorId, locatorStrategy, result);
             valueResult = String.valueOf(true);
         } catch (DefaultFrameworkException e) {
             valueResult = String.valueOf(false);

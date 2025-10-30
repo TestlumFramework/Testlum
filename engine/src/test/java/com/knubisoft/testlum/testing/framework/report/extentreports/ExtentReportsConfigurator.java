@@ -34,7 +34,7 @@ public class ExtentReportsConfigurator {
         String projectName = extentReportsConfig.getProjectName();
         HtmlReportGenerator htmlReportGeneratorSettings = extentReportsConfig.getHtmlReportGenerator();
         KlovServerReportGenerator klovServerGeneratorSettings = extentReportsConfig.getKlovServerReportGenerator();
-        if (htmlReportGeneratorSettings.isEnabled()) {
+        if (Objects.nonNull(htmlReportGeneratorSettings) && htmlReportGeneratorSettings.isEnabled()) {
             attachSparkReporter(extentReports, projectName);
         }
         if (Objects.nonNull(klovServerGeneratorSettings) && klovServerGeneratorSettings.isEnabled()) {

@@ -382,6 +382,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link TestRails }
+     * 
+     */
+    public TestRails createTestRails() {
+        return new TestRails();
+    }
+
+    /**
      * Create an instance of {@link UiWait }
      * 
      */

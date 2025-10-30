@@ -438,6 +438,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link TestRailReports }
+     * 
+     */
+    public TestRailReports createTestRailReports() {
+        return new TestRailReports();
+    }
+
+    /**
      * Create an instance of {@link BrowserSettings }
      * 
      */

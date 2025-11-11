@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,9 +34,16 @@ public abstract class AbstractSqlExecutor {
     private static final String TRUNCATE = "TRUNCATE";
     private static final String DROP = "DROP";
     private static final String SET = "SET";
+    private static final String DO = "DO";
+    private static final String CALL = "CALL";
     private static final String COUNT = "count";
 
     protected final JdbcTemplate template;
+
+    private static final Pattern STMT_SPLIT = Pattern.compile(
+            ";\\s*(?:(?:/\\*.*?\\*/)|(?:--.*?$))*\\s*(?=(?i)(?:insert\\s+into|update|delete|create|alter|drop|with|do)\\b)",
+            Pattern.DOTALL | Pattern.MULTILINE
+    );
 
     public AbstractSqlExecutor(final DataSource dataSource) {
         this.template = Objects.isNull(dataSource) ? null : new JdbcTemplate(dataSource);
@@ -64,20 +72,46 @@ public abstract class AbstractSqlExecutor {
                         .replaceAll(DelimiterConstant.SPACE_WITH_PLUS, SPACE)
                         .trim());
 
-        try {
-            Object result = executeAppropriateQuery(queryResult.getQuery());
-            queryResult.setContent(result);
-        } catch (InvalidDataAccessResourceUsageException e) {
-            LogUtil.logSqlException(e, queryResult.getQuery());
-            throw e;
+        List<String> statements = splitSqlStatements(query);
+
+        if (statements.size() <= 1) {
+            try {
+                Object result = executeAppropriateQuery(queryResult.getQuery());
+                queryResult.setContent(result);
+            } catch (InvalidDataAccessResourceUsageException e) {
+                LogUtil.logSqlException(e, query);
+                throw e;
+            }
+            return queryResult;
         }
+        Object lastResult = null;
+        for (String statement : statements) {
+            try {
+                lastResult = executeAppropriateQuery(statement);
+            } catch (InvalidDataAccessResourceUsageException e) {
+                LogUtil.logSqlException(e, statement);
+                throw e;
+            }
+        }
+        queryResult.setContent(lastResult);
         return queryResult;
+    }
+
+    protected List<String> splitSqlStatements(final String script) {
+        if (script == null || script.isBlank()){
+            return List.of();
+        }
+        final String source = script.replace("\uFEFF", "");
+        return STMT_SPLIT.splitAsStream(source)
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
     }
 
     private Object executeAppropriateQuery(final String query) {
         if (checkMatchQuery(query, INSERT, UPDATE, DELETE)) {
             return executeDMLQuery(query);
-        } else if (checkMatchQuery(query, ALTER, CREATE, TRUNCATE, DROP, SET)) {
+        } else if (checkMatchQuery(query, ALTER, CREATE, TRUNCATE, DROP, SET, DO, CALL)) {
             return executeDDLQuery(query);
         }
         return executeDQLQuery(query);

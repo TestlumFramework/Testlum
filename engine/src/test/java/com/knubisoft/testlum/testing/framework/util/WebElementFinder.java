@@ -59,12 +59,58 @@ public final class WebElementFinder {
     }
 
     public WebElement find(final Locator locator, final ExecutorDependencies dependencies) {
-        Set<org.openqa.selenium.By> bySet = new LinkedHashSet<>();
-        locator.getXpathOrIdOrClassName().forEach(obj -> {
-            Class<?> clazz = obj.getClass();
-            bySet.addAll(SEARCH_TYPES.get(clazz).apply(locator));
-        });
-        return getElementFromLocatorList(bySet, dependencies, locator.getLocatorId());
+        return find(locator, dependencies, FindOptions.defaults());
+    }
+
+    public WebElement find(final Locator locator,
+                           final ExecutorDependencies dependencies,
+                           final FindOptions options) {
+        final Set<org.openqa.selenium.By> bySet = buildBySet(locator);
+
+        if (options.isWaitForDomComplete()) {
+            waitForDomToComplete(dependencies);
+        }
+
+        final WebDriver driver = dependencies.getDriver();
+
+        if (isExplicitDisabled(options)) {
+            Duration implicitToRestore = getImplicitFromConfig();
+            driver.manage().timeouts().implicitlyWait(Duration.ZERO);
+            try {
+                Optional<WebElement> oneShot = tryFindMatching(bySet, driver, options.getState());
+                if (oneShot.isPresent()) {
+                    return oneShot.get();
+                }
+
+                if (options.isUseConfigSleep()) {
+                    waitForSecondsDefinedInConfig();
+                    oneShot = tryFindMatching(bySet, driver, options.getState());
+                    if (oneShot.isPresent()) {
+                        return oneShot.get();
+                    }
+                }
+            } finally {
+                driver.manage().timeouts().implicitlyWait(implicitToRestore);
+            }
+            throw new DefaultFrameworkException(String.format(UNABLE_TO_FIND_ELEMENT_BY_LOCATOR, locator.getLocatorId()));
+        }
+
+        final Duration implicitToRestore = getImplicitFromConfig();
+        driver.manage().timeouts().implicitlyWait(Duration.ZERO);
+        try {
+            final long deadline = System.nanoTime() + options.getMaxTime().toNanos();
+            while (System.nanoTime() < deadline) {
+                final Optional<WebElement> candidate = tryFindMatching(bySet, driver, options.getState());
+                if (candidate.isPresent()) {
+                    return candidate.get();
+                }
+                sleepQuietly(options.getPollInterval());
+            }
+        } finally {
+            driver.manage().timeouts().implicitlyWait(implicitToRestore);
+        }
+
+        throw new DefaultFrameworkException(String.format(UNABLE_TO_FIND_ELEMENT_BY_LOCATOR, locator.getLocatorId()));
     }
 
     private WebElement getElementFromLocatorList(final Set<org.openqa.selenium.By> bySet,
@@ -173,6 +219,62 @@ public final class WebElementFinder {
 
         return "No match found";
     }
+
+    private Optional<WebElement> tryFindMatching(final Set<org.openqa.selenium.By> bySet,
+                                                 final WebDriver driver,
+                                                 final FindOptions.State state) {
+        final List<String> logMessages = new LinkedList<>();
+        int checked = 0;
+        for (org.openqa.selenium.By by : bySet) {
+            try {
+                WebElement element = findElementByLocator(driver, by, logMessages, checked);
+                if (matchesState(element, state)) {
+                    return Optional.of(element);
+                }
+                checked++;
+            } catch (NoSuchElementException ignore) {
+                checked++;
+                logMessages.add(String.format(UNABLE_TO_FIND_ELEMENT_BY_LOCATOR_TYPE, extractLocatorValue(by)));
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Set<org.openqa.selenium.By> buildBySet(final Locator locator) {
+        final Set<org.openqa.selenium.By> bySet = new LinkedHashSet<>();
+        locator.getXpathOrIdOrClassName().forEach(obj -> {
+            final Class<?> clazz = obj.getClass();
+            bySet.addAll(SEARCH_TYPES.get(clazz).apply(locator));
+        });
+        return bySet;
+    }
+
+    private boolean isExplicitDisabled(final FindOptions options) {
+        return options.getMaxTime() == null || options.getMaxTime().isZero();
+    }
+
+    private boolean matchesState(final WebElement el, final FindOptions.State state) {
+        return switch (state) {
+            case PRESENT -> true;
+            case VISIBLE -> el.isDisplayed();
+            case CLICKABLE -> el.isDisplayed() && el.isEnabled();
+        };
+    }
+
+    private void sleepQuietly(final Duration duration) {
+        try {
+            Thread.sleep(duration.toMillis());
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private Duration getImplicitFromConfig() {
+        Web settings = ConfigProviderImpl.GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv());
+        int s = settings.getBrowserSettings().getElementAutowait().getSeconds();
+        return Duration.ofSeconds(s);
+    }
+
 
     //CHECKSTYLE:ON
 

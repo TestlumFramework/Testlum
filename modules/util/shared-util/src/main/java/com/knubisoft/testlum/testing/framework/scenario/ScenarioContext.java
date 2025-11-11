@@ -1,14 +1,12 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
 import com.knubisoft.testlum.testing.framework.util.MapUtil;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +19,7 @@ public class ScenarioContext {
     private static final String NO_VALUES_FOUND_IN_CONTEXT = "Unable to find any value in scenario context." +
                                                              " Available keys: %s";
     private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
+    private static final Pattern IDENT = Pattern.compile("\\b([A-Za-z_][A-Za-z0-9_]*)\\b");
 
     private final Map<String, String> contextMap;
     private final Map<String, Boolean> conditionMap = new HashMap<>();
@@ -54,14 +53,16 @@ public class ScenarioContext {
         conditionMap.put(key, value);
     }
 
-    public String getCondition(final String condition) {
-        String injectedCondition = condition;
-        for (Map.Entry<String, Boolean> entry : conditionMap.entrySet()) {
-            if (injectedCondition.contains(entry.getKey())) {
-                injectedCondition = injectedCondition.replace(entry.getKey(), String.valueOf(entry.getValue()));
-            }
+    public String getCondition(final String raw) {
+        if (StringUtils.isBlank(raw)) {
+            return raw;
         }
-        return injectedCondition;
+
+        Boolean exact = conditionMap.get(raw.trim());
+        if (exact != null) {
+            return Boolean.toString(exact);
+        }
+        return substituteIdentifiers(raw, conditionMap);
     }
 
     public String inject(final String original) {
@@ -78,9 +79,19 @@ public class ScenarioContext {
             String firstSubsequence = m.group(1);
             String zeroSubsequence = m.group(0);
             String value = get(firstSubsequence);
-            value = StringEscapeUtils.escapeJson(value);
+            value = StringEscapeUtils.escapeJson(value).replaceAll("'", "''");
             formatted = formatted.replace(zeroSubsequence, value);
         }
         return formatted;
+    }
+
+    private static String substituteIdentifiers(final String expression, final Map<String, Boolean> values) {
+        return IDENT.matcher(expression).replaceAll(matchResult -> {
+            String ident = matchResult.group(1);
+            String replacement = values.containsKey(ident)
+                    ? String.valueOf(values.get(ident))
+                    : ident;
+            return Matcher.quoteReplacement(replacement);
+        });
     }
 }

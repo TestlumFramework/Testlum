@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioFilter;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
+import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ScenarioStepReader;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl.GlobalVariationsProvider;
@@ -138,7 +139,7 @@ public class TestSetCollector {
         return ScenarioArguments.builder()
                 .path(getShortPath(entry.file))
                 .file(entry.file)
-                .scenario(entry.scenario)
+                .scenario(deepCopyScenario(entry.scenario))
                 .exception(entry.exception)
                 .browser(browserAlias)
                 .mobilebrowserDevice(mobilebrowserAlias)
@@ -152,7 +153,7 @@ public class TestSetCollector {
         return ScenarioArguments.builder()
                 .path(getShortPath(entry.file))
                 .file(entry.file)
-                .scenario(entry.scenario)
+                .scenario(deepCopyScenario(entry.scenario))
                 .exception(entry.exception)
                 .variations(variations)
                 .build();
@@ -160,6 +161,11 @@ public class TestSetCollector {
 
     private Arguments convertToNamedArguments(final ScenarioArguments scenarioArguments) {
         return arguments(Named.of(scenarioArguments.getPath(), scenarioArguments));
+    }
+
+    private Scenario deepCopyScenario(Scenario src) {
+        String json = JacksonMapperUtil.writeValueToCopiedString(src);
+        return JacksonMapperUtil.readCopiedValue(json, Scenario.class);
     }
 
     private String getShortPath(final File file) {

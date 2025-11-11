@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioFilter;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
+import com.knubisoft.testlum.testing.framework.util.JacksonService;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ScenarioStepReader;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsProvider;
@@ -13,6 +14,7 @@ import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.testlum.testing.model.global_config.Environment;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
+import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.provider.Arguments;
@@ -37,6 +39,7 @@ public class TestSetCollector {
     private final TestResourceSettings testResourceSettings;
     private final GlobalVariationsProvider globalVariationsProvider;
     private final List<Environment> environments;
+    private final JacksonService jacksonService;
 
     public TestSetCollector(final ScenarioCollector scenarioCollector,
                             final ScenarioFilter scenarioFilter,
@@ -44,7 +47,8 @@ public class TestSetCollector {
                             final MobileUtil mobileUtil,
                             final TestResourceSettings testResourceSettings,
                             final GlobalVariationsProvider globalVariationsProvider,
-                            final List<Environment> environments) {
+                            final List<Environment> environments,
+                            final JacksonService jacksonService) {
         this.scenarioCollector = scenarioCollector;
         this.scenarioFilter = scenarioFilter;
         this.browsers = browserUtil.filterDefaultEnabledBrowsers().stream()
@@ -56,6 +60,7 @@ public class TestSetCollector {
         this.testResourceSettings = testResourceSettings;
         this.globalVariationsProvider = globalVariationsProvider;
         this.environments = environments;
+        this.jacksonService = jacksonService;
     }
 
     public Stream<Arguments> collect() {
@@ -124,7 +129,7 @@ public class TestSetCollector {
         return ScenarioArguments.builder()
                 .path(getShortPath(entry.file))
                 .file(entry.file)
-                .scenario(entry.scenario)
+                .scenario(deepCopyScenario(entry.scenario))
                 .exception(entry.exception)
                 .browser(browserAlias)
                 .mobileBrowserDevice(mobileBrowserAlias)
@@ -139,7 +144,7 @@ public class TestSetCollector {
         return ScenarioArguments.builder()
                 .path(getShortPath(entry.file))
                 .file(entry.file)
-                .scenario(entry.scenario)
+                .scenario(deepCopyScenario(entry.scenario))
                 .exception(entry.exception)
                 .variations(variations)
                 .build();
@@ -186,6 +191,11 @@ public class TestSetCollector {
                 .build();
         cloned.setEnvironment(environment);
         return cloned;
+    }
+
+    private Scenario deepCopyScenario(Scenario src) {
+        String json = jacksonService.writeValueToCopiedString(src);
+        return jacksonService.readCopiedValue(json, Scenario.class);
     }
 
     private String getShortPath(final File file) {

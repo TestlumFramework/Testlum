@@ -75,11 +75,4 @@ public class SqlDatabaseExecutor extends AbstractSqlExecutor {
             log.error("Failed to execute truncate file '{}': {}", fileName, e.getMessage(), e);
         }
     }
-
-    private List<String> splitSqlStatements(final String sql) {
-        return Arrays.stream(sql.split(";\\s*(\\r?\\n)?"))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .toList();
-    }
 }

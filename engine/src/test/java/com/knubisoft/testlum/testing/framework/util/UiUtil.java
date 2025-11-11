@@ -78,6 +78,14 @@ public class UiUtil {
         return WebElementFinder.find(locator, dependencies);
     }
 
+    public WebElement findWebElement(final ExecutorDependencies dependencies,
+                                     final String locatorId,
+                                     final LocatorStrategy locatorStrategy,
+                                     final FindOptions options) {
+        Locator locator = getLocatorByStrategy(locatorId, locatorStrategy);
+        return WebElementFinder.find(locator, dependencies, options);
+    }
+
     public Locator getLocatorByStrategy(final String locatorId, final LocatorStrategy locatorStrategy) {
         Locator locator = new Locator();
         locator.setLocatorId(locatorId);

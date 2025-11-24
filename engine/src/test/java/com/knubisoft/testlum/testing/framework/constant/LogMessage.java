@@ -96,6 +96,8 @@ public final class LogMessage {
                     + "{} test successful\n{} test failed\n";
     public static final String FAILED_SCENARIOS_NAME_TEMPLATE =
             ANSI_RED_BOLD + "Scenario %s was failed. Related exception provided below." + ANSI_RED_BOLD;
+    public static final String FAILED_SCENARIO_DETAILS_TEMPLATE =
+            ANSI_RED_BOLD + "Scenario [%d] name: %s was failed. Path - %s was failed. Related exception provided below." + ANSI_RED_BOLD;
     public static final String SUCCESS_QUERY = "Query completed successfully";
 
     public static final String DB_TYPE_LOG = format(TABLE_FORMAT, "DB Type", "{}");

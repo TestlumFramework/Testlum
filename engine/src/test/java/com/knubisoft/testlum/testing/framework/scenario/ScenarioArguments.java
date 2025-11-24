@@ -23,5 +23,6 @@ public class ScenarioArguments {
     private final Map<String, String> variations;
     private final boolean containsUiSteps;
 
+    private int id;
     private String environment;
 }

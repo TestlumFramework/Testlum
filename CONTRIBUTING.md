@@ -9,7 +9,7 @@ We welcome all contributions: bug reports, feature requests, code improvements, 
 
 Before contributing, make sure you have:
 
-- Java 11 or higher
+- Java 17 or higher
 - [Maven](https://maven.apache.org/)
 
 ---

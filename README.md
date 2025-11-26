@@ -48,7 +48,7 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting your pull reque
 Prerequisites
 
 Make sure you have the following installed:
-- Java 11 or higher
+- Java 17 or higher
 - Maven
 - or Docker
 

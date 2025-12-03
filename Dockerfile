@@ -1,6 +1,6 @@
 # Multi-Stage build
-ARG MAVEN_TAG=3.8.5-openjdk-17
-ARG JDK_TAG=17
+ARG MAVEN_TAG=3.8.6-jdk-11
+ARG JDK_TAG=11.0.28_6-jdk
   # Build container
 FROM maven:${MAVEN_TAG} AS maven-build
 
@@ -9,7 +9,7 @@ COPY . .
 RUN mvn clean install -P professional -DskipTests
 
 # Target container
-FROM  openjdk:${JDK_TAG}
+FROM  eclipse-temurin:${JDK_TAG}
 
 WORKDIR /testlum/
 

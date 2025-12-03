@@ -1,3 +1,11 @@
+def startBrowserStackLocal() {
+    sh "sudo /var/lib/jenkins/BrowserStackLocal --key NUACoxprFA8R1epBAvhs &"
+}
+
+def stopBrowserStackLocal() {
+    sh "sudo lsof -i:45454 | grep BrowserSt | awk '{ print \$2; }' | xargs sudo kill -9"
+}
+
 pipeline {
     agent any
     options {
@@ -42,18 +50,9 @@ environment {
         PORT                       = '22'
         HOST_DIR                   = '/data/e2e-testing-tool'
 
-        STACKLOCAL_PORT            = '45454'
-        STACKLOCAL_KEY             = credentials('browserstack-local-key') //change in creds
+        // STACKLOCAL_PORT            = '45454'
+        // STACKLOCAL_KEY             = credentials('browserstack-local-key') //change in creds
 }
-
-def startBrowserStackLocal() {
-    sh "sudo /var/lib/jenkins/BrowserStackLocal --key ${STACKLOCAL_KEY} &"
-}
-
-def stopBrowserStackLocal() {
-    sh "sudo lsof -i:${STACKLOCAL_PORT} | grep BrowserSt | awk '{ print \$2 }' | xargs sudo kill -9"
-}
-
 
   stages {
     stage('Print job envs') {
@@ -146,7 +145,7 @@ def stopBrowserStackLocal() {
             }
         }
     }
-//CHECK FILE FOR BITBUCKET in jenkins ubrat
+
     // free subscription
     // stage('build testlum-free') {
     //     steps {

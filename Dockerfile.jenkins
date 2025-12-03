@@ -1,4 +1,4 @@
-FROM maven:3.8.5-openjdk-17 as maven-build
+FROM maven:3.8.6-jdk-11 as maven-build
 
 ARG PROFILE
 
@@ -6,7 +6,7 @@ WORKDIR /testlum/
 COPY . .
 RUN mvn clean install -DskipTests -P$PROFILE
 
-FROM openjdk:17
+FROM eclipse-temurin:11.0.28_6-jdk
 
 ARG JAR_FILE=target/testlum-with-dependencies.jar
 

@@ -5,7 +5,7 @@ set -e
 ROOT_POM="./pom.xml"
 
 if [[ ! -f "$ROOT_POM" ]]; then
-  echo "❌ Root pom.xml not found!"
+  echo "Root pom.xml not found!"
   exit 1
 fi
 
@@ -26,15 +26,15 @@ ROOT_VERSION=$(awk '
 ' "$ROOT_POM")
 
 if [[ -z "$ROOT_VERSION" ]]; then
-  echo "❌ Failed to extract version from root pom.xml"
+  echo "Failed to extract version from root pom.xml"
   exit 1
 fi
 
-echo "🔍 Root version: $ROOT_VERSION"
+echo "Root version: $ROOT_VERSION"
 
 # --- Update version in child POMs
 find . -name "pom.xml" ! -path "./pom.xml" | while read -r pom; do
-  echo "📝 Updating parent version in $pom"
+  echo "Updating parent version in $pom"
   awk -v newVersion="$ROOT_VERSION" '
     BEGIN { inParent = 0 }
     /<parent>/ { inParent = 1 }
@@ -52,12 +52,12 @@ done
 FILES=("Dockerfile" "Dockerfile.jenkins")
 for file in "${FILES[@]}"; do
   if [[ -f $file ]]; then
-    echo "🐳 Updating JAR version in $file"
+    echo "Updating JAR version in $file"
     sed -E -i.bak "s/(testlum-)[0-9]+\.[0-9]+(\.[0-9]+)?(\.jar)/\1${ROOT_VERSION}\3/" "$file"
     rm "$file.bak"
   else
-    echo "⚠️ $file not found, skipping..."
+    echo "$file not found, skipping..."
   fi
 done
 
-echo "✅ All done! Synced version to $ROOT_VERSION"
+echo "All done! Synced version to $ROOT_VERSION"

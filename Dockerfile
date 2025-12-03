@@ -1,6 +1,6 @@
 # Multi-Stage build
-ARG MAVEN_TAG=3.8.6-jdk-11
-ARG JDK_TAG=11.0.28_6-jdk
+ARG MAVEN_TAG=3.9.11-eclipse-temurin-17
+ARG JDK_TAG=17-jdk
   # Build container
 FROM maven:${MAVEN_TAG} AS maven-build
 

@@ -1,0 +1,69 @@
+pipeline {
+    agent any
+
+    environment {
+        REGISTRY = 'testlum/testlum'
+        DOCKERHUB_CREDS = credentials('dockerhub-credentials')
+    }
+
+    stages {
+        stage('Determine Docker tags') {
+            steps {
+                script {
+                    def tags = []
+
+                    // names for releases
+                    if (env.TAG_NAME) {
+                        def semver = env.TAG_NAME.replaceFirst(/^v/, '')
+                        tags << semver
+                        tags << 'latest'
+                    }
+
+                    // push to main branch
+                    if (env.BRANCH_NAME == 'main' && !env.TAG_NAME) {
+                        tags << 'latest'
+                        def shortSha = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                        tags << shortSha
+                    }
+
+                    env.DOCKER_TAGS = tags.join(',')
+                }
+            }
+        }
+
+        stage('Build & Push Docker image') {
+            when {
+                anyOf {
+                    branch 'main'
+                    buildingTag()
+                }
+            }
+            steps {
+                script {
+                    docker.withRegistry('', 'dockerhub-credentials') {
+                        
+                        def image = docker.build("${env.REGISTRY}:${env.BUILD_NUMBER}")
+
+                        env.DOCKER_TAGS.split(',').each { tag ->
+                            def cleanTag = tag.trim()
+                            echo "Pushing tag: ${cleanTag}"
+                            image.push(cleanTag)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker image prune -f || true'
+        }
+        success {
+            echo "Successfully pushed to Docker Hub with tag: ${env.DOCKER_TAGS}"
+        }
+        failure {
+            echo 'Docker build~push failed'
+        }
+    }
+}

@@ -1,10 +1,16 @@
 pipeline {
     agent any
 
+    parameters {
+    string(name: 'EXTRA_DOCKER_TAGS', defaultValue: '', description: 'If needed extra or custom tags')
+    }
+
     environment {
         REGISTRY = 'testlum/testlum'
         DOCKERHUB_CREDS = credentials('dockerhub-credentials')
     }
+
+  
 
     stages {
         stage('Determine Docker tags') {
@@ -22,11 +28,18 @@ pipeline {
                     // push to main branch
                     if (env.BRANCH_NAME == 'main' && !env.TAG_NAME) {
                         tags << 'latest'
-                        def shortSha = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                        tags << shortSha
                     }
 
+                    if (env.EXTRA_DOCKER_TAGS?.trim()) {
+                    def extra = env.EXTRA_DOCKER_TAGS.split(',').collect { it.trim() }.findAll { it } tags.addAll(extra)
+                    }
+
+                    if (env.EXTRA_DOCKER_TAGS?.trim()) {
+                    tags.addAll(env.EXTRA_DOCKER_TAGS.split(',').collect{ it.trim() }.findAll{ it })
+                    }                    
+                    
                     env.DOCKER_TAGS = tags.join(',')
+                    echo "Tags for push: ${env.DOCKER_TAGS}"
                 }
             }
         }
@@ -42,12 +55,13 @@ pipeline {
                 script {
                     docker.withRegistry('', 'dockerhub-credentials') {
                         
-                        def image = docker.build("${env.REGISTRY}:${env.BUILD_NUMBER}")
-
-                        env.DOCKER_TAGS.split(',').each { tag ->
+                    def tagsToPush = env.DOCKER_TAGS.split(',')
+                        tagsToPush.each { tag ->
                             def cleanTag = tag.trim()
-                            echo "Pushing tag: ${cleanTag}"
-                            image.push(cleanTag)
+                            if (cleanTag) {
+                                echo "Pushing ${env.REGISTRY}:${cleanTag}"
+                                image.push(cleanTag)
+                            }
                         }
                     }
                 }
@@ -60,10 +74,10 @@ pipeline {
             sh 'docker image prune -f || true'
         }
         success {
-            echo "Successfully pushed to Docker Hub with tag: ${env.DOCKER_TAGS}"
+            echo "Successfully pushed to Docker Hub with tag(s): ${env.DOCKER_TAGS}"
         }
         failure {
-            echo 'Docker build~push failed'
+            echo 'Docker build/push failed'
         }
     }
 }

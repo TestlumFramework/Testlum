@@ -32,11 +32,7 @@ pipeline {
 
                     if (env.EXTRA_DOCKER_TAGS?.trim()) {
                     def extra = env.EXTRA_DOCKER_TAGS.split(',').collect { it.trim() }.findAll { it } tags.addAll(extra)
-                    }
-
-                    if (env.EXTRA_DOCKER_TAGS?.trim()) {
-                    tags.addAll(env.EXTRA_DOCKER_TAGS.split(',').collect{ it.trim() }.findAll{ it })
-                    }                    
+                    }                
                     
                     env.DOCKER_TAGS = tags.join(',')
                     echo "Tags for push: ${env.DOCKER_TAGS}"

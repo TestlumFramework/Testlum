@@ -1,9 +1,9 @@
 def startBrowserStackLocal() {
-    sh "sudo /var/lib/jenkins/BrowserStackLocal --key ${STACKLOCAL_KEY} &"
+    sh "sudo /var/lib/jenkins/BrowserStackLocal --key NUACoxprFA8R1epBAvhs &"
 }
 
 def stopBrowserStackLocal() {
-    sh "sudo lsof -i:${STACKLOCAL_PORT} | grep BrowserSt | awk '{ print \$2 }' | xargs sudo kill -9"
+    sh "sudo lsof -i:45454 | grep BrowserSt | awk '{ print \$2; }' | xargs sudo kill -9"
 }
 
 pipeline {
@@ -50,12 +50,9 @@ environment {
         PORT                       = '22'
         HOST_DIR                   = '/data/e2e-testing-tool'
 
-        STACKLOCAL_PORT            = '45454'
-        STACKLOCAL_KEY             = credentials('browserstack-local-key') //change in creds
+        // STACKLOCAL_PORT            = '45454'
+        // STACKLOCAL_KEY             = credentials('browserstack-local-key') //change in creds
 }
-
-
-
 
   stages {
     stage('Print job envs') {
@@ -148,7 +145,7 @@ environment {
             }
         }
     }
-//CHECK FILE FOR BITBUCKET in jenkins ubrat
+
     // free subscription
     // stage('build testlum-free') {
     //     steps {
@@ -202,25 +199,6 @@ environment {
             sh 'docker volume ls -qf "dangling=true" | xargs docker volume rm || true'
             stopBrowserStackLocal()
         }
-
-        script {
-
-            if (env.GIT_URL?.contains('github.com')) {
-                step([
-                    $class: 'GitHubCommitStatusSetter',
-                    reposSource: [$class: "ManuallyEnteredRepositorySource", url: env.GIT_URL],
-                    commitShaSource: [$class: "ManuallyEnteredShaSource", sha: env.GIT_COMMIT],
-                    contextSource: [$class: "ManuallyEnteredCommitContextSource", context: "ci/jenkins/e2e-tests"],
-                    errorHandlers: [[$class: "ChangingBuildStatusErrorHandler", result: "UNSTABLE"]],
-                    statusResultSource: [
-                        $class: "ConditionalStatusResultSource",
-                        results: [
-                            [$class: "AnyBuildResult", state: currentBuild.currentResult == 'SUCCESS' ? 'SUCCESS' : 'FAILURE', message: "Jenkins E2E: ${currentBuild.currentResult}"]
-                        ]
-                    ]
-                ])
-            }
-     }
-   }
- }
+    }
+  }
 }

@@ -14,7 +14,7 @@ pipeline {
                 name: 'EXECUTE_SYNC',
                 choices: ['no', 'yes'],
                 description: '''
-                    <strong>Execute DEV → PROD content synchronization?</strong>
+                    <strong>Execute DEV => PROD content synchronization?</strong>
                     <br>Selecting <code>yes</code> will change everything in prod<br>
                 '''
             )
@@ -47,7 +47,7 @@ pipeline {
 
                 aws s3 sync s3://testlum-testlum-web-prod s3://testlum-prod-bd-backup --source-region eu-north-1  
 
-                echo "Backups in $S3_BUCKET is succesfull!"
+                echo "Backups in bucket are succesfull!"
                 '''
         }
         }

@@ -1,0 +1,89 @@
+pipeline {
+    agent any
+ environment {
+        DB_NAME     = 'testlum_prod_db'
+        DB_USER     = credentials('PSQL_USER_PROD')
+        DB_PASSWORD = credentials('PSQL_PASS_PROD')
+        DB_HOST = '162.55.97.228'
+        DB_PORT = '25432'
+        S3_BUCKET   = 's3://testlum-web-prod'
+        AWS_REGION  = 'eu-north-1'
+ }
+    parameters {
+            choice(
+                name: 'EXECUTE_SYNC',
+                choices: ['no', 'yes'],
+                description: '''
+                    <strong>Execute DEV => PROD content synchronization?</strong>
+                    <br>Selecting <code>yes</code> will change everything in prod<br>
+                    <br>Selecting <code>no</code> will not change anything in prod<br>
+                '''
+            )
+    }
+
+    stages {
+    stage('Backup prod db into S3 bucket') {
+        steps{
+            withCredentials([
+            usernamePassword(credentialsId: 'dev-postgresql', 
+                            usernameVariable: 'PSQL_USER_DEV', 
+                            passwordVariable: 'PSQL_PASS_DEV'),
+            
+            usernamePassword(credentialsId: 'prod-postgresql', 
+                            usernameVariable: 'PSQL_USER_PROD', 
+                            passwordVariable: 'PSQL_PASS_PROD'),
+            
+            aws(credentialsId: 'aws_testlum', 
+                accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
+                secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
+        ]){
+            sh '''
+                export PGPASSWORD="${PSQL_PASS_PROD}"
+                export AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
+                export AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
+
+                
+                pg_dump -h $DB_HOST -p $DB_PORT -U $DB_USER -Fc $DB_NAME \
+                  | aws s3 cp - ${S3_BUCKET}${DB_NAME}-$(date +%Y-%m-%dT%H-%M-%S).dump
+
+                aws s3 sync s3://testlum-testlum-web-prod s3://testlum-prod-bd-backup --region ${AWS_REGION}  
+
+                echo "Backups in bucket are succesfull!"
+                '''
+        }
+        }
+    }
+    stage('Run script') {
+        when {
+            expression { params.EXECUTE_SYNC == 'yes' }
+        }
+        steps {
+            withCredentials([
+            usernamePassword(credentialsId: 'dev-postgresql', 
+                            usernameVariable: 'PSQL_USER_DEV', 
+                            passwordVariable: 'PSQL_PASS_DEV'),
+            
+            usernamePassword(credentialsId: 'prod-postgresql', 
+                            usernameVariable: 'PSQL_USER_PROD', 
+                            passwordVariable: 'PSQL_PASS_PROD'),
+            
+            aws(credentialsId: 'aws_testlum', 
+                accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
+                secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
+        ]) {
+            sh 'bash ops/dev-to-prod.sh'
+        }
+      }
+   }
+   post {
+        always {
+            echo "Pipeline finished. The choice was: ${params.EXECUTE_SYNC}"
+        }
+        success {
+            echo "Content synchronization DEV => PROD completed successfully"
+        }
+        failure {
+            echo "Content synchronization DEV => PROD failed"
+        }
+    }
+}

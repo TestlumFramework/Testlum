@@ -1,0 +1,79 @@
+pipeline {
+    agent any
+
+    parameters {
+    string(name: 'EXTRA_DOCKER_TAGS', defaultValue: '', description: 'If needed extra or custom tags')
+    }
+
+    environment {
+        REGISTRY = 'testlum/testlum'
+        DOCKERHUB_CREDS = credentials('dockerhub-credentials')
+    }
+
+  
+
+    stages {
+        stage('Determine Docker tags') {
+            steps {
+                script {
+                    def tags = []
+
+                    // names for releases
+                    if (env.TAG_NAME) {
+                        def semver = env.TAG_NAME.replaceFirst(/^v/, '')
+                        tags << semver
+                        tags << 'latest'
+                    }
+
+                    // push to main branch
+                    if (env.BRANCH_NAME == 'main' && !env.TAG_NAME) {
+                        tags << 'latest'
+                    }
+
+                    if (env.EXTRA_DOCKER_TAGS?.trim()) {
+                    def extra = env.EXTRA_DOCKER_TAGS.split(',').collect { it.trim() }.findAll { it } tags.addAll(extra)
+                    }                
+                    
+                    env.DOCKER_TAGS = tags.join(',')
+                    echo "Tags for push: ${env.DOCKER_TAGS}"
+                }
+            }
+        }
+
+        stage('Build & Push Docker image') {
+            when {
+                anyOf {
+                    branch 'main'
+                    buildingTag()
+                }
+            }
+            steps {
+                script {
+                    docker.withRegistry('', 'dockerhub-credentials') {
+                        
+                    def tagsToPush = env.DOCKER_TAGS.split(',')
+                        tagsToPush.each { tag ->
+                            def cleanTag = tag.trim()
+                            if (cleanTag) {
+                                echo "Pushing ${env.REGISTRY}:${cleanTag}"
+                                image.push(cleanTag)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker image prune -f || true'
+        }
+        success {
+            echo "Successfully pushed to Docker Hub with tag(s): ${env.DOCKER_TAGS}"
+        }
+        failure {
+            echo 'Docker build/push failed'
+        }
+    }
+}

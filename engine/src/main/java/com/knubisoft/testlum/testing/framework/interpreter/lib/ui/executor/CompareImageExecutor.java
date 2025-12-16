@@ -5,16 +5,19 @@ import com.github.romankh3.image.comparison.model.Rectangle;
 import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ImageComparator;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.model.scenario.ByArea;
+import com.knubisoft.testlum.testing.model.scenario.ByLocator;
+import com.knubisoft.testlum.testing.model.scenario.Exclude;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
 import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +34,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @ExecutorForClass(Image.class)
@@ -108,10 +112,19 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         if (Objects.nonNull(fullScreen) && !fullScreen.getExclude().isEmpty()) {
             Scale scale = getScaling(expected, driver);
             return fullScreen.getExclude().stream()
-                    .map(element -> getElementArea(element.getLocator(), scale, element.getLocatorStrategy()))
-                    .toList();
+                    .map(element -> getExcludeArea(element, scale))
+                    .collect(Collectors.toList());
         }
         return Collections.emptyList();
+    }
+
+    private Rectangle getExcludeArea(Exclude exclude, Scale scale) {
+        if (exclude.getByLocator() != null) {
+            ByLocator byLocator = exclude.getByLocator();
+            return getElementArea(byLocator.getLocator(), scale, byLocator.getLocatorStrategy());
+        } else {
+            return getAreaByCoordinates(exclude);
+        }
     }
 
     private Scale getScaling(final BufferedImage screen, final WebDriver driver) {
@@ -131,6 +144,15 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         double width = (seleniumRectangle.getX() + seleniumRectangle.getWidth()) * scale.getScaleX();
         double height = (seleniumRectangle.getY() + seleniumRectangle.getHeight()) * scale.getScaleY();
         return new Rectangle((int) x, (int) y, (int) width, (int) height);
+    }
+
+    private Rectangle getAreaByCoordinates(Exclude exclude) {
+        ByArea byArea = exclude.getByArea();
+        int minX = byArea.getX();
+        int minY = byArea.getY();
+        int maxX = minX + byArea.getWidth();
+        int maxY = minY + byArea.getHeight();
+        return new Rectangle(minX, minY, maxX, maxY);
     }
 
     private String getImageURLStartsWithBaseURL(final CommandResult result, final String urlToImage) {

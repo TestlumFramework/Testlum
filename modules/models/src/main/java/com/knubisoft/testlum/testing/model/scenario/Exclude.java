@@ -3,7 +3,6 @@ package com.knubisoft.testlum.testing.model.scenario;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlType;
 
 
@@ -16,8 +15,10 @@ import jakarta.xml.bind.annotation.XmlType;
  * &lt;complexType name="exclude"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="locator" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
- *       &lt;attribute name="locatorStrategy" type="{http://www.knubisoft.com/testlum/testing/model/scenario}locatorStrategy" default="locatorId" /&gt;
+ *       &lt;choice&gt;
+ *         &lt;element name="byLocator" type="{http://www.knubisoft.com/testlum/testing/model/scenario}byLocator"/&gt;
+ *         &lt;element name="byArea" type="{http://www.knubisoft.com/testlum/testing/model/scenario}byArea"/&gt;
+ *       &lt;/choice&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -26,64 +27,61 @@ import jakarta.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "exclude")
+@XmlType(name = "exclude", propOrder = {
+    "byLocator",
+    "byArea"
+})
 public class Exclude {
 
-    @XmlAttribute(name = "locator", required = true)
-    protected String locator;
-    @XmlAttribute(name = "locatorStrategy")
-    protected LocatorStrategy locatorStrategy;
+    protected ByLocator byLocator;
+    protected ByArea byArea;
 
     /**
-     * Gets the value of the locator property.
+     * Gets the value of the byLocator property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link ByLocator }
      *     
      */
-    public String getLocator() {
-        return locator;
+    public ByLocator getByLocator() {
+        return byLocator;
     }
 
     /**
-     * Sets the value of the locator property.
+     * Sets the value of the byLocator property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link ByLocator }
      *     
      */
-    public void setLocator(String value) {
-        this.locator = value;
+    public void setByLocator(ByLocator value) {
+        this.byLocator = value;
     }
 
     /**
-     * Gets the value of the locatorStrategy property.
+     * Gets the value of the byArea property.
      * 
      * @return
      *     possible object is
-     *     {@link LocatorStrategy }
+     *     {@link ByArea }
      *     
      */
-    public LocatorStrategy getLocatorStrategy() {
-        if (locatorStrategy == null) {
-            return LocatorStrategy.LOCATOR_ID;
-        } else {
-            return locatorStrategy;
-        }
+    public ByArea getByArea() {
+        return byArea;
     }
 
     /**
-     * Sets the value of the locatorStrategy property.
+     * Sets the value of the byArea property.
      * 
      * @param value
      *     allowed object is
-     *     {@link LocatorStrategy }
+     *     {@link ByArea }
      *     
      */
-    public void setLocatorStrategy(LocatorStrategy value) {
-        this.locatorStrategy = value;
+    public void setByArea(ByArea value) {
+        this.byArea = value;
     }
 
 }

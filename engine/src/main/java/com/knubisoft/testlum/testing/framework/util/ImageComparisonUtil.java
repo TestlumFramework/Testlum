@@ -6,6 +6,8 @@ import com.github.romankh3.image.comparison.model.ImageComparisonState;
 import com.knubisoft.testlum.testing.framework.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.model.scenario.ByArea;
+import com.knubisoft.testlum.testing.model.scenario.Exclude;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.openqa.selenium.Capabilities;
@@ -117,5 +119,15 @@ public class ImageComparisonUtil {
         long screenHeight = (Long) javascriptUtil.executeJsScript(MOBILE_SCREEN_HEIGHT, driver);
         long windowHeight = (Long) javascriptUtil.executeJsScript(WINDOW_INNER_HEIGHT, driver);
         return (int) (screenHeight - windowHeight);
+    }
+
+    public String addExcludedMetaData(Exclude exclude) {
+        if (exclude.getByLocator() != null) {
+            return exclude.getByLocator().getLocator();
+        } else {
+            ByArea byArea = exclude.getByArea();
+            String areaFormat = "X: %d, Y: %d, width: %d, height: %d";
+            return String.format(areaFormat, byArea.getX(), byArea.getY(), byArea.getWidth(), byArea.getHeight());
+        }
     }
 }

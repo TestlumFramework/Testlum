@@ -304,7 +304,7 @@ public class LogUtil {
         }
         if (!fullScreen.getExclude().isEmpty()) {
             log.info(IMAGE_EXCLUDED_ELEMENT_LOG, StringUtils.join(fullScreen.getExclude().stream()
-                    .map(Exclude::getLocator)
+                    .map(ImageComparisonUtil::addExcludedMetaData)
                     .collect(Collectors.joining(COMMA + SPACE))));
         }
     }

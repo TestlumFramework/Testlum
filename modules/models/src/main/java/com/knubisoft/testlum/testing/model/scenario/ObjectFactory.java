@@ -950,6 +950,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ByLocator }
+     * 
+     */
+    public ByLocator createByLocator() {
+        return new ByLocator();
+    }
+
+    /**
+     * Create an instance of {@link ByArea }
+     * 
+     */
+    public ByArea createByArea() {
+        return new ByArea();
+    }
+
+    /**
      * Create an instance of {@link MobilebrowserRepeat }
      * 
      */

@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.*;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class ResultUtil {
 
     public static final String ALIAS = "Alias";
@@ -109,9 +111,11 @@ public class ResultUtil {
     private static final String IMAGE_LOCATOR = "Locator to element with picture";
     private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
     private static final String MATCH_PERCENTAGE = "Match percentage";
-    private static final String EXCLUDED_ELEMENT = "Excluded elements locators";
+    private static final String EXCLUDED_ELEMENT = "Excluded elements";
     private static final String ACTUAL_IMAGE_SIZE = "Actual image size";
     private static final String EXPECTED_IMAGE_SIZE = "Expected image size";
+
+    private final ImageComparisonUtil imageComparisonUtil;
 
     public CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
         CommandResult commandResult = new CommandResult();
@@ -331,7 +335,7 @@ public class ResultUtil {
         }
         if (!fullScreen.getExclude().isEmpty()) {
             result.put(EXCLUDED_ELEMENT, StringUtils.join(fullScreen.getExclude().stream()
-                    .map(Exclude::getLocator)
+                    .map(imageComparisonUtil::addExcludedMetaData)
                     .collect(Collectors.joining(DelimiterConstant.COMMA + DelimiterConstant.SPACE))));
         }
     }

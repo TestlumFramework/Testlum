@@ -15,6 +15,9 @@ import com.knubisoft.testlum.testing.framework.util.ImageComparisonUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
+import com.knubisoft.testlum.testing.model.scenario.ByArea;
+import com.knubisoft.testlum.testing.model.scenario.ByLocator;
+import com.knubisoft.testlum.testing.model.scenario.Exclude;
 import com.knubisoft.testlum.testing.model.scenario.Image;
 import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
 import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
@@ -102,10 +105,19 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         if (nonNull(fullScreen) && !fullScreen.getExclude().isEmpty()) {
             Scale scale = getScaling(expected, driver);
             return fullScreen.getExclude().stream()
-                    .map(element -> getElementArea(element.getLocator(), scale, element.getLocatorStrategy()))
+                    .map(element -> getExcludeArea(element, scale))
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
+    }
+
+    private Rectangle getExcludeArea(Exclude exclude, Scale scale) {
+        if (exclude.getByLocator() != null) {
+            ByLocator byLocator = exclude.getByLocator();
+            return getElementArea(byLocator.getLocator(), scale, byLocator.getLocatorStrategy());
+        } else {
+            return getAreaByCoordinates(exclude);
+        }
     }
 
     private Scale getScaling(final BufferedImage screen, final WebDriver driver) {
@@ -125,6 +137,15 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
         double width = (seleniumRectangle.getX() + seleniumRectangle.getWidth()) * scale.getScaleX();
         double height = (seleniumRectangle.getY() + seleniumRectangle.getHeight()) * scale.getScaleY();
         return new Rectangle((int) x, (int) y, (int) width, (int) height);
+    }
+
+    private Rectangle getAreaByCoordinates(Exclude exclude) {
+        ByArea byArea = exclude.getByArea();
+        int minX = byArea.getX();
+        int minY = byArea.getY();
+        int maxX = minX + byArea.getWidth();
+        int maxY = minY + byArea.getHeight();
+        return new Rectangle(minX, minY, maxX, maxY);
     }
 
     private String getImageURLStartsWithBaseURL(final CommandResult result, final String urlToImage) {

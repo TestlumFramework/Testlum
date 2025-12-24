@@ -141,10 +141,10 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
 
     private Rectangle getAreaByCoordinates(Exclude exclude) {
         ByArea byArea = exclude.getByArea();
-        int minX = byArea.getX();
-        int minY = byArea.getY();
-        int maxX = minX + byArea.getWidth();
-        int maxY = minY + byArea.getHeight();
+        int minX = byArea.getX().intValue();
+        int minY = byArea.getY().intValue();
+        int maxX = minX + byArea.getWidth().intValue();
+        int maxY = minY + byArea.getHeight().intValue();
         return new Rectangle(minX, minY, maxX, maxY);
     }
 

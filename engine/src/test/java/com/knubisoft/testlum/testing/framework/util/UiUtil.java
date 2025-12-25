@@ -20,12 +20,8 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.By;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -39,8 +35,10 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SCROLL_TO_ELEMENT_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.WEB_ELEMENT_ATTRIBUTE_NOT_EXIST;
@@ -259,6 +257,58 @@ public class UiUtil {
                     .getBaseUrl() + path;
         }
         return GlobalTestConfigurationProvider.getWebSettings(env).getBaseUrl() + path;
+    }
+
+    public void processMatSelect(ExecutorDependencies dependencies, WebElement matSelect, String value) {
+        WebDriver driver = dependencies.getDriver();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.elementToBeClickable(matSelect)).click();
+        wait.until(d -> "true".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
+
+        String panelId = matSelect.getAttribute("aria-controls");
+        if (panelId == null || panelId.isBlank()) {
+            throw new DefaultFrameworkException("mat-select aria-controls is empty");
+        }
+
+        WebElement panel = wait.until(ExpectedConditions.visibilityOfElementLocated(org.openqa.selenium.By.id(panelId)));
+
+        List<WebElement> options = panel.findElements(org.openqa.selenium.By.cssSelector("mat-option, [role='option']"));
+        if (options.isEmpty()) {
+            throw new DefaultFrameworkException("No options found in panel: " + panelId);
+        }
+
+        String target = normalizeText(value);
+
+        WebElement option = options.stream()
+                .filter(o -> !"true".equalsIgnoreCase(o.getAttribute("aria-disabled")))
+                .filter(o -> normalizeText(extractOptionText(o)).equalsIgnoreCase(target))
+                .findFirst()
+                .orElseThrow(() -> new DefaultFrameworkException(
+                        "Option not found: " + value + ". Available: " +
+                                options.stream().map(o -> normalizeText(extractOptionText(o))).toList()
+                ));
+
+        wait.until(ExpectedConditions.elementToBeClickable(option)).click();
+
+        wait.until(d -> "false".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
+    }
+
+    private String extractOptionText(WebElement option) {
+        List<WebElement> spans = option.findElements(By.cssSelector("span"));
+        if (!spans.isEmpty()) {
+            String txt = spans.get(0).getText();
+            if (txt != null && !txt.isBlank()) return txt;
+        }
+        return option.getText();
+    }
+
+    private String normalizeText(String s) {
+        if (s == null) {
+            return "";
+        }
+        return s.replace('\u00A0', ' ')
+                .replaceAll("\\s+", " ")
+                .trim();
     }
 
     public String getBasePageURL(final String currentPageURL) {

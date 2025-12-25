@@ -15,11 +15,12 @@ import com.knubisoft.testlum.testing.model.scenario.SelectOrDeselectBy;
 import com.knubisoft.testlum.testing.model.scenario.TypeForAllValues;
 import com.knubisoft.testlum.testing.model.scenario.TypeForOneValue;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -92,6 +93,11 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         log.info(COMMAND_TYPE_LOG, format(ONE_VALUE_TEMPLATE, type.value()));
         log.info(BY_LOG, oneValue.getBy().value());
         log.info(VALUE_LOG, value);
+        if ("mat-select".equalsIgnoreCase(dropDownElement.getTagName())) {
+            UiUtil.processMatSelect(dependencies, dropDownElement, value);
+            UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+            return;
+        }
         dropDownElement.click();
         List<WebElement> dropDownParentElements = dropDownElement.findElements(By.xpath("ancestor::*"));
         selectSearchableOptionForCustomDropDown(dropDownParentElements, value);

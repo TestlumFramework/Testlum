@@ -38,8 +38,11 @@ public class AlertExecutor extends AbstractUiExecutor<Alert> {
            setPromptText(alert.getText());
         }
 
-        WebDriverWait wait = new WebDriverWait(dependencies.getDriver(), Duration.ofSeconds(5));
-        wait.until(ExpectedConditions.alertIsPresent());
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         if (AlertAction.ACCEPT == alert.getAction()) {
             acceptAlert();

@@ -178,6 +178,14 @@
                 <x:attribute name="type" type="tns:alertType" default="alert"/>
                 <x:attribute name="action" type="tns:alertAction" use="required"/>
                 <x:attribute name="text" type="x:string" use="optional"/>
+                <x:attribute name="until" use="optional">
+                    <x:simpleType>
+                        <x:restriction base="x:string">
+                            <x:enumeration value="visible"/>
+                        </x:restriction>
+                    </x:simpleType>
+                </x:attribute>
+                <x:attribute name="timeout" type="x:int" default="10" use="optional"/>
             </x:extension>
         </x:complexContent>
     </x:complexType>

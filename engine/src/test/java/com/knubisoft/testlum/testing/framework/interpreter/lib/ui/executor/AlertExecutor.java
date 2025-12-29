@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
@@ -8,12 +9,16 @@ import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Alert;
 import com.knubisoft.testlum.testing.model.scenario.AlertAction;
 import com.knubisoft.testlum.testing.model.scenario.AlertType;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ALERT_NOT_VISIBLE;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALERT_TYPE;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALERT_WAIT;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.PROMPT_TEXT;
 
 @ExecutorForClass(Alert.class)
 public class AlertExecutor extends AbstractUiExecutor<Alert> {
@@ -25,25 +30,37 @@ public class AlertExecutor extends AbstractUiExecutor<Alert> {
     @Override
     public void execute(Alert alert, CommandResult result) {
         result.put(ALERT_TYPE, alert.getType().value());
-//        UiUtil.waitForElementVisibility(dependencies, webElement);
-//        UiUtil.highlightElementIfRequired(click.isHighlight(), webElement, dependencies.getDriver());
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
-        processAlertCommand(alert, result);
-//        clickWithMethod(click.getMethod(), webElement, result);
+        waitForAlertVisibleIfRequired(alert, result);
+        handleAlertInteraction(alert, result);
     }
 
-    private void processAlertCommand(Alert alert, CommandResult result) {
+    private void waitForAlertVisibleIfRequired(Alert alert, CommandResult result) {
+        if (alert.getUntil() != null && alert.getUntil().equals("visible")) {
+            result.put(ALERT_WAIT, alert.getTimeout());
+            WebDriverWait wait = new WebDriverWait(dependencies.getDriver(), Duration.ofSeconds(alert.getTimeout()));
+            try {
+                wait.until(ExpectedConditions.alertIsPresent());
+            } catch (TimeoutException e) {
+                throw new DefaultFrameworkException(ALERT_NOT_VISIBLE);
+            }
+        }
+    }
+
+    private void handleAlertInteraction(Alert alert, CommandResult result) {
+        fillPromptTextIfRequired(alert, result);
+        finalizeAlert(alert);
+    }
+
+    private void fillPromptTextIfRequired(Alert alert, CommandResult result) {
         if (AlertType.PROMPT == alert.getType() && alert.getText() != null) {
-//            result.put(CLICK_METHOD, "javascript");
-           setPromptText(alert.getText());
+            String promptText = alert.getText();
+            result.put(PROMPT_TEXT, promptText);
+            setPromptText(promptText);
         }
+    }
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
+    private void finalizeAlert(Alert alert) {
         if (AlertAction.ACCEPT == alert.getAction()) {
             acceptAlert();
         } else {
@@ -59,20 +76,7 @@ public class AlertExecutor extends AbstractUiExecutor<Alert> {
         dependencies.getDriver().switchTo().alert().dismiss();
     }
 
-    private String getAlertText(Object alert) {
-        return dependencies.getDriver().switchTo().alert().getText();
-    }
-
     private void setPromptText(String alertText) {
         dependencies.getDriver().switchTo().alert().sendKeys(alertText);
     }
-
-    /*
-
-    <alert type="alert" action="dismiss" />
-    <alert type="prompt" text="Hello" action="accept" />
-
-assert alert is present
-var from alert
-     */
 }

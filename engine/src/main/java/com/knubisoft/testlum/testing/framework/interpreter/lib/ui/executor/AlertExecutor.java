@@ -31,7 +31,7 @@ public class AlertExecutor extends AbstractUiExecutor<Alert> {
         }
 
         try {
-            dependencies.wait(5000);
+            dependencies.getDriver().wait(5000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

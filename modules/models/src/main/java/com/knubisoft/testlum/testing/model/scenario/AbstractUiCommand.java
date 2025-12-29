@@ -39,6 +39,7 @@ import jakarta.xml.bind.annotation.XmlType;
     Javascript.class,
     Navigate.class,
     BrowserTab.class,
+    Alert.class,
     HotKey.class,
     Copy.class,
     Cut.class,

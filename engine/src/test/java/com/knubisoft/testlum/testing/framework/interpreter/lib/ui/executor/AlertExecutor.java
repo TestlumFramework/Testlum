@@ -8,6 +8,10 @@ import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Alert;
 import com.knubisoft.testlum.testing.model.scenario.AlertAction;
 import com.knubisoft.testlum.testing.model.scenario.AlertType;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALERT_TYPE;
 
@@ -34,11 +38,8 @@ public class AlertExecutor extends AbstractUiExecutor<Alert> {
            setPromptText(alert.getText());
         }
 
-        try {
-            dependencies.getDriver().wait(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        WebDriverWait wait = new WebDriverWait(dependencies.getDriver(), Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.alertIsPresent());
 
         if (AlertAction.ACCEPT == alert.getAction()) {
             acceptAlert();

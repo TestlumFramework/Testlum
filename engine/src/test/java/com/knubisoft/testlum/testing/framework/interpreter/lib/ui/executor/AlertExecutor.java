@@ -34,6 +34,12 @@ public class AlertExecutor extends AbstractUiExecutor<Alert> {
            setPromptText(alert.getText());
         }
 
+        try {
+            dependencies.wait(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         if (AlertAction.ACCEPT == alert.getAction()) {
             acceptAlert();
         } else {

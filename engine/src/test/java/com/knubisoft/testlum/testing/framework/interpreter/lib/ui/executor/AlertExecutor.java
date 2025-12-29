@@ -14,12 +14,12 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALERT_TYPE
 @ExecutorForClass(Alert.class)
 public class AlertExecutor extends AbstractUiExecutor<Alert> {
 
-    protected AlertExecutor(ExecutorDependencies dependencies) {
+    public AlertExecutor(ExecutorDependencies dependencies) {
         super(dependencies);
     }
 
     @Override
-    protected void execute(Alert alert, CommandResult result) {
+    public void execute(Alert alert, CommandResult result) {
         result.put(ALERT_TYPE, alert.getType().value());
 //        UiUtil.waitForElementVisibility(dependencies, webElement);
 //        UiUtil.highlightElementIfRequired(click.isHighlight(), webElement, dependencies.getDriver());

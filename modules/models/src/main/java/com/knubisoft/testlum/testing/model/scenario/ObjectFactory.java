@@ -550,6 +550,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FromAlert }
+     * 
+     */
+    public FromAlert createFromAlert() {
+        return new FromAlert();
+    }
+
+    /**
      * Create an instance of {@link ElementPresent }
      * 
      */

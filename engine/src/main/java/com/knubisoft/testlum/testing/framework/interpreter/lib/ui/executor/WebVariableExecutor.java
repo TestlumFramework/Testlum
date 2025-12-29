@@ -37,6 +37,7 @@ public class WebVariableExecutor extends AbstractVariableExecutor<WebVar> {
         map.put(var -> Objects.nonNull(var.getDom()), this::getDomResult);
         map.put(var -> Objects.nonNull(var.getCookie()), this::getWebCookiesResult);
         map.put(var -> Objects.nonNull(var.getUrl()), this::getUrlResult);
+        map.put(var -> Objects.nonNull(var.getAlert()), this::getAlertResult);
         addCommonVarMethods(map);
         return map;
     }
@@ -118,5 +119,9 @@ public class WebVariableExecutor extends AbstractVariableExecutor<WebVar> {
         String valueResult = dependencies.getDriver().getCurrentUrl();
         resultUtil.addVariableMetaData(ResultUtil.URL, var.getName(), ResultUtil.NO_EXPRESSION, valueResult, result);
         return valueResult;
+    }
+
+    private String getAlertResult(final WebVar var, final CommandResult result) {
+        return dependencies.getDriver().switchTo().alert().getText();
     }
 }

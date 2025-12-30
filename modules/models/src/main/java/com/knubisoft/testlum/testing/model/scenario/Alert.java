@@ -15,13 +15,7 @@ import jakarta.xml.bind.annotation.*;
  *       &lt;attribute name="type" type="{http://www.knubisoft.com/testlum/testing/model/scenario}alertType" default="alert" /&gt;
  *       &lt;attribute name="action" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}alertAction" /&gt;
  *       &lt;attribute name="text" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="until"&gt;
- *         &lt;simpleType&gt;
- *           &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *             &lt;enumeration value="visible"/&gt;
- *           &lt;/restriction&gt;
- *         &lt;/simpleType&gt;
- *       &lt;/attribute&gt;
+ *       &lt;attribute name="untilVisible" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *       &lt;attribute name="timeout" type="{http://www.w3.org/2001/XMLSchema}int" default="10" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -42,8 +36,8 @@ public class Alert
     protected AlertAction action;
     @XmlAttribute(name = "text")
     protected String text;
-    @XmlAttribute(name = "until")
-    protected String until;
+    @XmlAttribute(name = "untilVisible")
+    protected Boolean untilVisible;
     @XmlAttribute(name = "timeout")
     protected Integer timeout;
 
@@ -124,27 +118,27 @@ public class Alert
     }
 
     /**
-     * Gets the value of the until property.
+     * Gets the value of the untilVisible property.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Boolean }
      *     
      */
-    public String getUntil() {
-        return until;
+    public Boolean isUntilVisible() {
+        return untilVisible;
     }
 
     /**
-     * Sets the value of the until property.
+     * Sets the value of the untilVisible property.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Boolean }
      *     
      */
-    public void setUntil(String value) {
-        this.until = value;
+    public void setUntilVisible(Boolean value) {
+        this.untilVisible = value;
     }
 
     /**

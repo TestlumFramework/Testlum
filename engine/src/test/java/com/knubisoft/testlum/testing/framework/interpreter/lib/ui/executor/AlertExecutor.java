@@ -36,7 +36,7 @@ public class AlertExecutor extends AbstractUiExecutor<Alert> {
     }
 
     private void waitForAlertVisibleIfRequired(Alert alert, CommandResult result) {
-        if (alert.getUntil() != null && alert.getUntil().equals("visible")) {
+        if (alert.isUntilVisible() != null && Boolean.TRUE.equals(alert.isUntilVisible())) {
             result.put(ALERT_WAIT, alert.getTimeout());
             WebDriverWait wait = new WebDriverWait(dependencies.getDriver(), Duration.ofSeconds(alert.getTimeout()));
             try {

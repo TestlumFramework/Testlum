@@ -146,6 +146,7 @@
         <json-simple.version>1.1.1</json-simple.version>
         <junit-platform-launcher.version>1.13.1</junit-platform-launcher.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
+        <langchain4j-open-api.version>1.10.0</langchain4j-open-api.version>
 
         <versions.maven.plugin.version>2.21.0</versions.maven.plugin.version>
         <checkstyle.maven.plugin.version>3.6.0</checkstyle.maven.plugin.version>
@@ -1438,6 +1439,12 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
                 <version>${apache.commons.text.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-open-ai</artifactId>
+                <version>${langchain4j-open-api.version}</version>
             </dependency>
 
         </dependencies>

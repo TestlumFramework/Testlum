@@ -14,6 +14,7 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.util.*;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
+import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.SneakyThrows;
@@ -52,6 +53,7 @@ public class ScenarioRunner {
     private final InjectionUtil injectionUtil;
     private final LogUtil logUtil;
     private final InterpreterScanner interpreterScanner;
+    private final WebDownloadUtil webDownloadUtil;
 
     public ScenarioRunner(final ScenarioArguments scenarioArguments,
                           final ApplicationContext ctx) {
@@ -66,6 +68,7 @@ public class ScenarioRunner {
         this.injectionUtil = ctx.getBean(InjectionUtil.class);
         this.logUtil = ctx.getBean(LogUtil.class);
         this.interpreterScanner = ctx.getBean(InterpreterScanner.class);
+        this.webDownloadUtil = ctx.getBean(WebDownloadUtil.class);
         this.stopScenarioOnFailure = ctx.getBean(GlobalTestConfiguration.class).isStopScenarioOnFailure();
 
         this.dependencies = createDependencies();
@@ -109,6 +112,12 @@ public class ScenarioRunner {
                 dependencies.getWebDriver().quit();
                 dependencies.getMobilebrowserDriver().quit();
             }
+            boolean keep = browserUtil
+                    .getBrowserBy(scenarioArguments.getEnvironment(), scenarioArguments.getBrowser())
+                    .map(AbstractBrowser::isKeepDownloadedFiles)
+                    .orElse(false);
+
+            webDownloadUtil.cleanupDownloadedFiles(keep);
         }
     }
 

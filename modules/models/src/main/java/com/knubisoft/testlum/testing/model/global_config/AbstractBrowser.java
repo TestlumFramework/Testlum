@@ -21,6 +21,7 @@ import jakarta.xml.bind.annotation.*;
  *       &lt;attribute name="maximizedBrowserWindow" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *       &lt;attribute name="browserWindowSize" type="{http://www.knubisoft.com/testlum/testing/model/global-config}windowSize" /&gt;
  *       &lt;attribute name="alias" use="required" type="{http://www.knubisoft.com/testlum/testing/model/global-config}aliasPattern" /&gt;
+ *       &lt;attribute name="keepDownloadedFiles" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -52,6 +53,8 @@ public abstract class AbstractBrowser {
     protected String browserWindowSize;
     @XmlAttribute(name = "alias", required = true)
     protected String alias;
+    @XmlAttribute(name = "keepDownloadedFiles")
+    protected Boolean keepDownloadedFiles;
 
     /**
      * Gets the value of the browserType property.
@@ -179,6 +182,34 @@ public abstract class AbstractBrowser {
      */
     public void setAlias(String value) {
         this.alias = value;
+    }
+
+    /**
+     * Gets the value of the keepDownloadedFiles property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public boolean isKeepDownloadedFiles() {
+        if (keepDownloadedFiles == null) {
+            return false;
+        } else {
+            return keepDownloadedFiles;
+        }
+    }
+
+    /**
+     * Sets the value of the keepDownloadedFiles property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setKeepDownloadedFiles(Boolean value) {
+        this.keepDownloadedFiles = value;
     }
 
 }

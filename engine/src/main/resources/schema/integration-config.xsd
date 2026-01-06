@@ -13,6 +13,7 @@
         </x:appinfo>
     </x:annotation>
 
+    <x:include schemaLocation="ai-integration.xsd"/>
     <x:include schemaLocation="api-integration.xsd"/>
     <x:include schemaLocation="graphql-integration.xsd"/>
     <x:include schemaLocation="websocket-integration.xsd"/>
@@ -38,6 +39,7 @@
     <x:element name="integrations">
         <x:complexType>
             <x:all>
+                <x:element name="aiIntegration" type="tns:aiIntegration" minOccurs="0"/>
                 <x:element name="apis" type="tns:apis" minOccurs="0"/>
                 <x:element name="websockets" type="tns:websockets" minOccurs="0"/>
                 <x:element name="graphqlIntegration" type="tns:graphqlIntegration" minOccurs="0"/>

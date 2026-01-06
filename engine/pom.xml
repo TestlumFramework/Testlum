@@ -118,6 +118,8 @@
         <skipGenerateModels>true</skipGenerateModels>
         <log4j-api.version>2.24.3</log4j-api.version>
         <log4j-core.version>2.24.3</log4j-core.version>
+
+        <langchain4j-open-api.version>1.10.0</langchain4j-open-api.version>
     </properties>
 
     <repositories>
@@ -1255,6 +1257,13 @@
             <groupId>com.knubisoft</groupId>
             <artifactId>testlum-lambda</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <!--    AI    -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai</artifactId>
+            <version>${langchain4j-open-api.version}</version>
         </dependency>
 
         <!--    TESTLUM UI PLUGINS    -->

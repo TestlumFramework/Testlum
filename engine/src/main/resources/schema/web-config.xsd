@@ -42,6 +42,7 @@
         <x:attribute name="maximizedBrowserWindow" type="x:boolean" use="required"/>
         <x:attribute name="browserWindowSize" type="tns:windowSize"/>
         <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+        <x:attribute name="keepDownloadedFiles" type="x:boolean" default="false"/>
     </x:complexType>
 
     <x:complexType name="browserType">

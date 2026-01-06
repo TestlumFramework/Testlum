@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.WebDownloadUtil;
 import com.knubisoft.testlum.testing.model.scenario.Click;
 import com.knubisoft.testlum.testing.model.scenario.ClickMethod;
 import org.openqa.selenium.WebElement;
@@ -23,7 +24,10 @@ public class ClickExecutor extends AbstractUiExecutor<Click> {
         WebElement webElement = uiUtil.findWebElement(dependencies, click.getLocator(), click.getLocatorStrategy());
         uiUtil.highlightElementIfRequired(click.isHighlight(), webElement, dependencies.getDriver());
         uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        WebDownloadUtil.DownloadContext context = webDownloadUtil
+                .prepareDownload(dependencies.getDriver(), dependencies.getFile());
         clickWithMethod(click.getMethod(), webElement, result);
+        webDownloadUtil.captureDownloadedFile(context);
     }
 
     private void clickWithMethod(final ClickMethod method, final WebElement element, final CommandResult result) {

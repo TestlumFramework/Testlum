@@ -1,7 +1,11 @@
 
 package com.knubisoft.testlum.testing.model.global_config;
 
-import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
@@ -25,6 +29,7 @@ import jakarta.xml.bind.annotation.*;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "integration")
 @XmlSeeAlso({
+    Ai.class,
     Api.class,
     GraphqlApi.class,
     WebsocketApi.class,

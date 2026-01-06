@@ -583,6 +583,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!--    AI    -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-open-ai</artifactId>
+        </dependency>
+
         <!--    TESTLUM UI PLUGINS    -->
         <dependency>
             <groupId>com.knubisoft</groupId>

@@ -18,6 +18,8 @@ import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.WebDownloadUtil;
+import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
@@ -100,6 +102,12 @@ public class ScenarioRunner {
                 dependencies.getWebDriver().quit();
                 dependencies.getMobilebrowserDriver().quit();
             }
+            boolean keep = BrowserUtil
+                    .getBrowserBy(scenarioArguments.getEnvironment(), scenarioArguments.getBrowser())
+                    .map(AbstractBrowser::isKeepDownloadedFiles)
+                    .orElse(false);
+
+            WebDownloadUtil.cleanupDownloadedFiles(keep);
         }
     }
 

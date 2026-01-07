@@ -35,6 +35,7 @@ import java.util.List;
  *         &lt;element name="hotKey" type="{http://www.knubisoft.com/testlum/testing/model/scenario}hotKey"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webVar"/&gt;
  *         &lt;element name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiCondition"/&gt;
+ *         &lt;element name="doubleClick" type="{http://www.knubisoft.com/testlum/testing/model/scenario}doubleClick"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="index" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *     &lt;/extension&gt;
@@ -69,7 +70,8 @@ public class SwitchToFrame
             @XmlElement(name = "hotKey", type = HotKey.class),
             @XmlElement(name = "var", type = WebVar.class),
             @XmlElement(name = "condition", type = UiCondition.class),
-            @XmlElement(name = "doubleClick", type = DoubleClick.class)
+            @XmlElement(name = "doubleClick", type = DoubleClick.class),
+            @XmlElement(name = "askAi", type = UiAskAi.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "index")
@@ -112,6 +114,7 @@ public class SwitchToFrame
      * {@link WebVar }
      * {@link UiCondition }
      * {@link DoubleClick }
+     * {@link UiAskAi }
      */
     public List<AbstractUiCommand> getClickOrInputOrAssert() {
         if (clickOrInputOrAssert == null) {

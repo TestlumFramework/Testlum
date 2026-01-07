@@ -318,6 +318,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AskAi }
+     * 
+     */
+    public AskAi createAskAi() {
+        return new AskAi();
+    }
+
+    /**
      * Create an instance of {@link Response }
      * 
      */
@@ -635,6 +643,14 @@ public class ObjectFactory {
      */
     public AssertPresent createAssertPresent() {
         return new AssertPresent();
+    }
+
+    /**
+     * Create an instance of {@link UiAskAi }
+     * 
+     */
+    public UiAskAi createUiAskAi() {
+        return new UiAskAi();
     }
 
     /**

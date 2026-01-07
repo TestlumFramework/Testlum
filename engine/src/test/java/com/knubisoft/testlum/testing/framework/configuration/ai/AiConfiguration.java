@@ -7,7 +7,6 @@ import com.knubisoft.testlum.testing.model.global_config.Ai;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
-import dev.langchain4j.model.openai.OpenAiChatModelName;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -32,14 +31,19 @@ public class AiConfiguration {
                                    final Map<AliasEnv, ChatModel> aiChatModelMap) {
         for (Ai ai : integrations.getAiIntegration().getAi()) {
             if (ai.isEnabled()) {
-                aiChatModelMap.put(new AliasEnv(ai.getAlias(), env),
-                        OpenAiChatModel.builder()
-                                .apiKey(ai.getApiKey())
-                                .baseUrl(ai.getBaseUrl())
-                                .modelName(ai.getModelName())
-                                .build());
+                aiChatModelMap.put(new AliasEnv(ai.getAlias(), env), constructChatModel(ai));
             }
         }
+    }
+
+    private ChatModel constructChatModel(final Ai ai) {
+        return OpenAiChatModel.builder()
+                .apiKey(ai.getApiKey())
+                .baseUrl(ai.getBaseUrl())
+                .modelName(ai.getModelName())
+                .temperature(0.0)
+                .maxCompletionTokens(50)
+                .build();
     }
 
 }

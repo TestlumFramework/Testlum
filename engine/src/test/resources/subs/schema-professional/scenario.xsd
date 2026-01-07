@@ -38,6 +38,7 @@
     <x:include schemaLocation="graphql.xsd"/>
     <x:include schemaLocation="lambda.xsd"/>
     <x:include schemaLocation="condition.xsd"/>
+    <x:include schemaLocation="ask-ai.xsd"/>
 
     <x:annotation>
         <x:appinfo>
@@ -99,6 +100,8 @@
                     <x:element name="shell" type="tns:shell"/>
                     <x:element name="smtp" type="tns:smtp"/>
                     <x:element name="twilio" type="tns:twilio"/>
+
+                    <x:element name="askAi" type="tns:askAi"/>
                 </x:choice>
             </x:sequence>
         </x:complexType>
@@ -136,6 +139,7 @@
 
                     <x:element name="var" type="tns:var"/>
                     <x:element name="wait" type="tns:wait"/>
+                    <x:element name="askAi" type="tns:askAi"/>
                 </x:choice>
                 <x:attribute name="apiAlias" type="tns:nonEmptyString" default="DEFAULT"/>
                 <x:attribute name="credentials" type="tns:jsonFileExtension" use="required"/>
@@ -176,6 +180,7 @@
                     <x:element name="shell" type="tns:shell"/>
                     <x:element name="smtp" type="tns:smtp"/>
                     <x:element name="twilio" type="tns:twilio"/>
+                    <x:element name="askAi" type="tns:askAi"/>
                 </x:choice>
                 <x:attribute name="times" type="tns:positiveIntegerMin1"/>
                 <x:attribute name="variations" type="tns:csv"/>

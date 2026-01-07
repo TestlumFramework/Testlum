@@ -11,6 +11,7 @@
     <x:include schemaLocation="var.xsd"/>
     <x:include schemaLocation="condition.xsd"/>
     <x:include schemaLocation="assert.xsd"/>
+    <x:include schemaLocation="ask-ai.xsd"/>
 
     <x:complexType name="click">
         <x:complexContent>

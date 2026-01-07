@@ -419,6 +419,12 @@
 
         <dependency>
             <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-ai</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
             <artifactId>testlum-shell</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -587,6 +593,12 @@
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-open-ai</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+            <version>${langchain4j-open-api.version}</version>
         </dependency>
 
         <!--    TESTLUM UI PLUGINS    -->

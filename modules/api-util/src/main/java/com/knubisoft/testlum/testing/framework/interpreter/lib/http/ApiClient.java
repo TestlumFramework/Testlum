@@ -2,17 +2,22 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.http;
 
 import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.*;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.simple.parser.JSONParser;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -21,11 +26,14 @@ import static org.springframework.http.HttpMethod.*;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class ApiClient {
 
     public static final String UNKNOWN_HTTP_METHOD = "Unknown http method: %s";
 
     private static final String HTTP_STATUS_CODE = LogFormat.table("Status code", "{} {}");
+
+    private final HttpUtil httpUtil;
 
     public ApiResponse call(final HttpMethod httpMethod,
                             final String url,
@@ -104,5 +112,30 @@ public class ApiClient {
                                           final HttpEntity body) {
         request.setEntity(body);
         return request;
+    }
+
+    private Object httpEntityToResponseBody(final HttpEntity httpEntity) throws Exception {
+        byte[] contentBytes = EntityUtils.toByteArray(httpEntity);
+        if (contentBytes.length == 0) {
+            return StringUtils.EMPTY;
+        }
+
+        ContentType contentType = ContentType.get(httpEntity);
+        String mimeType = (contentType != null && contentType.getMimeType() != null)
+                ? contentType.getMimeType().toLowerCase()
+                : "";
+
+        if (httpUtil.checkIfContentTypeIsJson(httpEntity.getContentType())) {
+            return new JSONParser().parse(new String(contentBytes, StandardCharsets.UTF_8));
+        }
+
+        if (mimeType.startsWith("text/") || mimeType.contains("xml") || mimeType.contains("html")) {
+            return new String(contentBytes,
+                    contentType.getCharset() != null
+                            ? contentType.getCharset()
+                            : StandardCharsets.UTF_8);
+        }
+
+        return contentBytes;
     }
 }

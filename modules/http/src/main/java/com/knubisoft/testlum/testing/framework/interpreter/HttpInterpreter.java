@@ -23,7 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
+import java.io.File;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,11 +91,22 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                                final ApiResponse actual,
                                final CommandResult result) {
         HttpValidator httpValidator = new HttpValidator(this);
-        String actualBody = String.valueOf(actual.getBody());
+
+        String actualBody;
+        if (actual.getBody() instanceof byte[]) {
+            actualBody = "[BINARY DATA] size: " + ((byte[]) actual.getBody()).length + " bytes";
+        } else {
+            actualBody = String.valueOf(actual.getBody());
+        }
+
         setContextBody(getContextBodyKey(expected.getFile()), actualBody);
         httpValidator.validateCode(expected.getCode(), actual.getCode());
         validateHeaders(expected, actual, httpValidator);
-        validateBody(expected, actualBody, httpValidator, result);
+
+        if (!(actual.getBody() instanceof byte[])) {
+            validateBody(expected, actualBody, httpValidator, result);
+        }
+
         httpValidator.rethrowOnErrors();
     }
 
@@ -135,7 +149,62 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         mergeContentTypeFromBody(headers, body);
         logBodyContent(body);
         String url = createFullUrl(endpoint, alias);
-        return getApiResponse(httpMethod, url, headers, body);
+        ApiResponse response = getApiResponse(httpMethod, url, headers, body);
+        if (response.getBody() instanceof byte[]) {
+            String fileNameCandidate = extractFileNameFromEndpoint(endpoint);
+            String fallbackName = StringUtils.isNotBlank(fileNameCandidate) ? fileNameCandidate : alias;
+
+            saveFileViaReflection(response, fallbackName, result);
+        }
+        return response;
+    }
+
+    private String extractFileNameFromEndpoint(String endpoint) {
+        if (StringUtils.isBlank(endpoint)) {
+            return null;
+        }
+
+        int queryParamIndex = endpoint.indexOf("?");
+        if (queryParamIndex != -1) {
+            endpoint = endpoint.substring(0, queryParamIndex);
+        }
+        if (endpoint.endsWith("/")) {
+            endpoint = endpoint.substring(0, endpoint.length() - 1);
+        }
+        int lastSlashIndex = endpoint.lastIndexOf("/");
+        if (lastSlashIndex != -1 && lastSlashIndex < endpoint.length() - 1) {
+            return endpoint.substring(lastSlashIndex + 1);
+        }
+        return endpoint;
+    }
+
+    private void saveFileViaReflection(final ApiResponse response, final String fileName, final CommandResult result) {
+        try {
+            String className = "com.knubisoft.testlum.testing.framework.util.ApiDownloadUtil";
+            Class<?> utilClass = Class.forName(className);
+
+            Method saveMethod = utilClass.getMethod("saveToScenarioDir",
+                    File.class,
+                    Map.class,
+                    byte[].class,
+                    String.class
+            );
+
+            Object pathObj = saveMethod.invoke(null,
+                    dependencies.getFile(),
+                    response.getHeaders(),
+                    (byte[]) response.getBody(),
+                    fileName
+            );
+
+            if (pathObj instanceof Path savedPath) {
+                log.info("File downloaded and saved temporarily to: {}", savedPath.toAbsolutePath());
+                result.put("Downloaded File", savedPath.toString());
+            }
+
+        } catch (Exception e) {
+            log.warn("Failed to save downloaded file using reflection (ApiDownloadUtil). Error: {}", e.getMessage());
+        }
     }
 
     private void mergeContentTypeFromBody(final Map<String, String> headers, final HttpEntity body) {

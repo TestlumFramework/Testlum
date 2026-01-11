@@ -51,6 +51,7 @@
             <x:element name="expression" type="tns:fromExpression"/>
             <x:element name="sql" type="tns:fromSQL"/>
             <x:element name="generate" type="tns:fromRandomGenerate"/>
+            <x:element name="date" type="tns:fromDate"/>
         </x:choice>
     </x:group>
 
@@ -84,6 +85,22 @@
         </x:sequence>
         <x:attribute name="dbType" type="tns:relationalDB" use="required"/>
         <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
+    </x:complexType>
+
+    <x:complexType name="fromDate">
+        <x:choice>
+            <x:element name="relative" type="tns:dateRelative"/>
+            <x:element name="specified" type="tns:dateSpecified"/>
+        </x:choice>
+        <x:attribute name="format" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="dateRelative">
+        <x:attribute name="shift" type="tns:nonEmptyString"/>
+    </x:complexType>
+
+    <x:complexType name="dateSpecified">
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
     <x:simpleType name="variableQuery">

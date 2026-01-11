@@ -12,13 +12,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.FromConstant;
-import com.knubisoft.testlum.testing.model.scenario.FromExpression;
-import com.knubisoft.testlum.testing.model.scenario.FromFile;
-import com.knubisoft.testlum.testing.model.scenario.FromPath;
-import com.knubisoft.testlum.testing.model.scenario.FromRandomGenerate;
-import com.knubisoft.testlum.testing.model.scenario.FromSQL;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -38,11 +32,14 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalQueries;
+import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
@@ -232,6 +229,83 @@ public class VariableHelperImpl implements VariableHelper {
         return valueResult;
     }
 
+    @Override
+    public String getDateResult(final FromDate fromDate, final String varName, final CommandResult result) {
+        String format = fromDate.getFormat();
+        if (format == null || format.trim().isEmpty()) {
+            format = "yyyy-MM-dd";
+        }
+
+        String valueResult = calculateDate(fromDate, format);
+        ResultUtil.addVariableMetaData(GENERATED_STRING, varName, format, valueResult, result);
+        return valueResult;
+    }
+
+    private String calculateDate(FromDate fromDate, String format) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        LocalDateTime dateTime = LocalDateTime.now();
+
+        if (fromDate.getSpecified() != null) {
+            String value = fromDate.getSpecified().getValue();
+            dateTime = parseSpecifiedValue(value, format);
+            return dateTime.format(formatter);
+        }
+
+        if (fromDate.getRelative() != null) {
+            String shift = fromDate.getRelative().getShift();
+            if (shift != null && !shift.trim().isEmpty()) {
+                dateTime = applyShift(dateTime, shift);
+            }
+            return dateTime.format(formatter);
+        }
+
+        return dateTime.format(formatter);
+    }
+
+    private LocalDateTime parseSpecifiedValue(String value, String pattern) {
+        if (value == null || value.trim().isEmpty()) {
+            return LocalDateTime.now();
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+
+        TemporalAccessor accessor = formatter.parse(value);
+
+        LocalDate date = accessor.query(TemporalQueries.localDate());
+        LocalTime time = accessor.query(TemporalQueries.localTime());
+
+        if (date != null && time != null) {
+            return LocalDateTime.of(date, time);
+        }
+
+        if (date != null) {
+            return date.atStartOfDay();
+        }
+
+        if (time != null) {
+            return time.atDate(LocalDate.now());
+        }
+
+        throw new DefaultFrameworkException(
+                String.format("Value '%s' matches format '%s', but does not contain enough information to build a LocalDateTime.", value, pattern)
+        );
+    }
+
+    private LocalDateTime applyShift(LocalDateTime dateTime, String shift) {
+        String[] parts = shift.trim().split("\\s+");
+        if (parts.length < 2) return dateTime;
+
+        try {
+            int amount = Integer.parseInt(parts[0]);
+            String unitText = parts[1];
+
+            return ShiftUnit.apply(dateTime, amount, unitText);
+
+        } catch (NumberFormatException e) {
+            return dateTime;
+        }
+    }
+
     private void checkAlias(final FromSQL fromSQL) {
         if (fromSQL.getAlias() == null) {
             fromSQL.setAlias(DEFAULT_ALIAS_VALUE);
@@ -271,5 +345,32 @@ public class VariableHelperImpl implements VariableHelper {
                 (List<AbstractStorageOperation.QueryResult<?>>) applyRelationalDb.getRaw();
         String[] queryParts = rawList.get(0).getQuery().split(DelimiterConstant.SPACE);
         return queryParts[1];
+    }
+
+    private enum ShiftUnit {
+        DAY("day", LocalDateTime::plusDays),
+        MONTH("month", LocalDateTime::plusMonths),
+        YEAR("year", LocalDateTime::plusYears),
+        HOUR("hour", LocalDateTime::plusHours),
+        MINUTE("minute", LocalDateTime::plusMinutes),
+        SECOND("second", LocalDateTime::plusSeconds);
+
+        private final String prefix;
+        private final BiFunction<LocalDateTime, Long, LocalDateTime> operation;
+
+        ShiftUnit(String prefix, BiFunction<LocalDateTime, Long, LocalDateTime> operation) {
+            this.prefix = prefix;
+            this.operation = operation;
+        }
+
+        public static LocalDateTime apply(LocalDateTime dateTime, int amount, String text) {
+            String lowerText = text.toLowerCase(Locale.ROOT);
+
+            return Arrays.stream(values())
+                    .filter(unit -> lowerText.startsWith(unit.prefix))
+                    .findFirst()
+                    .map(unit -> unit.operation.apply(dateTime, (long) amount))
+                    .orElse(dateTime);
+        }
     }
 }

@@ -318,11 +318,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AskAi }
+     * Create an instance of {@link Ai }
      * 
      */
-    public AskAi createAskAi() {
-        return new AskAi();
+    public Ai createAskAi() {
+        return new Ai();
     }
 
     /**
@@ -646,11 +646,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link UiAskAi }
+     * Create an instance of {@link UiAi }
      * 
      */
-    public UiAskAi createUiAskAi() {
-        return new UiAskAi();
+    public UiAi createUiAskAi() {
+        return new UiAi();
     }
 
     /**

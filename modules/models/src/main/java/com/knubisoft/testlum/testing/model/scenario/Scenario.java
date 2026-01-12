@@ -109,7 +109,7 @@ public class Scenario {
         @XmlElement(name = "shell", type = Shell.class),
         @XmlElement(name = "smtp", type = Smtp.class),
         @XmlElement(name = "twilio", type = Twilio.class),
-        @XmlElement(name = "askAi", type = AskAi.class)
+        @XmlElement(name = "ai", type = Ai.class)
     })
     protected List<AbstractCommand> commands;
 
@@ -212,7 +212,7 @@ public class Scenario {
      * {@link Shell }
      * {@link Smtp }
      * {@link Twilio }
-     * {@link AskAi }
+     * {@link Ai }
      *
      * 
      */

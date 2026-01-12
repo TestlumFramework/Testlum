@@ -8,14 +8,14 @@ import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for uiAskAi complex type.
+ * <p>Java class for askAi complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="uiAskAi"&gt;
+ * &lt;complexType name="ai"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractUiCommand"&gt;
+ *     &lt;extension base="{http://www.knubisoft.com/testlum/testing/model/scenario}abstractCommand"&gt;
  *       &lt;attribute name="alias" type="{http://www.knubisoft.com/testlum/testing/model/scenario}aliasPattern" default="DEFAULT" /&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *       &lt;attribute name="prompt" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
@@ -27,9 +27,9 @@ import jakarta.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "uiAskAi")
-public class UiAskAi
-    extends AbstractUiCommand
+@XmlType(name = "ai")
+public class Ai
+    extends AbstractCommand
 {
 
     @XmlAttribute(name = "alias")

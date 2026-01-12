@@ -7,7 +7,7 @@
 
     <x:include schemaLocation="shared.xsd"/>
 
-    <x:complexType name="uiAskAi">
+    <x:complexType name="uiAi">
         <x:complexContent>
             <x:extension base="tns:abstractUiCommand">
                 <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
@@ -17,7 +17,7 @@
         </x:complexContent>
     </x:complexType>
 
-    <x:complexType name="askAi">
+    <x:complexType name="ai">
         <x:complexContent>
             <x:extension base="tns:abstractCommand">
                 <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>

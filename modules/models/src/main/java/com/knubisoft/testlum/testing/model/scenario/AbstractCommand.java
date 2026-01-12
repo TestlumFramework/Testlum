@@ -56,7 +56,7 @@ import jakarta.xml.bind.annotation.*;
     Shell.class,
     Smtp.class,
     Twilio.class,
-    AskAi.class,
+    Ai.class,
     Ui.class,
     AssertEquality.class,
     AbstractUiCommand.class,

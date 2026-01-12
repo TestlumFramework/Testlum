@@ -42,7 +42,7 @@ import java.util.List;
  *         &lt;element name="twilio" type="{http://www.knubisoft.com/testlum/testing/model/scenario}twilio"/&gt;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}var"/&gt;
  *         &lt;element name="wait" type="{http://www.knubisoft.com/testlum/testing/model/scenario}wait"/&gt;
- *         &lt;element name="askAi" type="{http://www.knubisoft.com/testlum/testing/model/scenario}askAi"/&gt;
+ *         &lt;element name="ai" type="{http://www.knubisoft.com/testlum/testing/model/scenario}askAi"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="apiAlias" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" default="DEFAULT" /&gt;
  *       &lt;attribute name="credentials" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}jsonFileExtension" /&gt;
@@ -88,7 +88,7 @@ public class Auth
         @XmlElement(name = "twilio", type = Twilio.class),
         @XmlElement(name = "var", type = Var.class),
         @XmlElement(name = "wait", type = Wait.class),
-        @XmlElement(name = "askAi", type = AskAi.class)
+        @XmlElement(name = "ai", type = Ai.class)
     })
     protected List<AbstractCommand> commands;
     @XmlAttribute(name = "apiAlias", required = true)
@@ -141,7 +141,7 @@ public class Auth
      * {@link Twilio }
      * {@link Var }
      * {@link Wait }
-     * {@link AskAi }
+     * {@link Ai }
      * 
      * 
      */

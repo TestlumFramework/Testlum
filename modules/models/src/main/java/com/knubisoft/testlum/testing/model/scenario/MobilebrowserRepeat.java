@@ -35,7 +35,7 @@ import java.util.List;
  *         &lt;element name="var" type="{http://www.knubisoft.com/testlum/testing/model/scenario}webVar"/&gt;
  *         &lt;element name="condition" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiCondition"/&gt;
  *         &lt;element name="repeat" type="{http://www.knubisoft.com/testlum/testing/model/scenario}mobilebrowserRepeat"/&gt;
- *         &lt;element name="askAi" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiAskAi"/&gt;
+ *         &lt;element name="ai" type="{http://www.knubisoft.com/testlum/testing/model/scenario}uiAskAi"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="times" type="{http://www.knubisoft.com/testlum/testing/model/scenario}positiveIntegerMin1" /&gt;
  *       &lt;attribute name="variations" type="{http://www.knubisoft.com/testlum/testing/model/scenario}csv" /&gt;
@@ -73,7 +73,7 @@ public class MobilebrowserRepeat
         @XmlElement(name = "var", type = WebVar.class),
         @XmlElement(name = "condition", type = UiCondition.class),
         @XmlElement(name = "repeat", type = MobilebrowserRepeat.class),
-        @XmlElement(name = "askAi", type = UiAskAi.class)
+        @XmlElement(name = "ai", type = UiAi.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;
     @XmlAttribute(name = "times")
@@ -117,7 +117,7 @@ public class MobilebrowserRepeat
      * {@link WebVar }
      * {@link UiCondition }
      * {@link MobilebrowserRepeat }
-     * {@link UiAskAi }
+     * {@link UiAi }
      * 
      * 
      */

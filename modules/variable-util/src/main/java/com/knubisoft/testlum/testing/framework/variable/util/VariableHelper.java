@@ -3,6 +3,7 @@ package com.knubisoft.testlum.testing.framework.variable.util;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.model.scenario.*;
+import org.openqa.selenium.Alert;
 
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -26,6 +27,8 @@ public interface VariableHelper {
                          UnaryOperator<String> fileToString);
 
     String getSQLResult(FromSQL fromSQL, String varName, CommandResult result);
+
+    String getAlertResult(FromAlert fromAlert, String varName, Alert browserAlert, CommandResult result);
 
     interface VarPredicate<T extends AbstractCommand> extends Predicate<T> { }
 

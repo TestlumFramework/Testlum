@@ -17,6 +17,7 @@ import com.knubisoft.testlum.testing.model.scenario.ElementPresent;
 import com.knubisoft.testlum.testing.model.scenario.WebVar;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebElement;
 
@@ -168,6 +169,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     private String getAlertResult(final WebVar var, final CommandResult result) {
-        return dependencies.getDriver().switchTo().alert().getText();
+        Alert browserAlert = dependencies.getDriver().switchTo().alert();
+        return variableHelper.getAlertResult(var.getAlert(), var.getName(), browserAlert, result);
     }
 }

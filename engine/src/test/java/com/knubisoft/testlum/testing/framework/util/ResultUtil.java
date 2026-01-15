@@ -52,6 +52,7 @@ public class ResultUtil {
     public static final String JSON_PATH = "JSON path";
     public static final String XML_PATH = "Xml path";
     public static final String RELATIONAL_DB_QUERY = "Relational DB query";
+    public static final String ALERT = "Alert";
     public static final String FILE = "File";
     public static final String EXPRESSION = "Expression";
     public static final String CONSTANT = "Constant";

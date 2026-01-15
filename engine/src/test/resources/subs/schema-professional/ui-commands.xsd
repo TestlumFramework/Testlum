@@ -178,7 +178,7 @@
                 <x:attribute name="type" type="tns:alertType" default="alert"/>
                 <x:attribute name="action" type="tns:alertAction" use="required"/>
                 <x:attribute name="text" type="x:string" use="optional"/>
-                <x:attribute name="untilVisible" type="x:boolean" use="optional"/>
+                <x:attribute name="waitUntilVisible" type="x:boolean" use="optional"/>
                 <x:attribute name="timeout" type="x:int" default="10" use="optional"/>
             </x:extension>
         </x:complexContent>

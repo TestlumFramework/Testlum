@@ -15,7 +15,7 @@ import jakarta.xml.bind.annotation.*;
  *       &lt;attribute name="type" type="{http://www.knubisoft.com/testlum/testing/model/scenario}alertType" default="alert" /&gt;
  *       &lt;attribute name="action" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}alertAction" /&gt;
  *       &lt;attribute name="text" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="untilVisible" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
+ *       &lt;attribute name="waitUntilVisible" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
  *       &lt;attribute name="timeout" type="{http://www.w3.org/2001/XMLSchema}int" default="10" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
@@ -36,8 +36,8 @@ public class Alert
     protected AlertAction action;
     @XmlAttribute(name = "text")
     protected String text;
-    @XmlAttribute(name = "untilVisible")
-    protected Boolean untilVisible;
+    @XmlAttribute(name = "waitUntilVisible")
+    protected Boolean waitUntilVisible;
     @XmlAttribute(name = "timeout")
     protected Integer timeout;
 
@@ -118,27 +118,27 @@ public class Alert
     }
 
     /**
-     * Gets the value of the untilVisible property.
+     * Gets the value of the waitUntilVisible property.
      * 
      * @return
      *     possible object is
      *     {@link Boolean }
      *     
      */
-    public Boolean isUntilVisible() {
-        return untilVisible;
+    public Boolean isWaitUntilVisible() {
+        return waitUntilVisible;
     }
 
     /**
-     * Sets the value of the untilVisible property.
+     * Sets the value of the waitUntilVisible property.
      * 
      * @param value
      *     allowed object is
      *     {@link Boolean }
      *     
      */
-    public void setUntilVisible(Boolean value) {
-        this.untilVisible = value;
+    public void setWaitUntilVisible(Boolean value) {
+        this.waitUntilVisible = value;
     }
 
     /**

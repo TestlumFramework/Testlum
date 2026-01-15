@@ -25,6 +25,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
 import org.springframework.context.ApplicationContext;
+import org.openqa.selenium.Alert;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -219,6 +220,13 @@ public class VariableHelperImpl implements VariableHelper {
         AbstractStorageOperation storageOperation = aliasToStorageOperation.getByNameOrThrow(metadataKey);
         String valueResult = getActualQueryResult(fromSQL, storageOperation);
         resultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, fromSQL, varName, valueResult, result);
+        return valueResult;
+    }
+
+    @Override
+    public String getAlertResult(FromAlert fromAlert, String varName, Alert browserAlert, CommandResult result) {
+        String valueResult = browserAlert.getText();
+        resultUtil.addVariableMetaData(ALERT, varName, NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 

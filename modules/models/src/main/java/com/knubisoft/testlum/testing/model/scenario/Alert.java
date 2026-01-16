@@ -1,7 +1,13 @@
 
 package com.knubisoft.testlum.testing.model.scenario;
 
-import jakarta.xml.bind.annotation.*;
+import java.math.BigInteger;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlType;
+
 
 /**
  * <p>Java class for alert complex type.
@@ -16,7 +22,7 @@ import jakarta.xml.bind.annotation.*;
  *       &lt;attribute name="action" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}alertAction" /&gt;
  *       &lt;attribute name="text" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="waitUntilVisible" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *       &lt;attribute name="timeout" type="{http://www.w3.org/2001/XMLSchema}int" default="10" /&gt;
+ *       &lt;attribute name="timeout" type="{http://www.w3.org/2001/XMLSchema}nonNegativeInteger" default="10" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -39,7 +45,8 @@ public class Alert
     @XmlAttribute(name = "waitUntilVisible")
     protected Boolean waitUntilVisible;
     @XmlAttribute(name = "timeout")
-    protected Integer timeout;
+    @XmlSchemaType(name = "nonNegativeInteger")
+    protected BigInteger timeout;
 
     /**
      * Gets the value of the type property.
@@ -146,12 +153,12 @@ public class Alert
      * 
      * @return
      *     possible object is
-     *     {@link Integer }
+     *     {@link BigInteger }
      *     
      */
-    public int getTimeout() {
+    public BigInteger getTimeout() {
         if (timeout == null) {
-            return  10;
+            return new BigInteger("10");
         } else {
             return timeout;
         }
@@ -162,10 +169,10 @@ public class Alert
      * 
      * @param value
      *     allowed object is
-     *     {@link Integer }
+     *     {@link BigInteger }
      *     
      */
-    public void setTimeout(Integer value) {
+    public void setTimeout(BigInteger value) {
         this.timeout = value;
     }
 

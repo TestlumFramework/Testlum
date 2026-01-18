@@ -8,8 +8,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.*;
-import org.apache.http.entity.ContentType;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpOptions;
+import org.apache.http.client.methods.HttpPatch;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpTrace;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -17,7 +26,6 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -115,27 +123,9 @@ public class ApiClient {
     }
 
     private Object httpEntityToResponseBody(final HttpEntity httpEntity) throws Exception {
-        byte[] contentBytes = EntityUtils.toByteArray(httpEntity);
-        if (contentBytes.length == 0) {
-            return StringUtils.EMPTY;
-        }
-
-        ContentType contentType = ContentType.get(httpEntity);
-        String mimeType = (contentType != null && contentType.getMimeType() != null)
-                ? contentType.getMimeType().toLowerCase()
-                : "";
-
         if (httpUtil.checkIfContentTypeIsJson(httpEntity.getContentType())) {
-            return new JSONParser().parse(new String(contentBytes, StandardCharsets.UTF_8));
+            return new JSONParser().parse(EntityUtils.toString(httpEntity));
         }
-
-        if (mimeType.startsWith("text/") || mimeType.contains("xml") || mimeType.contains("html")) {
-            return new String(contentBytes,
-                    contentType.getCharset() != null
-                            ? contentType.getCharset()
-                            : StandardCharsets.UTF_8);
-        }
-
-        return contentBytes;
+        return EntityUtils.toString(httpEntity);
     }
 }

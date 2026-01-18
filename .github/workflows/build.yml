@@ -17,10 +17,8 @@ jobs:
         java: [ 17 ]
         experimental: [ false ]
         include:
-          - java: 11
-            experimental: true
           - java: 21
-            experimental: true
+            experimental: false
           - java: 25
             experimental: true
 

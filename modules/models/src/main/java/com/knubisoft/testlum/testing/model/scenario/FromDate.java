@@ -17,10 +17,13 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;choice&gt;
- *         &lt;element name="relative" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dateRelative"/&gt;
- *         &lt;element name="specified" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dateSpecified"/&gt;
+ *         &lt;element name="constant" type="{http://www.knubisoft.com/testlum/testing/model/scenario}fromConstant"/&gt;
+ *         &lt;element name="now" type="{http://www.knubisoft.com/testlum/testing/model/scenario}now"/&gt;
+ *         &lt;element name="beforeNow" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dateShift"/&gt;
+ *         &lt;element name="afterNow" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dateShift"/&gt;
  *       &lt;/choice&gt;
- *       &lt;attribute name="format" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
+ *       &lt;attribute name="format" type="{http://www.w3.org/2001/XMLSchema}string" default="yyyy-MM-dd HH:mm:ss" /&gt;
+ *       &lt;attribute name="timezone" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -30,62 +33,116 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "fromDate", propOrder = {
-    "relative",
-    "specified"
+    "constant",
+    "now",
+    "beforeNow",
+    "afterNow"
 })
 public class FromDate {
 
-    protected DateRelative relative;
-    protected DateSpecified specified;
-    @XmlAttribute(name = "format", required = true)
+    protected FromConstant constant;
+    protected Now now;
+    protected DateShift beforeNow;
+    protected DateShift afterNow;
+    @XmlAttribute(name = "format")
     protected String format;
+    @XmlAttribute(name = "timezone")
+    protected String timezone;
 
     /**
-     * Gets the value of the relative property.
+     * Gets the value of the constant property.
      * 
      * @return
      *     possible object is
-     *     {@link DateRelative }
+     *     {@link FromConstant }
      *     
      */
-    public DateRelative getRelative() {
-        return relative;
+    public FromConstant getConstant() {
+        return constant;
     }
 
     /**
-     * Sets the value of the relative property.
+     * Sets the value of the constant property.
      * 
      * @param value
      *     allowed object is
-     *     {@link DateRelative }
+     *     {@link FromConstant }
      *     
      */
-    public void setRelative(DateRelative value) {
-        this.relative = value;
+    public void setConstant(FromConstant value) {
+        this.constant = value;
     }
 
     /**
-     * Gets the value of the specified property.
+     * Gets the value of the now property.
      * 
      * @return
      *     possible object is
-     *     {@link DateSpecified }
+     *     {@link Now }
      *     
      */
-    public DateSpecified getSpecified() {
-        return specified;
+    public Now getNow() {
+        return now;
     }
 
     /**
-     * Sets the value of the specified property.
+     * Sets the value of the now property.
      * 
      * @param value
      *     allowed object is
-     *     {@link DateSpecified }
+     *     {@link Now }
      *     
      */
-    public void setSpecified(DateSpecified value) {
-        this.specified = value;
+    public void setNow(Now value) {
+        this.now = value;
+    }
+
+    /**
+     * Gets the value of the beforeNow property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link DateShift }
+     *     
+     */
+    public DateShift getBeforeNow() {
+        return beforeNow;
+    }
+
+    /**
+     * Sets the value of the beforeNow property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DateShift }
+     *     
+     */
+    public void setBeforeNow(DateShift value) {
+        this.beforeNow = value;
+    }
+
+    /**
+     * Gets the value of the afterNow property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link DateShift }
+     *     
+     */
+    public DateShift getAfterNow() {
+        return afterNow;
+    }
+
+    /**
+     * Sets the value of the afterNow property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link DateShift }
+     *     
+     */
+    public void setAfterNow(DateShift value) {
+        this.afterNow = value;
     }
 
     /**
@@ -97,7 +154,11 @@ public class FromDate {
      *     
      */
     public String getFormat() {
-        return format;
+        if (format == null) {
+            return "yyyy-MM-dd HH:mm:ss";
+        } else {
+            return format;
+        }
     }
 
     /**
@@ -110,6 +171,30 @@ public class FromDate {
      */
     public void setFormat(String value) {
         this.format = value;
+    }
+
+    /**
+     * Gets the value of the timezone property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getTimezone() {
+        return timezone;
+    }
+
+    /**
+     * Sets the value of the timezone property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setTimezone(String value) {
+        this.timezone = value;
     }
 
 }

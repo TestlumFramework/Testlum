@@ -185,4 +185,13 @@ public class ExceptionMessage {
     public static final String TAB_OUT_OF_BOUNDS = "Cannot close the tab №<%s> because there are only %s tabs";
     public static final String CANNOT_SWITCH_TO_WEBVIEW = "Cannot switch to the web view. Web context was not found";
     public static final String ALERT_NOT_VISIBLE = "Alert hasn't been visible";
+    public static final String DATE_FORMATTING_FAILED = "Failed to format date result using pattern '%s'. Error: %s";
+    public static final String INVALID_DATE_FORMAT_PATTERN = "Invalid date format pattern: '%s'. "
+            + "Please check Java DateTimeFormatter documentation. Error: %s";
+    public static final String INVALID_TIMEZONE = "Invalid timezone: '%s'. "
+            + "Valid examples: 'UTC', 'Europe/Kiev', 'GMT+2', 'America/New_York'.";
+    public static final String VALUE_DOES_NOT_MATCH_FORMAT = "Value '%s' does not match the format '%s'. "
+            + "Please ensure the value strictly follows the pattern.";
+    public static final String POOR_DATETIME_INFORMATION = "Parsed value '%s' with format '%s' "
+            + "lacks enough information (Date or Time) to build a result.";
 }

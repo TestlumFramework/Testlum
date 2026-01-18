@@ -89,19 +89,32 @@
 
     <x:complexType name="fromDate">
         <x:choice>
-            <x:element name="relative" type="tns:dateRelative"/>
-            <x:element name="specified" type="tns:dateSpecified"/>
+            <x:element name="constant" type="tns:fromConstant"/>
+            <x:element name="now" type="tns:now"/>
+            <x:element name="beforeNow" type="tns:dateShift"/>
+            <x:element name="afterNow" type="tns:dateShift"/>
         </x:choice>
-        <x:attribute name="format" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="format" type="x:string" default="yyyy-MM-dd HH:mm:ss"/>
+        <x:attribute name="timezone" type="x:string"/>
     </x:complexType>
 
-    <x:complexType name="dateRelative">
-        <x:attribute name="shift" type="tns:nonEmptyString"/>
+    <x:complexType name="dateShift">
+        <x:attribute name="unit" type="tns:dateUnit" use="required"/>
+        <x:attribute name="value" type="x:int" use="required"/>
     </x:complexType>
 
-    <x:complexType name="dateSpecified">
-        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
-    </x:complexType>
+
+    <x:simpleType name="dateUnit">
+        <x:restriction base="x:string">
+            <x:enumeration value="minutes"/>
+            <x:enumeration value="seconds"/>
+            <x:enumeration value="hours"/>
+            <x:enumeration value="days"/>
+            <x:enumeration value="months"/>
+            <x:enumeration value="years"/>
+        </x:restriction>
+    </x:simpleType>
+
 
     <x:simpleType name="variableQuery">
         <x:restriction base="x:string">
@@ -133,6 +146,8 @@
     <x:complexType name="randomAlphabetic"/>
 
     <x:complexType name="randomAlphanumeric"/>
+
+    <x:complexType name="now"/>
 
     <x:complexType name="randomRegexp">
         <x:attribute name="pattern" type="tns:nonEmptyString" use="required"/>

@@ -115,7 +115,7 @@
         <org.reflections.version>0.10.2</org.reflections.version>
         <com.typesafe.version>1.4.3</com.typesafe.version>
 
-        <skipGenerateModels>true</skipGenerateModels>
+        <skipGenerateModels>false</skipGenerateModels>
         <log4j-api.version>2.24.3</log4j-api.version>
         <log4j-core.version>2.24.3</log4j-core.version>
     </properties>

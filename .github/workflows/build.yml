@@ -20,7 +20,7 @@ jobs:
           - java: 21
             experimental: false
           - java: 25
-            experimental: true
+            experimental: false
 
     steps:
       - name: Checkout repository

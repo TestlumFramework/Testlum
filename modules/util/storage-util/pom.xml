@@ -18,7 +18,6 @@
         <com.zaxxer.HikariCP.version>6.3.0</com.zaxxer.HikariCP.version>
     </properties>
 
-
     <dependencies>
         <dependency>
             <groupId>com.knubisoft</groupId>
@@ -56,6 +55,13 @@
                     <artifactId>commons-collections4</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.42</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

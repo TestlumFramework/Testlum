@@ -1,4 +1,4 @@
-name: Build
+name: Testlum Engine Build
 
 on:
   push:
@@ -8,13 +8,21 @@ on:
 
 jobs:
   build:
-    name: Java ${{ matrix.java }} build
+    name: Java ${{ matrix.java }} [experimental > ${{ matrix.experimental }}] build
     runs-on: ubuntu-latest
     continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: true
       matrix:
-        java: [ 8, 11, 17, 23 ]
+        java: [ 17 ]
+        experimental: [ false ]
+        include:
+          - java: 11
+            experimental: true
+          - java: 21
+            experimental: true
+          - java: 25
+            experimental: true
 
     steps:
       - name: Checkout repository

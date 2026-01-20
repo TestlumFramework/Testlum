@@ -32,6 +32,7 @@ import io.github.bonigarcia.wdm.managers.SafariDriverManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -44,11 +45,13 @@ import org.openqa.selenium.safari.SafariOptions;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
+import java.nio.file.Path;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 
@@ -58,7 +61,6 @@ import java.util.function.Predicate;
 public class WebDriverFactory {
 
     private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
-
     private static final int MAX_TIMEOUT_SECONDS = 60;
 
     private final SeleniumDriverUtil seleniumDriverUtil;
@@ -67,28 +69,28 @@ public class WebDriverFactory {
     private final UIConfiguration uiConfigs;
 
     private final Map<BrowserPredicate, WebDriverFunction> driverInitializerMap = Map.of(
-            browser -> browser instanceof Chrome, b -> new ChromeDriverInitializer().init((Chrome) b),
-            browser -> browser instanceof Firefox, b -> new FirefoxDriverInitializer().init((Firefox) b),
-            browser -> browser instanceof Safari, b -> new SafariDriverInitializer().init((Safari) b),
-            browser -> browser instanceof Edge, b -> new EdgeDriverInitializer().init((Edge) b));
+            browser -> browser instanceof Chrome, (b, path) -> new ChromeDriverInitializer(path).init((Chrome) b),
+            browser -> browser instanceof Firefox, (b, path) -> new FirefoxDriverInitializer(path).init((Firefox) b),
+            browser -> browser instanceof Safari, (b, path) -> new SafariDriverInitializer().init((Safari) b),
+            browser -> browser instanceof Edge, (b, path) -> new EdgeDriverInitializer(path).init((Edge) b));
 
-    public WebDriver createDriver(final AbstractBrowser browser) {
+    public WebDriver createDriver(final AbstractBrowser browser, final Path downloadPath) {
         ConnectionTemplate connectionTemplate = new ConnectionTemplateImpl();
         String connectionInfo = String.format(LogMessage.CONNECTION_INTEGRATION_DATA,
                 browser.getClass().getSimpleName(), browser.getAlias());
         return connectionTemplate.executeWithRetry(
                 connectionInfo,
                 ConnectionTemplate.DEFAULT_ATTEMPTS,
-                () -> initializeDriver(browser),
+                () -> initializeDriver(browser, downloadPath),
                 forWebDriver(browser),
                 this::safeQuitDriver);
     }
 
-    private WebDriver initializeDriver(final AbstractBrowser browser) {
+    private WebDriver initializeDriver(final AbstractBrowser browser, final Path downloadPath) {
         return driverInitializerMap.entrySet().stream()
                 .filter(function -> function.getKey().test(browser))
                 .findFirst()
-                .map(function -> function.getValue().apply(browser))
+                .map(function -> function.getValue().apply(browser, downloadPath))
                 .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND));
     }
 
@@ -99,6 +101,7 @@ public class WebDriverFactory {
             throw new DefaultFrameworkException("Failed to quit WebDriver: ".concat(e.getMessage()));
         }
     }
+
     private IntegrationHealthCheck<WebDriver> forWebDriver(final AbstractBrowser browser) {
         return webDriver -> {
             try {
@@ -217,10 +220,14 @@ public class WebDriverFactory {
         }
     }
 
-    private interface WebDriverInitializer {
-    }
+    private interface WebDriverInitializer {}
 
     private class ChromeDriverInitializer implements WebDriverInitializer {
+        private final Path downloadPath;
+
+        public ChromeDriverInitializer(final Path downloadPath) {
+            this.downloadPath = downloadPath;
+        }
 
         private WebDriver init(final Chrome browser) {
             return getWebDriver(browser, getChromeOptions(browser), new ChromeDriverManager());
@@ -228,6 +235,17 @@ public class WebDriverFactory {
 
         private ChromeOptions getChromeOptions(final Chrome browser) {
             ChromeOptions chromeOptions = new ChromeOptions();
+
+            if (Objects.nonNull(downloadPath)) {
+                Map<String, Object> prefs = new HashMap<>();
+                prefs.put("download.default_directory", downloadPath.toAbsolutePath().toString());
+                prefs.put("download.prompt_for_download", false);
+                prefs.put("download.directory_upgrade", true);
+                prefs.put("safebrowsing.enabled", true);
+                prefs.put("profile.default_content_settings.popups", 0);
+                chromeOptions.setExperimentalOption("prefs", prefs);
+            }
+
             if (browser.isHeadlessMode()) {
                 chromeOptions.addArguments("--headless=new");
             }
@@ -242,6 +260,11 @@ public class WebDriverFactory {
     }
 
     private class FirefoxDriverInitializer implements WebDriverInitializer {
+        private final Path downloadPath;
+
+        public FirefoxDriverInitializer(final Path downloadPath) {
+            this.downloadPath = downloadPath;
+        }
 
         private WebDriver init(final Firefox browser) {
             return getWebDriver(browser, getFirefoxOptions(browser), new FirefoxDriverManager());
@@ -249,6 +272,14 @@ public class WebDriverFactory {
 
         private FirefoxOptions getFirefoxOptions(final Firefox browser) {
             FirefoxOptions firefoxOptions = new FirefoxOptions();
+            if (Objects.nonNull(downloadPath)) {
+                firefoxOptions.addPreference("browser.download.folderList", 2);
+                firefoxOptions.addPreference("browser.download.dir", downloadPath.toAbsolutePath().toString());
+                firefoxOptions.addPreference("browser.download.useDownloadDir", true);
+                firefoxOptions.addPreference("browser.helperApps.neverAsk.saveToDisk",
+                        "application/pdf,application/zip,application/octet-stream,text/csv,image/jpeg,image/png,application/json");
+                firefoxOptions.addPreference("pdfjs.disabled", true);
+            }
             if (browser.isHeadlessMode()) {
                 firefoxOptions.addArguments("-headless");
             }
@@ -261,6 +292,11 @@ public class WebDriverFactory {
     }
 
     private class EdgeDriverInitializer implements WebDriverInitializer {
+        private final Path downloadPath;
+
+        public EdgeDriverInitializer(final Path downloadPath) {
+            this.downloadPath = downloadPath;
+        }
 
         private WebDriver init(final Edge browser) {
             return getWebDriver(browser, getEdgeOptions(browser), new EdgeDriverManager());
@@ -268,6 +304,12 @@ public class WebDriverFactory {
 
         private EdgeOptions getEdgeOptions(final Edge browser) {
             EdgeOptions edgeOptions = new EdgeOptions();
+            if (Objects.nonNull(downloadPath)) {
+                Map<String, Object> prefs = new HashMap<>();
+                prefs.put("download.default_directory", downloadPath.toAbsolutePath().toString());
+                prefs.put("download.prompt_for_download", false);
+                edgeOptions.setExperimentalOption("prefs", prefs);
+            }
             if (browser.isHeadlessMode()) {
                 edgeOptions.addArguments("--headless=new");
             }
@@ -287,5 +329,5 @@ public class WebDriverFactory {
     }
 
     private interface BrowserPredicate extends Predicate<AbstractBrowser> { }
-    private interface WebDriverFunction extends Function<AbstractBrowser, WebDriver> { }
+    private interface WebDriverFunction extends BiFunction<AbstractBrowser, Path, WebDriver> { }
 }

@@ -36,4 +36,4 @@ jobs:
           cache: maven # Caches dependencies to speed up subsequent runs
 
       - name: Build with Maven
-        run: mvn clean package -Pprofessional -DskipTests
+        run: mvn clean package -DskipTests

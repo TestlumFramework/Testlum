@@ -32,10 +32,10 @@ Use clear, descriptive names like:
 - Include JavaDoc for public classes and methods
 - Make small, focused commits with meaningful messages
 
-### 4. Pass quality-checking rules
+### 4. Pass checkstyle
 After implementing your feature run the following command
 ```bash
-    mvn clean install -Pquality-checking -Pprofessional
+    mvn clean install
 ```
 And make sure that build pass
 

@@ -55,8 +55,8 @@ Make sure you have the following installed:
 ### Run locally
 After cloning repository to your local machine: 
 - navigate to root project folder
-- build executable jar file ```mvn clean package -Pprofessional -DskipTests```
-- and run it by passing test resources location ```java -jar engine/target/testlum-1.0.0.jar -c="global-config-file-name.xml" -p"=absolute path to folder with test resources"```
+- build executable jar file ```mvn clean package  -DskipTests```
+- and run it by passing test resources location ```java -jar engine/target/testlum-1.0.2.jar -c="global-config-file-name.xml" -p"=absolute path to folder with test resources"```
 - examples of test resources can be found in our [Wiki](https://github.com/TestlumFramework/Testlum/releases)
 
 Or You can use our official maven artifact:
@@ -81,22 +81,6 @@ Or You can use our official maven artifact:
 public static void main(String[] args) {
     TESTLUMStarter.main(new String[]{"-c=global-config.xml", "-p=/path-to-resources"});
 }
-```
-
-### Run in docker
-After cloning repository to your local machine:
-- navigate to root project folder
-- build image from [Dockerfile](Dockerfile) 
-
-```shell
-  docker build -t testlum:1.0 .
-```
-
-- execute [run-docker-local](run-docker-local) bash script by passing test resources location
-
-```shell 
-  sh run-docker-local imageName configFileName testResourcesPath
-  sh run-docker-local testlum:1.0 global-config.xml ~/Users/user/test-resources 
 ```
 
 Or You can use our official docker image from [Docker Hub](https://hub.docker.com/r/testlum/testlum)

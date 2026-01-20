@@ -30,7 +30,7 @@ public class CompareBuilder {
     private final int position;
     private String expected;
     private Supplier<String> supplierActual;
-    private String mode;
+    private boolean strict;
 
     public CompareBuilder(final File scenarioFile, final int position) {
         this.scenarioFile = scenarioFile;
@@ -61,7 +61,7 @@ public class CompareBuilder {
     }
 
     public CompareBuilder withMode(final String mode) {
-        this.mode = mode;
+        this.strict = "strict".equalsIgnoreCase(mode);
         return this;
     }
 
@@ -87,11 +87,8 @@ public class CompareBuilder {
         try {
             final String newActual = StringPrettifier.prettify(actual);
             final String newExpected = StringPrettifier.prettify(expected);
-            if (mode != null) {
-                TreeComparator.compare(newExpected, newActual, mode);
-            } else {
-                TreeComparator.compare(newExpected, newActual);
-            }
+
+            new TreeComparator(strict).compare(newActual, newExpected);
         } catch (ComparisonException e) {
             save(actual);
             throw e;

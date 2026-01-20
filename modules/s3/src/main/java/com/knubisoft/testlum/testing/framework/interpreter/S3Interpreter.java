@@ -174,8 +174,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         try {
             s3Client.get(aliasEnv).headBucket(request -> request.bucket(bucketName));
             return true;
-        }
-        catch (final NoSuchBucketException exception) {
+        } catch (final NoSuchBucketException exception) {
             return false;
         }
     }
@@ -254,7 +253,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         try {
             checkBucketFileExists(bucketName, key, aliasEnv);
             ResponseInputStream<GetObjectResponse> s3Object = s3Client.get(aliasEnv)
-                    .getObject(builder ->  builder.bucket(bucketName).key(key));
+                    .getObject(builder -> builder.bucket(bucketName).key(key));
             return IOUtils.toString(s3Object, StandardCharsets.UTF_8);
         } catch (S3Exception e) {
             throw new DefaultFrameworkException(String.format(FILE_PROCESSING_ERROR, key, bucketName));
@@ -356,7 +355,8 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     }
 
     private String getFileOrDownloadValue(final S3File fileCommand) {
-        return fileCommand.getDownload().getFile() == null ? fileCommand.getDownload().getValue() : fileCommand.getDownload().getFile();
+        S3FileDownload download = fileCommand.getDownload();
+        return download.getFile() == null ? download.getValue() : download.getFile();
     }
 
 }

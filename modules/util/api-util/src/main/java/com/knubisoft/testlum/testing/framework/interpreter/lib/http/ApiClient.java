@@ -81,9 +81,8 @@ public class ApiClient {
         return request;
     }
 
-    private HttpUriRequest getHttpRequest(final HttpMethod httpMethod,
-                                          final String url,
-                                          final HttpEntity body) {
+    @SuppressWarnings("MethodLength")
+    private HttpUriRequest getHttpRequest(final HttpMethod httpMethod, final String url, final HttpEntity body) {
         if (httpMethod.equals(GET)) {
             return new HttpGet(url);
         } else if (httpMethod.equals(DELETE)) {

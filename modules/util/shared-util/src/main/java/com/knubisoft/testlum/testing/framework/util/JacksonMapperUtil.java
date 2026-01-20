@@ -12,14 +12,12 @@ import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-
-import java.io.File;
+import org.apache.commons.lang3.StringUtils;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.CLOSE_BRACE;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.CLOSE_SQUARE_BRACKET;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
 public final class JacksonMapperUtil {
@@ -35,11 +33,6 @@ public final class JacksonMapperUtil {
 
     @SneakyThrows
     public <T> T readValue(final byte[] content, final Class<T> valueType) {
-        return MAPPER.readValue(content, valueType);
-    }
-
-    @SneakyThrows
-    public <T> T readValue(final File content, final Class<T> valueType) {
         return MAPPER.readValue(content, valueType);
     }
 
@@ -70,10 +63,12 @@ public final class JacksonMapperUtil {
     }
 
     public Object toJsonObject(final String content) {
-        if (isNotBlank(content)
-                && ((content.startsWith(OPEN_BRACE) && content.endsWith(CLOSE_BRACE))
-                || (content.startsWith(OPEN_SQUARE_BRACKET) && content.endsWith(CLOSE_SQUARE_BRACKET)))) {
-            return JacksonMapperUtil.readValue(content, Object.class);
+        if (StringUtils.isNotBlank(content)) {
+            boolean brace = content.startsWith(OPEN_BRACE) && content.endsWith(CLOSE_BRACE);
+            boolean squareBracket = content.startsWith(OPEN_SQUARE_BRACKET) && content.endsWith(CLOSE_SQUARE_BRACKET);
+            if (brace || squareBracket) {
+                return JacksonMapperUtil.readValue(content, Object.class);
+            }
         }
         return content;
     }

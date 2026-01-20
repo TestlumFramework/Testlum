@@ -174,7 +174,8 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
 
     private List<Object> receiveMessages(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
         ReceiveMessageRequest receiveMessageRequest = createReceiveRequest(receive, aliasEnv);
-        ReceiveMessageResponse receiveMessageResult = this.sqsClient.get(aliasEnv).receiveMessage(receiveMessageRequest);
+        ReceiveMessageResponse receiveMessageResult =
+                this.sqsClient.get(aliasEnv).receiveMessage(receiveMessageRequest);
         return receiveMessageResult.messages()
                 .stream()
                 .map(message ->
@@ -194,7 +195,9 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                 .build();
     }
 
-    private void compareMessage(final String expectedContent, final List<Object> messages, final CommandResult result) {
+    private void compareMessage(final String expectedContent,
+                                final List<Object> messages,
+                                final CommandResult result) {
         final CompareBuilder comparator = newCompare()
                 .withExpected(expectedContent)
                 .withActual(messages);

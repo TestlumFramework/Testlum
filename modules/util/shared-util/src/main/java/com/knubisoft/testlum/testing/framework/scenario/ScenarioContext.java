@@ -1,14 +1,12 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
 import com.knubisoft.testlum.testing.framework.util.MapUtil;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,9 +15,11 @@ import static java.util.Objects.isNull;
 public class ScenarioContext {
 
     private static final String ROUTE_REGEXP = "\\{\\{(.*?)}}";
-    private static final String NO_VALUE_FOUND_FOR_KEY = "Unable to find value for key <%s>. Available keys: %s";
-    private static final String NO_VALUES_FOUND_IN_CONTEXT = "Unable to find any value in scenario context." +
-                                                             " Available keys: %s";
+    private static final String NO_VALUE_FOUND_FOR_KEY =
+            "Unable to find value for key <%s>. Available keys: %s";
+    private static final String NO_VALUES_FOUND_IN_CONTEXT =
+            "Unable to find any value in scenario context. Available keys: %s";
+
     private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
 
     private final Map<String, String> contextMap;

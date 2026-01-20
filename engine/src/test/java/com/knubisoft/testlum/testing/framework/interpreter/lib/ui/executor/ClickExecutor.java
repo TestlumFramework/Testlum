@@ -4,7 +4,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.WebDownloadUtil;
 import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
 
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
@@ -30,9 +29,7 @@ public class ClickExecutor extends AbstractUiExecutor<Click> {
 //        UiUtil.waitForElementVisibility(dependencies, webElement);
         UiUtil.highlightElementIfRequired(click.isHighlight(), webElement, dependencies.getDriver());
         UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
-        WebDownloadUtil.DownloadContext context = WebDownloadUtil.prepareDownload(dependencies.getDriver(), dependencies.getFile());
         clickWithMethod(click.getMethod(), webElement, result);
-        WebDownloadUtil.captureDownloadedFile(context);
     }
 
     private void clickWithMethod(final ClickMethod method, final WebElement element, final CommandResult result) {

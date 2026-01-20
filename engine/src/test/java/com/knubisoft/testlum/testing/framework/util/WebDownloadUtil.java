@@ -1,223 +1,216 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import lombok.Getter;
-import org.openqa.selenium.WebDriver;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class WebDownloadUtil {
+@Slf4j
+@UtilityClass
+public class WebDownloadUtil {
 
-    private static final long TIMEOUT_MS = 60_000L;
-    private static final long POLL_MS = 250L;
-    private static final ThreadLocal<Set<Path>> DOWNLOADED_FILES = ThreadLocal.withInitial(HashSet::new);
-
-    public static DownloadContext prepareDownload(final WebDriver driver, final File scenarioFile) {
-        Path scenarioDir = resolveScenarioDir(scenarioFile);
-        if (scenarioDir == null || !Files.isDirectory(scenarioDir)) {
-            return DownloadContext.inactive();
-        }
-
-        configureChromiumDownloadDir(driver, scenarioDir);
-        Set<String> before = snapshotFileNames(scenarioDir);
-
-        return new DownloadContext(true, scenarioDir, before, System.currentTimeMillis());
-    }
-
-    public static void captureDownloadedFile(final DownloadContext ctx) {
-        if (ctx == null || !ctx.isActive() || ctx.getScenarioDir() == null) {
-            return;
-        }
-
-        Path dir = ctx.getScenarioDir();
-        if (!Files.isDirectory(dir)) {
-            return;
-        }
-
-        final long QUICK_DETECT_MS = 1500L;
-        long quickDeadline = System.currentTimeMillis() + QUICK_DETECT_MS;
-
-        boolean detected = false;
-
-        while (System.currentTimeMillis() <= quickDeadline) {
-            List<Path> newFiles = listNewFiles(dir, ctx.getBeforeFileNames());
-            for (Path path : newFiles) {
-                registerDownloadedFile(path);
-            }
-            if (!newFiles.isEmpty()) {
-                detected = true;
-                break;
-            }
-            sleep(POLL_MS);
-        }
-
-        if (!detected) {
-            return;
-        }
-
-        long deadline = System.currentTimeMillis() + TIMEOUT_MS;
-
-        while (System.currentTimeMillis() <= deadline) {
-            List<Path> newFiles = listNewFiles(dir, ctx.getBeforeFileNames());
-
-            Path ready = newestReadyFile(newFiles);
-            if (ready != null) {
-                long size = safeSize(ready);
-                if (size > 0) {
-                    return;
-                }
-            }
-
-            sleep(POLL_MS);
-        }
-
-    }
-
-    private static List<Path> listNewFiles(final Path dir, final Set<String> beforeFileNames) {
-        try (Stream<Path> stream = Files.list(dir)) {
-            return stream
-                    .filter(Files::isRegularFile)
-                    .filter(p -> beforeFileNames == null || !beforeFileNames.contains(p.getFileName().toString()))
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
-            return Collections.emptyList();
-        }
-    }
-
-    private static Path newestReadyFile(final List<Path> candidates) {
-        if (candidates == null || candidates.isEmpty()) {
-            return null;
-        }
-        return candidates.stream()
-                .filter(path -> !isTempDownloadFile(path))
-                .max(Comparator.comparingLong(WebDownloadUtil::safeLastModified))
-                .orElse(null);
-    }
+    private static final long DOWNLOAD_TIMEOUT_SECONDS = 60;
+    private static final long POLLING_INTERVAL_MS = 300;
+    private static final long DOWNLOAD_DETECTION_WINDOW_MS = 2000;
+    private static final long STABILITY_THRESHOLD_MS = 2500;
 
     public static Path resolveScenarioDir(final File scenarioFile) {
         if (scenarioFile == null) {
             return null;
         }
-        File parent = scenarioFile.getParentFile();
-        return parent == null ? null : parent.toPath().toAbsolutePath().normalize();
+        File parentDirectory = scenarioFile.getParentFile();
+        if (parentDirectory == null) {
+            return null;
+        }
+        return parentDirectory.toPath().toAbsolutePath().normalize();
     }
 
-    public static void configureChromiumDownloadDir(final WebDriver driver, final Path dir) {
-        if (driver == null || dir == null) {
-            return;
+    public static Set<String> snapshotFileNames(final Path directory) {
+        if (directory == null || !Files.isDirectory(directory)) {
+            return Collections.emptySet();
         }
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("behavior", "allow");
-        params.put("downloadPath", dir.toString());
-
-        if (tryExecuteCdp(driver, "Page.setDownloadBehavior", params)) {
-            return;
-        }
-
-        tryExecuteCdp(driver, "Browser.setDownloadBehavior", params);
+        return collectFileNames(directory);
     }
 
-    public static Set<String> snapshotFileNames(final Path dir) {
-        try (Stream<Path> stream = Files.list(dir)) {
-            return stream
-                    .filter(Files::isRegularFile)
-                    .map(p -> p.getFileName().toString())
+    private static Set<String> collectFileNames(final Path directory) {
+        try (Stream<Path> stream = Files.list(directory)) {
+            return stream.filter(Files::isRegularFile)
+                    .map(path -> path.getFileName().toString())
                     .collect(Collectors.toSet());
-        } catch (IOException e) {
+        } catch (IOException exception) {
             return Collections.emptySet();
         }
     }
 
-    public static boolean isTempDownloadFile(final Path p) {
-        String name = p.getFileName().toString().toLowerCase();
-        return name.endsWith(".crdownload") || name.endsWith(".part") || name.endsWith(".tmp");
-    }
-
-    public static long safeLastModified(final Path p) {
-        try {
-            return Files.getLastModifiedTime(p).toMillis();
-        } catch (IOException e) {
-            return 0L;
-        }
-    }
-
-    public static long safeSize(final Path p) {
-        try {
-            return Files.size(p);
-        } catch (IOException e) {
-            return 0L;
-        }
-    }
-
-    public static void sleep(final long ms) {
-        try {
-            Thread.sleep(Math.max(0L, ms));
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    public static void registerDownloadedFile(final Path file) {
-        if (file == null) {
+    public static void waitForDownloadIfInitiated(final Path directory, final Set<String> filesBeforeAction) {
+        if (directory == null || !Files.exists(directory)) {
             return;
         }
-        try {
-            DOWNLOADED_FILES.get().add(file.toAbsolutePath().normalize());
-        } catch (Exception ignored) { }
-    }
-
-    public static void cleanupDownloadedFiles(final boolean keepFiles) {
-        try {
-            if (!keepFiles) {
-                for (Path path : DOWNLOADED_FILES.get()) {
-                    try {
-                        Files.deleteIfExists(path);
-                    } catch (Exception ignored) { }
-                }
-            }
-        } finally {
-            DOWNLOADED_FILES.remove();
+        if (isDownloadDetected(directory, filesBeforeAction)) {
+            waitForActiveDownloads(directory);
         }
     }
 
-    private static boolean tryExecuteCdp(final WebDriver driver,
-                                         final String command,
-                                         final Map<String, Object> params) {
-        try {
-            Method m = driver.getClass().getMethod("executeCdpCommand", String.class, Map.class);
-            m.invoke(driver, command, params);
-            return true;
-        } catch (Exception ignored) {
+    private static boolean isDownloadDetected(final Path directory, final Set<String> filesBeforeAction) {
+        long deadline = System.currentTimeMillis() + DOWNLOAD_DETECTION_WINDOW_MS;
+        while (System.currentTimeMillis() < deadline) {
+            if (containsNewOrTempFiles(directory, filesBeforeAction)) {
+                return true;
+            }
+            sleep();
+        }
+        return false;
+    }
+
+    private static boolean containsNewOrTempFiles(final Path directory, final Set<String> filesBeforeAction) {
+        try (Stream<Path> stream = Files.list(directory)) {
+            return stream.filter(Files::isRegularFile)
+                    .anyMatch(path -> isNewOrTempFile(path, filesBeforeAction));
+        } catch (IOException exception) {
             return false;
         }
     }
 
-    @Getter
-    public static final class DownloadContext {
-        private final boolean active;
-        private final Path scenarioDir;
-        private final Set<String> beforeFileNames;
-        private final long preparedAtMs;
+    private static boolean isNewOrTempFile(final Path path, final Set<String> filesBeforeAction) {
+        return isTempDownloadFile(path) || !filesBeforeAction.contains(path.getFileName().toString());
+    }
 
-        private DownloadContext(final boolean active,
-                                final Path scenarioDir,
-                                final Set<String> beforeFileNames,
-                                final long preparedAtMs) {
-            this.active = active;
-            this.scenarioDir = scenarioDir;
-            this.beforeFileNames = beforeFileNames;
-            this.preparedAtMs = preparedAtMs;
+    public static void waitForActiveDownloads(final Path directory) {
+        if (directory == null || !Files.exists(directory)) {
+            return;
         }
+        performWaitLoop(directory);
+    }
 
-        public static DownloadContext inactive() {
-            return new DownloadContext(false, null, Collections.emptySet(), 0L);
+    private static void performWaitLoop(final Path directory) {
+        long deadline = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(DOWNLOAD_TIMEOUT_SECONDS);
+        long stableSinceTimestamp = 0;
+        while (System.currentTimeMillis() < deadline) {
+            stableSinceTimestamp = processStabilityCycle(directory, stableSinceTimestamp);
+            if (isStabilityThresholdMet(stableSinceTimestamp)) {
+                return;
+            }
+            sleep();
+        }
+    }
+
+    private static long processStabilityCycle(final Path directory, final long currentStableSince) {
+        if (containsActiveDownloads(directory)) {
+            return 0;
+        }
+        return (currentStableSince == 0) ? System.currentTimeMillis() : currentStableSince;
+    }
+
+    private static boolean isStabilityThresholdMet(final long stableSinceTimestamp) {
+        return stableSinceTimestamp > 0
+                && (System.currentTimeMillis() - stableSinceTimestamp > STABILITY_THRESHOLD_MS);
+    }
+
+    public static boolean isTempDownloadFile(final Path path) {
+        String fileName = path.getFileName().toString().toLowerCase();
+        return isStandardTempExtension(fileName) || isChromeSpecificTempFile(fileName);
+    }
+
+    private static boolean isStandardTempExtension(final String fileName) {
+        return fileName.endsWith(".crdownload") || fileName.endsWith(".part")
+                || fileName.endsWith(".tmp") || fileName.endsWith(".download");
+    }
+
+    private static boolean isChromeSpecificTempFile(final String fileName) {
+        return fileName.startsWith("unconfirmed") || fileName.startsWith(".com.google.chrome")
+                || fileName.startsWith(".org.chromium.chromium");
+    }
+
+    private static boolean containsActiveDownloads(final Path directory) {
+        try (Stream<Path> stream = Files.list(directory)) {
+            return stream.filter(Files::isRegularFile).anyMatch(WebDownloadUtil::isTempDownloadFile);
+        } catch (IOException exception) {
+            return true;
+        }
+    }
+
+    public static void moveSystemDownloadsToScenarioDir(final Path scenarioDirectory, final long startTimeEpochMs) {
+        if (scenarioDirectory == null) {
+            return;
+        }
+        Path systemDownloadsDirectory = Paths.get(System.getProperty("user.home"), "Downloads");
+        if (!Files.isDirectory(systemDownloadsDirectory)) {
+            return;
+        }
+        processSafariDownloads(systemDownloadsDirectory, scenarioDirectory, startTimeEpochMs);
+    }
+
+    private static void processSafariDownloads(final Path sourceDirectory, final Path targetDirectory, final long startTime) {
+        try (Stream<Path> stream = Files.list(sourceDirectory)) {
+            stream.filter(Files::isRegularFile)
+                    .filter(path -> isEligibleSafariFile(path, startTime))
+                    .forEach(path -> moveFile(path, targetDirectory));
+        } catch (IOException exception) {
+            log.warn("Failed to scan system Downloads folder", exception);
+        }
+    }
+
+    private static boolean isEligibleSafariFile(final Path path, final long startTime) {
+        return !isTempDownloadFile(path) && getFileLastModifiedTime(path) > startTime;
+    }
+
+    private static void moveFile(final Path source, final Path targetDirectory) {
+        try {
+            Path targetPath = targetDirectory.resolve(source.getFileName());
+            Files.move(source, targetPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException exception) {
+            log.error("Failed to move file from Downloads: {}", source, exception);
+        }
+    }
+
+    public static void cleanupDownloadedFiles(final Path directory, final Set<String> existingFiles, final boolean keepFiles) {
+        if (keepFiles || directory == null || !Files.exists(directory)) {
+            return;
+        }
+        performCleanup(directory, existingFiles);
+    }
+
+    private static void performCleanup(final Path directory, final Set<String> existingFiles) {
+        try (Stream<Path> stream = Files.list(directory)) {
+            stream.filter(Files::isRegularFile)
+                    .filter(path -> !existingFiles.contains(path.getFileName().toString()))
+                    .forEach(WebDownloadUtil::deleteFile);
+        } catch (IOException exception) {
+            log.warn("Failed to cleanup directory: {}", directory, exception);
+        }
+    }
+
+    private static void deleteFile(final Path path) {
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException exception) {
+            log.warn("Failed to delete file: {}", path, exception);
+        }
+    }
+
+    private static long getFileLastModifiedTime(final Path path) {
+        try {
+            return Files.getLastModifiedTime(path).toMillis();
+        } catch (IOException exception) {
+            return 0L;
+        }
+    }
+
+    private static void sleep() {
+        try {
+            Thread.sleep(WebDownloadUtil.POLLING_INTERVAL_MS);
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
         }
     }
 }

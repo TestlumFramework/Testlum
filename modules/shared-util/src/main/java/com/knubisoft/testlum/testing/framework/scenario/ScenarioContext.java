@@ -18,7 +18,7 @@ public class ScenarioContext {
             "Unable to find any value in scenario context. Available keys: %s";
     private static final Pattern ROUTE_PATTERN =
             Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
-    private static final Pattern IDENT = Pattern.compile("\\b([A-Za-z_][A-Za-z0-9_]*)\\b");
+    private static final Pattern CONDITION_NAME_PATTERN = Pattern.compile("\\b([A-Za-z_][A-Za-z0-9_]*)\\b");
 
     private final Map<String, String> contextMap;
     private final Map<String, Boolean> conditionMap = new HashMap<>();
@@ -66,16 +66,12 @@ public class ScenarioContext {
         conditionMap.put(key, value);
     }
 
-    public String getCondition(final String raw) {
-        if (StringUtils.isBlank(raw)) {
-            return raw;
-        }
-
-        Boolean exact = conditionMap.get(raw.trim());
+    public String getCondition(final String condition) {
+        Boolean exact = conditionMap.get(condition.trim());
         if (exact != null) {
             return Boolean.toString(exact);
         }
-        return substituteIdentifiers(raw, conditionMap);
+        return substituteIdentifiers(condition);
     }
 
     public String inject(final String original) {
@@ -110,12 +106,12 @@ public class ScenarioContext {
         return value.replaceAll("'", "''");
     }
 
-    private static String substituteIdentifiers(final String expression, final Map<String, Boolean> values) {
-        return IDENT.matcher(expression).replaceAll(matchResult -> {
-            String ident = matchResult.group(1);
-            String replacement = values.containsKey(ident)
-                    ? String.valueOf(values.get(ident))
-                    : ident;
+    private String substituteIdentifiers(final String expression) {
+        return CONDITION_NAME_PATTERN.matcher(expression).replaceAll(matchResult -> {
+            String conditionName = matchResult.group(1);
+            String replacement = conditionMap.containsKey(conditionName)
+                    ? String.valueOf(conditionMap.get(conditionName))
+                    : conditionName;
             return Matcher.quoteReplacement(replacement);
         });
     }

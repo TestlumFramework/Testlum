@@ -41,7 +41,7 @@ public abstract class AbstractSqlExecutor {
     protected final JdbcTemplate template;
     protected final LogUtil logUtil;
 
-    private static final Pattern STMT_SPLIT = Pattern.compile(
+    private static final Pattern STATEMENT = Pattern.compile(
             ";\\s*(?:(?:/\\*.*?\\*/)|(?:--.*?$))*\\s*(?=(?i)(?:insert\\s+into|update|delete|create|alter|drop|with|do)\\b)",
             Pattern.DOTALL | Pattern.MULTILINE
     );
@@ -69,34 +69,47 @@ public abstract class AbstractSqlExecutor {
     }
 
     private QueryResult<Object> executeQuery(final String query) {
-        QueryResult<Object> queryResult =
-                new QueryResult<>(query.replaceAll(LF, EMPTY)
-                        .replaceAll(DelimiterConstant.SPACE_WITH_PLUS, SPACE)
-                        .trim());
+        QueryResult<Object> queryResult = createCleanedQueryResult(query);
 
         List<String> statements = splitSqlStatements(query);
 
-        if (statements.size() <= 1) {
-            try {
-                Object result = executeAppropriateQuery(queryResult.getQuery());
-                queryResult.setContent(result);
-            } catch (InvalidDataAccessResourceUsageException e) {
-                logUtil.logSqlException(e, query);
-                throw e;
-            }
-            return queryResult;
+        Object result;
+        if (shouldExecuteAsSingleQuery(statements)) {
+            result = executeSingleStatement(queryResult.getQuery());
+        } else {
+            result = executeStatementBatch(statements);
         }
+
+        queryResult.setContent(result);
+        return queryResult;
+    }
+
+    private QueryResult<Object> createCleanedQueryResult(String query) {
+        String cleanedQuery = query.replaceAll(LF, EMPTY)
+                .replaceAll(DelimiterConstant.SPACE_WITH_PLUS, SPACE)
+                .trim();
+        return new QueryResult<>(cleanedQuery);
+    }
+
+    private boolean shouldExecuteAsSingleQuery(List<String> statements) {
+        return statements.size() <= 1;
+    }
+
+    private Object executeStatementBatch(List<String> statements) {
         Object lastResult = null;
         for (String statement : statements) {
-            try {
-                lastResult = executeAppropriateQuery(statement);
-            } catch (InvalidDataAccessResourceUsageException e) {
-                logUtil.logSqlException(e, statement);
-                throw e;
-            }
+            lastResult = executeSingleStatement(statement);
         }
-        queryResult.setContent(lastResult);
-        return queryResult;
+        return lastResult;
+    }
+
+    private Object executeSingleStatement(String statement) {
+        try {
+            return executeAppropriateQuery(statement);
+        } catch (InvalidDataAccessResourceUsageException e) {
+            logUtil.logSqlException(e, statement);
+            throw e;
+        }
     }
 
     protected List<String> splitSqlStatements(final String script) {
@@ -104,7 +117,7 @@ public abstract class AbstractSqlExecutor {
             return List.of();
         }
         final String source = script.replace("\uFEFF", "");
-        return STMT_SPLIT.splitAsStream(source)
+        return STATEMENT.splitAsStream(source)
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .collect(Collectors.toList());

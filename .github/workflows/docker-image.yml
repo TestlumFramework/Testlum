@@ -1,0 +1,21 @@
+name: Manual Trigger Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Docker image version'
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build . \
+            --file Dockerfile \
+            --tag testlum:${{ inputs.version }}

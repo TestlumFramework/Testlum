@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -31,8 +32,11 @@ import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.time.Duration;
+import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -54,13 +58,13 @@ public class WebDriverFactory {
     private final GlobalTestConfigurationProvider.UIConfiguration uiConfigs;
 
     private Map<BrowserPredicate, WebDriverFunction> driverInitializerMap = Map.of(
-            browser -> browser instanceof Chrome, b -> new ChromeDriverInitializer().init((Chrome) b),
-            browser -> browser instanceof Firefox, b -> new FirefoxDriverInitializer().init((Firefox) b),
-            browser -> browser instanceof Safari, b -> new SafariDriverInitializer().init((Safari) b),
-            browser -> browser instanceof Edge, b -> new EdgeDriverInitializer().init((Edge) b));
+            browser -> browser instanceof Chrome, (b, path) -> new ChromeDriverInitializer(path).init((Chrome) b),
+            browser -> browser instanceof Firefox, (b, path) -> new FirefoxDriverInitializer(path).init((Firefox) b),
+            browser -> browser instanceof Safari, (b, path) -> new SafariDriverInitializer().init((Safari) b),
+            browser -> browser instanceof Edge, (b, path) -> new EdgeDriverInitializer(path).init((Edge) b));
 
     //CHECKSTYLE:OFF
-    public WebDriver createDriver(final AbstractBrowser browser) {
+    public WebDriver createDriver(final AbstractBrowser browser, final Path downloadPath) {
         ConnectionTemplate connectionTemplate = new ConnectionTemplateImpl();
         return connectionTemplate.executeWithRetry(
                 String.format(CONNECTION_INTEGRATION_DATA, browser.getClass().getSimpleName(), browser.getAlias()),
@@ -68,7 +72,7 @@ public class WebDriverFactory {
                 () -> driverInitializerMap.entrySet().stream()
                         .filter(function -> function.getKey().test(browser))
                         .findFirst()
-                        .map(function -> function.getValue().apply(browser))
+                        .map(function -> function.getValue().apply(browser, downloadPath))
                         .orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND)),
                 healthCheckFactory.forWebDriver(browser),
                 integration -> {
@@ -80,8 +84,8 @@ public class WebDriverFactory {
                 }
         );
     }
-    //CHECKSTYLE:ON
 
+    //CHECKSTYLE:ON
     private WebDriver getWebDriver(final AbstractBrowser browser,
                                    final MutableCapabilities browserOptions,
                                    final WebDriverManager driverManager) {
@@ -181,6 +185,11 @@ public class WebDriverFactory {
     }
 
     private class ChromeDriverInitializer implements WebDriverInitializer<Chrome> {
+        private final Path downloadPath;
+
+        public ChromeDriverInitializer(Path downloadPath) {
+            this.downloadPath = downloadPath;
+        }
 
         public WebDriver init(final Chrome browser) {
             return getWebDriver(browser, getChromeOptions(browser), new ChromeDriverManager());
@@ -188,6 +197,17 @@ public class WebDriverFactory {
 
         private ChromeOptions getChromeOptions(final Chrome browser) {
             ChromeOptions chromeOptions = new ChromeOptions();
+
+            if (Objects.nonNull(downloadPath)) {
+                Map<String, Object> prefs = new HashMap<>();
+                prefs.put("download.default_directory", downloadPath.toAbsolutePath().toString());
+                prefs.put("download.prompt_for_download", false);
+                prefs.put("download.directory_upgrade", true);
+                prefs.put("safebrowsing.enabled", true);
+                prefs.put("profile.default_content_settings.popups", 0);
+                chromeOptions.setExperimentalOption("prefs", prefs);
+            }
+
             if (browser.isHeadlessMode()) {
                 chromeOptions.addArguments("--headless=new");
             }
@@ -202,6 +222,11 @@ public class WebDriverFactory {
     }
 
     private class FirefoxDriverInitializer implements WebDriverInitializer<Firefox> {
+        private final Path downloadPath;
+
+        public FirefoxDriverInitializer(Path downloadPath) {
+            this.downloadPath = downloadPath;
+        }
 
         public WebDriver init(final Firefox browser) {
             return getWebDriver(browser, getFirefoxOptions(browser), new FirefoxDriverManager());
@@ -209,6 +234,14 @@ public class WebDriverFactory {
 
         private FirefoxOptions getFirefoxOptions(final Firefox browser) {
             FirefoxOptions firefoxOptions = new FirefoxOptions();
+            if (Objects.nonNull(downloadPath)) {
+                firefoxOptions.addPreference("browser.download.folderList", 2);
+                firefoxOptions.addPreference("browser.download.dir", downloadPath.toAbsolutePath().toString());
+                firefoxOptions.addPreference("browser.download.useDownloadDir", true);
+                firefoxOptions.addPreference("browser.helperApps.neverAsk.saveToDisk",
+                        "application/pdf,application/zip,application/octet-stream,text/csv,image/jpeg,image/png,application/json");
+                firefoxOptions.addPreference("pdfjs.disabled", true);
+            }
             if (browser.isHeadlessMode()) {
                 firefoxOptions.addArguments("-headless");
             }
@@ -221,6 +254,11 @@ public class WebDriverFactory {
     }
 
     private class EdgeDriverInitializer implements WebDriverInitializer<Edge> {
+        private final Path downloadPath;
+
+        public EdgeDriverInitializer(Path downloadPath) {
+            this.downloadPath = downloadPath;
+        }
 
         public WebDriver init(final Edge browser) {
             return getWebDriver(browser, getEdgeOptions(browser), new EdgeDriverManager());
@@ -228,6 +266,12 @@ public class WebDriverFactory {
 
         private EdgeOptions getEdgeOptions(final Edge browser) {
             EdgeOptions edgeOptions = new EdgeOptions();
+            if (Objects.nonNull(downloadPath)) {
+                Map<String, Object> prefs = new HashMap<>();
+                prefs.put("download.default_directory", downloadPath.toAbsolutePath().toString());
+                prefs.put("download.prompt_for_download", false);
+                edgeOptions.setExperimentalOption("prefs", prefs);
+            }
             if (browser.isHeadlessMode()) {
                 edgeOptions.addArguments("--headless=new");
             }
@@ -247,5 +291,5 @@ public class WebDriverFactory {
     }
 
     private interface BrowserPredicate extends Predicate<AbstractBrowser> { }
-    private interface WebDriverFunction extends Function<AbstractBrowser, WebDriver> { }
+    private interface WebDriverFunction extends BiFunction<AbstractBrowser, Path, WebDriver> { }
 }

@@ -38,7 +38,8 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
                 variable -> nonNull(variable.getConstant()), this::getConstantResult,
                 variable -> nonNull(variable.getExpression()), this::getExpressionResult,
                 variable -> nonNull(variable.getPath()), this::getPathResult,
-                variable -> nonNull(variable.getGenerate()), this::getRandomGenerateResult);
+                variable -> nonNull(variable.getGenerate()), this::getRandomGenerateResult,
+                variable -> nonNull(variable.getDate()), this::getDateResult);
     }
 
     @Override
@@ -89,6 +90,10 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
 
     private String getRandomGenerateResult(final Var var, final CommandResult result) {
         return variableHelper.getRandomGenerateResult(var.getGenerate(), var.getName(), result);
+    }
+
+    private String getDateResult(final Var var, final CommandResult result) {
+        return variableHelper.getDateResult(var.getDate(), var.getName(), result);
     }
 
     private void logVarInfo(final String name, final String value) {

@@ -2,13 +2,7 @@ package com.knubisoft.testlum.testing.framework.variable.util;
 
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.FromConstant;
-import com.knubisoft.testlum.testing.model.scenario.FromExpression;
-import com.knubisoft.testlum.testing.model.scenario.FromFile;
-import com.knubisoft.testlum.testing.model.scenario.FromPath;
-import com.knubisoft.testlum.testing.model.scenario.FromRandomGenerate;
-import com.knubisoft.testlum.testing.model.scenario.FromSQL;
+import com.knubisoft.testlum.testing.model.scenario.*;
 
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -31,6 +25,8 @@ public interface VariableHelper {
     String getPathResult(FromPath fromPath, String varName, ScenarioContext scenarioContext, CommandResult result);
 
     String getSQLResult(FromSQL fromSQL, String varName, CommandResult result);
+
+    String getDateResult(FromDate fromDate, String varName, CommandResult result);
 
 
 

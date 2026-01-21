@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.locator.LocatorCollector;
+import com.knubisoft.testlum.testing.framework.locator.LocatorData;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.pages.*;
 import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
@@ -73,12 +74,14 @@ public class UiUtil {
     public WebElement findWebElement(final ExecutorDependencies dependencies,
                                      final String locatorId,
                                      final LocatorStrategy locatorStrategy) {
-        Locator locator = getLocatorByStrategy(locatorId, locatorStrategy);
-        return webElementFinder.find(locator, dependencies);
+        LocatorData locatorData = getLocatorByStrategy(locatorId, locatorStrategy);
+        return webElementFinder.find(locatorData, dependencies);
     }
 
-    //CHECKSTYLE:OFF
-    public Locator getLocatorByStrategy(final String locatorId, final LocatorStrategy locatorStrategy) {
+    public LocatorData getLocatorByStrategy(final String locatorId, final LocatorStrategy locatorStrategy) {
+        if (locatorStrategy == LocatorStrategy.LOCATOR_ID) {
+            return locatorCollector.getLocator(locatorId);
+        }
         Locator locator = new Locator();
         locator.setLocatorId(locatorId);
         switch (locatorStrategy) {
@@ -112,7 +115,9 @@ public class UiUtil {
                 locator.getXpathOrIdOrClassName().add(cssSelector);
                 break;
         }
-        return locator;
+        LocatorData locatorData = new LocatorData();
+        locatorData.setLocator(locator);
+        return locatorData;
     }
     //CHECKSTYLE:ON
 

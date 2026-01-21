@@ -3,6 +3,7 @@ package com.knubisoft.testlum.testing.framework.util;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.locator.LocatorData;
 import com.knubisoft.testlum.testing.model.pages.*;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollDirection;
@@ -62,7 +63,8 @@ public class InnerScrollScript {
     }
 
     public List<String> getInnerScrollScript(final Scroll scroll, final UiUtil uiUtil) {
-        Locator locator = uiUtil.getLocatorByStrategy(scroll.getLocator(), scroll.getLocatorStrategy());
+        LocatorData locatorData = uiUtil.getLocatorByStrategy(scroll.getLocator(), scroll.getLocatorStrategy());
+        Locator locator = locatorData.getLocator();
         InnerScrollScriptItem[] items = new InnerScrollScriptItem[]{
                 verticalByCssSelector, verticalById, verticalByClass, verticalByXpath};
         return Arrays.stream(items)

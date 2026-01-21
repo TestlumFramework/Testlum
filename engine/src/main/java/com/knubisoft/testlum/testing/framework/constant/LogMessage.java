@@ -167,6 +167,11 @@ public final class LogMessage {
     public static final String CONNECTION_COMPLETELY_FAILED =
             withRed("Max attempts reached for {}. Failed to obtain connection with cause {}");
 
+    public static final String START_HEAL_LOG =
+            LogFormat.withYellow("Unable to find element by provided locators. Start healing process...");
+    public static final String HEAL_RESULT_LOG =
+            LogFormat.withGreen("Element was healed successfully. New values for locator {} were generated in {}");
+
     private LogMessage() {
         // nop
     }

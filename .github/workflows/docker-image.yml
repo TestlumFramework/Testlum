@@ -31,7 +31,7 @@ jobs:
         with:
           context: .
           build-args: |
-            BUILD_VERSION=${{ steps.testlum_version.outputs.result }}
+            APP_VERSION=${{ steps.testlum_version.outputs.result }}
           file: Dockerfile
           push: true
           tags: |

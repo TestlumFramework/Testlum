@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
+      - name: Set up Docker Build
         uses: docker/setup-buildx-action@v3
 
       - name: Login to GitHub Container Registry
@@ -23,8 +23,8 @@ jobs:
         id: testlum_version
         uses: QwerMike/xpath-action@v1
         with:
-          filename: ./pom.xml
-          expression: /project/version/text()
+          filename: 'pom.xml'
+          expression: '//version/text()'
       
       - name: Build and push Docker image
         uses: docker/build-push-action@v6

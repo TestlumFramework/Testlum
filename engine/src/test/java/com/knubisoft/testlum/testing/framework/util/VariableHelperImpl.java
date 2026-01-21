@@ -322,7 +322,13 @@ public class VariableHelperImpl implements VariableHelper {
     }
 
     private ZonedDateTime applyDateShift(final ZonedDateTime zonedDateTime, final DateShift dateShift, final int signMultiplier) {
-        int shiftAmount = dateShift.getValue() * signMultiplier;
+        int value;
+        try {
+            value = Integer.parseInt(dateShift.getValue());
+        } catch (NumberFormatException e) {
+            return zonedDateTime;
+        }
+        int shiftAmount = value * signMultiplier;
         return switch (dateShift.getUnit()) {
             case MINUTES -> zonedDateTime.plusMinutes(shiftAmount);
             case SECONDS -> zonedDateTime.plusSeconds(shiftAmount);

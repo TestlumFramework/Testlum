@@ -100,7 +100,7 @@
 
     <x:complexType name="dateShift">
         <x:attribute name="unit" type="tns:dateUnit" use="required"/>
-        <x:attribute name="value" type="x:int" use="required"/>
+        <x:attribute name="value" type="x:string" use="required"/>
     </x:complexType>
 
 

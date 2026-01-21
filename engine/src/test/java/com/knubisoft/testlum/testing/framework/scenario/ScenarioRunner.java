@@ -44,7 +44,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @RequiredArgsConstructor
 public class ScenarioRunner {
 
-    private static final AtomicInteger SCENARIO_ID_GENERATOR = new AtomicInteger();
     private final AtomicInteger idGenerator = new AtomicInteger();
     private final ScenarioResult scenarioResult = new ScenarioResult();
 
@@ -76,7 +75,7 @@ public class ScenarioRunner {
 
     private void prepareScenarioResult() {
         Scenario scenario = scenarioArguments.getScenario();
-        scenarioResult.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
+        scenarioResult.setId(scenarioArguments.getId());
         scenarioResult.setOverview(scenario.getOverview());
         scenarioResult.setName(scenario.getOverview().getName());
         scenarioResult.setTags(scenario.getSettings().getTags());

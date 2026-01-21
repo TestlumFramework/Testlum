@@ -16,15 +16,11 @@ import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioRunner;
 import com.knubisoft.testlum.testing.framework.util.FileRemover;
+import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.model.global_config.DelayBetweenScenarioRuns;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Named;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -86,7 +82,8 @@ public class RootTest {
     @DisplayName("Execution of test scenarios:")
     @ParameterizedTest(name = "[{index}] path -- {0}")
     @MethodSource("prepareTestData")
-    void execution(@ConvertWith(ScenarioArgumentsToNamedConverter.class) final Named<ScenarioArguments> arguments) {
+    void execution(@ConvertWith(ScenarioArgumentsToNamedConverter.class) final Named<ScenarioArguments> arguments, final TestInfo testInfo) {
+        LogUtil.registerScenarioArguments(testInfo.getDisplayName(), arguments.getPayload());
         envLockService.runLocked(() -> execute(arguments.getPayload()));
     }
 

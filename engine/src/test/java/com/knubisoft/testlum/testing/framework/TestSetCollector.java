@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,6 +37,7 @@ public class TestSetCollector {
     private final List<String> browsers;
     private final List<String> mobilebrowsers;
     private final List<String> nativeDevices;
+    private final AtomicInteger scenarioIdGenerator = new AtomicInteger();
 
     public TestSetCollector() {
         browsers = BrowserUtil.filterDefaultEnabledBrowsers().stream()
@@ -146,6 +148,7 @@ public class TestSetCollector {
                 .nativeDevice(nativeAlias)
                 .variations(variations)
                 .containsUiSteps(true)
+                .id(scenarioIdGenerator.incrementAndGet())
                 .build();
     }
 
@@ -156,6 +159,7 @@ public class TestSetCollector {
                 .scenario(deepCopyScenario(entry.scenario))
                 .exception(entry.exception)
                 .variations(variations)
+                .id(scenarioIdGenerator.incrementAndGet())
                 .build();
     }
 

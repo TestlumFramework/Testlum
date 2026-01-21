@@ -1,7 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.ai;
 
-import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnAiEnabledCondition;
+import com.knubisoft.testlum.testing.framework.condition.OnAiEnabledCondition;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Ai;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -14,14 +13,16 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider.*;
+
 @Configuration
 @Conditional(OnAiEnabledCondition.class)
 public class AiConfiguration {
 
     @Bean
-    public Map<AliasEnv, ChatModel> aiChatModel() {
+    public Map<AliasEnv, ChatModel> aiChatModel(final EnvToIntegrationMap envTointegrations) {
         Map<AliasEnv, ChatModel> aiChatModelMap = new HashMap<>();
-        ConfigProviderImpl.GlobalTestConfigurationProvider.getIntegrations()
+        envTointegrations
                 .forEach((env, integrations) -> collectChatModels(integrations, env, aiChatModelMap));
         return aiChatModelMap;
     }

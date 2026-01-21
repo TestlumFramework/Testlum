@@ -1,21 +1,20 @@
-# Multi-Stage build
-ARG MAVEN_TAG=3.8.6-jdk-11
-ARG JDK_TAG=11.0.28_6-jdk
-  # Build container
-FROM maven:${MAVEN_TAG} AS maven-build
+ARG APP_VERSION="0.0.0"
+
+FROM maven:3-openjdk-17-slim AS maven-build
+
+ARG APP_VERSION
 
 WORKDIR /testlum/
 COPY . .
-RUN mvn clean install -P professional -DskipTests
+RUN mvn clean install -Pprofessional -DskipTests
 
-# Target container
-FROM  eclipse-temurin:${JDK_TAG}
+FROM eclipse-temurin:17-jdk-jammy
+
+ARG APP_VERSION
+RUN echo "Container version: ${APP_VERSION}"
 
 WORKDIR /testlum/
 
-ARG JAR_FILE=engine/target/testlum-1.0.2.jar
+COPY --from=maven-build /testlum/engine/target/testlum-${APP_VERSION}.jar testlum-final.jar
 
-COPY --from=maven-build /testlum/${JAR_FILE} testlum.jar
-
-#ENTRYPOINT ["java", "-jar", "testlum.jar"]
-ENTRYPOINT ["java", "-DTESTING_IN_PIPELINE=true", "-jar", "testlum.jar"]
+ENTRYPOINT ["java", "-DTESTING_IN_PIPELINE=true", "-jar", "testlum-final.jar"]

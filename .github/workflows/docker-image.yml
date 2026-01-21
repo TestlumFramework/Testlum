@@ -2,11 +2,6 @@ name: Docker Image Manual Build & Push
 
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Docker image version (Override pom.xml version)'
-        required: false
-        type: string
 
 jobs:
   build:
@@ -26,7 +21,7 @@ jobs:
           
       - name: Extracting version
         id: testlum_version
-        uses: ./.github/workflows
+        uses: QwerMike/xpath-action@v1
         with:
           filename: ./pom.xml
           expression: /project/version/text()
@@ -35,8 +30,10 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          build-args: |
+            BUILD_VERSION=${{ steps.testlum_version.outputs.result }}
           file: Dockerfile
           push: true
           tags: |
-            ghcr.io/testlum/testlum:${{ github.event.inputs.version || steps.testlum_version.outputs.result }}
+            ghcr.io/testlum/testlum:${{ steps.testlum_version.outputs.result }}
             ghcr.io/testlum/testlum:latest

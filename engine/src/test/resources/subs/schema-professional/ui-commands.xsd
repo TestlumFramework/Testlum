@@ -406,8 +406,22 @@
     </x:complexType>
 
     <x:complexType name="exclude">
+        <x:choice>
+            <x:element name="byLocator" type="tns:byLocator"/>
+            <x:element name="byArea" type="tns:byArea"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="byLocator">
         <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
         <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
+    </x:complexType>
+
+    <x:complexType name="byArea">
+        <x:attribute name="x" type="x:nonNegativeInteger" use="required"/>
+        <x:attribute name="y" type="x:nonNegativeInteger" use="required"/>
+        <x:attribute name="width" type="x:nonNegativeInteger" use="required"/>
+        <x:attribute name="height" type="x:nonNegativeInteger" use="required"/>
     </x:complexType>
 
     <x:simpleType name="positiveDoubleMin0Max100">

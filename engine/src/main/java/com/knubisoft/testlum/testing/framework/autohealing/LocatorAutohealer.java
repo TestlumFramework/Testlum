@@ -47,6 +47,26 @@ public class LocatorAutohealer {
         this.jacksonService = jacksonService;
     }
 
+    public Optional<WebElement> heal(final Locator locator) {
+        HealingElementMetadata healingElementMetadata = elementMetadataExtractor.extractMetadata(locator);
+        String tag = healingElementMetadata.findMostCommonTag().orElse("*");
+        SearchContext searchScope = driver;
+        for (String anchorId : healingElementMetadata.getAncestorIds()) {
+            try {
+                searchScope = driver.findElement(By.id(anchorId));
+                break;
+            } catch (NoSuchElementException ignored) {
+            }
+        }
+        List<WebElement> candidates = searchScope.findElements(By.tagName(tag));
+
+        return candidates.stream()
+                .map(candidate -> new ScoredElement(candidate, calculateScore(healingElementMetadata, candidate)))
+                .filter(scored -> scored.score >= MIN_ACCEPTABLE_SCORE)
+                .max(Comparator.comparingDouble(s -> s.score))
+                .map(ScoredElement::getElement);
+    }
+
     @SneakyThrows
     public File generateNewLocators(final WebElement healedElement, final AutoHealingMode mode,
                                     final ExecutorDependencies dependencies, LocatorData locatorData) {
@@ -106,26 +126,6 @@ public class LocatorAutohealer {
         if (!text.isEmpty()) {
             healedLocators.setText(text);
         }
-    }
-
-    public Optional<WebElement> heal(final Locator locator) {
-        HealingElementMetadata healingElementMetadata = elementMetadataExtractor.extractMetadata(locator);
-        String tag = healingElementMetadata.findMostCommonTag().orElse("*");
-        SearchContext searchScope = driver;
-        for (String anchorId : healingElementMetadata.getAncestorIds()) {
-            try {
-                searchScope = driver.findElement(By.id(anchorId));
-                break;
-            } catch (NoSuchElementException ignored) {
-            }
-        }
-        List<WebElement> candidates = searchScope.findElements(By.tagName(tag));
-
-        return candidates.stream()
-                .map(candidate -> new ScoredElement(candidate, calculateScore(healingElementMetadata, candidate)))
-                .filter(scored -> scored.score >= MIN_ACCEPTABLE_SCORE)
-                .max(Comparator.comparingDouble(s -> s.score))
-                .map(ScoredElement::getElement);
     }
 
     private double calculateScore(final HealingElementMetadata metadata, final WebElement candidate) {

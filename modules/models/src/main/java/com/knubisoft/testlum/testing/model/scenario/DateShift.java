@@ -17,7 +17,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="unit" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dateUnit" /&gt;
- *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
+ *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -32,7 +32,7 @@ public class DateShift {
     @XmlAttribute(name = "unit", required = true)
     protected DateUnit unit;
     @XmlAttribute(name = "value", required = true)
-    protected int value;
+    protected String value;
 
     /**
      * Gets the value of the unit property.
@@ -61,16 +61,24 @@ public class DateShift {
     /**
      * Gets the value of the value property.
      * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
      */
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 
     /**
      * Sets the value of the value property.
      * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
      */
-    public void setValue(int value) {
+    public void setValue(String value) {
         this.value = value;
     }
 

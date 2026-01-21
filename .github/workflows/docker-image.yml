@@ -26,7 +26,7 @@ jobs:
           
       - name: Extracting version
         id: testlum_version
-        uses: ./.github/workflows
+        uses: QwerMike/xpath-action@v1
         with:
           filename: ./pom.xml
           expression: /project/version/text()

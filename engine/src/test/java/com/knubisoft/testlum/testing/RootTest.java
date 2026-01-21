@@ -15,8 +15,11 @@ import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioRunner;
+import com.knubisoft.testlum.testing.framework.testRail.TestRailService;
+import com.knubisoft.testlum.testing.framework.testRail.util.TestRailUtil;
 import com.knubisoft.testlum.testing.framework.util.FileRemover;
 import com.knubisoft.testlum.testing.model.global_config.DelayBetweenScenarioRuns;
+import com.knubisoft.testlum.testing.model.global_config.TestRailReports;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.AfterAll;
@@ -38,6 +41,8 @@ import org.springframework.test.context.TestContextManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 

@@ -17,6 +17,7 @@ import com.knubisoft.testlum.testing.model.scenario.ElementPresent;
 import com.knubisoft.testlum.testing.model.scenario.WebVar;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebElement;
 
@@ -47,17 +48,18 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     public WebVariableExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         this.variableHelper = dependencies.getContext().getBean(VariableHelper.class);
-        varToMethodMap = Map.of(
-                var -> nonNull(var.getElement()), this::getElementResult,
-                var -> nonNull(var.getDom()), this::getDomResult,
-                var -> nonNull(var.getCookie()), this::getWebCookiesResult,
-                var -> nonNull(var.getUrl()), this::getUrlResult,
-                var -> nonNull(var.getPath()), this::getPathResult,
-                var -> nonNull(var.getConstant()), this::getConstantResult,
-                var -> nonNull(var.getExpression()), this::getExpressionResult,
-                var -> nonNull(var.getFile()), this::getFileResult,
-                var -> nonNull(var.getSql()), this::getSQLResult,
-                var -> nonNull(var.getGenerate()), this::getRandomGenerateResult);
+        varToMethodMap = Map.ofEntries(
+                Map.entry(var -> nonNull(var.getElement()), this::getElementResult),
+                Map.entry(var -> nonNull(var.getDom()), this::getDomResult),
+                Map.entry(var -> nonNull(var.getCookie()), this::getWebCookiesResult),
+                Map.entry(var -> nonNull(var.getUrl()), this::getUrlResult),
+                Map.entry(var -> nonNull(var.getPath()), this::getPathResult),
+                Map.entry(var -> nonNull(var.getConstant()), this::getConstantResult),
+                Map.entry(var -> nonNull(var.getExpression()), this::getExpressionResult),
+                Map.entry(var -> nonNull(var.getFile()), this::getFileResult),
+                Map.entry(var -> nonNull(var.getSql()), this::getSQLResult),
+                Map.entry(var -> nonNull(var.getGenerate()), this::getRandomGenerateResult),
+                Map.entry(var -> nonNull(var.getAlert()), this::getAlertResult));
     }
 
     @Override
@@ -164,5 +166,10 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
 
     private String getRandomGenerateResult(final WebVar var, final CommandResult result) {
         return variableHelper.getRandomGenerateResult(var.getGenerate(), var.getName(), result);
+    }
+
+    private String getAlertResult(final WebVar var, final CommandResult result) {
+        Alert browserAlert = dependencies.getDriver().switchTo().alert();
+        return variableHelper.getAlertResult(var.getAlert(), var.getName(), browserAlert, result);
     }
 }

@@ -53,7 +53,7 @@
         <commons-dbutils.version>1.8.1</commons-dbutils.version>
         <org.junit.jupiter.version>5.13.1</org.junit.jupiter.version>
         <org.junit.version>4.13.2</org.junit.version>
-        <lombok.version>1.18.38</lombok.version>
+        <lombok.version>1.18.42</lombok.version>
         <imagination.comparator.version>2.2</imagination.comparator.version>
         <org.slf4j.api.version>2.0.17</org.slf4j.api.version>
         <com.opencsv.version>5.11.1</com.opencsv.version>
@@ -914,6 +914,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -1409,6 +1410,7 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.sun.activation</groupId>
@@ -1441,7 +1443,20 @@
 
     <build>
         <finalName>testlum</finalName>
+
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.14.1</version> <!-- Use a recent version -->
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <proc>full</proc> <!-- Explicitly enable full annotation processing -->
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>

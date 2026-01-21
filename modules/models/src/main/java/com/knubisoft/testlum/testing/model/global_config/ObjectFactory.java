@@ -302,6 +302,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AutoHealing }
+     * 
+     */
+    public AutoHealing createAutoHealing() {
+        return new AutoHealing();
+    }
+
+    /**
      * Create an instance of {@link TagValue }
      * 
      */

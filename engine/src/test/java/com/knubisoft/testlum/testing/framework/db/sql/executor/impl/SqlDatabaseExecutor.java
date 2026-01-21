@@ -11,9 +11,7 @@ import org.apache.commons.io.FileUtils;
 import javax.sql.DataSource;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class SqlDatabaseExecutor extends AbstractSqlExecutor {
@@ -63,12 +61,5 @@ public class SqlDatabaseExecutor extends AbstractSqlExecutor {
         }
 
         log.info("No custom truncate file defined for alias '{}'. Fallback logic can be placed here.", aliasEnv.getAlias());
-    }
-
-    private List<String> splitSqlStatements(String sql) {
-        return Arrays.stream(sql.split(";\\s*(\\r?\\n)?"))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
-                .collect(Collectors.toList());
     }
 }

@@ -550,6 +550,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FromAlert }
+     * 
+     */
+    public FromAlert createFromAlert() {
+        return new FromAlert();
+    }
+
+    /**
      * Create an instance of {@link ElementPresent }
      * 
      */
@@ -774,6 +782,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Alert }
+     * 
+     */
+    public Alert createAlert() {
+        return new Alert();
+    }
+
+    /**
      * Create an instance of {@link SwitchToFrame }
      * 
      */
@@ -963,6 +979,22 @@ public class ObjectFactory {
      */
     public Exclude createExclude() {
         return new Exclude();
+    }
+
+    /**
+     * Create an instance of {@link ByLocator }
+     * 
+     */
+    public ByLocator createByLocator() {
+        return new ByLocator();
+    }
+
+    /**
+     * Create an instance of {@link ByArea }
+     * 
+     */
+    public ByArea createByArea() {
+        return new ByArea();
     }
 
     /**

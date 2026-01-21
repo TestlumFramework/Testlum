@@ -13,6 +13,7 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
+import com.knubisoft.testlum.testing.model.scenario.FromAlert;
 import com.knubisoft.testlum.testing.model.scenario.FromConstant;
 import com.knubisoft.testlum.testing.model.scenario.FromExpression;
 import com.knubisoft.testlum.testing.model.scenario.FromFile;
@@ -25,6 +26,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
+import org.openqa.selenium.Alert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -49,6 +51,7 @@ import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SLASH_SEPARATOR;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VAR_QUERY_RESULT_ERROR;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TABLE_FORMAT;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALERT;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONSTANT;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.EXPRESSION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.FILE;
@@ -229,6 +232,13 @@ public class VariableHelperImpl implements VariableHelper {
         AbstractStorageOperation storageOperation = aliasToStorageOperation.getByNameOrThrow(metadataKey);
         String valueResult = getActualQueryResult(fromSQL, storageOperation);
         ResultUtil.addVariableMetaData(RELATIONAL_DB_QUERY, fromSQL, varName, valueResult, result);
+        return valueResult;
+    }
+
+    @Override
+    public String getAlertResult(FromAlert fromAlert, String varName, Alert browserAlert, CommandResult result) {
+        String valueResult = browserAlert.getText();
+        ResultUtil.addVariableMetaData(ALERT, varName, NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 

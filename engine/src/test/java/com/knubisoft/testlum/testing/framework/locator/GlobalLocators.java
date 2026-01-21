@@ -15,18 +15,18 @@ import static java.util.Objects.isNull;
 @UtilityClass
 public class GlobalLocators {
 
-    private static final Map<String, Locator> LOCATOR_MAP;
+    private static final Map<String, LocatorData> LOCATOR_MAP;
 
     static {
         LOCATOR_MAP = Collections.unmodifiableMap(new LocatorCollector().collect());
     }
 
-    public Locator getLocator(final String name) {
-        Locator locator = LOCATOR_MAP.get(name);
-        if (isNull(locator)) {
+    public LocatorData getLocator(final String name) {
+        LocatorData locatorData = LOCATOR_MAP.get(name);
+        if (isNull(locatorData)) {
             throw defaultFrameworkException(name);
         }
-        return locator;
+        return locatorData;
     }
 
     private DefaultFrameworkException defaultFrameworkException(final String name) {

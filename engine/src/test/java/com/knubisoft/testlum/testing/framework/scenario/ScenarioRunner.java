@@ -18,6 +18,9 @@ import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.WebDownloadUtil;
+import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
+import com.knubisoft.testlum.testing.model.global_config.Safari;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +29,9 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.openqa.selenium.WebDriver;
 import org.springframework.context.ApplicationContext;
 
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FUNCTION_FOR_COMMAND_NOT_FOUND;
@@ -44,7 +49,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @RequiredArgsConstructor
 public class ScenarioRunner {
 
-    private static final AtomicInteger SCENARIO_ID_GENERATOR = new AtomicInteger();
     private final AtomicInteger idGenerator = new AtomicInteger();
     private final ScenarioResult scenarioResult = new ScenarioResult();
 
@@ -54,6 +58,9 @@ public class ScenarioRunner {
     private InterpreterDependencies dependencies;
     private boolean stopScenarioOnFailure;
     private CommandToInterpreterMap cmdToInterpreterMap;
+    private Path scenarioDir;
+    private Set<String> preExistingFiles;
+    private long executionStartTime;
 
     public ScenarioResult run() {
         prepare();
@@ -64,6 +71,17 @@ public class ScenarioRunner {
     }
 
     private void prepare() {
+        this.executionStartTime = System.currentTimeMillis();
+        this.scenarioDir = WebDownloadUtil.resolveScenarioDir(scenarioArguments.getFile());
+
+        if (nonNull(scenarioDir)) {
+            try {
+                java.nio.file.Files.createDirectories(scenarioDir);
+            } catch (Exception ignore) {}
+        }
+
+        this.preExistingFiles = WebDownloadUtil.snapshotFileNames(scenarioDir);
+
         this.dependencies = createDependencies();
         this.stopScenarioOnFailure = GlobalTestConfigurationProvider.provide().isStopScenarioOnFailure();
         this.cmdToInterpreterMap = createClassToInterpreterMap(dependencies);
@@ -76,7 +94,7 @@ public class ScenarioRunner {
 
     private void prepareScenarioResult() {
         Scenario scenario = scenarioArguments.getScenario();
-        scenarioResult.setId(SCENARIO_ID_GENERATOR.incrementAndGet());
+        scenarioResult.setId(scenarioArguments.getId());
         scenarioResult.setOverview(scenario.getOverview());
         scenarioResult.setName(scenario.getOverview().getName());
         scenarioResult.setTags(scenario.getSettings().getTags());
@@ -100,6 +118,17 @@ public class ScenarioRunner {
                 dependencies.getWebDriver().quit();
                 dependencies.getMobilebrowserDriver().quit();
             }
+
+            AbstractBrowser browserConfig = BrowserUtil
+                    .getBrowserBy(scenarioArguments.getEnvironment(), scenarioArguments.getBrowser())
+                    .orElse(null);
+
+            if (browserConfig instanceof Safari) {
+                WebDownloadUtil.moveSystemDownloadsToScenarioDir(scenarioDir, executionStartTime);
+            }
+
+            boolean keep = nonNull(browserConfig) && browserConfig.isKeepDownloadedFiles();
+            WebDownloadUtil.cleanupDownloadedFiles(scenarioDir, preExistingFiles, keep);
         }
     }
 
@@ -127,10 +156,14 @@ public class ScenarioRunner {
     }
 
     private void executeCommand(final AbstractCommand command, final CommandResult result) {
+        Set<String> filesBefore = WebDownloadUtil.snapshotFileNames(scenarioDir);
         try {
             getInterpreterOrThrow(command).apply(command, result);
         } catch (Exception e) {
             ResultUtil.setExceptionResult(result, e);
+        }
+        if (scenarioArguments.isContainsUiSteps()) {
+            WebDownloadUtil.waitForDownloadIfInitiated(scenarioDir, filesBefore);
         }
     }
 
@@ -201,7 +234,7 @@ public class ScenarioRunner {
 
     private WebDriver createWebDriver() {
         return BrowserUtil.getBrowserBy(scenarioArguments.getEnvironment(), scenarioArguments.getBrowser())
-                .map(WebDriverFactory::createDriver)
+                .map(config -> WebDriverFactory.createDriver(config, scenarioDir))
                 .orElse(new MockDriver(WEB_DRIVER_NOT_INIT));
     }
 

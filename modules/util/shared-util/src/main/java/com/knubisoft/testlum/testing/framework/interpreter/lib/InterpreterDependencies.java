@@ -1,12 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib;
 
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.openqa.selenium.WebDriver;
 import org.springframework.context.ApplicationContext;
 
@@ -17,6 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Builder
 @Getter
 @Setter
+@RequiredArgsConstructor
+@AllArgsConstructor
 public class InterpreterDependencies {
 
     private final ApplicationContext context;

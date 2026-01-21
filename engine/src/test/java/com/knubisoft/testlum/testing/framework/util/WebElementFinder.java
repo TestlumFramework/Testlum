@@ -1,10 +1,13 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.autohealing.LocatorAutohealer;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
+import com.knubisoft.testlum.testing.framework.locator.LocatorData;
+import com.knubisoft.testlum.testing.model.global_config.AutoHealing;
 import com.knubisoft.testlum.testing.model.global_config.Web;
 import com.knubisoft.testlum.testing.model.pages.ClassName;
 import com.knubisoft.testlum.testing.model.pages.CssSelector;
@@ -22,6 +25,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.FluentWait;
 
+import java.io.File;
 import java.time.Duration;
 
 import java.util.Collections;
@@ -38,13 +42,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ELEMENT_WAS_FOUND_BY_LOCATOR;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UNABLE_TO_FIND_ELEMENT_BY_LOCATOR;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UNABLE_TO_FIND_ELEMENT_BY_LOCATOR_TYPE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
 
 @Slf4j
 @UtilityClass
 public final class WebElementFinder {
+
+    private static final String START_HEAL_LOG =
+            ANSI_YELLOW
+            + "Unable to find element by provided locators. Start healing process..." + ANSI_RESET;
+
+    private static final String HEAL_RESULT_LOG =
+            ANSI_GREEN
+            + "Element was healed successfully. New values for locator {} were generated in {}" + ANSI_RESET;
 
     private static final Map<Class<?>, ByType> SEARCH_TYPES;
 
@@ -58,23 +68,23 @@ public final class WebElementFinder {
         SEARCH_TYPES = Collections.unmodifiableMap(map);
     }
 
-    public WebElement find(final Locator locator, final ExecutorDependencies dependencies) {
+    public WebElement find(final LocatorData locatorData, final ExecutorDependencies dependencies) {
         Set<org.openqa.selenium.By> bySet = new LinkedHashSet<>();
-        locator.getXpathOrIdOrClassName().forEach(obj -> {
+        locatorData.getLocator().getXpathOrIdOrClassName().forEach(obj -> {
             Class<?> clazz = obj.getClass();
-            bySet.addAll(SEARCH_TYPES.get(clazz).apply(locator));
+            bySet.addAll(SEARCH_TYPES.get(clazz).apply(locatorData.getLocator()));
         });
-        return getElementFromLocatorList(bySet, dependencies, locator.getLocatorId());
+        return getElementFromLocatorList(bySet, dependencies, locatorData);
     }
 
     private WebElement getElementFromLocatorList(final Set<org.openqa.selenium.By> bySet,
-                                                 final ExecutorDependencies dependencies, final String locatorId) {
+                                                 final ExecutorDependencies dependencies, final LocatorData locatorData) {
         waitForDomToComplete(dependencies);
 
         Optional<WebElement> optionalElement = findElement(bySet, dependencies.getDriver());
 
         return optionalElement.orElseGet(() ->
-                tryToFindElementIfNotFoundBeforeAfterAutoWait(bySet, dependencies.getDriver(), locatorId));
+                tryToFindElementIfNotFoundBeforeAfterAutoWait(bySet, dependencies, locatorData));
     }
 
     private Optional<WebElement> findElement(final Set<org.openqa.selenium.By> bySet, final WebDriver driver) {
@@ -92,19 +102,43 @@ public final class WebElementFinder {
     }
 
     private static WebElement tryToFindElementIfNotFoundBeforeAfterAutoWait(final Set<org.openqa.selenium.By> bySet,
-                                                                            final WebDriver driver,
-                                                                            final String locatorId) {
+                                                                            final ExecutorDependencies dependencies,
+                                                                            final LocatorData locatorData) {
         waitForSecondsDefinedInConfig();
 
-        Optional<WebElement> optionalElement = findElement(bySet, driver);
+        Optional<WebElement> optionalElement = findElement(bySet, dependencies.getDriver());
 
         if (optionalElement.isEmpty()) {
-            throw new DefaultFrameworkException(String.format(UNABLE_TO_FIND_ELEMENT_BY_LOCATOR, locatorId));
+            AutoHealing autoHealing = ConfigProviderImpl.GlobalTestConfigurationProvider
+                    .getWebSettings(EnvManager.currentEnv()).getAutoHealing();
+            if (autoHealing.isEnabled()) {
+                return tryToHealElement(dependencies, locatorData, autoHealing);
+            }
+            throw new DefaultFrameworkException(
+                    String.format(UNABLE_TO_FIND_ELEMENT_BY_LOCATOR, locatorData.getLocator().getLocatorId()));
         }
         return optionalElement.get();
     }
 
-//CHECKSTYLE:OFF
+    private static WebElement tryToHealElement(final ExecutorDependencies dependencies, final LocatorData locatorData,
+                                               final AutoHealing autoHealing) {
+        log.warn(START_HEAL_LOG);
+        LocatorAutohealer locatorAutohealer = new LocatorAutohealer(dependencies);
+        Locator locator = locatorData.getLocator();
+        Optional<WebElement> healedWebElement = locatorAutohealer.heal(locator);
+        if (healedWebElement.isEmpty()) {
+            throw new DefaultFrameworkException(
+                    String.format(UNABLE_TO_FIND_ELEMENT_BY_LOCATOR, locator.getLocatorId()));
+        }
+        WebElement healedElement = healedWebElement.get();
+        File fileWithPatch = locatorAutohealer.generateNewLocators(
+                healedElement, autoHealing.getMode(), dependencies, locatorData);
+        log.info(HEAL_RESULT_LOG,
+                locator.getLocatorId(), fileWithPatch.getAbsolutePath());
+        return healedElement;
+    }
+
+    //CHECKSTYLE:OFF
     @SneakyThrows(InterruptedException.class)
     private static void waitForSecondsDefinedInConfig() {
         Web settings = ConfigProviderImpl.GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv());

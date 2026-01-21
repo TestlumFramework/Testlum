@@ -1,4 +1,4 @@
-name: Manual Trigger Workflow
+name: Docker Image Manual Build & Push
 
 on:
   workflow_dispatch:
@@ -14,8 +14,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: |
-          docker build . \
-            --file Dockerfile \
-            --tag testlum:${{ inputs.version }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Extracting version
+        id: testlum_version
+        uses: ./.github/workflows
+        with:
+          filename: ./pom.xml
+          expression: /project/version/text()
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ghcr.io/testlum/testlum:${{ steps.testlum_version.outputs.result }}
+            ghcr.io/testlum/testlum:latest

@@ -26,7 +26,7 @@ jobs:
         id: testlum_version
         run: |
           VERSION=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -t -v "/x:project/x:version" pom.xml)
-          echo "::set-output name=version::$VERSION"          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT           
       
       - name: Build and push Docker image
         uses: docker/build-push-action@v6

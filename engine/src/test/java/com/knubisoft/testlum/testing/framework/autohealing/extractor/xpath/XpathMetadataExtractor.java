@@ -16,7 +16,7 @@ public class XpathMetadataExtractor implements SpecificMetadataExtractor<Xpath>,
         IdExtractor, TagNameExtractor, TextExtractor, AncestorIdExtractor, ParentTagExtractor {
 
     @Override
-    public void extractMetadata(Xpath type, HealingElementMetadata metadata) {
+    public void extractMetadata(final Xpath type, final HealingElementMetadata metadata) {
         this.extractAttributes(type.getValue(), metadata);
         this.extractId(type.getValue(), metadata);
         this.extractTagName(type.getValue(), metadata);

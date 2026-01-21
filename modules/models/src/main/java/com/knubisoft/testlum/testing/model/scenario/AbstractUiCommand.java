@@ -36,6 +36,7 @@ import jakarta.xml.bind.annotation.XmlType;
     AssertAttribute.class,
     AssertTitle.class,
     AssertAlert.class,
+    UiAi.class,
     Javascript.class,
     Navigate.class,
     BrowserTab.class,

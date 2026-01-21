@@ -32,6 +32,7 @@
                     <x:element name="condition" type="tns:uiCondition"/>
                     <x:element name="repeat" type="tns:webRepeat"/>
                     <x:element name="doubleClick" type="tns:doubleClick"/>
+                    <x:element name="ai" type="tns:uiAi"/>
                     <x:element name="alert" type="tns:alert"/>
                 </x:choice>
                 <x:attribute name="clearCookiesAfterExecution" type="x:boolean" default="false"/>
@@ -63,6 +64,7 @@
                     <x:element name="var" type="tns:webVar"/>
                     <x:element name="condition" type="tns:uiCondition"/>
                     <x:element name="repeat" type="tns:webRepeat"/>
+                    <x:element name="ai" type="tns:uiAi"/>
                     <x:element name="alert" type="tns:alert"/>
                 </x:choice>
                 <x:attribute name="times" type="tns:positiveIntegerMin1"/>

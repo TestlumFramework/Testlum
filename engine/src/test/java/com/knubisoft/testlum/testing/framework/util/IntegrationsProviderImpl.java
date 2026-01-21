@@ -53,6 +53,7 @@ public class IntegrationsProviderImpl implements IntegrationsProvider {
 
         static {
             CONFIG_TO_INTEGRATION_LIST_MAP = Map.ofEntries(
+                    Map.entry(c -> c.equals(Ai.class), i -> i.getAiIntegration().getAi()),
                     Map.entry(c -> c.equals(Api.class), i -> i.getApis().getApi()),
                     Map.entry(c -> c.equals(WebsocketApi.class), i -> i.getWebsockets().getApi()),
                     Map.entry(c -> c.equals(S3.class), i -> i.getS3Integration().getS3()),

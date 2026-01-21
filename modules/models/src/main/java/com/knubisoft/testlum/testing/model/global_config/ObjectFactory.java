@@ -78,6 +78,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AiIntegration }
+     * 
+     */
+    public AiIntegration createAiIntegration() {
+        return new AiIntegration();
+    }
+
+    /**
      * Create an instance of {@link Apis }
      * 
      */
@@ -603,6 +611,14 @@ public class ObjectFactory {
      */
     public GooglePlayLogin createGooglePlayLogin() {
         return new GooglePlayLogin();
+    }
+
+    /**
+     * Create an instance of {@link Ai }
+     * 
+     */
+    public Ai createAi() {
+        return new Ai();
     }
 
     /**

@@ -27,6 +27,7 @@
         <module>util/auth-util</module>
         <module>util/wait-util</module>
         <module>util/variable-util</module>
+        <module>util/ai-util</module>
         <module>util</module>
 
         <module>conditional</module>
@@ -60,6 +61,7 @@
         <module>sqlDatabase</module>
 
         <module>ui</module>
+        <module>ai</module>
     </modules>
 
     <properties>

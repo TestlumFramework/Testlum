@@ -1,11 +1,8 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
 import com.knubisoft.testlum.testing.framework.autohealing.LocatorAutohealer;
-import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
-import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
@@ -27,7 +24,14 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.time.Duration;
-import java.util.*;
+
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -124,8 +128,8 @@ public final class WebElementFinder {
         WebElement healedElement = healedWebElement.get();
         File fileWithPatch = locatorAutohealer.generateNewLocators(
                 healedElement, autoHealing.getMode(), dependencies, locatorData);
-        log.info(LogMessage.HEAL_RESULT_LOG,
-                locator.getLocatorId(), fileWithPatch.getAbsolutePath());
+        log.info(LogMessage.HEAL_RESULT_LOG, locator.getLocatorId(),
+                fileWithPatch == null ? dependencies.getFile() : fileWithPatch.getAbsolutePath());
         return healedElement;
     }
 

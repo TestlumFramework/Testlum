@@ -25,7 +25,7 @@ jobs:
       - name: Extracting version
         id: testlum_version
         run: |
-          VERSION=$(xmlstarlet sel -t -v "//version/text()" pom.xml)
+          VERSION=$(xmlstarlet sel -N x="http://maven.apache.org/POM/4.0.0" -t -v "/x:project/x:version" pom.xml)
           echo "::set-output name=version::$VERSION"          
       
       - name: Build and push Docker image

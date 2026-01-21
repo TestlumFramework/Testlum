@@ -38,5 +38,5 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            ghcr.io/testlum/testlum:${{ steps.testlum_version.outputs.result }}
+            ghcr.io/testlum/testlum:${{ github.event.inputs.version || steps.testlum_version.outputs.result }}
             ghcr.io/testlum/testlum:latest

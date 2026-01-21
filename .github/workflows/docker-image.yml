@@ -18,22 +18,24 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          
+
+      - name: Install xml starlet
+        run: sudo apt-get update && sudo apt-get install -y xmlstarlet
+
       - name: Extracting version
         id: testlum_version
-        uses: QwerMike/xpath-action@v1
-        with:
-          filename: 'pom.xml'
-          expression: '//version/text()'
+        run: |
+          VERSION=$(xmlstarlet sel -t -v "//version/text()" pom.xml)
+          echo "::set-output name=version::$VERSION"          
       
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           build-args: |
-            APP_VERSION=${{ steps.testlum_version.outputs.result }}
+            APP_VERSION=${{ steps.testlum_version.outputs.version }}
           file: Dockerfile
           push: true
           tags: |
-            ghcr.io/testlum/testlum:${{ steps.testlum_version.outputs.result }}
+            ghcr.io/testlum/testlum:${{ steps.testlum_version.outputs.version }}
             ghcr.io/testlum/testlum:latest

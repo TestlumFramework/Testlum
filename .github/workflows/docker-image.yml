@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Docker image version'
-        required: true
+        description: 'Docker image version (Override pom.xml version)'
+        required: false
         type: string
 
 jobs:

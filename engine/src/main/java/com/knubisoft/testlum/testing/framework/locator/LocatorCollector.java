@@ -24,7 +24,7 @@ public class LocatorCollector {
 
     private final Map<String, File> pageFiles;
     private final Map<String, File> componentFiles;
-    private final Map<String, Locator> locatorMap;
+    private final Map<String, LocatorData> locatorMap;
 
     public LocatorCollector(final XMLParsers xmlParsers,
                             final PageValidator pageValidator,
@@ -36,14 +36,17 @@ public class LocatorCollector {
         this.locatorMap = collect(xmlParsers);
     }
 
-    private Map<String, Locator> collect(final XMLParsers xmlParsers) {
+    private Map<String, LocatorData> collect(final XMLParsers xmlParsers) {
         Map<File, Page> fileToPage = collectFileToPageMap(xmlParsers);
         return transformToNameToLocatorMap(fileToPage);
     }
 
+
     private Map<File, Page> collectFileToPageMap(final XMLParsers xmlParsers) {
         Map<File, Page> fileToPage = new LinkedHashMap<>();
-        pageFiles.values().forEach(each -> fileToPage.put(each, parseLocatorOrThrow(xmlParsers, each)));
+        pageFiles.values().stream()
+                .filter(file -> file.getName().endsWith(".xml"))
+                .forEach(each -> fileToPage.put(each, parseLocatorOrThrow(xmlParsers, each)));
         return fileToPage;
     }
 
@@ -73,12 +76,12 @@ public class LocatorCollector {
         return xmlParsers.forComponentLocator().process(file);
     }
 
-    private Map<String, Locator> transformToNameToLocatorMap(final Map<File, Page> fileToPage) {
-        Map<String, Locator> result = new LinkedHashMap<>();
+    private Map<String, LocatorData> transformToNameToLocatorMap(final Map<File, Page> fileToPage) {
+        Map<String, LocatorData> result = new LinkedHashMap<>();
 
         for (Map.Entry<File, Page> each : fileToPage.entrySet()) {
             for (Locator locator : each.getValue().getLocators().getLocator()) {
-                result.put(getKeyName(each, locator), locator);
+                result.put(getKeyName(each, locator), new LocatorData(each.getKey(), locator));
             }
         }
         return result;
@@ -89,12 +92,12 @@ public class LocatorCollector {
         return prefix + DelimiterConstant.DOT + locator.getLocatorId();
     }
 
-    public Locator getLocator(final String name) {
-        Locator locator = locatorMap.get(name);
-        if (locator == null) {
+    public LocatorData getLocator(final String name) {
+        LocatorData locatorData = locatorMap.get(name);
+        if (locatorData == null) {
             throw defaultFrameworkException(name);
         }
-        return locator;
+        return locatorData;
     }
 
     private DefaultFrameworkException defaultFrameworkException(final String name) {

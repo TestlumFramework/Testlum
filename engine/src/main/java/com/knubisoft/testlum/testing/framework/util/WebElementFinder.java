@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.time.Duration;
+
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -157,6 +158,8 @@ public final class WebElementFinder {
                 healedElement, autoHealing.getMode(), dependencies, locatorData);
         log.info(LogMessage.HEAL_RESULT_LOG,
                 locator.getLocatorId(), fileWithPatch == null ? dependencies.getFile() : fileWithPatch.getAbsolutePath());
+        log.info(LogMessage.HEAL_RESULT_LOG, locator.getLocatorId(),
+                fileWithPatch == null ? dependencies.getFile() : fileWithPatch.getAbsolutePath());
         return healedElement;
     }
 

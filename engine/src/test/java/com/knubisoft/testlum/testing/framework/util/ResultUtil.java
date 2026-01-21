@@ -51,6 +51,7 @@ public class ResultUtil {
     public static final String JSON_PATH = "JSON path";
     public static final String XML_PATH = "Xml path";
     public static final String RELATIONAL_DB_QUERY = "Relational DB query";
+    public static final String ALERT = "Alert";
     public static final String FILE = "File";
     public static final String EXPRESSION = "Expression";
     public static final String CONSTANT = "Constant";
@@ -80,6 +81,9 @@ public class ResultUtil {
     public static final String HOTKEY_TIMES = "Times to repeat hotkey command";
     public static final String INPUT_VALUE = "Value for input";
     public static final String CLICK_METHOD = "Click method";
+    public static final String ALERT_TYPE = "Alert type";
+    public static final String ALERT_WAIT = "Wait for visible";
+    public static final String PROMPT_TEXT = "Text for prompt";
     public static final String CLOSE_TAB = "Close";
     public static final String SWITCH_TAB = "Switch";
     public static final String OPEN_TAB = "Open";

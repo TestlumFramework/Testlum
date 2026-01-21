@@ -133,8 +133,8 @@ public final class WebElementFinder {
         WebElement healedElement = healedWebElement.get();
         File fileWithPatch = locatorAutohealer.generateNewLocators(
                 healedElement, autoHealing.getMode(), dependencies, locatorData);
-        log.info(HEAL_RESULT_LOG,
-                locator.getLocatorId(), fileWithPatch.getAbsolutePath());
+        log.info(HEAL_RESULT_LOG, locator.getLocatorId(),
+                fileWithPatch == null ? dependencies.getFile() : fileWithPatch.getAbsolutePath());
         return healedElement;
     }
 

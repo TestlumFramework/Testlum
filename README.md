@@ -1,10 +1,10 @@
 <h1 align="center">
   <br/>
-  <a href="https://testlum.com"><img src="https://testlum.com/img/logo.27745238.svg" alt="Testlum" width="100"></a>
+  <a href="https://testlum.com"><img src="https://testlum.com/img/logo.1acbeb84.svg" alt="Testlum" width="100"></a>
 </h1>
 <h2 align="center">Run tests fast and easy</h2>
 
-[![Build Status](https://jenkins.testlum.com/buildStatus/icon?job=Testlum%2FFullRegression)](https://jenkins.testlum.com/job/Testlum/job/FullRegression/)
+[![Testlum Engine Build](https://github.com/TestlumFramework/Testlum/actions/workflows/build.yml/badge.svg)](https://github.com/TestlumFramework/Testlum/actions/workflows/build.yml)
 [![License](http://img.shields.io/:license-Apache%202-red.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 # Table of Contents

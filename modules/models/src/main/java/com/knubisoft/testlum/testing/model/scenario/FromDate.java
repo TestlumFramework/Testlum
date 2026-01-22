@@ -17,13 +17,13 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;choice&gt;
- *         &lt;element name="constant" type="{http://www.knubisoft.com/testlum/testing/model/scenario}fromConstant"/&gt;
+ *         &lt;element name="constant" type="{http://www.knubisoft.com/testlum/testing/model/scenario}fromDateConstant"/&gt;
  *         &lt;element name="now" type="{http://www.knubisoft.com/testlum/testing/model/scenario}now"/&gt;
  *         &lt;element name="beforeNow" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dateShift"/&gt;
  *         &lt;element name="afterNow" type="{http://www.knubisoft.com/testlum/testing/model/scenario}dateShift"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="format" type="{http://www.w3.org/2001/XMLSchema}string" default="yyyy-MM-dd HH:mm:ss" /&gt;
- *       &lt;attribute name="timezone" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="timezone" type="{http://www.knubisoft.com/testlum/testing/model/scenario}timezoneType" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -40,7 +40,7 @@ import jakarta.xml.bind.annotation.XmlType;
 })
 public class FromDate {
 
-    protected FromConstant constant;
+    protected FromDateConstant constant;
     protected Now now;
     protected DateShift beforeNow;
     protected DateShift afterNow;
@@ -54,10 +54,10 @@ public class FromDate {
      * 
      * @return
      *     possible object is
-     *     {@link FromConstant }
+     *     {@link FromDateConstant }
      *     
      */
-    public FromConstant getConstant() {
+    public FromDateConstant getConstant() {
         return constant;
     }
 
@@ -66,10 +66,10 @@ public class FromDate {
      * 
      * @param value
      *     allowed object is
-     *     {@link FromConstant }
+     *     {@link FromDateConstant }
      *     
      */
-    public void setConstant(FromConstant value) {
+    public void setConstant(FromDateConstant value) {
         this.constant = value;
     }
 

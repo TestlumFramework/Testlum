@@ -75,6 +75,10 @@
         <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
+    <x:complexType name="fromDateConstant">
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
     <x:complexType name="fromExpression">
         <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
@@ -89,13 +93,13 @@
 
     <x:complexType name="fromDate">
         <x:choice>
-            <x:element name="constant" type="tns:fromConstant"/>
+            <x:element name="constant" type="tns:fromDateConstant"/>
             <x:element name="now" type="tns:now"/>
             <x:element name="beforeNow" type="tns:dateShift"/>
             <x:element name="afterNow" type="tns:dateShift"/>
         </x:choice>
         <x:attribute name="format" type="x:string" default="yyyy-MM-dd HH:mm:ss"/>
-        <x:attribute name="timezone" type="x:string"/>
+        <x:attribute name="timezone" type="tns:timezoneType"/>
     </x:complexType>
 
     <x:complexType name="dateShift">
@@ -119,6 +123,12 @@
     <x:simpleType name="variableQuery">
         <x:restriction base="x:string">
             <x:pattern value="(\s|\n)*SELECT([^\*,]|\n)+FROM(.|\n)+WHERE(.|\n)+"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="timezoneType">
+        <x:restriction base="x:string">
+            <x:pattern value="|UTC[+-][0-9]+|(UTC[+-]?)?\{\{.+\}\}"/>
         </x:restriction>
     </x:simpleType>
 

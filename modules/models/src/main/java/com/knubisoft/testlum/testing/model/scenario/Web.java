@@ -78,7 +78,7 @@ public class Web
         @XmlElement(name = "condition", type = UiCondition.class),
         @XmlElement(name = "repeat", type = WebRepeat.class),
         @XmlElement(name = "doubleClick", type = DoubleClick.class),
-        @XmlElement(name = "ai", type = UiAi.class)
+        @XmlElement(name = "ai", type = UiAi.class),
         @XmlElement(name = "alert", type = Alert.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;

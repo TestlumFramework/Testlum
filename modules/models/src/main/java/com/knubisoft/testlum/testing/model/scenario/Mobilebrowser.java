@@ -74,7 +74,7 @@ public class Mobilebrowser
         @XmlElement(name = "var", type = WebVar.class),
         @XmlElement(name = "condition", type = UiCondition.class),
         @XmlElement(name = "repeat", type = MobilebrowserRepeat.class),
-        @XmlElement(name = "ai", type = UiAi.class)
+        @XmlElement(name = "ai", type = UiAi.class),
         @XmlElement(name = "alert", type = Alert.class)
     })
     protected List<AbstractUiCommand> clickOrInputOrAssert;

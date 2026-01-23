@@ -8,7 +8,7 @@ RUN mvn clean install -DskipTests -P$PROFILE
 
 FROM eclipse-temurin:17.0.10_7-jdk
 
-ARG JAR_FILE=target/testlum-with-dependencies.jar
+ARG JAR_FILE=target/testlum-1.0.2.jar
 
 WORKDIR /testlum/
 

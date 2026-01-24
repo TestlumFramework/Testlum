@@ -13,16 +13,10 @@ public class EnvManager {
 
     private static final ThreadLocal<Environment> THREAD_ENV = new ThreadLocal<>();
 
-    private final List<Environment> environments;
-    private final KeyLocker keyLocker;
-    private final Lock lock;
-    private final Condition lockCondition;
+    private final Environment environment;
 
     public EnvManager(final List<Environment> environments) {
-        this.environments = Collections.unmodifiableList(environments);
-        this.keyLocker = new KeyLocker();
-        this.lock = new ReentrantLock();
-        this.lockCondition = lock.newCondition();
+        this.environment = environments.stream().findFirst().get();
     }
 
     public static String currentEnv() {
@@ -30,41 +24,11 @@ public class EnvManager {
     }
 
     public String acquireEnv() throws InterruptedException {
-        lock.lock();
-        try {
-            while (true) {
-                Optional<Environment> env = tryToLockEnv();
-                if (env.isPresent()) {
-                    return env.get().getFolder();
-                }
-                lockCondition.await();
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private Optional<Environment> tryToLockEnv() {
-        return environments.stream()
-                .filter(env -> keyLocker.tryLock(env.getFolder(), env.getThreads()))
-                .findFirst()
-                .map(env -> {
-                    THREAD_ENV.set(env);
-                    return env;
-                });
+        THREAD_ENV.set(environment);
+        return currentEnv();
     }
 
     public void releaseEnv(final String env) {
-        lock.lock();
-        try {
-            keyLocker.releaseLock(env);
-            THREAD_ENV.remove();
-        } finally {
-            try {
-                lockCondition.signal();
-            } finally {
-                lock.unlock();
-            }
-        }
+        THREAD_ENV.remove();
     }
 }

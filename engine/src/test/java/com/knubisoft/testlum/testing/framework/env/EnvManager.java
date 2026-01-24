@@ -29,6 +29,6 @@ public class EnvManager {
     }
 
     public void releaseEnv(final String env) {
-        THREAD_ENV.remove();
+        //THREAD_ENV.remove();
     }
 }

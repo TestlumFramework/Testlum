@@ -19,12 +19,7 @@ import com.knubisoft.testlum.testing.framework.util.FileRemover;
 import com.knubisoft.testlum.testing.model.global_config.DelayBetweenScenarioRuns;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Named;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,6 +33,7 @@ import org.springframework.test.context.TestContextManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
@@ -87,7 +83,11 @@ public class RootTest {
     @ParameterizedTest(name = "[{index}] path -- {0}")
     @MethodSource("prepareTestData")
     void execution(@ConvertWith(ScenarioArgumentsToNamedConverter.class) final Named<ScenarioArguments> arguments) {
-        envLockService.runLocked(() -> execute(arguments.getPayload()));
+        Duration testTimeOut = Duration.ofMinutes(1); // TODO extract to global and local settings
+
+        Assertions.assertTimeoutPreemptively(testTimeOut, () -> {
+            envLockService.runLocked(() -> execute(arguments.getPayload()));
+        });
     }
 
     private void execute(final ScenarioArguments scenarioArguments) {

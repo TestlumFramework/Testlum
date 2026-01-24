@@ -86,7 +86,7 @@ public class RootTest {
         Duration testTimeOut = Duration.ofMinutes(1); // TODO extract to global and local settings
 
         Assertions.assertTimeoutPreemptively(testTimeOut, () -> {
-            envLockService.runLocked(() -> execute(arguments.getPayload()));
+            execute(arguments.getPayload());
         });
     }
 

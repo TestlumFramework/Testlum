@@ -1,6 +1,8 @@
 package com.knubisoft.testlum.testing.framework.env;
 
+import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl;
 import com.knubisoft.testlum.testing.model.global_config.Environment;
+import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +22,13 @@ public class EnvManager {
     }
 
     public static String currentEnv() {
-        return THREAD_ENV.get().getFolder();
+        Environment env = THREAD_ENV.get();
+        if (env == null) {
+            env = ConfigProviderImpl.GlobalTestConfigurationProvider.
+                    getEnabledEnvironments().stream().findFirst().get();
+            THREAD_ENV.set(env);
+        }
+        return env.getFolder();
     }
 
     public String acquireEnv() throws InterruptedException {

@@ -260,44 +260,62 @@ public class UiUtil {
     }
 
     public void processMatSelect(ExecutorDependencies dependencies, WebElement matSelect, String value) {
-        WebDriver driver = dependencies.getDriver();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.elementToBeClickable(matSelect)).click();
-        wait.until(d -> "true".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
+        openMatSelect(dependencies, matSelect);
+        WebElement panel = getMatSelectPanel(dependencies, matSelect);
+        WebElement option = findMatchingOption(panel, value);
+        clickMatOption(dependencies, option);
+        waitForMatSelectToClose(dependencies, matSelect);
+    }
 
+    private void openMatSelect(ExecutorDependencies dependencies, WebElement matSelect) {
+        waitForElementToBeClickable(dependencies, matSelect);
+        matSelect.click();
+        getWebDriverWait(dependencies).until(d -> "true".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
+    }
+
+    private WebElement getMatSelectPanel(ExecutorDependencies dependencies, WebElement matSelect) {
         String panelId = matSelect.getAttribute("aria-controls");
-        if (panelId == null || panelId.isBlank()) {
-            throw new DefaultFrameworkException("mat-select aria-controls is empty");
+        if (isBlank(panelId)) {
+            throw new DefaultFrameworkException("The 'aria-controls' attribute is missing on mat-select. Cannot find dropdown panel.");
         }
+        WebElement panel = dependencies.getDriver().findElement(By.id(panelId));
+        waitForElementVisibility(dependencies, panel);
+        return panel;
+    }
 
-        WebElement panel = wait.until(ExpectedConditions.visibilityOfElementLocated(org.openqa.selenium.By.id(panelId)));
-
-        List<WebElement> options = panel.findElements(org.openqa.selenium.By.cssSelector("mat-option, [role='option']"));
+    private WebElement findMatchingOption(WebElement panel, String value) {
+        List<WebElement> options = panel.findElements(By.cssSelector("mat-option, [role='option']"));
         if (options.isEmpty()) {
-            throw new DefaultFrameworkException("No options found in panel: " + panelId);
+            throw new DefaultFrameworkException("No options (mat-option) found in the dropdown panel.");
         }
 
-        String target = normalizeText(value);
-
-        WebElement option = options.stream()
+        String normalizedTarget = normalizeText(value);
+        return options.stream()
                 .filter(o -> !"true".equalsIgnoreCase(o.getAttribute("aria-disabled")))
-                .filter(o -> normalizeText(extractOptionText(o)).equalsIgnoreCase(target))
+                .filter(o -> normalizeText(extractOptionText(o)).equalsIgnoreCase(normalizedTarget))
                 .findFirst()
                 .orElseThrow(() -> new DefaultFrameworkException(
-                        "Option not found: " + value + ". Available: " +
-                                options.stream().map(o -> normalizeText(extractOptionText(o))).toList()
+                        format("Option '%s' not found. Available options: %s", value,
+                                options.stream().map(o -> normalizeText(extractOptionText(o))).collect(Collectors.toList()))
                 ));
+    }
 
-        wait.until(ExpectedConditions.elementToBeClickable(option)).click();
+    private void clickMatOption(ExecutorDependencies dependencies, WebElement option) {
+        waitForElementToBeClickable(dependencies, option);
+        option.click();
+    }
 
-        wait.until(d -> "false".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
+    private void waitForMatSelectToClose(ExecutorDependencies dependencies, WebElement matSelect) {
+        getWebDriverWait(dependencies).until(d -> "false".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
     }
 
     private String extractOptionText(WebElement option) {
         List<WebElement> spans = option.findElements(By.cssSelector("span"));
-        if (!spans.isEmpty()) {
-            String txt = spans.get(0).getText();
-            if (txt != null && !txt.isBlank()) return txt;
+        for (WebElement span : spans) {
+            String txt = span.getText();
+            if (!isBlank(txt)) {
+                return txt;
+            }
         }
         return option.getText();
     }

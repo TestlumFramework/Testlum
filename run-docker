@@ -1,0 +1,151 @@
+#!/usr/bin/env bash
+
+# =============================================================================
+# Run Docker Locally Script
+# =============================================================================
+# This script runs the Testlum Docker container with the specified configuration.
+#
+# Usage: ./run-docker <image-name> <config> <path>
+#
+# Arguments:
+#   1) Docker image name  - The name of the Testlum Docker image
+#   2) Config file        - Configuration file: -c=<file>.xml or --config=<file>.xml
+#   3) Path to resources  - Path to test resources: -p=<path> or --path=<path>
+#
+# Example:
+#   ./run-docker testlum:1.0.2 -c=config.xml -p=/user/folder/resources
+# =============================================================================
+
+# Validation patterns
+cfgPattern='^(-c=|--config=)[a-zA-Z0-9._:*#-]+(.xml)$'
+pathPattern='^(-p=|--path=)(./|/|(./[a-zA-Z0-9_-]+)|(/[a-zA-Z0-9_-]+))+$'
+
+# Input arguments
+dockerImageName=$1
+configFileName=$2
+pathToFiles=$3
+
+# -----------------------------------------------------------------------------
+# Validates that all required arguments are provided
+# -----------------------------------------------------------------------------
+function validate_arguments() {
+    local has_errors=false
+
+    # Check if Docker image name is provided
+    if [[ -z "$dockerImageName" ]]; then
+        echo "Error: Docker image name is required (argument 1)"
+        has_errors=true
+    fi
+
+    # Check if config file matches the expected pattern
+    if [[ -z "$configFileName" ]]; then
+        echo "Error: Configuration file is required (argument 2)"
+        has_errors=true
+    elif [[ ! $configFileName =~ $cfgPattern ]]; then
+        echo "Error: Invalid configuration file format: '$configFileName'"
+        echo "       Expected format: -c=<filename>.xml or --config=<filename>.xml"
+        has_errors=true
+    fi
+
+    # Check if path matches the expected pattern
+    if [[ -z "$pathToFiles" ]]; then
+        echo "Error: Path to test resources is required (argument 3)"
+        has_errors=true
+    elif [[ ! $pathToFiles =~ $pathPattern ]]; then
+        echo "Error: Invalid path format: '$pathToFiles'"
+        echo "       Expected format: -p=<path> or --path=<path>"
+        has_errors=true
+    fi
+
+    if [[ "$has_errors" == true ]]; then
+        echo ""
+        print_usage
+        exit 1
+    fi
+}
+
+# -----------------------------------------------------------------------------
+# Validates that Docker is installed and running
+# -----------------------------------------------------------------------------
+function validate_docker() {
+    if ! command -v docker &> /dev/null; then
+        echo "Error: Docker is not installed or not in PATH"
+        exit 1
+    fi
+
+    if ! docker info &> /dev/null; then
+        echo "Error: Docker daemon is not running"
+        exit 1
+    fi
+}
+
+# -----------------------------------------------------------------------------
+# Validates that the specified path exists
+# -----------------------------------------------------------------------------
+function validate_path_exists() {
+    local path
+    path=$(get_path)
+
+    if [[ ! -d "$path" ]]; then
+        echo "Error: Path does not exist: '$path'"
+        exit 1
+    fi
+}
+
+# -----------------------------------------------------------------------------
+# Main entry point
+# -----------------------------------------------------------------------------
+function main() {
+    validate_docker
+    validate_arguments
+    validate_path_exists
+    run_docker_locally
+}
+
+# -----------------------------------------------------------------------------
+# Runs the Docker container with the specified configuration
+# -----------------------------------------------------------------------------
+function run_docker_locally() {
+    local path
+    path=$(get_path)
+
+    echo "Starting Testlum container..."
+    echo "  Image:  $dockerImageName"
+    echo "  Config: $configFileName"
+    echo "  Path:   $path"
+    echo ""
+
+    docker run --rm --network=host \
+        --mount type=bind,source="$path",target="$path" \
+        "$dockerImageName" "$configFileName" "$pathToFiles"
+}
+
+# -----------------------------------------------------------------------------
+# Extracts the path value from the path argument (removes -p= or --path= prefix)
+# -----------------------------------------------------------------------------
+function get_path() {
+    echo "$pathToFiles" | perl -pe 's/^(-p=|--path=)//'
+}
+
+# -----------------------------------------------------------------------------
+# Prints usage information
+# -----------------------------------------------------------------------------
+function print_usage() {
+    echo "Usage: ./run-docker <image-name> <config> <path>"
+    echo ""
+    echo "Arguments:"
+    echo "  1) Docker image name"
+    echo "       The name of the Testlum Docker image"
+    echo ""
+    echo "  2) Configuration file"
+    echo "       Format: -c=<filename>.xml or --config=<filename>.xml"
+    echo "       Allowed characters: [a-zA-Z0-9._:*#-]"
+    echo ""
+    echo "  3) Path to test resources"
+    echo "       Format: -p=<path> or --path=<path>"
+    echo ""
+    echo "Example:"
+    echo "  ./run-docker testlum:1.0.2 -c=config.xml -p=/user/folder/resources"
+}
+
+main

@@ -24,6 +24,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.CUSTOM_DROP_DOWN_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
@@ -36,6 +37,7 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_LOCATOR;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ONE_VALUE_TEMPLATE;
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
 @ExecutorForClass(DropDown.class)
@@ -94,7 +96,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         log.info(BY_LOG, oneValue.getBy().value());
         log.info(VALUE_LOG, value);
         if ("mat-select".equalsIgnoreCase(dropDownElement.getTagName())) {
-            UiUtil.processMatSelect(dependencies, dropDownElement, value);
+            processMatSelect(dependencies, dropDownElement, value);
             UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
             return;
         }
@@ -204,5 +206,71 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         log.info(COMMAND_TYPE_LOG, ALL_VALUES_DESELECT);
         result.put(DROP_DOWN_FOR, ALL_VALUES_DESELECT);
         select.deselectAll();
+    }
+
+    public void processMatSelect(ExecutorDependencies dependencies, WebElement matSelect, String value) {
+        openMatSelect(dependencies, matSelect);
+        WebElement panel = getMatSelectPanel(dependencies, matSelect);
+        WebElement option = findMatchingOption(panel, value);
+        clickMatOption(dependencies, option);
+        UiUtil.waitForMatSelectToClose(dependencies, matSelect);
+    }
+
+    private void openMatSelect(ExecutorDependencies dependencies, WebElement matSelect) {
+        UiUtil.waitForElementToBeClickable(dependencies, matSelect);
+        matSelect.click();
+        UiUtil.waitForMatSelectToOpen(dependencies, matSelect);
+    }
+
+    private WebElement getMatSelectPanel(ExecutorDependencies dependencies, WebElement matSelect) {
+        String panelId = matSelect.getAttribute("aria-controls");
+        if (isBlank(panelId)) {
+            throw new DefaultFrameworkException("The 'aria-controls' attribute is missing on mat-select. Cannot find dropdown panel.");
+        }
+        WebElement panel = dependencies.getDriver().findElement(By.id(panelId));
+        UiUtil.waitForElementVisibility(dependencies, panel);
+        return panel;
+    }
+
+    private WebElement findMatchingOption(WebElement panel, String value) {
+        List<WebElement> options = panel.findElements(By.cssSelector("mat-option, [role='option']"));
+        if (options.isEmpty()) {
+            throw new DefaultFrameworkException("No options (mat-option) found in the dropdown panel.");
+        }
+
+        String normalizedTarget = normalizeText(value);
+        return options.stream()
+                .filter(o -> !"true".equalsIgnoreCase(o.getAttribute("aria-disabled")))
+                .filter(o -> normalizeText(extractOptionText(o)).equalsIgnoreCase(normalizedTarget))
+                .findFirst()
+                .orElseThrow(() -> new DefaultFrameworkException(
+                        format("Option '%s' not found. Available options: %s", value,
+                                options.stream().map(o -> normalizeText(extractOptionText(o))).collect(Collectors.toList()))
+                ));
+    }
+
+    private void clickMatOption(ExecutorDependencies dependencies, WebElement option) {
+        UiUtil.waitForElementToBeClickable(dependencies, option);
+        option.click();
+    }
+
+    private String extractOptionText(WebElement option) {
+        List<WebElement> spans = option.findElements(By.cssSelector("span"));
+        for (WebElement span : spans) {
+            String txt = span.getText();
+            if (!isBlank(txt)) {
+                return txt;
+            }
+        }
+        return option.getText();
+    }
+
+    private String normalizeText(String s) {
+        if (s == null) {
+            return "";
+        }
+        return s.replace('\u00A0', ' ')
+                .replaceAll("\\s+", " ")
+                .trim();
     }
 }

@@ -259,74 +259,12 @@ public class UiUtil {
         return GlobalTestConfigurationProvider.getWebSettings(env).getBaseUrl() + path;
     }
 
-    public void processMatSelect(ExecutorDependencies dependencies, WebElement matSelect, String value) {
-        openMatSelect(dependencies, matSelect);
-        WebElement panel = getMatSelectPanel(dependencies, matSelect);
-        WebElement option = findMatchingOption(panel, value);
-        clickMatOption(dependencies, option);
-        waitForMatSelectToClose(dependencies, matSelect);
-    }
-
-    private void openMatSelect(ExecutorDependencies dependencies, WebElement matSelect) {
-        waitForElementToBeClickable(dependencies, matSelect);
-        matSelect.click();
-        getWebDriverWait(dependencies).until(d -> "true".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
-    }
-
-    private WebElement getMatSelectPanel(ExecutorDependencies dependencies, WebElement matSelect) {
-        String panelId = matSelect.getAttribute("aria-controls");
-        if (isBlank(panelId)) {
-            throw new DefaultFrameworkException("The 'aria-controls' attribute is missing on mat-select. Cannot find dropdown panel.");
-        }
-        WebElement panel = dependencies.getDriver().findElement(By.id(panelId));
-        waitForElementVisibility(dependencies, panel);
-        return panel;
-    }
-
-    private WebElement findMatchingOption(WebElement panel, String value) {
-        List<WebElement> options = panel.findElements(By.cssSelector("mat-option, [role='option']"));
-        if (options.isEmpty()) {
-            throw new DefaultFrameworkException("No options (mat-option) found in the dropdown panel.");
-        }
-
-        String normalizedTarget = normalizeText(value);
-        return options.stream()
-                .filter(o -> !"true".equalsIgnoreCase(o.getAttribute("aria-disabled")))
-                .filter(o -> normalizeText(extractOptionText(o)).equalsIgnoreCase(normalizedTarget))
-                .findFirst()
-                .orElseThrow(() -> new DefaultFrameworkException(
-                        format("Option '%s' not found. Available options: %s", value,
-                                options.stream().map(o -> normalizeText(extractOptionText(o))).collect(Collectors.toList()))
-                ));
-    }
-
-    private void clickMatOption(ExecutorDependencies dependencies, WebElement option) {
-        waitForElementToBeClickable(dependencies, option);
-        option.click();
-    }
-
-    private void waitForMatSelectToClose(ExecutorDependencies dependencies, WebElement matSelect) {
+    public void waitForMatSelectToClose(ExecutorDependencies dependencies, WebElement matSelect) {
         getWebDriverWait(dependencies).until(d -> "false".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
     }
 
-    private String extractOptionText(WebElement option) {
-        List<WebElement> spans = option.findElements(By.cssSelector("span"));
-        for (WebElement span : spans) {
-            String txt = span.getText();
-            if (!isBlank(txt)) {
-                return txt;
-            }
-        }
-        return option.getText();
-    }
-
-    private String normalizeText(String s) {
-        if (s == null) {
-            return "";
-        }
-        return s.replace('\u00A0', ' ')
-                .replaceAll("\\s+", " ")
-                .trim();
+    public void waitForMatSelectToOpen(ExecutorDependencies dependencies, WebElement matSelect) {
+        getWebDriverWait(dependencies).until(d -> "true".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
     }
 
     public String getBasePageURL(final String currentPageURL) {

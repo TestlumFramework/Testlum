@@ -21,6 +21,10 @@ import org.openqa.selenium.support.ui.Select;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
 @ExecutorForClass(DropDown.class)
@@ -194,5 +198,71 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         log.info(LogMessage.COMMAND_TYPE_LOG, ResultUtil.ALL_VALUES_DESELECT);
         result.put(ResultUtil.DROP_DOWN_FOR, ResultUtil.ALL_VALUES_DESELECT);
         select.deselectAll();
+    }
+
+    public void processMatSelect(ExecutorDependencies dependencies, WebElement matSelect, String value) {
+        openMatSelect(dependencies, matSelect);
+        WebElement panel = getMatSelectPanel(dependencies, matSelect);
+        WebElement option = findMatchingOption(panel, value);
+        clickMatOption(dependencies, option);
+        uiUtil.waitForMatSelectToClose(dependencies, matSelect);
+    }
+
+    private void openMatSelect(ExecutorDependencies dependencies, WebElement matSelect) {
+        uiUtil.waitForElementToBeClickable(dependencies, matSelect);
+        matSelect.click();
+        uiUtil.waitForMatSelectToOpen(dependencies, matSelect);
+    }
+
+    private WebElement getMatSelectPanel(ExecutorDependencies dependencies, WebElement matSelect) {
+        String panelId = matSelect.getAttribute("aria-controls");
+        if (isBlank(panelId)) {
+            throw new DefaultFrameworkException("The 'aria-controls' attribute is missing on mat-select. Cannot find dropdown panel.");
+        }
+        WebElement panel = dependencies.getDriver().findElement(By.id(panelId));
+        uiUtil.waitForElementVisibility(dependencies, panel);
+        return panel;
+    }
+
+    private WebElement findMatchingOption(WebElement panel, String value) {
+        List<WebElement> options = panel.findElements(By.cssSelector("mat-option, [role='option']"));
+        if (options.isEmpty()) {
+            throw new DefaultFrameworkException("No options (mat-option) found in the dropdown panel.");
+        }
+
+        String normalizedTarget = normalizeText(value);
+        return options.stream()
+                .filter(o -> !"true".equalsIgnoreCase(o.getAttribute("aria-disabled")))
+                .filter(o -> normalizeText(extractOptionText(o)).equalsIgnoreCase(normalizedTarget))
+                .findFirst()
+                .orElseThrow(() -> new DefaultFrameworkException(
+                        format("Option '%s' not found. Available options: %s", value,
+                                options.stream().map(o -> normalizeText(extractOptionText(o))).collect(Collectors.toList()))
+                ));
+    }
+
+    private void clickMatOption(ExecutorDependencies dependencies, WebElement option) {
+        uiUtil.waitForElementToBeClickable(dependencies, option);
+        option.click();
+    }
+
+    private String extractOptionText(WebElement option) {
+        List<WebElement> spans = option.findElements(By.cssSelector("span"));
+        for (WebElement span : spans) {
+            String txt = span.getText();
+            if (!isBlank(txt)) {
+                return txt;
+            }
+        }
+        return option.getText();
+    }
+
+    private String normalizeText(String s) {
+        if (s == null) {
+            return "";
+        }
+        return s.replace('\u00A0', ' ')
+                .replaceAll("\\s+", " ")
+                .trim();
     }
 }

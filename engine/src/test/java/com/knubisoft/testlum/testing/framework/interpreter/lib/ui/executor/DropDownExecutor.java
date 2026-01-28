@@ -208,7 +208,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         select.deselectAll();
     }
 
-    public void processMatSelect(ExecutorDependencies dependencies, WebElement matSelect, String value) {
+    public void processMatSelect(final ExecutorDependencies dependencies, final WebElement matSelect, final String value) {
         openMatSelect(dependencies, matSelect);
         WebElement panel = getMatSelectPanel(dependencies, matSelect);
         WebElement option = findMatchingOption(panel, value);
@@ -216,13 +216,13 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         UiUtil.waitForMatSelectToClose(dependencies, matSelect);
     }
 
-    private void openMatSelect(ExecutorDependencies dependencies, WebElement matSelect) {
+    private void openMatSelect(final ExecutorDependencies dependencies, final WebElement matSelect) {
         UiUtil.waitForElementToBeClickable(dependencies, matSelect);
         matSelect.click();
         UiUtil.waitForMatSelectToOpen(dependencies, matSelect);
     }
 
-    private WebElement getMatSelectPanel(ExecutorDependencies dependencies, WebElement matSelect) {
+    private WebElement getMatSelectPanel(final ExecutorDependencies dependencies, final WebElement matSelect) {
         String panelId = matSelect.getAttribute("aria-controls");
         if (isBlank(panelId)) {
             throw new DefaultFrameworkException("The 'aria-controls' attribute is missing on mat-select. Cannot find dropdown panel.");
@@ -232,7 +232,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         return panel;
     }
 
-    private WebElement findMatchingOption(WebElement panel, String value) {
+    private WebElement findMatchingOption(final WebElement panel, final String value) {
         List<WebElement> options = panel.findElements(By.cssSelector("mat-option, [role='option']"));
         if (options.isEmpty()) {
             throw new DefaultFrameworkException("No options (mat-option) found in the dropdown panel.");
@@ -249,12 +249,12 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
                 ));
     }
 
-    private void clickMatOption(ExecutorDependencies dependencies, WebElement option) {
+    private void clickMatOption(final ExecutorDependencies dependencies, final WebElement option) {
         UiUtil.waitForElementToBeClickable(dependencies, option);
         option.click();
     }
 
-    private String extractOptionText(WebElement option) {
+    private String extractOptionText(final WebElement option) {
         List<WebElement> spans = option.findElements(By.cssSelector("span"));
         for (WebElement span : spans) {
             String txt = span.getText();
@@ -265,7 +265,7 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         return option.getText();
     }
 
-    private String normalizeText(String s) {
+    private String normalizeText(final String s) {
         if (s == null) {
             return "";
         }

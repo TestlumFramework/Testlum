@@ -20,8 +20,12 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.*;
-import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.PointerInput;
 import org.openqa.selenium.interactions.Sequence;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -259,11 +263,11 @@ public class UiUtil {
         return GlobalTestConfigurationProvider.getWebSettings(env).getBaseUrl() + path;
     }
 
-    public void waitForMatSelectToClose(ExecutorDependencies dependencies, WebElement matSelect) {
+    public void waitForMatSelectToClose(final ExecutorDependencies dependencies, final WebElement matSelect) {
         getWebDriverWait(dependencies).until(d -> "false".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
     }
 
-    public void waitForMatSelectToOpen(ExecutorDependencies dependencies, WebElement matSelect) {
+    public void waitForMatSelectToOpen(final ExecutorDependencies dependencies, final WebElement matSelect) {
         getWebDriverWait(dependencies).until(d -> "true".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
     }
 

@@ -11,10 +11,7 @@ import com.knubisoft.testlum.testing.model.global_config.UiConfig;
 import com.knubisoft.testlum.testing.model.global_config.Web;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.io.IoBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.launcher.Launcher;
@@ -25,6 +22,7 @@ import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -67,6 +65,7 @@ import java.util.function.Consumer;
  * @see TestResourceSettings
  * @see RootTest
  */
+@Slf4j
 public class TESTLUMStarter {
 
     /**
@@ -119,32 +118,18 @@ public class TESTLUMStarter {
     private static void formatMessageAndExitCode(final TestExecutionSummary summary) {
         ExitCode exitCode = getExitCode(summary);
 
-        Logger log4jLogger = LogManager.getLogger(TESTLUMStarter.class);
-
-        log4jLogger.info("Execution status [{}]", exitCode.getMessage());
-        with(log4jLogger, Level.INFO, summary::printTo);
-        with(log4jLogger, Level.ERROR, summary::printFailuresTo);
+        log.info("Execution status [{}]", exitCode.getMessage());
+        log.info(toString(summary::printTo));
+        log.error(toString(summary::printFailuresTo));
 
         System.exit(exitCode.getExitCode());
     }
 
-    /**
-     * Utility method to write output to a logger via PrintWriter.
-     *
-     * @param log4jLogger the logger to write to
-     * @param level       the log level to use
-     * @param pw          consumer that accepts a PrintWriter for output
-     */
-    private static void with(final Logger log4jLogger,
-                             final Level level,
-                             final Consumer<PrintWriter> pw) {
-        try (PrintWriter printWriter = new PrintWriter(IoBuilder.forLogger(log4jLogger).
-                setLevel(level).
-                buildPrintWriter())) {
-            pw.accept(printWriter);
-        } catch (Exception e) {
-            // Silently ignore logging failures
-        }
+    private static String toString(final Consumer<PrintWriter> writer) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        writer.accept(printWriter);
+        return stringWriter.toString();
     }
 
     /**

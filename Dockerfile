@@ -17,4 +17,4 @@ WORKDIR /testlum/
 
 COPY --from=maven-build /testlum/engine/target/testlum-${APP_VERSION}.jar testlum-final.jar
 
-ENTRYPOINT ["java", "-DTESTING_IN_PIPELINE=true", "-jar", "testlum-final.jar"]
+ENTRYPOINT ["java", "-jar", "testlum-final.jar"]

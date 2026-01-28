@@ -14,7 +14,6 @@ import com.knubisoft.testlum.testing.model.scenario.SwipeElement;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.SwipePage;
 import io.appium.java_client.AppiumDriver;
-import lombok.Getter;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.interactions.Sequence;
@@ -25,6 +24,7 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 
 @ExecutorForClass(SwipeNative.class)
 public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
+
     private static final int ACTION_DURATION = 250;
     private static final int PERCENTS = 100;
 
@@ -44,8 +44,8 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
         AppiumDriver driver = (AppiumDriver) dependencies.getDriver();
         Swipe swipe = createSwipe(swipeNative, driver);
 
-        for (int i = 0; i < swipe.getQuantity(); i++) {
-            driver.perform(Collections.singletonList(swipe.getSequence()));
+        for (int i = 0; i < swipe.quantity(); i++) {
+            driver.perform(Collections.singletonList(swipe.sequence()));
             driver.switchTo();
         }
     }
@@ -61,7 +61,9 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
         return buildSwipe(
                 swipeElement.getPercent(),
                 swipeElement.getDirection(),
-                UiUtil.findWebElement(dependencies, swipeElement.getLocator(), swipeElement.getLocatorStrategy()).getLocation(),
+                UiUtil.findWebElement(dependencies,
+                        swipeElement.getLocator(),
+                        swipeElement.getLocatorStrategy()).getLocation(),
                 driver.manage().window().getSize(),
                 swipeElement.getQuantity()
         );
@@ -77,41 +79,34 @@ public class SwipeNativeExecutor extends AbstractUiExecutor<SwipeNative> {
         );
     }
 
-    private Swipe buildSwipe(final int percent, final SwipeDirection direction, final Point start, final Dimension screenSize, final int quantity) {
+    private Swipe buildSwipe(final int percent,
+                             final SwipeDirection direction,
+                             final Point start,
+                             final Dimension screenSize, final int quantity) {
         int swipeValue = calculateSwipeValue(percent, direction, screenSize);
         Point end = calculateEndPoint(direction, start, swipeValue);
         return new Swipe(UiUtil.buildSequence(start, end, ACTION_DURATION), quantity);
     }
 
-    private int calculateSwipeValue(final int percent, final SwipeDirection direction, final Dimension screenSize) {
-        int size = (direction == SwipeDirection.UP || direction == SwipeDirection.DOWN) ? screenSize.height : screenSize.width;
+    private int calculateSwipeValue(final int percent,
+                                    final SwipeDirection direction,
+                                    final Dimension screenSize) {
+        boolean upOrDown = direction == SwipeDirection.UP || direction == SwipeDirection.DOWN;
+        int size = upOrDown ? screenSize.height : screenSize.width;
         return size * percent / PERCENTS;
     }
 
     private Point calculateEndPoint(final SwipeDirection direction, final Point start, final int swipeValue) {
-        switch (direction) {
-            case UP:
-                return new Point(start.getX(), start.getY() - swipeValue);
-            case DOWN:
-                return new Point(start.getX(), start.getY() + swipeValue);
-            case LEFT:
-                return new Point(start.getX() - swipeValue, start.getY());
-            case RIGHT:
-                return new Point(start.getX() + swipeValue, start.getY());
-            default:
-                throw new DefaultFrameworkException(SWIPE_TYPE_NOT_FOUND, direction);
-        }
+        return switch (direction) {
+            case UP -> new Point(start.getX(), start.getY() - swipeValue);
+            case DOWN -> new Point(start.getX(), start.getY() + swipeValue);
+            case LEFT -> new Point(start.getX() - swipeValue, start.getY());
+            case RIGHT -> new Point(start.getX() + swipeValue, start.getY());
+            default -> throw new DefaultFrameworkException(SWIPE_TYPE_NOT_FOUND, direction);
+        };
     }
 
-    @Getter
-    private static class Swipe {
-        private final Sequence sequence;
-        private final int quantity;
-
-        public Swipe(final Sequence sequence, final int quantity) {
-            this.sequence = sequence;
-            this.quantity = quantity;
-        }
+    private record Swipe(Sequence sequence, int quantity) {
     }
 
 }

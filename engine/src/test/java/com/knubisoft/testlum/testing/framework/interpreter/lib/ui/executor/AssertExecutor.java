@@ -164,7 +164,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         ResultUtil.addAssertCheckedMetadata(checked, result);
         boolean isSelected =
                 UiUtil.findWebElement(dependencies, checked.getLocator(), checked.getLocatorStrategy()).isSelected();
-        if ((checked.isNegative() && isSelected) || (!checked.isNegative() && !isSelected)) {
+        if (checked.isNegative() && isSelected || !checked.isNegative() && !isSelected) {
             Exception e = new DefaultFrameworkException(String
                     .format(ASSERT_CHECKED, checked.getLocator()));
             onException(result, e);

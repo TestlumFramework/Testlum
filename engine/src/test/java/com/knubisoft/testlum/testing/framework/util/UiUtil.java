@@ -40,8 +40,10 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SCROLL_TO_ELEMENT_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.WEB_ELEMENT_ATTRIBUTE_NOT_EXIST;
@@ -262,6 +264,14 @@ public class UiUtil {
                     .getBaseUrl() + path;
         }
         return GlobalTestConfigurationProvider.getWebSettings(env).getBaseUrl() + path;
+    }
+
+    public void waitForMatSelectToClose(final ExecutorDependencies dependencies, final WebElement matSelect) {
+        getWebDriverWait(dependencies).until(d -> "false".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
+    }
+
+    public void waitForMatSelectToOpen(final ExecutorDependencies dependencies, final WebElement matSelect) {
+        getWebDriverWait(dependencies).until(d -> "true".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
     }
 
     public String getBasePageURL(final String currentPageURL) {

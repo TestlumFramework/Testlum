@@ -28,7 +28,8 @@ public class RedisConfiguration {
 
     @Bean
     public Map<AliasEnv, StringRedisConnection> stringRedisConnection(
-            @Autowired @Qualifier("redisConnectionFactory") final Map<AliasEnv, JedisConnectionFactory> redisConnectionFactory) {
+            @Autowired @Qualifier("redisConnectionFactory")
+            final Map<AliasEnv, JedisConnectionFactory> redisConnectionFactory) {
         final Map<AliasEnv, StringRedisConnection> redisConnectionMap = new HashMap<>();
         redisConnectionFactory.forEach((aliasEnv, jedisConnectionFactory) -> {
             jedisConnectionFactory.afterPropertiesSet();

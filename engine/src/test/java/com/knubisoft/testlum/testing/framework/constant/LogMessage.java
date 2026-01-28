@@ -10,7 +10,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 public final class LogMessage {
 
     public static final String TABLE_FORMAT = "%-23s|%-70s";
-    public static final String CONTENT_FORMAT = format("%n%19s| %-23s|", EMPTY, EMPTY);
+
     public static final String NEW_LOG_LINE = format("%n%19s| ", EMPTY);
     public static final String REGEX_NEW_LINE = "[\\r\\n]";
 
@@ -21,9 +21,7 @@ public final class LogMessage {
     public static final String ANSI_YELLOW = "\u001B[33m";
     public static final String ANSI_CYAN = "\u001b[36m";
     public static final String ANSI_ORANGE = "\u001b[38;5;208m";
-    public static final String ANSI_BLUE_UNDERLINED = "\033[4;34m";
 
-    public static final String ERROR_LOG = "Error ->";
     public static final String UI_COMMAND_LOG = ANSI_CYAN + "------- UI command #{} - {} -------" + ANSI_RESET;
     public static final String UI_COMMAND_LOG_WITHOUT_POSITION = ANSI_CYAN
             + "------- UI command - {} -------" + ANSI_RESET;
@@ -33,7 +31,7 @@ public final class LogMessage {
     public static final String COMMAND_SKIPPED_ON_CONDITION_LOG = ANSI_ORANGE
             + "Command was skipped because of the condition" + ANSI_RESET;
     public static final String CONDITION_LOG = format(TABLE_FORMAT, "Condition", "'{}' = {};");
-    public static final String ERROR_DURING_DB_MIGRATION_LOG = "Error during database migration ->";
+
     public static final String QUERY = format(TABLE_FORMAT, "Query", "{}");
     public static final String ERROR_SQL_QUERY = ANSI_RED + "Error while executing SQL query -> "
             + "{}" + ANSI_ORANGE + NEW_LOG_LINE + "{}" + ANSI_RESET;
@@ -56,19 +54,28 @@ public final class LogMessage {
             + NEW_LOG_LINE + format(TABLE_FORMAT, "Exception", "{}") + NEW_LOG_LINE
             + LINE + ANSI_RESET + "\n";
 
-    public static final String SCENARIO_WITH_EMPTY_TAG_LOG = ANSI_YELLOW + LINE
-                                                      + NEW_LOG_LINE + format(TABLE_FORMAT, "Scenario was skipped because of empty tag", "{}") + NEW_LOG_LINE
-                                                      + LINE + ANSI_RESET + "\n";
+    public static final String SCENARIO_WITH_EMPTY_TAG_LOG = ANSI_YELLOW
+            + LINE
+            + NEW_LOG_LINE
+            + format(TABLE_FORMAT, "Scenario was skipped because of empty tag", "{}")
+            + NEW_LOG_LINE
+            + LINE + ANSI_RESET + "\n";
 
     public static final String DISABLED_CONFIGURATION = ANSI_YELLOW
-            + LINE + NEW_LOG_LINE
+            + LINE
+            + NEW_LOG_LINE
             + "<{}> configuration not found or disabled. Scenarios that depend on this config will be invalid"
-            + NEW_LOG_LINE + LINE + ANSI_RESET;
+            + NEW_LOG_LINE
+            + LINE
+            + ANSI_RESET;
 
     public static final String EXECUTION_STOP_SIGNAL_LOG = ANSI_YELLOW
-            + LINE + NEW_LOG_LINE
+            + LINE
+            + NEW_LOG_LINE
             + "The execution has been stopped because of the enabled <StopScenarioOnFailure>"
-            + NEW_LOG_LINE + LINE + ANSI_RESET;
+            + NEW_LOG_LINE
+            + LINE
+            + ANSI_RESET;
 
     public static final String EXCEPTION_LOG = ANSI_RED
             + "----------------    EXCEPTION    -----------------"
@@ -130,9 +137,7 @@ public final class LogMessage {
     public static final String HOTKEY_COMMAND_LOCATOR = format(TABLE_FORMAT, "Hotkey command locator", "{}");
     public static final String HOTKEY_COMMAND_TIMES = format(TABLE_FORMAT, "Times to repeat", "{}");
     public static final String HTTP_STATUS_CODE = format(TABLE_FORMAT, "Status code", "{} {}");
-    public static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "HTTP method", "{}");
-    public static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
-    public static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
+
     public static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
     public static final String ATTRIBUTE_LOG = format(TABLE_FORMAT, "Attribute", "{}");
     public static final String IMAGE_COMPARISON_TYPE_LOG = format(TABLE_FORMAT, "Image comparison type", "{}");
@@ -152,7 +157,7 @@ public final class LogMessage {
     public static final String SCROLL_DIRECTION_LOG = format(TABLE_FORMAT, "Direction", "{}");
     public static final String SCROLL_BY_LOG = format(TABLE_FORMAT, "Scroll by", "{}");
     public static final String LOCATOR_STRATEGY = format(TABLE_FORMAT, "Locator strategy", "{}");
-    public static final String TIMES_LOG = format(TABLE_FORMAT, "Times to repeat", "{}");
+
     public static final String LOCAL_STORAGE_KEY = format(TABLE_FORMAT, "Local storage key", "{}");
     public static final String CLEAR_COOKIES_AFTER = format(TABLE_FORMAT, "Clear cookies after", "{}");
     public static final String TAB_COMMAND = format(TABLE_FORMAT, "Command", "{}");

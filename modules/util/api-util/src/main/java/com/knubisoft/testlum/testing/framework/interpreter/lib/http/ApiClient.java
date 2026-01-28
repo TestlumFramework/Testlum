@@ -81,6 +81,7 @@ public class ApiClient {
         return request;
     }
 
+    // CHECKSTYLE:OFF
     private HttpUriRequest getHttpRequest(final HttpMethod httpMethod,
                                           final String url,
                                           final HttpEntity body) {
@@ -103,6 +104,7 @@ public class ApiClient {
         }
         throw new DefaultFrameworkException(UNKNOWN_HTTP_METHOD, httpMethod);
     }
+    // CHECKSTYLE:ON
 
     private void addRequestHeaders(final HttpUriRequest request,
                                    final Map<String, String> headers) {

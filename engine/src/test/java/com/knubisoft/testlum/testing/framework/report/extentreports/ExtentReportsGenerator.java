@@ -22,7 +22,6 @@ import com.knubisoft.testlum.testing.model.scenario.Overview;
 import lombok.SneakyThrows;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.Comparator;

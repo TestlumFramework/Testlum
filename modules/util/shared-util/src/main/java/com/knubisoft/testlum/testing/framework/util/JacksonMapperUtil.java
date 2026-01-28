@@ -10,16 +10,12 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.CLOSE_BRACE;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.CLOSE_SQUARE_BRACKET;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
 public final class JacksonMapperUtil {
@@ -70,10 +66,16 @@ public final class JacksonMapperUtil {
     }
 
     public Object toJsonObject(final String content) {
-        if (isNotBlank(content)
-                && ((content.startsWith(OPEN_BRACE) && content.endsWith(CLOSE_BRACE))
-                || (content.startsWith(OPEN_SQUARE_BRACKET) && content.endsWith(CLOSE_SQUARE_BRACKET)))) {
-            return JacksonMapperUtil.readValue(content, Object.class);
+        if (StringUtils.isBlank(content)) {
+            boolean isObject = content.startsWith(DelimiterConstant.OPEN_BRACE)
+                    &&
+                    content.endsWith(DelimiterConstant.CLOSE_BRACE);
+            boolean isArray = content.startsWith(DelimiterConstant.OPEN_SQUARE_BRACKET)
+                    &&
+                    content.endsWith(DelimiterConstant.CLOSE_SQUARE_BRACKET);
+            if (isObject || isArray) {
+                return JacksonMapperUtil.readValue(content, Object.class);
+            }
         }
         return content;
     }

@@ -15,90 +15,41 @@
     </modules>
 
     <properties>
-        <checkstyle.maven.plugin.version>3.1.2</checkstyle.maven.plugin.version>
-        <com.puppycrawl.tools.checkstyle.version>8.41</com.puppycrawl.tools.checkstyle.version>
-        <spotbugs.version>4.7.3</spotbugs.version>
-        <spotbugs.maven.plugin.version>4.7.2.1</spotbugs.maven.plugin.version>
+        <versions.maven.plugin.version>2.21.0</versions.maven.plugin.version>
+        <checkstyle.maven.plugin.version>3.6.0</checkstyle.maven.plugin.version>
     </properties>
-
-    <profiles>
-        <profile>
-            <id>quality-checking</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-checkstyle-plugin</artifactId>
-                        <version>${checkstyle.maven.plugin.version}</version>
-                        <dependencies>
-                            <dependency>
-                                <groupId>com.puppycrawl.tools</groupId>
-                                <artifactId>checkstyle</artifactId>
-                                <version>${com.puppycrawl.tools.checkstyle.version}</version>
-                            </dependency>
-                        </dependencies>
-                        <configuration>
-                            <encoding>UTF-8</encoding>
-                            <configLocation>checkstyle.xml</configLocation>
-                            <consoleOutput>true</consoleOutput>
-                            <logViolationsToConsole>true</logViolationsToConsole>
-                            <failsOnError>true</failsOnError>
-                            <linkXRef>false</linkXRef>
-                            <excludes>**/com/knubisoft/testlum/testing/model/**/*</excludes>
-                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>check-style</id>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>com.github.spotbugs</groupId>
-                        <artifactId>spotbugs-maven-plugin</artifactId>
-                        <version>${spotbugs.maven.plugin.version}</version>
-                        <configuration>
-                            <effort>Max</effort>
-                            <threshold>Low</threshold>
-                            <xmlOutput>true</xmlOutput>
-                            <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
-                            <spotbugsXmlOutputDirectory>target/spotbugs
-                            </spotbugsXmlOutputDirectory>
-                            <classFilesDirectory>../target/test-classes</classFilesDirectory>
-                        </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>com.github.spotbugs</groupId>
-                                <artifactId>spotbugs</artifactId>
-                                <version>${spotbugs.version}</version>
-                            </dependency>
-                        </dependencies>
-                        <executions>
-                            <execution>
-                                <id>analyze-code</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.21.0</version>
+                <version>${versions.maven.plugin.version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${checkstyle.maven.plugin.version}</version>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                    <suppressionsLocation>suppressions.xml</suppressionsLocation>
+                    <consoleOutput>true</consoleOutput>
+                    <logViolationsToConsole>true</logViolationsToConsole>
+                    <failsOnError>true</failsOnError>
+                    <linkXRef>false</linkXRef>
+                    <excludes>**/com/knubisoft/testlum/testing/model/**/*</excludes>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>check-style</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

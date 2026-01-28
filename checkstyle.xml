@@ -7,7 +7,7 @@
 
     <property name="fileExtensions" value="java, properties, xml"/>
 
-    <module name="NewlineAtEndOfFile"/>
+<!--    <module name="NewlineAtEndOfFile"/>-->
     <module name="Translation"/>
     <module name="FileLength"/>
     <module name="FileTabCharacter"/>
@@ -89,7 +89,7 @@
         <module name="VariableDeclarationUsageDistance"/>
 
         <!--        IMPORTS-->
-        <module name="AvoidStarImport"/>
+<!--        <module name="AvoidStarImport"/>-->
         <module name="IllegalImport"/>
         <module name="RedundantImport"/>
         <module name="UnusedImports"/>

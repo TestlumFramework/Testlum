@@ -3,6 +3,7 @@ package com.knubisoft.testlum.testing.framework.scenario;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
 import com.knubisoft.testlum.testing.framework.util.DatasetValidator;
@@ -102,6 +103,7 @@ import com.knubisoft.testlum.testing.model.scenario.WebVar;
 import com.knubisoft.testlum.testing.model.scenario.Websocket;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -113,25 +115,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOUBLE_CLOSE_BRACE;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOUBLE_OPEN_BRACE;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_ALIASES_DOESNT_MATCH;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_NOT_FOUND;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INTEGRATION_NOT_FOUND;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NOT_ENABLED_BROWSERS;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NOT_ENABLED_MOBILEBROWSER_DEVICE;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NOT_ENABLED_NATIVE_DEVICE;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_LOCATOR_FOUND_FOR_ELEMENT_SWIPE;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SAME_APPIUM_URL;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SAME_MOBILE_DEVICES;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.ObjectUtils.allNotNull;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
@@ -321,7 +304,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 o -> o instanceof MobilebrowserRepeat, (xmlFile, command) ->
                         validateRepeatCommand(((MobilebrowserRepeat) command).getVariations()),
                 o -> o instanceof Scroll && ScrollType.INNER == ((Scroll) o).getType(), (xmlFile, command) ->
-                        validateLocator((Scroll) command, NO_LOCATOR_FOUND_FOR_INNER_SCROLL),
+                        validateLocator((Scroll) command, ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL),
                 o -> o instanceof Image, (xmlFile, command) ->
                         validateFileIfExist(xmlFile, ((Image) command).getFile()),
                 o -> o instanceof DragAndDrop, (xmlFile, command) ->
@@ -345,7 +328,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateVariationsIfExist(final Scenario scenario, final File xmlFile) {
-        if (isNotBlank(scenario.getSettings().getVariations())) {
+        if (StringUtils.isNotBlank(scenario.getSettings().getVariations())) {
             GlobalVariationsProvider.process(scenario, xmlFile);
             variationList.addAll(GlobalVariationsProvider.getVariations(scenario.getSettings().getVariations()));
         }
@@ -362,17 +345,17 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateNativeAndMobileAppiumConfig() {
         if (isSameUrl()) {
-            throw new DefaultFrameworkException(SAME_APPIUM_URL);
+            throw new DefaultFrameworkException(ExceptionMessage.SAME_APPIUM_URL);
         }
         if (isSameNativeAndMobileDevices()) {
-            throw new DefaultFrameworkException(SAME_MOBILE_DEVICES);
+            throw new DefaultFrameworkException(ExceptionMessage.SAME_MOBILE_DEVICES);
         }
     }
 
     private boolean isSameUrl() {
         return GlobalTestConfigurationProvider.getUiConfigs().values().stream()
-                .filter(uiConfig -> allNotNull(uiConfig.getMobilebrowser(), uiConfig.getNative()))
-                .filter(uiConfig -> allNotNull(uiConfig.getNative().getConnection().getAppiumServer(),
+                .filter(uiConfig -> ObjectUtils.allNotNull(uiConfig.getMobilebrowser(), uiConfig.getNative()))
+                .filter(uiConfig -> ObjectUtils.allNotNull(uiConfig.getNative().getConnection().getAppiumServer(),
                         uiConfig.getMobilebrowser().getConnection().getAppiumServer()))
                 .anyMatch(uiConfig -> Objects.equals(
                         uiConfig.getMobilebrowser().getConnection().getAppiumServer().getServerUrl(),
@@ -381,7 +364,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private boolean isSameNativeAndMobileDevices() {
         return GlobalTestConfigurationProvider.getUiConfigs().values().stream()
-                .filter(uiConfig -> allNotNull(uiConfig.getMobilebrowser(), uiConfig.getNative()))
+                .filter(uiConfig -> ObjectUtils.allNotNull(uiConfig.getMobilebrowser(), uiConfig.getNative()))
                 .anyMatch(this::isSameNativeAndMobileDevices);
     }
 
@@ -400,23 +383,23 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private String validateFileExistenceInDataFolder(final String fileName) {
-        if (isNotBlank(fileName) && fileName.trim().contains(DOUBLE_OPEN_BRACE)
-                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && !variationList.isEmpty()) {
+        if (StringUtils.isNotBlank(fileName) && fileName.trim().contains(DelimiterConstant.DOUBLE_OPEN_BRACE)
+                && fileName.trim().contains(DelimiterConstant.DOUBLE_CLOSE_BRACE) && !variationList.isEmpty()) {
             return validateFileNamesIfVariations(null, fileName).getName();
         }
-        if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
-                && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {
+        if (StringUtils.isNotBlank(fileName) && !fileName.trim().contains(DelimiterConstant.DOUBLE_OPEN_BRACE)
+                && !fileName.trim().contains(DelimiterConstant.DOUBLE_CLOSE_BRACE)) {
             return FileSearcher.searchFileFromDataFolder(fileName).getName();
         }
         return fileName;
     }
 
     private void validateFileIfExist(final File xmlFile, final String fileName) {
-        if (isNotBlank(fileName) && fileName.trim().contains(DOUBLE_OPEN_BRACE)
-                && fileName.trim().contains(DOUBLE_CLOSE_BRACE) && !variationList.isEmpty()) {
+        if (StringUtils.isNotBlank(fileName) && fileName.trim().contains(DelimiterConstant.DOUBLE_OPEN_BRACE)
+                && fileName.trim().contains(DelimiterConstant.DOUBLE_CLOSE_BRACE) && !variationList.isEmpty()) {
             validateFileNamesIfVariations(xmlFile, fileName);
-        } else if (isNotBlank(fileName) && !fileName.trim().contains(DOUBLE_OPEN_BRACE)
-                && !fileName.trim().contains(DOUBLE_CLOSE_BRACE)) {
+        } else if (StringUtils.isNotBlank(fileName) && !fileName.trim().contains(DelimiterConstant.DOUBLE_OPEN_BRACE)
+                && !fileName.trim().contains(DelimiterConstant.DOUBLE_CLOSE_BRACE)) {
             FileSearcher.searchFileFromDir(xmlFile, fileName);
         }
     }
@@ -425,13 +408,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         String variationValue = variationList.stream()
                 .map(variationsMap -> GlobalVariationsProvider.getValue(fileName, variationsMap))
                 .findFirst().get();
-        return nonNull(xmlFile) ? FileSearcher.searchFileFromDir(xmlFile, variationValue)
+        return Objects.nonNull(xmlFile) ? FileSearcher.searchFileFromDir(xmlFile, variationValue)
                 : FileSearcher.searchFileFromDataFolder(variationValue);
     }
 
     private void checkIntegrationExistence(final Object integration, final Class<?> name) {
-        if (isNull(integration)) {
-            throw new DefaultFrameworkException(INTEGRATION_NOT_FOUND, name.getSimpleName());
+        if (Objects.isNull(integration)) {
+            throw new DefaultFrameworkException(ExceptionMessage.INTEGRATION_NOT_FOUND, name.getSimpleName());
         }
     }
 
@@ -441,10 +424,10 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     //CHECKSTYLE:OFF
     private void validateVarCommand(final File xmlFile, final FromFile fromFile, final FromSQL fromSQL) {
-        if (nonNull(fromFile)) {
+        if (Objects.nonNull(fromFile)) {
             validateFileIfExist(xmlFile, fromFile.getFileName());
         }
-        if (nonNull(fromSQL)) {
+        if (Objects.nonNull(fromSQL)) {
             List<? extends Integration> integrationList;
             switch (fromSQL.getDbType()) {
                 case POSTGRES:
@@ -464,7 +447,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                     integrationList = integrations.getClickhouseIntegration().getClickhouse();
                     break;
                 default:
-                    throw new DefaultFrameworkException(DB_NOT_SUPPORTED, fromSQL.getDbType());
+                    throw new DefaultFrameworkException(ExceptionMessage.DB_NOT_SUPPORTED, fromSQL.getDbType());
             }
             validateAlias(integrationList, fromSQL.getAlias());
         }
@@ -473,14 +456,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateAuthCommand(final Auth auth) {
         Api apiIntegration = IntegrationsUtil.findApiForAlias(integrations.getApis().getApi(), auth.getApiAlias());
-        if (isNull(apiIntegration.getAuth())) {
-            throw new DefaultFrameworkException(AUTH_NOT_FOUND, apiIntegration.getAlias());
+        if (Objects.isNull(apiIntegration.getAuth())) {
+            throw new DefaultFrameworkException(ExceptionMessage.AUTH_NOT_FOUND, apiIntegration.getAlias());
         }
         boolean authCmdAliasNotMatch = auth.getCommands().stream()
                 .anyMatch(command -> command instanceof Http
                         && !((Http) command).getAlias().equalsIgnoreCase(auth.getApiAlias()));
         if (authCmdAliasNotMatch) {
-            throw new DefaultFrameworkException(AUTH_ALIASES_DOESNT_MATCH);
+            throw new DefaultFrameworkException(ExceptionMessage.AUTH_ALIASES_DOESNT_MATCH);
         }
     }
 
@@ -489,7 +472,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
         HttpInfo httpInfo = HttpUtil.getHttpMethodMetadata(http).getHttpInfo();
         Response response = httpInfo.getResponse();
-        if (nonNull(response) && isNotBlank(response.getFile())) {
+        if (Objects.nonNull(response) && StringUtils.isNotBlank(response.getFile())) {
             validateFileIfExist(xmlFile, response.getFile());
         }
     }
@@ -497,13 +480,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateGraphqlCommand(final File xmlFile, final Graphql graphql) {
         Stream.of(graphql.getPost(), graphql.getGet())
                 .filter(Objects::nonNull)
-                .filter(v -> isNotBlank(v.getResponse().getFile()))
+                .filter(v -> StringUtils.isNotBlank(v.getResponse().getFile()))
                 .forEach(v -> validateFileIfExist(xmlFile, v.getResponse().getFile()));
     }
 
     private void validateWebsocketCommand(final File xmlFile, final Websocket websocket) {
         List<Object> commands = new ArrayList<>();
-        if (nonNull(websocket.getStomp())) {
+        if (Objects.nonNull(websocket.getStomp())) {
             addWebsocketCommandsToCheck(websocket.getStomp().getSubscribeOrSendOrReceive(), commands);
         } else {
             addWebsocketCommandsToCheck(websocket.getSendOrReceive(), commands);
@@ -532,11 +515,11 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateLambdaCommand(final File xmlFile, final Lambda lambda) {
         Response response = lambda.getResponse();
-        if (nonNull(response) && isNotBlank(response.getFile())) {
+        if (Objects.nonNull(response) && StringUtils.isNotBlank(response.getFile())) {
             validateFileIfExist(xmlFile, response.getFile());
         }
         LambdaBody body = lambda.getBody();
-        if (nonNull(body) && nonNull(body.getFrom())) {
+        if (Objects.nonNull(body) && Objects.nonNull(body.getFrom())) {
             validateFileIfExist(xmlFile, body.getFrom().getFile());
         }
     }
@@ -552,7 +535,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateElasticsearchCommand(final File xmlFile, final Elasticsearch elasticsearch) {
         ElasticSearchResponse elasticSearchResponse = HttpUtil.getESHttpMethodMetadata(elasticsearch)
                 .getElasticSearchRequest().getResponse();
-        if (nonNull(elasticSearchResponse) && isNotBlank(elasticSearchResponse.getFile())) {
+        if (Objects.nonNull(elasticSearchResponse) && StringUtils.isNotBlank(elasticSearchResponse.getFile())) {
             validateFileIfExist(xmlFile, elasticSearchResponse.getFile());
         }
     }
@@ -610,7 +593,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateS3FileCommand(final File xmlFile, final S3File s3File) {
-        if (isNotBlank(s3File.getUpload())) {
+        if (StringUtils.isNotBlank(s3File.getUpload())) {
             validateFileIfExist(xmlFile, s3File.getUpload());
         }
     }
@@ -618,14 +601,14 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateSendgridCommand(final File xmlFile, final Sendgrid sendgrid) {
         SendgridInfo sendgridInfo = SendGridUtil.getSendgridMethodMetadata(sendgrid).getHttpInfo();
         Response response = sendgridInfo.getResponse();
-        if (nonNull(response) && isNotBlank(response.getFile())) {
+        if (Objects.nonNull(response) && StringUtils.isNotBlank(response.getFile())) {
             validateFileIfExist(xmlFile, response.getFile());
         }
 
         if (sendgridInfo instanceof SendgridWithBody) {
             SendgridWithBody commandWithBody = (SendgridWithBody) sendgridInfo;
             Body body = commandWithBody.getBody();
-            if (nonNull(body) && nonNull(body.getFrom())) {
+            if (Objects.nonNull(body) && Objects.nonNull(body.getFrom())) {
                 validateFileIfExist(xmlFile, body.getFrom().getFile());
             }
         }
@@ -647,13 +630,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateIncludeAction(final Include include, final File xmlFile) {
-        if (isNotBlank(include.getScenario())) {
+        if (StringUtils.isNotBlank(include.getScenario())) {
             File includedScenarioFolder = new File(TestResourceSettings.getInstance().getScenariosFolder(),
                     include.getScenario());
             File includedFile = FileSearcher.searchFileFromDir(includedScenarioFolder,
                     TestResourceSettings.SCENARIO_FILENAME);
             if (includedFile.equals(xmlFile)) {
-                throw new DefaultFrameworkException(SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF);
+                throw new DefaultFrameworkException(ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF);
             }
         }
     }
@@ -661,7 +644,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateWebCommands(final Web command, final File xmlFile) {
         if (BrowserUtil.filterDefaultEnabledBrowsers().isEmpty()
                 || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getWeb().isEnabled()) {
-            throw new DefaultFrameworkException(NOT_ENABLED_BROWSERS);
+            throw new DefaultFrameworkException(ExceptionMessage.NOT_ENABLED_BROWSERS);
         }
         validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);
     }
@@ -669,7 +652,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateMobilebrowserCommands(final Mobilebrowser command, final File xmlFile) {
         if (MobileUtil.filterDefaultEnabledMobilebrowserDevices().isEmpty()
                 || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getMobilebrowser().isEnabled()) {
-            throw new DefaultFrameworkException(NOT_ENABLED_MOBILEBROWSER_DEVICE);
+            throw new DefaultFrameworkException(ExceptionMessage.NOT_ENABLED_MOBILEBROWSER_DEVICE);
         }
         validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);
     }
@@ -677,13 +660,13 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private void validateNativeCommands(final Native command, final File xmlFile) {
         if (MobileUtil.filterDefaultEnabledNativeDevices().isEmpty()
                 || !GlobalTestConfigurationProvider.getDefaultUiConfigs().getNative().isEnabled()) {
-            throw new DefaultFrameworkException(NOT_ENABLED_NATIVE_DEVICE);
+            throw new DefaultFrameworkException(ExceptionMessage.NOT_ENABLED_NATIVE_DEVICE);
         }
         validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);
     }
 
     private void validateLocator(final CommandWithOptionalLocator command, final String exceptionMessage) {
-        if (!isNotBlank(command.getLocator())) {
+        if (!StringUtils.isNotBlank(command.getLocator())) {
             throw new DefaultFrameworkException(exceptionMessage);
         }
     }

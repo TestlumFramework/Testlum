@@ -33,5 +33,8 @@ jobs:
           distribution: 'temurin' # Recommended distribution for setup-java
           cache: maven # Caches dependencies to speed up subsequent runs
 
+      - name: Maven run checkstyle
+        run: mvn checkstyle:check
+
       - name: Build with Maven
         run: mvn clean install -Pprofessional -DskipTests

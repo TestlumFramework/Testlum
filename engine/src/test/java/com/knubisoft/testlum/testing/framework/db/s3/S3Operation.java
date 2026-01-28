@@ -35,7 +35,8 @@ public class S3Operation extends AbstractStorageOperation {
         this.s3Client.forEach((aliasEnv, amazonS3) -> {
             if (isTruncate(S3.class, aliasEnv) && Objects.equals(aliasEnv.getEnvironment(), EnvManager.currentEnv())) {
                 amazonS3.listBuckets().buckets().forEach(bucket -> {
-                    ListObjectsV2Response objectsInBucket = amazonS3.listObjectsV2(builder -> builder.bucket(bucket.name()));
+                    ListObjectsV2Response objectsInBucket =
+                            amazonS3.listObjectsV2(builder -> builder.bucket(bucket.name()));
                     this.deleteObjectsInBucket(amazonS3, objectsInBucket, bucket.name());
                     amazonS3.deleteBucket(builder -> builder.bucket(bucket.name()));
                 });

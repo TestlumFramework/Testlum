@@ -14,10 +14,10 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import static java.lang.String.format;
-import static java.util.Objects.nonNull;
 
 @Slf4j
 @Getter
@@ -26,6 +26,7 @@ public class CompareBuilder {
     private static final String COMPARISON_FOR_STEP_WAS_SKIPPED = "Comparison for step [{}] was skipped";
     private static final String ACTUAL_FILENAME = "actual.json";
     private static final String FILENAME_TO_SAVE = "action_%s_" + ACTUAL_FILENAME;
+
     private final File scenarioFile;
     private final int position;
     private String expected;
@@ -74,8 +75,7 @@ public class CompareBuilder {
     }
 
     public void exec() {
-        //must be nonNull
-        if (nonNull(expected)) {
+        if (Objects.nonNull(expected)) {
             String actual = supplierActual.get();
             tryToCompare(actual);
         } else {
@@ -87,15 +87,16 @@ public class CompareBuilder {
         try {
             final String newActual = StringPrettifier.prettify(actual);
             final String newExpected = StringPrettifier.prettify(expected);
-            if (mode != null) {
-                TreeComparator.compare(newExpected, newActual, mode);
-            } else {
-                TreeComparator.compare(newExpected, newActual);
-            }
+
+            new TreeComparator(isStrict()).compare(newExpected, newActual);
         } catch (ComparisonException e) {
             save(actual);
             throw e;
         }
+    }
+
+    private boolean isStrict() {
+        return !"lenient".equals(mode);
     }
 
     private void save(final String actual) {

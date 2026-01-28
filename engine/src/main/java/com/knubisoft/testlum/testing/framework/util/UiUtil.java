@@ -287,11 +287,11 @@ public class UiUtil {
         return environmentLoader.getWebSettings(env).get().getBaseUrl() + path;
     }
 
-    public void waitForMatSelectToClose(ExecutorDependencies dependencies, WebElement matSelect) {
+    public void waitForMatSelectToClose(final ExecutorDependencies dependencies, final WebElement matSelect) {
         getWebDriverWait(dependencies).until(d -> "false".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
     }
 
-    public void waitForMatSelectToOpen(ExecutorDependencies dependencies, WebElement matSelect) {
+    public void waitForMatSelectToOpen(final ExecutorDependencies dependencies, final WebElement matSelect) {
         getWebDriverWait(dependencies).until(d -> "true".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
     }
 

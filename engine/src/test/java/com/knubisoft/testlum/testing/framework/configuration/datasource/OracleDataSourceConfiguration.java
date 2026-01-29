@@ -45,7 +45,7 @@ public class OracleDataSourceConfiguration {
                             DataSource hikariDataSource = DataSourceUtil.getHikariDataSource(dataSource);
                             try (Connection conn = hikariDataSource.getConnection();
                                  Statement stmt = conn.createStatement()) {
-                                stmt.executeQuery("SELECT 1").next();
+                                stmt.executeQuery(dataSource.getHikari().getConnectionTestQuery()).next();
                                 return hikariDataSource;
 
                             } catch (Exception e) {

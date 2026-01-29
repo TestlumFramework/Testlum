@@ -128,7 +128,7 @@
 
     <x:simpleType name="timezoneType">
         <x:restriction base="x:string">
-            <x:pattern value="|UTC[+-][0-9]+|(UTC[+-]?)?\{\{.+\}\}"/>
+            <x:pattern value="UTC[+\-][0-9]+|.*\{\{.*\}\}.*|"/>
         </x:restriction>
     </x:simpleType>
 

@@ -2,9 +2,12 @@ package com.knubisoft.testlum.testing.framework.configuration.smtp;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSmtpEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Smtp;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -16,9 +19,12 @@ import java.util.Properties;
 
 @Configuration
 @Conditional(OnSmtpEnabledCondition.class)
+@RequiredArgsConstructor
 public class SmtpConfiguration {
 
     private static final String SMTP_PROTOCOL = "smtp";
+
+    private final ConnectionTemplate connectionTemplate;
 
     @Bean
     public Map<AliasEnv, JavaMailSenderImpl> javaMailSender() {
@@ -33,8 +39,20 @@ public class SmtpConfiguration {
                                 final Map<AliasEnv, JavaMailSenderImpl> senderMap) {
         for (Smtp smtp : integrations.getSmtpIntegration().getSmtp()) {
             if (smtp.isEnabled()) {
-                JavaMailSenderImpl javaMailSender = createJavaMailSender(smtp);
-                senderMap.put(new AliasEnv(smtp.getAlias(), env), javaMailSender);
+                JavaMailSenderImpl resilientSender = connectionTemplate.executeWithRetry(
+                        "SMTP - " + smtp.getAlias(),
+                        () -> {
+                            JavaMailSenderImpl sender = createJavaMailSender(smtp);
+                            try {
+                                sender.testConnection();
+                                return sender;
+                            } catch (Exception e) {
+                                throw new DefaultFrameworkException(e.getMessage());
+                            }
+                        }
+                );
+
+                senderMap.put(new AliasEnv(smtp.getAlias(), env), resilientSender);
             }
         }
     }
@@ -53,5 +71,7 @@ public class SmtpConfiguration {
         properties.put("mail.transport.protocol", SMTP_PROTOCOL);
         properties.put("mail.smtp.auth", smtpSettings.isSmtpAuth());
         properties.put("mail.smtp.starttls.enable", smtpSettings.isSmtpStarttlsEnable());
+        properties.put("mail.smtp.connectiontimout", 5000);
+        properties.put("mail.smtp.timeout", 5000);
     }
 }

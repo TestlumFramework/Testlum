@@ -2,11 +2,14 @@ package com.knubisoft.testlum.testing.framework.configuration.websocket;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnWebsocketEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.WebsocketConnectionManager;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.WebsocketApi;
 import com.knubisoft.testlum.testing.model.global_config.WebsocketProtocol;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +27,10 @@ import java.util.Map;
 
 @Configuration
 @Conditional(OnWebsocketEnabledCondition.class)
+@RequiredArgsConstructor
 public class WebsocketConfiguration {
+
+    private final ConnectionTemplate connectionTemplate;
 
     @Bean
     public Map<AliasEnv, WebsocketConnectionManager> websocketConnectionSupplier() {
@@ -38,11 +44,37 @@ public class WebsocketConfiguration {
                                         final String env,
                                         final Map<AliasEnv, WebsocketConnectionManager> connectionSupplierMap) {
         for (WebsocketApi websocket : integrations.getWebsockets().getApi()) {
-            AliasEnv aliasEnv = new AliasEnv(websocket.getAlias(), env);
-            if (WebsocketProtocol.STOMP == websocket.getProtocol()) {
-                connectionSupplierMap.put(aliasEnv, getWsStompConnectionManager(websocket.getUrl()));
-            } else if (WebsocketProtocol.STANDARD == websocket.getProtocol()) {
-                connectionSupplierMap.put(aliasEnv, getWsStandardConnectionManager(websocket.getUrl()));
+            if (websocket.isEnabled()) {
+                AliasEnv aliasEnv = new AliasEnv(websocket.getAlias(), env);
+                WebsocketConnectionManager manager = connectionTemplate.executeWithRetry(
+                        "Websocket - " + websocket.getAlias(),
+                        () -> {
+                            WebsocketConnectionManager wsManager;
+                            if (WebsocketProtocol.STOMP == websocket.getProtocol()) {
+                                wsManager = getWsStompConnectionManager(websocket.getUrl());
+                            } else {
+                                wsManager = getWsStandardConnectionManager(websocket.getUrl());
+                            }
+
+                            try {
+                                wsManager.openConnection();
+                                if (!wsManager.isConnected()) {
+                                    throw new DefaultFrameworkException("failed to connect");
+                                }
+
+                                return wsManager;
+                            } catch (Exception e) {
+                                try {
+                                    wsManager.closeConnection();
+                                } catch (Exception ex) {
+                                    throw new DefaultFrameworkException(ex.getMessage());
+                                }
+                                throw new DefaultFrameworkException("handshake failed for - " + websocket.getUrl() + " " + e.getMessage());
+                            }
+                        }
+                );
+
+                connectionSupplierMap.put(aliasEnv, manager);
             }
         }
     }

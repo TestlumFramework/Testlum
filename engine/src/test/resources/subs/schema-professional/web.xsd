@@ -9,7 +9,7 @@
     <x:include schemaLocation="settings.xsd"/>
 
     <x:complexType name="web">
-        <x:complexContent mixed="true">
+        <x:complexContent>
             <x:extension base="tns:ui">
                 <x:choice maxOccurs="unbounded" minOccurs="0">
                     <x:element name="click" type="tns:click"/>

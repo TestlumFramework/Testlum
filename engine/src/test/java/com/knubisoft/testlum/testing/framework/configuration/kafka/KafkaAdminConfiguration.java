@@ -78,7 +78,7 @@ public class KafkaAdminConfiguration {
 
     private AdminClient createAdminClient(final Kafka kafka) {
         return connectionTemplate.executeWithRetry(
-                "Kafka - " + kafka.getAlias(),
+                "Kafka Admin - " + kafka.getAlias(),
                 () -> {
                     AdminClient client = KafkaAdminClient.create(Map.of(
                             AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapAddress(),

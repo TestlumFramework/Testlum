@@ -10,16 +10,15 @@ import lombok.SneakyThrows;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.DeleteTopicsResult;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.PartitionInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Conditional({OnKafkaEnabledCondition.class})
 @Component
@@ -53,11 +52,14 @@ public class KafkaOperation extends AbstractStorageOperation {
 
     @SneakyThrows
     private void clearKafka(final KafkaConsumer<String, String> kafkaConsumer, final AliasEnv aliasEnv) {
-        Map<String, List<PartitionInfo>> topics = kafkaConsumer.listTopics();
-        Set<String> topicsName = topics.keySet();
-        DeleteTopicsResult deleteTopicsResult = adminClient.get(aliasEnv).deleteTopics(topicsName);
-        while (!deleteTopicsResult.all().isDone()) {
-            TimeUnit.MILLISECONDS.sleep(THREAD_SLEEPING_MILLIS);
+        Set<String> userTopics = kafkaConsumer.listTopics().keySet().stream()
+                .filter(topic -> !topic.startsWith("_"))
+                .collect(Collectors.toSet());
+        if (userTopics.isEmpty()) {
+            return;
         }
+
+        DeleteTopicsResult deleteTopicsResult = adminClient.get(aliasEnv).deleteTopics(userTopics);
+        deleteTopicsResult.all().get(10, TimeUnit.SECONDS);
     }
 }

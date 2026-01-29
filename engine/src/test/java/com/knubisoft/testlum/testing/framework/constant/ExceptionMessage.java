@@ -206,7 +206,7 @@ public class ExceptionMessage {
     public static final String INVALID_DATE_FORMAT_PATTERN = "Invalid date format pattern: '%s'. "
             + "Please check Java DateTimeFormatter documentation. Error: %s";
     public static final String INVALID_TIMEZONE = "Invalid timezone: '%s'. "
-            + "Valid examples: 'UTC', 'Europe/Kiev', 'GMT+2', 'America/New_York'.";
+            + "Valid examples: 'UTC', 'UTC+1', 'UTC-1' .";
     public static final String VALUE_DOES_NOT_MATCH_FORMAT = "Value '%s' does not match the format '%s'. "
             + "Please ensure the value strictly follows the pattern.";
     public static final String POOR_DATETIME_INFORMATION = "Parsed value '%s' with format '%s' "

@@ -59,7 +59,7 @@
     </x:annotation>
 
     <x:element name="scenario">
-        <x:complexType mixed="true">
+        <x:complexType>
             <x:sequence>
                 <x:element name="overview" type="tns:overview"/>
                 <x:element name="settings" type="tns:settings"/>

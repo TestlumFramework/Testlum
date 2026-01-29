@@ -2,10 +2,13 @@ package com.knubisoft.testlum.testing.framework.configuration.rabbitmq;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Rabbitmq;
 import com.rabbitmq.http.client.Client;
 import com.rabbitmq.http.client.ClientParameters;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -17,6 +20,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,10 +30,12 @@ import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant
 
 @Configuration
 @Conditional({OnRabbitMQEnabledCondition.class})
+@RequiredArgsConstructor
 public class RabbitMQConfiguration {
 
     private static final String SCHEMA = "http://";
     private static final String API_PATH = "/api";
+    private final ConnectionTemplate connectionTemplate;
     private final Map<String, List<Rabbitmq>> rabbitmqMap = GlobalTestConfigurationProvider.getIntegrations()
             .entrySet().stream()
             .collect(Collectors.toMap(Map.Entry::getKey,
@@ -42,14 +48,25 @@ public class RabbitMQConfiguration {
         return clientMap;
     }
 
-    @SneakyThrows
     private void addClientParameters(final List<Rabbitmq> rabbitmqs,
                                      final String env,
                                      final Map<AliasEnv, Client> clientMap) {
         for (Rabbitmq rabbitmq : rabbitmqs) {
             if (rabbitmq.isEnabled()) {
-                ClientParameters clientParameters = createClientParameters(rabbitmq);
-                clientMap.put(new AliasEnv(rabbitmq.getAlias(), env), new Client(clientParameters));
+                Client adminClient = connectionTemplate.executeWithRetry(
+                        "RabbitMQ-Admin - " + rabbitmq.getAlias(),
+                        () -> {
+                            try {
+                                Client client = new Client(createClientParameters(rabbitmq));
+                                client.getVhosts();
+                                return client;
+                            } catch (URISyntaxException | MalformedURLException e) {
+                                throw new DefaultFrameworkException(e.getMessage());
+                            }
+
+                        }
+                );
+                clientMap.put(new AliasEnv(rabbitmq.getAlias(), env), adminClient);
             }
         }
     }
@@ -88,7 +105,19 @@ public class RabbitMQConfiguration {
                                       final Map<AliasEnv, ConnectionFactory> connectionFactoryMap) {
         for (Rabbitmq rabbitmq : rabbitmqList) {
             if (rabbitmq.isEnabled()) {
-                CachingConnectionFactory connectionFactory = createConnectionFactory(rabbitmq);
+                CachingConnectionFactory connectionFactory = connectionTemplate.executeWithRetry(
+                        "RabbitMQ-AMQP - " + rabbitmq.getAlias(),
+                        () -> {
+                            CachingConnectionFactory cf = createConnectionFactory(rabbitmq);
+                            try {
+                                cf.createConnection().close();
+                                return cf;
+                            } catch (Exception e) {
+                                cf.destroy();
+                                throw new DefaultFrameworkException(e.getMessage());
+                            }
+                        }
+                );
                 connectionFactoryMap.put(new AliasEnv(rabbitmq.getAlias(), env), connectionFactory);
             }
         }

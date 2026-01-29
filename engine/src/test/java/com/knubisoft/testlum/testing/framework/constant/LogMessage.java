@@ -167,4 +167,12 @@ public final class LogMessage {
     public static final String EXTRACT_THEN_COMPARE = "Extract picture from web element then compare";
     public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a full screenshot then compare";
     public static final String GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE = "Get element as screenshot then compare";
+
+    public static final String CONNECTING_INFO = ANSI_CYAN + "Connecting to {} (Attempt {}/{})" + ANSI_RESET;
+    public static final String CONNECTIN_SUCCESS = ANSI_GREEN + "Successfully connected to {}" + ANSI_RESET;
+    public static final String CONNECTION_ATTEMPT_FAILED =
+            ANSI_ORANGE + "Attempt {} failed for {} with error: {}" + ANSI_RESET;
+    public static final String CONNECTION_ATTEMPT_RETRYING = "Retrying to connect to {} in {}ms";
+    public static final String CONNECTION_COMPLETELY_FAILED =
+            ANSI_RED + "Max attempts reached for {}. Failed to obtain connection with cause {}" + ANSI_RESET;
 }

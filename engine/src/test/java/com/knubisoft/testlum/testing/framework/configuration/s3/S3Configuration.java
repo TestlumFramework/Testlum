@@ -2,9 +2,12 @@ package com.knubisoft.testlum.testing.framework.configuration.s3;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnS3EnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.S3;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +22,10 @@ import java.util.Map;
 
 @Configuration
 @Conditional({OnS3EnabledCondition.class})
+@RequiredArgsConstructor
 public class S3Configuration {
+
+    private final ConnectionTemplate connectionTemplate;
 
     @Bean
     public Map<AliasEnv, S3Client> s3Client() {
@@ -34,7 +40,21 @@ public class S3Configuration {
                              final Map<AliasEnv, S3Client> amazonS3Map) {
         for (S3 s3 : integrations.getS3Integration().getS3()) {
             if (s3.isEnabled()) {
-                amazonS3Map.put(new AliasEnv(s3.getAlias(), env), createAmazonS3(s3));
+                S3Client resilientClient = connectionTemplate.executeWithRetry(
+                        "S3 - " + s3.getAlias(),
+                        () -> {
+                            S3Client client = createAmazonS3(s3);
+                            try {
+                                client.listBuckets();
+                                return client;
+                            } catch (Exception e) {
+                                client.close();
+                                throw new DefaultFrameworkException(e.getMessage());
+                            }
+                        }
+                );
+
+                amazonS3Map.put(new AliasEnv(s3.getAlias(), env), resilientClient);
             }
         }
     }

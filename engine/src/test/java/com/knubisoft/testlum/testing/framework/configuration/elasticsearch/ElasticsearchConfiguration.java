@@ -2,17 +2,18 @@ package com.knubisoft.testlum.testing.framework.configuration.elasticsearch;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnElasticEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Elasticsearch;
+import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -25,26 +26,74 @@ import java.util.stream.Collectors;
 
 @Configuration
 @Conditional({OnElasticEnabledCondition.class})
+@RequiredArgsConstructor
 public class ElasticsearchConfiguration {
+
+    private final ConnectionTemplate connectionTemplate;
 
     private final Map<String, List<Elasticsearch>> elasticsearchMap = GlobalTestConfigurationProvider.getIntegrations()
             .entrySet().stream()
             .collect(Collectors.toMap(Map.Entry::getKey,
                     entry -> entry.getValue().getElasticsearchIntegration().getElasticsearch()));
 
+    // TODO: investigate possibility to go with single client
     @Bean(name = "restHighLevelClient")
     public Map<AliasEnv, RestHighLevelClient> restHighLevelClient(
             final Map<AliasEnv, RestClientBuilder> restClientBuilder) {
         Map<AliasEnv, RestHighLevelClient> restHighLevelClientMap = new HashMap<>();
-        restClientBuilder.forEach((aliasEnv, clientBuilder) ->
-                restHighLevelClientMap.put(aliasEnv, new RestHighLevelClient(clientBuilder)));
+        restClientBuilder.forEach((aliasEnv, clientBuilder) -> {
+                    RestHighLevelClient resilientClient = connectionTemplate.executeWithRetry(
+                            "ElasticSearch HighLevelClient - " + aliasEnv.getAlias(),
+                            () -> {
+                                RestHighLevelClient client = new RestHighLevelClient(clientBuilder);
+                                try {
+                                    boolean isAlive = client.ping(RequestOptions.DEFAULT);
+                                    if (!isAlive) {
+                                        throw new DefaultFrameworkException("Connection refused");
+                                    }
+                                    return client;
+                                } catch (Exception e) {
+                                    try {
+                                        client.close();
+                                    } catch (Exception ignored) {
+                                        // ignored
+                                    }
+                                    throw new DefaultFrameworkException(e.getMessage());
+                                }
+                            }
+                    );
+                    restHighLevelClientMap.put(aliasEnv, resilientClient);
+                });
         return restHighLevelClientMap;
     }
 
     @Bean(name = "restClient")
     public Map<AliasEnv, RestClient> restClient(final Map<AliasEnv, RestClientBuilder> restClientBuilder) {
         Map<AliasEnv, RestClient> restClientMap = new HashMap<>();
-        restClientBuilder.forEach((aliasEnv, clientBuilder) -> restClientMap.put(aliasEnv, clientBuilder.build()));
+        restClientBuilder.forEach((aliasEnv, clientBuilder) -> {
+            RestClient resilientClient = connectionTemplate.executeWithRetry(
+                    "ElasticSearch Rest Client - " + aliasEnv.getAlias(),
+                    () -> {
+                        RestClient client = clientBuilder.build();
+                        try {
+                            Response response = client.performRequest(new Request("GET", "/"));
+                            int statusCode = response.getStatusLine().getStatusCode();
+                            if (statusCode != 200) {
+                                throw new DefaultFrameworkException("Failed to obtain connection with status code: " + statusCode);
+                            }
+                            return client;
+                        } catch (Exception e) {
+                            try {
+                                client.close();
+                            } catch (Exception ignored) {
+                                // ignored
+                            }
+                            throw new DefaultFrameworkException(e.getMessage());
+                        }
+                    }
+            );
+            restClientMap.put(aliasEnv, resilientClient);
+        });
         return restClientMap;
     }
 

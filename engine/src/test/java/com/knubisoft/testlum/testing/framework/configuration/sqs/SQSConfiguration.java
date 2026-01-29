@@ -2,9 +2,12 @@ package com.knubisoft.testlum.testing.framework.configuration.sqs;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSQSEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Sqs;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +22,10 @@ import java.util.Map;
 
 @Configuration
 @Conditional({OnSQSEnabledCondition.class})
+@RequiredArgsConstructor
 public class SQSConfiguration {
+
+    private final ConnectionTemplate connectionTemplate;
 
     @Bean
     public Map<AliasEnv, SqsClient> sqsClient() {
@@ -34,8 +40,21 @@ public class SQSConfiguration {
                               final Map<AliasEnv, SqsClient> amazonSqsMap) {
         for (Sqs sqs : integrations.getSqsIntegration().getSqs()) {
             if (sqs.isEnabled()) {
-                SqsClient amazonSqs = createAmazonSqs(sqs);
-                amazonSqsMap.put(new AliasEnv(sqs.getAlias(), env), amazonSqs);
+                SqsClient checkedSqsClient = connectionTemplate.executeWithRetry(
+                        "SQS - " + sqs.getAlias(),
+                        () -> {
+                            SqsClient client = createAmazonSqs(sqs);
+                            try {
+                                client.listQueues(lq -> lq.maxResults(1));
+                                return client;
+                            } catch (Exception e) {
+                                client.close();
+                                throw new DefaultFrameworkException(e.getMessage());
+                            }
+                        }
+                );
+
+                amazonSqsMap.put(new AliasEnv(sqs.getAlias(), env), checkedSqsClient);
             }
         }
     }

@@ -2,9 +2,12 @@ package com.knubisoft.testlum.testing.framework.configuration.redis;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRedisEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Redis;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -24,20 +27,38 @@ import java.util.stream.Collectors;
 
 @Configuration
 @Conditional({OnRedisEnabledCondition.class})
+@RequiredArgsConstructor
 public class RedisConfiguration {
+
+    private final ConnectionTemplate connectionTemplate;
 
     @Bean
     public Map<AliasEnv, StringRedisConnection> stringRedisConnection(
             @Autowired @Qualifier("redisConnectionFactory") final Map<AliasEnv, JedisConnectionFactory> redisConnectionFactory) {
         final Map<AliasEnv, StringRedisConnection> redisConnectionMap = new HashMap<>();
-        redisConnectionFactory.forEach((aliasEnv, jedisConnectionFactory) -> {
-            jedisConnectionFactory.afterPropertiesSet();
 
-            JedisConnection connection = (JedisConnection) jedisConnectionFactory.getConnection();
-            redisConnectionMap.put(aliasEnv, new DefaultStringRedisConnection(connection, new StringRedisSerializer()));
+        redisConnectionFactory.forEach((aliasEnv, jedisConnectionFactory) -> {
+            StringRedisConnection resilientConn = connectionTemplate.executeWithRetry(
+                    "Redis - " + aliasEnv.getAlias(),
+                    () -> {
+                        jedisConnectionFactory.afterPropertiesSet();
+                        JedisConnection connection = (JedisConnection) jedisConnectionFactory.getConnection();
+                        try {
+                            String response = connection.ping();
+                            if (!"PONG".equalsIgnoreCase(response)) {
+                                throw new DefaultFrameworkException("Redis did not respond");
+                            }
+                            return new DefaultStringRedisConnection(connection, new StringRedisSerializer());
+                        } catch (Exception e) {
+                            connection.close();
+                            throw new DefaultFrameworkException(e.getMessage());
+                        }
+                    }
+            );
+            redisConnectionMap.put(aliasEnv, resilientConn);
         });
-        return redisConnectionMap;
-    }
+
+        return redisConnectionMap;    }
 
     @Bean("redisConnectionFactory")
     public Map<AliasEnv, JedisConnectionFactory> jedisConnectionFactory(

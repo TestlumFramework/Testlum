@@ -2,9 +2,12 @@ package com.knubisoft.testlum.testing.framework.configuration.ses;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSESEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Ses;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +22,10 @@ import java.util.Map;
 
 @Configuration
 @Conditional({OnSESEnabledCondition.class})
+@RequiredArgsConstructor
 public class SESConfiguration {
+
+    private final ConnectionTemplate connectionTemplate;
 
     @Bean
     public Map<AliasEnv, SesClient> sesClient() {
@@ -34,8 +40,21 @@ public class SESConfiguration {
                               final Map<AliasEnv, SesClient> emailServiceMap) {
         for (Ses ses : integrations.getSesIntegration().getSes()) {
             if (ses.isEnabled()) {
-                SesClient amazonSes = createAmazonSes(ses);
-                emailServiceMap.put(new AliasEnv(ses.getAlias(), env), amazonSes);
+                SesClient checkedSesClient = connectionTemplate.executeWithRetry(
+                        "SES:" + ses.getAlias(),
+                        () -> {
+                            SesClient client = createAmazonSes(ses);
+                            try {
+                                client.listIdentities(li -> li.maxItems(1));
+                                return client;
+                            } catch (Exception e) {
+                                client.close();
+                                throw new DefaultFrameworkException(e.getMessage());
+                            }
+                        }
+                );
+
+                emailServiceMap.put(new AliasEnv(ses.getAlias(), env), checkedSesClient);
             }
         }
     }

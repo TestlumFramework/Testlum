@@ -136,7 +136,7 @@ public class WebDriverFactory {
     private WebDriver getRemoteDriver(final RemoteBrowser remoteBrowserSettings,
                                       final MutableCapabilities browserOptions) {
         String url = remoteBrowserSettings.getRemoteBrowserURL();
-        log.debug("Connecting to Remote Grid at: {}", url);
+        log.info("Connecting to Remote Browser at: {}", url);
 
         ClientConfig config = ClientConfig.defaultConfig()
                 .connectionTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS))

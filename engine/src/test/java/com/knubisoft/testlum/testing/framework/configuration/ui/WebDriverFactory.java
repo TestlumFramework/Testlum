@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.ui;
 
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
@@ -25,6 +26,7 @@ import io.github.bonigarcia.wdm.managers.FirefoxDriverManager;
 import io.github.bonigarcia.wdm.managers.SafariDriverManager;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -32,9 +34,11 @@ import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.http.ClientConfig;
 import org.openqa.selenium.safari.SafariOptions;
 
 import java.net.URL;
+import java.time.Duration;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -44,9 +48,12 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
+@Slf4j
 public class WebDriverFactory {
+
     private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;
+    private static final int MAX_TIMEOUT_SECONDS = 60;
 
     static {
         DRIVER_INITIALIZER_MAP = Map.of(
@@ -56,18 +63,40 @@ public class WebDriverFactory {
                 browser -> browser instanceof Edge, b -> new EdgeDriverInitializer().init((Edge) b));
     }
 
+    // todo: refactor
     public WebDriver createDriver(final AbstractBrowser browser) {
-        WebDriver webDriver = DRIVER_INITIALIZER_MAP.entrySet().stream()
-                .filter(function -> function.getKey().test(browser))
-                .findFirst()
-                .map(function -> function.getValue().apply(browser))
-                .orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
-        BrowserUtil.manageWindowSize(browser, webDriver);
-        Web settings = GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv());
-//        int secondsToWait = settings.getBrowserSettings().getElementAutowait().getSeconds();
-//        webDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));
-        webDriver.get(settings.getBaseUrl());
-        return webDriver;
+        ConnectionTemplate connectionTemplate = new ConnectionTemplate();
+        return connectionTemplate.executeWithRetry(
+                browser.getClass().getSimpleName() + " - " + browser.getAlias(),
+                () -> {
+                    log.info("Attempting to create {} instance (Max timeout: {}s)",
+                            browser.getClass().getSimpleName() + " - " + browser.getAlias(), MAX_TIMEOUT_SECONDS);
+
+                    WebDriver webDriver = DRIVER_INITIALIZER_MAP.entrySet().stream()
+                            .filter(function -> function.getKey().test(browser))
+                            .findFirst()
+                            .map(function -> function.getValue().apply(browser))
+                            .orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
+
+                    try {
+                        webDriver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS));
+                        webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS));
+
+                        BrowserUtil.manageWindowSize(browser, webDriver);
+
+                        Web settings = GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv());
+                        log.debug("Navigating to base URL: {}", settings.getBaseUrl());
+                        webDriver.get(settings.getBaseUrl());
+                        return webDriver;
+                    } catch (Exception e) {
+                        log.error("Failed to initialize driver or reach base URL within {}s", MAX_TIMEOUT_SECONDS);
+                        if (webDriver != null) {
+                            webDriver.quit();
+                        }
+                        throw new DefaultFrameworkException(e.getMessage());
+                    }
+                }
+        );
     }
 
     private WebDriver getWebDriver(final AbstractBrowser browser,
@@ -106,8 +135,22 @@ public class WebDriverFactory {
     @SneakyThrows
     private WebDriver getRemoteDriver(final RemoteBrowser remoteBrowserSettings,
                                       final MutableCapabilities browserOptions) {
-        browserOptions.setCapability(CapabilityType.BROWSER_VERSION, remoteBrowserSettings.getBrowserVersion());
-        return new RemoteWebDriver(new URL(remoteBrowserSettings.getRemoteBrowserURL()), browserOptions);
+        String url = remoteBrowserSettings.getRemoteBrowserURL();
+        log.debug("Connecting to Remote Grid at: {}", url);
+
+        ClientConfig config = ClientConfig.defaultConfig()
+                .connectionTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS))
+                .readTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS));
+
+        try {
+            return RemoteWebDriver.builder()
+                    .address(new URL(url))
+                    .oneOf(browserOptions)
+                    .config(config)
+                    .build();
+        } catch (Exception e) {
+            throw new DefaultFrameworkException("Unable to connect to remote browser with cause:" + e.getMessage());
+        }
     }
 
     private WebDriverManager setScreenResolution(final AbstractBrowser browser,
@@ -120,6 +163,9 @@ public class WebDriverFactory {
     private WebDriver getBrowserInDocker(final BrowserInDocker browserInDockerSettings,
                                          final MutableCapabilities browserOptions,
                                          final WebDriverManager driverManager) {
+        log.debug("Configuring Docker container for {}", browserOptions.getBrowserName());
+        driverManager.timeout(MAX_TIMEOUT_SECONDS);
+
         String dockerNetwork = browserInDockerSettings.getDockerNetwork();
         ScreenRecording screenRecordingSettings = browserInDockerSettings.getScreenRecording();
         driverManager.capabilities(browserOptions).browserVersion(browserInDockerSettings.getBrowserVersion());
@@ -135,10 +181,12 @@ public class WebDriverFactory {
     private WebDriver getLocalDriver(final LocalBrowser localBrowserSettings,
                                      final MutableCapabilities browserOptions,
                                      final WebDriverManager driverManager) {
+        log.debug("Setting up local {} driver", browserOptions.getBrowserName());
         String driverVersion = localBrowserSettings.getDriverVersion();
         if (isNotBlank(driverVersion)) {
             driverManager.driverVersion(driverVersion);
         }
+        driverManager.timeout(MAX_TIMEOUT_SECONDS);
         return driverManager.capabilities(browserOptions).create();
     }
 

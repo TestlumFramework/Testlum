@@ -26,6 +26,7 @@ import org.springframework.data.redis.connection.jedis.JedisConnection;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.lambda.LambdaClient;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.ses.SesClient;
 import software.amazon.awssdk.services.sqs.SqsClient;
 
@@ -191,5 +192,9 @@ public class HealthCheckFactory {
                 throw new DefaultFrameworkException(e.getMessage());
             }
         };
+    }
+
+    public static IntegrationHealthCheck<S3Client> forS3() {
+        return S3Client::listBuckets;
     }
 }

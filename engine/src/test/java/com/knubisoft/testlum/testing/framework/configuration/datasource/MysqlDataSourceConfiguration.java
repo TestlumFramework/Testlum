@@ -3,8 +3,8 @@ package com.knubisoft.testlum.testing.framework.configuration.datasource;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnMysqlEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.DataSourceUtil;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Mysql;
@@ -14,10 +14,10 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 
 @Configuration
 @Conditional({OnMysqlEnabledCondition.class})
@@ -37,30 +37,14 @@ public class MysqlDataSourceConfiguration {
     private void collectDataSource(final Integrations integrations,
                                    final String env,
                                    final Map<AliasEnv, DataSource> dataSourceMap) {
-        for (Mysql dataSource : integrations.getMysqlIntegration().getMysql()) {
-            if (dataSource.isEnabled()) {
+        for (Mysql mysql : integrations.getMysqlIntegration().getMysql()) {
+            if (mysql.isEnabled()) {
                 DataSource checkedDataSource = connectionTemplate.executeWithRetry(
-                        "MySQL - " + dataSource.getAlias(),
-                        () -> {
-                            DataSource hikariDataSource = DataSourceUtil.getHikariDataSource(dataSource);
-                            try (Connection conn = hikariDataSource.getConnection();
-                                 Statement stmt = conn.createStatement()) {
-                                stmt.executeQuery("SELECT 1").next();
-                                return hikariDataSource;
-
-                            } catch (Exception e) {
-                                if (hikariDataSource instanceof AutoCloseable closeable) {
-                                    try {
-                                        closeable.close();
-                                    } catch (Exception ignored) {
-                                        // ignored
-                                    }
-                                }
-                                throw new DefaultFrameworkException(e.getMessage());
-                            }
-                        }
+                        String.format(CONNECTION_INTEGRATION_DATA, "MySQL", mysql.getAlias()),
+                        () -> DataSourceUtil.getHikariDataSource(mysql),
+                        HealthCheckFactory.forJdbc()
                 );
-                dataSourceMap.put(new AliasEnv(dataSource.getAlias(), env), checkedDataSource);
+                dataSourceMap.put(new AliasEnv(mysql.getAlias(), env), checkedDataSource);
             }
         }
     }

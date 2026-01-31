@@ -3,6 +3,8 @@ package com.knubisoft.testlum.testing.framework.configuration.websocket;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnWebsocketEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.WebsocketConnectionManager;
@@ -24,6 +26,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 
 @Configuration
 @Conditional(OnWebsocketEnabledCondition.class)
@@ -47,31 +51,15 @@ public class WebsocketConfiguration {
             if (websocket.isEnabled()) {
                 AliasEnv aliasEnv = new AliasEnv(websocket.getAlias(), env);
                 WebsocketConnectionManager manager = connectionTemplate.executeWithRetry(
-                        "Websocket - " + websocket.getAlias(),
+                        String.format(CONNECTION_INTEGRATION_DATA, "Websocket", websocket.getAlias()),
                         () -> {
-                            WebsocketConnectionManager wsManager;
                             if (WebsocketProtocol.STOMP == websocket.getProtocol()) {
-                                wsManager = getWsStompConnectionManager(websocket.getUrl());
+                                return getWsStompConnectionManager(websocket.getUrl());
                             } else {
-                                wsManager = getWsStandardConnectionManager(websocket.getUrl());
+                                return getWsStandardConnectionManager(websocket.getUrl());
                             }
-
-                            try {
-                                wsManager.openConnection();
-                                if (!wsManager.isConnected()) {
-                                    throw new DefaultFrameworkException("failed to connect");
-                                }
-
-                                return wsManager;
-                            } catch (Exception e) {
-                                try {
-                                    wsManager.closeConnection();
-                                } catch (Exception ex) {
-                                    throw new DefaultFrameworkException(ex.getMessage());
-                                }
-                                throw new DefaultFrameworkException("handshake failed for - " + websocket.getUrl() + " " + e.getMessage());
-                            }
-                        }
+                        },
+                        HealthCheckFactory.forWebSocket(websocket)
                 );
 
                 connectionSupplierMap.put(aliasEnv, manager);

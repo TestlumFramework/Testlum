@@ -2,28 +2,24 @@ package com.knubisoft.testlum.testing.framework.configuration.kafka;
 
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Kafka;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 import static com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 
 @Configuration
@@ -56,20 +52,9 @@ public class KafkaConsumerConfiguration {
         final Properties props = new Properties();
         configureProperties(props, kafka);
         return connectionTemplate.executeWithRetry(
-                "Kafka Consumer - " + kafka.getAlias(),
-                () -> {
-                    KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(props);
-                    try {
-                        kafkaConsumer.listTopics(Duration.ofSeconds(5));
-                        return kafkaConsumer;
-                    } catch (Exception e) {
-                        kafkaConsumer.close();
-                        if (e.getMessage() == null) {
-                            throw new DefaultFrameworkException(e.getClass().getSimpleName());
-                        }
-                        throw new DefaultFrameworkException(e.getMessage());
-                    }
-                }
+                String.format(CONNECTION_INTEGRATION_DATA, "Kafka Consumer", kafka.getAlias()),
+                () -> new KafkaConsumer<>(props),
+                HealthCheckFactory.forKafkaConsumer()
         );
     }
 

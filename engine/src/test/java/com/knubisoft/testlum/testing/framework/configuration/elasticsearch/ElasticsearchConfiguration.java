@@ -3,8 +3,8 @@ package com.knubisoft.testlum.testing.framework.configuration.elasticsearch;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnElasticEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Elasticsearch;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHost;
@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
+
 @Configuration
 @Conditional({OnElasticEnabledCondition.class})
 @RequiredArgsConstructor
@@ -42,27 +44,12 @@ public class ElasticsearchConfiguration {
             final Map<AliasEnv, RestClientBuilder> restClientBuilder) {
         Map<AliasEnv, RestHighLevelClient> restHighLevelClientMap = new HashMap<>();
         restClientBuilder.forEach((aliasEnv, clientBuilder) -> {
-                    RestHighLevelClient resilientClient = connectionTemplate.executeWithRetry(
-                            "ElasticSearch HighLevelClient - " + aliasEnv.getAlias(),
-                            () -> {
-                                RestHighLevelClient client = new RestHighLevelClient(clientBuilder);
-                                try {
-                                    boolean isAlive = client.ping(RequestOptions.DEFAULT);
-                                    if (!isAlive) {
-                                        throw new DefaultFrameworkException("Connection refused");
-                                    }
-                                    return client;
-                                } catch (Exception e) {
-                                    try {
-                                        client.close();
-                                    } catch (Exception ignored) {
-                                        // ignored
-                                    }
-                                    throw new DefaultFrameworkException(e.getMessage());
-                                }
-                            }
+                    RestHighLevelClient checkedClient = connectionTemplate.executeWithRetry(
+                            String.format(CONNECTION_INTEGRATION_DATA, "ElasticSearch HighLevelClient", aliasEnv.getAlias()),
+                            () -> new RestHighLevelClient(clientBuilder),
+                            HealthCheckFactory.forElasticRestHighLevelClient()
                     );
-                    restHighLevelClientMap.put(aliasEnv, resilientClient);
+                    restHighLevelClientMap.put(aliasEnv, checkedClient);
                 });
         return restHighLevelClientMap;
     }
@@ -72,25 +59,9 @@ public class ElasticsearchConfiguration {
         Map<AliasEnv, RestClient> restClientMap = new HashMap<>();
         restClientBuilder.forEach((aliasEnv, clientBuilder) -> {
             RestClient resilientClient = connectionTemplate.executeWithRetry(
-                    "ElasticSearch Rest Client - " + aliasEnv.getAlias(),
-                    () -> {
-                        RestClient client = clientBuilder.build();
-                        try {
-                            Response response = client.performRequest(new Request("GET", "/"));
-                            int statusCode = response.getStatusLine().getStatusCode();
-                            if (statusCode != 200) {
-                                throw new DefaultFrameworkException("Failed to obtain connection with status code: " + statusCode);
-                            }
-                            return client;
-                        } catch (Exception e) {
-                            try {
-                                client.close();
-                            } catch (Exception ignored) {
-                                // ignored
-                            }
-                            throw new DefaultFrameworkException(e.getMessage());
-                        }
-                    }
+                    String.format(CONNECTION_INTEGRATION_DATA, "ElasticSearch Rest Client", aliasEnv.getAlias()),
+                    clientBuilder::build,
+                    HealthCheckFactory.forElasticRestClient()
             );
             restClientMap.put(aliasEnv, resilientClient);
         });

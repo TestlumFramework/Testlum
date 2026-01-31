@@ -3,8 +3,8 @@ package com.knubisoft.testlum.testing.framework.configuration.smtp;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSmtpEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Smtp;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +16,8 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 
 @Configuration
 @Conditional(OnSmtpEnabledCondition.class)
@@ -40,16 +42,9 @@ public class SmtpConfiguration {
         for (Smtp smtp : integrations.getSmtpIntegration().getSmtp()) {
             if (smtp.isEnabled()) {
                 JavaMailSenderImpl resilientSender = connectionTemplate.executeWithRetry(
-                        "SMTP - " + smtp.getAlias(),
-                        () -> {
-                            JavaMailSenderImpl sender = createJavaMailSender(smtp);
-                            try {
-                                sender.testConnection();
-                                return sender;
-                            } catch (Exception e) {
-                                throw new DefaultFrameworkException(e.getMessage());
-                            }
-                        }
+                        String.format(CONNECTION_INTEGRATION_DATA, "SMTP", smtp.getAlias()),
+                        () -> createJavaMailSender(smtp),
+                        HealthCheckFactory.forSmtp()
                 );
 
                 senderMap.put(new AliasEnv(smtp.getAlias(), env), resilientSender);

@@ -3,8 +3,8 @@ package com.knubisoft.testlum.testing.framework.configuration.lambda;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnLambdaEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Lambda;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +16,12 @@ import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.lambda.LambdaClient;
-import software.amazon.awssdk.services.lambda.model.ListFunctionsResponse;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 
 @Configuration
 @Conditional({OnLambdaEnabledCondition.class})
@@ -43,17 +44,9 @@ public class LambdaConfiguration {
         for (Lambda lambda : integrations.getLambdaIntegration().getLambda()) {
             if (lambda.isEnabled()) {
                 LambdaClient lambdaClient = connectionTemplate.executeWithRetry(
-                        "Lambda - " + lambda.getAlias(),
-                        () -> {
-                            LambdaClient client = createLambdaClient(lambda);
-                            try {
-                                client.listFunctions(lf -> lf.maxItems(1));
-                                return client;
-                            } catch (Exception e) {
-                                client.close();
-                                throw new DefaultFrameworkException(e.getMessage());
-                            }
-                        }
+                        String.format(CONNECTION_INTEGRATION_DATA, "Lambda", lambda.getAlias()),
+                        () -> createLambdaClient(lambda),
+                        HealthCheckFactory.forLambda()
                 );
                 lambdaClientMap.put(new AliasEnv(lambda.getAlias(), env), lambdaClient);
             }

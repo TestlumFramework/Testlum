@@ -3,22 +3,20 @@ package com.knubisoft.testlum.testing.framework.configuration.sendgrid;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSendgridEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Sendgrid;
-import com.sendgrid.Method;
-import com.sendgrid.Request;
-import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 
 @Configuration
 @Conditional({OnSendgridEnabledCondition.class})
@@ -41,26 +39,9 @@ public class SendgridConfiguration {
         for (Sendgrid sendgrid : integrations.getSendgridIntegration().getSendgrid()) {
             if (sendgrid.isEnabled()) {
                 SendGrid checkedSendGrid = connectionTemplate.executeWithRetry(
-                        "SendGrid - " + sendgrid.getAlias(),
-                        () -> {
-                            SendGrid sendGrid = new SendGrid(sendgrid.getApiKey());
-                            try {
-                                Request request = new Request();
-                                request.setMethod(Method.GET);
-                                request.setEndpoint("scopes");
-
-                                Response response = sendGrid.api(request);
-                                if (response.getStatusCode() == 401 || response.getStatusCode() == 403) {
-                                    throw new DefaultFrameworkException("SendGrid Authentication failed. Invalid API Key. " + response.getBody());
-                                } else if (response.getStatusCode() >= 500) {
-                                    throw new DefaultFrameworkException("SendGrid Server Error: " + response.getBody());
-                                }
-
-                                return sendGrid;
-                            } catch (IOException e) {
-                                throw new DefaultFrameworkException(e.getMessage());
-                            }
-                        }
+                        String.format(CONNECTION_INTEGRATION_DATA, "SendGrid", sendgrid.getAlias()),
+                        () -> new SendGrid(sendgrid.getApiKey()),
+                        HealthCheckFactory.forSendGrid()
                 );
                 sendGridMap.put(new AliasEnv(sendgrid.getAlias(), env), checkedSendGrid);
             }

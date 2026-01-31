@@ -3,6 +3,8 @@ package com.knubisoft.testlum.testing.framework.configuration.s3;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnS3EnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -19,6 +21,8 @@ import software.amazon.awssdk.services.s3.S3Client;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 
 @Configuration
 @Conditional({OnS3EnabledCondition.class})
@@ -41,17 +45,9 @@ public class S3Configuration {
         for (S3 s3 : integrations.getS3Integration().getS3()) {
             if (s3.isEnabled()) {
                 S3Client resilientClient = connectionTemplate.executeWithRetry(
-                        "S3 - " + s3.getAlias(),
-                        () -> {
-                            S3Client client = createAmazonS3(s3);
-                            try {
-                                client.listBuckets();
-                                return client;
-                            } catch (Exception e) {
-                                client.close();
-                                throw new DefaultFrameworkException(e.getMessage());
-                            }
-                        }
+                        String.format(CONNECTION_INTEGRATION_DATA, "S3", s3.getAlias()),
+                        () -> createAmazonS3(s3),
+                        HealthCheckFactory.forS3()
                 );
 
                 amazonS3Map.put(new AliasEnv(s3.getAlias(), env), resilientClient);

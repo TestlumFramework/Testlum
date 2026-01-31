@@ -21,11 +21,12 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Main entry point for launching Testlum test execution.
@@ -60,10 +61,12 @@ import java.util.function.Consumer;
  *   <li>{@code 0} - All tests passed successfully</li>
  *   <li>{@code 1} - One or more tests failed</li>
  *   <li>{@code 2} - No tests were found</li>
+ *   <li>{@code 3} - Invalid configuration (missing arguments or files not found)</li>
  * </ul>
  *
  * @see TestResourceSettings
  * @see RootTest
+ * @see ExitCode
  */
 @Slf4j
 public class TESTLUMStarter {
@@ -93,18 +96,143 @@ public class TESTLUMStarter {
         Optional<String> pathToTestResources = Args.read(args, Args.Param.PATH_TO_TEST_RESOURCES);
         Optional<String> scenarioScope = Args.read(args, Args.Param.PATH_TO_SPECIFIC_SCENARIOS);
 
-        TestResourceSettings.init(configFileName.orElseThrow(() ->
-                        new IllegalArgumentException("No config file provided as first argument")),
-                pathToTestResources.orElseThrow(() ->
-                        new IllegalArgumentException("No path to test resources provided as second argument")),
-                scenarioScope);
+        validateParams(configFileName, pathToTestResources);
 
+        TestResourceSettings.init(configFileName.get(), pathToTestResources.get(), scenarioScope);
         System.setProperty("resource", pathToTestResources.get());
-
         initLocatorsFolder();
 
         TestExecutionSummary summary = launchTestsAndGetSummary();
         formatMessageAndExitCode(summary);
+    }
+
+    /**
+     * Validates command line parameters for configuration and path.
+     *
+     * <p>Performs two-phase validation: first checks if required parameters are present,
+     * then verifies that the specified files and directories exist.</p>
+     *
+     * @param config optional configuration file name
+     * @param path   optional path to test resources directory
+     */
+    private static void validateParams(final Optional<String> config, final Optional<String> path) {
+        validateRequiredParams(config, path);
+        validateFilesExist(config.get(), path.get());
+    }
+
+    /**
+     * Validates that required parameters are present.
+     *
+     * @param config  optional configuration file name
+     * @param path    optional path to test resources
+     */
+    private static void validateRequiredParams(final Optional<String> config,
+                                               final Optional<String> path) {
+        InputValidator.construct()
+                .check(Args.Param.CONFIG_FILE.name(),
+                        config::isEmpty, "Required parameter is missing")
+                .check(Args.Param.PATH_TO_TEST_RESOURCES.name(),
+                        path::isEmpty, "Required parameter is missing")
+                .exitIfAny();
+    }
+
+    /**
+     * Validates that the resources directory and configuration file exist.
+     *
+     * @param config  configuration file name
+     * @param path    path to test resources directory
+     */
+    private static void validateFilesExist(final String config,
+                                           final String path) {
+        File resourcesDir = new File(path);
+        InputValidator.construct()
+                .check(Args.Param.PATH_TO_TEST_RESOURCES.name(),
+                        () -> !resourcesDir.exists(), "Folder does not exist")
+                .check(Args.Param.CONFIG_FILE.name(),
+                        () -> !new File(resourcesDir, config).exists(), "File not found")
+                .exitIfAny();
+    }
+
+    /**
+     * Fluent input validator for checking command line parameters.
+     *
+     * <p>Collects validation errors and provides usage information when errors are found.</p>
+     */
+    private static class InputValidator {
+
+        private final Map<String, String> errors = new LinkedHashMap<>(3, 1F);
+
+        /**
+         * Creates a new InputValidator instance.
+         *
+         * @return new validator instance
+         */
+        public static InputValidator construct() {
+            return new InputValidator();
+        }
+
+        /**
+         * Adds a validation check for a parameter.
+         *
+         * @param key     parameter name for error reporting
+         * @param check   supplier that returns true if validation fails
+         * @param message error message to display on failure
+         * @return this validator for method chaining
+         */
+        public InputValidator check(final String key, final Supplier<Boolean> check, final String message) {
+            try {
+                boolean error = check.get();
+                if (error) {
+                    errors.put(key, message);
+                }
+            } catch (Exception e) {
+                errors.put(key, message);
+            }
+            return this;
+        }
+
+        /**
+         * Executes callback if any validation errors were collected.
+         *
+         * <p>Prints errors and usage information if has any errors.</p>
+         */
+        public void exitIfAny() {
+            if (!errors.isEmpty()) {
+                printErrorsAndUsage();
+                System.exit(ExitCode.INVALID_CONFIGURATION.exitCode);
+            }
+        }
+
+        /**
+         * Logs validation errors and prints usage information.
+         */
+        private void printErrorsAndUsage() {
+            log.error("Failed to start Testlum due to configuration errors:");
+            errors.forEach((param, message) -> log.error("  - {}: {}", param, message));
+            log.info("");
+            printUsage();
+        }
+
+        /**
+         * Prints command line usage information to the log.
+         */
+        private void printUsage() {
+            String usage = """
+                Usage: java -jar testlum.jar [options]
+
+                Required arguments:
+                  -c=<file>, --config=<file>    Configuration file name (e.g., global-config.xml)
+                  -p=<path>, --path=<path>      Absolute path to test resources directory
+
+                Optional arguments:
+                  -s=<path>, --scenario=<path>  Path to specific scenarios to execute
+
+                Example:
+                  java -jar testlum.jar -c=config.xml -p=/home/user/test-resources
+
+                Exit codes: 0=passed, 1=failed, 2=no tests, 3=invalid config""";
+            log.info(usage);
+        }
     }
 
     /**
@@ -125,6 +253,12 @@ public class TESTLUMStarter {
         System.exit(exitCode.getExitCode());
     }
 
+    /**
+     * Converts a PrintWriter consumer output to a String.
+     *
+     * @param writer consumer that writes to a PrintWriter
+     * @return the written content as a string
+     */
     private static String toString(final Consumer<PrintWriter> writer) {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
@@ -140,6 +274,7 @@ public class TESTLUMStarter {
      *   <li>{@link #TESTS_PASSED} (0) - All tests executed successfully</li>
      *   <li>{@link #TESTS_FAILED} (1) - One or more tests failed or encountered errors</li>
      *   <li>{@link #NO_TESTS_FOUND} (2) - No tests were discovered for execution</li>
+     *   <li>{@link #INVALID_CONFIGURATION} (3) - Configuration is invalid or files not found</li>
      * </ul>
      */
     @Getter
@@ -153,7 +288,10 @@ public class TESTLUMStarter {
         TESTS_FAILED(1, "Tests failed"),
 
         /** No tests were found for execution. Exit code: 2 */
-        NO_TESTS_FOUND(2, "No tests found");
+        NO_TESTS_FOUND(2, "No tests found"),
+
+        /** Invalid configuration. Exit code: 3 */
+        INVALID_CONFIGURATION(3, "Invalid configuration");
 
         private final int exitCode;
         private final String message;

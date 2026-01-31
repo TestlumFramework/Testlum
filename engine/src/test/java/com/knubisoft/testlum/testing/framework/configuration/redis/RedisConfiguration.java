@@ -3,8 +3,8 @@ package com.knubisoft.testlum.testing.framework.configuration.redis;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRedisEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Redis;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
+
 @Configuration
 @Conditional({OnRedisEnabledCondition.class})
 @RequiredArgsConstructor
@@ -38,24 +40,14 @@ public class RedisConfiguration {
         final Map<AliasEnv, StringRedisConnection> redisConnectionMap = new HashMap<>();
 
         redisConnectionFactory.forEach((aliasEnv, jedisConnectionFactory) -> {
-            StringRedisConnection resilientConn = connectionTemplate.executeWithRetry(
-                    "Redis - " + aliasEnv.getAlias(),
-                    () -> {
-                        jedisConnectionFactory.afterPropertiesSet();
-                        JedisConnection connection = (JedisConnection) jedisConnectionFactory.getConnection();
-                        try {
-                            String response = connection.ping();
-                            if (!"PONG".equalsIgnoreCase(response)) {
-                                throw new DefaultFrameworkException("Redis did not respond");
-                            }
-                            return new DefaultStringRedisConnection(connection, new StringRedisSerializer());
-                        } catch (Exception e) {
-                            connection.close();
-                            throw new DefaultFrameworkException(e.getMessage());
-                        }
-                    }
+            jedisConnectionFactory.afterPropertiesSet();
+            JedisConnection connection = (JedisConnection) jedisConnectionFactory.getConnection();
+            StringRedisConnection checkedConnection = connectionTemplate.executeWithRetry(
+                    String.format(CONNECTION_INTEGRATION_DATA, "Redis", aliasEnv.getAlias()),
+                    () -> new DefaultStringRedisConnection(connection, new StringRedisSerializer()),
+                    HealthCheckFactory.forRedis(connection)
             );
-            redisConnectionMap.put(aliasEnv, resilientConn);
+            redisConnectionMap.put(aliasEnv, checkedConnection);
         });
 
         return redisConnectionMap;    }

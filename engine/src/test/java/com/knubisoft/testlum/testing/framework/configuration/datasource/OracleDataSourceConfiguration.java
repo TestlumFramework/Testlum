@@ -1,10 +1,10 @@
 package com.knubisoft.testlum.testing.framework.configuration.datasource;
 
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnOracleEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.configuration.condition.OnOracleEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.DataSourceUtil;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Oracle;
@@ -14,10 +14,10 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 
 @Configuration
 @Conditional({OnOracleEnabledCondition.class})
@@ -37,30 +37,14 @@ public class OracleDataSourceConfiguration {
     private void collectDataSource(final Integrations integrations,
                                    final String env,
                                    final Map<AliasEnv, DataSource> dataSourceMap) {
-        for (Oracle dataSource : integrations.getOracleIntegration().getOracle()) {
-            if (dataSource.isEnabled()) {
+        for (Oracle oracle : integrations.getOracleIntegration().getOracle()) {
+            if (oracle.isEnabled()) {
                 DataSource checkedDataSource = connectionTemplate.executeWithRetry(
-                        "Oracle - " + dataSource.getAlias(),
-                        () -> {
-                            DataSource hikariDataSource = DataSourceUtil.getHikariDataSource(dataSource);
-                            try (Connection conn = hikariDataSource.getConnection();
-                                 Statement stmt = conn.createStatement()) {
-                                stmt.executeQuery(dataSource.getHikari().getConnectionTestQuery()).next();
-                                return hikariDataSource;
-
-                            } catch (Exception e) {
-                                if (hikariDataSource instanceof AutoCloseable closeable) {
-                                    try {
-                                        closeable.close();
-                                    } catch (Exception ignored) {
-                                        // ignored
-                                    }
-                                }
-                                throw new DefaultFrameworkException(e.getMessage());
-                            }
-                        }
+                        String.format(CONNECTION_INTEGRATION_DATA, "Oracle", oracle.getAlias()),
+                        () -> DataSourceUtil.getHikariDataSource(oracle),
+                        HealthCheckFactory.forJdbc()
                 );
-                dataSourceMap.put(new AliasEnv(dataSource.getAlias(), env), checkedDataSource);
+                dataSourceMap.put(new AliasEnv(oracle.getAlias(), env), checkedDataSource);
             }
         }
     }

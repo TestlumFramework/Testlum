@@ -3,8 +3,8 @@ package com.knubisoft.testlum.testing.framework.configuration.sqs;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSQSEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Sqs;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,8 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 
 @Configuration
 @Conditional({OnSQSEnabledCondition.class})
@@ -41,17 +43,9 @@ public class SQSConfiguration {
         for (Sqs sqs : integrations.getSqsIntegration().getSqs()) {
             if (sqs.isEnabled()) {
                 SqsClient checkedSqsClient = connectionTemplate.executeWithRetry(
-                        "SQS - " + sqs.getAlias(),
-                        () -> {
-                            SqsClient client = createAmazonSqs(sqs);
-                            try {
-                                client.listQueues(lq -> lq.maxResults(1));
-                                return client;
-                            } catch (Exception e) {
-                                client.close();
-                                throw new DefaultFrameworkException(e.getMessage());
-                            }
-                        }
+                        String.format(CONNECTION_INTEGRATION_DATA, "SQS", sqs.getAlias()),
+                        () -> createAmazonSqs(sqs),
+                        HealthCheckFactory.forSqs()
                 );
 
                 amazonSqsMap.put(new AliasEnv(sqs.getAlias(), env), checkedSqsClient);

@@ -168,6 +168,7 @@ public final class LogMessage {
     public static final String TAKE_SCREENSHOT_THEN_COMPARE = "Take a full screenshot then compare";
     public static final String GET_ELEMENT_AS_SCREENSHOT_THEN_COMPARE = "Get element as screenshot then compare";
 
+    public static final String CONNECTION_INTEGRATION_DATA = "%s - [%s]";
     public static final String CONNECTING_INFO = ANSI_CYAN + "Connecting to {} (Attempt {}/{})" + ANSI_RESET;
     public static final String CONNECTIN_SUCCESS = ANSI_GREEN + "Successfully connected to {}" + ANSI_RESET;
     public static final String CONNECTION_ATTEMPT_FAILED =

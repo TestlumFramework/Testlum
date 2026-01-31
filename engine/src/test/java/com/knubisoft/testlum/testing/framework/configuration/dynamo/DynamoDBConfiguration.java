@@ -3,8 +3,8 @@ package com.knubisoft.testlum.testing.framework.configuration.dynamo;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnDynamoEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Dynamo;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +20,8 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 
 @Configuration
 @Conditional({OnDynamoEnabledCondition.class})
@@ -42,17 +44,9 @@ public class DynamoDBConfiguration {
         for (Dynamo dynamo : integrations.getDynamoIntegration().getDynamo()) {
             if (dynamo.isEnabled()) {
                 DynamoDbClient checkedDynamoDbClient = connectionTemplate.executeWithRetry(
-                        "DynamoDB - " + dynamo.getAlias(),
-                        () -> {
-                            DynamoDbClient dynamoDbClient = createDynamoDbClient(dynamo);
-                            try {
-                                dynamoDbClient.listTables(lt -> lt.limit(1));
-                                return dynamoDbClient;
-                            } catch (Exception e) {
-                                dynamoDbClient.close();
-                                throw new DefaultFrameworkException(e.getMessage());
-                            }
-                        }
+                        String.format(CONNECTION_INTEGRATION_DATA, "DynamoDB", dynamo.getAlias()),
+                        () -> createDynamoDbClient(dynamo),
+                        HealthCheckFactory.forDynamoDb()
                 );
                 dbClientMap.put(new AliasEnv(dynamo.getAlias(), env), checkedDynamoDbClient);
             }

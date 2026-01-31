@@ -2,6 +2,8 @@ package com.knubisoft.testlum.testing.framework.configuration.ui;
 
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplateImpl;
+import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
@@ -18,7 +20,6 @@ import com.knubisoft.testlum.testing.model.global_config.LocalBrowser;
 import com.knubisoft.testlum.testing.model.global_config.RemoteBrowser;
 import com.knubisoft.testlum.testing.model.global_config.Safari;
 import com.knubisoft.testlum.testing.model.global_config.ScreenRecording;
-import com.knubisoft.testlum.testing.model.global_config.Web;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.managers.ChromeDriverManager;
 import io.github.bonigarcia.wdm.managers.EdgeDriverManager;
@@ -44,6 +45,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DRIVER_INITIALIZER_NOT_FOUND;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -53,7 +55,7 @@ public class WebDriverFactory {
 
     private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;
-    private static final int MAX_TIMEOUT_SECONDS = 60;
+    private static final int MAX_TIMEOUT_SECONDS = 20;
 
     static {
         DRIVER_INITIALIZER_MAP = Map.of(
@@ -65,37 +67,15 @@ public class WebDriverFactory {
 
     // todo: refactor
     public WebDriver createDriver(final AbstractBrowser browser) {
-        ConnectionTemplate connectionTemplate = new ConnectionTemplate();
+        ConnectionTemplate connectionTemplate = new ConnectionTemplateImpl();
         return connectionTemplate.executeWithRetry(
-                browser.getClass().getSimpleName() + " - " + browser.getAlias(),
-                () -> {
-                    log.info("Attempting to create {} instance (Max timeout: {}s)",
-                            browser.getClass().getSimpleName() + " - " + browser.getAlias(), MAX_TIMEOUT_SECONDS);
-
-                    WebDriver webDriver = DRIVER_INITIALIZER_MAP.entrySet().stream()
-                            .filter(function -> function.getKey().test(browser))
-                            .findFirst()
-                            .map(function -> function.getValue().apply(browser))
-                            .orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND));
-
-                    try {
-                        webDriver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS));
-                        webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS));
-
-                        BrowserUtil.manageWindowSize(browser, webDriver);
-
-                        Web settings = GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv());
-                        log.debug("Navigating to base URL: {}", settings.getBaseUrl());
-                        webDriver.get(settings.getBaseUrl());
-                        return webDriver;
-                    } catch (Exception e) {
-                        log.error("Failed to initialize driver or reach base URL within {}s", MAX_TIMEOUT_SECONDS);
-                        if (webDriver != null) {
-                            webDriver.quit();
-                        }
-                        throw new DefaultFrameworkException(e.getMessage());
-                    }
-                }
+                String.format(CONNECTION_INTEGRATION_DATA, browser.getClass().getSimpleName(), browser.getAlias()),
+                () -> DRIVER_INITIALIZER_MAP.entrySet().stream()
+                        .filter(function -> function.getKey().test(browser))
+                        .findFirst()
+                        .map(function -> function.getValue().apply(browser))
+                        .orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND)),
+                HealthCheckFactory.forWebDriver(browser)
         );
     }
 

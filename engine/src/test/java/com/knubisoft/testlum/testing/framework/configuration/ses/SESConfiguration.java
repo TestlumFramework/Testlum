@@ -3,8 +3,8 @@ package com.knubisoft.testlum.testing.framework.configuration.ses;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSESEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Ses;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,8 @@ import software.amazon.awssdk.services.ses.SesClient;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 
 @Configuration
 @Conditional({OnSESEnabledCondition.class})
@@ -41,17 +43,9 @@ public class SESConfiguration {
         for (Ses ses : integrations.getSesIntegration().getSes()) {
             if (ses.isEnabled()) {
                 SesClient checkedSesClient = connectionTemplate.executeWithRetry(
-                        "SES:" + ses.getAlias(),
-                        () -> {
-                            SesClient client = createAmazonSes(ses);
-                            try {
-                                client.listIdentities(li -> li.maxItems(1));
-                                return client;
-                            } catch (Exception e) {
-                                client.close();
-                                throw new DefaultFrameworkException(e.getMessage());
-                            }
-                        }
+                        String.format(CONNECTION_INTEGRATION_DATA, "SES", ses.getAlias()),
+                        () -> createAmazonSes(ses),
+                        HealthCheckFactory.forSes()
                 );
 
                 emailServiceMap.put(new AliasEnv(ses.getAlias(), env), checkedSesClient);

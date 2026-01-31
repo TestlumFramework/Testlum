@@ -27,6 +27,8 @@ import static org.apache.kafka.clients.consumer.ConsumerConfig.*;
 @RequiredArgsConstructor
 public class KafkaConsumerConfiguration {
 
+    private static final int TIMEOUT = 5000;
+
     private final ConnectionTemplate connectionTemplate;
 
     @Bean
@@ -58,13 +60,14 @@ public class KafkaConsumerConfiguration {
         );
     }
 
+    // CHECKSTYLE:OFF
     private void configureProperties(final Properties props, final Kafka kafka) {
         props.put(BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapAddress());
         props.put(GROUP_ID_CONFIG, kafka.getGroupId());
         props.put(CLIENT_ID_CONFIG, kafka.getClientId());
         props.put(AUTO_OFFSET_RESET_CONFIG, kafka.getAutoOffsetReset());
-        props.put(REQUEST_TIMEOUT_MS_CONFIG, 5000);
-        props.put(DEFAULT_API_TIMEOUT_MS_CONFIG, 5000);
+        props.put(REQUEST_TIMEOUT_MS_CONFIG, TIMEOUT);
+        props.put(DEFAULT_API_TIMEOUT_MS_CONFIG, TIMEOUT);
         props.put(MAX_POLL_RECORDS_CONFIG, kafka.getMaxPollRecords());
         props.put(MAX_POLL_INTERVAL_MS_CONFIG, kafka.getMaxPollIntervalMs());
         props.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -74,4 +77,5 @@ public class KafkaConsumerConfiguration {
             props.put(AUTO_COMMIT_INTERVAL_MS_CONFIG, kafka.getAutoCommitTimeout());
         }
     }
+    // CHECKSTYLE:ON
 }

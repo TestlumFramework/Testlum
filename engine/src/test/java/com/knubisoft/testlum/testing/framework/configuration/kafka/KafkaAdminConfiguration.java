@@ -27,6 +27,8 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 @RequiredArgsConstructor
 public class KafkaAdminConfiguration {
 
+    private static final int TIMEOUT = 10000;
+
     private final ConnectionTemplate connectionTemplate;
 
     private final Map<String, List<Kafka>> kafkaMap = GlobalTestConfigurationProvider.getIntegrations()
@@ -81,8 +83,8 @@ public class KafkaAdminConfiguration {
                 String.format(CONNECTION_INTEGRATION_DATA, "Kafka Admin", kafka.getAlias()),
                 () -> KafkaAdminClient.create(Map.of(
                         AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapAddress(),
-                        AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, 10000,
-                        AdminClientConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, 10000
+                        AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, TIMEOUT,
+                        AdminClientConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, TIMEOUT
                 )),
                 HealthCheckFactory.forKafkaAdmin());
     }

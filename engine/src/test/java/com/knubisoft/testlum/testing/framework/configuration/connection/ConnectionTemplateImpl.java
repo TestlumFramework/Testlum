@@ -14,7 +14,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 
 @Slf4j
 @Component
-public class ConnectionTemplateImpl implements ConnectionTemplate{
+public class ConnectionTemplateImpl implements ConnectionTemplate {
 
     private static final int DEFAULT_ATTEMPTS = 3;
     private static final long INITIAL_BACKOFF_MS = 20000;
@@ -84,6 +84,7 @@ public class ConnectionTemplateImpl implements ConnectionTemplate{
             try {
                 ((AutoCloseable) resource).close();
             } catch (final Exception ignored) {
+                // ignore
             }
         }
     }

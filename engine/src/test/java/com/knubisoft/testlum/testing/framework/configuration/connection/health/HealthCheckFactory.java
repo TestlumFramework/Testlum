@@ -23,6 +23,7 @@ import org.openqa.selenium.WebDriver;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.data.redis.connection.DefaultStringRedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnection;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.lambda.LambdaClient;
@@ -39,11 +40,12 @@ import java.util.concurrent.TimeUnit;
 public class HealthCheckFactory {
 
     private static final int MAX_TIMEOUT_SECONDS = 20;
+    private static final int TIME = 5;
 
     public static IntegrationHealthCheck<DataSource> forJdbc() {
         return ds -> {
             try (Connection conn = ds.getConnection()) {
-                conn.isValid(5);
+                conn.isValid(TIME);
             }
         };
     }
@@ -65,22 +67,22 @@ public class HealthCheckFactory {
         return restClient -> {
             Response response = restClient.performRequest(new Request("GET", "/"));
             int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode != 200) {
+            if (statusCode != HttpStatus.OK.value()) {
                 throw new DefaultFrameworkException("Failed to obtain connection with status code: " + statusCode);
             }
         };
     }
 
     public static IntegrationHealthCheck<AdminClient> forKafkaAdmin() {
-        return client -> client.listTopics().names().get(5, TimeUnit.SECONDS);
+        return client -> client.listTopics().names().get(TIME, TimeUnit.SECONDS);
     }
 
     public static IntegrationHealthCheck<KafkaConsumer<String, String>> forKafkaConsumer() {
-        return kafkaConsumer -> kafkaConsumer.listTopics(Duration.ofSeconds(5));
+        return kafkaConsumer -> kafkaConsumer.listTopics(Duration.ofSeconds(TIME));
     }
 
     public static IntegrationHealthCheck<KafkaProducer<String, String>> forKafkaProducer() {
-        return kafkaProducer -> kafkaProducer.clientInstanceId(Duration.ofSeconds(5));
+        return kafkaProducer -> kafkaProducer.clientInstanceId(Duration.ofSeconds(TIME));
     }
 
     public static IntegrationHealthCheck<LambdaClient> forLambda() {
@@ -118,9 +120,10 @@ public class HealthCheckFactory {
             request.setEndpoint("scopes");
 
             com.sendgrid.Response response = sdkSendGrid.api(request);
-            if (response.getStatusCode() == 401 || response.getStatusCode() == 403) {
+            if (response.getStatusCode() == HttpStatus.UNAUTHORIZED.value()
+                    || response.getStatusCode() == HttpStatus.FORBIDDEN.value()) {
                 throw new DefaultFrameworkException("SendGrid Authentication failed. " + response.getBody());
-            } else if (response.getStatusCode() >= 500) {
+            } else if (response.getStatusCode() >= HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 throw new DefaultFrameworkException("SendGrid Server Error: " + response.getBody());
             }
         };
@@ -162,28 +165,25 @@ public class HealthCheckFactory {
                     throw new DefaultFrameworkException("failed to connect");
                 }
             } catch (Exception e) {
-                try {
-                    wsManager.closeConnection();
-                } catch (Exception ex) {
-                    throw new DefaultFrameworkException(ex.getMessage());
-                }
+                closeConnectionManager(wsManager);
                 throw new DefaultFrameworkException(
                         "handshake failed for - " + websocket.getUrl() + " " + e.getMessage());
             }
         };
     }
 
+    private static void closeConnectionManager(final WebsocketConnectionManager wsManager) {
+        try {
+            wsManager.closeConnection();
+        } catch (Exception ex) {
+            throw new DefaultFrameworkException(ex.getMessage());
+        }
+    }
+
     public static IntegrationHealthCheck<WebDriver> forWebDriver(final AbstractBrowser browser) {
         return webDriver -> {
             try {
-                webDriver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS));
-                webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS));
-
-                BrowserUtil.manageWindowSize(browser, webDriver);
-
-                Web settings = ConfigProviderImpl.GlobalTestConfigurationProvider.getWebSettings(EnvManager.currentEnv());
-                log.debug("Navigating to base URL: {}", settings.getBaseUrl());
-                webDriver.get(settings.getBaseUrl());
+                safeInitWebdriverWithTimeouts(browser, webDriver);
             } catch (Exception e) {
                 log.error("Failed to initialize driver or reach base URL within {}s", MAX_TIMEOUT_SECONDS);
                 if (webDriver != null) {
@@ -192,6 +192,16 @@ public class HealthCheckFactory {
                 throw new DefaultFrameworkException(e.getMessage());
             }
         };
+    }
+
+    private static void safeInitWebdriverWithTimeouts(final AbstractBrowser browser, final WebDriver webDriver) {
+        webDriver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS));
+        webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS));
+        BrowserUtil.manageWindowSize(browser, webDriver);
+        Web settings = ConfigProviderImpl.GlobalTestConfigurationProvider.
+                getWebSettings(EnvManager.currentEnv());
+        log.debug("Navigating to base URL: {}", settings.getBaseUrl());
+        webDriver.get(settings.getBaseUrl());
     }
 
     public static IntegrationHealthCheck<S3Client> forS3() {

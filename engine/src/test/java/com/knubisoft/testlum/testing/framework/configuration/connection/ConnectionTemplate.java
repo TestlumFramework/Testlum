@@ -6,12 +6,12 @@ import java.util.function.Supplier;
 
 public interface ConnectionTemplate {
 
-    <T> T executeWithRetry(final String integrationName,
-                           final Supplier<T> connector,
-                           final IntegrationHealthCheck<T> healthCheck);
+    <T> T executeWithRetry(String integrationName,
+                           Supplier<T> connector,
+                           IntegrationHealthCheck<T> healthCheck);
 
-    <T> T executeWithRetry(final String integrationName,
-                           final int maxAttempts,
-                           final Supplier<T> connector,
-                           final IntegrationHealthCheck<T> healthCheck);
+    <T> T executeWithRetry(String integrationName,
+                           int maxAttempts,
+                           Supplier<T> connector,
+                           IntegrationHealthCheck<T> healthCheck);
 }

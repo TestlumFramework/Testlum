@@ -50,8 +50,8 @@ public class RedisConfiguration {
             );
             redisConnectionMap.put(aliasEnv, checkedConnection);
         });
-
-        return redisConnectionMap;    }
+        return redisConnectionMap;
+    }
 
     @Bean("redisConnectionFactory")
     public Map<AliasEnv, JedisConnectionFactory> jedisConnectionFactory(

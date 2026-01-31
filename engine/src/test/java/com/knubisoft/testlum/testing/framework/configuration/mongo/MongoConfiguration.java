@@ -30,6 +30,8 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 @RequiredArgsConstructor
 public class MongoConfiguration {
 
+    private static final int TIMEOUT = 5000;
+
     private final ConnectionTemplate connectionTemplate;
 
     @Bean
@@ -60,14 +62,13 @@ public class MongoConfiguration {
                 mongo.getUsername(), mongo.getDatabase(), mongo.getPassword().toCharArray());
         ServerAddress mongoAddress = new ServerAddress(mongo.getHost(), mongo.getPort());
 
-        MongoClientSettings settings = MongoClientSettings.builder()
-                .credential(credential)
+        MongoClientSettings settings = MongoClientSettings.builder().credential(credential)
                 .applyToClusterSettings(builder -> builder
                         .hosts(Collections.singletonList(mongoAddress))
-                        .serverSelectionTimeout(5000, TimeUnit.MILLISECONDS))
+                        .serverSelectionTimeout(TIMEOUT, TimeUnit.MILLISECONDS))
                 .applyToSocketSettings(builder -> builder
-                        .connectTimeout(5000, TimeUnit.MILLISECONDS)
-                        .readTimeout(5000, TimeUnit.MILLISECONDS))
+                        .connectTimeout(TIMEOUT, TimeUnit.MILLISECONDS)
+                        .readTimeout(TIMEOUT, TimeUnit.MILLISECONDS))
                 .build();
         return MongoClients.create(settings);
     }

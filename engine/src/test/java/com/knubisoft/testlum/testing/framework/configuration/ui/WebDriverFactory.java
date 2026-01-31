@@ -117,16 +117,12 @@ public class WebDriverFactory {
                                       final MutableCapabilities browserOptions) {
         String url = remoteBrowserSettings.getRemoteBrowserURL();
         log.info("Connecting to Remote Browser at: {}", url);
-
         ClientConfig config = ClientConfig.defaultConfig()
                 .connectionTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS))
                 .readTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS));
-
         try {
-            return RemoteWebDriver.builder()
-                    .address(new URL(url))
-                    .oneOf(browserOptions)
-                    .config(config)
+            return RemoteWebDriver.builder().address(new URL(url))
+                    .oneOf(browserOptions).config(config)
                     .build();
         } catch (Exception e) {
             throw new DefaultFrameworkException("Unable to connect to remote browser with cause:" + e.getMessage());

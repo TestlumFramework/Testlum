@@ -25,6 +25,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class SmtpConfiguration {
 
     private static final String SMTP_PROTOCOL = "smtp";
+    private static final int TIMEOUT = 5000;
 
     private final ConnectionTemplate connectionTemplate;
 
@@ -66,7 +67,7 @@ public class SmtpConfiguration {
         properties.put("mail.transport.protocol", SMTP_PROTOCOL);
         properties.put("mail.smtp.auth", smtpSettings.isSmtpAuth());
         properties.put("mail.smtp.starttls.enable", smtpSettings.isSmtpStarttlsEnable());
-        properties.put("mail.smtp.connectiontimout", 5000);
-        properties.put("mail.smtp.timeout", 5000);
+        properties.put("mail.smtp.connectiontimout", TIMEOUT);
+        properties.put("mail.smtp.timeout", TIMEOUT);
     }
 }

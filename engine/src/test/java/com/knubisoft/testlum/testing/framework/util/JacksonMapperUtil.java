@@ -11,18 +11,14 @@ import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.vault.model.VaultDto;
 import com.knubisoft.testlum.testing.framework.vault.model.VaultDtoDeserializer;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.CLOSE_BRACE;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.CLOSE_SQUARE_BRACKET;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @UtilityClass
 public final class JacksonMapperUtil {
@@ -31,7 +27,6 @@ public final class JacksonMapperUtil {
     private static final ObjectMapper DYNAMODB_MAPPER = createObjectMapperWithFieldVisibility();
     private static final ObjectMapper COPY_MAPPER = createObjectMapperForDeepCopy();
     private static final ObjectMapper VAULT_MAPPER = buildObjectToVaultMapper();
-
 
     @SneakyThrows
     public <T> T readValue(final String content, final Class<T> valueType) {
@@ -80,9 +75,12 @@ public final class JacksonMapperUtil {
     }
 
     public Object toJsonObject(final String content) {
-        if (isNotBlank(content)
-                && ((content.startsWith(OPEN_BRACE) && content.endsWith(CLOSE_BRACE))
-                || (content.startsWith(OPEN_SQUARE_BRACKET) && content.endsWith(CLOSE_SQUARE_BRACKET)))) {
+        if (StringUtils.isNotBlank(content)
+                && (content.startsWith(DelimiterConstant.OPEN_BRACE)
+                && content.endsWith(DelimiterConstant.CLOSE_BRACE)
+                ||
+                content.startsWith(DelimiterConstant.OPEN_SQUARE_BRACKET)
+                && content.endsWith(DelimiterConstant.CLOSE_SQUARE_BRACKET))) {
             return JacksonMapperUtil.readValue(content, Object.class);
         }
         return content;

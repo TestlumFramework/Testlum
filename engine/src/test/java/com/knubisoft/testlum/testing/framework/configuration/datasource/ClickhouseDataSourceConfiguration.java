@@ -38,7 +38,6 @@ public class ClickhouseDataSourceConfiguration {
     private void collectDataSource(final Integrations integrations,
                                    final String env,
                                    final Map<AliasEnv, DataSource> dataSourceMap) {
-
         for (Clickhouse clickhouse : integrations.getClickhouseIntegration().getClickhouse()) {
             if (clickhouse.isEnabled()) {
                 DataSource checkedDataSource = connectionTemplate.executeWithRetry(
@@ -46,16 +45,19 @@ public class ClickhouseDataSourceConfiguration {
                         () -> new DataSourceImpl(clickhouse.getConnectionUrl(), clickHouseProperties(clickhouse)),
                         HealthCheckFactory.forJdbc()
                 );
-
                 dataSourceMap.put(new AliasEnv(clickhouse.getAlias(), env), checkedDataSource);
             }
         }
+        addIfEnabled(integrations, env, dataSourceMap);
+    }
 
+    private void addIfEnabled(final Integrations integrations,
+                              final String env,
+                              final Map<AliasEnv, DataSource> dataSourceMap) {
         for (Clickhouse clickhouse : integrations.getClickhouseIntegration().getClickhouse()) {
             if (clickhouse.isEnabled()) {
-                Properties properties = clickHouseProperties(clickhouse);
-                String url = clickhouse.getConnectionUrl();
-                dataSourceMap.put(new AliasEnv(clickhouse.getAlias(), env), new DataSourceImpl(url, properties));
+                dataSourceMap.put(new AliasEnv(clickhouse.getAlias(), env),
+                        new DataSourceImpl(clickhouse.getConnectionUrl(), clickHouseProperties(clickhouse)));
             }
         }
     }

@@ -4,9 +4,7 @@ import com.knubisoft.testlum.testing.framework.configuration.condition.OnWebsock
 import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
-import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.WebsocketConnectionManager;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.WebsocketApi;
@@ -44,27 +42,28 @@ public class WebsocketConfiguration {
         return connectionSupplierMap;
     }
 
-    private void addWebsocketConnection(final Integrations integrations,
-                                        final String env,
+    private void addWebsocketConnection(final Integrations integrations, final String env,
                                         final Map<AliasEnv, WebsocketConnectionManager> connectionSupplierMap) {
         for (WebsocketApi websocket : integrations.getWebsockets().getApi()) {
             if (websocket.isEnabled()) {
                 AliasEnv aliasEnv = new AliasEnv(websocket.getAlias(), env);
-                WebsocketConnectionManager manager = connectionTemplate.executeWithRetry(
-                        String.format(CONNECTION_INTEGRATION_DATA, "Websocket", websocket.getAlias()),
-                        () -> {
-                            if (WebsocketProtocol.STOMP == websocket.getProtocol()) {
-                                return getWsStompConnectionManager(websocket.getUrl());
-                            } else {
-                                return getWsStandardConnectionManager(websocket.getUrl());
-                            }
-                        },
-                        HealthCheckFactory.forWebSocket(websocket)
-                );
-
+                WebsocketConnectionManager manager = getWebsocketConnectionManager(websocket);
                 connectionSupplierMap.put(aliasEnv, manager);
             }
         }
+    }
+
+    private WebsocketConnectionManager getWebsocketConnectionManager(final WebsocketApi websocket) {
+        return connectionTemplate.executeWithRetry(
+                String.format(CONNECTION_INTEGRATION_DATA, "Websocket", websocket.getAlias()), () -> {
+                    if (WebsocketProtocol.STOMP == websocket.getProtocol()) {
+                        return getWsStompConnectionManager(websocket.getUrl());
+                    } else {
+                        return getWsStandardConnectionManager(websocket.getUrl());
+                    }
+                },
+                HealthCheckFactory.forWebSocket(websocket)
+        );
     }
 
     private WebsocketStandardConnectionManager getWsStandardConnectionManager(final String url) {

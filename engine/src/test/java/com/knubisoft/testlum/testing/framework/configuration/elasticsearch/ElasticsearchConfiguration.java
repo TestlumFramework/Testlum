@@ -38,14 +38,14 @@ public class ElasticsearchConfiguration {
             .collect(Collectors.toMap(Map.Entry::getKey,
                     entry -> entry.getValue().getElasticsearchIntegration().getElasticsearch()));
 
-    // TODO: investigate possibility to go with single client
     @Bean(name = "restHighLevelClient")
     public Map<AliasEnv, RestHighLevelClient> restHighLevelClient(
             final Map<AliasEnv, RestClientBuilder> restClientBuilder) {
         Map<AliasEnv, RestHighLevelClient> restHighLevelClientMap = new HashMap<>();
         restClientBuilder.forEach((aliasEnv, clientBuilder) -> {
                     RestHighLevelClient checkedClient = connectionTemplate.executeWithRetry(
-                            String.format(CONNECTION_INTEGRATION_DATA, "ElasticSearch HighLevelClient", aliasEnv.getAlias()),
+                            String.format(CONNECTION_INTEGRATION_DATA, "ElasticSearch HighLevelClient",
+                                    aliasEnv.getAlias()),
                             () -> new RestHighLevelClient(clientBuilder),
                             HealthCheckFactory.forElasticRestHighLevelClient()
                     );

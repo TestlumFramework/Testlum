@@ -54,20 +54,24 @@ public class RabbitMQConfiguration {
                                      final Map<AliasEnv, Client> clientMap) {
         for (Rabbitmq rabbitmq : rabbitmqs) {
             if (rabbitmq.isEnabled()) {
-                Client adminClient = connectionTemplate.executeWithRetry(
-                        String.format(CONNECTION_INTEGRATION_DATA, "RabbitMQ-Admin", rabbitmq.getAlias()),
-                        () -> {
-                            try {
-                                return new Client(createClientParameters(rabbitmq));
-                            } catch (URISyntaxException | MalformedURLException e) {
-                                throw new DefaultFrameworkException(e.getMessage());
-                            }
-                        },
-                        HealthCheckFactory.forRabbitMqAdmin()
-                );
+                Client adminClient = buildAdminClient(rabbitmq);
                 clientMap.put(new AliasEnv(rabbitmq.getAlias(), env), adminClient);
             }
         }
+    }
+
+    private Client buildAdminClient(final Rabbitmq rabbitmq) {
+        return connectionTemplate.executeWithRetry(
+                String.format(CONNECTION_INTEGRATION_DATA, "RabbitMQ-Admin", rabbitmq.getAlias()),
+                () -> {
+                    try {
+                        return new Client(createClientParameters(rabbitmq));
+                    } catch (URISyntaxException | MalformedURLException e) {
+                        throw new DefaultFrameworkException(e.getMessage());
+                    }
+                },
+                HealthCheckFactory.forRabbitMqAdmin()
+        );
     }
 
     private ClientParameters createClientParameters(final Rabbitmq rabbitmq) throws MalformedURLException {

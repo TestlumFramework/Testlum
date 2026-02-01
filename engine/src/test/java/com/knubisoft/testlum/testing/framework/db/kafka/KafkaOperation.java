@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Component
 public class KafkaOperation extends AbstractStorageOperation {
 
-    private static final int THREAD_SLEEPING_MILLIS = 10;
+    private static final int TIMEOUT = 10;
 
     private final Map<AliasEnv, KafkaConsumer<String, String>> kafkaConsumer;
     private final Map<AliasEnv, AdminClient> adminClient;
@@ -60,6 +60,6 @@ public class KafkaOperation extends AbstractStorageOperation {
         }
 
         DeleteTopicsResult deleteTopicsResult = adminClient.get(aliasEnv).deleteTopics(userTopics);
-        deleteTopicsResult.all().get(10, TimeUnit.SECONDS);
+        deleteTopicsResult.all().get(TIMEOUT, TimeUnit.SECONDS);
     }
 }

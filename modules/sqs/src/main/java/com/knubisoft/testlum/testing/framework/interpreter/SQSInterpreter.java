@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
-import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -174,11 +173,11 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
 
     private List<Object> receiveMessages(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
         ReceiveMessageRequest receiveMessageRequest = createReceiveRequest(receive, aliasEnv);
-        ReceiveMessageResponse receiveMessageResult = this.sqsClient.get(aliasEnv).receiveMessage(receiveMessageRequest);
+        ReceiveMessageResponse receiveMessageResult =
+                this.sqsClient.get(aliasEnv).receiveMessage(receiveMessageRequest);
         return receiveMessageResult.messages()
                 .stream()
-                .map(message ->
-                        message.body().replaceAll(REGEX_MANY_SPACES, DelimiterConstant.EMPTY))
+                .map(message -> message.body().replaceAll(REGEX_MANY_SPACES, StringUtils.EMPTY))
                 .map(JacksonMapperUtil::toJsonObject)
                 .collect(Collectors.toList());
     }

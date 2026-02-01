@@ -66,7 +66,7 @@ public final class JacksonMapperUtil {
     }
 
     public Object toJsonObject(final String content) {
-        if (StringUtils.isBlank(content)) {
+        if (StringUtils.isNotBlank(content)) {
             boolean isObject = content.startsWith(DelimiterConstant.OPEN_BRACE)
                     &&
                     content.endsWith(DelimiterConstant.CLOSE_BRACE);

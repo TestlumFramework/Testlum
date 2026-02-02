@@ -50,6 +50,7 @@ public class MongoConfiguration {
 
         MongoClientSettings settings = MongoClientSettings.builder()
                 .credential(credential)
+                .applyToSslSettings(builder -> builder.enabled(true).invalidHostNameAllowed(true))
                 .applyToClusterSettings(builder -> builder.hosts(Collections.singletonList(mongoAddress)))
                 .build();
         return MongoClients.create(settings);

@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -11,11 +12,12 @@ import com.knubisoft.testlum.testing.model.scenario.Shell;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SystemUtils;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -25,8 +27,8 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 @InterpreterForClass(Shell.class)
 public class ShellInterpreter extends AbstractInterpreter<Shell> {
 
-    private static final String EXEC_WINDOWS_COMMAND = "cmd.exe /c dir %s";
-    private static final String EXEC_LINUX_COMMAND = "sh %s";
+    private static final String[] EXEC_WINDOWS_COMMAND = {"cmd.exe", "/c"};
+    private static final String EXEC_LINUX_COMMAND = "sh";
     private static final String EXPECTED_RESULT = "{\"expectedCode\": %d}";
 
     private static final String SHELL_FILES = "Shell files";
@@ -64,31 +66,45 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
             Process process = Runtime.getRuntime().exec(shellCommand);
             processExpectedAndActual(process.waitFor(), shell, result);
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new DefaultFrameworkException(e.getMessage());
         }
     }
 
     private void execShellFiles(final List<String> shellFiles, final Shell shell, final CommandResult result) {
-        shellFiles.forEach(shellFile -> execShellFileOrThrow(shellFile, shell, result));
+        shellFiles.forEach(shellFileCommand -> execShellFileOrThrow(shellFileCommand, shell, result));
     }
 
-    private void execShellFileOrThrow(final String shellFile, final Shell shell, final CommandResult result) {
+    private void execShellFileOrThrow(final String shellFileCommand, final Shell shell, final CommandResult result) {
         try {
-            Process process = getProcessorForFile(shellFile);
+            Process process = getProcessorForFile(shellFileCommand);
             processExpectedAndActual(process.waitFor(), shell, result);
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new DefaultFrameworkException(e.getMessage());
         }
     }
 
-    private Process getProcessorForFile(final String shellFile) throws IOException {
-        File shellFileByPath = FileSearcher.searchFileFromDataFolder(shellFile);
-        log.info(SHELL_FILE_LOG, new String(Files.readAllBytes(shellFileByPath.toPath()), StandardCharsets.UTF_8)
-                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
-        String command = SystemUtils.IS_OS_WINDOWS
-                ? String.format(EXEC_WINDOWS_COMMAND, shellFileByPath.getAbsolutePath())
-                : String.format(EXEC_LINUX_COMMAND, shellFileByPath.getAbsolutePath());
-        return Runtime.getRuntime().exec(command);
+    private Process getProcessorForFile(final String shellFileCommand) throws IOException {
+        String[] shellFileCommandParts = shellFileCommand.trim().split("\\s+");
+        File shellFileByPath = FileSearcher.searchFileFromDataFolder(shellFileCommandParts[0]);
+
+        log.info(SHELL_COMMAND_LOG, shellFileCommand);
+
+        List<String> commandList = computeCommandList(shellFileByPath, shellFileCommandParts);
+        ProcessBuilder pb = new ProcessBuilder(commandList);
+        pb.directory(shellFileByPath.getParentFile());
+        return pb.start();
+    }
+
+    private List<String> computeCommandList(final File shellFileByPath, final String[] shellFileCommandParts) {
+        List<String> commandList = new ArrayList<>();
+        if (SystemUtils.IS_OS_WINDOWS) {
+            commandList.addAll(Arrays.asList(EXEC_WINDOWS_COMMAND));
+        } else {
+            commandList.add(EXEC_LINUX_COMMAND);
+        }
+        commandList.add(shellFileByPath.getName());
+        commandList.addAll(Arrays.asList(shellFileCommandParts).subList(1, shellFileCommandParts.length));
+        return commandList;
     }
 
     private void processExpectedAndActual(final int expectedCode, final Shell shell, final CommandResult result) {

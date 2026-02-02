@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
+import java.util.random.RandomGenerator;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SLASH_SEPARATOR;
@@ -158,9 +159,10 @@ public class VariableHelperImpl implements VariableHelper {
     public String getPathResult(final FromPath fromPath,
                                 final String varName,
                                 final ScenarioContext scenarioContext,
-                                final CommandResult result) {
+                                final CommandResult result,
+                                final UnaryOperator<String> fileToString) {
         String path = fromPath.getValue();
-        String body = getBodyFromContext(fromPath, scenarioContext);
+        String body = getBodyFromContext(fromPath, scenarioContext, fileToString);
         if (path.startsWith(DOLLAR_SIGN)) {
             return evaluateJPath(path, varName, body, result);
         }
@@ -170,8 +172,9 @@ public class VariableHelperImpl implements VariableHelper {
         throw new DefaultFrameworkException("Path <%s> is not supported", path);
     }
 
-    private String getBodyFromContext(final FromPath fromPath, final ScenarioContext scenarioContext) {
-        String body = resolveBodySource(fromPath, scenarioContext);
+    private String getBodyFromContext(final FromPath fromPath, final ScenarioContext scenarioContext,
+                                      final UnaryOperator<String> fileToString) {
+        String body = resolveBodySource(fromPath, scenarioContext, fileToString);
         logVarContextInfo(body);
         return body;
     }
@@ -180,13 +183,14 @@ public class VariableHelperImpl implements VariableHelper {
         log.info(VAR_CONTEXT_LOG, body);
     }
 
-    private String resolveBodySource(final FromPath fromPath, final ScenarioContext scenarioContext) {
+    private String resolveBodySource(final FromPath fromPath, final ScenarioContext scenarioContext,
+                                     final UnaryOperator<String> fileToString) {
         if (fromPath.getFromFile() == null && fromPath.getFromVar() == null) {
             return scenarioContext.getBody().getValue();
         }
         return fromPath.getFromFile() == null
                 ? scenarioContext.get(fromPath.getFromVar())
-                : scenarioContext.get(fromPath.getFromFile());
+                : fileToString.apply(fromPath.getFromFile());
     }
 
 

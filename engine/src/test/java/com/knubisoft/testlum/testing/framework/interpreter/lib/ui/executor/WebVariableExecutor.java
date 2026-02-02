@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
@@ -142,7 +143,12 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     }
 
     private String getPathResult(final WebVar var, final CommandResult result) {
-        return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result);
+        UnaryOperator<String> fileToString = fileName -> {
+            String content = FileSearcher.searchFileToString(fileName, dependencies.getFile());
+            return inject(content);
+        };
+        return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result,
+                fileToString);
     }
 
     private String getConstantResult(final WebVar var, final CommandResult result) {

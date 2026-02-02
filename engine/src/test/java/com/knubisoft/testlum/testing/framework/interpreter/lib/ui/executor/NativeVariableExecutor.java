@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
+import java.util.function.UnaryOperator;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_VARIABLE_LOG;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ELEMENT_PRESENT;
@@ -79,7 +81,12 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
     }
 
     private String getPathResult(final NativeVar var, final CommandResult result) {
-        return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result);
+        UnaryOperator<String> fileToString = fileName -> {
+            String content = FileSearcher.searchFileToString(fileName, dependencies.getFile());
+            return inject(content);
+        };
+        return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result,
+                fileToString);
     }
 
     private String getConstantResult(final NativeVar var, final CommandResult result) {

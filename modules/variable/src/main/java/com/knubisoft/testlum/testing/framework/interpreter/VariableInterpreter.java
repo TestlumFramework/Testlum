@@ -84,7 +84,12 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     }
 
     private String getPathResult(final Var var, final CommandResult result) {
-        return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result);
+        UnaryOperator<String> fileToString = fileName -> {
+            String content = FileSearcher.searchFileToString(fileName, dependencies.getFile());
+            return inject(content);
+        };
+        return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result,
+                fileToString);
     }
 
     private String getRandomGenerateResult(final Var var, final CommandResult result) {

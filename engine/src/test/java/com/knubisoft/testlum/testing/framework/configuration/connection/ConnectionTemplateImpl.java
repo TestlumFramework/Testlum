@@ -3,6 +3,7 @@ package com.knubisoft.testlum.testing.framework.configuration.connection;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.IntegrationHealthCheck;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.WebDriver;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
@@ -80,6 +81,13 @@ public class ConnectionTemplateImpl implements ConnectionTemplate {
     }
 
     private void closeResource(final Object resource) {
+        if (resource instanceof WebDriver) {
+            try {
+                ((WebDriver) resource).quit();
+            } catch (final Exception e) {
+                throw new DefaultFrameworkException("Failed to quit WebDriver: ".concat(e.getMessage()));
+            }
+        }
         if (resource instanceof AutoCloseable) {
             try {
                 ((AutoCloseable) resource).close();

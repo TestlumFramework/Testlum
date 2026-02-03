@@ -65,7 +65,6 @@ public class WebDriverFactory {
                 browser -> browser instanceof Edge, b -> new EdgeDriverInitializer().init((Edge) b));
     }
 
-    // todo: refactor
     public WebDriver createDriver(final AbstractBrowser browser) {
         ConnectionTemplate connectionTemplate = new ConnectionTemplateImpl();
         return connectionTemplate.executeWithRetry(

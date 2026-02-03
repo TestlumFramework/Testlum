@@ -136,7 +136,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         try {
             return restClient.get(new AliasEnv(alias, dependencies.getEnvironment())).performRequest(request);
         } catch (ResponseException responseException) {
-            logWarning(responseException);
+            logError(responseException);
             return responseException.getResponse();
         }
     }
@@ -207,8 +207,8 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         }
     }
 
-    private void logWarning(final Exception ex) {
-        log.warn(ERROR_LOG, ex);
+    private void logError(final Exception ex) {
+        log.error(ERROR_LOG, ex);
     }
 
     //RESULT

@@ -5,17 +5,13 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpret
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Assert;
 import com.knubisoft.testlum.testing.model.scenario.AssertEqual;
 import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.AssertNotEqual;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.springframework.expression.Expression;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -59,16 +55,20 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         anAssert.getEqualOrNotEqual().forEach(action -> {
-            int commandId = dependencies.getPosition().incrementAndGet();
-            CommandResult commandResult = newCommandResultInstance(commandId, action);
-            subCommandsResult.add(commandResult);
-            logAssertEqualityCommand(action, commandId);
-            addAssertEqualityMetaData(action, commandResult);
-            if (conditionProvider.isTrue(action.getCondition(), dependencies.getScenarioContext(), commandResult)) {
-                processEachAction(action, commandResult);
-            }
+            processAssertAction(action, subCommandsResult);
         });
         setExecutionResultIfSubCommandsFailed(result);
+    }
+
+    private void processAssertAction(final AssertEquality action, final List<CommandResult> subCommandsResult) {
+        int commandId = dependencies.getPosition().incrementAndGet();
+        CommandResult commandResult = newCommandResultInstance(commandId, action);
+        subCommandsResult.add(commandResult);
+        logAssertEqualityCommand(action, commandId);
+        addAssertEqualityMetaData(action, commandResult);
+        if (conditionProvider.isTrue(action.getCondition(), dependencies.getScenarioContext(), commandResult)) {
+            processEachAction(action, commandResult);
+        }
     }
 
     private void processEachAction(final AssertEquality action, final CommandResult result) {

@@ -12,7 +12,6 @@ import com.knubisoft.testlum.testing.model.scenario.Shell;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SystemUtils;
-import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;

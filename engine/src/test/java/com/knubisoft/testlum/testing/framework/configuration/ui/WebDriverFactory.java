@@ -55,7 +55,7 @@ public class WebDriverFactory {
 
     private static final String DEFAULT_DOCKER_SCREEN_COLORS_DEPTH = "x24";
     private static final Map<BrowserPredicate, WebDriverFunction> DRIVER_INITIALIZER_MAP;
-    private static final int MAX_TIMEOUT_SECONDS = 20;
+    private static final int MAX_TIMEOUT_SECONDS = 60;
 
     static {
         DRIVER_INITIALIZER_MAP = Map.of(

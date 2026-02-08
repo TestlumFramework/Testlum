@@ -22,7 +22,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <start-class>com.knubisoft.testlum.starter.TESTLUMStarter</start-class>
         <models.dir>../modules/models/src/main/java</models.dir>
-        <professional-subs-pack>${project.basedir}/src/test/resources/subs/schema-professional</professional-subs-pack>
+        <schema.path>${project.basedir}/src/test/resources/schema</schema.path>
 
         <selenium-java.version>4.34.0</selenium-java.version>
         <appium-client.version>9.5.0</appium-client.version>
@@ -1444,6 +1444,33 @@
             </plugin>
 
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>${jaxb2-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>test-models-generating</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <skipXjc>${skipGenerateModels}</skipXjc>
+                    <skipTestXjc>${skipGenerateModels}</skipTestXjc>
+                    <outputDirectory>${models.dir}</outputDirectory>
+                    <clearOutputDir>true</clearOutputDir>
+                    <sources>
+                        <source>${schema.path}${file.separator}scenario.xsd</source>
+                        <source>${schema.path}${file.separator}global-config.xsd</source>
+                        <source>${schema.path}${file.separator}pages.xsd</source>
+                    </sources>
+                    <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>${maven-assembly-plugin.version}</version>
@@ -1471,91 +1498,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>professional</id>
-            <dependencies>
-                <!--DATABASES-->
-            </dependencies>
-            <build>
-                <plugins>
-                    <!-- Clean the desired-folder -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-clean-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <configuration>
-                            <filesets>
-                                <fileset>
-                                    <directory>${project.basedir}${file.separator}src${file.separator}test${file.separator}resources${file.separator}schema</directory>
-                                </fileset>
-                            </filesets>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>clean-desired-folder</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>clean</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <!-- Copy resources to the desired-folder -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.2.0</version>
-                        <executions>
-                            <execution>
-                                <id>copy-resources</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.basedir}${file.separator}src${file.separator}test${file.separator}resources${file.separator}schema</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>${professional-subs-pack}</directory>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>jaxb2-maven-plugin</artifactId>
-                        <version>${jaxb2-maven-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>test-models-generating</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>xjc</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <skipXjc>${skipGenerateModels}</skipXjc>
-                            <skipTestXjc>${skipGenerateModels}</skipTestXjc>
-                            <outputDirectory>${models.dir}</outputDirectory>
-                            <clearOutputDir>true</clearOutputDir>
-                            <sources>
-                                <source>${professional-subs-pack}${file.separator}scenario.xsd</source>
-                                <source>${professional-subs-pack}${file.separator}global-config.xsd</source>
-                                <source>${professional-subs-pack}${file.separator}pages.xsd</source>
-                            </sources>
-                            <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-
-    </profiles>
 </project>

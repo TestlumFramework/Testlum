@@ -1,6 +1,8 @@
 package com.knubisoft.testlum.testing.framework.configuration;
 
 import lombok.Getter;
+import lombok.Setter;
+import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.util.Optional;
@@ -39,6 +41,10 @@ public class TestResourceSettings {
 
     private static TestResourceSettings instance;
 
+    @Getter
+    @Setter
+    private ApplicationContext ctx;
+
     private final File testResourcesFolder;
     private final File configFile;
     private final File envConfigFolder;
@@ -48,7 +54,8 @@ public class TestResourceSettings {
     private File pagesFolder;
     private File componentsFolder;
 
-    private TestResourceSettings(final String configFileName, final String pathToTestResources,
+    private TestResourceSettings(final String configFileName,
+                                 final String pathToTestResources,
                                  final Optional<String> scenarioScope) {
         this.testResourcesFolder = new File(pathToTestResources);
         this.configFile = new File(testResourcesFolder, configFileName);
@@ -59,10 +66,12 @@ public class TestResourceSettings {
                 .map(s -> subFolder(scenariosFolder, s, SPECIFIED_SCENARIOS_FOLDER_NOT_EXIST));
     }
 
-    public static void init(final String configFileName,
-                            final String pathToTestResources,
-                            final Optional<String> scenarioScope) {
-        TestResourceSettings.instance = new TestResourceSettings(configFileName, pathToTestResources, scenarioScope);
+    public static void init(
+            final String configFileName,
+            final String pathToTestResources,
+            final Optional<String> scenarioScope) {
+        TestResourceSettings.instance =
+                new TestResourceSettings(configFileName, pathToTestResources, scenarioScope);
     }
 
     public void initLocatorsFolder() {

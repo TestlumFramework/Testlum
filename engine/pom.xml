@@ -22,7 +22,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <start-class>com.knubisoft.testlum.starter.TESTLUMStarter</start-class>
         <models.dir>../modules/models/src/main/java</models.dir>
-        <schema.path>${project.basedir}/src/test/resources/schema</schema.path>
+        <schema.path>${project.basedir}/src/main/resources/schema</schema.path>
 
         <selenium-java.version>4.34.0</selenium-java.version>
         <appium-client.version>9.5.0</appium-client.version>
@@ -1476,7 +1476,7 @@
                 <version>${maven-assembly-plugin.version}</version>
                 <configuration>
                     <descriptors>
-                        <descriptor>src/test/resources/assembly-plugin-configuration.xml</descriptor>
+                        <descriptor>src/main/resources/assembly-plugin-configuration.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>

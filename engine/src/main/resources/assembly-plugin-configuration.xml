@@ -23,7 +23,7 @@
     </dependencySets>
     <files>
         <file>
-            <source>${project.basedir}/src/test/resources/META-INF/spring.factories</source>
+            <source>${project.basedir}/src/main/resources/META-INF/spring.factories</source>
             <outputDirectory>META-INF</outputDirectory>
         </file>
     </files>
@@ -37,7 +37,7 @@
             <useDefaultExcludes>true</useDefaultExcludes>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/src/test/resources</directory>
+            <directory>${project.basedir}/src/main/resources</directory>
             <outputDirectory>/</outputDirectory>
         </fileSet>
         <fileSet>

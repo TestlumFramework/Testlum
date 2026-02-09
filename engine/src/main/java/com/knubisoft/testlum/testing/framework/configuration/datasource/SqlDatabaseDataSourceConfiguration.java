@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.configuration.datasource;
 
-import com.knubisoft.testlum.testing.framework.configuration.ConfigProviderImpl;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSqlDatabaseEnableCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;

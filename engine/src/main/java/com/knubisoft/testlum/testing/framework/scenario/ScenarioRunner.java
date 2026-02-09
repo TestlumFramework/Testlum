@@ -206,7 +206,7 @@ public class ScenarioRunner {
     }
 
     private WebDriver createMobilebrowserDriver() {
-        return MobileUtil.getMobilebrowserDeviceBy(scenarioArguments.getEnvironment(),
+        return MobileUtil.getMobileBrowserDeviceBy(scenarioArguments.getEnvironment(),
                         scenarioArguments.getMobilebrowserDevice())
                 .map(MobilebrowserDriverFactory::createDriver)
                 .orElse(new MockDriver(MOBILEBROWSER_DRIVER_NOT_INIT));

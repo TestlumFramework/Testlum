@@ -184,7 +184,7 @@ public class ExtentReportsGenerator implements ReportGenerator {
 
     private void addMobilebrowserDeviceInfo(final ExtentTest extentTest, final ScenarioResult scenarioResult) {
         if (isNotBlank(scenarioResult.getMobilebrowserDevice())) {
-            MobileUtil.getMobilebrowserDeviceBy(scenarioResult.getEnvironment(),
+            MobileUtil.getMobileBrowserDeviceBy(scenarioResult.getEnvironment(),
                     scenarioResult.getMobilebrowserDevice()).ifPresent(mobilebrowserDevice -> extentTest.info(
                     MarkupHelper.createTable(createTableWithMobilebrowserDeviceInfo(mobilebrowserDevice))));
         }

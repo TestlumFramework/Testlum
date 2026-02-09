@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEn
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.kafka.KafkaOperation;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Kafka;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
@@ -24,7 +25,8 @@ public class AliasKafkaAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
-        for (Kafka kafka : GlobalTestConfigurationProvider.get().getDefaultIntegrations().getKafkaIntegration().getKafka()) {
+        Integrations integrations = GlobalTestConfigurationProvider.get().getDefaultIntegrations();
+        for (Kafka kafka : integrations.getKafkaIntegration().getKafka()) {
             if (kafka.isEnabled()) {
                 aliasMap.put(KAFKA + UNDERSCORE + kafka.getAlias(), kafkaOperation);
             }

@@ -7,7 +7,6 @@ import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ReportGeneratorFactory;
 import com.knubisoft.testlum.testing.model.global_config.Environment;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 @Configuration
-@ComponentScan(basePackages = {"com.knubisoft"})
 public class SpringTestContext {
 
     @Bean

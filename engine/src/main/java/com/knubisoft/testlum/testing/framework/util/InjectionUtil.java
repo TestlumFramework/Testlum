@@ -4,7 +4,6 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.framework.vault.VaultService;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 
 import java.util.Map;
 

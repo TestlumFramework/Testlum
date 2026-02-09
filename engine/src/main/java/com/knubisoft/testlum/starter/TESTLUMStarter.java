@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.starter;
 
-import com.knubisoft.testlum.testing.RootTest;
+
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.model.global_config.Mobilebrowser;
@@ -12,8 +12,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
-import org.springframework.boot.SpringApplication;
+import org.springframework.boot.Banner;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.PropertySource;
 
 import java.io.File;
 import java.util.*;
@@ -56,11 +59,14 @@ import java.util.function.Supplier;
  * </ul>
  *
  * @see TestResourceSettings
- * @see RootTest
+ * @see com.knubisoft.testlum.testing.RootTest
  * @see ExitCode
  */
-@SpringBootApplication(scanBasePackages = "com.knubisoft.testlum")
+
+@SpringBootApplication
 @Slf4j
+@PropertySource(name = "spring.banner.location", value = "classpath:banner.txt")
+@PropertySource(name = "logging.level.root", value = "INFO")
 public class TESTLUMStarter {
 
     /**
@@ -94,7 +100,10 @@ public class TESTLUMStarter {
         System.setProperty("resource", pathToTestResources.get());
         initLocatorsFolder();
 
-        SpringApplication.run(TestRunner.class, args);
+        new SpringApplicationBuilder(TestRunner.class)
+                .bannerMode(Banner.Mode.CONSOLE)
+                .web(WebApplicationType.NONE)
+                .run(args);
     }
 
     /**

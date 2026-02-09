@@ -1,12 +1,10 @@
 package com.knubisoft.testlum.testing.framework.vault;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.vault.model.VaultDto;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.Vault;
-import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.vault.authentication.TokenAuthentication;
@@ -28,7 +26,7 @@ public class VaultService {
 
     private final VaultTemplate template;
 
-    public VaultService(GlobalTestConfiguration configuration) {
+    public VaultService(final GlobalTestConfiguration configuration) {
         Vault vault = configuration.getVault();
         if (Objects.nonNull(vault)) {
             this.template = new VaultTemplate(vaultEndpoint(vault), new TokenAuthentication(vault.getToken()));

@@ -1,8 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.util.Optional;
@@ -40,10 +38,6 @@ public class TestResourceSettings {
     private static final String ENV_CONFIG_FOLDER_NOT_EXIST = "[config] folder does not exist";
 
     private static TestResourceSettings instance;
-
-    @Getter
-    @Setter
-    private ApplicationContext ctx;
 
     private final File testResourcesFolder;
     private final File configFile;

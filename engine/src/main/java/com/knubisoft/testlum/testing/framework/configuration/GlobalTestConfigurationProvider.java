@@ -33,6 +33,23 @@ public class GlobalTestConfigurationProvider {
     private final UiConfig defaultUiConfigs;
     private final Optional<VaultService> vaultService;
 
+    private GlobalTestConfigurationProvider() {
+        this.globalTestConfiguration = handle(this::init,
+                "Unable to retrieve global test configuration");
+        this.vaultService = handle(() -> initVault(globalTestConfiguration),
+                "Unable to init vault");
+        this.environments = handle(() -> filterEnabledEnvironments(globalTestConfiguration),
+                "Unable to retrieve environments");
+        this.integrations = handle(() -> collectIntegrations(environments),
+                "Unable to retrieve integrations");
+        this.uiConfigs = handle(() -> collectUiConfigs(environments),
+                "Unable to retrieve ui configs");
+        this.defaultIntegrations = handle(() -> defaultIntegrations(integrations),
+                "Unable to retrieve default integrations");
+        this.defaultUiConfigs = handle(() -> defaultUiConfigs(uiConfigs),
+                "Unable to retrieve default ui configs");
+    }
+
     public static GlobalTestConfigurationProvider get() {
         GlobalTestConfigurationProvider provider = instance;
         if (provider == null) {
@@ -47,24 +64,7 @@ public class GlobalTestConfigurationProvider {
         return provider;
     }
 
-    private GlobalTestConfigurationProvider() {
-        this.globalTestConfiguration = handle(this::init,
-                "Unable to retrieve global test configuration");
-        this.vaultService = handle(()-> initVault(globalTestConfiguration),
-                "Unable to init vault");
-        this.environments = handle(()-> filterEnabledEnvironments(globalTestConfiguration),
-                "Unable to retrieve environments");
-        this.integrations = handle(() -> collectIntegrations(environments),
-                "Unable to retrieve integrations");
-        this.uiConfigs = handle(() -> collectUiConfigs(environments),
-                "Unable to retrieve ui configs");
-        this.defaultIntegrations = handle(() -> defaultIntegrations(integrations),
-                "Unable to retrieve default integrations");
-        this.defaultUiConfigs = handle(() -> defaultUiConfigs(uiConfigs),
-                "Unable to retrieve default ui configs");
-    }
-
-    private Optional<VaultService> initVault(GlobalTestConfiguration globalTestConfiguration) {
+    private Optional<VaultService> initVault(final GlobalTestConfiguration globalTestConfiguration) {
         Vault vault = globalTestConfiguration.getVault();
         if (vault != null) {
             return Optional.of(new VaultService(globalTestConfiguration));
@@ -73,7 +73,7 @@ public class GlobalTestConfigurationProvider {
         }
     }
 
-    private <T> T handle(Supplier<T> s, String message){
+    private <T> T handle(final Supplier<T> s, final String message) {
         try {
             return s.get();
         } catch (Exception e) {
@@ -107,12 +107,12 @@ public class GlobalTestConfigurationProvider {
                 .process(TestResourceSettings.getInstance().getConfigFile());
     }
 
-    private List<Environment> filterEnabledEnvironments(GlobalTestConfiguration globalTestConfiguration) {
+    private List<Environment> filterEnabledEnvironments(final GlobalTestConfiguration globalTestConfiguration) {
         return globalTestConfiguration.getEnvironments().getEnv().stream()
                 .filter(Environment::isEnabled).collect(Collectors.toList());
     }
 
-    private Map<String, Integrations> collectIntegrations(List<Environment> environments) {
+    private Map<String, Integrations> collectIntegrations(final List<Environment> environments) {
         Map<String, Integrations> integrationsMap = environments.stream()
                 .collect(Collectors.toMap(Environment::getFolder, this::initIntegration));
         new IntegrationsValidator().validate(integrationsMap);
@@ -131,7 +131,7 @@ public class GlobalTestConfigurationProvider {
                 });
     }
 
-    private Map<String, UiConfig> collectUiConfigs(List<Environment> environments) {
+    private Map<String, UiConfig> collectUiConfigs(final List<Environment> environments) {
         Map<String, UiConfig> uiConfigMap = environments.stream()
                 .collect(Collectors.toMap(Environment::getFolder, this::initUiConfig));
         new UiConfigValidator().validate(uiConfigMap);
@@ -150,14 +150,14 @@ public class GlobalTestConfigurationProvider {
     }
 
     private <T> T injectFromVaultIfPresent(final T t) {
-        return vaultService.map(service-> InjectionUtil.injectFromVault(service, t)).orElse(t);
+        return vaultService.map(service -> InjectionUtil.injectFromVault(service, t)).orElse(t);
     }
 
-    private Integrations defaultIntegrations(Map<String, Integrations> integrations) {
+    private Integrations defaultIntegrations(final Map<String, Integrations> integrations) {
         return integrations.get(getDefaultEnabledEnvironment());
     }
 
-    private UiConfig defaultUiConfigs(Map<String, UiConfig> uiConfigs) {
+    private UiConfig defaultUiConfigs(final Map<String, UiConfig> uiConfigs) {
         return uiConfigs.get(getDefaultEnabledEnvironment());
     }
 

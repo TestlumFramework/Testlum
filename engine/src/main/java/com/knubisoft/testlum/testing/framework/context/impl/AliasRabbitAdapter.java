@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.configuration.condition.OnRabbitM
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.rabbitmq.RabbitMQOperation;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Rabbitmq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
@@ -24,8 +25,8 @@ public class AliasRabbitAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
-        for (Rabbitmq rabbitmq
-                : GlobalTestConfigurationProvider.get().getDefaultIntegrations().getRabbitmqIntegration().getRabbitmq()) {
+        Integrations integrations = GlobalTestConfigurationProvider.get().getDefaultIntegrations();
+        for (Rabbitmq rabbitmq : integrations.getRabbitmqIntegration().getRabbitmq()) {
             if (rabbitmq.isEnabled()) {
                 aliasMap.put(RABBITMQ + UNDERSCORE + rabbitmq.getAlias(), rabbitMQOperation);
             }

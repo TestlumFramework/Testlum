@@ -81,8 +81,8 @@ public class LogUtil {
         BrowserUtil.getBrowserBy(environment, browserAlias).ifPresent(abstractBrowser ->
                 log.info(LogMessage.BROWSER_NAME_LOG, BrowserUtil.getBrowserInfo(abstractBrowser)));
 
-        MobileUtil.getMobilebrowserDeviceBy(environment, mobilebrowserAlias).ifPresent(mobilebrowserDevice ->
-                log.info(LogMessage.MOBILEBROWSER_LOG, MobileUtil.getMobilebrowserDeviceInfo(mobilebrowserDevice)));
+        MobileUtil.getMobileBrowserDeviceBy(environment, mobilebrowserAlias).ifPresent(mobilebrowserDevice ->
+                log.info(LogMessage.MOBILEBROWSER_LOG, MobileUtil.getMobileBrowserDeviceInfo(mobilebrowserDevice)));
 
         MobileUtil.getNativeDeviceBy(environment, nativeDeviceAlias).ifPresent(nativeDevice ->
                 log.info(LogMessage.NATIVE_LOG, MobileUtil.getNativeDeviceInfo(nativeDevice)));

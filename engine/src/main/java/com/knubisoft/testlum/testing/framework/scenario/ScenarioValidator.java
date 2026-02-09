@@ -338,7 +338,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         boolean containsNativeAndMobileCommands =
                 commands.stream().anyMatch(command -> command instanceof Native)
                         && commands.stream().anyMatch(command -> command instanceof Mobilebrowser);
-        if (containsNativeAndMobileCommands && MobileUtil.isNativeAndMobilebrowserConfigEnabled()) {
+        if (containsNativeAndMobileCommands && MobileUtil.isNativeAndMobileBrowserConfigEnabled()) {
             validateNativeAndMobileAppiumConfig();
         }
     }
@@ -650,7 +650,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateMobilebrowserCommands(final Mobilebrowser command, final File xmlFile) {
-        if (MobileUtil.filterDefaultEnabledMobilebrowserDevices().isEmpty()
+        if (MobileUtil.filterDefaultEnabledMobileBrowserDevices().isEmpty()
                 || !GlobalTestConfigurationProvider.get().getDefaultUiConfigs().getMobilebrowser().isEnabled()) {
             throw new DefaultFrameworkException(ExceptionMessage.NOT_ENABLED_MOBILEBROWSER_DEVICE);
         }

@@ -39,7 +39,7 @@ public class TestSetCollector {
     public TestSetCollector() {
         browsers = BrowserUtil.filterDefaultEnabledBrowsers().stream()
                 .map(AbstractBrowser::getAlias).collect(Collectors.toList());
-        mobilebrowsers = MobileUtil.filterDefaultEnabledMobilebrowserDevices().stream()
+        mobilebrowsers = MobileUtil.filterDefaultEnabledMobileBrowserDevices().stream()
                 .map(MobilebrowserDevice::getAlias).collect(Collectors.toList());
         nativeDevices = MobileUtil.filterDefaultEnabledNativeDevices().stream()
                 .map(NativeDevice::getAlias).collect(Collectors.toList());

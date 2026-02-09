@@ -1,8 +1,9 @@
 package com.knubisoft.testlum.starter;
 
+
 import com.knubisoft.testlum.testing.RootTest;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+
 import com.knubisoft.testlum.testing.framework.env.parallel.GlobalParallelExecutionConfigStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,6 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.io.PrintWriter;
@@ -27,12 +27,8 @@ import java.util.stream.Collectors;
 @Component
 public class TestRunner implements CommandLineRunner {
 
-    private final ApplicationContext applicationContext;
-
     @Override
-    public void run(String... args) {
-        TestResourceSettings.getInstance().setCtx(applicationContext);
-
+    public void run(final String... args) {
         TestExecutionSummary summary = launchTestsAndGetSummary();
         formatMessageAndExitCode(summary);
     }

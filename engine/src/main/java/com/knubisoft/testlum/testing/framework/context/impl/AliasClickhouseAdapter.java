@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.sql.ClickhouseOperation;
 import com.knubisoft.testlum.testing.model.global_config.Clickhouse;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
@@ -24,8 +25,8 @@ public class AliasClickhouseAdapter implements AliasAdapter {
 
     @Override
     public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
-        for (Clickhouse clickhouse
-                : GlobalTestConfigurationProvider.get().getDefaultIntegrations().getClickhouseIntegration().getClickhouse()) {
+        Integrations integrations = GlobalTestConfigurationProvider.get().getDefaultIntegrations();
+        for (Clickhouse clickhouse : integrations.getClickhouseIntegration().getClickhouse()) {
             if (clickhouse.isEnabled()) {
                 aliasMap.put(CLICKHOUSE + UNDERSCORE + clickhouse.getAlias(), clickhouseOperation);
             }

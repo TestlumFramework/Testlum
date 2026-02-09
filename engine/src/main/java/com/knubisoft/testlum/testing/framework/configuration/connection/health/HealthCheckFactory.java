@@ -40,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 public class HealthCheckFactory {
 
     private static final int MAX_TIMEOUT_SECONDS = 20;
+    private static final int WEB_DRIVER_MAX_TIMEOUT_SECONDS = 60;
     private static final int TIME = 5;
 
     public static IntegrationHealthCheck<DataSource> forJdbc() {
@@ -185,7 +186,7 @@ public class HealthCheckFactory {
             try {
                 safeInitWebdriverWithTimeouts(browser, webDriver);
             } catch (Exception e) {
-                log.error("Failed to initialize driver or reach base URL within {}s", MAX_TIMEOUT_SECONDS);
+                log.error("Failed to initialize driver or reach base URL within {}s", WEB_DRIVER_MAX_TIMEOUT_SECONDS);
                 if (webDriver != null) {
                     webDriver.quit();
                 }
@@ -195,8 +196,8 @@ public class HealthCheckFactory {
     }
 
     private static void safeInitWebdriverWithTimeouts(final AbstractBrowser browser, final WebDriver webDriver) {
-        webDriver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS));
-        webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(MAX_TIMEOUT_SECONDS));
+        webDriver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(WEB_DRIVER_MAX_TIMEOUT_SECONDS));
+        webDriver.manage().timeouts().scriptTimeout(Duration.ofSeconds(WEB_DRIVER_MAX_TIMEOUT_SECONDS));
         BrowserUtil.manageWindowSize(browser, webDriver);
         Web settings = GlobalTestConfigurationProvider.get().
                 getWebSettings(EnvManager.currentEnv());

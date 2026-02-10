@@ -6,7 +6,7 @@ ARG APP_VERSION
 
 WORKDIR /testlum/
 COPY . .
-RUN mvn clean install -Pprofessional -DskipTests
+RUN mvn clean install -DskipTests
 
 FROM eclipse-temurin:17-jdk-jammy
 

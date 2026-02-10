@@ -60,7 +60,7 @@
         <io.micrometer.version>1.15.0</io.micrometer.version>
 
         <pl.project13.maven.plugin.version>4.0.0</pl.project13.maven.plugin.version>
-        <jaxb2-maven-plugin.version>2.5.0</jaxb2-maven-plugin.version>
+        <jaxb2-maven-plugin.version>4.0.0</jaxb2-maven-plugin.version>
         <exec.maven.plugin.version>3.0.0</exec.maven.plugin.version>
         <maven.enforcer.plugin.version>3.0.0-M3</maven.enforcer.plugin.version>
         <!--        <checkstyle.maven.plugin.version>3.1.2</checkstyle.maven.plugin.version>-->
@@ -115,7 +115,6 @@
         <org.reflections.version>0.10.2</org.reflections.version>
         <com.typesafe.version>1.4.3</com.typesafe.version>
 
-        <skipGenerateModels>true</skipGenerateModels>
         <log4j-api.version>2.24.3</log4j-api.version>
         <log4j-core.version>2.24.3</log4j-core.version>
     </properties>
@@ -1422,43 +1421,10 @@
 
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>${exec.maven.plugin.version}</version>
-                <configuration>
-                    <skip>${skipGenerateModels}</skip>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <delete dir="${basedir}/src/test/java/META-INF"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
                 <version>${jaxb2-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>test-models-generating</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
-                    <skipXjc>${skipGenerateModels}</skipXjc>
-                    <skipTestXjc>${skipGenerateModels}</skipTestXjc>
                     <outputDirectory>${models.dir}</outputDirectory>
                     <clearOutputDir>true</clearOutputDir>
                     <sources>

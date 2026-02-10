@@ -55,7 +55,7 @@ Make sure you have the following installed:
 ### Run locally
 After cloning repository to your local machine: 
 - navigate to root project folder
-- build executable jar file ```mvn clean package -Pprofessional -DskipTests```
+- build executable jar file ```mvn clean package -DskipTests```
 - and run it by passing test resources location ```java -jar engine/target/testlum-1.0.2.jar -c="global-config-file-name.xml" -p"=absolute path to folder with test resources"```
 - examples of test resources can be found in our [Wiki](https://github.com/TestlumFramework/Testlum/releases)
 

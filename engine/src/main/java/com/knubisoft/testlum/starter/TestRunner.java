@@ -95,8 +95,9 @@ public class TestRunner implements CommandLineRunner {
         log.info(toString(summary::printTo).lines().filter(line ->
                         !line.contains("container"))
                 .collect(Collectors.joining(System.lineSeparator())));
-        log.error(toString(summary::printFailuresTo));
-
+        if (summary.getTestsFailedCount() > 0) {
+            log.error(toString(summary::printFailuresTo));
+        }
         System.exit(exitCode.getExitCode());
     }
 

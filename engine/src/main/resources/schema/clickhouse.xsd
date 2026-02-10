@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
           xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
-          xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
           targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
-          elementFormDefault="qualified" jaxb:version="2.1">
+          elementFormDefault="qualified" jaxb:version="3.0">
 
     <x:include schemaLocation="shared.xsd"/>
 

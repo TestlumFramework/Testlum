@@ -66,7 +66,6 @@ import java.util.function.Supplier;
 @SpringBootApplication
 @Slf4j
 @PropertySource(name = "spring.banner.location", value = "classpath:banner.txt")
-@PropertySource(name = "logging.level.root", value = "INFO")
 public class TESTLUMStarter {
 
     /**
@@ -97,7 +96,6 @@ public class TESTLUMStarter {
         validateParams(configFileName, pathToTestResources);
 
         TestResourceSettings.init(configFileName.get(), pathToTestResources.get(), scenarioScope);
-        System.setProperty("resource", pathToTestResources.get());
         initLocatorsFolder();
 
         new SpringApplicationBuilder(TestRunner.class)

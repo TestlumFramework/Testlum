@@ -38,7 +38,7 @@
         <javax.xml.version>4.0.5</javax.xml.version>
         <jakarta.xml.bind-api.version>4.0.2</jakarta.xml.bind-api.version>
         <xerces.version>2.12.2</xerces.version>
-        <scala.version>3.7.0</scala.version>
+
         <commons-io.version>2.19.0</commons-io.version>
         <org.json.version>20250517</org.json.version>
         <com.jayway.json-path.version>2.9.0</com.jayway.json-path.version>
@@ -63,10 +63,7 @@
         <jaxb2-maven-plugin.version>4.0.0</jaxb2-maven-plugin.version>
         <exec.maven.plugin.version>3.0.0</exec.maven.plugin.version>
         <maven.enforcer.plugin.version>3.0.0-M3</maven.enforcer.plugin.version>
-        <!--        <checkstyle.maven.plugin.version>3.1.2</checkstyle.maven.plugin.version>-->
-        <!--        <com.puppycrawl.tools.checkstyle.version>8.41</com.puppycrawl.tools.checkstyle.version>-->
-        <!--        <spotbugs.version>4.7.3</spotbugs.version>-->
-        <!--        <spotbugs.maven.plugin.version>4.7.2.1</spotbugs.maven.plugin.version>-->
+
         <maven.pmd.plugin.version>3.14.0</maven.pmd.plugin.version>
         <maven.surefire.failsafe.version>3.0.0-M5</maven.surefire.failsafe.version>
         <tomcat.jdbc.version>11.0.8</tomcat.jdbc.version>
@@ -113,7 +110,6 @@
 
         <org.jetbrains.annotations.version>26.0.2</org.jetbrains.annotations.version>
         <org.reflections.version>0.10.2</org.reflections.version>
-        <com.typesafe.version>1.4.3</com.typesafe.version>
 
         <log4j-api.version>2.24.3</log4j-api.version>
         <log4j-core.version>2.24.3</log4j-core.version>
@@ -743,12 +739,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.typesafe</groupId>
-            <artifactId>config</artifactId>
-            <version>${com.typesafe.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>${xerces.version}</version>
@@ -788,13 +778,6 @@
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
             <version>${javax.xml.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala3-library_3</artifactId>
-            <version>${scala.version}</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>

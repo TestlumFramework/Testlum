@@ -40,9 +40,5 @@
             <directory>${project.basedir}/src/main/resources</directory>
             <outputDirectory>/</outputDirectory>
         </fileSet>
-        <fileSet>
-            <directory>${project.build.directory}/test-classes/initial-sample</directory>
-            <outputDirectory>/initial-sample</outputDirectory>
-        </fileSet>
     </fileSets>
 </assembly>

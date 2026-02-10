@@ -44,7 +44,7 @@ public class LocatorCollector {
 
     private Page parseLocatorOrThrow(final File each) {
         try {
-            Page page = XMLParsers.forPageLocator().process(each);
+            Page page = XMLParsers.getInstance().forPageLocator().process(each);
             addIncludeLocators(page);
             PAGE_VALIDATOR.validate(page, each);
             return page;
@@ -65,7 +65,7 @@ public class LocatorCollector {
 
     private Component parseComponent(final Include include) {
         File file = componentFiles.get(include.getComponent());
-        return XMLParsers.forComponentLocator().process(file);
+        return XMLParsers.getInstance().forComponentLocator().process(file);
     }
 
     private Map<String, Locator> transformToNameToLocatorMap(final Map<File, Page> fileToPage) {

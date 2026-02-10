@@ -94,7 +94,7 @@ public class GlobalTestConfigurationProvider {
         return getUiConfigs().get(env).getWeb();
     }
 
-    public Mobilebrowser getMobilebrowserSettings(final String env) {
+    public Mobilebrowser getMobileBrowserSettings(final String env) {
         return getUiConfigs().get(env).getMobilebrowser();
     }
 
@@ -103,7 +103,7 @@ public class GlobalTestConfigurationProvider {
     }
 
     private GlobalTestConfiguration init() {
-        return XMLParsers.forGlobalTestConfiguration()
+        return XMLParsers.getInstance().forGlobalTestConfiguration()
                 .process(TestResourceSettings.getInstance().getConfigFile());
     }
 
@@ -122,7 +122,7 @@ public class GlobalTestConfigurationProvider {
     private Integrations initIntegration(final Environment env) {
         return FileSearcher
                 .searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.INTEGRATION_CONFIG_FILENAME)
-                .map(configFile -> XMLParsers.forIntegrations().process(configFile))
+                .map(configFile -> XMLParsers.getInstance().forIntegrations().process(configFile))
                 .map(this::injectFromVaultIfPresent)
                 .map(InjectionUtil::injectFromSystem)
                 .orElseGet(() -> {
@@ -140,7 +140,7 @@ public class GlobalTestConfigurationProvider {
 
     private UiConfig initUiConfig(final Environment env) {
         return FileSearcher.searchFileFromEnvFolder(env.getFolder(), TestResourceSettings.UI_CONFIG_FILENAME)
-                .map(configFile -> XMLParsers.forUiConfig().process(configFile))
+                .map(configFile -> XMLParsers.getInstance().forUiConfig().process(configFile))
                 .map(this::injectFromVaultIfPresent)
                 .map(InjectionUtil::injectFromSystem)
                 .orElseGet(() -> {

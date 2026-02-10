@@ -48,7 +48,7 @@ public class MobileUtil {
     public Optional<MobilebrowserDevice> getMobileBrowserDeviceBy(final String env, final String deviceAlias) {
         return isBlank(deviceAlias)
                 ? Optional.empty()
-                : GlobalTestConfigurationProvider.get().getMobilebrowserSettings(env)
+                : GlobalTestConfigurationProvider.get().getMobileBrowserSettings(env)
                 .getDevices().getDevice().stream()
                 .filter(MobilebrowserDevice::isEnabled)
                 .filter(device -> device.getAlias().equalsIgnoreCase(deviceAlias))

@@ -3,37 +3,36 @@ package com.knubisoft.testlum.starter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @UtilityClass
 public class Args {
 
-    @Getter
     @RequiredArgsConstructor
+    @Getter
     public enum Param {
-        CONFIG_FILE(0, "^(-c=|--config=)"),
-        PATH_TO_TEST_RESOURCES(1, "^(-p=|--path=)"),
-        PATH_TO_SPECIFIC_SCENARIOS(2, "^(-s=|--scenarios=)");
+        CONFIG_FILE("^(?:-c|--config)=(.*)$"),
+        PATH_TO_TEST_RESOURCES("^(?:-p|--path)=(.*)$"),
+        PATH_TO_SPECIFIC_SCENARIOS("^(?:-s|--scenarios)=(.*)$");
 
-        private final int index;
         private final String regexp;
     }
 
     public Optional<String> read(final String[] args, final Param param) {
-        return safeGet(args, param.index).map(e -> remove(e, param.regexp));
+        return tryFindByRegexp(args, param.regexp);
     }
 
-    private String remove(final String input, final String regex) {
-        return input.replaceAll(regex, StringUtils.EMPTY);
-    }
-
-    private static Optional<String> safeGet(final String[] args, final int index) {
-        try {
-            return Optional.of(args[index]);
-        } catch (IndexOutOfBoundsException e) {
-            return Optional.empty();
+    private static Optional<String> tryFindByRegexp(final String[] args, final String regexp) {
+        Pattern p = Pattern.compile(regexp);
+        for (final String arg : args) {
+            Matcher m = p.matcher(arg);
+            if (m.matches()) {
+                return Optional.of(m.group(1));
+            }
         }
+        return Optional.empty();
     }
 }

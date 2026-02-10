@@ -58,7 +58,7 @@ public class ConfigProviderImpl implements ConfigProvider {
 
     @Override
     public Mobilebrowser getMobilebrowserSettings(final String env) {
-        return config.getMobilebrowserSettings(env);
+        return config.getMobileBrowserSettings(env);
     }
 
     @Override

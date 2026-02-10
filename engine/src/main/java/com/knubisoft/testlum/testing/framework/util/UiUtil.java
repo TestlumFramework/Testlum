@@ -255,7 +255,7 @@ public class UiUtil {
             return path;
         }
         if (UiType.MOBILE_BROWSER == uiType) {
-            return GlobalTestConfigurationProvider.get().getMobilebrowserSettings(env)
+            return GlobalTestConfigurationProvider.get().getMobileBrowserSettings(env)
                     .getBaseUrl() + path;
         }
         return GlobalTestConfigurationProvider.get().getWebSettings(env).getBaseUrl() + path;

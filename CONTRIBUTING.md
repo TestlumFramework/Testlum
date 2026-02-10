@@ -51,13 +51,9 @@ mvn -version     # Should show Maven 3.8+
 
 4. **Build the project**
    ```bash
-   mvn clean install -Pprofessional -DskipTests
+   mvn clean install -DskipTests
    ```
 
-5. **Run tests**
-   ```bash
-   mvn test -Pprofessional
-   ```
 
 ## Project Structure
 
@@ -152,7 +148,7 @@ git rebase upstream/main
 Ensure all checks pass before submitting:
 
 ```bash
-mvn clean install -Pprofessional
+mvn clean install
 ```
 
 ### 6. Push and Create PR

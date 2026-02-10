@@ -82,7 +82,7 @@ public class ScenarioCollector {
     }
 
     private Scenario convertXmlToScenario(final File xmlFile) {
-        Scenario scenario = XMLParsers.forScenario().process(xmlFile);
+        Scenario scenario = XMLParsers.getInstance().forScenario().process(xmlFile);
         getScenarioVariations(xmlFile, scenario);
         updateScenario(scenario);
         scenarioValidator.validate(scenario, xmlFile);
@@ -169,7 +169,7 @@ public class ScenarioCollector {
         File includedScenarioFolder = new File(scenariosFolder,
                 include.getScenario());
         File file = FileSearcher.searchFileFromDir(includedScenarioFolder, TestResourceSettings.SCENARIO_FILENAME);
-        return XMLParsers.forScenario().process(file, scenarioValidator);
+        return XMLParsers.getInstance().forScenario().process(file, scenarioValidator);
     }
 
     public static class Result {

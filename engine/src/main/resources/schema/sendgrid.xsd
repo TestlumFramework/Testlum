@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          elementFormDefault="qualified" jaxb:version="3.0">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="sendgrid">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:sequence>
+                    <x:choice>
+                        <x:element name="get" type="tns:sendgridGet"/>
+                        <x:element name="post" type="tns:sendgridPost"/>
+                        <x:element name="put" type="tns:sendgridPut"/>
+                        <x:element name="patch" type="tns:sendgridPatch"/>
+                        <x:element name="delete" type="tns:sendgridDelete"/>
+                    </x:choice>
+                </x:sequence>
+                <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="sendgridInfo" abstract="true">
+        <x:sequence>
+            <x:element name="response" type="tns:response" minOccurs="0"/>
+            <x:element name="header" type="tns:header" minOccurs="0" maxOccurs="unbounded"/>
+            <x:element name="queryParam" type="tns:queryParam" minOccurs="0" maxOccurs="unbounded"/>
+        </x:sequence>
+        <x:attribute name="endpoint" type="tns:endpointPattern" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="queryParam">
+        <x:attribute name="key" type="tns:nonEmptyString"/>
+        <x:attribute name="value" type="tns:nonEmptyString"/>
+    </x:complexType>
+
+    <x:complexType name="sendgridWithBody" abstract="true">
+        <x:complexContent>
+            <x:extension base="tns:sendgridInfo">
+                <x:sequence>
+                    <x:element name="body" type="tns:body" minOccurs="0"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="sendgridWithoutBody" abstract="true">
+        <x:complexContent>
+            <x:extension base="tns:sendgridInfo"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="sendgridGet">
+        <x:complexContent>
+            <x:extension base="tns:sendgridWithoutBody"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="sendgridPost">
+        <x:complexContent>
+            <x:extension base="tns:sendgridWithBody"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="sendgridPut">
+        <x:complexContent>
+            <x:extension base="tns:sendgridWithBody"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="sendgridPatch">
+        <x:complexContent>
+            <x:extension base="tns:sendgridWithBody"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="sendgridDelete">
+        <x:complexContent>
+            <x:extension base="tns:sendgridWithoutBody"/>
+        </x:complexContent>
+    </x:complexType>
+
+</x:schema>

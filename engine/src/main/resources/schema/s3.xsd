@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="s3">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="file" type="tns:s3File"/>
+                    <x:element name="bucket" type="tns:s3Bucket"/>
+                </x:choice>
+                <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="s3Bucket">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice>
+                    <x:element name="create" type="tns:nonEmptyString"/>
+                    <x:element name="remove" type="tns:nonEmptyString"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="s3File">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice>
+                    <x:element name="upload" type="tns:nonEmptyString"/>
+                    <x:element name="download" type="tns:s3FileDownload"/>
+                    <x:element name="remove" type="tns:s3FileRemove"/>
+                </x:choice>
+                <x:attribute name="bucket" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="key" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="s3FileDownload">
+        <x:choice>
+            <x:element name="value" type="tns:nonEmptyString"/>
+            <x:element name="file" type="tns:nonEmptyString"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="s3FileRemove"/>
+
+</x:schema>

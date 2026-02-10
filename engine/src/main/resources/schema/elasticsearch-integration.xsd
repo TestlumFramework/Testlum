@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
+
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:complexType name="elasticsearchIntegration">
+        <x:choice maxOccurs="unbounded">
+            <x:element name="elasticsearch" type="tns:elasticsearch"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="elasticsearch">
+        <x:complexContent>
+            <x:extension base="tns:storageIntegration">
+                <x:sequence>
+                    <x:element name="host" type="tns:nonEmptyString"/>
+                    <x:element name="port" type="x:int"/>
+                    <x:element name="scheme" type="tns:nonEmptyString"/>
+                    <x:element name="connectionTimeout" type="x:int"/>
+                    <x:element name="socketTimeout" type="x:int"/>
+                    <x:element name="signer" type="x:boolean"/>
+                    <x:element name="serviceName" type="tns:nonEmptyString"/>
+                    <x:element name="region" type="tns:nonEmptyString"/>
+                    <x:element name="username" type="tns:nonEmptyString"/>
+                    <x:element name="password" type="tns:nonEmptyString"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+</x:schema>
+

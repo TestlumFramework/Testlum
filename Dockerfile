@@ -6,7 +6,7 @@ ARG APP_VERSION
 
 WORKDIR /testlum/
 COPY . .
-RUN mvn clean install -Pprofessional -DskipTests
+RUN mvn clean install -DskipTests
 
 FROM eclipse-temurin:17-jdk-jammy
 
@@ -17,4 +17,4 @@ WORKDIR /testlum/
 
 COPY --from=maven-build /testlum/engine/target/testlum-${APP_VERSION}.jar testlum-final.jar
 
-ENTRYPOINT ["java", "-DTESTING_IN_PIPELINE=true", "-jar", "testlum-final.jar"]
+ENTRYPOINT ["java", "-jar", "testlum-final.jar"]

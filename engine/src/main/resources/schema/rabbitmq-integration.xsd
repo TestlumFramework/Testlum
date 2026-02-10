@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
+
+    <x:include schemaLocation="shared-config.xsd"/>
+
+    <x:complexType name="rabbitmqIntegration">
+        <x:choice maxOccurs="unbounded">
+            <x:element name="rabbitmq" type="tns:rabbitmq"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="rabbitmq">
+        <x:complexContent>
+            <x:extension base="tns:storageIntegration">
+                <x:sequence>
+                    <x:element name="host" type="tns:nonEmptyString"/>
+                    <x:element name="port" type="x:int"/>
+                    <x:element name="username" type="tns:nonEmptyString"/>
+                    <x:element name="password" type="tns:nonEmptyString"/>
+                    <x:element name="apiPort" type="x:int"/>
+                    <x:element name="virtualHost" type="tns:nonEmptyString"/>
+                    <x:element name="enabledMetrics" type="x:boolean"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+</x:schema>
+

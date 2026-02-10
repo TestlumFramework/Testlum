@@ -4,6 +4,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpret
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.model.scenario.Condition;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,7 +19,8 @@ public class ConditionInterpreter extends AbstractInterpreter<Condition> {
     @Override
     protected void acceptImpl(final Condition o, final CommandResult result) {
         Condition condition = injectCommand(o);
-        conditionProvider.processCondition(condition.getName(), condition.getSpel(),
-                dependencies.getScenarioContext(), result);
+        ScenarioContext scenarioContext = dependencies.getScenarioContext();
+        conditionProvider.processCondition(condition.getName(), scenarioContext.getCondition(condition.getSpel()),
+                scenarioContext, result);
     }
 }

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/global-config"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/global-config"
+          elementFormDefault="qualified"
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
+
+    <x:include schemaLocation="shared-restrictions.xsd"/>
+
+    <x:simpleType name="url" final="restriction">
+        <x:restriction base="x:string">
+            <x:pattern value="https?://.+"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="urlWeb" final="restriction">
+        <x:restriction base="x:string">
+            <x:pattern value="https?://.+"/>
+            <x:pattern value="chrome-extension://.+"/>
+            <x:pattern value="\{\{.*\}\}"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="urlWebsocket" final="restriction">
+        <x:restriction base="x:string">
+            <x:pattern value="((wss?|https?)://.+)"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="windowSize">
+        <x:restriction base="x:string">
+            <x:pattern value="(\d+)x(\d+)"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="xmlFileExtension">
+        <x:restriction base="x:string">
+            <x:pattern value="|.+(\.xml)"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="tagValue">
+        <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="hikari">
+        <x:sequence>
+            <x:element name="connectionTimeout" type="x:int"/>
+            <x:element name="idleTimeout" type="x:int"/>
+            <x:element name="maxLifetime" type="x:int"/>
+            <x:element name="maximumPoolSize" type="x:int"/>
+            <x:element name="minimumIdle" type="x:int"/>
+            <x:element name="connectionInitSql" type="tns:nonEmptyString"/>
+            <x:element name="connectionTestQuery" type="tns:nonEmptyString"/>
+            <x:element name="poolName" type="tns:nonEmptyString"/>
+            <x:element name="autoCommit" type="x:boolean"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="integration" abstract="true">
+        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="databaseConfig" abstract="true">
+        <x:complexContent>
+            <x:extension base="tns:storageIntegration">
+                <x:sequence>
+                    <x:element name="jdbcDriver" type="tns:nonEmptyString"/>
+                    <x:element name="username" type="tns:nonEmptyString"/>
+                    <x:element name="password" type="tns:nonEmptyString"/>
+                    <x:element name="connectionUrl" type="tns:nonEmptyString"/>
+                    <x:element name="schema" type="tns:nonEmptyString" minOccurs="0"/>
+                    <x:element name="hikari" type="tns:hikari"/>
+                </x:sequence>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="storageIntegration">
+        <x:complexContent>
+            <x:extension base="tns:integration">
+                <x:attribute name="truncate" type="x:boolean" default="false"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="settings">
+        <x:sequence>
+            <x:element name="takeScreenshots" type="tns:takeScreenshot"/>
+            <x:element name="elementAutowait" type="tns:elementAutowait"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="takeScreenshot">
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="elementAutowait">
+        <x:attribute name="seconds" type="x:int" use="required"/>
+    </x:complexType>
+
+    <x:complexType name="abstractDevice" abstract="true">
+        <x:choice>
+            <x:element name="capabilities" type="tns:capabilities" minOccurs="0"/>
+        </x:choice>
+        <x:attribute name="platformName" type="tns:platform" use="required"/>
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:attribute name="alias" type="tns:aliasPattern" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="platform">
+        <x:restriction base="x:string">
+            <x:enumeration value="android"/>
+            <x:enumeration value="ios"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:complexType name="connectionType">
+        <x:choice>
+            <x:element name="appiumServer" type="tns:appiumServer"/>
+            <x:element name="browserStack" type="tns:browserStackServer"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="appiumServer">
+        <x:choice>
+            <x:element name="serverUrl" type="tns:url"/>
+        </x:choice>
+    </x:complexType>
+
+    <x:complexType name="browserStackServer"/>
+
+    <x:complexType name="abstractCapabilities" abstract="true">
+        <x:sequence>
+            <x:element name="deviceName" type="tns:nonEmptyString"/>
+            <x:element name="platformVersion" type="tns:nonEmptyString"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="appiumCapabilities">
+        <x:complexContent>
+            <x:extension base="tns:abstractCapabilities">
+                <x:choice>
+                    <x:element name="udid" type="tns:nonEmptyString"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="browserStackCapabilities">
+        <x:complexContent>
+            <x:extension base="tns:abstractCapabilities"/>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="capabilities">
+        <x:sequence>
+            <x:element name="capability" type="tns:capability" maxOccurs="unbounded"/>
+        </x:sequence>
+    </x:complexType>
+
+    <x:complexType name="capability">
+        <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
+</x:schema>

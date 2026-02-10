@@ -55,8 +55,8 @@ Make sure you have the following installed:
 ### Run locally
 After cloning repository to your local machine: 
 - navigate to root project folder
-- build executable jar file ```mvn clean package -Pprofessional -DskipTests```
-- and run it by passing test resources location ```java -jar engine/target/testlum-1.0.0.jar -c="global-config-file-name.xml" -p"=absolute path to folder with test resources"```
+- build executable jar file ```mvn clean package -DskipTests```
+- and run it by passing test resources location ```java -jar engine/target/testlum-1.0.2.jar -c="global-config-file-name.xml" -p"=absolute path to folder with test resources"```
 - examples of test resources can be found in our [Wiki](https://github.com/TestlumFramework/Testlum/releases)
 
 Or You can use our official maven artifact:
@@ -89,14 +89,8 @@ After cloning repository to your local machine:
 - build image from [Dockerfile](Dockerfile) 
 
 ```shell
-  docker build -t testlum:1.0 .
-```
-
-- execute [run-docker-local](run-docker-local) bash script by passing test resources location
-
-```shell 
-  sh run-docker-local imageName configFileName testResourcesPath
-  sh run-docker-local testlum:1.0 global-config.xml ~/Users/user/test-resources 
+  docker build --no-cache --build-arg APP_VERSION=1.0.2 -t testlum:1.0.2 .
+  ./run-docker testlum:1.0.2 global-config.xml ~/Users/user/test-resources 
 ```
 
 Or You can use our official docker image from [Docker Hub](https://hub.docker.com/r/testlum/testlum)
@@ -122,7 +116,7 @@ Want to learn more about our vision, tools, and everything we’re building arou
 
 👇 Check out our official website
 
-<a href="https://testlum.com"><img src="https://testlum.com/img/logo.27745238.svg" alt="Testlum" width="50"></a>
+<a href="https://testlum.com"><img src="https://testlum.com/img/logo.1acbeb84.svg" alt="Testlum" width="50"></a>
 
 ### 🔍 What you’ll find there:
 - 📘 **Documentation & Tutorials** – Dive deep into how our testing framework works and how to get started in minutes.

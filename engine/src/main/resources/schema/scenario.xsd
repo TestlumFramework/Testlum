@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
+
+    <x:include schemaLocation="overview.xsd"/>
+    <x:include schemaLocation="settings.xsd"/>
+    <x:include schemaLocation="mobilebrowser.xsd"/>
+    <x:include schemaLocation="web.xsd"/>
+    <x:include schemaLocation="native.xsd"/>
+    <x:include schemaLocation="migrate.xsd"/>
+    <x:include schemaLocation="postgres.xsd"/>
+    <x:include schemaLocation="sqlDatabase.xsd"/>
+    <x:include schemaLocation="mongo.xsd"/>
+    <x:include schemaLocation="rabbit.xsd"/>
+    <x:include schemaLocation="clickhouse.xsd"/>
+    <x:include schemaLocation="redis.xsd"/>
+    <x:include schemaLocation="s3.xsd"/>
+    <x:include schemaLocation="sqs.xsd"/>
+    <x:include schemaLocation="oracle.xsd"/>
+    <x:include schemaLocation="kafka.xsd"/>
+    <x:include schemaLocation="mysql.xsd"/>
+    <x:include schemaLocation="elasticsearch.xsd"/>
+    <x:include schemaLocation="ses.xsd"/>
+    <x:include schemaLocation="sendgrid.xsd"/>
+    <x:include schemaLocation="dynamo.xsd"/>
+    <x:include schemaLocation="assert.xsd"/>
+    <x:include schemaLocation="var.xsd"/>
+    <x:include schemaLocation="wait.xsd"/>
+    <x:include schemaLocation="http.xsd"/>
+    <x:include schemaLocation="logout.xsd"/>
+    <x:include schemaLocation="shell.xsd"/>
+    <x:include schemaLocation="smtp.xsd"/>
+    <x:include schemaLocation="twilio.xsd"/>
+    <x:include schemaLocation="websocket.xsd"/>
+    <x:include schemaLocation="graphql.xsd"/>
+    <x:include schemaLocation="lambda.xsd"/>
+    <x:include schemaLocation="condition.xsd"/>
+
+    <x:annotation>
+        <x:appinfo>
+            <jaxb:bindings
+                    node="/x:schema/x:element[@name='scenario']//x:complexType//x:sequence/x:choice">
+                <jaxb:property name="commands"/>
+            </jaxb:bindings>
+
+            <jaxb:bindings
+                    node="/x:schema/x:complexType[@name='auth']//x:complexContent//x:extension/x:choice">
+                <jaxb:property name="commands"/>
+            </jaxb:bindings>
+
+            <jaxb:bindings
+                    node="/x:schema/x:complexType[@name='repeat']//x:complexContent//x:extension/x:choice">
+                <jaxb:property name="commands"/>
+            </jaxb:bindings>
+        </x:appinfo>
+    </x:annotation>
+
+    <x:element name="scenario">
+        <x:complexType>
+            <x:sequence>
+                <x:element name="overview" type="tns:overview"/>
+                <x:element name="settings" type="tns:settings"/>
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="include" type="tns:include"/>
+                    <x:element name="auth" type="tns:auth"/>
+                    <x:element name="repeat" type="tns:repeat"/>
+                    <x:element name="mobilebrowser" type="tns:mobilebrowser"/>
+                    <x:element name="web" type="tns:web"/>
+                    <x:element name="native" type="tns:native"/>
+
+                    <x:element name="http" type="tns:http"/>
+                    <x:element name="migrate" type="tns:migrate"/>
+                    <x:element name="postgres" type="tns:postgres"/>
+                    <x:element name="sqlDatabase" type="tns:sqlDatabase"/>
+                    <x:element name="mysql" type="tns:mysql"/>
+                    <x:element name="oracle" type="tns:oracle"/>
+                    <x:element name="mongo" type="tns:mongo"/>
+                    <x:element name="redis" type="tns:redis"/>
+                    <x:element name="rabbit" type="tns:rabbit"/>
+                    <x:element name="kafka" type="tns:kafka"/>
+                    <x:element name="s3" type="tns:s3"/>
+                    <x:element name="sqs" type="tns:sqs"/>
+                    <x:element name="clickhouse" type="tns:clickhouse"/>
+                    <x:element name="elasticsearch" type="tns:elasticsearch"/>
+                    <x:element name="lambda" type="tns:lambda"/>
+                    <x:element name="sendgrid" type="tns:sendgrid"/>
+                    <x:element name="ses" type="tns:ses"/>
+                    <x:element name="dynamo" type="tns:dynamo"/>
+                    <x:element name="graphql" type="tns:graphql"/>
+                    <x:element name="websocket" type="tns:websocket"/>
+
+                    <x:element name="assert" type="tns:assert"/>
+                    <x:element name="var" type="tns:var"/>
+                    <x:element name="condition" type="tns:condition"/>
+                    <x:element name="wait" type="tns:wait"/>
+                    <x:element name="shell" type="tns:shell"/>
+                    <x:element name="smtp" type="tns:smtp"/>
+                    <x:element name="twilio" type="tns:twilio"/>
+                </x:choice>
+            </x:sequence>
+        </x:complexType>
+    </x:element>
+
+    <x:complexType name="auth">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="include" type="tns:include"/>
+<!--                    <x:element name="auth" type="tns:auth"/>-->
+                    <x:element name="repeat" type="tns:repeat"/>
+                    <x:element name="web" type="tns:web"/>
+
+                    <x:element name="http" type="tns:http"/>
+                    <x:element name="migrate" type="tns:migrate"/>
+                    <x:element name="postgres" type="tns:postgres"/>
+                    <x:element name="sqlDatabase" type="tns:sqlDatabase"/>
+                    <x:element name="mysql" type="tns:mysql"/>
+                    <x:element name="oracle" type="tns:oracle"/>
+                    <x:element name="mongo" type="tns:mongo"/>
+                    <x:element name="redis" type="tns:redis"/>
+                    <x:element name="rabbit" type="tns:rabbit"/>
+                    <x:element name="kafka" type="tns:kafka"/>
+                    <x:element name="s3" type="tns:s3"/>
+                    <x:element name="sqs" type="tns:sqs"/>
+                    <x:element name="clickhouse" type="tns:clickhouse"/>
+                    <x:element name="elasticsearch" type="tns:elasticsearch"/>
+                    <x:element name="sendgrid" type="tns:sendgrid"/>
+                    <x:element name="ses" type="tns:ses"/>
+                    <x:element name="dynamo" type="tns:dynamo"/>
+                    <x:element name="graphql" type="tns:graphql"/>
+                    <x:element name="smtp" type="tns:smtp"/>
+                    <x:element name="twilio" type="tns:twilio"/>
+
+                    <x:element name="var" type="tns:var"/>
+                    <x:element name="wait" type="tns:wait"/>
+                </x:choice>
+                <x:attribute name="apiAlias" type="tns:nonEmptyString" default="DEFAULT"/>
+                <x:attribute name="credentials" type="tns:jsonFileExtension" use="required"/>
+                <x:attribute name="loginEndpoint" type="tns:endpointPattern" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="repeat">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="include" type="tns:include"/>
+<!--                    <x:element name="auth" type="tns:auth"/>-->
+                    <x:element name="repeat" type="tns:repeat"/>
+                    <x:element name="web" type="tns:web"/>
+                    <x:element name="http" type="tns:http"/>
+                    <x:element name="migrate" type="tns:migrate"/>
+                    <x:element name="postgres" type="tns:postgres"/>
+                    <x:element name="sqlDatabase" type="tns:sqlDatabase"/>
+                    <x:element name="mysql" type="tns:mysql"/>
+                    <x:element name="oracle" type="tns:oracle"/>
+                    <x:element name="mongo" type="tns:mongo"/>
+                    <x:element name="redis" type="tns:redis"/>
+                    <x:element name="rabbit" type="tns:rabbit"/>
+                    <x:element name="kafka" type="tns:kafka"/>
+                    <x:element name="s3" type="tns:s3"/>
+                    <x:element name="sqs" type="tns:sqs"/>
+                    <x:element name="clickhouse" type="tns:clickhouse"/>
+                    <x:element name="elasticsearch" type="tns:elasticsearch"/>
+                    <x:element name="lambda" type="tns:lambda"/>
+                    <x:element name="sendgrid" type="tns:sendgrid"/>
+                    <x:element name="ses" type="tns:ses"/>
+                    <x:element name="dynamo" type="tns:dynamo"/>
+                    <x:element name="graphql" type="tns:graphql"/>
+                    <x:element name="var" type="tns:var"/>
+                    <x:element name="wait" type="tns:wait"/>
+                    <x:element name="shell" type="tns:shell"/>
+                    <x:element name="smtp" type="tns:smtp"/>
+                    <x:element name="twilio" type="tns:twilio"/>
+                </x:choice>
+                <x:attribute name="times" type="tns:positiveIntegerMin1"/>
+                <x:attribute name="variations" type="tns:csv"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="include">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:attribute name="scenario" type="tns:nonEmptyString" use="required"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+</x:schema>

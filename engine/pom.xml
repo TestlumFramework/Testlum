@@ -22,7 +22,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <start-class>com.knubisoft.testlum.starter.TESTLUMStarter</start-class>
         <models.dir>../modules/models/src/main/java</models.dir>
-        <professional-subs-pack>${project.basedir}/src/test/resources/subs/schema-professional</professional-subs-pack>
+        <schema.path>${project.basedir}/src/main/resources/schema</schema.path>
 
         <selenium-java.version>4.34.0</selenium-java.version>
         <appium-client.version>9.5.0</appium-client.version>
@@ -38,7 +38,7 @@
         <javax.xml.version>4.0.5</javax.xml.version>
         <jakarta.xml.bind-api.version>4.0.2</jakarta.xml.bind-api.version>
         <xerces.version>2.12.2</xerces.version>
-        <scala.version>3.7.0</scala.version>
+
         <commons-io.version>2.19.0</commons-io.version>
         <org.json.version>20250517</org.json.version>
         <com.jayway.json-path.version>2.9.0</com.jayway.json-path.version>
@@ -60,13 +60,11 @@
         <io.micrometer.version>1.15.0</io.micrometer.version>
 
         <pl.project13.maven.plugin.version>4.0.0</pl.project13.maven.plugin.version>
-        <jaxb2-maven-plugin.version>2.5.0</jaxb2-maven-plugin.version>
+        <jaxb2-maven-plugin.version>4.0.0</jaxb2-maven-plugin.version>
         <exec.maven.plugin.version>3.0.0</exec.maven.plugin.version>
         <maven.enforcer.plugin.version>3.0.0-M3</maven.enforcer.plugin.version>
-        <!--        <checkstyle.maven.plugin.version>3.1.2</checkstyle.maven.plugin.version>-->
-        <!--        <com.puppycrawl.tools.checkstyle.version>8.41</com.puppycrawl.tools.checkstyle.version>-->
-        <!--        <spotbugs.version>4.7.3</spotbugs.version>-->
-        <!--        <spotbugs.maven.plugin.version>4.7.2.1</spotbugs.maven.plugin.version>-->
+        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+
         <maven.pmd.plugin.version>3.14.0</maven.pmd.plugin.version>
         <maven.surefire.failsafe.version>3.0.0-M5</maven.surefire.failsafe.version>
         <tomcat.jdbc.version>11.0.8</tomcat.jdbc.version>
@@ -106,16 +104,14 @@
         <klov-reporter.version>5.1.0</klov-reporter.version>
         <jakarta.activation.version>1.2.2</jakarta.activation.version>
         <com.twilio.sdk.version>10.9.2</com.twilio.sdk.version>
-        <image-comparison.version>4.4.1</image-comparison.version>
+        <image-comparison.version>4.4.0</image-comparison.version>
         <com.github.curious-odd-man.rgxgen.version>3.0</com.github.curious-odd-man.rgxgen.version>
         <org.jsoup.version>1.20.1</org.jsoup.version>
         <org.asynchttpclient>3.0.2</org.asynchttpclient>
 
         <org.jetbrains.annotations.version>26.0.2</org.jetbrains.annotations.version>
         <org.reflections.version>0.10.2</org.reflections.version>
-        <com.typesafe.version>1.4.3</com.typesafe.version>
 
-        <skipGenerateModels>true</skipGenerateModels>
         <log4j-api.version>2.24.3</log4j-api.version>
         <log4j-core.version>2.24.3</log4j-core.version>
     </properties>
@@ -744,12 +740,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.typesafe</groupId>
-            <artifactId>config</artifactId>
-            <version>${com.typesafe.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>${xerces.version}</version>
@@ -789,13 +779,6 @@
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
             <version>${javax.xml.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala3-library_3</artifactId>
-            <version>${scala.version}</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -1022,8 +1005,6 @@
             <groupId>com.github.romankh3</groupId>
             <artifactId>image-comparison</artifactId>
             <version>${image-comparison.version}</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/src/test/resources/lib/image-comparison-4.4.1.jar</systemPath>
         </dependency>
 
         <dependency>
@@ -1271,6 +1252,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-iostreams</artifactId>
+            <version>2.25.2</version>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -1416,7 +1403,6 @@
                 <artifactId>jakarta.xml.bind-api</artifactId>
                 <version>${jakarta.xml.bind-api.version}</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -1425,25 +1411,19 @@
 
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>${exec.maven.plugin.version}</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>${jaxb2-maven-plugin.version}</version>
                 <configuration>
-                    <skip>${skipGenerateModels}</skip>
+                    <outputDirectory>${models.dir}</outputDirectory>
+                    <clearOutputDir>true</clearOutputDir>
+                    <sources>
+                        <source>${schema.path}${file.separator}scenario.xsd</source>
+                        <source>${schema.path}${file.separator}global-config.xsd</source>
+                        <source>${schema.path}${file.separator}pages.xsd</source>
+                    </sources>
+                    <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
                 </configuration>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <delete dir="${basedir}/src/test/java/META-INF"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
@@ -1452,7 +1432,7 @@
                 <version>${maven-assembly-plugin.version}</version>
                 <configuration>
                     <descriptors>
-                        <descriptor>src/test/resources/assembly-plugin-configuration.xml</descriptor>
+                        <descriptor>src/main/resources/assembly-plugin-configuration.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>
@@ -1472,162 +1452,7 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>quality-checking</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-enforcer-plugin</artifactId>
-                        <version>${maven.enforcer.plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>check-pre-defined=project-rules</id>
-                                <goals>
-                                    <goal>enforce</goal>
-                                </goals>
-                                <phase>verify</phase>
-                                <configuration>
-                                    <rules>
-                                        <banDuplicatePomDependencyVersions/>
-                                        <dependencyConvergence/>
-                                        <reactorModuleConvergence/>
-                                        <requireJavaVersion>
-                                            <version>${java.version}</version>
-                                        </requireJavaVersion>
-                                        <!--                                    if you use version for plugin from props as ${version} move this property to root pom-->
-                                        <requirePluginVersions>
-                                            <banLatest>false</banLatest>
-                                            <banRelease>false</banRelease>
-                                            <banSnapshots>false</banSnapshots>
-                                            <unCheckedPluginList>
-                                                org.apache.maven.plugins:maven-site-plugin,
-                                                org.apache.maven.plugins:maven-compiler-plugin,
-                                                org.apache.maven.plugins:maven-surefire-plugin,
-                                                org.apache.maven.plugins:maven-jar-plugin,
-                                                org.apache.maven.plugins:maven-clean-plugin,
-                                                org.apache.maven.plugins:maven-install-plugin,
-                                                org.apache.maven.plugins:maven-resources-plugin,
-                                                org.apache.maven.plugins:maven-deploy-plugin
-                                            </unCheckedPluginList>
-                                        </requirePluginVersions>
-                                    </rules>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-pmd-plugin</artifactId>
-                        <version>${maven.pmd.plugin.version}</version>
-                        <configuration>
-                            <linkXRef>true</linkXRef>
-                            <sourceEncoding>utf-8</sourceEncoding>
-                            <minimumTokens>50</minimumTokens>
-                            <targetJdk>${java.version}</targetJdk>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>duplicate-detection</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>cpd-check</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>professional</id>
-            <dependencies>
-                <!--DATABASES-->
-            </dependencies>
-            <build>
-                <plugins>
-                    <!-- Clean the desired-folder -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-clean-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <configuration>
-                            <filesets>
-                                <fileset>
-                                    <directory>${project.basedir}${file.separator}src${file.separator}test${file.separator}resources${file.separator}schema</directory>
-                                </fileset>
-                            </filesets>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>clean-desired-folder</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>clean</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <!-- Copy resources to the desired-folder -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>3.2.0</version>
-                        <executions>
-                            <execution>
-                                <id>copy-resources</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.basedir}${file.separator}src${file.separator}test${file.separator}resources${file.separator}schema</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>${professional-subs-pack}</directory>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>jaxb2-maven-plugin</artifactId>
-                        <version>${jaxb2-maven-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>test-models-generating</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>xjc</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <skipXjc>${skipGenerateModels}</skipXjc>
-                            <skipTestXjc>${skipGenerateModels}</skipTestXjc>
-                            <outputDirectory>${models.dir}</outputDirectory>
-                            <clearOutputDir>true</clearOutputDir>
-                            <sources>
-                                <source>${professional-subs-pack}${file.separator}scenario.xsd</source>
-                                <source>${professional-subs-pack}${file.separator}global-config.xsd</source>
-                                <source>${professional-subs-pack}${file.separator}pages.xsd</source>
-                            </sources>
-                            <noGeneratedHeaderComments>true</noGeneratedHeaderComments>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-
-    </profiles>
 </project>

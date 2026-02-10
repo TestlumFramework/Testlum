@@ -16,7 +16,6 @@ public class TestResourceSettings {
     public static final String UI_CONFIG_FILENAME = "ui.xml";
     public static final String ACTUAL_FILENAME = "actual.json";
     public static final String ACTUAL_IMAGE_PREFIX = "actual_image_compared_to_";
-    public static final String FILENAME_TO_SAVE = "action_%s_" + ACTUAL_FILENAME;
     public static final String SCREENSHOT_FILENAME = "screenshot.jpg";
     public static final String SCREENSHOT_NAME_TO_SAVE = "%s_action_%s_" + SCREENSHOT_FILENAME;
     public static final String XML_SUFFIX = ".xml";
@@ -49,7 +48,8 @@ public class TestResourceSettings {
     private File pagesFolder;
     private File componentsFolder;
 
-    private TestResourceSettings(final String configFileName, final String pathToTestResources,
+    private TestResourceSettings(final String configFileName,
+                                 final String pathToTestResources,
                                  final Optional<String> scenarioScope) {
         this.testResourcesFolder = new File(pathToTestResources);
         this.configFile = new File(testResourcesFolder, configFileName);
@@ -60,9 +60,12 @@ public class TestResourceSettings {
                 .map(s -> subFolder(scenariosFolder, s, SPECIFIED_SCENARIOS_FOLDER_NOT_EXIST));
     }
 
-    public static void init(final String configFileName, final String pathToTestResources,
-                            final Optional<String> scenarioScope) {
-        instance = new TestResourceSettings(configFileName, pathToTestResources, scenarioScope);
+    public static void init(
+            final String configFileName,
+            final String pathToTestResources,
+            final Optional<String> scenarioScope) {
+        TestResourceSettings.instance =
+                new TestResourceSettings(configFileName, pathToTestResources, scenarioScope);
     }
 
     public void initLocatorsFolder() {
@@ -71,7 +74,7 @@ public class TestResourceSettings {
     }
 
     public static TestResourceSettings getInstance() {
-        return instance;
+        return TestResourceSettings.instance;
     }
 
     private File subFolder(final File sourceDirectory, final String name, final String errorMessage) {

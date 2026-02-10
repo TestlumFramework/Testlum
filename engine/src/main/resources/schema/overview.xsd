@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="overview">
+        <x:all>
+            <x:element name="description" type="tns:stringMin10"/>
+            <x:element name="name" type="tns:nonEmptyString"/>
+            <x:element name="jira" type="tns:nonEmptyString" minOccurs="0"/>
+            <x:element name="developer" type="tns:nonEmptyString" minOccurs="0"/>
+            <x:element name="link" type="tns:nonEmptyString" minOccurs="0"/>
+        </x:all>
+    </x:complexType>
+
+    <x:simpleType name="overviewPart">
+        <x:restriction base="x:string">
+            <x:enumeration value="Description"/>
+            <x:enumeration value="Name"/>
+            <x:enumeration value="Jira"/>
+            <x:enumeration value="Developer"/>
+            <x:enumeration value="Link"/>
+        </x:restriction>
+    </x:simpleType>
+</x:schema>

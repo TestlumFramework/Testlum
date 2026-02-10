@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="assert">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="equal" type="tns:assertEqual"/>
+                    <x:element name="notEqual" type="tns:assertNotEqual"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="assertEqual">
+        <x:complexContent>
+            <x:extension base="tns:assertEquality" />
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="assertNotEqual">
+        <x:complexContent>
+            <x:extension base="tns:assertEquality" />
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="assertEquality" abstract="true">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice minOccurs="2" maxOccurs="unbounded">
+                    <x:element name="content" type="tns:nonEmptyString"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="webAssert">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="attribute" type="tns:assertAttribute"/>
+                    <x:element name="title" type="tns:assertTitle"/>
+                    <x:element name="equal" type="tns:assertEqual"/>
+                    <x:element name="notEqual" type="tns:assertNotEqual"/>
+                    <x:element name="alert" type="tns:assertAlert"/>
+                    <x:element name="checked" type="tns:assertChecked"/>
+                    <x:element name="present" type="tns:assertPresent"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="nativeAssert">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:choice maxOccurs="unbounded">
+                    <x:element name="attribute" type="tns:assertAttribute"/>
+                    <x:element name="equal" type="tns:assertEqual"/>
+                    <x:element name="notEqual" type="tns:assertNotEqual"/>
+                </x:choice>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="assertAttribute">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:sequence>
+                    <x:element name="content" type="tns:nonEmptyString"/>
+                </x:sequence>
+                <x:attribute name="name" type="tns:webAttributeNamePattern" use="required"/>
+                <x:attribute name="negative" type="x:boolean" default="false"/>
+                <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>
+                <x:attribute name="locatorStrategy" type="tns:locatorStrategy" default="locatorId"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="assertTitle">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:sequence>
+                    <x:element name="content" type="tns:nonEmptyString"/>
+                </x:sequence>
+                <x:attribute name="negative" type="x:boolean" default="false"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="assertAlert">
+        <x:complexContent>
+            <x:extension base="tns:abstractUiCommand">
+                <x:sequence>
+                    <x:element name="text" type="tns:nonEmptyString"/>
+                </x:sequence>
+                <x:attribute name="negative" type="x:boolean" default="false"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="assertChecked">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
+                <x:attribute name="negative" type="x:boolean" default="false"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:complexType name="assertPresent">
+        <x:complexContent>
+            <x:extension base="tns:commandWithLocator">
+                <x:attribute name="negative" type="x:boolean" default="false"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+</x:schema>

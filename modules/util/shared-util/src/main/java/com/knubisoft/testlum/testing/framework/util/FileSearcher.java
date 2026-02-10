@@ -65,9 +65,10 @@ public final class FileSearcher {
     public File searchFileFromDataFolder(final String fileName) {
         final String targetName = fileName.startsWith(SLASH_SEPARATOR)
                 ? fileName.substring(1) : fileName;
-        File file = DATA_FOLDER_FILES.get(targetName);
+        String finalFileName = targetName.split("\\s+")[0];
+        File file = DATA_FOLDER_FILES.get(finalFileName);
         if (isNull(file)) {
-            throw new FileLinkingException(DATA_FOLDER, TEST_RESOURCES_FOLDER, targetName);
+            throw new FileLinkingException(DATA_FOLDER, TEST_RESOURCES_FOLDER, finalFileName);
         }
         return file;
     }

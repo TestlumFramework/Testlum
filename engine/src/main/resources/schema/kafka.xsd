@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
+
+  <x:include schemaLocation="shared.xsd"/>
+
+  <x:complexType name="kafka">
+    <x:complexContent>
+      <x:extension base="tns:abstractCommand">
+        <x:sequence maxOccurs="unbounded">
+          <x:choice>
+            <x:element name="send" type="tns:sendKafkaMessage" maxOccurs="unbounded"/>
+            <x:element name="receive" type="tns:receiveKafkaMessage" maxOccurs="unbounded"/>
+          </x:choice>
+        </x:sequence>
+        <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
+      </x:extension>
+    </x:complexContent>
+  </x:complexType>
+
+  <x:complexType name="sendKafkaMessage">
+    <x:sequence>
+      <x:choice>
+        <x:element name="value" type="tns:nonEmptyString"/>
+        <x:element name="file" type="tns:bodyFile"/>
+      </x:choice>
+      <x:element name="key" type="x:string" minOccurs="0"/>
+      <x:element name="headers" type="tns:kafkaHeaders" minOccurs="0"/>
+    </x:sequence>
+    <x:attribute name="topic" type="tns:nonEmptyString" use="required"/>
+    <x:attribute name="correlationId" type="tns:nonEmptyString"/>
+  </x:complexType>
+
+  <x:complexType name="receiveKafkaMessage">
+    <x:choice>
+      <x:element name="value" type="tns:nonEmptyString"/>
+      <x:element name="file" type="tns:expectedPattern"/>
+    </x:choice>
+
+    <x:attribute name="topic" type="tns:nonEmptyString" use="required"/>
+    <x:attribute name="timeoutMillis" type="x:long" default="1500"/>
+    <x:attribute name="headers" type="x:boolean" default="true"/>
+    <x:attribute name="commit" type="x:boolean" default="false"/>
+  </x:complexType>
+
+  <x:complexType name="kafkaHeaders">
+    <x:sequence maxOccurs="unbounded">
+      <x:element name="header" type="tns:kafkaHeader"/>
+    </x:sequence>
+  </x:complexType>
+
+  <x:complexType name="kafkaHeader">
+    <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
+    <x:attribute name="value" type="x:string" use="required"/>
+  </x:complexType>
+</x:schema>

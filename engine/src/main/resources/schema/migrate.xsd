@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:schema xmlns:x="http://www.w3.org/2001/XMLSchema"
+          targetNamespace="http://www.knubisoft.com/testlum/testing/model/scenario"
+          xmlns:tns="http://www.knubisoft.com/testlum/testing/model/scenario"
+          elementFormDefault="qualified"
+          xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
+
+    <x:include schemaLocation="shared.xsd"/>
+
+    <x:complexType name="migrate">
+        <x:complexContent>
+            <x:extension base="tns:abstractCommand">
+                <x:choice minOccurs="1" maxOccurs="unbounded">
+                    <x:element name="dataset" type="tns:nonEmptyString" minOccurs="1" maxOccurs="1"/>
+                </x:choice>
+                <x:attribute name="name" type="tns:storageName" default="POSTGRES"/>
+                <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
+            </x:extension>
+        </x:complexContent>
+    </x:complexType>
+
+    <x:simpleType name="storageName">
+        <x:restriction base="x:string">
+            <x:enumeration value="POSTGRES"/>
+            <x:enumeration value="MYSQL"/>
+            <x:enumeration value="ORACLE"/>
+            <x:enumeration value="REDIS"/>
+            <x:enumeration value="MONGODB"/>
+            <x:enumeration value="DYNAMO"/>
+            <x:enumeration value="CLICKHOUSE"/>
+            <x:enumeration value="SQLDATABASE"/>
+        </x:restriction>
+    </x:simpleType>
+</x:schema>

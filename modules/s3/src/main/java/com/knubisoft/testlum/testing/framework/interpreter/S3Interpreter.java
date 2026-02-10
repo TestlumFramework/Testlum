@@ -94,6 +94,11 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         result.put(ALIAS, s3.getAlias());
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
+        performCommands(s3, subCommandsResult);
+        setExecutionResultIfSubCommandsFailed(result);
+    }
+
+    private void performCommands(final S3 s3, final List<CommandResult> subCommandsResult) {
         for (AbstractCommand action : s3.getFileOrBucket()) {
             int commandId = dependencies.getPosition().incrementAndGet();
             log.info(COMMAND_LOG, commandId, action.getClass().getSimpleName());
@@ -101,7 +106,6 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
             subCommandsResult.add(commandResult);
             processEachAction(action, new AliasEnv(s3.getAlias(), dependencies.getEnvironment()), commandResult);
         }
-        setExecutionResultIfSubCommandsFailed(result);
     }
 
     private void checkAlias(final S3 s3) {
@@ -174,8 +178,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         try {
             s3Client.get(aliasEnv).headBucket(request -> request.bucket(bucketName));
             return true;
-        }
-        catch (final NoSuchBucketException exception) {
+        } catch (final NoSuchBucketException exception) {
             return false;
         }
     }
@@ -254,7 +257,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         try {
             checkBucketFileExists(bucketName, key, aliasEnv);
             ResponseInputStream<GetObjectResponse> s3Object = s3Client.get(aliasEnv)
-                    .getObject(builder ->  builder.bucket(bucketName).key(key));
+                    .getObject(builder -> builder.bucket(bucketName).key(key));
             return IOUtils.toString(s3Object, StandardCharsets.UTF_8);
         } catch (S3Exception e) {
             throw new DefaultFrameworkException(String.format(FILE_PROCESSING_ERROR, key, bucketName));
@@ -356,7 +359,8 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     }
 
     private String getFileOrDownloadValue(final S3File fileCommand) {
-        return fileCommand.getDownload().getFile() == null ? fileCommand.getDownload().getValue() : fileCommand.getDownload().getFile();
+        S3FileDownload download = fileCommand.getDownload();
+        return download.getFile() == null ? download.getValue() : download.getFile();
     }
 
 }

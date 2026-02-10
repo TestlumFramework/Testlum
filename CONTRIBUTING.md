@@ -54,6 +54,10 @@ mvn -version     # Should show Maven 3.8+
    mvn clean install -DskipTests
    ```
 
+5. **Run tests**
+   ```bash
+   mvn test
+   ```
 
 ## Project Structure
 

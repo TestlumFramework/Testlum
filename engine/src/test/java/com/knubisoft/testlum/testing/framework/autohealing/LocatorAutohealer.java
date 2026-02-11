@@ -34,6 +34,8 @@ import static java.nio.charset.Charset.defaultCharset;
 public class LocatorAutohealer {
 
     private static final double MIN_ACCEPTABLE_SCORE = 0.6;
+    private static final String PATCH_FILE_PREFIX = "patch_";
+    private static final String PATCH_FILE_EXTENSION = ".xml";
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private final JaroWinklerSimilarity jaroWinklerSimilarity = new JaroWinklerSimilarity();
@@ -92,11 +94,11 @@ public class LocatorAutohealer {
         String fileName;
         if (isLocatorDefinedInLocatorFile) {
             directory = locatorData.getFile().getParentFile();
-            fileName = "patch_" + locatorData.getLocator().getLocatorId() + ".xml";
+            fileName = PATCH_FILE_PREFIX + locatorData.getLocator().getLocatorId() + PATCH_FILE_EXTENSION;
         } else {
             directory = dependencies.getFile().getParentFile();
             int position = dependencies.getPosition().get();
-            fileName = "patch_" + position + ".xml";
+            fileName = PATCH_FILE_PREFIX + position + PATCH_FILE_EXTENSION;
         }
         File patch = new File(directory, fileName);
         String xmlContent = XmlGenerator.toXml(healedLocators);

@@ -66,7 +66,6 @@ public class LocatorAutohealer {
                 .map(ScoredElement::getElement);
     }
 
-    @SneakyThrows
     public File generateNewLocators(final WebElement healedElement, final AutoHealingMode mode,
                                     final ExecutorDependencies dependencies, LocatorData locatorData) {
         HealedLocators healedLocators = generateXpathAndCssSelector(healedElement);
@@ -89,20 +88,24 @@ public class LocatorAutohealer {
     private File generatePatchForLocatorDefinedInScenario(final ExecutorDependencies dependencies,
                                                           final HealedLocators healedLocators,
                                                           final boolean isLocatorDefinedInLocatorFile,
-                                                          final LocatorData locatorData)
-            throws IOException {
+                                                          final LocatorData locatorData) {
+        File directory;
+        String fileName;
         if (isLocatorDefinedInLocatorFile) {
-            File locatorFileDirectory = locatorData.getFile().getParentFile();
-            File patch = new File(locatorFileDirectory,"patch_" + locatorData.getLocator().getLocatorId() + ".json");
-            FileUtils.writeStringToFile(patch,
-                    JacksonMapperUtil.writeValueAsStringWithDefaultPrettyPrinter(healedLocators), defaultCharset());
-            return patch;
+            directory = locatorData.getFile().getParentFile();
+            fileName = "patch_" + locatorData.getLocator().getLocatorId() + ".xml";
+        } else {
+            directory = dependencies.getFile().getParentFile();
+            int position = dependencies.getPosition().get();
+            fileName = "patch_" + position + ".xml";
         }
-        File scenarioDirectory = dependencies.getFile().getParentFile();
-        int position = dependencies.getPosition().get();
-        File patch = new File(scenarioDirectory, "patch_" + position + ".json");
-        FileUtils.writeStringToFile(patch,
-                JacksonMapperUtil.writeValueAsStringWithDefaultPrettyPrinter(healedLocators), defaultCharset());
+        File patch = new File(directory, fileName);
+        String xmlContent = XmlGenerator.toXml(healedLocators);
+        try {
+            FileUtils.writeStringToFile(patch, xmlContent, defaultCharset());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return patch;
     }
 

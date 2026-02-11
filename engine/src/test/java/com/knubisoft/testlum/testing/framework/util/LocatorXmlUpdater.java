@@ -19,7 +19,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class LocatorXmlUpdater {
 
@@ -81,22 +83,41 @@ public class LocatorXmlUpdater {
         }
     }
 
-    private static void addSingle(final Document document, final Element locatorElement,
-                                  final String tagName, final String value) {
-        if (value == null) {
+    private static void addSingle(final Document document, final Element parent, String tagName, String tagValue) {
+        if (tagValue == null || tagValue.trim().isEmpty()) {
             return;
         }
-        Element tagElement = document.createElement(tagName);
-        tagElement.setTextContent(value);
-        locatorElement.appendChild(tagElement);
+        NodeList existing = parent.getElementsByTagName(tagName);
+        for (int i = 0; i < existing.getLength(); i++) {
+            if (existing.item(i).getTextContent().equals(tagValue)) {
+                return;
+            }
+        }
+        insertAtAnchor(document, parent, tagName, tagValue, existing.item(0));
     }
 
-    private static void addMultiple(final Document document, final Element locatorElement,
-                                    final String tagName, final List<String> values) {
-        for (String value : values) {
-            Element tagElement = document.createElement(tagName);
-            tagElement.setTextContent(value);
-            locatorElement.appendChild(tagElement);
+    private static void addMultiple(final Document document, final Element parent, String tagName, List<String> tagValues) {
+        if (tagValues == null || tagValues.isEmpty()) {
+            return;
+        }
+        NodeList existing = parent.getElementsByTagName(tagName);
+        Set<String> seen = new HashSet<>();
+        for (int i = 0; i < existing.getLength(); i++) {
+            seen.add(existing.item(i).getTextContent().trim());
+        }
+        tagValues.stream()
+                .filter(v -> v != null && !v.trim().isEmpty() && !seen.contains(v.trim()))
+                .forEach(v -> insertAtAnchor(document, parent, tagName, v, existing.item(0)));
+    }
+
+    private static void insertAtAnchor(final Document document, final Element parent, final String tagName,
+                                       final String tagValue, final Node anchor) {
+        Element el = document.createElement(tagName);
+        el.setTextContent(tagValue);
+        if (anchor != null) {
+            parent.insertBefore(el, anchor);
+        } else {
+            parent.appendChild(el);
         }
     }
 

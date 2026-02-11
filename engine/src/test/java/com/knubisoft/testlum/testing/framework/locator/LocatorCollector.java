@@ -39,7 +39,7 @@ public class LocatorCollector {
     private Map<File, Page> collectFileToPageMap() {
         Map<File, Page> fileToPage = new LinkedHashMap<>();
         pageFiles.values().stream()
-                .filter(file -> file.getName().endsWith(".xml"))
+                .filter(file -> !file.getName().startsWith("patch_"))
                 .forEach(each -> fileToPage.put(each, parseLocatorOrThrow(each)));
         return fileToPage;
     }

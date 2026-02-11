@@ -4,14 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.knubisoft.testlum.testing.framework.autohealing.dto.HealedLocators;
 import com.knubisoft.testlum.testing.framework.autohealing.dto.HealingElementMetadata;
+import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.locator.LocatorData;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.LocatorXmlUpdater;
 import com.knubisoft.testlum.testing.model.global_config.AutoHealingMode;
 import com.knubisoft.testlum.testing.model.pages.Locator;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.text.similarity.JaroWinklerSimilarity;
 import org.openqa.selenium.By;
@@ -104,7 +103,7 @@ public class LocatorAutohealer {
         try {
             FileUtils.writeStringToFile(patch, xmlContent, defaultCharset());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new DefaultFrameworkException(e.getMessage());
         }
         return patch;
     }

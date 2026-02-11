@@ -83,7 +83,8 @@ public class LocatorXmlUpdater {
         }
     }
 
-    private static void addSingle(final Document document, final Element parent, String tagName, String tagValue) {
+    private static void addSingle(final Document document, final Element parent, final String tagName,
+                                  final String tagValue) {
         if (tagValue == null || tagValue.trim().isEmpty()) {
             return;
         }
@@ -96,7 +97,8 @@ public class LocatorXmlUpdater {
         insertAtAnchor(document, parent, tagName, tagValue, existing.item(0));
     }
 
-    private static void addMultiple(final Document document, final Element parent, String tagName, List<String> tagValues) {
+    private static void addMultiple(final Document document, final Element parent, final String tagName,
+                                    final List<String> tagValues) {
         if (tagValues == null || tagValues.isEmpty()) {
             return;
         }

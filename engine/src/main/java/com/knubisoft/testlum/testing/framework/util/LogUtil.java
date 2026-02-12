@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.util;
 
+import com.knubisoft.testlum.testing.framework.constant.Color;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
@@ -28,85 +29,109 @@ import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.Ui;
 import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.platform.launcher.listeners.TestExecutionSummary;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @UtilityClass
 @Slf4j
 public class LogUtil {
 
+    @RequiredArgsConstructor
+    private class Text {
+
+        private final Color color;
+        private final List<String> lines = new ArrayList<>();
+
+        public void addAll(List<String> data) {
+            for (Object o : data) {
+                add(o);
+            }
+        }
+
+        public void add(Object object) {
+            if (object instanceof String) {
+                lines.add((String) object);
+            } else if (object instanceof Optional) {
+                Optional<?> optional = (Optional<?>) object;
+                optional.ifPresent(o -> lines.add(o.toString()));
+            }
+        }
+
+        public void info() {
+            for (String line : lines) {
+                log.info(LogMessage.with(color, line));
+            }
+            lines.clear();
+        }
+    }
+
     /* execution log */
-    public void logScenarioDetails(final ScenarioArguments scenarioArguments, final int scenarioId) {
-        log.info(DelimiterConstant.EMPTY);
-        log.info(LogMessage.SCENARIO_NUMBER_AND_PATH_LOG, scenarioId, scenarioArguments.getFile().getAbsolutePath());
+    public void logScenarioDetails(final ScenarioArguments scenarioArguments,
+                                   @Nullable final Exception exception,
+                                   final Color color) {
+        Text text = new Text(color);
+        text.add(DelimiterConstant.EMPTY);
+        text.add(String.format(LogMessage.SCENARIO_NUMBER_AND_PATH_LOG,
+                scenarioArguments.getFile().getAbsolutePath()));
+
         Overview overview = scenarioArguments.getScenario().getOverview();
-        logOverview(overview);
+        text.add(formatOverview(OverviewPart.NAME, overview.getName()));
+        text.add(formatOverview(OverviewPart.DESCRIPTION, overview.getDescription()));
+        text.add(formatOverview(OverviewPart.JIRA, overview.getJira()));
+        text.add(formatOverview(OverviewPart.DEVELOPER, overview.getDeveloper()));
+        text.add(formatOverview(OverviewPart.LINK, overview.getLink()));
+
         if (scenarioArguments.isContainsUiSteps()) {
-            logUiInfo(scenarioArguments.getScenario().getSettings().getVariations(),
+            text.addAll(getUIInfo(scenarioArguments.getScenario().getSettings().getVariations(),
                     scenarioArguments.getEnvironment(),
                     scenarioArguments.getBrowser(),
-                    scenarioArguments.getMobilebrowserDevice(),
-                    scenarioArguments.getNativeDevice());
+                    scenarioArguments.getMobileBrowserDevice(),
+                    scenarioArguments.getNativeDevice()));
         }
+        Optional.ofNullable(exception).ifPresent(e-> {
+            text.add(DelimiterConstant.EMPTY);
+            text.add(e.getMessage());
+            text.add(DelimiterConstant.EMPTY);
+        });
+        text.info();
     }
 
-    private void logOverview(final Overview overview) {
-        logOverviewPartInfo(OverviewPart.NAME, overview.getName());
-        logOverviewPartInfo(OverviewPart.DESCRIPTION, overview.getDescription());
-        logOverviewPartInfo(OverviewPart.JIRA, overview.getJira());
-        logOverviewPartInfo(OverviewPart.DEVELOPER, overview.getDeveloper());
-        logOverviewPartInfo(OverviewPart.LINK, overview.getLink());
-    }
-
-    private void logOverviewPartInfo(final OverviewPart overviewPart, final String data) {
+    private String formatOverview(final OverviewPart overviewPart, final String data) {
         if (StringUtils.isNotBlank(data)) {
-            log.info(LogMessage.OVERVIEW_INFO_LOG, overviewPart.value(), data);
+            return String.format(LogMessage.OVERVIEW_INFO_LOG, overviewPart.value(), data);
+        } else {
+            return null;
         }
     }
 
-    private void logUiInfo(final String variation,
+    private List<String> getUIInfo(final String variation,
                            final String environment,
                            final String browserAlias,
-                           final String mobilebrowserAlias,
+                           final String mobileBrowserAlias,
                            final String nativeDeviceAlias) {
+        List<String> messages = new ArrayList<>();
         if (StringUtils.isNotBlank(variation)) {
-            log.info(LogMessage.VARIATION_LOG, variation);
+            messages.add(String.format(LogMessage.VARIATION_LOG, variation));
         }
         BrowserUtil.getBrowserBy(environment, browserAlias).ifPresent(abstractBrowser ->
-                log.info(LogMessage.BROWSER_NAME_LOG, BrowserUtil.getBrowserInfo(abstractBrowser)));
+                messages.add(String.format(LogMessage.BROWSER_NAME_LOG,
+                        BrowserUtil.getBrowserInfo(abstractBrowser))));
 
-        MobileUtil.getMobileBrowserDeviceBy(environment, mobilebrowserAlias).ifPresent(mobilebrowserDevice ->
-                log.info(LogMessage.MOBILEBROWSER_LOG, MobileUtil.getMobileBrowserDeviceInfo(mobilebrowserDevice)));
+        MobileUtil.getMobileBrowserDeviceBy(environment, mobileBrowserAlias).ifPresent(mobilebrowserDevice ->
+                messages.add(String.format(LogMessage.MOBILE_BROWSER_LOG,
+                        MobileUtil.getMobileBrowserDeviceInfo(mobilebrowserDevice))));
 
         MobileUtil.getNativeDeviceBy(environment, nativeDeviceAlias).ifPresent(nativeDevice ->
-                log.info(LogMessage.NATIVE_LOG, MobileUtil.getNativeDeviceInfo(nativeDevice)));
-    }
+                messages.add(String.format(LogMessage.NATIVE_LOG,
+                       MobileUtil.getNativeDeviceInfo(nativeDevice))));
 
-    public void logTestExecutionSummary(final TestExecutionSummary testExecutionSummary) {
-        if (testExecutionSummary.getTestsFoundCount() == 0 && !testExecutionSummary.getFailures().isEmpty()) {
-            testExecutionSummary.getFailures().forEach(e -> log.error(LogMessage.TESTS_RUN_FAILED, e.getException()));
-        } else {
-            logTestsStatistics(testExecutionSummary);
-        }
-    }
-
-    private void logTestsStatistics(final TestExecutionSummary testExecutionSummary) {
-        log.info(LogMessage.TEST_EXECUTION_SUMMARY_TEMPLATE,
-                testExecutionSummary.getTestsFoundCount(),
-                testExecutionSummary.getTestsSkippedCount(),
-                testExecutionSummary.getTestsStartedCount(),
-                testExecutionSummary.getTestsAbortedCount(),
-                testExecutionSummary.getTestsSucceededCount(),
-                testExecutionSummary.getTestsFailedCount());
-        testExecutionSummary.getFailures().forEach(e -> log.error(
-                String.format(LogMessage.FAILED_SCENARIOS_NAME_TEMPLATE, e.getTestIdentifier().getDisplayName()),
-                e.getException()));
+        return messages;
     }
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {
@@ -187,12 +212,6 @@ public class LogUtil {
         }
         if (action instanceof CommandWithLocator) {
             log.info(LogMessage.LOCATOR_LOG, ((CommandWithLocator) action).getLocator());
-        }
-    }
-    public void logUiAttributes(final boolean isClearCookies, final String storageKey) {
-        log.info(LogMessage.CLEAR_COOKIES_AFTER, isClearCookies);
-        if (StringUtils.isNotBlank(storageKey)) {
-            log.info(LogMessage.LOCAL_STORAGE_KEY, storageKey);
         }
     }
 

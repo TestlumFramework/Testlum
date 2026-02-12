@@ -18,7 +18,7 @@ public class ScenarioArguments {
     private final Scenario scenario;
     private final Exception exception;
     private final String browser;
-    private final String mobilebrowserDevice;
+    private final String mobileBrowserDevice;
     private final String nativeDevice;
     private final Map<String, String> variations;
     private final boolean containsUiSteps;

@@ -131,7 +131,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
             logException(e);
             checkIfStopScenarioOnFailure(e);
         } finally {
-            result.setExecutionTime(stopWatch.getTime());
+            result.setExecutionTime(stopWatch.getDuration().toMillis());
             stopWatch.stop();
         }
     }

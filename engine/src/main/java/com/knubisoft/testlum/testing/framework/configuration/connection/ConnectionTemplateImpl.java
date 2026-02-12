@@ -54,7 +54,7 @@ public class ConnectionTemplateImpl implements ConnectionTemplate {
         T client = connector.get();
         try {
             healthCheck.verify(client);
-            log.info(CONNECTIN_SUCCESS, integrationName);
+            log.info(CONNECTION_SUCCESS, integrationName);
             return client;
         } catch (final Exception e) {
             closeResource(client);

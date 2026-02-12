@@ -147,7 +147,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
             logException(e);
             checkIfStopScenarioOnFailure(e);
         } finally {
-            result.setExecutionTime(stopWatch.getTime());
+            result.setExecutionTime(stopWatch.getDuration().toMillis());
             stopWatch.stop();
         }
     }

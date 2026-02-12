@@ -39,7 +39,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class HealthCheckFactory {
 
-    private static final int MAX_TIMEOUT_SECONDS = 20;
     private static final int WEB_DRIVER_MAX_TIMEOUT_SECONDS = 60;
     private static final int TIME = 5;
 

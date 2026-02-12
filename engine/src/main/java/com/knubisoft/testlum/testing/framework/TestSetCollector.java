@@ -12,7 +12,6 @@ import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl.G
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
-import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.provider.Arguments;
@@ -33,42 +32,39 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 public class TestSetCollector {
 
     private final List<String> browsers;
-    private final List<String> mobilebrowsers;
+    private final List<String> mobileBrowsers;
     private final List<String> nativeDevices;
 
     public TestSetCollector() {
-        browsers = BrowserUtil.filterDefaultEnabledBrowsers().stream()
+        this.browsers = BrowserUtil.filterDefaultEnabledBrowsers().stream()
                 .map(AbstractBrowser::getAlias).collect(Collectors.toList());
-        mobilebrowsers = MobileUtil.filterDefaultEnabledMobileBrowserDevices().stream()
+        this.mobileBrowsers = MobileUtil.filterDefaultEnabledMobileBrowserDevices().stream()
                 .map(MobilebrowserDevice::getAlias).collect(Collectors.toList());
-        nativeDevices = MobileUtil.filterDefaultEnabledNativeDevices().stream()
+        this.nativeDevices = MobileUtil.filterDefaultEnabledNativeDevices().stream()
                 .map(NativeDevice::getAlias).collect(Collectors.toList());
     }
 
-
     public Stream<Arguments> collect() {
         ScenarioCollector.Result result = new ScenarioCollector().collect();
-        Set<MappingResult> validScenarios = new ScenarioFilter().filterScenarios(result.get());
-        return validScenarios.stream()
-                .flatMap(this::createArguments);
+        List<MappingResult> validScenarios = new ScenarioFilter().filterScenarios(result);
+        return validScenarios.stream().flatMap(this::createArguments);
     }
 
     //CHECKSTYLE:OFF
     private Stream<Arguments> createArguments(final MappingResult entry) {
-        Scenario scenario = entry.scenario;
-        final ScenarioStepReader s = new ScenarioStepReader().checkSteps(scenario);
+        final ScenarioStepReader s = new ScenarioStepReader(entry.scenario);
 
         if (s.isWeb()) {
-            if (s.isMobilebrowser()) {
+            if (s.isMobileBrowser()) {
                 if (s.isNatives()) {
                     return nativeDevices.stream().flatMap(nativeDevice ->
-                            mobilebrowsers.stream().flatMap(mobilebrowser ->
+                            mobileBrowsers.stream().flatMap(mobileBrowser ->
                                     browsers.stream().flatMap(browser ->
-                                            getArgumentsWithUiSteps(entry, browser, mobilebrowser, nativeDevice))));
+                                            getArgumentsWithUiSteps(entry, browser, mobileBrowser, nativeDevice))));
                 }
                 return browsers.stream().flatMap(browser ->
-                        mobilebrowsers.stream().flatMap(mobilebrowser ->
-                                getArgumentsWithUiSteps(entry, browser, mobilebrowser, null)));
+                        mobileBrowsers.stream().flatMap(mobileBrowser ->
+                                getArgumentsWithUiSteps(entry, browser, mobileBrowser, null)));
             }
             if (s.isNatives()) {
                 return nativeDevices.stream().flatMap(nativeDevice ->
@@ -78,14 +74,14 @@ public class TestSetCollector {
             return browsers.stream().flatMap(browser ->
                     getArgumentsWithUiSteps(entry, browser, null, null));
         }
-        if (s.isMobilebrowser()) {
+        if (s.isMobileBrowser()) {
             if (s.isNatives()) {
                 return nativeDevices.stream().flatMap(nativeDevice ->
-                        mobilebrowsers.stream().flatMap(mobilebrowser ->
-                                getArgumentsWithUiSteps(entry, null, mobilebrowser, nativeDevice)));
+                        mobileBrowsers.stream().flatMap(mobileBrowser ->
+                                getArgumentsWithUiSteps(entry, null, mobileBrowser, nativeDevice)));
             }
-            return mobilebrowsers.stream().flatMap(mobilebrowser ->
-                    getArgumentsWithUiSteps(entry, null, mobilebrowser, null));
+            return mobileBrowsers.stream().flatMap(mobileBrowser ->
+                    getArgumentsWithUiSteps(entry, null, mobileBrowser, null));
         }
         if (s.isNatives()) {
             return nativeDevices.stream().flatMap(nativeDevice ->
@@ -109,30 +105,30 @@ public class TestSetCollector {
 
     private Stream<Arguments> getArgumentsWithUiSteps(final MappingResult entry,
                                                       final String browserAlias,
-                                                      final String mobilebrowserAlias,
+                                                      final String mobileBrowserAlias,
                                                       final String nativeAlias) {
         if (variationsExist(entry)) {
             return getVariationList(entry).stream().map(variations ->
-                    getArgumentsWithUiSteps(entry, browserAlias, mobilebrowserAlias, nativeAlias, variations));
+                    getArgumentsWithUiSteps(entry, browserAlias, mobileBrowserAlias, nativeAlias, variations));
         } else {
             return Stream.of(
-                    getArgumentsWithUiSteps(entry, browserAlias, mobilebrowserAlias, nativeAlias, new HashMap<>()));
+                    getArgumentsWithUiSteps(entry, browserAlias, mobileBrowserAlias, nativeAlias, new HashMap<>()));
         }
     }
 
     private Arguments getArgumentsWithUiSteps(final MappingResult entry,
                                               final String browserAlias,
-                                              final String mobilebrowserAlias,
+                                              final String mobileBrowserAlias,
                                               final String nativeAlias,
                                               final Map<String, String> variations) {
         ScenarioArguments scenarioArguments = buildScenarioArguments(
-                entry, browserAlias, mobilebrowserAlias, nativeAlias, variations);
+                entry, browserAlias, mobileBrowserAlias, nativeAlias, variations);
         return convertToNamedArguments(scenarioArguments);
     }
 
     private ScenarioArguments buildScenarioArguments(final MappingResult entry,
                                                      final String browserAlias,
-                                                     final String mobilebrowserAlias,
+                                                     final String mobileBrowserAlias,
                                                      final String nativeAlias,
                                                      final Map<String, String> variations) {
         return ScenarioArguments.builder()
@@ -141,14 +137,15 @@ public class TestSetCollector {
                 .scenario(entry.scenario)
                 .exception(entry.exception)
                 .browser(browserAlias)
-                .mobilebrowserDevice(mobilebrowserAlias)
+                .mobileBrowserDevice(mobileBrowserAlias)
                 .nativeDevice(nativeAlias)
                 .variations(variations)
                 .containsUiSteps(true)
                 .build();
     }
 
-    private ScenarioArguments buildScenarioArguments(final MappingResult entry, final Map<String, String> variations) {
+    private ScenarioArguments buildScenarioArguments(final MappingResult entry,
+                                                     final Map<String, String> variations) {
         return ScenarioArguments.builder()
                 .path(getShortPath(entry.file))
                 .file(entry.file)
@@ -163,8 +160,8 @@ public class TestSetCollector {
     }
 
     private String getShortPath(final File file) {
-        return file.getPath()
-                .replace(TestResourceSettings.getInstance().getScenariosFolder().toString(), StringUtils.EMPTY);
+        File scenariosFolder = TestResourceSettings.getInstance().getScenariosFolder();
+        return file.getPath().replace(scenariosFolder.toString(), StringUtils.EMPTY);
     }
 
     private boolean variationsExist(final MappingResult entry) {

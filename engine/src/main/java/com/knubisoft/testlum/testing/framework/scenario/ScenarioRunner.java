@@ -82,14 +82,13 @@ public class ScenarioRunner {
         scenarioResult.setTags(scenario.getSettings().getTags());
         scenarioResult.setPath(scenarioArguments.getFile().getPath());
         scenarioResult.setBrowser(scenarioArguments.getBrowser());
-        scenarioResult.setMobilebrowserDevice(scenarioArguments.getMobilebrowserDevice());
+        scenarioResult.setMobilebrowserDevice(scenarioArguments.getMobileBrowserDevice());
         scenarioResult.setNativeDevice(scenarioArguments.getNativeDevice());
         scenarioResult.setSuccess(true);
         scenarioResult.setEnvironment(scenarioArguments.getEnvironment());
     }
 
     private void runScenarioCommands() {
-        LogUtil.logScenarioDetails(scenarioArguments, scenarioResult.getId());
         try {
             runCommands(scenarioArguments.getScenario().getCommands());
         } catch (StopSignalException ignore) {
@@ -207,7 +206,7 @@ public class ScenarioRunner {
 
     private WebDriver createMobilebrowserDriver() {
         return MobileUtil.getMobileBrowserDeviceBy(scenarioArguments.getEnvironment(),
-                        scenarioArguments.getMobilebrowserDevice())
+                        scenarioArguments.getMobileBrowserDevice())
                 .map(MobilebrowserDriverFactory::createDriver)
                 .orElse(new MockDriver(MOBILEBROWSER_DRIVER_NOT_INIT));
     }

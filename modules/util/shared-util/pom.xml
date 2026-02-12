@@ -14,7 +14,7 @@
     <artifactId>testlum-shared-util</artifactId>
 
     <properties>
-        <selenium-java.version>4.33.0</selenium-java.version>
+        <selenium-java.version>4.40.0</selenium-java.version>
         <imagination.comparator.version>2.2</imagination.comparator.version>
         <commons-io.version>2.19.0</commons-io.version>
         <org.apache.commons.version>3.17.0</org.apache.commons.version>

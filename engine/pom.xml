@@ -105,7 +105,7 @@
         <jakarta.activation.version>1.2.2</jakarta.activation.version>
         <com.twilio.sdk.version>10.9.2</com.twilio.sdk.version>
         <image-comparison.version>4.4.0</image-comparison.version>
-        <com.github.curious-odd-man.rgxgen.version>3.0</com.github.curious-odd-man.rgxgen.version>
+        <org.cornutum.regexp.regexp-gen.version>3.0.0</org.cornutum.regexp.regexp-gen.version>
         <org.jsoup.version>1.20.1</org.jsoup.version>
         <org.asynchttpclient>3.0.2</org.asynchttpclient>
 
@@ -1028,9 +1028,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.curious-odd-man</groupId>
-            <artifactId>rgxgen</artifactId>
-            <version>${com.github.curious-odd-man.rgxgen.version}</version>
+            <groupId>org.cornutum.regexp</groupId>
+            <artifactId>regexp-gen</artifactId>
+            <version>${org.cornutum.regexp.regexp-gen.version}</version>
         </dependency>
 
         <!--    TESTLUM PLUGINS    -->

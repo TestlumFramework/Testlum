@@ -1,6 +1,5 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.github.curiousoddman.rgxgen.RgxGen;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
@@ -23,6 +22,11 @@ import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.cornutum.regexpgen.RandomGen;
+import org.cornutum.regexpgen.RegExpGen;
+import org.cornutum.regexpgen.RegExpGenBuilder;
+import org.cornutum.regexpgen.js.Provider;
+import org.cornutum.regexpgen.random.RandomBoundsGen;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
@@ -110,16 +114,11 @@ public class VariableHelperImpl implements VariableHelper {
     }
 
     private String generateStringByRegexp(final FromRandomGenerate randomGenerate) {
-        RgxGen rgxGen = RgxGen.parse(randomGenerate.getRandomRegexp().getPattern());
         int requiredLength = randomGenerate.getLength();
-        StringBuilder randomString = new StringBuilder();
-        while (randomString.length() < requiredLength) {
-            randomString.append(rgxGen.generate());
-        }
-        if (randomString.length() > requiredLength) {
-            randomString.delete(requiredLength, randomString.length());
-        }
-        return randomString.toString();
+        RandomGen random = new RandomBoundsGen();
+        RegExpGen generator = RegExpGenBuilder.generateRegExp(Provider.forEcmaScript())
+                .matching(randomGenerate.getRandomRegexp().getPattern());
+        return generator.generate(random, requiredLength, requiredLength);
     }
 
     @Override

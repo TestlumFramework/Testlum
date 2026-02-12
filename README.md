@@ -59,24 +59,6 @@ After cloning repository to your local machine:
 - and run it by passing test resources location ```java -jar engine/target/testlum-1.0.2.jar -c="global-config-file-name.xml" -p"=absolute path to folder with test resources"```
 - examples of test resources can be found in our [Wiki](https://github.com/TestlumFramework/Testlum/releases)
 
-Or You can use our official maven artifact:
-```xml
-<repositories>
-    <repository>
-        <id>testlum</id>
-        <name>Testlum Releases</name>
-        <url>https://mvnrepository.knubisoft.com/artifactory/testlum</url>
-    </repository>
-</repositories>
-
-<dependencies>
-    <dependency>
-      <groupId>com.testlum</groupId>
-      <artifactId>tesltum-engine</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-</dependencies>
-```
 ```java
 public static void main(String[] args) {
     TESTLUMStarter.main(new String[]{"-c=global-config.xml", "-p=/path-to-resources"});

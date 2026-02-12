@@ -54,7 +54,7 @@
         <org.junit.jupiter.version>5.13.1</org.junit.jupiter.version>
         <org.junit.version>4.13.2</org.junit.version>
         <lombok.version>1.18.42</lombok.version>
-        <imagination.comparator.version>2.2</imagination.comparator.version>
+
         <org.slf4j.api.version>2.0.17</org.slf4j.api.version>
         <com.opencsv.version>5.11.1</com.opencsv.version>
         <io.micrometer.version>1.15.0</io.micrometer.version>
@@ -121,12 +121,6 @@
             <id>central</id>
             <name>Maven Central</name>
             <url>https://repo.maven.apache.org/maven2</url>
-        </repository>
-
-        <repository>
-            <id>knubisoft</id>
-            <name>Knubisoft Releases Local</name>
-            <url>https://mvnrepository.knubisoft.com/artifactory/libs-release-local</url>
         </repository>
 
         <repository>
@@ -899,11 +893,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.knubisoft</groupId>
-            <artifactId>tree-comparator</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${org.slf4j.api.version}</version>
@@ -1262,11 +1251,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>com.knubisoft</groupId>
-                <artifactId>tree-comparator</artifactId>
-                <version>${imagination.comparator.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.asynchttpclient</groupId>
                 <artifactId>async-http-client</artifactId>

@@ -17,6 +17,7 @@
     <modules>
         <module>models</module>
 
+        <module>util/comparator</module>
         <module>util/shared-util</module>
         <module>util/repeat-util</module>
         <module>util/ui-util</module>

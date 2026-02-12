@@ -9,7 +9,6 @@ import com.knubisoft.comparator.condition.DateComparator;
 import com.knubisoft.comparator.condition.NowComparator;
 import com.knubisoft.comparator.condition.Operator;
 import com.knubisoft.comparator.constant.CommonConstant;
-import com.knubisoft.comparator.exception.ComparisonException;
 import com.knubisoft.comparator.util.LogMessage;
 import com.knubisoft.comparator.util.Parser;
 import lombok.Getter;

@@ -1,7 +1,6 @@
 package com.knubisoft.comparator.util;
 
 import com.knubisoft.comparator.condition.Operator;
-import com.knubisoft.comparator.exception.ComparisonException;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

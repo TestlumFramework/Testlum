@@ -37,11 +37,14 @@ public class StringComparator extends AbstractObjectComparator<String> {
     public void compare(final String expected, final String actual) {
         if (!Objects.equals(expected, actual)) {
             ComparisonResult result = extractAction(expected);
-            switch (result) {
-                case PatternComparison patternComparison -> patternComparison(actual, patternComparison);
-                case TreeComparison treeComparison -> treeComparison(actual, treeComparison);
-                case ConditionComparison conditionComparison -> conditionComparison(actual, conditionComparison);
-                case null, default -> raise(format(LogMessage.PROPERTY_NOT_EQUAL, expected, actual));
+            if (result instanceof PatternComparison) {
+                patternComparison(actual, (PatternComparison) result);
+            } else if (result instanceof TreeComparison) {
+                treeComparison(actual, (TreeComparison) result);
+            } else if (result instanceof ConditionComparison) {
+                conditionComparison(actual, (ConditionComparison) result);
+            } else {
+                raise(format(LogMessage.PROPERTY_NOT_EQUAL, expected, actual));
             }
         }
     }

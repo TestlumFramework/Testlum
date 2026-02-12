@@ -17,7 +17,6 @@ import com.knubisoft.testlum.testing.model.scenario.Logout;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.*;

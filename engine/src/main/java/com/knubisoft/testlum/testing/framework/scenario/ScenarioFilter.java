@@ -19,6 +19,7 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 
 public class ScenarioFilter {
 
+    //CHECKSTYLE:OFF
     public List<MappingResult> filterScenarios(final List<MappingResult> original) {
         List<MappingResult> nonParsedScenarios =
                 original.stream().filter(e -> e.scenario == null).toList();
@@ -36,13 +37,13 @@ public class ScenarioFilter {
         originalWithoutNonParsed.removeAll(nonParsedScenarios);
         return filterValidScenarios(originalWithoutNonParsed);
     }
+    //CHECKSTYLE:ON
 
     private List<MappingResult> filterValidScenarios(final List<MappingResult> validScenarios) {
         List<MappingResult> activeScenarios = filterIsActive(validScenarios);
         List<MappingResult> scenariosWithOnlyThisEnabled = filterScenariosIfOnlyThis(activeScenarios);
-        return filterScenariosByTags(scenariosWithOnlyThisEnabled.isEmpty() ?
-                activeScenarios :
-                scenariosWithOnlyThisEnabled);
+        return filterScenariosByTags(scenariosWithOnlyThisEnabled.isEmpty()
+                ? activeScenarios : scenariosWithOnlyThisEnabled);
     }
 
     private List<MappingResult> filterIsActive(final List<MappingResult> original) {

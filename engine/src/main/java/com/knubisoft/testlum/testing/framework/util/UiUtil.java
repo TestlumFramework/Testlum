@@ -70,7 +70,6 @@ public class UiUtil {
         return value;
     }
 
-    //CHECKSTYLE:OFF
     public WebElement findWebElement(final ExecutorDependencies dependencies,
                                      final String locatorId,
                                      final LocatorStrategy locatorStrategy) {
@@ -78,6 +77,7 @@ public class UiUtil {
         return WebElementFinder.find(locator, dependencies);
     }
 
+    //CHECKSTYLE:OFF
     public Locator getLocatorByStrategy(final String locatorId, final LocatorStrategy locatorStrategy) {
         Locator locator = new Locator();
         locator.setLocatorId(locatorId);

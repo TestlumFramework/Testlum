@@ -20,7 +20,7 @@
 
     <x:simpleType name="csv">
         <x:restriction base="x:string">
-            <x:pattern value="[a-zA-Z\d_]+\.csv"/>
+            <x:pattern value="[a-zA-Z\d_-]+\.csv"/>
         </x:restriction>
     </x:simpleType>
 </x:schema>

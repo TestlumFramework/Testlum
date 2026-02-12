@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILEBROWSER_APPIUM_INFO;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILEBROWSER_INFO;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILE_BROWSER_APPIUM_INFO;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILE_BROWSER_INFO;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_APPIUM_INFO;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_INFO;
 import static java.util.Objects.nonNull;
@@ -73,9 +73,9 @@ public class MobileUtil {
 
     public String getMobileBrowserDeviceInfo(final MobilebrowserDevice mobileDevice) {
         if (nonNull(mobileDevice.getAppiumCapabilities())) {
-            return formatAppiumInfo(MOBILEBROWSER_APPIUM_INFO, mobileDevice, mobileDevice.getAppiumCapabilities());
+            return formatAppiumInfo(MOBILE_BROWSER_APPIUM_INFO, mobileDevice, mobileDevice.getAppiumCapabilities());
         }
-        return formatBrowserStackInfo(MOBILEBROWSER_INFO, mobileDevice, mobileDevice.getBrowserStackCapabilities());
+        return formatBrowserStackInfo(MOBILE_BROWSER_INFO, mobileDevice, mobileDevice.getBrowserStackCapabilities());
     }
 
     private String formatAppiumInfo(final String template,

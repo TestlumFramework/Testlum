@@ -105,6 +105,7 @@ import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -113,7 +114,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ScenarioValidator implements XMLValidator<Scenario> {
@@ -121,11 +121,16 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
     private final Map<AbstractCommandPredicate, AbstractCommandValidator> uiCommandValidatorsMap;
     private final Integrations integrations = GlobalTestConfigurationProvider.get().getDefaultIntegrations();
+
     private List<Map<String, String>> variationList = new ArrayList<>();
 
     public ScenarioValidator() {
+        this.abstractCommandValidatorsMap = createCommandsValidatorsMap();
+        this.uiCommandValidatorsMap = createUICommandsValidatorMap();
+    }
 
-        this.abstractCommandValidatorsMap = Map.ofEntries(
+    private @NotNull Map<AbstractCommandPredicate, AbstractCommandValidator> createCommandsValidatorsMap() {
+        return Map.ofEntries(
                 Map.entry(o -> o instanceof Auth, (xmlFile, command) -> {
                     checkIntegrationExistence(integrations.getApis(), Apis.class);
                     Auth auth = (Auth) command;
@@ -291,8 +296,10 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                         validateMobilebrowserCommands((Mobilebrowser) command, xmlFile)),
                 Map.entry(o -> o instanceof Native, (xmlFile, command) ->
                         validateNativeCommands((Native) command, xmlFile)));
+    }
 
-        this.uiCommandValidatorsMap = Map.of(
+    private @NotNull Map<AbstractCommandPredicate, AbstractCommandValidator> createUICommandsValidatorMap() {
+        return Map.of(
                 o -> o instanceof WebVar, (xmlFile, command) -> {
                     WebVar var = (WebVar) command;
                     validateVarCommand(xmlFile, var.getFile(), var.getSql());
@@ -304,7 +311,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 o -> o instanceof MobilebrowserRepeat, (xmlFile, command) ->
                         validateRepeatCommand(((MobilebrowserRepeat) command).getVariations()),
                 o -> o instanceof Scroll && ScrollType.INNER == ((Scroll) o).getType(), (xmlFile, command) ->
-                        validateLocator((Scroll) command, ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL),
+                        validateLocator((Scroll) command),
                 o -> o instanceof Image, (xmlFile, command) ->
                         validateFileIfExist(xmlFile, ((Image) command).getFile()),
                 o -> o instanceof DragAndDrop, (xmlFile, command) ->
@@ -323,7 +330,6 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateVariationsIfExist(scenario, xmlFile);
             validateIfContainsNativeAndMobileCommands(scenario.getCommands());
             scenario.getCommands().forEach(command -> validateCommand(command, xmlFile));
-            variationList = new ArrayList<>();
         }
     }
 
@@ -373,7 +379,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .map(NativeDevice::getAppiumCapabilities)
                 .filter(Objects::nonNull)
                 .map(AppiumCapabilities::getUdid)
-                .collect(Collectors.toList());
+                .toList();
 
         return uiConfig.getMobilebrowser().getDevices().getDevice().stream()
                 .map(MobilebrowserDevice::getAppiumCapabilities)
@@ -665,9 +671,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);
     }
 
-    private void validateLocator(final CommandWithOptionalLocator command, final String exceptionMessage) {
+    private void validateLocator(final CommandWithOptionalLocator command) {
         if (!StringUtils.isNotBlank(command.getLocator())) {
-            throw new DefaultFrameworkException(exceptionMessage);
+            throw new DefaultFrameworkException(ExceptionMessage.NO_LOCATOR_FOUND_FOR_INNER_SCROLL);
         }
     }
 

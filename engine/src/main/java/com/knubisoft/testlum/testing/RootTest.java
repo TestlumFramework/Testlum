@@ -6,26 +6,25 @@ import com.knubisoft.testlum.testing.framework.SystemDataStoreCleaner;
 import com.knubisoft.testlum.testing.framework.TestSetCollector;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.constant.Color;
 import com.knubisoft.testlum.testing.framework.context.AliasToStorageOperation;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.env.service.LockService;
+import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.knubisoft.testlum.testing.framework.report.GlobalScenarioStatCollector;
 import com.knubisoft.testlum.testing.framework.report.ReportGenerator;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioRunner;
 import com.knubisoft.testlum.testing.framework.util.FileRemover;
+import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.model.global_config.DelayBetweenScenarioRuns;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Named;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -45,6 +44,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+@Slf4j
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Configuration
 @SpringBootTest
@@ -78,18 +78,23 @@ public class RootTest {
     @ParameterizedTest(name = "[{index}] path -- {0}")
     @MethodSource("prepareTestData")
     void execution(@ConvertWith(ScenarioArgumentsToNamedConverter.class) final Named<ScenarioArguments> arguments) {
-        envLockService.runLocked(() -> prepareAndRun(arguments.getPayload()));
+        ScenarioArguments data = arguments.getPayload();
+        envLockService.runLocked(() -> prepareAndRun(data));
     }
 
     private void prepareAndRun(final ScenarioArguments args) {
         args.setEnvironment(EnvManager.currentEnv());
-        if (args.getScenario().getSettings().isTruncateStorages()) {
-            systemDataStoreCleaner.clearAll(this.aliasToStorageOperation);
+        boolean ignore = args.getException() instanceof IntegrationDisabledException;
+        LogUtil.logScenarioDetails(args, args.getException(), ignore ? Color.YELLOW : Color.GREEN);
+        if (!ignore) {
+            if (args.getScenario().getSettings().isTruncateStorages()) {
+                systemDataStoreCleaner.clearAll(this.aliasToStorageOperation);
+            }
+            runInstructions(args);
         }
-        extracted(args);
     }
 
-    private void extracted(final ScenarioArguments args) {
+    private void runInstructions(final ScenarioArguments args) {
         StopWatch stopWatch = StopWatch.createStarted();
         ScenarioResult result = null;
         try {

@@ -5,9 +5,7 @@ import lombok.NoArgsConstructor;
 
 import static com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings.INTEGRATION_CONFIG_FILENAME;
 import static com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings.UI_CONFIG_FILENAME;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ANSI_RED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ANSI_RESET;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ANSI_YELLOW;
+
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExceptionMessage {
@@ -35,15 +33,15 @@ public class ExceptionMessage {
     public static final String NO_ENABLED_ENVIRONMENTS_FOUND =
             "No enabled environments found in configuration file";
     public static final String NO_ENABLED_REPORT_GENERATORS_FOUND =
-            ANSI_RED + "At least one report generator must be enabled" + ANSI_RESET;
+            LogMessage.withRed("At least one report generator must be enabled");
     public static final String STOP_IF_NON_PARSED_SCENARIO =
-            ANSI_YELLOW + "The execution has been stopped because of the enabled <StopIfInvalidScenario>" + ANSI_RESET;
+            LogMessage.withYellow("The execution has been stopped because of the enabled <StopIfInvalidScenario>");
     public static final String VALID_SCENARIOS_NOT_FOUND =
-            ANSI_RED + "Valid scenarios are not found" + ANSI_RESET;
+            LogMessage.withRed("Valid scenarios are not found");
     public static final String NO_SCENARIOS_FILTERED_BY_TAGS =
-            ANSI_RED + "There are no active scenarios by enabled tags" + ANSI_RESET;
+            LogMessage.withRed("There are no active scenarios by enabled tags");
     public static final String NO_ENABLED_TAGS_CONFIG =
-            ANSI_RED + "No enabled tags in runScenariosByTag configuration" + ANSI_RESET;
+            LogMessage.withRed("No enabled tags in runScenariosByTag configuration");
 
     // scenario validation
     public static final String INTEGRATION_NOT_FOUND =
@@ -88,55 +86,56 @@ public class ExceptionMessage {
             + "check your configuration in config file";
 
     // config validation
-    public static final String UI_CONFIG_NOT_PRESENT_IN_ALL_ENVS = ANSI_RED + "Number of enabled <%s> blocks does not"
-            + " match the number of enabled environments" + ANSI_RESET;
-    public static final String BASE_URLS_ARE_SAME = ANSI_RED + "<baseUrl> must be different for each <%s> block in all "
-            + "enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
-    public static final String ENVIRONMENT_MISSING_DEVICES_OR_BROWSERS = ANSI_RED + "One or more of your environments "
-            + "does not have enabled <%ss> in <%s> block" + ANSI_RESET;
-    public static final String UI_ALIASES_NOT_DIFFER = ANSI_RED + "More than one enabled <%s> was found in "
-            + "<%s> settings with alias <%s> in the config by path: %s" + ANSI_RESET;
-    public static final String UI_ALIASES_NOT_MATCH = ANSI_RED + "Enabled %s <%s> in <%s> block with alias <%s> not"
-            + " found or not enabled in all enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
-    public static final String CONNECTION_TYPE_NOT_MATCH = ANSI_RED + "Connection type in <%s> block must be the same "
-            + "in all enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
-    public static final String SAME_APPIUM_SERVER_URLS = ANSI_RED + "<AppiumServer> connection url must be different "
-            + "for each <%s> settings in all enabled environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
-    public static final String BROWSERSTACK_LOGIN_NOT_CONFIGURED = ANSI_RED + "To use the <BrowserStack> connection "
+    public static final String UI_CONFIG_NOT_PRESENT_IN_ALL_ENVS = LogMessage.withRed("Number of enabled <%s> blocks does not"
+            + " match the number of enabled environments");
+    public static final String BASE_URLS_ARE_SAME = LogMessage.withRed("<baseUrl> must be different for each <%s> block in all "
+            + "enabled environments (" + UI_CONFIG_FILENAME + " files)");
+    public static final String ENVIRONMENT_MISSING_DEVICES_OR_BROWSERS = LogMessage.withRed("One or more of your environments "
+            + "does not have enabled <%ss> in <%s> block");
+    public static final String UI_ALIASES_NOT_DIFFER = LogMessage.withRed("More than one enabled <%s> was found in "
+            + "<%s> settings with alias <%s> in the config by path: %s");
+    public static final String UI_ALIASES_NOT_MATCH = LogMessage.withRed("Enabled %s <%s> in <%s> block with alias <%s> not"
+            + " found or not enabled in all enabled environments (" + UI_CONFIG_FILENAME + " files)");
+    public static final String CONNECTION_TYPE_NOT_MATCH = LogMessage.withRed("Connection type in <%s> block must be the same "
+            + "in all enabled environments (" + UI_CONFIG_FILENAME + " files)");
+    public static final String SAME_APPIUM_SERVER_URLS = LogMessage.withRed("<AppiumServer> connection url must be different "
+            + "for each <%s> settings in all enabled environments (" + UI_CONFIG_FILENAME + " files)");
+    public static final String BROWSERSTACK_LOGIN_NOT_CONFIGURED = LogMessage.withRed("To use the <BrowserStack> connection "
             + "type requires <browserStackLogin> settings to be configured in all enabled environments "
-            + "(" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
-    public static final String DEVICE_PLATFORMS_NOT_MATCH = ANSI_RED + "<device> in <%s> block with alias <%s> must "
+            + "(" + UI_CONFIG_FILENAME + " files)");
+    public static final String DEVICE_PLATFORMS_NOT_MATCH = LogMessage.withRed("<device> in <%s> block with alias <%s> must "
             + "have the same <platformName> param in all enabled environments (" + UI_CONFIG_FILENAME + " files)"
-            + ANSI_RESET;
-    public static final String CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE = ANSI_RED + "<device> with alias <%s> "
+    );
+    public static final String CAPABILITIES_TYPE_NOT_MATCH_WITH_CONNECTION_TYPE = LogMessage.withRed("<device> with alias <%s> "
             + "in <%s> block has capabilities type that does not match with block <connection> type in the config by "
-            + "path: %s" + ANSI_RESET;
-    public static final String CAPABILITIES_TYPE_NOT_MATCH_IN_ALL_ENVS = ANSI_RED + "<device> with alias <%s> in <%s> "
+            + "path: %s");
+    public static final String CAPABILITIES_TYPE_NOT_MATCH_IN_ALL_ENVS = LogMessage.withRed("<device> with alias <%s> in <%s> "
             + "block has capabilities type that does not match with this device capabilities type in other enabled "
-            + "environments (" + UI_CONFIG_FILENAME + " files)" + ANSI_RESET;
-    public static final String INTEGRATIONS_MISMATCH_ENVS = ANSI_RED + "<%s> integration must be configured and "
-            + "enabled in all enabled environments or not configured/disabled at all" + ANSI_RESET;
-    public static final String SAME_INTEGRATION_ALIAS = ANSI_RED + "More than one enabled <%s> integration was found "
-            + "with alias <%s> in the config by path: %s" + ANSI_RESET;
-    public static final String INTEGRATION_ALIAS_NOT_MATCH = ANSI_RED + "<%s> integration with alias <%s> not found "
-            + "in all enabled environments (" + INTEGRATION_CONFIG_FILENAME + " files)" + ANSI_RESET;
-    public static final String AUTH_NOT_PRESENT_IN_ALL_ENVS = ANSI_RED + "<Api> integration with alias <%s> have "
+            + "environments (" + UI_CONFIG_FILENAME + " files)");
+    public static final String INTEGRATIONS_MISMATCH_ENVS = LogMessage.withRed("<%s> integration must be configured and "
+            + "enabled in all enabled environments or not configured/disabled at all");
+    public static final String SAME_INTEGRATION_ALIAS = LogMessage.withRed("More than one enabled <%s> integration was found "
+            + "with alias <%s> in the config by path: %s");
+    public static final String INTEGRATION_ALIAS_NOT_MATCH = LogMessage.withRed("<%s> integration with alias <%s> not found "
+            + "in all enabled environments (" + INTEGRATION_CONFIG_FILENAME + " files)");
+    public static final String AUTH_NOT_PRESENT_IN_ALL_ENVS = LogMessage.withRed("<Api> integration with alias <%s> have "
             + "configuration for <auth> command, but not in all enabled environments (" + INTEGRATION_CONFIG_FILENAME
-            + " files)" + ANSI_RESET;
-    public static final String AUTH_LOGOUT_NOT_MATCH = ANSI_RED + "<Api> integration with alias <%s> must have the "
+            + " files)");
+    public static final String AUTH_LOGOUT_NOT_MATCH = LogMessage.withRed("<Api> integration with alias <%s> must have the "
             + "same setup for <autoLogout> argument in <auth> command in all enabled environments ("
-            + INTEGRATION_CONFIG_FILENAME + " files)" + ANSI_RESET;
-    public static final String AUTH_STRATEGY_NOT_MATCH = ANSI_RED + "<Api> integration with alias <%s> must have the "
+            + INTEGRATION_CONFIG_FILENAME + " files)");
+    public static final String AUTH_STRATEGY_NOT_MATCH = LogMessage.withRed("<Api> integration with alias <%s> must have the "
             + "same setup for <authStrategy> argument in <auth> command in all enabled environments ("
-            + INTEGRATION_CONFIG_FILENAME + " files)" + ANSI_RESET;
-    public static final String AUTH_CUSTOM_CLASS_NAME_NOT_MATCH = ANSI_RED + "<Api> integration with alias <%s> must "
+            + INTEGRATION_CONFIG_FILENAME + " files)");
+    public static final String AUTH_CUSTOM_CLASS_NAME_NOT_MATCH = LogMessage.withRed("<Api> integration with alias <%s> must "
             + "have the same setup for <authCustomClassName> argument in <auth> command in all enabled environments"
-            + " (" + INTEGRATION_CONFIG_FILENAME + " files)" + ANSI_RESET;
+            + " (" + INTEGRATION_CONFIG_FILENAME + " files)");
 
-    public static final String FAILED_CONDITION_EXPRESSION = ANSI_RED
-            + "Condition '%s' is not a valid boolean expression\n"
-            + "Converted condition: %s\n"
-            + "Parsing exception: %s" + ANSI_RESET;
+    public static final String FAILED_CONDITION_EXPRESSION = LogMessage.withRed(
+            """
+                    Condition '%s' is not a valid boolean expression
+                    Converted condition: %s
+                    Parsing exception: %s""");
 
     public static final String VARIATIONS_NOT_FOUND = "Variations for %s not found";
     public static final String VARIATION_FILE_IS_EMPTY = "Variation %s file in the %s is empty";

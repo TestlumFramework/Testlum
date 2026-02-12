@@ -5,6 +5,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
+import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.context.AliasToStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.ListSource;
@@ -48,7 +49,6 @@ import java.util.function.UnaryOperator;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SLASH_SEPARATOR;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VAR_QUERY_RESULT_ERROR;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.TABLE_FORMAT;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONSTANT;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.EXPRESSION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.FILE;
@@ -57,14 +57,13 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.JSON_PATH;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.NO_EXPRESSION;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.RELATIONAL_DB_QUERY;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.XML_PATH;
-import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 
 @Slf4j
 @Component
 public class VariableHelperImpl implements VariableHelper {
 
-    private static final String VAR_CONTEXT_LOG = format(TABLE_FORMAT, "Created from", "{}");
+    private static final String VAR_CONTEXT_LOG = LogMessage.table("Created from");
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     private final Map<RandomPredicate, RandomFunction> randomGenerateMethodMap;

@@ -7,12 +7,7 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.testlum.testing.model.global_config.TagValue;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -24,53 +19,61 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 
 public class ScenarioFilter {
 
-    public Set<MappingResult> filterScenarios(final Set<MappingResult> original) {
-        boolean containsNonParsed = original.removeIf(this::isScenarioNonParsed);
-        if (GlobalTestConfigurationProvider.get().provide().isStopIfInvalidScenario() && containsNonParsed) {
-            throw new DefaultFrameworkException(STOP_IF_NON_PARSED_SCENARIO);
+    public List<MappingResult> filterScenarios(final List<MappingResult> original) {
+        List<MappingResult> nonParsedScenarios =
+                original.stream().filter(e -> e.scenario == null).toList();
+        if (!nonParsedScenarios.isEmpty()) {
+            for (MappingResult entry : nonParsedScenarios) {
+                LogUtil.logNonParsedScenarioInfo(entry.file.getPath(), entry.exception.getMessage());
+            }
+            if (GlobalTestConfigurationProvider.get().provide().isStopIfInvalidScenario()) {
+                throw new DefaultFrameworkException(STOP_IF_NON_PARSED_SCENARIO);
+            }
         } else if (original.isEmpty()) {
             throw new DefaultFrameworkException(VALID_SCENARIOS_NOT_FOUND);
         }
-        return filterValidScenarios(original);
+        List<MappingResult> originalWithoutNonParsed = new ArrayList<>(original);
+        originalWithoutNonParsed.removeAll(nonParsedScenarios);
+        return filterValidScenarios(originalWithoutNonParsed);
     }
 
-    private Set<MappingResult> filterValidScenarios(final Set<MappingResult> validScenarios) {
-        Set<MappingResult> activeScenarios = filterIsActive(validScenarios);
-        Set<MappingResult> scenariosWithOnlyThisEnabled = filterScenariosIfOnlyThis(activeScenarios);
-        return scenariosWithOnlyThisEnabled.isEmpty()
-                ? filterScenariosByTags(activeScenarios)
-                : filterScenariosByTags(scenariosWithOnlyThisEnabled);
+    private List<MappingResult> filterValidScenarios(final List<MappingResult> validScenarios) {
+        List<MappingResult> activeScenarios = filterIsActive(validScenarios);
+        List<MappingResult> scenariosWithOnlyThisEnabled = filterScenariosIfOnlyThis(activeScenarios);
+        return filterScenariosByTags(scenariosWithOnlyThisEnabled.isEmpty() ?
+                activeScenarios :
+                scenariosWithOnlyThisEnabled);
     }
 
-    private Set<MappingResult> filterIsActive(final Set<MappingResult> original) {
+    private List<MappingResult> filterIsActive(final List<MappingResult> original) {
         return filterBy(original, e -> e.scenario.getSettings().isActive());
     }
 
-    private Set<MappingResult> filterScenariosIfOnlyThis(final Set<MappingResult> original) {
+    private List<MappingResult> filterScenariosIfOnlyThis(final List<MappingResult> original) {
         return filterBy(original, e -> e.scenario.getSettings().isOnlyThis());
     }
 
-    private Set<MappingResult> filterScenariosByTags(final Set<MappingResult> activeScenarios) {
+    private List<MappingResult> filterScenariosByTags(final List<MappingResult> activeScenarios) {
         RunScenariosByTag runScenariosByTag = GlobalTestConfigurationProvider.get().provide().getRunScenariosByTag();
         return runScenariosByTag.isEnabled()
                 ? filterByTags(activeScenarios, getEnabledTags(runScenariosByTag.getTag()))
                 : sortByName(activeScenarios);
     }
 
-    private Set<MappingResult> filterByTags(final Set<MappingResult> original, final List<String> enabledTags) {
-        Set<MappingResult> filteredByTags = filterBy(sortByName(original), e -> isMatchesTags(e, enabledTags)).stream()
+    private List<MappingResult> filterByTags(final List<MappingResult> original, final List<String> enabledTags) {
+        List<MappingResult> filteredByTags = filterBy(sortByName(original), e -> isMatchesTags(e, enabledTags)).stream()
                 .sorted(Comparator.comparing(mappingResult -> mappingResult.scenario.getSettings().getTags()))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+                .collect(Collectors.toCollection(ArrayList::new));
         if (filteredByTags.isEmpty()) {
             throw new DefaultFrameworkException(NO_SCENARIOS_FILTERED_BY_TAGS);
         }
         return filteredByTags;
     }
 
-    private LinkedHashSet<MappingResult> sortByName(final Set<MappingResult> activeScenarios) {
+    private List<MappingResult> sortByName(final List<MappingResult> activeScenarios) {
         return activeScenarios.stream()
                 .sorted(Comparator.comparing(mappingResult -> mappingResult.file.getPath()))
-                .collect(Collectors.toCollection(LinkedHashSet::new));
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private boolean isMatchesTags(final MappingResult entry, final List<String> enabledTags) {
@@ -93,18 +96,8 @@ public class ScenarioFilter {
         return enabledTags;
     }
 
-    private LinkedHashSet<MappingResult> filterBy(final Set<MappingResult> scenarios,
-                                                  final Predicate<MappingResult> by) {
-        return scenarios.stream()
-                .filter(by)
-                .collect(Collectors.toCollection(LinkedHashSet::new));
-    }
-
-    private boolean isScenarioNonParsed(final MappingResult entry) {
-        if (Objects.nonNull(entry.scenario)) {
-            return false;
-        }
-        LogUtil.logNonParsedScenarioInfo(entry.file.getPath(), entry.exception.getMessage());
-        return true;
+    private List<MappingResult> filterBy(final List<MappingResult> scenarios,
+                                         final Predicate<MappingResult> by) {
+        return scenarios.stream().filter(by).collect(Collectors.toCollection(ArrayList::new));
     }
 }

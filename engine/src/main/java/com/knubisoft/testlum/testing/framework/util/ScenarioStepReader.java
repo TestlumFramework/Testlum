@@ -11,21 +11,15 @@ import java.util.List;
 
 @Getter
 public class ScenarioStepReader {
-    private boolean web;
-    private boolean mobilebrowser;
-    private boolean natives;
 
-    public ScenarioStepReader checkSteps(final Scenario scenario) {
+    private final boolean web;
+    private final boolean mobileBrowser;
+    private final boolean natives;
+
+    public ScenarioStepReader(final Scenario scenario) {
         List<AbstractCommand> commands = scenario.getCommands();
-        if (commands.stream().anyMatch(command -> command instanceof Web)) {
-            this.web = true;
-        }
-        if (commands.stream().anyMatch(command -> command instanceof Mobilebrowser)) {
-            this.mobilebrowser = true;
-        }
-        if (commands.stream().anyMatch(command -> command instanceof Native)) {
-            this.natives = true;
-        }
-        return this;
+        this.web = commands.stream().anyMatch(command -> command instanceof Web);
+        this.mobileBrowser = commands.stream().anyMatch(command -> command instanceof Mobilebrowser);
+        this.natives = commands.stream().anyMatch(command -> command instanceof Native);
     }
 }

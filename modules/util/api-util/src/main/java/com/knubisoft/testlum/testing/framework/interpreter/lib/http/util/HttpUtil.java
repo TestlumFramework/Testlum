@@ -204,8 +204,7 @@ public final class HttpUtil {
 
     public boolean checkIfContentTypeIsJson(final Header contentTypeHeader) {
         if (nonNull(contentTypeHeader)) {
-            return contentTypeHeader.getValue().equals(MediaType.APPLICATION_JSON_VALUE)
-                    || contentTypeHeader.getValue().equals(MediaType.APPLICATION_JSON_UTF8_VALUE);
+            return contentTypeHeader.getValue().contains(MediaType.APPLICATION_JSON_VALUE);
         }
         return false;
     }

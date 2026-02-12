@@ -3,6 +3,7 @@ package com.knubisoft.testlum.testing.framework.scenario;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.knubisoft.testlum.testing.framework.parser.XMLParsers;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
@@ -30,7 +31,6 @@ public class ScenarioCollector {
     private final File rootTestResources;
     private final Optional<File> scenarioScopeFolder;
     private final ScenarioValidator scenarioValidator;
-    private String variationFileName;
 
     public ScenarioCollector() {
         TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
@@ -73,9 +73,13 @@ public class ScenarioCollector {
     }
 
     private void applyXml(final File xmlFile, final Result result) {
+        Scenario scenario = null;
         try {
-            Scenario scenario = convertXmlToScenario(xmlFile);
+            scenario = convertXmlToScenario(xmlFile);
+            scenarioValidator.validate(scenario, xmlFile);
             result.add(new MappingResult(xmlFile, scenario, null));
+        } catch (IntegrationDisabledException e) {
+            result.add(new MappingResult(xmlFile, scenario, e));
         } catch (Exception e) {
             result.add(new MappingResult(xmlFile, null, e));
         }
@@ -83,38 +87,42 @@ public class ScenarioCollector {
 
     private Scenario convertXmlToScenario(final File xmlFile) {
         Scenario scenario = XMLParsers.getInstance().forScenario().process(xmlFile);
-        getScenarioVariations(xmlFile, scenario);
-        updateScenario(scenario);
-        scenarioValidator.validate(scenario, xmlFile);
+        Optional<String> variations = getScenarioVariations(xmlFile, scenario);
+        updateScenario(scenario, variations);
         return scenario;
     }
 
-    private void getScenarioVariations(final File xmlFile, final Scenario scenario) {
+    private Optional<String> getScenarioVariations(final File xmlFile, final Scenario scenario) {
         if (nonNull(scenario.getSettings().getVariations())) {
             GlobalVariationsProvider.process(scenario, xmlFile);
-            this.variationFileName = scenario.getSettings().getVariations();
+            return Optional.of(scenario.getSettings().getVariations());
+        } else {
+            return Optional.empty();
         }
     }
 
-    private void updateScenario(final Scenario scenario) {
-        List<AbstractCommand> updatedCommands = updateCommands(scenario.getCommands());
+    private void updateScenario(final Scenario scenario, final Optional<String> variationFileName) {
+        List<AbstractCommand> updatedCommands = updateCommands(scenario.getCommands(), variationFileName);
         scenario.getCommands().clear();
         scenario.getCommands().addAll(updatedCommands);
     }
 
-    private List<AbstractCommand> updateCommands(final List<AbstractCommand> commands) {
+    private List<AbstractCommand> updateCommands(final List<AbstractCommand> commands,
+                                                 final Optional<String> variationFileName) {
         List<AbstractCommand> updatedCommands = new ArrayList<>();
         for (AbstractCommand command : commands) {
-            addAbstractCommand(updatedCommands, command);
+            addAbstractCommand(updatedCommands, command, variationFileName);
         }
         return updatedCommands;
     }
 
-    private void addAbstractCommand(final List<AbstractCommand> updatedCommand, final AbstractCommand command) {
+    private void addAbstractCommand(final List<AbstractCommand> updatedCommand,
+                                    final AbstractCommand command,
+                                    final Optional<String> variationFileName) {
         if (command instanceof Auth) {
             addAuthCommands(updatedCommand, (Auth) command);
         } else if (command instanceof Include) {
-            addIncludeCommands(updatedCommand, command);
+            addIncludeCommands(updatedCommand, command, variationFileName);
         } else {
             updatedCommand.add(command);
         }
@@ -145,21 +153,22 @@ public class ScenarioCollector {
         throw new DefaultFrameworkException(AUTH_NOT_FOUND, apiIntegration.getAlias());
     }
 
-    private void addIncludeCommands(final List<AbstractCommand> updatedCommands, final AbstractCommand command) {
-        Include include = getIncludeCommand(command);
+    private void addIncludeCommands(final List<AbstractCommand> updatedCommands,
+                                    final AbstractCommand command,
+                                    final Optional<String> variationFileName) {
+        Include include = getIncludeCommand(command, variationFileName);
         Scenario includedScenario = findIncludedScenarioAndParse(include);
-        updateScenario(includedScenario);
+        updateScenario(includedScenario, variationFileName);
         updatedCommands.addAll(includedScenario.getCommands());
     }
 
-    private Include getIncludeCommand(final AbstractCommand command) {
+    private Include getIncludeCommand(final AbstractCommand command, final Optional<String> variationFileName) {
         Include include = (Include) command;
-        if (StringUtils.isNotBlank(variationFileName)) {
-            List<Map<String, String>> variationList = GlobalVariationsProvider.getVariations(variationFileName);
+        if (variationFileName != null && variationFileName.isPresent()) {
+            List<Map<String, String>> variationList = GlobalVariationsProvider.getVariations(variationFileName.get());
             include = variationList.stream()
                     .map(variationMap -> (Include) InjectionUtil.injectObjectVariation(command, variationMap))
                     .findFirst().get();
-            this.variationFileName = null;
         }
         return include;
     }
@@ -172,26 +181,8 @@ public class ScenarioCollector {
         return XMLParsers.getInstance().forScenario().process(file, scenarioValidator);
     }
 
-    public static class Result {
+    public static class Result extends ArrayList<MappingResult> {
 
-        private static final TreeSet<MappingResult> SET_MAP = new TreeSet<>(new Comparator<MappingResult>() {
-            @Override
-            public int compare(final MappingResult o1, final MappingResult o2) {
-                return getReadonlyValue(o1) ? -1 : 1;
-            }
-
-            private boolean getReadonlyValue(final MappingResult result) {
-                return nonNull(result.scenario) && (result.scenario.getSettings().isTruncateStorages());
-            }
-        });
-
-        public void add(final MappingResult mappingResult) {
-            SET_MAP.add(mappingResult);
-        }
-
-        public Set<MappingResult> get() {
-            return SET_MAP;
-        }
     }
 
     @RequiredArgsConstructor

@@ -141,7 +141,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
             setExceptionResult(result, e);
             checkIfStopScenarioOnFailure(e);
         } finally {
-            result.setExecutionTime(stopWatch.getTime());
+            result.setExecutionTime(stopWatch.getDuration().toMillis());
             stopWatch.stop();
         }
     }

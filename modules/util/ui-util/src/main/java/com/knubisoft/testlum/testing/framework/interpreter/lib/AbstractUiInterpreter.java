@@ -5,8 +5,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.Ui;
 import org.apache.commons.lang3.StringUtils;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.html5.WebStorage;
 
 public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterpreter<T> {
 
@@ -34,8 +34,8 @@ public abstract class AbstractUiInterpreter<T extends Ui> extends AbstractInterp
     public void clearLocalStorage(final WebDriver driver, final String key, final CommandResult result) {
         if (StringUtils.isNotEmpty(key)) {
             result.put(CLEAR_LOCAL_STORAGE_BY_KEY, key);
-            WebStorage webStorage = (WebStorage) driver;
-            webStorage.getLocalStorage().removeItem(key);
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("window.localStorage.removeItem(arguments[0]);", key);
         }
     }
 

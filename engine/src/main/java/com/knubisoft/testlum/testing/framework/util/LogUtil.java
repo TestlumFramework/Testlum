@@ -48,13 +48,13 @@ public class LogUtil {
         private final Color color;
         private final List<String> lines = new ArrayList<>();
 
-        public void addAll(List<String> data) {
+        public void addAll(final List<String> data) {
             for (Object o : data) {
                 add(o);
             }
         }
 
-        public void add(Object object) {
+        public void add(final Object object) {
             if (object instanceof String) {
                 lines.add((String) object);
             } else if (object instanceof Optional) {
@@ -71,7 +71,7 @@ public class LogUtil {
         }
     }
 
-    /* execution log */
+    //CHECKSTYLE:OFF
     public void logScenarioDetails(final ScenarioArguments scenarioArguments,
                                    @Nullable final Exception exception,
                                    final Color color) {
@@ -94,13 +94,14 @@ public class LogUtil {
                     scenarioArguments.getMobileBrowserDevice(),
                     scenarioArguments.getNativeDevice()));
         }
-        Optional.ofNullable(exception).ifPresent(e-> {
+        Optional.ofNullable(exception).ifPresent(e -> {
             text.add(DelimiterConstant.EMPTY);
             text.add(e.getMessage());
             text.add(DelimiterConstant.EMPTY);
         });
         text.info();
     }
+    //CHECKSTYLE:ON
 
     private String formatOverview(final OverviewPart overviewPart, final String data) {
         if (StringUtils.isNotBlank(data)) {
@@ -110,11 +111,12 @@ public class LogUtil {
         }
     }
 
+    //CHECKSTYLE:OFF
     private List<String> getUIInfo(final String variation,
-                           final String environment,
-                           final String browserAlias,
-                           final String mobileBrowserAlias,
-                           final String nativeDeviceAlias) {
+                                   final String environment,
+                                   final String browserAlias,
+                                   final String mobileBrowserAlias,
+                                   final String nativeDeviceAlias) {
         List<String> messages = new ArrayList<>();
         if (StringUtils.isNotBlank(variation)) {
             messages.add(String.format(LogMessage.VARIATION_LOG, variation));
@@ -129,10 +131,11 @@ public class LogUtil {
 
         MobileUtil.getNativeDeviceBy(environment, nativeDeviceAlias).ifPresent(nativeDevice ->
                 messages.add(String.format(LogMessage.NATIVE_LOG,
-                       MobileUtil.getNativeDeviceInfo(nativeDevice))));
+                        MobileUtil.getNativeDeviceInfo(nativeDevice))));
 
         return messages;
     }
+    //CHECKSTYLE:ON
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {
         log.error(LogMessage.INVALID_SCENARIO_LOG, path, exception);

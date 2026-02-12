@@ -129,6 +129,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         this.uiCommandValidatorsMap = createUICommandsValidatorMap();
     }
 
+    //CHECKSTYLE:OFF
     private @NotNull Map<AbstractCommandPredicate, AbstractCommandValidator> createCommandsValidatorsMap() {
         return Map.ofEntries(
                 Map.entry(o -> o instanceof Auth, (xmlFile, command) -> {
@@ -297,7 +298,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 Map.entry(o -> o instanceof Native, (xmlFile, command) ->
                         validateNativeCommands((Native) command, xmlFile)));
     }
+    //CHECKSTYLE:ON
 
+    //CHECKSTYLE:OFF
     private @NotNull Map<AbstractCommandPredicate, AbstractCommandValidator> createUICommandsValidatorMap() {
         return Map.of(
                 o -> o instanceof WebVar, (xmlFile, command) -> {
@@ -323,6 +326,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                     validateVarCommand(xmlFile, var.getFile(), var.getSql());
                 });
     }
+    //CHECKSTYLE:ON
 
     @Override
     public void validate(final Scenario scenario, final File xmlFile) {

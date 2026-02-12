@@ -23,6 +23,8 @@ public class WebDownloadUtil {
     private static final long POLLING_INTERVAL_MS = 300;
     private static final long DOWNLOAD_DETECTION_WINDOW_MS = 2000;
     private static final long STABILITY_THRESHOLD_MS = 2500;
+    private static final String ACTUAL_FILENAME = "actual.json";
+    private static final String FINAL_ACTUAL_FILENAME = "action_%s_" + ACTUAL_FILENAME;
 
     public static Path resolveScenarioDir(final File scenarioFile) {
         if (scenarioFile == null) {
@@ -183,7 +185,8 @@ public class WebDownloadUtil {
     private static void performCleanup(final Path directory, final Set<String> existingFiles) {
         try (Stream<Path> stream = Files.list(directory)) {
             stream.filter(Files::isRegularFile)
-                    .filter(path -> !existingFiles.contains(path.getFileName().toString()))
+                    .filter(path -> !existingFiles.contains(path.getFileName().toString())
+                                    && path.getFileName().toString().startsWith(FINAL_ACTUAL_FILENAME))
                     .forEach(WebDownloadUtil::deleteFile);
         } catch (IOException exception) {
             log.warn("Failed to cleanup directory: {}", directory, exception);

@@ -21,6 +21,18 @@
         </x:restriction>
     </x:simpleType>
 
+    <x:complexType name="autoHealing">
+        <x:attribute name="enabled" type="x:boolean" use="required"/>
+        <x:attribute name="mode" type="tns:autoHealingMode" use="required"/>
+    </x:complexType>
+
+    <x:simpleType name="autoHealingMode">
+        <x:restriction base="x:string">
+            <x:enumeration value="soft"/>
+            <x:enumeration value="persistent"/>
+        </x:restriction>
+    </x:simpleType>
+
     <x:simpleType name="urlWebsocket" final="restriction">
         <x:restriction base="x:string">
             <x:pattern value="((wss?|https?)://.+)"/>

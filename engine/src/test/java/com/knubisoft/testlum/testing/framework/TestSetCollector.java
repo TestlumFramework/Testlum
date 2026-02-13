@@ -6,6 +6,7 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioFilter;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
+import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ScenarioStepReader;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl.GlobalVariationsProvider;
@@ -23,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,6 +37,7 @@ public class TestSetCollector {
     private final List<String> browsers;
     private final List<String> mobilebrowsers;
     private final List<String> nativeDevices;
+    private final AtomicInteger scenarioIdGenerator = new AtomicInteger();
 
     public TestSetCollector() {
         browsers = BrowserUtil.filterDefaultEnabledBrowsers().stream()
@@ -138,13 +141,14 @@ public class TestSetCollector {
         return ScenarioArguments.builder()
                 .path(getShortPath(entry.file))
                 .file(entry.file)
-                .scenario(entry.scenario)
+                .scenario(deepCopyScenario(entry.scenario))
                 .exception(entry.exception)
                 .browser(browserAlias)
                 .mobilebrowserDevice(mobilebrowserAlias)
                 .nativeDevice(nativeAlias)
                 .variations(variations)
                 .containsUiSteps(true)
+                .id(scenarioIdGenerator.incrementAndGet())
                 .build();
     }
 
@@ -152,14 +156,20 @@ public class TestSetCollector {
         return ScenarioArguments.builder()
                 .path(getShortPath(entry.file))
                 .file(entry.file)
-                .scenario(entry.scenario)
+                .scenario(deepCopyScenario(entry.scenario))
                 .exception(entry.exception)
                 .variations(variations)
+                .id(scenarioIdGenerator.incrementAndGet())
                 .build();
     }
 
     private Arguments convertToNamedArguments(final ScenarioArguments scenarioArguments) {
         return arguments(Named.of(scenarioArguments.getPath(), scenarioArguments));
+    }
+
+    private Scenario deepCopyScenario(Scenario src) {
+        String json = JacksonMapperUtil.writeValueToCopiedString(src);
+        return JacksonMapperUtil.readCopiedValue(json, Scenario.class);
     }
 
     private String getShortPath(final File file) {

@@ -10,7 +10,6 @@ import com.knubisoft.testlum.testing.model.scenario.AssertChecked;
 import com.knubisoft.testlum.testing.model.scenario.AssertPresent;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
-import com.knubisoft.testlum.testing.model.scenario.Exclude;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
 import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
@@ -52,6 +51,7 @@ public class ResultUtil {
     public static final String JSON_PATH = "JSON path";
     public static final String XML_PATH = "Xml path";
     public static final String RELATIONAL_DB_QUERY = "Relational DB query";
+    public static final String ALERT = "Alert";
     public static final String FILE = "File";
     public static final String EXPRESSION = "Expression";
     public static final String CONSTANT = "Constant";
@@ -81,6 +81,9 @@ public class ResultUtil {
     public static final String HOTKEY_TIMES = "Times to repeat hotkey command";
     public static final String INPUT_VALUE = "Value for input";
     public static final String CLICK_METHOD = "Click method";
+    public static final String ALERT_TYPE = "Alert type";
+    public static final String ALERT_WAIT = "Wait for visible";
+    public static final String PROMPT_TEXT = "Text for prompt";
     public static final String CLOSE_TAB = "Close";
     public static final String SWITCH_TAB = "Switch";
     public static final String OPEN_TAB = "Open";
@@ -140,7 +143,7 @@ public class ResultUtil {
     private static final String IMAGE_LOCATOR = "Locator to element with picture";
     private static final String IMAGE_SOURCE_ATT = "Image source attribute name";
     private static final String MATCH_PERCENTAGE = "Match percentage";
-    private static final String EXCLUDED_ELEMENT = "Excluded elements locators";
+    private static final String EXCLUDED_ELEMENT = "Excluded elements";
     private static final String ACTUAL_IMAGE_SIZE = "Actual image size";
     private static final String EXPECTED_IMAGE_SIZE = "Expected image size";
 
@@ -371,7 +374,7 @@ public class ResultUtil {
         }
         if (!fullScreen.getExclude().isEmpty()) {
             result.put(EXCLUDED_ELEMENT, StringUtils.join(fullScreen.getExclude().stream()
-                    .map(Exclude::getLocator)
+                    .map(ImageComparisonUtil::addExcludedMetaData)
                     .collect(Collectors.joining(COMMA + SPACE))));
         }
     }

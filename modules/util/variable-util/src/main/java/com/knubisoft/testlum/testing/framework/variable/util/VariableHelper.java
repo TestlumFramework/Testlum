@@ -2,7 +2,16 @@ package com.knubisoft.testlum.testing.framework.variable.util;
 
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
-import com.knubisoft.testlum.testing.model.scenario.*;
+import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
+import com.knubisoft.testlum.testing.model.scenario.FromAlert;
+import com.knubisoft.testlum.testing.model.scenario.FromConstant;
+import com.knubisoft.testlum.testing.model.scenario.FromDate;
+import com.knubisoft.testlum.testing.model.scenario.FromExpression;
+import com.knubisoft.testlum.testing.model.scenario.FromFile;
+import com.knubisoft.testlum.testing.model.scenario.FromPath;
+import com.knubisoft.testlum.testing.model.scenario.FromRandomGenerate;
+import com.knubisoft.testlum.testing.model.scenario.FromSQL;
+import org.openqa.selenium.Alert;
 
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -29,6 +38,7 @@ public interface VariableHelper {
     String getDateResult(FromDate fromDate, String varName, CommandResult result);
 
 
+    String getAlertResult(FromAlert fromAlert, String varName, Alert browserAlert, CommandResult result);
 
 
     interface VarPredicate<T extends AbstractCommand> extends Predicate<T> { }

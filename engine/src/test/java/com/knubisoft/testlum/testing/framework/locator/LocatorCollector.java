@@ -31,14 +31,16 @@ public class LocatorCollector {
         this.componentFiles = FileSearcher.collectFilesFromFolder(resourceSettings.getComponentsFolder());
     }
 
-    public Map<String, Locator> collect() {
+    public Map<String, LocatorData> collect() {
         Map<File, Page> fileToPage = collectFileToPageMap();
         return transformToNameToLocatorMap(fileToPage);
     }
 
     private Map<File, Page> collectFileToPageMap() {
         Map<File, Page> fileToPage = new LinkedHashMap<>();
-        pageFiles.values().forEach(each -> fileToPage.put(each, parseLocatorOrThrow(each)));
+        pageFiles.values().stream()
+                .filter(file -> file.getName().endsWith(".xml"))
+                .forEach(each -> fileToPage.put(each, parseLocatorOrThrow(each)));
         return fileToPage;
     }
 
@@ -68,12 +70,12 @@ public class LocatorCollector {
         return XMLParsers.forComponentLocator().process(file);
     }
 
-    private Map<String, Locator> transformToNameToLocatorMap(final Map<File, Page> fileToPage) {
-        Map<String, Locator> result = new LinkedHashMap<>();
+    private Map<String, LocatorData> transformToNameToLocatorMap(final Map<File, Page> fileToPage) {
+        Map<String, LocatorData> result = new LinkedHashMap<>();
 
         for (Map.Entry<File, Page> each : fileToPage.entrySet()) {
             for (Locator locator : each.getValue().getLocators().getLocator()) {
-                result.put(getKeyName(each, locator), locator);
+                result.put(getKeyName(each, locator), new LocatorData(each.getKey(), locator));
             }
         }
         return result;

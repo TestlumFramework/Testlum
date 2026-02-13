@@ -1,0 +1,39 @@
+name: Testlum Engine Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Java ${{ matrix.java }} [experimental > ${{ matrix.experimental }}] build
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: true
+      matrix:
+        java: [ 17 ]
+        experimental: [ false ]
+        include:
+          - java: 21
+            experimental: false
+          - java: 25
+            experimental: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: 'temurin' # Recommended distribution for setup-java
+          cache: maven # Caches dependencies to speed up subsequent runs
+
+      - name: Build with Maven
+        run: mvn clean package -Pprofessional -DskipTests

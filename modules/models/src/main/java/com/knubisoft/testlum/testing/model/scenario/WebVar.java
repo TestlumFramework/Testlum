@@ -22,6 +22,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *         &lt;element name="dom" type="{http://www.knubisoft.com/testlum/testing/model/scenario}fromDom"/&gt;
  *         &lt;element name="url" type="{http://www.knubisoft.com/testlum/testing/model/scenario}fromUrl"/&gt;
  *         &lt;element name="element" type="{http://www.knubisoft.com/testlum/testing/model/scenario}fromElement"/&gt;
+ *         &lt;element name="alert" type="{http://www.knubisoft.com/testlum/testing/model/scenario}fromAlert"/&gt;
  *       &lt;/choice&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.knubisoft.com/testlum/testing/model/scenario}nonEmptyString" /&gt;
  *     &lt;/extension&gt;
@@ -43,7 +44,8 @@ import jakarta.xml.bind.annotation.XmlType;
     "cookie",
     "dom",
     "url",
-    "element"
+    "element",
+    "alert"
 })
 public class WebVar
     extends AbstractUiCommand
@@ -60,6 +62,7 @@ public class WebVar
     protected FromDom dom;
     protected FromUrl url;
     protected FromElement element;
+    protected FromAlert alert;
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
@@ -325,6 +328,30 @@ public class WebVar
      */
     public void setElement(FromElement value) {
         this.element = value;
+    }
+
+    /**
+     * Gets the value of the alert property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FromAlert }
+     *     
+     */
+    public FromAlert getAlert() {
+        return alert;
+    }
+
+    /**
+     * Sets the value of the alert property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FromAlert }
+     *     
+     */
+    public void setAlert(FromAlert value) {
+        this.alert = value;
     }
 
     /**

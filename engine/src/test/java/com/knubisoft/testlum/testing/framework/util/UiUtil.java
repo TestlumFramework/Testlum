@@ -7,6 +7,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.locator.GlobalLocators;
+import com.knubisoft.testlum.testing.framework.locator.LocatorData;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.pages.ClassName;
 import com.knubisoft.testlum.testing.model.pages.CssSelector;
@@ -39,8 +40,10 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SCROLL_TO_ELEMENT_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.WEB_ELEMENT_ATTRIBUTE_NOT_EXIST;
@@ -74,17 +77,17 @@ public class UiUtil {
     public WebElement findWebElement(final ExecutorDependencies dependencies,
                                      final String locatorId,
                                      final LocatorStrategy locatorStrategy) {
-        Locator locator = getLocatorByStrategy(locatorId, locatorStrategy);
-        return WebElementFinder.find(locator, dependencies);
+        LocatorData locatorData = getLocatorByStrategy(locatorId, locatorStrategy);
+        return WebElementFinder.find(locatorData, dependencies);
     }
 
-    public Locator getLocatorByStrategy(final String locatorId, final LocatorStrategy locatorStrategy) {
+    public LocatorData getLocatorByStrategy(final String locatorId, final LocatorStrategy locatorStrategy) {
+        if (locatorStrategy == LocatorStrategy.LOCATOR_ID) {
+            return GlobalLocators.getLocator(locatorId);
+        }
         Locator locator = new Locator();
         locator.setLocatorId(locatorId);
         switch (locatorStrategy) {
-            case LOCATOR_ID:
-                locator = GlobalLocators.getLocator(locatorId);
-                break;
             case XPATH:
                 Xpath xpath = new Xpath();
                 xpath.setValue(locatorId);
@@ -112,7 +115,9 @@ public class UiUtil {
                 locator.getXpathOrIdOrClassName().add(cssSelector);
                 break;
         }
-        return locator;
+        LocatorData locatorData = new LocatorData();
+        locatorData.setLocator(locator);
+        return locatorData;
     }
     //CHECKSTYLE:ON
 
@@ -259,6 +264,14 @@ public class UiUtil {
                     .getBaseUrl() + path;
         }
         return GlobalTestConfigurationProvider.getWebSettings(env).getBaseUrl() + path;
+    }
+
+    public void waitForMatSelectToClose(final ExecutorDependencies dependencies, final WebElement matSelect) {
+        getWebDriverWait(dependencies).until(d -> "false".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
+    }
+
+    public void waitForMatSelectToOpen(final ExecutorDependencies dependencies, final WebElement matSelect) {
+        getWebDriverWait(dependencies).until(d -> "true".equalsIgnoreCase(matSelect.getAttribute("aria-expanded")));
     }
 
     public String getBasePageURL(final String currentPageURL) {

@@ -15,14 +15,16 @@ import com.knubisoft.testlum.testing.model.scenario.SelectOrDeselectBy;
 import com.knubisoft.testlum.testing.model.scenario.TypeForAllValues;
 import com.knubisoft.testlum.testing.model.scenario.TypeForOneValue;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.CUSTOM_DROP_DOWN_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
@@ -35,6 +37,7 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_LOCATOR;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ONE_VALUE_TEMPLATE;
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Slf4j
 @ExecutorForClass(DropDown.class)
@@ -92,6 +95,11 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         log.info(COMMAND_TYPE_LOG, format(ONE_VALUE_TEMPLATE, type.value()));
         log.info(BY_LOG, oneValue.getBy().value());
         log.info(VALUE_LOG, value);
+        if ("mat-select".equalsIgnoreCase(dropDownElement.getTagName())) {
+            processMatSelect(dependencies, dropDownElement, value);
+            UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+            return;
+        }
         dropDownElement.click();
         List<WebElement> dropDownParentElements = dropDownElement.findElements(By.xpath("ancestor::*"));
         selectSearchableOptionForCustomDropDown(dropDownParentElements, value);
@@ -198,5 +206,71 @@ public class DropDownExecutor extends AbstractUiExecutor<DropDown> {
         log.info(COMMAND_TYPE_LOG, ALL_VALUES_DESELECT);
         result.put(DROP_DOWN_FOR, ALL_VALUES_DESELECT);
         select.deselectAll();
+    }
+
+    public void processMatSelect(final ExecutorDependencies dependencies, final WebElement matSelect, final String value) {
+        openMatSelect(dependencies, matSelect);
+        WebElement panel = getMatSelectPanel(dependencies, matSelect);
+        WebElement option = findMatchingOption(panel, value);
+        clickMatOption(dependencies, option);
+        UiUtil.waitForMatSelectToClose(dependencies, matSelect);
+    }
+
+    private void openMatSelect(final ExecutorDependencies dependencies, final WebElement matSelect) {
+        UiUtil.waitForElementToBeClickable(dependencies, matSelect);
+        matSelect.click();
+        UiUtil.waitForMatSelectToOpen(dependencies, matSelect);
+    }
+
+    private WebElement getMatSelectPanel(final ExecutorDependencies dependencies, final WebElement matSelect) {
+        String panelId = matSelect.getAttribute("aria-controls");
+        if (isBlank(panelId)) {
+            throw new DefaultFrameworkException("The 'aria-controls' attribute is missing on mat-select. Cannot find dropdown panel.");
+        }
+        WebElement panel = dependencies.getDriver().findElement(By.id(panelId));
+        UiUtil.waitForElementVisibility(dependencies, panel);
+        return panel;
+    }
+
+    private WebElement findMatchingOption(final WebElement panel, final String value) {
+        List<WebElement> options = panel.findElements(By.cssSelector("mat-option, [role='option']"));
+        if (options.isEmpty()) {
+            throw new DefaultFrameworkException("No options (mat-option) found in the dropdown panel.");
+        }
+
+        String normalizedTarget = normalizeText(value);
+        return options.stream()
+                .filter(o -> !"true".equalsIgnoreCase(o.getAttribute("aria-disabled")))
+                .filter(o -> normalizeText(extractOptionText(o)).equalsIgnoreCase(normalizedTarget))
+                .findFirst()
+                .orElseThrow(() -> new DefaultFrameworkException(
+                        format("Option '%s' not found. Available options: %s", value,
+                                options.stream().map(o -> normalizeText(extractOptionText(o))).collect(Collectors.toList()))
+                ));
+    }
+
+    private void clickMatOption(final ExecutorDependencies dependencies, final WebElement option) {
+        UiUtil.waitForElementToBeClickable(dependencies, option);
+        option.click();
+    }
+
+    private String extractOptionText(final WebElement option) {
+        List<WebElement> spans = option.findElements(By.cssSelector("span"));
+        for (WebElement span : spans) {
+            String txt = span.getText();
+            if (!isBlank(txt)) {
+                return txt;
+            }
+        }
+        return option.getText();
+    }
+
+    private String normalizeText(final String s) {
+        if (s == null) {
+            return "";
+        }
+        return s.replace('\u00A0', ' ')
+                .replaceAll("\\s+", " ")
+                .trim();
     }
 }

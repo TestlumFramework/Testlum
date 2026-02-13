@@ -37,6 +37,8 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
@@ -56,6 +58,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class LogUtil {
 
     private static final int MAX_CONTENT_LENGTH = 25 * 1024;
+    private static final Map<String, ScenarioArguments> SCENARIO_ARGUMENTS_BY_DISPLAY_NAME = new ConcurrentHashMap<>();
 
     /* execution log */
     public void logScenarioDetails(final ScenarioArguments scenarioArguments, final int scenarioId) {
@@ -113,16 +116,44 @@ public class LogUtil {
     }
 
     private void logTestsStatistics(final TestExecutionSummary testExecutionSummary) {
+        long failedScenarios = testExecutionSummary.getTestsFailedCount();
         log.info(LogMessage.TEST_EXECUTION_SUMMARY_TEMPLATE,
                 testExecutionSummary.getTestsFoundCount(),
                 testExecutionSummary.getTestsSkippedCount(),
                 testExecutionSummary.getTestsStartedCount(),
                 testExecutionSummary.getTestsAbortedCount(),
                 testExecutionSummary.getTestsSucceededCount(),
-                testExecutionSummary.getTestsFailedCount());
-        testExecutionSummary.getFailures().forEach(e -> log.error(
-                format(LogMessage.FAILED_SCENARIOS_NAME_TEMPLATE, e.getTestIdentifier().getDisplayName()),
-                e.getException()));
+                failedScenarios);
+        if (failedScenarios > 0) {
+            testExecutionSummary.getFailures()
+                    .forEach(LogUtil::logFailureSummary);
+        }
+    }
+
+    private void logFailureSummary(final TestExecutionSummary.Failure failure) {
+        String displayName = failure.getTestIdentifier().getDisplayName();
+        ScenarioArguments args = findScenarioArguments(displayName);
+
+        String message = (args != null)
+                ? buildFailedScenarioMessage(args)
+                : format(LogMessage.FAILED_SCENARIOS_NAME_TEMPLATE, displayName);
+
+        log.error(message, failure.getException());
+    }
+
+    private String buildFailedScenarioMessage(final ScenarioArguments args) {
+        String scenarioName = "";
+        if (args.getScenario() != null && args.getScenario().getOverview() != null) {
+            String nameFromOverview = args.getScenario().getOverview().getName();
+            if (nameFromOverview != null && !nameFromOverview.isEmpty()) {
+                scenarioName = nameFromOverview;
+            }
+        }
+
+        return format(LogMessage.FAILED_SCENARIO_DETAILS_TEMPLATE,
+                args.getId(),
+                scenarioName,
+                args.getPath());
     }
 
     public void logNonParsedScenarioInfo(final String path, final String exception) {
@@ -304,7 +335,7 @@ public class LogUtil {
         }
         if (!fullScreen.getExclude().isEmpty()) {
             log.info(IMAGE_EXCLUDED_ELEMENT_LOG, StringUtils.join(fullScreen.getExclude().stream()
-                    .map(Exclude::getLocator)
+                    .map(ImageComparisonUtil::addExcludedMetaData)
                     .collect(Collectors.joining(COMMA + SPACE))));
         }
     }
@@ -425,5 +456,16 @@ public class LogUtil {
 
     public static void logScenarioWithoutTags(final String scenarioPath) {
         log.warn(SCENARIO_WITH_EMPTY_TAG_LOG, scenarioPath);
+    }
+
+    public static void registerScenarioArguments(final String displayName,
+                                                 final ScenarioArguments scenarioArguments) {
+        if (displayName != null && scenarioArguments != null) {
+            SCENARIO_ARGUMENTS_BY_DISPLAY_NAME.put(displayName, scenarioArguments);
+        }
+    }
+
+    private static ScenarioArguments findScenarioArguments(final String displayName) {
+        return SCENARIO_ARGUMENTS_BY_DISPLAY_NAME.get(displayName);
     }
 }

@@ -65,5 +65,10 @@
             <artifactId>testlum-variable-util</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-ai-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

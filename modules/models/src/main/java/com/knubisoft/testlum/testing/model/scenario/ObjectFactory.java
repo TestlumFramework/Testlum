@@ -318,6 +318,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Ai }
+     * 
+     */
+    public Ai createAskAi() {
+        return new Ai();
+    }
+
+    /**
      * Create an instance of {@link Response }
      * 
      */
@@ -542,6 +550,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link FromAlert }
+     * 
+     */
+    public FromAlert createFromAlert() {
+        return new FromAlert();
+    }
+
+    /**
      * Create an instance of {@link ElementPresent }
      * 
      */
@@ -635,6 +651,14 @@ public class ObjectFactory {
      */
     public AssertPresent createAssertPresent() {
         return new AssertPresent();
+    }
+
+    /**
+     * Create an instance of {@link UiAi }
+     * 
+     */
+    public UiAi createUiAskAi() {
+        return new UiAi();
     }
 
     /**
@@ -755,6 +779,14 @@ public class ObjectFactory {
      */
     public Scroll createScroll() {
         return new Scroll();
+    }
+
+    /**
+     * Create an instance of {@link Alert }
+     * 
+     */
+    public Alert createAlert() {
+        return new Alert();
     }
 
     /**
@@ -947,6 +979,22 @@ public class ObjectFactory {
      */
     public Exclude createExclude() {
         return new Exclude();
+    }
+
+    /**
+     * Create an instance of {@link ByLocator }
+     * 
+     */
+    public ByLocator createByLocator() {
+        return new ByLocator();
+    }
+
+    /**
+     * Create an instance of {@link ByArea }
+     * 
+     */
+    public ByArea createByArea() {
+        return new ByArea();
     }
 
     /**

@@ -241,4 +241,5 @@ public class ExceptionMessage {
     public static final String TAB_NOT_FOUND = "No tab found to work with";
     public static final String TAB_OUT_OF_BOUNDS = "Cannot close the tab №<%s> because there are only %s tabs";
     public static final String CANNOT_SWITCH_TO_WEBVIEW = "Cannot switch to the web view. Web context was not found";
+    public static final String ALERT_NOT_VISIBLE = "Alert hasn't been visible";
 }

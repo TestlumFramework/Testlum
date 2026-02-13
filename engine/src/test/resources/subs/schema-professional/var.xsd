@@ -25,6 +25,7 @@
                     <x:element name="dom" type="tns:fromDom"/>
                     <x:element name="url" type="tns:fromUrl"/>
                     <x:element name="element" type="tns:fromElement"/>
+                    <x:element name="alert" type="tns:fromAlert"/>
                 </x:choice>
                 <x:attribute name="name" type="tns:nonEmptyString" use="required"/>
             </x:extension>
@@ -185,6 +186,8 @@
             <x:element name="attribute" type="tns:elementAttribute"/>
         </x:choice>
     </x:complexType>
+
+    <x:complexType name="fromAlert" />
 
     <x:complexType name="elementPresent">
         <x:attribute name="locator" type="tns:nonEmptyString" use="required"/>

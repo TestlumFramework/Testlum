@@ -52,6 +52,7 @@
             <x:element name="expression" type="tns:fromExpression"/>
             <x:element name="sql" type="tns:fromSQL"/>
             <x:element name="generate" type="tns:fromRandomGenerate"/>
+            <x:element name="date" type="tns:fromDate"/>
         </x:choice>
     </x:group>
 
@@ -75,6 +76,10 @@
         <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
 
+    <x:complexType name="fromDateConstant">
+        <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
+    </x:complexType>
+
     <x:complexType name="fromExpression">
         <x:attribute name="value" type="tns:nonEmptyString" use="required"/>
     </x:complexType>
@@ -87,9 +92,44 @@
         <x:attribute name="alias" type="tns:aliasPattern" default="DEFAULT"/>
     </x:complexType>
 
+    <x:complexType name="fromDate">
+        <x:choice>
+            <x:element name="constant" type="tns:fromDateConstant"/>
+            <x:element name="now" type="tns:now"/>
+            <x:element name="beforeNow" type="tns:dateShift"/>
+            <x:element name="afterNow" type="tns:dateShift"/>
+        </x:choice>
+        <x:attribute name="format" type="x:string" default="yyyy-MM-dd HH:mm:ss"/>
+        <x:attribute name="timezone" type="tns:timezoneType"/>
+    </x:complexType>
+
+    <x:complexType name="dateShift">
+        <x:attribute name="unit" type="tns:dateUnit" use="required"/>
+        <x:attribute name="value" type="x:string" use="required"/>
+    </x:complexType>
+
+
+    <x:simpleType name="dateUnit">
+        <x:restriction base="x:string">
+            <x:enumeration value="minutes"/>
+            <x:enumeration value="seconds"/>
+            <x:enumeration value="hours"/>
+            <x:enumeration value="days"/>
+            <x:enumeration value="months"/>
+            <x:enumeration value="years"/>
+        </x:restriction>
+    </x:simpleType>
+
+
     <x:simpleType name="variableQuery">
         <x:restriction base="x:string">
             <x:pattern value="(\s|\n)*SELECT([^\*,]|\n)+FROM(.|\n)+WHERE(.|\n)+"/>
+        </x:restriction>
+    </x:simpleType>
+
+    <x:simpleType name="timezoneType">
+        <x:restriction base="x:string">
+            <x:pattern value="UTC[+\-][0-9]+|.*\{\{.*\}\}.*|"/>
         </x:restriction>
     </x:simpleType>
 
@@ -117,6 +157,8 @@
     <x:complexType name="randomAlphabetic"/>
 
     <x:complexType name="randomAlphanumeric"/>
+
+    <x:complexType name="now"/>
 
     <x:complexType name="randomRegexp">
         <x:attribute name="pattern" type="tns:nonEmptyString" use="required"/>

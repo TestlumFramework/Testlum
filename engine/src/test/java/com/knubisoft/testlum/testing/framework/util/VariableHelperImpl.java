@@ -20,9 +20,11 @@ import com.knubisoft.testlum.testing.model.scenario.FromFile;
 import com.knubisoft.testlum.testing.model.scenario.FromPath;
 import com.knubisoft.testlum.testing.model.scenario.FromRandomGenerate;
 import com.knubisoft.testlum.testing.model.scenario.FromSQL;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
@@ -40,11 +42,11 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalQueries;
+import java.util.*;
 import java.util.function.UnaryOperator;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
@@ -69,6 +71,7 @@ public class VariableHelperImpl implements VariableHelper {
 
     private static final String VAR_CONTEXT_LOG = format(TABLE_FORMAT, "Created from", "{}");
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
+    private static final String JAVA_COMPATIBLE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     private final Map<RandomPredicate, RandomFunction> randomGenerateMethodMap;
     @Autowired
@@ -236,6 +239,114 @@ public class VariableHelperImpl implements VariableHelper {
     }
 
     @Override
+    public String getDateResult(final FromDate fromDate, final String variableName, final CommandResult commandResult) {
+        String dateFormatPattern = normalizeDateFormat(fromDate.getFormat());
+        ZoneId zoneId = resolveZoneId(fromDate.getTimezone());
+        DateTimeFormatter dateTimeFormatter = createDateTimeFormatter(dateFormatPattern);
+        ZonedDateTime calculatedDateTime = calculateDateTime(fromDate, dateFormatPattern, dateTimeFormatter, zoneId);
+        return formatAndRegisterResult(calculatedDateTime, dateTimeFormatter, variableName, dateFormatPattern, commandResult);
+    }
+
+    private ZonedDateTime calculateDateTime(final FromDate fromDate, final String dateFormatPattern,
+                                            final DateTimeFormatter dateTimeFormatter, final ZoneId zoneId) {
+        if (fromDate.getConstant() != null) {
+            return parseSpecifiedValue(fromDate.getConstant().getValue(), dateFormatPattern, dateTimeFormatter, zoneId);
+        }
+        if (fromDate.getBeforeNow() != null) {
+            return applyDateShift(ZonedDateTime.now(zoneId), fromDate.getBeforeNow(), -1);
+        }
+        if (fromDate.getAfterNow() != null) {
+            return applyDateShift(ZonedDateTime.now(zoneId), fromDate.getAfterNow(), 1);
+        }
+        return ZonedDateTime.now(zoneId);
+    }
+
+    private String formatAndRegisterResult(final ZonedDateTime dateTime, final DateTimeFormatter dateTimeFormatter,
+                                           final String variableName, final String pattern, final CommandResult commandResult) {
+        try {
+            String formattedResult = dateTime.format(dateTimeFormatter);
+            ResultUtil.addVariableMetaData(GENERATED_STRING, variableName, pattern, formattedResult, commandResult);
+            return formattedResult;
+        } catch (DateTimeException e) {
+            throw new DefaultFrameworkException(String.format(ExceptionMessage.DATE_FORMATTING_FAILED, pattern, e.getMessage()));
+        }
+    }
+
+    private DateTimeFormatter createDateTimeFormatter(final String dateFormatPattern) {
+        try {
+            return DateTimeFormatter.ofPattern(dateFormatPattern);
+        } catch (IllegalArgumentException e) {
+            throw new DefaultFrameworkException(
+                    String.format(ExceptionMessage.INVALID_DATE_FORMAT_PATTERN, dateFormatPattern, e.getMessage()));
+        }
+    }
+
+    private String normalizeDateFormat(final String dateFormat) {
+        return StringUtils.isBlank(dateFormat) ? JAVA_COMPATIBLE_FORMAT : dateFormat;
+    }
+
+    private ZoneId resolveZoneId(final String timezone) {
+        if (StringUtils.isBlank(timezone)) {
+            return ZoneId.systemDefault();
+        }
+        try {
+            String normalizedTimezone = timezone.startsWith("UTC") ? timezone.replace("UTC", "GMT") : timezone;
+            return ZoneId.of(normalizedTimezone);
+        } catch (Exception e) {
+            throw new DefaultFrameworkException(String.format(ExceptionMessage.INVALID_TIMEZONE, timezone));
+        }
+    }
+
+    private ZonedDateTime parseSpecifiedValue(final String valueToParse, final String dateFormatPattern,
+                                              final DateTimeFormatter dateTimeFormatter, final ZoneId zoneId) {
+        if (StringUtils.isBlank(valueToParse)) {
+            return ZonedDateTime.now(zoneId);
+        }
+        TemporalAccessor temporalAccessor = parseToTemporalAccessor(valueToParse, dateFormatPattern, dateTimeFormatter);
+        return convertToZonedDateTime(temporalAccessor, zoneId, valueToParse, dateFormatPattern);
+    }
+
+    private TemporalAccessor parseToTemporalAccessor(final String valueToParse, final String dateFormatPattern,
+                                                     final DateTimeFormatter dateTimeFormatter) {
+        try {
+            return dateTimeFormatter.parse(valueToParse);
+        } catch (DateTimeException e) {
+            throw new DefaultFrameworkException(
+                    String.format(ExceptionMessage.VALUE_DOES_NOT_MATCH_FORMAT, valueToParse, dateFormatPattern));
+        }
+    }
+
+    private ZonedDateTime convertToZonedDateTime(final TemporalAccessor temporalAccessor, final ZoneId zoneId,
+                                                 final String originalValue, final String pattern) {
+        LocalDate localDate = temporalAccessor.query(TemporalQueries.localDate());
+        LocalTime localTime = temporalAccessor.query(TemporalQueries.localTime());
+
+        if (localDate != null) {
+            return localTime != null ? ZonedDateTime.of(localDate, localTime, zoneId) : localDate.atStartOfDay(zoneId);
+        }
+        if (localTime != null) {
+            return ZonedDateTime.of(LocalDate.now(zoneId), localTime, zoneId);
+        }
+        throw new DefaultFrameworkException(
+                String.format(ExceptionMessage.POOR_DATETIME_INFORMATION, originalValue, pattern));
+    }
+
+    private ZonedDateTime applyDateShift(final ZonedDateTime zonedDateTime, final DateShift dateShift, final int signMultiplier) {
+        int value;
+        try {
+            value = Integer.parseInt(dateShift.getValue());
+        } catch (NumberFormatException e) {
+            return zonedDateTime;
+        }
+        int shiftAmount = value * signMultiplier;
+        return switch (dateShift.getUnit()) {
+            case MINUTES -> zonedDateTime.plusMinutes(shiftAmount);
+            case SECONDS -> zonedDateTime.plusSeconds(shiftAmount);
+            case HOURS -> zonedDateTime.plusHours(shiftAmount);
+            case DAYS -> zonedDateTime.plusDays(shiftAmount);
+            case MONTHS -> zonedDateTime.plusMonths(shiftAmount);
+            case YEARS -> zonedDateTime.plusYears(shiftAmount);
+        };
     public String getAlertResult(FromAlert fromAlert, String varName, Alert browserAlert, CommandResult result) {
         String valueResult = browserAlert.getText();
         ResultUtil.addVariableMetaData(ALERT, varName, NO_EXPRESSION, valueResult, result);

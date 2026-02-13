@@ -32,7 +32,8 @@ import jakarta.xml.bind.annotation.XmlType;
     "constant",
     "expression",
     "sql",
-    "generate"
+    "generate",
+    "date"
 })
 public class Var
     extends AbstractCommand
@@ -44,6 +45,7 @@ public class Var
     protected FromExpression expression;
     protected FromSQL sql;
     protected FromRandomGenerate generate;
+    protected FromDate date;
     @XmlAttribute(name = "name", required = true)
     protected String name;
 
@@ -189,6 +191,30 @@ public class Var
      */
     public void setGenerate(FromRandomGenerate value) {
         this.generate = value;
+    }
+
+    /**
+     * Gets the value of the date property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FromDate }
+     *     
+     */
+    public FromDate getDate() {
+        return date;
+    }
+
+    /**
+     * Sets the value of the date property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FromDate }
+     *     
+     */
+    public void setDate(FromDate value) {
+        this.date = value;
     }
 
     /**

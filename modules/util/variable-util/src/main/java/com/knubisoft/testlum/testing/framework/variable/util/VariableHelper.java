@@ -5,6 +5,7 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.FromAlert;
 import com.knubisoft.testlum.testing.model.scenario.FromConstant;
+import com.knubisoft.testlum.testing.model.scenario.FromDate;
 import com.knubisoft.testlum.testing.model.scenario.FromExpression;
 import com.knubisoft.testlum.testing.model.scenario.FromFile;
 import com.knubisoft.testlum.testing.model.scenario.FromPath;
@@ -33,6 +34,9 @@ public interface VariableHelper {
     String getPathResult(FromPath fromPath, String varName, ScenarioContext scenarioContext, CommandResult result);
 
     String getSQLResult(FromSQL fromSQL, String varName, CommandResult result);
+
+    String getDateResult(FromDate fromDate, String varName, CommandResult result);
+
 
     String getAlertResult(FromAlert fromAlert, String varName, Alert browserAlert, CommandResult result);
 

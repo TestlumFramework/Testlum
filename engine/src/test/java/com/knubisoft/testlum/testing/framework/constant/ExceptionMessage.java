@@ -202,6 +202,15 @@ public class ExceptionMessage {
             "Connection to database with name \"%s\" failed. "
             + "Please check global configuration, it may be disabled or doesn't exist";
     public static final String UNEXPECTED_WEBSOCKET_MESSAGE_TYPE = "Unexpected websocket message type: %s";
+    public static final String DATE_FORMATTING_FAILED = "Failed to format date result using pattern '%s'. Error: %s";
+    public static final String INVALID_DATE_FORMAT_PATTERN = "Invalid date format pattern: '%s'. "
+            + "Please check Java DateTimeFormatter documentation. Error: %s";
+    public static final String INVALID_TIMEZONE = "Invalid timezone: '%s'. "
+            + "Valid examples: 'UTC', 'UTC+1', 'UTC-1' .";
+    public static final String VALUE_DOES_NOT_MATCH_FORMAT = "Value '%s' does not match the format '%s'. "
+            + "Please ensure the value strictly follows the pattern.";
+    public static final String POOR_DATETIME_INFORMATION = "Parsed value '%s' with format '%s' "
+            + "lacks enough information (Date or Time) to build a result.";
 
     // executors
     public static final String VAR_TYPE_NOT_SUPPORTED = "Type of <%s> command is not supported";

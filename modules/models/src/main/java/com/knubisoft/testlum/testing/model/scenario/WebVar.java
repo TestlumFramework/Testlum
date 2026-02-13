@@ -40,6 +40,7 @@ import jakarta.xml.bind.annotation.XmlType;
     "expression",
     "sql",
     "generate",
+    "date",
     "cookie",
     "dom",
     "url",
@@ -56,6 +57,7 @@ public class WebVar
     protected FromExpression expression;
     protected FromSQL sql;
     protected FromRandomGenerate generate;
+    protected FromDate date;
     protected FromCookie cookie;
     protected FromDom dom;
     protected FromUrl url;
@@ -206,6 +208,30 @@ public class WebVar
      */
     public void setGenerate(FromRandomGenerate value) {
         this.generate = value;
+    }
+
+    /**
+     * Gets the value of the date property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link FromDate }
+     *     
+     */
+    public FromDate getDate() {
+        return date;
+    }
+
+    /**
+     * Sets the value of the date property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link FromDate }
+     *     
+     */
+    public void setDate(FromDate value) {
+        this.date = value;
     }
 
     /**

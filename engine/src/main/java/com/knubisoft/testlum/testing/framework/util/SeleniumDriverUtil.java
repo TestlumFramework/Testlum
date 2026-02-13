@@ -7,11 +7,11 @@ import com.knubisoft.testlum.testing.model.global_config.BrowserStackLogin;
 import com.knubisoft.testlum.testing.model.global_config.Capabilities;
 import com.knubisoft.testlum.testing.model.global_config.ConnectionType;
 import com.knubisoft.testlum.testing.model.global_config.UiConfig;
+import io.appium.java_client.android.options.UiAutomator2Options;
 import lombok.experimental.UtilityClass;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.BROWSER_STACK_CONFIGURATION_NOT_FOUND;
@@ -23,6 +23,7 @@ import static java.util.Objects.nonNull;
 public class SeleniumDriverUtil {
 
     private static final String BROWSER_STACK_URL_TEMPLATE = "https://%s:%s@hub-cloud.browserstack.com/wd/hub";
+    private static final int NEW_COMMAND_TIMEOUT = 5;
 
     public String getBrowserStackUrl(final UiConfig uiConfig) {
         BrowserStackLogin browserStack = uiConfig.getBrowserStackLogin();
@@ -50,22 +51,20 @@ public class SeleniumDriverUtil {
     }
 
     public void setDefaultCapabilities(final AbstractDevice abstractDevice,
-                                       final DesiredCapabilities desiredCapabilities) {
-        desiredCapabilities.setCapability("appium:newCommandTimeout", "5000");
+                                       final UiAutomator2Options options) {
+        options.setNewCommandTimeout(Duration.of(NEW_COMMAND_TIMEOUT, ChronoUnit.SECONDS));
         Capabilities capabilities = abstractDevice.getCapabilities();
         if (nonNull(capabilities)) {
             capabilities.getCapability()
-                    .forEach(cap -> desiredCapabilities.setCapability(cap.getName(), cap.getValue()));
+                    .forEach(cap -> options.setCapability(cap.getName(), cap.getValue()));
         }
     }
 
-    public void setCommonCapabilities(final DesiredCapabilities desiredCapabilities,
+    public void setCommonCapabilities(final UiAutomator2Options options,
                                       final AbstractDevice abstractDevice,
                                       final AbstractCapabilities capabilities) {
-        Map<String, Object> browserStackOptions = new HashMap<>();
-        browserStackOptions.put("osVersion", capabilities.getPlatformVersion());
-        browserStackOptions.put("deviceName", capabilities.getDeviceName());
-        browserStackOptions.put("local", Boolean.TRUE);
-        desiredCapabilities.setCapability("bstack:options", browserStackOptions);
+        options.setDeviceName(capabilities.getDeviceName());
+        options.setCapability("local", Boolean.TRUE);
+        options.setCapability("osVersion", capabilities.getPlatformVersion());
     }
 }

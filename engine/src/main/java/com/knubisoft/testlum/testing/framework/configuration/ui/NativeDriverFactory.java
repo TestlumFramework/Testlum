@@ -12,11 +12,11 @@ import com.knubisoft.testlum.testing.model.global_config.Platform;
 import com.knubisoft.testlum.testing.model.global_config.UiConfig;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.ios.IOSDriver;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.net.URL;
 import java.time.Duration;
@@ -32,16 +32,16 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class NativeDriverFactory {
 
     public WebDriver createDriver(final NativeDevice nativeDevice) {
-        DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-        SeleniumDriverUtil.setDefaultCapabilities(nativeDevice, desiredCapabilities);
-        return getNativeWebDriver(nativeDevice, desiredCapabilities);
+        UiAutomator2Options options = new UiAutomator2Options();
+        SeleniumDriverUtil.setDefaultCapabilities(nativeDevice, options);
+        return getNativeWebDriver(nativeDevice, options);
     }
 
     private AppiumDriver getNativeWebDriver(final NativeDevice nativeDevice,
-                                            final DesiredCapabilities desiredCapabilities) {
+                                            final UiAutomator2Options options) {
         UiConfig uiConfig = GlobalTestConfigurationProvider.get().getUiConfigs().get(EnvManager.currentEnv());
         String serverUrl = SeleniumDriverUtil.getNativeConnectionUrl(uiConfig);
-        AppiumDriver driver = newAppiumDriver(nativeDevice, serverUrl, desiredCapabilities);
+        AppiumDriver driver = newAppiumDriver(nativeDevice, serverUrl, options);
         int secondsToWait = uiConfig.getNative().getElementAutowait().getSeconds();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(secondsToWait));
         return driver;
@@ -50,74 +50,74 @@ public class NativeDriverFactory {
     @SneakyThrows
     private AppiumDriver newAppiumDriver(final NativeDevice nativeDevice,
                                          final String serverUrl,
-                                         final DesiredCapabilities desiredCapabilities) {
+                                         final UiAutomator2Options options) {
         URL url = new URL(serverUrl);
         if (Platform.ANDROID == nativeDevice.getPlatformName()) {
-            setAndroidCapabilities(nativeDevice, desiredCapabilities);
-            return new AndroidDriver(url, desiredCapabilities);
+            setAndroidCapabilities(nativeDevice, options);
+            return new AndroidDriver(url, options);
         } else if (Platform.IOS == nativeDevice.getPlatformName()) {
-            setIosCapabilities(nativeDevice, desiredCapabilities);
-            return new IOSDriver(url, desiredCapabilities);
+            setIosCapabilities(nativeDevice, options);
+            return new IOSDriver(url, options);
         }
         throw new DefaultFrameworkException(UNKNOWN_MOBILE_PLATFORM_NAME, nativeDevice.getPlatformName().value());
     }
 
     private void setAndroidCapabilities(final NativeDevice nativeDevice,
-                                        final DesiredCapabilities desiredCapabilities) {
+                                        final UiAutomator2Options options) {
         if (nonNull(nativeDevice.getAppiumCapabilities())) {
-            setAppiumCapabilities(nativeDevice, desiredCapabilities);
-            setAppiumAndroidApp(desiredCapabilities, nativeDevice.getAppiumCapabilities());
+            setAppiumCapabilities(nativeDevice, options);
+            setAppiumAndroidApp(options, nativeDevice.getAppiumCapabilities());
         } else if (nonNull(nativeDevice.getBrowserStackCapabilities())) {
-            setBrowserStackCapabilities(nativeDevice, desiredCapabilities);
-            setGooglePlayStoreCredentials(desiredCapabilities,
+            setBrowserStackCapabilities(nativeDevice, options);
+            setGooglePlayStoreCredentials(options,
                     nativeDevice.getBrowserStackCapabilities().getGooglePlayLogin());
         }
-        desiredCapabilities.setCapability("appium:automationName", "uiautomator2");
+        options.setAutomationName("uiautomator2");
     }
 
     private void setIosCapabilities(final NativeDevice nativeDevice,
-                                    final DesiredCapabilities desiredCapabilities) {
+                                    final UiAutomator2Options options) {
         if (nonNull(nativeDevice.getAppiumCapabilities())) {
-            setAppiumCapabilities(nativeDevice, desiredCapabilities);
+            setAppiumCapabilities(nativeDevice, options);
         } else if (nonNull(nativeDevice.getBrowserStackCapabilities())) {
-            setBrowserStackCapabilities(nativeDevice, desiredCapabilities);
+            setBrowserStackCapabilities(nativeDevice, options);
         }
-        desiredCapabilities.setCapability("appium:automationName", "XCUITest");
+        options.setAutomationName("XCUITest");
     }
 
     private void setAppiumCapabilities(final NativeDevice nativeDevice,
-                                       final DesiredCapabilities desiredCapabilities) {
+                                       final UiAutomator2Options options) {
         AppiumNativeCapabilities capabilities = nativeDevice.getAppiumCapabilities();
-        SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
-        desiredCapabilities.setCapability("appium:udid", capabilities.getUdid());
+        SeleniumDriverUtil.setCommonCapabilities(options, nativeDevice, capabilities);
+        options.setUdid(capabilities.getUdid());
         if (isNotBlank(capabilities.getApp())) {
-            desiredCapabilities.setCapability("appium:app", capabilities.getApp());
+            options.setApp(capabilities.getApp());
         }
     }
 
     private void setBrowserStackCapabilities(final NativeDevice nativeDevice,
-                                             final DesiredCapabilities desiredCapabilities) {
+                                             final UiAutomator2Options options) {
         BrowserStackNativeCapabilities capabilities = nativeDevice.getBrowserStackCapabilities();
-        SeleniumDriverUtil.setCommonCapabilities(desiredCapabilities, nativeDevice, capabilities);
-        desiredCapabilities.setCapability("appium:app", capabilities.getApp());
-        desiredCapabilities.setCapability("appium:browserstack.local", Boolean.TRUE);
+        SeleniumDriverUtil.setCommonCapabilities(options, nativeDevice, capabilities);
+        options.setApp(capabilities.getApp());
+        options.setCapability("appium:browserstack.local", Boolean.TRUE);
     }
 
-    private void setAppiumAndroidApp(final DesiredCapabilities desiredCapabilities,
+    private void setAppiumAndroidApp(final UiAutomator2Options options,
                                      final AppiumNativeCapabilities capabilities) {
         if (isNoneBlank(capabilities.getAppPackage(), capabilities.getAppActivity())) {
-            desiredCapabilities.setCapability("appium:appPackage", capabilities.getAppPackage());
-            desiredCapabilities.setCapability("appium:appActivity", capabilities.getAppActivity());
+            options.setAppPackage(capabilities.getAppPackage());
+            options.setAppActivity(capabilities.getAppActivity());
         }
     }
 
-    private void setGooglePlayStoreCredentials(final DesiredCapabilities desiredCapabilities,
+    private void setGooglePlayStoreCredentials(final UiAutomator2Options options,
                                                final GooglePlayLogin googlePlayLogin) {
         if (nonNull(googlePlayLogin)) {
             Map<String, String> map = new HashMap<>();
             map.put("username", googlePlayLogin.getEmail());
             map.put("password", googlePlayLogin.getPassword());
-            desiredCapabilities.setCapability("browserstack.appStoreConfiguration", map);
+            options.setCapability("browserstack.appStoreConfiguration", map);
         }
     }
 }

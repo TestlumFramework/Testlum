@@ -347,6 +347,8 @@ public class VariableHelperImpl implements VariableHelper {
             case MONTHS -> zonedDateTime.plusMonths(shiftAmount);
             case YEARS -> zonedDateTime.plusYears(shiftAmount);
         };
+    }
+
     public String getAlertResult(FromAlert fromAlert, String varName, Alert browserAlert, CommandResult result) {
         String valueResult = browserAlert.getText();
         ResultUtil.addVariableMetaData(ALERT, varName, NO_EXPRESSION, valueResult, result);

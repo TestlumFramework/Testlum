@@ -15,12 +15,6 @@
     <name>TESTLUM</name>
 
     <properties>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.source>17</maven.compiler.source>
-        <java.version>17</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <start-class>com.knubisoft.testlum.starter.TESTLUMStarter</start-class>
         <models.dir>../modules/models/src/main/java</models.dir>
         <schema.path>${project.basedir}/src/main/resources/schema</schema.path>
 
@@ -48,12 +42,11 @@
         <httpcore5.version>5.3.4</httpcore5.version>
         <org.apache.poi.version>5.4.1</org.apache.poi.version>
         <com.google.guava>33.4.8-jre</com.google.guava>
-        <com.google.code.gson.version>2.13.1</com.google.code.gson.version>
+
         <commons-codec.version>1.17.1</commons-codec.version>
         <commons-dbutils.version>1.8.1</commons-dbutils.version>
         <org.junit.jupiter.version>5.13.1</org.junit.jupiter.version>
         <org.junit.version>4.13.2</org.junit.version>
-        <lombok.version>1.18.42</lombok.version>
 
         <org.slf4j.api.version>2.0.17</org.slf4j.api.version>
         <com.opencsv.version>5.11.1</com.opencsv.version>
@@ -708,10 +701,6 @@
                     <groupId>org.apache.commons</groupId>
                     <artifactId>commons-lang3</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>com.google.code.gson</groupId>
-                    <artifactId>gson</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
 
@@ -889,7 +878,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
@@ -960,10 +949,6 @@
                     <groupId>org.projectlombok</groupId>
                     <artifactId>lombok</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>com.google.code.gson</groupId>
-                    <artifactId>gson</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
 
@@ -971,11 +956,6 @@
             <groupId>com.aventstack</groupId>
             <artifactId>klov-reporter</artifactId>
             <version>${klov-reporter.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
         </dependency>
 
         <dependency>
@@ -1275,11 +1255,6 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${com.google.guava}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>${com.google.code.gson.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>

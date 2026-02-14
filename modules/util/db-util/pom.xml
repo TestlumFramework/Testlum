@@ -16,7 +16,6 @@
     <properties>
         <org.apache.poi.version>5.4.1</org.apache.poi.version>
         <HikariCP.version>6.3.0</HikariCP.version>
-        <lombok.version>1.18.42</lombok.version>
     </properties>
 
     <dependencies>
@@ -73,8 +72,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.42</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>

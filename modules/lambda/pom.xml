@@ -13,10 +13,6 @@
 
     <artifactId>testlum-lambda</artifactId>
 
-    <properties>
-        <software.amazon.awssdk.version>2.31.65</software.amazon.awssdk.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.knubisoft</groupId>
@@ -33,7 +29,6 @@
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>lambda</artifactId>
-            <version>${software.amazon.awssdk.version}</version>
         </dependency>
 
         <dependency>

@@ -88,7 +88,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
                                final ApiResponse actual,
                                final CommandResult result) {
         HttpValidator httpValidator = new HttpValidator(this);
-        String actualBody = String.valueOf(actual.getBody());
+        String actualBody = actual.getBody();
         setContextBody(getContextBodyKey(expected.getFile()), actualBody);
         httpValidator.validateCode(expected.getCode(), actual.getCode());
         validateHeaders(expected, actual, httpValidator);

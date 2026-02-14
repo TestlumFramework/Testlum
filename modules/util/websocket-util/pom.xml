@@ -20,14 +20,4 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-websocket</artifactId>
-                <version>${org.spring.boot.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 </project>

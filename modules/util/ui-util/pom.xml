@@ -13,11 +13,6 @@
 
     <artifactId>testlum-ui-util</artifactId>
 
-    <properties>
-        <org.spring.version>6.2.8</org.spring.version>
-        <appium-client.version>10.0.0</appium-client.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.knubisoft</groupId>

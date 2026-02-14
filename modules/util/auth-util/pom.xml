@@ -13,11 +13,6 @@
 
     <artifactId>testlum-auth-util</artifactId>
 
-    <properties>
-        <com.jayway.json-path.version>2.9.0</com.jayway.json-path.version>
-        <json-smart.version>2.5.2</json-smart.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.knubisoft</groupId>
@@ -34,19 +29,11 @@
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>${com.jayway.json-path.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>net.minidev</groupId>
-                    <artifactId>json-smart</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>net.minidev</groupId>
             <artifactId>json-smart</artifactId>
-            <version>${json-smart.version}</version>
         </dependency>
 
         <dependency>

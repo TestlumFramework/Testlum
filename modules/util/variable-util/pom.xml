@@ -13,10 +13,6 @@
 
     <artifactId>testlum-variable-util</artifactId>
 
-    <properties>
-        <com.jayway.json-path.version>2.9.0</com.jayway.json-path.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.knubisoft</groupId>

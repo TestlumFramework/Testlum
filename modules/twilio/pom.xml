@@ -13,10 +13,6 @@
 
     <artifactId>testlum-twilio</artifactId>
 
-    <properties>
-        <com.twilio.sdk.version>10.9.2</com.twilio.sdk.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.knubisoft</groupId>
@@ -27,13 +23,6 @@
         <dependency>
             <groupId>com.twilio.sdk</groupId>
             <artifactId>twilio</artifactId>
-            <version>${com.twilio.sdk.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.datatype</groupId>
-                    <artifactId>jackson-datatype-jsr310</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>

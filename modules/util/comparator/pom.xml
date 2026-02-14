@@ -15,7 +15,7 @@
 
     <properties>
         <jackson.version>2.19.0</jackson.version>
-        <lombok.version>1.18.42</lombok.version>
+
         <org.slf4j.api.version>2.0.17</org.slf4j.api.version>
     </properties>
 
@@ -60,8 +60,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.42</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

@@ -9,15 +9,102 @@
     <version>1.0.2</version>
     <packaging>pom</packaging>
 
+    <description>
+        Testlum is an open-source, codeless end-to-end testing framework
+        built for teams who want powerful test automation without writing boilerplate code
+    </description>
+    <url>https://github.com/TestlumFramework/Testlum</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Testlum</name>
+            <email>contact@testlum.com</email>
+            <organization>Testlum, Inc.</organization>
+            <organizationUrl>https://www.testlum.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Maven Central</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+
+        <repository>
+            <id>jitpack.io</id>
+            <name>Jitpack</name>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <modules>
         <module>modules</module>
         <module>engine</module>
     </modules>
 
     <properties>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <java.version>17</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+
         <versions.maven.plugin.version>2.21.0</versions.maven.plugin.version>
         <checkstyle.maven.plugin.version>3.6.0</checkstyle.maven.plugin.version>
+        <maven.dependency.plugin.version>3.10.0</maven.dependency.plugin.version>
+
+        <start-class>com.knubisoft.testlum.starter.TESTLUMStarter</start-class>
+
+        <lombok.version>1.18.42</lombok.version>
+        <guava.version>33.5.0-jre</guava.version>
+        <commons.io.version>2.21.0</commons.io.version>
+        <org.apache.commons.version>3.20.0</org.apache.commons.version>
+        <apache.commons.text.version>1.15.0</apache.commons.text.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <scope>compile</scope>
+                <version>${lombok.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${org.apache.commons.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${apache.commons.text.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
@@ -25,6 +112,12 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>${versions.maven.plugin.version}</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven.dependency.plugin.version}</version>
             </plugin>
 
             <plugin>

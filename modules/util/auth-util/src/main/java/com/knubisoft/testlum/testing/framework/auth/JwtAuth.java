@@ -115,12 +115,13 @@ public class JwtAuth extends AbstractAuthStrategy {
     }
 
     private void logResponseStatusError(final HttpClientErrorException exception) {
-        if (NOT_FOUND == exception.getRawStatusCode()) {
-            log.info(INVALID_CREDENTIALS_LOG, exception.getRawStatusCode());
-        } else if (BAD_GATEWAY == exception.getRawStatusCode()) {
-            log.info(SERVER_BAD_GATEWAY_RESPONSE_LOG, exception.getRawStatusCode());
+        int code = exception.getStatusCode().value();
+        if (NOT_FOUND == code) {
+            log.info(INVALID_CREDENTIALS_LOG, code);
+        } else if (BAD_GATEWAY == code) {
+            log.info(SERVER_BAD_GATEWAY_RESPONSE_LOG, code);
         } else {
-            log.info(SERVER_ERROR_RESPONSE_LOG, exception.getRawStatusCode());
+            log.info(SERVER_ERROR_RESPONSE_LOG, code);
         }
     }
 }

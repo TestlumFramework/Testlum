@@ -5,7 +5,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,7 @@ public final class HttpValidator {
     private void validateHeader(final Map.Entry<String, String> entry,
                                 final Map<String, String> actualHeaderMap) {
         String value = actualHeaderMap.get(entry.getKey());
-        if (!StringUtils.equals(entry.getValue(), value)) {
+        if (!Strings.CS.equals(entry.getValue(), value)) {
             throw new ComparisonException("Not equal");
         }
     }

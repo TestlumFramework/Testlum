@@ -1,10 +1,5 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 
@@ -49,19 +44,6 @@ public class StringPrettifier {
 
     //use this method only to add value to CommandResult
     public String asJsonResult(final String json) {
-        if (StringUtils.isBlank(json)) {
-            return EMPTY;
-        }
-        try {
-            return getPrettyJson(json);
-        } catch (JsonParseException ignore) {
-            return json;
-        }
-    }
-
-    private String getPrettyJson(final String json) {
-        JsonElement je = JsonParser.parseString(json);
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(je);
+        return StringUtils.isBlank(json) ? EMPTY : prettifyToSave(json);
     }
 }

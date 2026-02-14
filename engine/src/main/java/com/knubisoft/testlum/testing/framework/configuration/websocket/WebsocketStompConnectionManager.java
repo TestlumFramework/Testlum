@@ -6,12 +6,12 @@ import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UNABLE_TO_DISCONNECT_WEBSOCKET_BECAUSE_CLOSED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_ALREADY_SUBSCRIBED;
@@ -63,7 +63,7 @@ public class WebsocketStompConnectionManager implements WebsocketConnectionManag
 
     @Override
     public void openConnection() throws Exception {
-        ListenableFuture<StompSession> connection = websocketStompClient.connect(url, websocketSessionHandler);
+        CompletableFuture<StompSession> connection = websocketStompClient.connectAsync(url, websocketSessionHandler);
         stompSession = connection.get();
         log.info(WEBSOCKET_CONNECTION_ESTABLISHED, stompSession.getSessionId());
     }

@@ -5,7 +5,6 @@ import com.knubisoft.testlum.testing.model.scenario.WebsocketReceive;
 import com.knubisoft.testlum.testing.model.scenario.WebsocketSend;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.WebSocketSession;
@@ -14,6 +13,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.concurrent.CompletableFuture;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_CONNECTION_CLOSED;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_CONNECTION_ESTABLISHED;
@@ -43,7 +43,7 @@ public class WebsocketStandardConnectionManager implements WebsocketConnectionMa
 
     @Override
     public void openConnection() throws Exception {
-        ListenableFuture<WebSocketSession> connection = websocketClient.doHandshake(
+        CompletableFuture<WebSocketSession> connection = websocketClient.execute(
                 websocketMessageHandler,
                 new WebSocketHttpHeaders(),
                 UriComponentsBuilder.fromUriString(url).build().toUri());

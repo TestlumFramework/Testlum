@@ -2,7 +2,6 @@ package com.knubisoft.testlum.testing.framework.interpreter.lib.http;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 
-import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -21,7 +20,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.json.simple.parser.JSONParser;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
@@ -56,17 +55,17 @@ public class ApiClient {
                                            final CloseableHttpClient httpClient) throws Exception {
         HttpUriRequest request = buildRequest(httpMethod, url, headers, body);
         try (CloseableHttpResponse response = httpClient.execute(request)) {
-            return convertToApiResponse(response);
+            return readAPIResponse(response);
         }
     }
 
-    private ApiResponse convertToApiResponse(final CloseableHttpResponse response) throws Exception {
+    private ApiResponse readAPIResponse(final CloseableHttpResponse response) throws Exception {
         Map<String, String> responseHeaders = new LinkedHashMap<>();
         for (Header each : response.getAllHeaders()) {
             responseHeaders.put(each.getName(), each.getValue());
         }
         HttpEntity entity = response.getEntity();
-        Object responseBody = Objects.isNull(entity) ? StringUtils.EMPTY : httpEntityToResponseBody(entity);
+        String responseBody = Objects.isNull(entity) ? StringUtils.EMPTY : EntityUtils.toString(entity);
         log.info(HTTP_STATUS_CODE, response.getStatusLine().getStatusCode(),
                 response.getStatusLine().getReasonPhrase());
         return new ApiResponse(response.getStatusLine().getStatusCode(), responseHeaders, responseBody);
@@ -117,12 +116,5 @@ public class ApiClient {
                                           final HttpEntity body) {
         request.setEntity(body);
         return request;
-    }
-
-    private Object httpEntityToResponseBody(final HttpEntity httpEntity) throws Exception {
-        if (HttpUtil.checkIfContentTypeIsJson(httpEntity.getContentType())) {
-            return new JSONParser().parse(EntityUtils.toString(httpEntity));
-        }
-        return EntityUtils.toString(httpEntity);
     }
 }

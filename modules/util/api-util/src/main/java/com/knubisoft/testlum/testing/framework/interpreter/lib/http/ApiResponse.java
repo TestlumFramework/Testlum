@@ -10,5 +10,5 @@ import java.util.Map;
 public class ApiResponse {
     private final int code;
     private final Map<String, String> headers;
-    private final Object body;
+    private final String body;
 }

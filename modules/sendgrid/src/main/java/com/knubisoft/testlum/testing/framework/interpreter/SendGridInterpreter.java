@@ -105,7 +105,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     }
 
     private void compare(final ApiResponse expected, final Response actual, final CommandResult result) {
-        String expectedBody = expected.getBody().toString();
+        String expectedBody = expected.getBody();
         result.setExpected(StringPrettifier.asJsonResult(expectedBody));
         result.setActual(StringPrettifier.asJsonResult(actual.getBody()));
         result.put(EXPECTED_CODE, expected.getCode());

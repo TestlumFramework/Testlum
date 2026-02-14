@@ -20,7 +20,7 @@ public class VaultDtoDeserializer extends StdDeserializer<VaultDto> {
 
     @Override
     public VaultDto deserialize(final JsonParser jsonParser,
-                                             final DeserializationContext deserializationContext) throws IOException {
+                                final DeserializationContext deserializationContext) throws IOException {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
         String key = node.fieldNames().next();
         String value = node.get(key).asText();

@@ -23,16 +23,6 @@ import static java.util.Objects.nonNull;
 public class GlobalVariationsImpl implements GlobalVariations {
 
     @Override
-    public void process(final Scenario scenario, final File filePath) {
-        GlobalVariationsProvider.process(scenario, filePath);
-    }
-
-    @Override
-    public void process(final String variationFileName) {
-        GlobalVariationsProvider.process(variationFileName);
-    }
-
-    @Override
     public List<Map<String, String>> getVariations(final String fileName) {
         return GlobalVariationsProvider.getVariations(fileName);
     }

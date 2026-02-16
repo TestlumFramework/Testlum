@@ -1,15 +1,12 @@
 package com.knubisoft.testlum.testing.framework.configuration;
 
-import com.knubisoft.testlum.testing.model.global_config.Environment;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Mobilebrowser;
 import com.knubisoft.testlum.testing.model.global_config.Native;
-import com.knubisoft.testlum.testing.model.global_config.UiConfig;
 import com.knubisoft.testlum.testing.model.global_config.Web;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
 
 @Component
@@ -27,28 +24,13 @@ public class ConfigProviderImpl implements ConfigProvider {
     }
 
     @Override
-    public List<Environment> getEnabledEnvironments() {
-        return config.getEnabledEnvironments();
-    }
-
-    @Override
     public Map<String, Integrations> getIntegrations() {
         return config.getIntegrations();
     }
 
     @Override
-    public Map<String, UiConfig> getUiConfigs() {
-        return config.getUiConfigs();
-    }
-
-    @Override
     public Integrations getDefaultIntegrations() {
         return config.getDefaultIntegrations();
-    }
-
-    @Override
-    public UiConfig getDefaultUiConfigs() {
-        return config.getDefaultUiConfigs();
     }
 
     @Override

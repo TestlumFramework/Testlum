@@ -21,16 +21,12 @@ public class AuthFactory {
         IntegrationsProvider integrationsProvider = dependencies.getContext().getBean(IntegrationsProvider.class);
         final Auth auth = getAuthConfig(dependencies.getEnvironment(), alias, integrationsProvider);
 
-        switch (auth.getAuthStrategy()) {
-            case BASIC:
-                return new BasicAuth(dependencies);
-            case JWT:
-                return new JwtAuth(dependencies);
-            case CUSTOM:
-                return createCustomStrategy(auth.getAuthCustomClassName());
-            default:
-                return new DefaultStrategy(dependencies);
-        }
+        return switch (auth.getAuthStrategy()) {
+            case BASIC -> new BasicAuth(dependencies);
+            case JWT -> new JwtAuth(dependencies);
+            case CUSTOM -> createCustomStrategy(auth.getAuthCustomClassName());
+            default -> new DefaultStrategy(dependencies);
+        };
     }
 
     private Auth getAuthConfig(final String env,

@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -14,17 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
-import static java.lang.String.format;
-
 @Slf4j
 @InterpreterForClass(Twilio.class)
 public class TwilioInterpreter extends AbstractInterpreter<Twilio> {
 
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String FROM_PHONE_NUMBER_LOG = format(TABLE_FORMAT, "'From' phone number", "{}");
-    private static final String TO_PHONE_NUMBER_LOG = format(TABLE_FORMAT, "'To' phone number", "{}");
-    private static final String MESSAGE_LOG = format(TABLE_FORMAT, "Message", "{}");
-    private static final String MESSAGE_STATUS = format(TABLE_FORMAT, "Message status", "{}");
+    private static final String FROM_PHONE_NUMBER_LOG = LogFormat.table("'From' phone number");
+    private static final String TO_PHONE_NUMBER_LOG = LogFormat.table("'To' phone number");
+    private static final String MESSAGE_LOG = LogFormat.table("Message");
+    private static final String MESSAGE_STATUS = LogFormat.table("Message status");
 
     private static final String ALIAS = "Alias";
     private static final String FROM = "From";

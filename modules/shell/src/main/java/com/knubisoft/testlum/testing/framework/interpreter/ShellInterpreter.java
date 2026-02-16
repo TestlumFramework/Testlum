@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.CompareBuilder;
@@ -19,9 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.lang.String.format;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-
 @Slf4j
 @InterpreterForClass(Shell.class)
 public class ShellInterpreter extends AbstractInterpreter<Shell> {
@@ -32,11 +30,8 @@ public class ShellInterpreter extends AbstractInterpreter<Shell> {
 
     private static final String SHELL_FILES = "Shell files";
     private static final String SHELL_COMMANDS = "Shell commands";
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String SHELL_COMMAND_LOG = format(TABLE_FORMAT, "Shell command", "{}");
-    private static final String SHELL_FILE_LOG = format(TABLE_FORMAT, "Shell file", "{}");
-    private static final String REGEX_NEW_LINE = "[\\r\\n]";
-    private static final String CONTENT_FORMAT = format("%n%19s| %-23s|", EMPTY, EMPTY);
+
+    private static final String SHELL_COMMAND_LOG = LogFormat.table("Shell command");
 
     public ShellInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);

@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -27,11 +28,6 @@ import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
-import static java.lang.String.format;
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 @InterpreterForClass(Websocket.class)
@@ -41,24 +37,22 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     private static final int CHECK_PERIOD_MS = 100;
 
     //LOGS
-    private static final String ANSI_RESET = "\u001b[0m";
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String ANSI_RED = "\u001B[31m";
-    private static final String ANSI_CYAN = "\u001b[36m";
-    private static final String NEW_LOG_LINE = format("%n%19s| ", StringUtils.EMPTY);
-    private static final String REGEX_NEW_LINE = "[\\r\\n]";
-    private static final String EXCEPTION_LOG = ANSI_RED
-            + "----------------    EXCEPTION    -----------------"
+
+    private static final String NEW_LOG_LINE = String.format("%n%19s| ", StringUtils.EMPTY);
+
+    private static final String EXCEPTION_LOG = LogFormat.withRed(
+            "----------------    EXCEPTION    -----------------"
             + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
-            + "--------------------------------------------------" + ANSI_RESET;
-    private static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
-    private static final String WEBSOCKET_ACTION_INFO_LOG = format(TABLE_FORMAT,
-            "Comment", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Action", "{}");
-    private static final String DESTINATION_LOG = format(TABLE_FORMAT, "Destination", "{}");
-    private static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
-    private static final String CONTENT_FORMAT = format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
-    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
+            + "--------------------------------------------------");
+    private static final String COMMAND_LOG = LogFormat.withCyan("------- Command #{} - {} -------");
+    private static final String WEBSOCKET_ACTION_INFO_LOG =
+            LogFormat.table("Comment") + NEW_LOG_LINE + LogFormat.table("Action");
+    private static final String DESTINATION_LOG = LogFormat.table("Destination");
+    private static final String CONTENT_LOG = LogFormat.table("Content");
+    private static final String ALIAS_LOG = LogFormat.table("Alias");
+
+    private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
+
     private static final String SUBSCRIBE = "subscribe";
     private static final String SEND_ACTION = "send";
     private static final String RECEIVE_ACTION = "receive";
@@ -120,12 +114,12 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
             }
         } catch (Exception e) {
             logException(e);
-            throw new DefaultFrameworkException(format(WEBSOCKET_CONNECTION_FAILURE, aliasEnv.getAlias()), e);
+            throw new DefaultFrameworkException(String.format(WEBSOCKET_CONNECTION_FAILURE, aliasEnv.getAlias()), e);
         }
     }
 
     private void runActions(final Websocket websocket, final List<CommandResult> subCommandsResult) {
-        List<Object> websocketActions = isNull(websocket.getStomp())
+        List<Object> websocketActions = Objects.isNull(websocket.getStomp())
                 ? websocket.getSendOrReceive()
                 : websocket.getStomp().getSubscribeOrSendOrReceive();
         websocketActions.forEach(action -> {
@@ -200,7 +194,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
     private List<Object> achieveRequiredMessageCount(final WebsocketReceive wsReceive,
                                                      final LinkedList<String> receivedMessages) {
-        int requiredMessageCount = nonNull(wsReceive.getLimit())
+        int requiredMessageCount = Objects.nonNull(wsReceive.getLimit())
                 ? wsReceive.getLimit().intValue() : ALL_AVAILABLE_MESSAGES;
 
         checkMessagesAreReceived(requiredMessageCount, wsReceive.getTimeoutMillis(), receivedMessages);
@@ -236,7 +230,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
                                   final AliasEnv aliasEnv,
                                   final CommandResult result) {
         addWebsocketInfoForSubscribeAction(wsSubscribe, aliasEnv.getAlias(), result);
-        logWebsocketActionInfo(SUBSCRIBE, wsSubscribe.getComment(), wsSubscribe.getTopic(), EMPTY);
+        logWebsocketActionInfo(SUBSCRIBE, wsSubscribe.getComment(), wsSubscribe.getTopic(), StringUtils.EMPTY);
         wsConnectionSupplier.get(aliasEnv).subscribeTo(wsSubscribe.getTopic());
     }
 
@@ -249,7 +243,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     }
 
     private String getValue(final String message, final String file) {
-        return isNotBlank(message)
+        return StringUtils.isNotBlank(message)
                 ? message
                 : getContentIfFile(file);
     }
@@ -290,8 +284,8 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     }
 
     private void logException(final Exception ex) {
-        if (isNotBlank(ex.getMessage())) {
-            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+        if (StringUtils.isNotBlank(ex.getMessage())) {
+            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(LogFormat.newLine(), NEW_LOG_LINE));
         } else {
             log.error(EXCEPTION_LOG, ex.toString());
         }
@@ -306,11 +300,12 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
                                         final String destination,
                                         final String content) {
         log.info(WEBSOCKET_ACTION_INFO_LOG, comment, action.toUpperCase(Locale.ROOT));
-        if (isNotBlank(destination)) {
+        if (StringUtils.isNotBlank(destination)) {
             log.info(DESTINATION_LOG, destination);
         }
-        if (isNotBlank(content)) {
-            log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content).replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+        if (StringUtils.isNotBlank(content)) {
+            log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content).
+                    replaceAll(LogFormat.newLine(), CONTENT_FORMAT));
         }
     }
 
@@ -345,7 +340,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
                                                   final String alias,
                                                   final CommandResult result) {
         addWebsocketGeneralInfo(RECEIVE, receiveAction.getComment(), alias, TOPIC, receiveAction.getTopic(), result);
-        result.put(NUMBER_OF_MESSAGES, nonNull(receiveAction.getLimit())
+        result.put(NUMBER_OF_MESSAGES, Objects.nonNull(receiveAction.getLimit())
                 ? receiveAction.getLimit().intValue() : ALL_AVAILABLE_MESSAGES);
         result.put(TIMEOUT_MILLIS, receiveAction.getTimeoutMillis());
     }
@@ -366,7 +361,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         result.setComment(comment);
         result.put(ALIAS, alias);
         result.put(ACTION, action);
-        if (isNotBlank(destinationValue)) {
+        if (StringUtils.isNotBlank(destinationValue)) {
             result.put(destination, destinationValue);
         }
     }
@@ -375,7 +370,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         CommandResult commandResult = new CommandResult();
         commandResult.setId(number);
         commandResult.setSuccess(true);
-        if (nonNull(command) && command.length > 0) {
+        if (Objects.nonNull(command) && command.length > 0) {
             commandResult.setCommandKey(command[0].getClass().getSimpleName());
         }
         return commandResult;

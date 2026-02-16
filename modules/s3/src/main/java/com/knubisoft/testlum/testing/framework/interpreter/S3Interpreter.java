@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.ComparisonException;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -17,6 +18,7 @@ import com.knubisoft.testlum.testing.model.scenario.S3FileDownload;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.beans.factory.annotation.Autowired;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -25,19 +27,14 @@ import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
-import static java.lang.String.format;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 @InterpreterForClass(S3.class)
 public class S3Interpreter extends AbstractInterpreter<S3> {
+
+    public static final String ALIAS_LOG = LogFormat.table("Alias");
 
     private static final String KEY = "Key";
     private static final String ALIAS = "Alias";
@@ -51,26 +48,23 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     private static final String FILE_NAME = "File name";
     private static final String STEP_FAILED = "Step failed";
     private static final String INCORRECT_S3_PROCESSING = "Incorrect S3 processing";
-    private static final String ANSI_RESET = "\u001b[0m";
-    private static final String ANSI_CYAN = "\u001b[36m";
-    private static final String ANSI_RED = "\u001B[31m";
-    private static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
-    private static final String NEW_LOG_LINE = format("%n%19s| ", EMPTY);
-    private static final String EXCEPTION_LOG = ANSI_RED
-                                                + "----------------    EXCEPTION    -----------------"
-                                                + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
-                                                + "--------------------------------------------------" + ANSI_RESET;
-    private static final String REGEX_NEW_LINE = "[\\r\\n]";
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    public static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
-    private static final String S3_BUCKET_ACTION_INFO_LOG = format(TABLE_FORMAT,
-            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Bucket for action", "{}");
-    private static final String S3_FILE_ACTION_INFO_LOG = format(TABLE_FORMAT,
-            "Action", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Bucket", "{}") + NEW_LOG_LINE + format(TABLE_FORMAT,
-            "Key", "{}");
-    private static final String FILE_LOG = format(TABLE_FORMAT, "File", "{}");
+
+    private static final String COMMAND_LOG =
+            LogFormat.withCyan("------- Command #{} - {} -------");
+    private static final String NEW_LOG_LINE =
+            String.format("%n%19s| ", StringUtils.EMPTY);
+    private static final String EXCEPTION_LOG =
+            LogFormat.withRed("----------------    EXCEPTION    -----------------"
+                    + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
+                    + "--------------------------------------------------");
+
+    private static final String S3_BUCKET_ACTION_INFO_LOG =
+            LogFormat.table("Action") + NEW_LOG_LINE + LogFormat.table("Bucket for action");
+    private static final String S3_FILE_ACTION_INFO_LOG =
+            LogFormat.table("Action") + NEW_LOG_LINE + LogFormat.table(
+            "Bucket") + NEW_LOG_LINE + LogFormat.table("Key");
+    private static final String FILE_LOG = LogFormat.table("File");
+
     private static final String BUCKET_EXISTS = "Bucket with name <%s> already exists";
     private static final String BUCKET_NOT_FOUND = "Bucket with name <%s> is not found ";
     private static final String FILE_NOT_FOUND = "File with key <%s> in bucket <%s> is not found";
@@ -142,11 +136,11 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     private void processBucketAction(final S3Bucket bucketCommand,
                                      final AliasEnv aliasEnv,
                                      final CommandResult result) {
-        if (isNotBlank(bucketCommand.getCreate())) {
+        if (StringUtils.isNotBlank(bucketCommand.getCreate())) {
             logS3BucketActionInfo(CREATE_BUCKET, bucketCommand.getCreate());
             addS3BucketMetaData(CREATE_BUCKET, bucketCommand.getCreate(), result);
             createBucket(bucketCommand.getCreate(), aliasEnv);
-        } else if (isNotBlank(bucketCommand.getRemove())) {
+        } else if (StringUtils.isNotBlank(bucketCommand.getRemove())) {
             logS3BucketActionInfo(REMOVE_BUCKET, bucketCommand.getRemove());
             addS3BucketMetaData(REMOVE_BUCKET, bucketCommand.getRemove(), result);
             removeBucket(aliasEnv, bucketCommand.getRemove());
@@ -188,13 +182,13 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                                    final CommandResult result) {
         String key = fileCommand.getKey();
         String bucketName = fileCommand.getBucket();
-        if (isNotBlank(fileCommand.getUpload())) {
+        if (StringUtils.isNotBlank(fileCommand.getUpload())) {
             processUploadFileAction(fileCommand, bucketName, key, aliasEnv, result);
         }
-        if (nonNull(fileCommand.getDownload())) {
+        if (Objects.nonNull(fileCommand.getDownload())) {
             processDownloadFileAction(fileCommand, bucketName, key, aliasEnv, result);
         }
-        if (nonNull(fileCommand.getRemove())) {
+        if (Objects.nonNull(fileCommand.getRemove())) {
             processRemoveFileAction(fileCommand, bucketName, key, aliasEnv, result);
         }
     }
@@ -300,7 +294,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
         CommandResult commandResult = new CommandResult();
         commandResult.setId(number);
         commandResult.setSuccess(true);
-        if (nonNull(command) && command.length > 0) {
+        if (Objects.nonNull(command) && command.length > 0) {
             commandResult.setCommandKey(command[0].getClass().getSimpleName());
         }
         return commandResult;
@@ -325,8 +319,8 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     }
 
     private void logException(final Exception ex) {
-        if (isNotBlank(ex.getMessage())) {
-            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+        if (StringUtils.isNotBlank(ex.getMessage())) {
+            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(LogFormat.newLine(), NEW_LOG_LINE));
         } else {
             log.error(EXCEPTION_LOG, ex.toString());
         }

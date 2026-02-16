@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -30,11 +31,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
-
-import static java.lang.String.format;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 
 @Slf4j
@@ -42,13 +40,13 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch> {
 
     //LOGS
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
-    private static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "HTTP method", "{}");
-    private static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
-    private static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
-    private static final String REGEX_NEW_LINE = "[\\r\\n]";
-    private static final String CONTENT_FORMAT = format("%n%19s| %-23s|", EMPTY, EMPTY);
+
+    private static final String ALIAS_LOG = LogFormat.table("Alias");
+    private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
+    private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
+    private static final String BODY_LOG = LogFormat.table("Body");
+
+    private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
     private static final String ERROR_LOG = "Error ->";
     private static final int MAX_CONTENT_LENGTH = 25 * 1024;
 
@@ -101,7 +99,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
                                     final CommandResult result) {
         String expectedBody = getContentIfFile(expectedResponse.getFile());
         if (StringUtils.isNotBlank(expectedBody)) {
-            String actualBody = nonNull(actual.getEntity()) ? EntityUtils.toString(actual.getEntity()) : null;
+            String actualBody = Objects.nonNull(actual.getEntity()) ? EntityUtils.toString(actual.getEntity()) : null;
             setContextBody(getContextBodyKey(expectedResponse.getFile()), actualBody);
             result.setActual(StringPrettifier.asJsonResult(actualBody));
             result.setExpected(StringPrettifier.asJsonResult(expectedBody));
@@ -197,12 +195,12 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
 
     @SneakyThrows
     private void logBodyContent(final HttpEntity body) {
-        if (nonNull(body) && body.getContentLength() < MAX_CONTENT_LENGTH) {
+        if (Objects.nonNull(body) && body.getContentLength() < MAX_CONTENT_LENGTH) {
             String stringBody = IOUtils.toString(body.getContent(), StandardCharsets.UTF_8);
             if (StringUtils.isNotBlank(stringBody)) {
                 log.info(BODY_LOG,
                         StringPrettifier.asJsonResult(StringPrettifier.cut(stringBody))
-                                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+                                .replaceAll(LogFormat.newLine(), CONTENT_FORMAT));
             }
         }
     }
@@ -227,7 +225,7 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
 
     private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
-                .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
+                .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
                 .collect(Collectors.toList()));
     }
 }

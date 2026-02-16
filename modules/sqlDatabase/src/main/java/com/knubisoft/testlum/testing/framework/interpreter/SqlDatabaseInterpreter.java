@@ -1,5 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.ListSource;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -10,24 +12,19 @@ import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.model.scenario.SqlDatabase;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
-
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
-import static com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation.StorageOperationResult;
-import static java.lang.String.format;
 
 @Slf4j
 @InterpreterForClass(SqlDatabase.class)
 public class SqlDatabaseInterpreter extends AbstractInterpreter<SqlDatabase> {
 
     //LOGS
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String QUERY = format(TABLE_FORMAT, "Query", "{}");
-    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
+    private static final String QUERY = LogFormat.table("Query");
+    private static final String ALIAS_LOG = LogFormat.table("Alias");
 
     //RESULT
     private static final String QUERIES = "Queries";
@@ -67,13 +64,15 @@ public class SqlDatabaseInterpreter extends AbstractInterpreter<SqlDatabase> {
         List<String> queries = sqlDatabase.getQuery();
         logAllQueries(queries, alias);
         addDatabaseMetaData(alias, queries, result);
-        StorageOperationResult applySqlDatabase = sqlDatabaseOperation.apply(new ListSource(queries), alias);
+        AbstractStorageOperation.StorageOperationResult applySqlDatabase =
+                sqlDatabaseOperation.apply(new ListSource(queries), alias);
         return toString(applySqlDatabase.getRaw());
     }
 
     private void logAllQueries(final List<String> queries, final String alias) {
         log.info(ALIAS_LOG, alias);
-        queries.forEach(query -> log.info(QUERY, query.replaceAll(REGEX_MANY_SPACES, SPACE)));
+        queries.forEach(query -> log.info(QUERY,
+                query.replaceAll(DelimiterConstant.REGEX_MANY_SPACES, StringUtils.EMPTY)));
     }
 
     private void addDatabaseMetaData(final String databaseAlias,

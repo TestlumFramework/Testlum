@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -22,25 +23,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static java.lang.String.format;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 @InterpreterForClass(Sendgrid.class)
 public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
     //LOGS
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
-    private static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "HTTP method", "{}");
-    private static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
-    private static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
-    private static final String REGEX_NEW_LINE = "[\\r\\n]";
-    private static final String CONTENT_FORMAT = format("%n%19s| %-23s|", EMPTY, EMPTY);
+    private static final String ALIAS_LOG = LogFormat.table("Alias");
+    private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
+    private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
+    private static final String BODY_LOG = LogFormat.table("Body");
+
+    private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
     private static final String CONTENT_TO_SEND = "Content to send";
     private static final String EXPECTED_CODE = "Expected code";
     private static final String ACTUAL_CODE = "Actual code";
@@ -140,10 +137,10 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
         Request request = new Request();
         request.setMethod(method);
         request.setEndpoint(endpoint);
-        if (nonNull(body)) {
+        if (Objects.nonNull(body)) {
             request.setBody(body);
         }
-        if (nonNull(sendgridInfo.getQueryParam())) {
+        if (Objects.nonNull(sendgridInfo.getQueryParam())) {
             sendgridInfo.getQueryParam().forEach(queryParam ->
                     request.addQueryParam(queryParam.getKey(), queryParam.getValue()));
         }
@@ -158,10 +155,10 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     }
 
     private void logBody(final String body) {
-        if (isNotBlank(body)) {
+        if (StringUtils.isNotBlank(body)) {
             log.info(BODY_LOG,
                     StringPrettifier.asJsonResult(StringPrettifier.cut(body))
-                            .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+                            .replaceAll(LogFormat.newLine(), CONTENT_FORMAT));
         }
     }
 
@@ -181,7 +178,7 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
     private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
-                .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
+                .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
                 .collect(Collectors.toList()));
     }
 }

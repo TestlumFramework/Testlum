@@ -591,6 +591,17 @@
             <artifactId>log4j-iostreams</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-log</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.knubisoft</groupId>
+            <artifactId>testlum-comparator</artifactId>
+        </dependency>
+
+
     </dependencies>
 
     <build>

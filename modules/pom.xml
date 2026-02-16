@@ -17,18 +17,16 @@
     <modules>
         <module>models</module>
 
-        <module>util/comparator</module>
-        <module>util/shared-util</module>
-        <module>util/repeat-util</module>
-        <module>util/ui-util</module>
-        <module>util/websocket-util</module>
-        <module>util/storage-util</module>
-        <module>util/db-util</module>
-        <module>util/api-util</module>
-        <module>util/auth-util</module>
-        <module>util/wait-util</module>
-        <module>util/variable-util</module>
-        <module>util</module>
+        <module>shared-util</module>
+        <module>repeat-util</module>
+        <module>ui-util</module>
+        <module>websocket-util</module>
+        <module>storage-util</module>
+        <module>db-util</module>
+        <module>api-util</module>
+        <module>auth-util</module>
+        <module>wait-util</module>
+        <module>variable-util</module>
 
         <module>conditional</module>
         <module>variable</module>
@@ -62,4 +60,5 @@
 
         <module>ui</module>
     </modules>
+
 </project>

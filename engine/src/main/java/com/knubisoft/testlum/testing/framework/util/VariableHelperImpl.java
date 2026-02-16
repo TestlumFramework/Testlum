@@ -2,9 +2,9 @@ package com.knubisoft.testlum.testing.framework.util;
 
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
-import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.context.AliasToStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.ListSource;
@@ -67,7 +67,7 @@ import static java.util.Objects.nonNull;
 @Component
 public class VariableHelperImpl implements VariableHelper {
 
-    private static final String VAR_CONTEXT_LOG = LogMessage.table("Created from");
+    private static final String VAR_CONTEXT_LOG = LogFormat.table("Created from");
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     private final Map<RandomPredicate, RandomFunction> randomGenerateMethodMap;

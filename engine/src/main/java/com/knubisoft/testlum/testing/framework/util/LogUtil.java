@@ -1,6 +1,8 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.knubisoft.testlum.testing.framework.constant.Color;
+import com.knubisoft.testlum.log.Color;
+import com.knubisoft.testlum.log.ColoredText;
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
@@ -29,7 +31,6 @@ import com.knubisoft.testlum.testing.model.scenario.ScrollType;
 import com.knubisoft.testlum.testing.model.scenario.SwipeNative;
 import com.knubisoft.testlum.testing.model.scenario.Ui;
 import com.knubisoft.testlum.testing.model.scenario.WebFullScreen;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -42,40 +43,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class LogUtil {
 
-    @RequiredArgsConstructor
-    private class Text {
-
-        private final Color color;
-        private final List<String> lines = new ArrayList<>();
-
-        public void addAll(final List<String> data) {
-            for (Object o : data) {
-                add(o);
-            }
-        }
-
-        public void add(final Object object) {
-            if (object instanceof String) {
-                lines.add((String) object);
-            } else if (object instanceof Optional) {
-                Optional<?> optional = (Optional<?>) object;
-                optional.ifPresent(o -> lines.add(o.toString()));
-            }
-        }
-
-        public void info() {
-            for (String line : lines) {
-                log.info(LogMessage.with(color, line));
-            }
-            lines.clear();
-        }
-    }
-
     //CHECKSTYLE:OFF
     public void logScenarioDetails(final ScenarioArguments scenarioArguments,
                                    @Nullable final Exception exception,
                                    final Color color) {
-        Text text = new Text(color);
+        ColoredText text = new ColoredText(color);
         text.add(DelimiterConstant.EMPTY);
         text.add(String.format(LogMessage.SCENARIO_NUMBER_AND_PATH_LOG,
                 scenarioArguments.getFile().getAbsolutePath()));
@@ -169,7 +141,7 @@ public class LogUtil {
     public void logException(final Exception ex) {
         if (StringUtils.isNotBlank(ex.getMessage())) {
             log.error(LogMessage.EXCEPTION_LOG,
-                    ex.getMessage().replaceAll(LogMessage.REGEX_NEW_LINE, LogMessage.NEW_LOG_LINE));
+                    ex.getMessage().replaceAll(LogFormat.newLine(), LogMessage.NEW_LOG_LINE));
         } else {
             log.error(LogMessage.EXCEPTION_LOG, ex.toString());
         }
@@ -190,11 +162,11 @@ public class LogUtil {
     public void logSqlException(final Exception ex, final String query) {
         if (StringUtils.isNotBlank(ex.getMessage())) {
             log.error(LogMessage.ERROR_SQL_QUERY,
-                    ex.getMessage().replaceAll(LogMessage.REGEX_NEW_LINE, LogMessage.NEW_LOG_LINE),
-                    SqlUtil.getBrokenQuery(ex, query).replaceAll(LogMessage.REGEX_NEW_LINE, LogMessage.NEW_LOG_LINE));
+                    ex.getMessage().replaceAll(LogFormat.newLine(), LogMessage.NEW_LOG_LINE),
+                    SqlUtil.getBrokenQuery(ex, query).replaceAll(LogFormat.newLine(), LogMessage.NEW_LOG_LINE));
         } else {
             log.error(LogMessage.ERROR_SQL_QUERY,
-                    ex.toString().replaceAll(LogMessage.REGEX_NEW_LINE, LogMessage.NEW_LOG_LINE));
+                    ex.toString().replaceAll(LogFormat.newLine(), LogMessage.NEW_LOG_LINE));
         }
     }
 

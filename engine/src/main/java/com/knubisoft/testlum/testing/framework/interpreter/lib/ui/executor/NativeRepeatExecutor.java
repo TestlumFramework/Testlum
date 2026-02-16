@@ -1,6 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter.lib.ui.executor;
 
-import com.knubisoft.testlum.testing.framework.constant.LogMessage;
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.SubCommandRunner;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExecutor;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
@@ -47,7 +47,7 @@ public class NativeRepeatExecutor extends AbstractUiExecutor<NativeRepeat> {
     private void runRepeatWithVariations(final NativeRepeat repeat,
                                          final CommandResult result,
                                          final List<CommandResult> subCommandsResult) {
-        log.info(LogMessage.table("Variations", repeat.getVariations()));
+        log.info(LogFormat.table("Variations", repeat.getVariations()));
         result.put("Variations", repeat.getVariations());
         List<AbstractUiCommand> commands = repeat.getClickOrInputOrAssert();
         List<AbstractUiCommand> injectedCommand = globalVariations.getVariations(repeat.getVariations()).stream()
@@ -59,7 +59,7 @@ public class NativeRepeatExecutor extends AbstractUiExecutor<NativeRepeat> {
     private void runSimpleRepeat(final NativeRepeat repeat,
                                  final CommandResult result,
                                  final List<CommandResult> subCommandsResult) {
-        log.info(LogMessage.table("Times", String.valueOf(repeat.getTimes())));
+        log.info(LogFormat.table("Times", String.valueOf(repeat.getTimes())));
         result.put("Times", repeat.getTimes());
         for (int i = 0; i < repeat.getTimes(); i++) {
             this.repeatCommandsRunner.runCommands(repeat.getClickOrInputOrAssert(), dependencies, result,

@@ -1,5 +1,7 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
+import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -20,50 +22,38 @@ import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
-import static java.lang.String.format;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 @InterpreterForClass(Sqs.class)
 public class SQSInterpreter extends AbstractInterpreter<Sqs> {
 
     //LOGS
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String REGEX_NEW_LINE = "[\\r\\n]";
     private static final String SEND_ACTION = "send";
     private static final String RECEIVE_ACTION = "receive";
-    private static final String CONTENT_FORMAT = format("%n%19s| %-23s|", EMPTY, EMPTY);
-    private static final String QUEUE_LOG = format(TABLE_FORMAT, "Queue", "{}");
-    private static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
-    private static final String ACTION_LOG = format(TABLE_FORMAT, "Action", "{}");
-    private static final String MESSAGE_DEDUPLICATION_ID_LOG = format(TABLE_FORMAT, "Deduplication Id", "{}");
-    private static final String MESSAGE_GROUP_ID_LOG = format(TABLE_FORMAT, "Message Group Id", "{}");
-    private static final String DELAY_SECONDS_LOG = format(TABLE_FORMAT, "Delay Seconds", "{}");
-    private static final String MAX_NUMBER_OF_MESSAGES_LOG = format(TABLE_FORMAT, "Max Number of Messages", "{}");
-    private static final String WAIT_TIME_SECONDS_LOG = format(TABLE_FORMAT, "Wait Time Seconds", "{}");
-    private static final String RECEIVE_REQUEST_ATTEMPT_ID_LOG = format(
-            TABLE_FORMAT, "Attempt Id", "{}");
-    private static final String VISIBILITY_TIMEOUT_LOG = format(TABLE_FORMAT, "Visibility Timeout", "{}");
-    private static final String NEW_LOG_LINE = format("%n%19s| ", EMPTY);
-    private static final String ANSI_RED = "\u001B[31m";
-    private static final String ANSI_CYAN = "\u001b[36m";
-    private static final String ANSI_RESET = "\u001b[0m";
-    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
-    private static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
-    private static final String EXCEPTION_LOG = ANSI_RED
-                                                + "----------------    EXCEPTION    -----------------"
-                                                + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
-                                                + "--------------------------------------------------" + ANSI_RESET;
+    private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
+
+    private static final String QUEUE_LOG = LogFormat.table("Queue");
+    private static final String CONTENT_LOG = LogFormat.table("Content");
+    private static final String ACTION_LOG = LogFormat.table("Action");
+    private static final String MESSAGE_DEDUPLICATION_ID_LOG = LogFormat.table("Deduplication Id");
+    private static final String MESSAGE_GROUP_ID_LOG = LogFormat.table("Message Group Id");
+    private static final String DELAY_SECONDS_LOG = LogFormat.table("Delay Seconds");
+    private static final String MAX_NUMBER_OF_MESSAGES_LOG = LogFormat.table("Max Number of Messages");
+    private static final String WAIT_TIME_SECONDS_LOG = LogFormat.table("Wait Time Seconds");
+    private static final String RECEIVE_REQUEST_ATTEMPT_ID_LOG = LogFormat.table("Attempt Id");
+    private static final String VISIBILITY_TIMEOUT_LOG = LogFormat.table("Visibility Timeout");
+
+    private static final String NEW_LOG_LINE = String.format("%n%19s| ", StringUtils.EMPTY);
+
+    private static final String ALIAS_LOG = LogFormat.table("Alias");
+    private static final String COMMAND_LOG = LogFormat.withCyan("------- Command #{} - {} -------");
+    private static final String EXCEPTION_LOG = LogFormat.withRed(
+            "----------------    EXCEPTION    -----------------"
+                    + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
+                    + "--------------------------------------------------");
 
     //RESULT
     private static final String MESSAGE_TO_SEND = "Message to send";
@@ -177,7 +167,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                 this.sqsClient.get(aliasEnv).receiveMessage(receiveMessageRequest);
         return receiveMessageResult.messages()
                 .stream()
-                .map(message -> message.body().replaceAll(REGEX_MANY_SPACES, StringUtils.EMPTY))
+                .map(message -> message.body().replaceAll(DelimiterConstant.REGEX_MANY_SPACES, StringUtils.EMPTY))
                 .map(JacksonMapperUtil::toJsonObject)
                 .collect(Collectors.toList());
     }
@@ -247,19 +237,21 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                                                  final String content) {
         log.info(ACTION_LOG, action.toUpperCase(Locale.ROOT));
         log.info(QUEUE_LOG, topicOrRoutingKeyOrQueueValue);
-        log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
-                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+        log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content.replaceAll(
+                        DelimiterConstant.REGEX_MANY_SPACES,
+                        DelimiterConstant.SPACE))
+                .replaceAll(LogFormat.newLine(), CONTENT_FORMAT));
     }
 
     private void logIfNotNull(final String title, final Object data) {
-        if (nonNull(data)) {
+        if (Objects.nonNull(data)) {
             log.info(title, data);
         }
     }
 
     private void logException(final Exception ex) {
-        if (isNotBlank(ex.getMessage())) {
-            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+        if (StringUtils.isNotBlank(ex.getMessage())) {
+            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(LogFormat.newLine(), NEW_LOG_LINE));
         } else {
             log.error(EXCEPTION_LOG, ex.toString());
         }
@@ -270,7 +262,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         CommandResult commandResult = new CommandResult();
         commandResult.setId(number);
         commandResult.setSuccess(true);
-        if (nonNull(command) && command.length > 0) {
+        if (Objects.nonNull(command) && command.length > 0) {
             commandResult.setCommandKey(command[0].getClass().getSimpleName());
         }
         return commandResult;
@@ -304,29 +296,29 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
     }
 
     private void addSqsAdditionalMetaDataForSendAction(final SendSqsMessage sendAction, final CommandResult result) {
-        if (nonNull(sendAction.getDelaySeconds())) {
+        if (Objects.nonNull(sendAction.getDelaySeconds())) {
             result.put(SQS_DELAY_SECONDS, sendAction.getDelaySeconds());
         }
-        if (isNotBlank(sendAction.getMessageDeduplicationId())) {
+        if (StringUtils.isNotBlank(sendAction.getMessageDeduplicationId())) {
             result.put(SQS_MESSAGE_DUPLICATION_ID, sendAction.getMessageDeduplicationId());
         }
-        if (isNotBlank(sendAction.getMessageGroupId())) {
+        if (StringUtils.isNotBlank(sendAction.getMessageGroupId())) {
             result.put(SQS_MESSAGE_GROUP_ID, sendAction.getMessageGroupId());
         }
     }
 
     private void addSqsAdditionalMetaDataForReceiveAction(final ReceiveSqsMessage receiveAction,
                                                           final CommandResult result) {
-        if (nonNull(receiveAction.getMaxNumberOfMessages())) {
+        if (Objects.nonNull(receiveAction.getMaxNumberOfMessages())) {
             result.put(SQS_MAX_NUMBER_OF_MESSAGES, receiveAction.getMaxNumberOfMessages());
         }
-        if (nonNull(receiveAction.getVisibilityTimeout())) {
+        if (Objects.nonNull(receiveAction.getVisibilityTimeout())) {
             result.put(SQS_VISIBILITY_TIMEOUT, receiveAction.getVisibilityTimeout());
         }
-        if (nonNull(receiveAction.getWaitTimeSeconds())) {
+        if (Objects.nonNull(receiveAction.getWaitTimeSeconds())) {
             result.put(SQS_WAIT_TIME_SECONDS, receiveAction.getWaitTimeSeconds());
         }
-        if (isNotBlank(receiveAction.getReceiveRequestAttemptId())) {
+        if (StringUtils.isNotBlank(receiveAction.getReceiveRequestAttemptId())) {
             result.put(SQS_RECEIVE_REQUEST_ATTEMPT_ID, receiveAction.getReceiveRequestAttemptId());
         }
     }

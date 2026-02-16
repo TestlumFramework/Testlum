@@ -1,12 +1,12 @@
 package com.knubisoft.testlum.testing;
 
+import com.knubisoft.testlum.log.Color;
 import com.knubisoft.testlum.testing.framework.ConnectionManager;
 import com.knubisoft.testlum.testing.framework.ScenarioArgumentsToNamedConverter;
 import com.knubisoft.testlum.testing.framework.SystemDataStoreCleaner;
 import com.knubisoft.testlum.testing.framework.TestSetCollector;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.constant.Color;
 import com.knubisoft.testlum.testing.framework.context.AliasToStorageOperation;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.env.service.LockService;

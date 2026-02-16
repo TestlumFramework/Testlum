@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -11,16 +12,14 @@ import com.knubisoft.testlum.testing.model.scenario.AssertEqual;
 import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.AssertNotEqual;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
-import static java.lang.String.format;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 
 @Slf4j
@@ -29,19 +28,16 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
 
     private static final String CONTENT = "Content";
     private static final String STEP_FAILED = "Step failed";
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String ANSI_CYAN = "\u001b[36m";
-    private static final String ANSI_RESET = "\u001b[0m";
-    private static final String ANSI_RED = "\u001B[31m";
-    private static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
-    private static final String COMMENT_LOG = format(TABLE_FORMAT, "Comment", "{}");
-    private static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
-    private static final String NEW_LOG_LINE = format("%n%19s| ", EMPTY);
-    private static final String EXCEPTION_LOG = ANSI_RED
-            + "----------------    EXCEPTION    -----------------"
+
+    private static final String COMMAND_LOG = LogFormat.withCyan("------- Command #{} - {} -------");
+    private static final String COMMENT_LOG = LogFormat.table("Comment");
+    private static final String CONTENT_LOG = LogFormat.table("Content");
+    private static final String NEW_LOG_LINE = String.format("%n%19s| ", StringUtils.EMPTY);
+    private static final String EXCEPTION_LOG = LogFormat.withRed(
+            "----------------    EXCEPTION    -----------------"
             + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
-            + "--------------------------------------------------" + ANSI_RESET;
-    private static final String REGEX_NEW_LINE = "[\\r\\n]";
+            + "--------------------------------------------------");
+
     private static final String ASSERT_CONTENT_NOT_EQUAL = "Equality content <%s> is not equal.";
     private static final String ASSERT_CONTENT_IS_EQUAL = "Inequality content <%s> is equal.";
 
@@ -114,7 +110,7 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
         CommandResult commandResult = new CommandResult();
         commandResult.setId(number);
         commandResult.setSuccess(true);
-        if (nonNull(command) && command.length > 0) {
+        if (Objects.nonNull(command) && command.length > 0) {
             commandResult.setCommandKey(command[0].getClass().getSimpleName());
         }
         return commandResult;
@@ -150,8 +146,8 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
     }
 
     public void logException(final Exception ex) {
-        if (isNotBlank(ex.getMessage())) {
-            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+        if (StringUtils.isNotBlank(ex.getMessage())) {
+            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(LogFormat.newLine(), NEW_LOG_LINE));
         } else {
             log.error(EXCEPTION_LOG, ex.toString());
         }

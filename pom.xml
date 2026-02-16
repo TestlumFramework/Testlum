@@ -48,45 +48,63 @@
     <modules>
         <module>modules</module>
         <module>engine</module>
+        <module>common</module>
     </modules>
 
     <properties>
+        <start-class>com.knubisoft.testlum.starter.TESTLUMStarter</start-class>
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.source>17</maven.compiler.source>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <!--
 
-        <versions.maven.plugin.version>2.21.0</versions.maven.plugin.version>
-        <checkstyle.maven.plugin.version>3.6.0</checkstyle.maven.plugin.version>
-        <maven.dependency.plugin.version>3.10.0</maven.dependency.plugin.version>
+        INTEGRATIONS DEPENDENCIES
 
-        <start-class>com.knubisoft.testlum.starter.TESTLUMStarter</start-class>
+        -->
+
+        <mongodb-java-driver.version>3.12.11</mongodb-java-driver.version>
+        <mysql-connector-j.version>9.3.0</mysql-connector-j.version>
+        <spring-kafka.version>3.3.7</spring-kafka.version>
+        <postgresql.driver.version>42.7.7</postgresql.driver.version>
+        <oracle.database.ojdbc11>23.8.0.25.04</oracle.database.ojdbc11>
+        <maria.driver.version>3.1.4</maria.driver.version>
+        <com.clickhouse.version>0.9.0</com.clickhouse.version>
+        <sendgrid-java.version>4.10.3</sendgrid-java.version>
+        <selenium-java.version>4.40.0</selenium-java.version>
+        <appium-client.version>10.0.0</appium-client.version>
+        <webdrivermanager.version>6.3.2</webdrivermanager.version>
+        <elasticsearch-rest-client.version>7.17.28</elasticsearch-rest-client.version>
+        <elasticsearch-rest-high-level-client.version>7.17.28</elasticsearch-rest-high-level-client.version>
+        <com.amazonaws.version>1.12.787</com.amazonaws.version>
+        <software.amazon.awssdk.version>2.31.65</software.amazon.awssdk.version>
+        <amqp-client.version>5.25.0</amqp-client.version>
+        <http-client.version>5.4.0</http-client.version>
+        <spring-rabbit.version>3.2.5</spring-rabbit.version>
+        <kafka-clients.version>3.9.1</kafka-clients.version>
+        <spring-vault-core.version>2.3.3</spring-vault-core.version>
+        <com.twilio.sdk.version>10.9.2</com.twilio.sdk.version>
+
+        <!--
+
+        INTEGRATIONS DEPENDENCIES END
+
+        -->
 
         <lombok.version>1.18.42</lombok.version>
         <guava.version>33.5.0-jre</guava.version>
         <commons.io.version>2.21.0</commons.io.version>
         <org.apache.commons.version>3.20.0</org.apache.commons.version>
         <apache.commons.text.version>1.15.0</apache.commons.text.version>
-        <postgresql.driver.version>42.7.7</postgresql.driver.version>
-        <oracle.database.ojdbc11>23.8.0.25.04</oracle.database.ojdbc11>
         <commons-dbutils.version>1.8.1</commons-dbutils.version>
         <commons-codec.version>1.17.1</commons-codec.version>
-        <maria.driver.version>3.1.4</maria.driver.version>
         <org.jsoup.version>1.20.1</org.jsoup.version>
         <HikariCP.version>6.3.0</HikariCP.version>
-        <com.clickhouse.version>0.9.0</com.clickhouse.version>
-        <elasticsearch-rest-client.version>7.17.28</elasticsearch-rest-client.version>
-        <elasticsearch-rest-high-level-client.version>7.17.28</elasticsearch-rest-high-level-client.version>
-        <sendgrid-java.version>4.10.3</sendgrid-java.version>
-        <selenium-java.version>4.40.0</selenium-java.version>
-        <appium-client.version>10.0.0</appium-client.version>
-        <webdrivermanager.version>6.3.2</webdrivermanager.version>
         <org.spring.boot.version>3.5.1</org.spring.boot.version>
         <org.spring.version>6.2.8</org.spring.version>
         <io.jsonwebtoken.version>0.12.6</io.jsonwebtoken.version>
-        <com.stripe-java.version>22.3.0</com.stripe-java.version>
         <json-smart.version>2.5.2</json-smart.version>
         <jackson.version>2.19.0</jackson.version>
         <javax.xml.jaxp-api.version>1.4.2</javax.xml.jaxp-api.version>
@@ -103,17 +121,6 @@
         <org.slf4j.api.version>2.0.17</org.slf4j.api.version>
         <com.opencsv.version>5.11.1</com.opencsv.version>
         <io.micrometer.version>1.15.0</io.micrometer.version>
-
-        <mongodb-java-driver.version>3.12.11</mongodb-java-driver.version>
-        <mysql-connector-j.version>9.3.0</mysql-connector-j.version>
-        <spring-kafka.version>3.3.7</spring-kafka.version>
-        <com.amazonaws.version>1.12.787</com.amazonaws.version>
-        <software.amazon.awssdk.version>2.31.65</software.amazon.awssdk.version>
-        <amqp-client.version>5.25.0</amqp-client.version>
-        <http-client.version>5.4.0</http-client.version>
-        <spring-rabbit.version>3.2.5</spring-rabbit.version>
-        <kafka-clients.version>3.9.1</kafka-clients.version>
-        <spring-vault-core.version>2.3.3</spring-vault-core.version>
         <jedis.version>6.0.0</jedis.version>
         <netty-handler.version>4.2.2.Final</netty-handler.version>
         <netty-common.version>4.2.2.Final</netty-common.version>
@@ -128,7 +135,6 @@
         <klov-reporter.version>5.1.0</klov-reporter.version>
         <jakarta.activation.version>1.2.2</jakarta.activation.version>
         <jakarta.activation-api.version>2.1.3</jakarta.activation-api.version>
-        <com.twilio.sdk.version>10.9.2</com.twilio.sdk.version>
         <image-comparison.version>4.4.0</image-comparison.version>
         <org.cornutum.regexp.regexp-gen.version>3.0.0</org.cornutum.regexp.regexp-gen.version>
         <org.asynchttpclient>3.0.2</org.asynchttpclient>
@@ -140,40 +146,253 @@
         <json-simple.version>1.1.1</json-simple.version>
         <junit-platform-launcher.version>1.13.1</junit-platform-launcher.version>
         <jaxb-api.version>2.3.1</jaxb-api.version>
+
+        <versions.maven.plugin.version>2.21.0</versions.maven.plugin.version>
+        <checkstyle.maven.plugin.version>3.6.0</checkstyle.maven.plugin.version>
+        <maven.dependency.plugin.version>3.10.0</maven.dependency.plugin.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <scope>compile</scope>
-                <version>${lombok.version}</version>
-            </dependency>
+
+            <!--
+
+            PROJECT DEPENDENCIES
+
+            -->
 
             <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-api-util</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-assert</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-auth</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-auth-util</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-clickhouse</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-conditional</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-db-util</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-dynamo</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-elasticsearch</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-graphql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-http</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-kafka</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-lambda</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-migrate</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-models</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-mongo</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-mysql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-oracle</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-postgres</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-rabbit</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-redis</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-repeat-util</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-repeat</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-s3</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-sendgrid</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-ses</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-shared-util</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-shell</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-smtp</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-sqlDatabase</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-sqs</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-storage-util</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-twilio</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-ui-util</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-variable</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-variable-util</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-wait</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-wait-util</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-web</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-native</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-mobilebrowser</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-websocket</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-websocket-util</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-comparator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>testlum-log</artifactId>
+                <version>${project.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>commons-io</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>${commons.io.version}</version>
-            </dependency>
+            <!--
 
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${org.apache.commons.version}</version>
-            </dependency>
+            PROJECT DEPENDENCIES END
 
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-text</artifactId>
-                <version>${apache.commons.text.version}</version>
-            </dependency>
+            -->
+
 
             <dependency>
                 <groupId>org.postgresql</groupId>
@@ -1173,6 +1392,38 @@
                 <artifactId>json</artifactId>
                 <version>${org.json.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <scope>compile</scope>
+                <version>${lombok.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${org.apache.commons.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-text</artifactId>
+                <version>${apache.commons.text.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

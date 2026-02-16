@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
@@ -11,16 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.TimeUnit;
 
-import static java.lang.String.format;
-
 @Slf4j
 @InterpreterForClass(Wait.class)
 public class WaitInterpreter extends AbstractInterpreter<Wait> {
 
     private static final String TIME = "Time";
     private static final String TIME_UNITE = "Time unit";
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String WAIT_INFO_LOG = format(TABLE_FORMAT, "Wait time & unit", "{} {}");
+
+    private static final String WAIT_INFO_LOG = LogFormat.table("Wait time & unit", "{} {}");
 
     @Autowired
     private WaitUtil waitUtil;

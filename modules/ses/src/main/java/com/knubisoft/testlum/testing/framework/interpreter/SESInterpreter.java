@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -7,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import software.amazon.awssdk.services.ses.SesClient;
 import software.amazon.awssdk.services.ses.model.Body;
@@ -17,21 +19,17 @@ import software.amazon.awssdk.services.ses.model.SendEmailRequest;
 import software.amazon.awssdk.services.ses.model.VerifyEmailAddressRequest;
 
 import java.util.Map;
-
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
-import static java.lang.String.format;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import java.util.Objects;
 
 @Slf4j
 @InterpreterForClass(Ses.class)
 public class SESInterpreter extends AbstractInterpreter<Ses> {
 
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
-    private static final String DESTINATION_LOG = format(TABLE_FORMAT, "Destination", "{}");
-    private static final String SOURCE_LOG = format(TABLE_FORMAT, "Source", "{}");
-    private static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
+    private static final String ALIAS_LOG = LogFormat.table("Alias");
+    private static final String DESTINATION_LOG = LogFormat.table("Destination");
+    private static final String SOURCE_LOG = LogFormat.table("Source");
+    private static final String BODY_LOG = LogFormat.table("Body");
+
     private static final String ALIAS = "Alias";
     private static final String DESTINATION = "Destination";
     private static final String SUBJECT = "Subject";
@@ -39,7 +37,7 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
     private static final String TEXT = "Text";
     private static final String SOURCE = "Source";
     private static final String SES_BODY_CONTENT_AND_TITLE_TEMPLATE = "%n%46s:%n%47s%-100s";
-    private static final String REGEX_NEW_LINE = "[\\r\\n]";
+
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)
@@ -138,7 +136,7 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
 
     private void logSESMessage(final Message sesMessage) {
         StringBuilder message = new StringBuilder();
-        if (nonNull(sesMessage.body())) {
+        if (Objects.nonNull(sesMessage.body())) {
             appendBodyContentIfNotBlank(sesMessage.body().html().data(), "HTML", message);
             appendBodyContentIfNotBlank(sesMessage.body().text().data(), "Text", message);
         } else {
@@ -147,11 +145,11 @@ public class SESInterpreter extends AbstractInterpreter<Ses> {
         log.info(BODY_LOG, message);
     }
     private void appendBodyContentIfNotBlank(final String data, final String title, final StringBuilder sb) {
-        if (isNotBlank(data)) {
-            sb.append(format(SES_BODY_CONTENT_AND_TITLE_TEMPLATE,
+        if (StringUtils.isNotBlank(data)) {
+            sb.append(String.format(SES_BODY_CONTENT_AND_TITLE_TEMPLATE,
                     title,
-                    EMPTY,
-                    data.replaceAll(REGEX_NEW_LINE, format("%n%15s", EMPTY))));
+                    StringUtils.EMPTY,
+                    data.replaceAll(LogFormat.newLine(), String.format("%n%15s", StringUtils.EMPTY))));
         }
     }
 }

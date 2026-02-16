@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
@@ -17,17 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static java.lang.String.format;
-
 @Slf4j
 @InterpreterForClass(Repeat.class)
 public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
 
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String ANSI_YELLOW = "\u001B[33m";
-    private static final String ANSI_RESET = "\u001b[0m";
-    private static final String COMMAND_REPEAT_FINISHED_LOG = ANSI_YELLOW + "------- Repeat is finished -------"
-            + ANSI_RESET;
+    private static final String COMMAND_REPEAT_FINISHED_LOG =
+            LogFormat.withYellow("------- Repeat is finished -------");
 
     private final RepeatCommandRunner repeatCommandsRunner;
     private final GlobalVariations globalVariations;
@@ -53,7 +49,7 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
     private void runRepeatWithVariations(final Repeat repeat,
                                          final CommandResult result,
                                          final List<CommandResult> subCommandsResult) {
-        log.info(format(TABLE_FORMAT, "Variations", repeat.getVariations()));
+        log.info(LogFormat.table("Variations", repeat.getVariations()));
         result.put("Variations", repeat.getVariations());
         List<AbstractCommand> commands = repeat.getCommands();
         List<AbstractCommand> injectedCommand = globalVariations.getVariations(repeat.getVariations()).stream()
@@ -67,7 +63,7 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
                                  final CommandResult result,
                                  final List<CommandResult> subCommandsResult) {
         Repeat repeat1 = injectCommand(repeat);
-        log.info(format(TABLE_FORMAT, "Times", repeat.getTimes()));
+        log.info(LogFormat.table("Times", repeat.getTimes()));
         result.put("Times", repeat.getTimes());
         for (int i = 0; i < repeat1.getTimes(); i++) {
             this.repeatCommandsRunner.runCommands(repeat1.getCommands(), dependencies, result, subCommandsResult);

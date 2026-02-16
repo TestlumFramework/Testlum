@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.context.AliasToStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
@@ -21,17 +22,14 @@ import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.lang.String.format;
-
 @Slf4j
 @InterpreterForClass(Migrate.class)
 public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
 
     //LOGS
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
+    private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String NAME_FOR_MIGRATION_MUST_PRESENT = "Data storage name for migration must present";
-    private static final String DATASET_PATH_LOG = format(TABLE_FORMAT, "Migration dataset", "{}");
+    private static final String DATASET_PATH_LOG = LogFormat.table("Migration dataset");
 
     //RESULT
     private static final String DATABASE = "Database";

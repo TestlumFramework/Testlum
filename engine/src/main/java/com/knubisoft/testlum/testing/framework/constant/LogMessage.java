@@ -1,12 +1,12 @@
 package com.knubisoft.testlum.testing.framework.constant;
 
+import static com.knubisoft.testlum.log.LogFormat.*;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 public final class LogMessage {
 
     public static final String NEW_LOG_LINE = format("%n%19s| ", EMPTY);
-    public static final String REGEX_NEW_LINE = "[\\r\\n]";
 
     public static final String UI_COMMAND_LOG =
             withCyan("------- UI command #{} - {} -------");
@@ -184,35 +184,4 @@ public final class LogMessage {
         // nop
     }
 
-    public static String table(final String text, final String arg) {
-        return String.format("%-23s|%-70s", text, arg);
-    }
-
-    public static String table(final String text) {
-        return table(text, "{}");
-    }
-
-    public static String with(final Color c, final String text) {
-        return c.getCode() + text + Color.RESET.getCode();
-    }
-
-    public static String withRed(final String text) {
-        return with(Color.RED, text);
-    }
-
-    public static String withOrange(final String text) {
-        return with(Color.ORANGE, text);
-    }
-
-    public static String withGreen(final String text) {
-        return with(Color.GREEN, text);
-    }
-
-    public static String withCyan(final String text) {
-        return with(Color.CYAN, text);
-    }
-
-    public static String withYellow(final String text) {
-        return with(Color.YELLOW, text);
-    }
 }

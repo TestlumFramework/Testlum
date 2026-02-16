@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.source.ListSource;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -19,7 +20,6 @@ import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation.StorageOperationResult;
-import static java.lang.String.format;
 
 @Slf4j
 @InterpreterForClass(Redis.class)
@@ -27,9 +27,9 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
 
     private static final String QUERIES = "Queries";
     private static final String DATABASE_ALIAS = "Database alias";
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
-    private static final String REDIS_QUERY = format(TABLE_FORMAT, "Query", "{} {}");
+
+    private static final String ALIAS_LOG = LogFormat.table("Alias");
+    private static final String REDIS_QUERY = LogFormat.table("Query", "{} {}");
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)

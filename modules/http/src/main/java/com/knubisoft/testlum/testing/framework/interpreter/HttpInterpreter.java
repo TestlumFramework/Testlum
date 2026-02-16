@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
@@ -27,24 +28,22 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static java.lang.String.format;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Slf4j
 @InterpreterForClass(Http.class)
 public class HttpInterpreter extends AbstractInterpreter<Http> {
 
     //LOGS
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
-    private static final String HTTP_METHOD_LOG = format(TABLE_FORMAT, "HTTP method", "{}");
-    private static final String ENDPOINT_LOG = format(TABLE_FORMAT, "Endpoint", "{}");
-    private static final String BODY_LOG = format(TABLE_FORMAT, "Body", "{}");
-    private static final String REGEX_NEW_LINE = "[\\r\\n]";
-    private static final String CONTENT_FORMAT = format("%n%19s| %-23s|", EMPTY, EMPTY);
+    private static final String ALIAS_LOG = LogFormat.table("Alias");
+    private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
+    private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
+    private static final String BODY_LOG = LogFormat.table("Body");
+
+
+    private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
     private static final String SKIPPED_BODY_VALIDATION = "Validation of the response body was skipped "
             + "because of no expected file";
     private static final String ERROR_LOG = "Error ->";
@@ -139,7 +138,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     }
 
     private void mergeContentTypeFromBody(final Map<String, String> headers, final HttpEntity body) {
-        if (nonNull(body) && nonNull(body.getContentType())) {
+        if (Objects.nonNull(body) && Objects.nonNull(body.getContentType())) {
             String contentType = body.getContentType().getValue();
             headers.merge(HttpHeaders.CONTENT_TYPE, contentType,
                     (k, v) -> contentType.equalsIgnoreCase(v) ? v : contentType);
@@ -189,12 +188,12 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
 
     @SneakyThrows
     private void logBodyContent(final HttpEntity body) {
-        if (nonNull(body) && body.getContentLength() < MAX_CONTENT_LENGTH) {
+        if (Objects.nonNull(body) && body.getContentLength() < MAX_CONTENT_LENGTH) {
             String stringBody = IOUtils.toString(body.getContent(), StandardCharsets.UTF_8);
             if (StringUtils.isNotBlank(stringBody)) {
                 log.info(BODY_LOG,
                         StringPrettifier.asJsonResult(StringPrettifier.cut(stringBody))
-                                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+                                .replaceAll(LogFormat.newLine(), CONTENT_FORMAT));
             }
         }
     }
@@ -224,7 +223,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
 
     private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
-                .map(e -> format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
+                .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
                 .collect(Collectors.toList()));
     }
 }

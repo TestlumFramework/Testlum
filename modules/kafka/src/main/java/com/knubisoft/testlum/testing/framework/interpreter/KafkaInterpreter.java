@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -28,50 +29,34 @@ import org.springframework.util.CollectionUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
-import static java.lang.String.format;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 @InterpreterForClass(Kafka.class)
 public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
     // LOGS
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String REGEX_NEW_LINE = "[\\r\\n]";
-    private static final String NEW_LOG_LINE = format("%n%19s| ", EMPTY);
-    private static final String CONTENT_FORMAT = format("%n%19s| %-23s|", EMPTY, EMPTY);
-    private static final String ANSI_RED = "\u001B[31m";
-    private static final String ANSI_CYAN = "\u001b[36m";
-    private static final String ANSI_RESET = "\u001b[0m";
+    private static final String NEW_LOG_LINE = String.format("%n%19s| ", StringUtils.EMPTY);
+    private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
+
     private static final String SEND_ACTION = "send";
     private static final String RECEIVE_ACTION = "receive";
-    private static final String ACTION_LOG = format(TABLE_FORMAT, "Action", "{}");
-    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
-    private static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
-    private static final String COMMIT_LOG = format(TABLE_FORMAT, "Commit", "{}");
-    private static final String TOPIC_LOG = format(TABLE_FORMAT, "Topic", "{}");
-    private static final String CORRELATION_ID_LOG = format(TABLE_FORMAT, "Correlation Id", "{}");
-    private static final String TIMEOUT_MILLIS_LOG = format(TABLE_FORMAT, "Timeout Millis", "{}");
-    private static final String COMMAND_LOG = ANSI_CYAN + "------- Command #{} - {} -------" + ANSI_RESET;
-    private static final String EXCEPTION_LOG = ANSI_RED
-            + "----------------    EXCEPTION    -----------------"
+
+    private static final String ACTION_LOG = LogFormat.table("Action");
+    private static final String ALIAS_LOG = LogFormat.table("Alias");
+    private static final String CONTENT_LOG = LogFormat.table("Content");
+    private static final String COMMIT_LOG = LogFormat.table("Commit");
+    private static final String TOPIC_LOG = LogFormat.table("Topic");
+    private static final String CORRELATION_ID_LOG = LogFormat.table("Correlation Id");
+    private static final String TIMEOUT_MILLIS_LOG = LogFormat.table("Timeout Millis");
+    private static final String COMMAND_LOG = LogFormat.withCyan("------- Command #{} - {} -------");
+    private static final String EXCEPTION_LOG = LogFormat.withRed(
+            "----------------    EXCEPTION    -----------------"
             + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
-            + "--------------------------------------------------" + ANSI_RESET;
+            + "--------------------------------------------------");
 
     //RESULT
     private static final String KEY = "Key";
@@ -242,7 +227,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
     private List<Header> getHeaders(final SendKafkaMessage send) {
         List<Header> headers = new ArrayList<>();
-        if (nonNull(send.getCorrelationId())) {
+        if (Objects.nonNull(send.getCorrelationId())) {
             byte[] correlationId = send.getCorrelationId().getBytes(StandardCharsets.UTF_8);
             RecordHeader correlationIdHeader = new RecordHeader(CORRELATION_ID, correlationId);
             headers.add(correlationIdHeader);
@@ -253,7 +238,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
 
     private List<Header> getHeadersFromSendMessage(final SendKafkaMessage send) {
         List<Header> headers = new ArrayList<>();
-        if (nonNull(send.getHeaders()) && !CollectionUtils.isEmpty(send.getHeaders().getHeader())) {
+        if (Objects.nonNull(send.getHeaders()) && !CollectionUtils.isEmpty(send.getHeaders().getHeader())) {
             for (KafkaHeader kafkaHeader : send.getHeaders().getHeader()) {
                 headers.add(convertToRecordHeader(kafkaHeader));
             }
@@ -310,18 +295,18 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         log.info(ACTION_LOG, action.toUpperCase(Locale.ROOT));
         log.info(TOPIC_LOG, topicOrRoutingKeyOrQueueValue);
         log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
-                .replaceAll(REGEX_NEW_LINE, CONTENT_FORMAT));
+                .replaceAll(LogFormat.newLine(), CONTENT_FORMAT));
     }
 
     private void logIfNotNull(final String title, final Object data) {
-        if (nonNull(data)) {
+        if (Objects.nonNull(data)) {
             log.info(title, data);
         }
     }
 
     private void logException(final Exception ex) {
-        if (isNotBlank(ex.getMessage())) {
-            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(REGEX_NEW_LINE, NEW_LOG_LINE));
+        if (StringUtils.isNotBlank(ex.getMessage())) {
+            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(LogFormat.newLine(), NEW_LOG_LINE));
         } else {
             log.error(EXCEPTION_LOG, ex.toString());
         }
@@ -332,7 +317,7 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         CommandResult commandResult = new CommandResult();
         commandResult.setId(number);
         commandResult.setSuccess(true);
-        if (nonNull(command) && command.length > 0) {
+        if (Objects.nonNull(command) && command.length > 0) {
             commandResult.setCommandKey(command[0].getClass().getSimpleName());
         }
         return commandResult;
@@ -362,15 +347,15 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         String key = sendAction.getKey();
         String correlationId = sendAction.getCorrelationId();
         KafkaHeaders kafkaHeaders = sendAction.getHeaders();
-        if (isNotBlank(key)) {
+        if (StringUtils.isNotBlank(key)) {
             result.put(KEY, key);
         }
-        if (isNotBlank(correlationId)) {
+        if (StringUtils.isNotBlank(correlationId)) {
             result.put(CORRELATION_ID, correlationId);
         }
-        if (nonNull(kafkaHeaders)) {
+        if (Objects.nonNull(kafkaHeaders)) {
             result.put(ADDITIONAL_HEADERS, kafkaHeaders.getHeader().stream().map(header ->
-                    format(HEADER_TEMPLATE, header.getName(), header.getValue())).collect(Collectors.toList()));
+                    String.format(HEADER_TEMPLATE, header.getName(), header.getValue())).toList());
         }
     }
     private void addMessageBrokerGeneralMetaData(final String alias,

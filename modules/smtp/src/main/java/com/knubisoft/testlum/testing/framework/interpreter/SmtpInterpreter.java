@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
@@ -14,20 +15,17 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.util.Map;
 
-import static java.lang.String.format;
-
 @Slf4j
 @InterpreterForClass(Smtp.class)
 public class SmtpInterpreter extends AbstractInterpreter<Smtp> {
 
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String ALIAS_LOG = format(TABLE_FORMAT, "Alias", "{}");
-    private static final String SMTP_HOST_LOG = format(TABLE_FORMAT, "SMTP Host", "{}");
-    private static final String SMTP_PORT_LOG = format(TABLE_FORMAT, "SMTP Port", "{}");
-    private static final String SUBJECT_LOG = format(TABLE_FORMAT, "Subject", "{}");
-    private static final String DESTINATION_LOG = format(TABLE_FORMAT, "Destination", "{}");
-    private static final String SOURCE_LOG = format(TABLE_FORMAT, "Source", "{}");
-    private static final String CONTENT_LOG = format(TABLE_FORMAT, "Content", "{}");
+    private static final String ALIAS_LOG = LogFormat.table("Alias");
+    private static final String SMTP_HOST_LOG = LogFormat.table("SMTP Host");
+    private static final String SMTP_PORT_LOG = LogFormat.table("SMTP Port");
+    private static final String SUBJECT_LOG = LogFormat.table("Subject");
+    private static final String DESTINATION_LOG = LogFormat.table("Destination");
+    private static final String SOURCE_LOG = LogFormat.table("Source");
+    private static final String CONTENT_LOG = LogFormat.table("Content");
 
     private static final String ALIAS = "Alias";
     private static final String SMTP_HOST = "SMTP Host";

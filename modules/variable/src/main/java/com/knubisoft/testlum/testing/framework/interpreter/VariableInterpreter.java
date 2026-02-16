@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.interpreter;
 
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpreter;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
@@ -12,18 +13,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.UnaryOperator;
 
-import static java.lang.String.format;
-import static java.util.Objects.nonNull;
 
 @Slf4j
 @InterpreterForClass(Var.class)
 public class VariableInterpreter extends AbstractInterpreter<Var> {
 
-    private static final String TABLE_FORMAT = "%-23s|%-70s";
-    private static final String NAME_LOG = format(TABLE_FORMAT, "Name", "{}");
-    private static final String VALUE_LOG = format(TABLE_FORMAT, "Value", "{}");
+    private static final String NAME_LOG = LogFormat.table("Name");
+    private static final String VALUE_LOG = LogFormat.table("Value");
 
     private static final String FAILED_VARIABLE_LOG = "Failed variable <{}> comment <{}>";
 
@@ -33,12 +32,12 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
 
     public VariableInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
-        varToMethodMap = Map.of(variable -> nonNull(variable.getSql()), this::getSQLResult,
-                variable -> nonNull(variable.getFile()), this::getFileResult,
-                variable -> nonNull(variable.getConstant()), this::getConstantResult,
-                variable -> nonNull(variable.getExpression()), this::getExpressionResult,
-                variable -> nonNull(variable.getPath()), this::getPathResult,
-                variable -> nonNull(variable.getGenerate()), this::getRandomGenerateResult);
+        varToMethodMap = Map.of(variable -> Objects.nonNull(variable.getSql()), this::getSQLResult,
+                variable -> Objects.nonNull(variable.getFile()), this::getFileResult,
+                variable -> Objects.nonNull(variable.getConstant()), this::getConstantResult,
+                variable -> Objects.nonNull(variable.getExpression()), this::getExpressionResult,
+                variable -> Objects.nonNull(variable.getPath()), this::getPathResult,
+                variable -> Objects.nonNull(variable.getGenerate()), this::getRandomGenerateResult);
     }
 
     @Override

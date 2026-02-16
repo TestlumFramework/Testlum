@@ -1,9 +1,7 @@
 package com.knubisoft.testlum.testing.framework.variations;
 
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
-import com.knubisoft.testlum.testing.model.scenario.Scenario;
 
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 

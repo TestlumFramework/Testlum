@@ -9,10 +9,6 @@ import java.util.Map;
 
 public interface GlobalVariations {
 
-    void process(Scenario scenario, File filePath);
-
-    void process(String variationFileName);
-
     List<Map<String, String>> getVariations(String fileName);
 
     String getValue(String variation, Map<String, String> variationMap);

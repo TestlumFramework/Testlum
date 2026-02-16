@@ -6,11 +6,4 @@ public final class IntegrationDisabledException extends DefaultFrameworkExceptio
         super(String.format(format, args));
     }
 
-    public IntegrationDisabledException(final Throwable cause) {
-        super(cause);
-    }
-
-    public IntegrationDisabledException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
 }

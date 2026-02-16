@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthorizationConstant {
 
-    public static final String TOKEN_JPATH = "$.body.token";
-    public static final String EMAIL_JPATH = "$.email";
     public static final String USERNAME_JPATH = "$.username";
     public static final String PASSWORD_JPATH = "$.password";
     public static final String CONTENT_KEY_TOKEN = "token";

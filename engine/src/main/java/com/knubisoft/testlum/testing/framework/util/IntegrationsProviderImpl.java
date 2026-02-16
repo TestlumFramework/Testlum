@@ -36,11 +36,6 @@ public class IntegrationsProviderImpl implements IntegrationsProvider {
     }
 
     @Override
-    public <T extends Integration> T findForAlias(final List<T> integrationList, final String env) {
-        return IntegrationsUtil.findForAlias(integrationList, env);
-    }
-
-    @Override
     public <T extends Integration> boolean isEnabled(final List<T> integrations) {
         return false;
     }

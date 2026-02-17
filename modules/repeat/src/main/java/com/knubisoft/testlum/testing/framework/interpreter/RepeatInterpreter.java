@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @InterpreterForClass(Repeat.class)
@@ -55,7 +54,7 @@ public class RepeatInterpreter extends AbstractInterpreter<Repeat> {
         List<AbstractCommand> injectedCommand = globalVariations.getVariations(repeat.getVariations()).stream()
                 .flatMap(variation -> commands.stream().map(command ->
                         injectObjectVariation(command, variation)))
-                .collect(Collectors.toList());
+                .toList();
         this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result, subCommandsResult);
     }
 

@@ -15,7 +15,6 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Slf4j
@@ -73,6 +72,6 @@ public class SqlDatabaseExecutor extends AbstractSqlExecutor {
         return Arrays.stream(sql.split(";\\s*(\\r?\\n)?"))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
-                .collect(Collectors.toList());
+                .toList();
     }
 }

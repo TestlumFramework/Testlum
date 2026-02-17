@@ -186,7 +186,7 @@ public class ResultUtil {
     private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
                 .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
-                .collect(Collectors.toList()));
+                .toList());
     }
 
     public void addVariableMetaData(final String type,

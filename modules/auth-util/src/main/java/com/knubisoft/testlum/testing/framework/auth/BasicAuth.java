@@ -22,12 +22,10 @@ import static com.knubisoft.testlum.testing.framework.auth.AuthorizationConstant
 @Slf4j
 public class BasicAuth extends AbstractAuthStrategy {
 
-    //LOGS
     private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
     private static final String CREDENTIALS_LOG = LogFormat.table("Credentials");
 
-    //RESULT
     private static final String AUTHENTICATION_TYPE = "Authentication type";
 
     public BasicAuth(final InterpreterDependencies dependencies) {

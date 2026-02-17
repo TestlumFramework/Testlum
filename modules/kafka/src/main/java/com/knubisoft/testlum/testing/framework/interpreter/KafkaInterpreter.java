@@ -37,8 +37,6 @@ import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant
 @Slf4j
 @InterpreterForClass(Kafka.class)
 public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
-
-    // LOGS
     private static final String NEW_LOG_LINE = String.format("%n%19s| ", StringUtils.EMPTY);
     private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
 
@@ -58,7 +56,6 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
             + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
             + "--------------------------------------------------");
 
-    //RESULT
     private static final String KEY = "Key";
     private static final String TOPIC = "Topic";
     private static final String ALIAS = "Alias";
@@ -277,7 +274,6 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         return kafkaConsumer.get(aliasEnv).listTopics().keySet().stream().noneMatch(topic::equals);
     }
 
-    //LOGS
     private void logKafkaReceiveInfo(final ReceiveKafkaMessage receive, final String content) {
         logMessageBrokerGeneralMetaData(RECEIVE_ACTION, receive.getTopic(), content);
         logIfNotNull(TIMEOUT_MILLIS_LOG, receive.getTimeoutMillis());
@@ -312,7 +308,6 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         }
     }
 
-    //RESULT
     private CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
         CommandResult commandResult = new CommandResult();
         commandResult.setId(number);

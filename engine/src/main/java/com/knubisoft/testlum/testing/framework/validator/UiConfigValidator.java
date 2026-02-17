@@ -103,7 +103,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                     List<?> nativeOrMobileOrWebList = uiConfigs.stream()
                             .filter(nonNullCheck)
                             .map(uiConfigToNativeOrMobileOrWebMethod)
-                            .collect(Collectors.toList());
+                            .toList();
                     if (!nativeOrMobileOrWebList.isEmpty() && nativeOrMobileOrWebList.size() != envNum) {
                         throw new DefaultFrameworkException(UI_CONFIG_NOT_PRESENT_IN_ALL_ENVS, nativeOrMobileOrWebName);
                     }
@@ -117,7 +117,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                     List<String> baseUrlList = uiConfigs.stream()
                             .filter(nonNullCheck)
                             .map(baseUrlMethod)
-                            .collect(Collectors.toList());
+                            .toList();
                     if (!baseUrlList.isEmpty() && baseUrlList.stream().distinct().count() != envNum) {
                         throw new DefaultFrameworkException(BASE_URLS_ARE_SAME, mobileOrWebConfigName);
                     }
@@ -131,7 +131,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                     List<ConnectionType> cTypeList = uiConfigs.stream()
                             .filter(nonNullCheck)
                             .map(connectionTypeMethod)
-                            .collect(Collectors.toList());
+                            .toList();
                     checkConnectionType(mobileOrNativeConfigName, uiConfigs, cTypeList);
                 })
         );
@@ -164,7 +164,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
         List<BrowserStackLogin> browserStackLoginList = uiConfigs.stream()
                 .map(UiConfig::getBrowserStackLogin)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
         if (browserStackLoginList.size() != uiConfigs.size()) {
             throw new DefaultFrameworkException(BROWSERSTACK_LOGIN_NOT_CONFIGURED);
         }
@@ -192,7 +192,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                 .map(configMethod)
                 .map(config -> getDeviceOrBrowserList(config).stream()
                         .filter(this::isDeviceOrBrowserEnabled)
-                        .collect(Collectors.toList()))
+                        .toList())
                 .filter(deviceOrBrowserList -> !deviceOrBrowserList.isEmpty())
                 .collect(Collectors.toList());
     }
@@ -233,7 +233,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
         return deviceOrBrowserList.stream()
                 .filter(deviceOrBrowser -> deviceOrBrowser instanceof AbstractBrowser)
                 .map(AbstractBrowser.class::cast)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void checkBrowserAliasesDifferAndMatch(final String configName,
@@ -265,7 +265,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                 .map(this::filterAbstractDevices)
                 .collect(Collectors.toList());
         List<String> defaultAliasList = defaultDevices.stream()
-                .map(AbstractDevice::getAlias).collect(Collectors.toList());
+                .map(AbstractDevice::getAlias).toList();
         checkDeviceAliasesDifferAndMatch(configName, envList, defaultAliasList, deviceLists);
         checkPlatformNameMatch(configName, defaultDevices, deviceLists);
         validateDeviceCapabilities(configName, envList, uiConfigList, defaultDevices, deviceLists);
@@ -275,7 +275,7 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
         return deviceOrBrowserList.stream()
                 .filter(deviceOrBrowser -> deviceOrBrowser instanceof AbstractDevice)
                 .map(AbstractDevice.class::cast)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void checkDeviceAliasesDifferAndMatch(final String configName,
@@ -332,8 +332,8 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
         return deviceLists.stream()
                 .map(devices -> devices.stream()
                         .filter(device -> device instanceof MobilebrowserDevice)
-                        .map(MobilebrowserDevice.class::cast).collect(Collectors.toList()))
-                .collect(Collectors.toList());
+                        .map(MobilebrowserDevice.class::cast).toList())
+                .toList();
     }
 
     private Map<String, MobilebrowserDevice> getMobilebrowserDeviceMap(
@@ -394,8 +394,8 @@ public class UiConfigValidator implements ConfigurationValidator<Map<String, UiC
                 .map(devices -> devices.stream()
                         .filter(device -> device instanceof NativeDevice)
                         .map(NativeDevice.class::cast)
-                        .collect(Collectors.toList()))
-                .collect(Collectors.toList());
+                        .toList())
+                .toList();
     }
 
     private Map<String, NativeDevice> getDefaultNativeDeviceMap(final List<? extends AbstractDevice> defaultDevices) {

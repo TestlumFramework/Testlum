@@ -41,7 +41,6 @@ import java.util.stream.Collectors;
 @InterpreterForClass(Graphql.class)
 public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
 
-    //LOGS
     private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
     private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
@@ -52,7 +51,6 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     private static final String ERROR_LOG = "Error ->";
     private static final int MAX_CONTENT_LENGTH = 25 * 1024;
 
-    //RESULT
     private static final String ALIAS = "Alias";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
@@ -206,7 +204,6 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         return string.replaceAll(DelimiterConstant.REGEX_MANY_SPACES, DelimiterConstant.SPACE);
     }
 
-    //LOGS
     private void logHttpInfo(final String alias, final String method, final String endpoint) {
         log.info(ALIAS_LOG, alias);
         log.info(HTTP_METHOD_LOG, method);
@@ -229,7 +226,6 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         log.error(ERROR_LOG, ex);
     }
 
-    //RESULT
     private void addGraphQlMetaData(final String alias,
                                     final HttpMethod httpMethod,
                                     final Map<String, String> headers,
@@ -246,7 +242,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
                 .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
-                .collect(Collectors.toList()));
+                .toList());
     }
 
     @RequiredArgsConstructor

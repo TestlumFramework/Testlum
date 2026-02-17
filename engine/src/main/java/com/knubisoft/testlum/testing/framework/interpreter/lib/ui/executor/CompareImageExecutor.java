@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.URL_TO_IMAGE_LOG;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.URL_TO_ACTUAL_IMAGE;
@@ -103,7 +102,7 @@ public class CompareImageExecutor extends AbstractUiExecutor<Image> {
             Scale scale = getScaling(expected, driver);
             return fullScreen.getExclude().stream()
                     .map(element -> getElementArea(element.getLocator(), scale, element.getLocatorStrategy()))
-                    .collect(Collectors.toList());
+                    .toList();
         }
         return Collections.emptyList();
     }

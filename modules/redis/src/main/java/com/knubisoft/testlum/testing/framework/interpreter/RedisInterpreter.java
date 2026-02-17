@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SPACE;
 import static com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation.StorageOperationResult;
@@ -75,7 +74,7 @@ public class RedisInterpreter extends AbstractInterpreter<Redis> {
     private List<String> convertToStringQueries(final List<RedisQuery> redisQueries) {
         return redisQueries.stream()
                 .map(this::toString)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void logAllRedisQueries(final List<RedisQuery> redisQueries, final String alias) {

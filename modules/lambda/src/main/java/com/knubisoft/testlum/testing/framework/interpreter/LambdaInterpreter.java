@@ -28,14 +28,12 @@ import java.util.stream.Collectors;
 @InterpreterForClass(Lambda.class)
 public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
 
-    //LOGS
     private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
     private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String LAMBDA_FUNCTION_LOG = LogFormat.table("Function name");
     private static final String LAMBDA_PAYLOAD_LOG = LogFormat.table("Payload");
     private static final String ERROR_LOG = "Error ->";
 
-    //RESULT
     private static final String ALIAS = "Alias";
     private static final String LAMBDA_FUNCTION_NAME = "Function name";
     private static final String LAMBDA_PAYLOAD = "Payload";
@@ -128,7 +126,6 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
                 .collect(Collectors.toMap(Header::getName, Header::getData));
     }
 
-    //LOGS
     private void logLambdaInfo(final String alias, final String functionName, final String payload) {
         log.info(ALIAS_LOG, alias);
         log.info(LAMBDA_FUNCTION_LOG, functionName);
@@ -142,7 +139,6 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
         log.error(ERROR_LOG, ex);
     }
 
-    //RESULT
     private void addLambdaGeneralMetaData(final String alias,
                                           final String functionName,
                                           final String payload,

@@ -20,18 +20,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @InterpreterForClass(Migrate.class)
 public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
 
-    //LOGS
     private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String NAME_FOR_MIGRATION_MUST_PRESENT = "Data storage name for migration must present";
     private static final String DATASET_PATH_LOG = LogFormat.table("Migration dataset");
 
-    //RESULT
     private static final String DATABASE = "Database";
     private static final String PATCHES = "Patches";
     private static final String DATABASE_ALIAS = "Database alias";
@@ -76,7 +73,7 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
         return datasets.stream()
                 .map(this::createSource)
                 .map(this::injectQueries)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private Source createSource(final String datasetName) {
@@ -88,7 +85,7 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     private Source injectQueries(final Source source) {
         List<String> queries = source.getQueries().stream()
                 .map(this::inject)
-                .collect(Collectors.toList());
+                .toList();
         return new ListSource(queries);
     }
 

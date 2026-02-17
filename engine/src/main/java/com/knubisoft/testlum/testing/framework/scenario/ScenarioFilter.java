@@ -90,7 +90,7 @@ public class ScenarioFilter {
         List<String> enabledTags = tags.stream()
                 .filter(TagValue::isEnabled)
                 .map(TagValue::getName)
-                .collect(Collectors.toList());
+                .toList();
         if (enabledTags.isEmpty()) {
             throw new DefaultFrameworkException(NO_ENABLED_TAGS_CONFIG);
         }

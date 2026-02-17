@@ -39,8 +39,6 @@ import java.util.stream.Collectors;
 @InterpreterForClass(Elasticsearch.class)
 public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch> {
 
-    //LOGS
-
     private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
     private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
@@ -50,7 +48,6 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     private static final String ERROR_LOG = "Error ->";
     private static final int MAX_CONTENT_LENGTH = 25 * 1024;
 
-    //RESULT
     private static final String ALIAS = "Alias";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
@@ -186,7 +183,6 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         return HttpUtil.extractBody(body, contentType, this, dependencies);
     }
 
-    //LOGS
     private void logHttpInfo(final String alias, final String method, final String endpoint) {
         log.info(ALIAS_LOG, alias);
         log.info(HTTP_METHOD_LOG, method);
@@ -209,7 +205,6 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
         log.error(ERROR_LOG, ex);
     }
 
-    //RESULT
     public void addElasticsearchMetaData(final String alias,
                                          final String httpMethodName,
                                          final Map<String, String> headers,
@@ -226,6 +221,6 @@ public class ElasticsearchInterpreter extends AbstractInterpreter<Elasticsearch>
     private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
                 .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
-                .collect(Collectors.toList()));
+                .toList());
     }
 }

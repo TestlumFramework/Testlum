@@ -10,13 +10,13 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.vault.authentication.TokenAuthentication;
 import org.springframework.vault.client.VaultEndpoint;
 import org.springframework.vault.core.VaultTemplate;
+import org.springframework.vault.support.VaultResponse;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class VaultService {
 
@@ -27,12 +27,16 @@ public class VaultService {
     private final VaultTemplate template;
 
     public VaultService(final GlobalTestConfiguration configuration) {
+        Vault vault = getVaultOrThrow(configuration);
+        this.template = new VaultTemplate(vaultEndpoint(vault), new TokenAuthentication(vault.getToken()));
+    }
+
+    private Vault getVaultOrThrow(final GlobalTestConfiguration configuration) {
         Vault vault = configuration.getVault();
-        if (Objects.nonNull(vault)) {
-            this.template = new VaultTemplate(vaultEndpoint(vault), new TokenAuthentication(vault.getToken()));
-        } else {
+        if (vault == null) {
             throw new DefaultFrameworkException("Vault is not enabled in global config file");
         }
+        return vault;
     }
 
     private VaultEndpoint vaultEndpoint(final Vault vault) {
@@ -47,14 +51,15 @@ public class VaultService {
         return vaultList.stream()
                 .map(JacksonMapperUtil::writeValueAsString)
                 .map(s -> JacksonMapperUtil.readVaultValue(s, VaultDto.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private List<VaultDto> getVaultByPath(final Map<String, Object> dataByPath) {
-        List<Object> vaultList = Objects.requireNonNull(dataByPath).entrySet().stream()
+        List<Object> vaultList = Objects.requireNonNull(dataByPath).entrySet()
+                .stream()
                 .filter(entry -> VAULT_KEY.equals(entry.getKey()))
                 .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
+                .toList();
         return objToVaultDto(vaultList);
     }
 
@@ -82,16 +87,16 @@ public class VaultService {
     }
 
     private String getValue(final String vaultKey, final String path, final String key) {
-        if (Objects.nonNull(template.read(path))) {
-            Map<String, Object> data = Objects.requireNonNull(template.read(path)).getData();
-            List<VaultDto> convertedVault = getVaultByPath(data);
-            return convertedVault.stream()
-                    .filter(vaultDto -> key.equals(vaultDto.getKey()))
-                    .map(VaultDto::getValue)
-                    .findFirst()
-                    .orElseThrow(() -> new DefaultFrameworkException("No such key in Vault: %s", key));
-        } else {
+        VaultResponse response = template.read(path);
+        if (response == null) {
             throw new DefaultFrameworkException("No data found for path: %s", vaultKey);
         }
+        Map<String, Object> data = response.getData();
+        List<VaultDto> convertedVault = getVaultByPath(data);
+        return convertedVault.stream()
+                .filter(vaultDto -> key.equals(vaultDto.getKey()))
+                .map(VaultDto::getValue)
+                .findFirst()
+                .orElseThrow(() -> new DefaultFrameworkException("No such key in Vault: %s", key));
     }
 }

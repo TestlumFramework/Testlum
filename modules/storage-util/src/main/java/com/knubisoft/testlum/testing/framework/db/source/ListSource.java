@@ -4,7 +4,6 @@ import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.LF;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -18,7 +17,7 @@ public class ListSource implements Source {
                 .flatMap(s -> Arrays.stream(s.split(QUERY_DELIMITER)))
                 .map(s -> s.replaceAll(LF, DelimiterConstant.SPACE))
                 .filter(s -> isNotBlank(s.trim()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

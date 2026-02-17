@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.REPEAT_FINISHED_LOG;
 
@@ -53,7 +52,7 @@ public class NativeRepeatExecutor extends AbstractUiExecutor<NativeRepeat> {
         List<AbstractUiCommand> injectedCommand = globalVariations.getVariations(repeat.getVariations()).stream()
                 .flatMap(variation -> commands.stream().map(command ->
                         InjectionUtil.injectObjectVariation(command, variation, dependencies.getScenarioContext())))
-                .collect(Collectors.toList());
+                .toList();
         this.repeatCommandsRunner.runCommands(injectedCommand, dependencies, result, subCommandsResult);
     }
     private void runSimpleRepeat(final NativeRepeat repeat,

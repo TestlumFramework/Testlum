@@ -19,7 +19,6 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -171,9 +170,9 @@ public final class HttpUtil {
             String params = JacksonMapperUtil.writeValueAsString(bodyParamMap);
             return newStringEntity(params, contentType);
         }
-        List<NameValuePair> paramList = bodyParamMap.entrySet().stream()
+        List<BasicNameValuePair> paramList = bodyParamMap.entrySet().stream()
                 .map(e -> new BasicNameValuePair(e.getKey(), e.getValue()))
-                .collect(Collectors.toList());
+                .toList();
         return new UrlEncodedFormEntity(paramList, StandardCharsets.UTF_8);
     }
 

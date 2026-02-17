@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Conditional({OnDynamoEnabledCondition.class})
@@ -57,7 +56,7 @@ public class DynamoDBOperation extends AbstractStorageOperation {
 
     private List<QueryResult<List<Map<String, AttributeValue>>>> execute(final List<String> statements,
                                                                          final String alias) {
-        return statements.stream().map(s -> executeSingleQuery(s, alias)).collect(Collectors.toList());
+        return statements.stream().map(s -> executeSingleQuery(s, alias)).toList();
     }
 
     private QueryResult<List<Map<String, AttributeValue>>> executeSingleQuery(final String query,

@@ -238,10 +238,9 @@ public class LocatorAutohealer {
 
         return jaroWinklerSimilarityScore > normalizedLevenshteinDistance
                 ? jaroWinklerSimilarityScore : normalizedLevenshteinDistance;
-
     }
 
-    private double getNormalizedLevenshteinDistance(String previousValue, String actualValue) {
+    private double getNormalizedLevenshteinDistance(final String previousValue, final String actualValue) {
         int distance = levenshteinDistance.apply(previousValue, actualValue);
         int maxLength = Math.max(previousValue.length(), actualValue.length());
         return 1.0 - ((double) distance / maxLength);

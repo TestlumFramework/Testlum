@@ -86,7 +86,7 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
                 .map(toIntegrationList)
                 .map(integrationList -> integrationList.stream()
                         .filter(Integration::isEnabled)
-                        .collect(Collectors.toList()))
+                        .toList())
                 .filter(integrations -> !integrations.isEmpty())
                 .collect(Collectors.toList());
     }
@@ -96,7 +96,7 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
                 .min(Comparator.comparingInt(List::size))
                 .map(integrationList -> integrationList.stream()
                         .map(Integration::getAlias)
-                        .collect(Collectors.toList()))
+                        .toList())
                 .orElse(Collections.emptyList());
     }
 
@@ -144,7 +144,7 @@ public class IntegrationsValidator implements ConfigurationValidator<Map<String,
                         .map(Api.class::cast)
                         .filter(api -> nonNull(api.getAuth()))
                         .collect(Collectors.toMap(Api::getAlias, Api::getAuth)))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void checkAuth(final Auth auth, final String alias, final Map<String, Auth> defaultAuthMap) {

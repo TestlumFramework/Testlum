@@ -23,14 +23,12 @@ import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @Slf4j
 @InterpreterForClass(Sqs.class)
 public class SQSInterpreter extends AbstractInterpreter<Sqs> {
 
-    //LOGS
     private static final String SEND_ACTION = "send";
     private static final String RECEIVE_ACTION = "receive";
     private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
@@ -55,7 +53,6 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                     + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
                     + "--------------------------------------------------");
 
-    //RESULT
     private static final String MESSAGE_TO_SEND = "Message to send";
     private static final String ALIAS = "Alias";
     private static final String QUEUE = "Queue";
@@ -169,7 +166,7 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
                 .stream()
                 .map(message -> message.body().replaceAll(DelimiterConstant.REGEX_MANY_SPACES, StringUtils.EMPTY))
                 .map(JacksonMapperUtil::toJsonObject)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private ReceiveMessageRequest createReceiveRequest(final ReceiveSqsMessage receive, final AliasEnv aliasEnv) {
@@ -216,7 +213,6 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         return StringUtils.isNotBlank(message) ? message : getContentIfFile(file);
     }
 
-    //LOGS
     private void logSQSSendInfo(final SendSqsMessage send, final String content) {
         logMessageBrokerGeneralMetaData(SEND_ACTION, send.getQueue(), content);
         logIfNotNull(DELAY_SECONDS_LOG, send.getDelaySeconds());
@@ -257,7 +253,6 @@ public class SQSInterpreter extends AbstractInterpreter<Sqs> {
         }
     }
 
-    //RESULT
     private CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
         CommandResult commandResult = new CommandResult();
         commandResult.setId(number);

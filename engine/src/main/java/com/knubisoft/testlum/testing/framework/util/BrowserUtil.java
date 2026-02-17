@@ -12,7 +12,6 @@ import org.openqa.selenium.WebDriver;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BROWSER_INFO;
 import static java.util.Objects.nonNull;
@@ -26,7 +25,7 @@ public class BrowserUtil {
         Web web = GlobalTestConfigurationProvider.get().getDefaultUiConfigs().getWeb();
         return nonNull(web)
                 ? web.getBrowserSettings().getBrowsers().getChromeOrFirefoxOrSafari().stream()
-                .filter(AbstractBrowser::isEnabled).collect(Collectors.toList())
+                .filter(AbstractBrowser::isEnabled).toList()
                 : Collections.emptyList();
     }
 

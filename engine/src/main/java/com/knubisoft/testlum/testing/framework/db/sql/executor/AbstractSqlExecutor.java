@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SUCCESS_QUERY;
@@ -55,7 +54,7 @@ public abstract class AbstractSqlExecutor {
     }
 
     public List<QueryResult<Object>> executeQueries(final List<String> queries) {
-        return queries.stream().map(this::executeQuery).collect(Collectors.toList());
+        return queries.stream().map(this::executeQuery).toList();
     }
 
     private QueryResult<Object> executeQuery(final String query) {

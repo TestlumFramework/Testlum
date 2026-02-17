@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.REDIS_COMMAND_NOT_FOUND;
 import static java.util.Objects.isNull;
@@ -56,7 +55,7 @@ public class RedisOperation extends AbstractStorageOperation {
     private List<QueryResult<String>> applyQueries(final List<String> queries, final String databaseAlias) {
         return queries.stream()
                 .map(e -> new QueryResult<>(e, executeQuery(e, databaseAlias)))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private String executeQuery(final String query, final String databaseAlias) {
@@ -77,7 +76,7 @@ public class RedisOperation extends AbstractStorageOperation {
         } else if (result instanceof List<?>) {
             return ((List<byte[]>) result).stream()
                     .map(bytes -> isNull(bytes) ? DelimiterConstant.EMPTY : new String(bytes, StandardCharsets.UTF_8))
-                    .collect(Collectors.toList())
+                    .toList()
                     .toString();
         }
         return String.valueOf(result);

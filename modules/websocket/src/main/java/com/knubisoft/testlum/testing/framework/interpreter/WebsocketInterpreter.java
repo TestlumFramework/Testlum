@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
@@ -35,8 +34,6 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
 
     private static final int ALL_AVAILABLE_MESSAGES = 0;
     private static final int CHECK_PERIOD_MS = 100;
-
-    //LOGS
 
     private static final String NEW_LOG_LINE = String.format("%n%19s| ", StringUtils.EMPTY);
 
@@ -57,7 +54,6 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     private static final String SEND_ACTION = "send";
     private static final String RECEIVE_ACTION = "receive";
 
-    //RESULT
     private static final String ALIAS = "Alias";
     private static final String MESSAGE_TO_SEND = "Message to send";
     private static final String STEP_FAILED = "Step failed";
@@ -204,7 +200,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
                 .mapToObj(id -> receivedMessages.pollFirst())
                 .filter(Objects::nonNull)
                 .map(JacksonMapperUtil::toJsonObject)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void checkMessagesAreReceived(final int requiredMessageCount,
@@ -278,7 +274,6 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         }
     }
 
-    //LOGS
     private void logAlias(final String alias) {
         log.info(ALIAS_LOG, alias);
     }
@@ -309,7 +304,6 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         }
     }
 
-    //RESULT
     private void setExecutionResultIfSubCommandsFailed(final CommandResult result) {
         List<CommandResult> subCommandsResult = result.getSubCommandsResult();
         if (subCommandsResult.stream().anyMatch(step -> !step.isSkipped() && !step.isSuccess())) {

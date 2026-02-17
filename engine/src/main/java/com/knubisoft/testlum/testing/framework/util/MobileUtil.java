@@ -7,7 +7,6 @@ import lombok.experimental.UtilityClass;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILE_BROWSER_APPIUM_INFO;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILE_BROWSER_INFO;
@@ -35,7 +34,7 @@ public class MobileUtil {
     }
 
     private <T extends AbstractDevice> List<T> filterEnabledDevices(final List<T> deviceList) {
-        return deviceList.stream().filter(AbstractDevice::isEnabled).collect(Collectors.toList());
+        return deviceList.stream().filter(AbstractDevice::isEnabled).toList();
     }
 
     public boolean isNativeAndMobileBrowserConfigEnabled() {

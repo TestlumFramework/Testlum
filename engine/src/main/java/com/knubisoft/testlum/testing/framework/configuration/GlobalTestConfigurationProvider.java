@@ -109,7 +109,7 @@ public class GlobalTestConfigurationProvider {
 
     private List<Environment> filterEnabledEnvironments(final GlobalTestConfiguration globalTestConfiguration) {
         return globalTestConfiguration.getEnvironments().getEnv().stream()
-                .filter(Environment::isEnabled).collect(Collectors.toList());
+                .filter(Environment::isEnabled).toList();
     }
 
     private Map<String, Integrations> collectIntegrations(final List<Environment> environments) {

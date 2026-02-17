@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Conditional({OnMongoEnabledCondition.class})
 @Component("mongoOperation")
@@ -50,7 +49,7 @@ public class MongoOperation extends AbstractStorageOperation {
     private List<QueryResult<String>> applyQueries(final List<String> queries, final String databaseAlias) {
         return queries.stream()
                 .map(query -> new QueryResult<>(query, executeQuery(query, databaseAlias)))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private String executeQuery(final String query, final String databaseAlias) {

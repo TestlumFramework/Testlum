@@ -21,7 +21,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Objects.nonNull;
@@ -36,11 +35,11 @@ public class TestSetCollector {
 
     public TestSetCollector() {
         this.browsers = BrowserUtil.filterDefaultEnabledBrowsers().stream()
-                .map(AbstractBrowser::getAlias).collect(Collectors.toList());
+                .map(AbstractBrowser::getAlias).toList();
         this.mobileBrowsers = MobileUtil.filterDefaultEnabledMobileBrowserDevices().stream()
-                .map(MobilebrowserDevice::getAlias).collect(Collectors.toList());
+                .map(MobilebrowserDevice::getAlias).toList();
         this.nativeDevices = MobileUtil.filterDefaultEnabledNativeDevices().stream()
-                .map(NativeDevice::getAlias).collect(Collectors.toList());
+                .map(NativeDevice::getAlias).toList();
     }
 
     public Stream<Arguments> collect() {

@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.knubisoft.comparator.util.LogMessage.CONTENT_DOES_MATCH;
 
@@ -34,7 +33,7 @@ public class StringLinesComparator extends AbstractObjectComparator<String> {
     private List<String> getLines(final String input) {
         return new BufferedReader(new StringReader(input))
                 .lines()
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private void compareLine(final String expected, final String actual) throws MatchException {

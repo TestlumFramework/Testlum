@@ -25,11 +25,9 @@ import static com.knubisoft.testlum.testing.framework.db.AbstractStorageOperatio
 @InterpreterForClass(Dynamo.class)
 public class DynamoDBInterpreter extends AbstractInterpreter<Dynamo> {
 
-    //LOGS
     private static final String QUERY = LogFormat.table("Query");
     private static final String ALIAS_LOG = LogFormat.table("Alias");
 
-    //RESULT
     private static final String QUERIES = "Queries";
     private static final String DATABASE_ALIAS = "Database alias";
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";

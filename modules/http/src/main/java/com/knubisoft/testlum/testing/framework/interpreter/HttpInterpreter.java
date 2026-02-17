@@ -31,17 +31,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-
 @Slf4j
 @InterpreterForClass(Http.class)
 public class HttpInterpreter extends AbstractInterpreter<Http> {
 
-    //LOGS
     private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String HTTP_METHOD_LOG = LogFormat.table("HTTP method");
     private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
     private static final String BODY_LOG = LogFormat.table("Body");
-
 
     private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
     private static final String SKIPPED_BODY_VALIDATION = "Validation of the response body was skipped "
@@ -49,7 +46,6 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     private static final String ERROR_LOG = "Error ->";
     private static final int MAX_CONTENT_LENGTH = 25 * 1024;
 
-    //RESULT
     private static final String API_ALIAS = "API alias";
     private static final String ENDPOINT = "Endpoint";
     private static final String HTTP_METHOD = "HTTP method";
@@ -179,7 +175,6 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         return apiIntegration.getUrl() + endpoint;
     }
 
-    //LOGS
     private void logHttpInfo(final String alias, final String method, final String endpoint) {
         log.info(ALIAS_LOG, alias);
         log.info(HTTP_METHOD_LOG, method);
@@ -206,8 +201,6 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         log.error(ERROR_LOG, ex);
     }
 
-    //RESULT
-
     private void addHttpMetaData(final String alias,
                                  final String httpMethodName,
                                  final Map<String, String> headers,
@@ -224,6 +217,6 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     private void addHeadersMetaData(final Map<String, String> headers, final CommandResult result) {
         result.put(ADDITIONAL_HEADERS, headers.entrySet().stream()
                 .map(e -> String.format(HEADER_TEMPLATE, e.getKey(), e.getValue()))
-                .collect(Collectors.toList()));
+                .toList());
     }
 }

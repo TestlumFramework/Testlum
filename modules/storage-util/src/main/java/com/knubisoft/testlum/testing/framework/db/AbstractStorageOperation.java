@@ -11,7 +11,6 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class AbstractStorageOperation {
 
@@ -21,7 +20,7 @@ public abstract class AbstractStorageOperation {
     public List<StorageOperationResult> apply(final List<Source> sources, final String databaseAlias) {
         return sources.stream()
                 .map(source -> apply(source, databaseAlias))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public abstract StorageOperationResult apply(Source source, String databaseAlias);

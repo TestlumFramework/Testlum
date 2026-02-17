@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.REGEX_MANY_SPACES;
@@ -36,7 +35,6 @@ import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant
 @InterpreterForClass(Rabbit.class)
 public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
 
-    //LOGS
     private static final String NEW_LOG_LINE = String.format("%n%19s| ", StringUtils.EMPTY);
     private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
 
@@ -56,7 +54,6 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
             + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
             + "--------------------------------------------------");
 
-    //RESULT
     private static final String MESSAGE_TO_SEND = "Message to send";
     private static final String ALIAS = "Alias";
     private static final String QUEUE = "Queue";
@@ -76,9 +73,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
     private static final String STEP_FAILED = "Step failed";
 
     private static final String QUEUE_DOES_NOT_EXIST = "Queue with name <%s> does not exist";
-
     private static final String CORRELATION_ID = "correlationId";
-
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
     @Autowired(required = false)
@@ -191,7 +186,7 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         return IntStream.range(0, receive.getPrefetchCount())
                 .mapToObj(i -> receiveRmqMessage(receive, aliasEnv))
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private RabbitMQMessage receiveRmqMessage(final ReceiveRmqMessage receive, final AliasEnv aliasEnv) {
@@ -242,7 +237,6 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         }
     }
 
-    //LOGS
     private void logRabbitSendInfo(final SendRmqMessage send, final String content) {
         logMessageBrokerGeneralMetaData(SEND_ACTION, ROUTING_KEY_LOG, send.getRoutingKey(), content);
         logIfNotNull(CORRELATION_ID_LOG, send.getCorrelationId());
@@ -278,7 +272,6 @@ public class RabbitMQInterpreter extends AbstractInterpreter<Rabbit> {
         }
     }
 
-    //RESULT
     private CommandResult newCommandResultInstance(final int number, final AbstractCommand... command) {
         CommandResult commandResult = new CommandResult();
         commandResult.setId(number);

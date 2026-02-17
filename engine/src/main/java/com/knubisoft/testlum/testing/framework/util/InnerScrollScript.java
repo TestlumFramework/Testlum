@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
@@ -27,25 +26,25 @@ public enum InnerScrollScript {
 
     VERTICAL_BY_CSS_SELECTOR(locator -> nonNull(WebElementFinder.getLocatorsByType(locator, CssSelector.class)),
             locator -> WebElementFinder.getLocatorsByType(locator, CssSelector.class)
-                    .stream().map(CssSelector::getValue).collect(Collectors.toList()),
+                    .stream().map(CssSelector::getValue).toList(),
             "document.querySelector('%s').scrollBy(0, %s)",
             "document.querySelector('%s').scrollBy(0, document.querySelector('%s')"
                     + ".scrollHeight * %s)"),
     VERTICAL_BY_ID(locator -> nonNull(WebElementFinder.getLocatorsByType(locator, Id.class)),
             locator -> WebElementFinder.getLocatorsByType(locator, Id.class)
-                    .stream().map(Id::getValue).collect(Collectors.toList()),
+                    .stream().map(Id::getValue).toList(),
             "document.getElementById('%s').scrollBy(0, %s)",
             "document.getElementById('%s').scrollBy(0, document.getElementById('%s')"
                     + ".scrollHeight * %s)"),
     VERTICAL_BY_CLASS(locator -> nonNull(WebElementFinder.getLocatorsByType(locator, ClassName.class)),
             locator -> WebElementFinder.getLocatorsByType(locator, ClassName.class)
-                    .stream().map(ClassName::getValue).collect(Collectors.toList()),
+                    .stream().map(ClassName::getValue).toList(),
             "document.getElementsByClassName('%s').scrollBy(0, %s)",
             "document.getElementsByClassName('%s').scrollBy(0, "
                     + "document.getElementsByClassName('%s').scrollHeight * %s)"),
     VERTICAL_BY_XPATH(locator -> nonNull(WebElementFinder.getLocatorsByType(locator, Xpath.class)),
             locator -> WebElementFinder.getLocatorsByType(locator, Xpath.class)
-                    .stream().map(Xpath::getValue).collect(Collectors.toList()),
+                    .stream().map(Xpath::getValue).toList(),
             "document.evaluate('%s', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
                     + ".singleNodeValue.scrollBy(0, %s)",
             "document.evaluate('%s', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
@@ -89,7 +88,7 @@ public enum InnerScrollScript {
                 .map(selector -> ScrollMeasure.PERCENT == scroll.getMeasure()
                 ? formatInnerPercentScript(e.getPercentageScript(), selector, value, scrollDirection)
                 : formatInnerPixelScript(e.getPixelScript(), selector, value, scrollDirection))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private static String formatInnerPixelScript(final String script,

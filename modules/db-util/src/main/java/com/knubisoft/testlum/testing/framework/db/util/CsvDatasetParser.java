@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.SQL_INSERT;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -32,7 +31,7 @@ public class CsvDatasetParser {
     private ListSource prepareSource(final List<String> commands) {
         List<String> queries = commands.stream()
                 .map(command -> String.format(SQL_INSERT, getTableName(command), getValues(command)))
-                .collect(Collectors.toList());
+                .toList();
         return new ListSource(queries);
     }
 

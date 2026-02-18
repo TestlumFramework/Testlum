@@ -36,7 +36,9 @@ public class NativeVariableExecutor extends AbstractVariableExecutor<NativeVar> 
                 var -> Objects.nonNull(var.getSql()),
                         (var, result) -> getSQLResult(var, result, var.getSql()),
                 var -> Objects.nonNull(var.getGenerate()),
-                        (var, result) -> getRandomGenerateResult(var, result, var.getGenerate()));
+                        (var, result) -> getRandomGenerateResult(var, result, var.getGenerate()),
+                var -> Objects.nonNull(var.getDate()),
+                        (var, result) -> getDateResult(var, result, var.getDate()));
     }
 
     @Override

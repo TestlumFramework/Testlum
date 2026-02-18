@@ -49,20 +49,11 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     private static final String STEP_FAILED = "Step failed";
     private static final String INCORRECT_S3_PROCESSING = "Incorrect S3 processing";
 
-    private static final String COMMAND_LOG =
-            LogFormat.withCyan("------- Command #{} - {} -------");
-    private static final String NEW_LOG_LINE =
-            String.format("%n%19s| ", StringUtils.EMPTY);
-    private static final String EXCEPTION_LOG =
-            LogFormat.withRed("----------------    EXCEPTION    -----------------"
-                    + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
-                    + "--------------------------------------------------");
-
     private static final String S3_BUCKET_ACTION_INFO_LOG =
-            LogFormat.table("Action") + NEW_LOG_LINE + LogFormat.table("Bucket for action");
+            LogFormat.table("Action") + LogFormat.newLogLine() + LogFormat.table("Bucket for action");
     private static final String S3_FILE_ACTION_INFO_LOG =
-            LogFormat.table("Action") + NEW_LOG_LINE + LogFormat.table(
-            "Bucket") + NEW_LOG_LINE + LogFormat.table("Key");
+            LogFormat.table("Action") + LogFormat.newLogLine() + LogFormat.table(
+            "Bucket") + LogFormat.newLogLine() + LogFormat.table("Key");
     private static final String FILE_LOG = LogFormat.table("File");
 
     private static final String BUCKET_EXISTS = "Bucket with name <%s> already exists";
@@ -95,7 +86,7 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
     private void performCommands(final S3 s3, final List<CommandResult> subCommandsResult) {
         for (AbstractCommand action : s3.getFileOrBucket()) {
             int commandId = dependencies.getPosition().incrementAndGet();
-            log.info(COMMAND_LOG, commandId, action.getClass().getSimpleName());
+            log.info(LogFormat.commandLog(), commandId, action.getClass().getSimpleName());
             CommandResult commandResult = newCommandResultInstance(commandId, action);
             subCommandsResult.add(commandResult);
             processEachAction(action, new AliasEnv(s3.getAlias(), dependencies.getEnvironment()), commandResult);
@@ -310,19 +301,6 @@ public class S3Interpreter extends AbstractInterpreter<S3> {
                     .map(CommandResult::getException)
                     .orElseGet(() -> new DefaultFrameworkException(STEP_FAILED));
             setExceptionResult(result, exception);
-        }
-    }
-
-    private void setExceptionResult(final CommandResult result, final Exception exception) {
-        result.setSuccess(false);
-        result.setException(exception);
-    }
-
-    private void logException(final Exception ex) {
-        if (StringUtils.isNotBlank(ex.getMessage())) {
-            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(LogFormat.newLine(), NEW_LOG_LINE));
-        } else {
-            log.error(EXCEPTION_LOG, ex.toString());
         }
     }
 

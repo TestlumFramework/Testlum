@@ -40,10 +40,9 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
     private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
     private static final String BODY_LOG = LogFormat.table("Body");
 
-    private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
     private static final String SKIPPED_BODY_VALIDATION = "Validation of the response body was skipped "
             + "because of no expected file";
-    private static final String ERROR_LOG = "Error ->";
+
     private static final int MAX_CONTENT_LENGTH = 25 * 1024;
 
     private static final String API_ALIAS = "API alias";
@@ -148,7 +147,7 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
         try {
             return apiClient.call(httpMethod, url, headers, body);
         } catch (Exception e) {
-            logError(e);
+            logException(e);
             throw new DefaultFrameworkException(e);
         }
     }
@@ -188,17 +187,13 @@ public class HttpInterpreter extends AbstractInterpreter<Http> {
             if (StringUtils.isNotBlank(stringBody)) {
                 log.info(BODY_LOG,
                         StringPrettifier.asJsonResult(StringPrettifier.cut(stringBody))
-                                .replaceAll(LogFormat.newLine(), CONTENT_FORMAT));
+                                .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
             }
         }
     }
 
     private void logBodyValidationSkipped() {
         log.info(SKIPPED_BODY_VALIDATION);
-    }
-
-    private void logError(final Exception ex) {
-        log.error(ERROR_LOG, ex);
     }
 
     private void addHttpMetaData(final String alias,

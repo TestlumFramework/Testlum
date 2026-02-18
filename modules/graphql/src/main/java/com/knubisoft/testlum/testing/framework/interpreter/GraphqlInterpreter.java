@@ -46,9 +46,8 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
     private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
     private static final String BODY_LOG = LogFormat.table("Body");
 
-    private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
     private static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";
-    private static final String ERROR_LOG = "Error ->";
+
     private static final int MAX_CONTENT_LENGTH = 25 * 1024;
 
     private static final String ALIAS = "Alias";
@@ -117,7 +116,7 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
         try {
             return apiClient.call(httpMethod, url, headers, body);
         } catch (Exception e) {
-            logError(e);
+            logException(e);
             throw new DefaultFrameworkException(e);
         }
     }
@@ -217,13 +216,9 @@ public class GraphqlInterpreter extends AbstractInterpreter<Graphql> {
             if (StringUtils.isNotBlank(stringBody)) {
                 log.info(BODY_LOG,
                         StringPrettifier.asJsonResult(StringPrettifier.cut(stringBody))
-                                .replaceAll(LogFormat.newLine(), CONTENT_FORMAT));
+                                .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
             }
         }
-    }
-
-    private void logError(final Exception ex) {
-        log.error(ERROR_LOG, ex);
     }
 
     private void addGraphQlMetaData(final String alias,

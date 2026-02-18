@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.Objects.isNull;
-
 public class ScenarioContext {
 
     private static final String ROUTE_REGEXP = "\\{\\{(.*?)}}";
@@ -50,10 +48,9 @@ public class ScenarioContext {
 
     public String get(final String key) {
         String result = contextMap.get(key);
-        //must be isNull
-        if (isNull(result)) {
+        if (result == null) {
             result = String.valueOf(conditionMap.get(key));
-            if (isNull(result) || "null".equals(result)) {
+            if (result == null || "null".equals(result)) {
                 throw new IllegalArgumentException(String.format(NO_VALUE_FOUND_FOR_KEY, key, contextMap));
             }
         }

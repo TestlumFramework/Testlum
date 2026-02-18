@@ -11,7 +11,6 @@ import static com.knubisoft.testlum.testing.framework.configuration.TestResource
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExceptionMessage {
 
-    // general
     public static final String NOT_DECLARED_WITH_INTERPRETER_FOR_CLASS =
             "Each non abstract interpreter must declare annotation InterpreterForClass. "
                     + "Class %s do not have this annotation";
@@ -44,7 +43,6 @@ public class ExceptionMessage {
     public static final String NO_ENABLED_TAGS_CONFIG =
             LogFormat.withRed("No enabled tags in runScenariosByTag configuration");
 
-    // scenario validation
     public static final String INTEGRATION_NOT_FOUND =
             "Cannot find integration configuration for <%s>";
     public static final String ALIAS_NOT_FOUND =
@@ -86,7 +84,6 @@ public class ExceptionMessage {
     public static final String NATIVE_DRIVER_NOT_INIT = "The webDriver for <native> has not been initialized, "
             + "check your configuration in config file";
 
-    // config validation
     public static final String UI_CONFIG_NOT_PRESENT_IN_ALL_ENVS = LogFormat.withRed("Number of enabled <%s> blocks does not"
             + " match the number of enabled environments");
     public static final String BASE_URLS_ARE_SAME = LogFormat.withRed("<baseUrl> must be different for each <%s> block in all "
@@ -150,13 +147,8 @@ public class ExceptionMessage {
             "Incorrect naming for %s. Expect format: <pageName.locatorId>";
     public static final String UNABLE_TO_FIND_LOCATOR_BY_PATH = "Unable to find locator [%s] by path";
 
-    // interpreters
     public static final String SLOW_COMMAND_PROCESSING = "Slow command processing detected. "
             + "Took %d ms, threshold %d ms";
-    public static final String HTTP_CODE_EXPECTED_BUT_WAS = " Http code should be [%s] but was [%s]";
-    public static final String HTTP_HEADERS_EXPECTED_BUT_WAS = " Http headers should be [%s]%n but was [%s]";
-    public static final String HTTP_BODY_EXPECTED_BUT_WAS = " Http body should be [%s]%n but was [%s]";
-    public static final String UNKNOWN_HTTP_METHOD = "Unknown http method: %s";
     public static final String UNKNOWN_BODY_CONTENT = "Unknown body content provided";
     public static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";
     public static final String REDIS_COMMAND_NOT_FOUND = "Redis command was not provided";
@@ -164,7 +156,6 @@ public class ExceptionMessage {
 
     public static final String UNEXPECTED_WEBSOCKET_MESSAGE_TYPE = "Unexpected websocket message type: %s";
 
-    // executors
     public static final String VAR_TYPE_NOT_SUPPORTED = "Type of <%s> command is not supported";
     public static final String VAR_QUERY_RESULT_ERROR =
             "Query result is empty. Perhaps your database is empty or there is no such value in the database";

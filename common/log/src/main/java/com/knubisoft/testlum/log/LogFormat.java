@@ -1,9 +1,22 @@
 package com.knubisoft.testlum.log;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class LogFormat {
 
     private static final String TABLE_PATTERN = "%-23s|%-70s";
     private static final String REGEX_NEW_LINE = "[\\r\\n]";
+    private static final String NEW_LOG_LINE =
+            String.format("%n%19s| ", StringUtils.EMPTY);
+    private static final String CONTENT_FORMAT =
+            String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
+    private static final String EXCEPTION_LOG = LogFormat.withRed(
+            "----------------    EXCEPTION    -----------------"
+            + newLogLine() + "{}" + newLogLine()
+            + "--------------------------------------------------");
+    private static final String COMMAND_LOG =
+            LogFormat.withCyan("------- Command #{} - {} -------");
+
 
     private LogFormat() {
         // nop
@@ -46,4 +59,19 @@ public class LogFormat {
         return REGEX_NEW_LINE;
     }
 
+    public static String contentFormat() {
+        return CONTENT_FORMAT;
+    }
+
+    public static String newLogLine() {
+        return NEW_LOG_LINE;
+    }
+
+    public static String exceptionLog() {
+        return EXCEPTION_LOG;
+    }
+
+    public static String commandLog() {
+        return COMMAND_LOG;
+    }
 }

@@ -35,7 +35,6 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
     private static final String ENDPOINT_LOG = LogFormat.table("Endpoint");
     private static final String BODY_LOG = LogFormat.table("Body");
 
-    private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
     private static final String CONTENT_TO_SEND = "Content to send";
     private static final String EXPECTED_CODE = "Expected code";
     private static final String ACTUAL_CODE = "Actual code";
@@ -152,9 +151,8 @@ public class SendGridInterpreter extends AbstractInterpreter<Sendgrid> {
 
     private void logBody(final String body) {
         if (StringUtils.isNotBlank(body)) {
-            log.info(BODY_LOG,
-                    StringPrettifier.asJsonResult(StringPrettifier.cut(body))
-                            .replaceAll(LogFormat.newLine(), CONTENT_FORMAT));
+            log.info(BODY_LOG, StringPrettifier.asJsonResult(StringPrettifier.cut(body))
+                    .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
         }
     }
 

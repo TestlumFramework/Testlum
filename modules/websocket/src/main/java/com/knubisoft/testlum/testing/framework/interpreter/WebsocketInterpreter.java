@@ -35,20 +35,11 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     private static final int ALL_AVAILABLE_MESSAGES = 0;
     private static final int CHECK_PERIOD_MS = 100;
 
-    private static final String NEW_LOG_LINE = String.format("%n%19s| ", StringUtils.EMPTY);
-
-    private static final String EXCEPTION_LOG = LogFormat.withRed(
-            "----------------    EXCEPTION    -----------------"
-            + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
-            + "--------------------------------------------------");
-    private static final String COMMAND_LOG = LogFormat.withCyan("------- Command #{} - {} -------");
     private static final String WEBSOCKET_ACTION_INFO_LOG =
-            LogFormat.table("Comment") + NEW_LOG_LINE + LogFormat.table("Action");
+            LogFormat.table("Comment") + LogFormat.newLogLine() + LogFormat.table("Action");
     private static final String DESTINATION_LOG = LogFormat.table("Destination");
     private static final String CONTENT_LOG = LogFormat.table("Content");
     private static final String ALIAS_LOG = LogFormat.table("Alias");
-
-    private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
 
     private static final String SUBSCRIBE = "subscribe";
     private static final String SEND_ACTION = "send";
@@ -66,7 +57,6 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
     private static final String ACTION = "Action";
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
-    //EXCEPTIONS
     private static final String WEBSOCKET_CONNECTION_FAILURE =
             "Something went wrong while connecting to websocket with name <%s>";
     private static final String UNKNOWN_WEBSOCKET_COMMAND = "Unknown websocket command: %s";
@@ -278,16 +268,8 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         log.info(ALIAS_LOG, alias);
     }
 
-    private void logException(final Exception ex) {
-        if (StringUtils.isNotBlank(ex.getMessage())) {
-            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(LogFormat.newLine(), NEW_LOG_LINE));
-        } else {
-            log.error(EXCEPTION_LOG, ex.toString());
-        }
-    }
-
     private void logSubCommand(final int position, final Object action) {
-        log.info(COMMAND_LOG, position, action.getClass().getSimpleName());
+        log.info(LogFormat.commandLog(), position, action.getClass().getSimpleName());
     }
 
     private void logWebsocketActionInfo(final String action,
@@ -300,7 +282,7 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
         }
         if (StringUtils.isNotBlank(content)) {
             log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content).
-                    replaceAll(LogFormat.newLine(), CONTENT_FORMAT));
+                    replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
         }
     }
 
@@ -315,11 +297,6 @@ public class WebsocketInterpreter extends AbstractInterpreter<Websocket> {
                     .orElseGet(() -> new DefaultFrameworkException(STEP_FAILED));
             setExceptionResult(result, exception);
         }
-    }
-
-    private void setExceptionResult(final CommandResult result, final Exception exception) {
-        result.setSuccess(false);
-        result.setException(exception);
     }
 
     private void addWebsocketInfoForSendAction(final WebsocketSend sendAction,

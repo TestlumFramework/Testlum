@@ -59,6 +59,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
                 Map.entry(var -> nonNull(var.getFile()), this::getFileResult),
                 Map.entry(var -> nonNull(var.getSql()), this::getSQLResult),
                 Map.entry(var -> nonNull(var.getGenerate()), this::getRandomGenerateResult),
+                Map.entry(var -> nonNull(var.getDate()), this::getDateResult),
                 Map.entry(var -> nonNull(var.getAlert()), this::getAlertResult));
     }
 
@@ -166,6 +167,10 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
 
     private String getRandomGenerateResult(final WebVar var, final CommandResult result) {
         return variableHelper.getRandomGenerateResult(var.getGenerate(), var.getName(), result);
+    }
+
+    private String getDateResult(final WebVar var, final CommandResult result) {
+        return variableHelper.getDateResult(var.getDate(), var.getName(), result);
     }
 
     private String getAlertResult(final WebVar var, final CommandResult result) {

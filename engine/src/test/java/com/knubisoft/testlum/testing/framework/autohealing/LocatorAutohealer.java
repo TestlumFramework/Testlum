@@ -13,6 +13,7 @@ import com.knubisoft.testlum.testing.model.pages.Locator;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.text.similarity.JaroWinklerSimilarity;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -33,12 +34,13 @@ import static java.nio.charset.Charset.defaultCharset;
 
 public class LocatorAutohealer {
 
-    private static final double MIN_ACCEPTABLE_SCORE = 0.6;
+    private static final double MIN_ACCEPTABLE_SCORE = 0.5;
     private static final String PATCH_FILE_PREFIX = "patch_";
     private static final String PATCH_FILE_EXTENSION = ".xml";
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private final JaroWinklerSimilarity jaroWinklerSimilarity = new JaroWinklerSimilarity();
+    private final LevenshteinDistance levenshteinDistance = LevenshteinDistance.getDefaultInstance();
     private final ElementMetadataExtractor elementMetadataExtractor;
     private final WebDriver driver;
 
@@ -230,7 +232,18 @@ public class LocatorAutohealer {
     }
 
     private double getScore(final String previousValue, final String actualValue) {
-        return jaroWinklerSimilarity.apply(previousValue, actualValue);
+        Double jaroWinklerSimilarityScore = jaroWinklerSimilarity.apply(previousValue, actualValue);
+
+        double normalizedLevenshteinDistance = getNormalizedLevenshteinDistance(previousValue, actualValue);
+
+        return jaroWinklerSimilarityScore > normalizedLevenshteinDistance
+                ? jaroWinklerSimilarityScore : normalizedLevenshteinDistance;
+    }
+
+    private double getNormalizedLevenshteinDistance(final String previousValue, final String actualValue) {
+        int distance = levenshteinDistance.apply(previousValue, actualValue);
+        int maxLength = Math.max(previousValue.length(), actualValue.length());
+        return 1.0 - ((double) distance / maxLength);
     }
 
     private HealedLocators generateXpathAndCssSelector(final WebElement healedElement) {

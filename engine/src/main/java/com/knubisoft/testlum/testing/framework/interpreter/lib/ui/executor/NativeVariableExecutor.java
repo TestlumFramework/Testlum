@@ -37,6 +37,7 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
                 var -> nonNull(var.getExpression()), this::getExpressionResult,
                 var -> nonNull(var.getFile()), this::getFileResult,
                 var -> nonNull(var.getSql()), this::getSQLResult,
+                var -> nonNull(var.getDate()), this::getDateResult,
                 var -> nonNull(var.getGenerate()), this::getRandomGenerateResult);
         this.variableHelper = dependencies.getContext().getBean(VariableHelper.class);
     }
@@ -98,6 +99,10 @@ public class NativeVariableExecutor extends AbstractUiExecutor<NativeVar> {
 
     private String getSQLResult(final NativeVar var, final CommandResult result) {
         return variableHelper.getSQLResult(var.getSql(), var.getName(), result);
+    }
+
+    private String getDateResult(final NativeVar var, final CommandResult result) {
+        return variableHelper.getDateResult(var.getDate(), var.getName(), result);
     }
 
     private String getRandomGenerateResult(final NativeVar var, final CommandResult result) {

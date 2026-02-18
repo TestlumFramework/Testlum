@@ -28,11 +28,9 @@ import java.util.stream.Collectors;
 @InterpreterForClass(Lambda.class)
 public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
 
-    private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
     private static final String ALIAS_LOG = LogFormat.table("Alias");
     private static final String LAMBDA_FUNCTION_LOG = LogFormat.table("Function name");
     private static final String LAMBDA_PAYLOAD_LOG = LogFormat.table("Payload");
-    private static final String ERROR_LOG = "Error ->";
 
     private static final String ALIAS = "Alias";
     private static final String LAMBDA_FUNCTION_NAME = "Function name";
@@ -85,7 +83,7 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
             AliasEnv aliasEnv = new AliasEnv(alias, dependencies.getEnvironment());
             return awsLambdaClients.get(aliasEnv).invoke(request);
         } catch (LambdaException e) {
-            logError(e);
+            logException(e);
             throw e;
         }
     }
@@ -130,13 +128,9 @@ public class LambdaInterpreter extends AbstractInterpreter<Lambda> {
         log.info(ALIAS_LOG, alias);
         log.info(LAMBDA_FUNCTION_LOG, functionName);
         if (StringUtils.isNotBlank(payload)) {
-            log.info(LAMBDA_PAYLOAD_LOG,
-                    StringPrettifier.asJsonResult(payload).replaceAll(LogFormat.newLine(), CONTENT_FORMAT));
+            log.info(LAMBDA_PAYLOAD_LOG, StringPrettifier.asJsonResult(payload).
+                    replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
         }
-    }
-
-    private void logError(final Exception ex) {
-        log.error(ERROR_LOG, ex);
     }
 
     private void addLambdaGeneralMetaData(final String alias,

@@ -1,19 +1,15 @@
 package com.knubisoft.testlum.testing.framework.constant;
 
+import com.knubisoft.testlum.log.LogFormat;
+
 import static com.knubisoft.testlum.log.LogFormat.*;
-import static java.lang.String.format;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 public final class LogMessage {
-
-    public static final String NEW_LOG_LINE = format("%n%19s| ", EMPTY);
 
     public static final String UI_COMMAND_LOG =
             withCyan("------- UI command #{} - {} -------");
     public static final String UI_COMMAND_LOG_WITHOUT_POSITION =
             withCyan("------- UI command - {} -------");
-    public static final String COMMAND_LOG =
-            withCyan("------- Command #{} - {} -------");
     public static final String REPEAT_FINISHED_LOG =
             withCyan("------- Repeat is finished -------");
     public static final String COMMENT_LOG =
@@ -25,11 +21,13 @@ public final class LogMessage {
 
     public static final String QUERY = table("Query");
     public static final String ERROR_SQL_QUERY = withRed(
-            "Error while executing SQL query -> {}" + NEW_LOG_LINE + "{}");
+            "Error while executing SQL query -> {}" + LogFormat.newLogLine() + "{}");
     public static final String SCENARIO_NUMBER_AND_PATH_LOG =
             "================== Execute for scenario %s ==================";
+
     public static final String LINE =
             "-----------------------------------------------------------------------------------------------------";
+
     public static final String START_UI_COMMANDS_IN_FRAME =
             withCyan("------- Start ui commands in frame -------");
     public static final String END_UI_COMMANDS_IN_FRAME =
@@ -41,36 +39,28 @@ public final class LogMessage {
             withCyan("------- End ui commands in web view -------");
 
     public static final String INVALID_SCENARIO_LOG = withRed(LINE
-            + NEW_LOG_LINE + table("Invalid scenario")
-            + NEW_LOG_LINE + table("Exception") + NEW_LOG_LINE
+            + LogFormat.newLogLine() + table("Invalid scenario")
+            + LogFormat.newLogLine() + table("Exception") + LogFormat.newLogLine()
             + LINE) + "\n";
 
-    public static final String SCENARIO_WITH_EMPTY_TAG_LOG = withYellow(
-            LINE
-                    + NEW_LOG_LINE
-                    + table("Scenario was skipped because of empty tag")
-                    + NEW_LOG_LINE
-                    + LINE) + "\n";
+    public static final String SCENARIO_WITH_EMPTY_TAG_LOG = withYellow(LINE
+            + LogFormat.newLogLine()
+            + table("Scenario was skipped because of empty tag")
+            + LogFormat.newLogLine()
+            + LINE) + "\n";
 
-    public static final String DISABLED_CONFIGURATION = withYellow(
-            LINE
-                    + NEW_LOG_LINE
-                    + "<{}> configuration not found or disabled. Scenarios that depend on this config will be invalid"
-                    + NEW_LOG_LINE
-                    + LINE
+    public static final String DISABLED_CONFIGURATION = withYellow(LINE
+            + LogFormat.newLogLine()
+            + "<{}> configuration not found or disabled. Scenarios that depend on this config will be invalid"
+            + LogFormat.newLogLine()
+            + LINE
     );
 
-    public static final String EXECUTION_STOP_SIGNAL_LOG = withYellow(
-            LINE
-                    + NEW_LOG_LINE
-                    + "The execution has been stopped because of the enabled <StopScenarioOnFailure>"
-                    + NEW_LOG_LINE
-                    + LINE);
-
-    public static final String EXCEPTION_LOG = withRed(
-            "----------------    EXCEPTION    -----------------"
-                    + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
-                    + "--------------------------------------------------");
+    public static final String EXECUTION_STOP_SIGNAL_LOG = withYellow(LINE
+            + LogFormat.newLogLine()
+            + "The execution has been stopped because of the enabled <StopScenarioOnFailure>"
+            + LogFormat.newLogLine()
+            + LINE);
 
     public static final String FAILED_VARIABLE_LOG = "Failed variable <{}> comment <{}>";
 
@@ -123,7 +113,6 @@ public final class LogMessage {
     public static final String DRAGGING_FILE_PATH = table("Dragging file path");
     public static final String HOTKEY_COMMAND_LOCATOR = table("Hotkey command locator");
     public static final String HOTKEY_COMMAND_TIMES = table("Times to repeat");
-    public static final String HTTP_STATUS_CODE = table("Status code", "{} {}");
 
     public static final String CONTENT_LOG = table("Content");
     public static final String ATTRIBUTE_LOG = table("Attribute");
@@ -145,8 +134,6 @@ public final class LogMessage {
     public static final String SCROLL_BY_LOG = table("Scroll by");
     public static final String LOCATOR_STRATEGY = table("Locator strategy");
 
-    public static final String LOCAL_STORAGE_KEY = table("Local storage key");
-    public static final String CLEAR_COOKIES_AFTER = table("Clear cookies after");
     public static final String TAB_COMMAND = table("Command");
     public static final String TAB_INDEX = table("Tab Index");
     public static final String TAB_URL = table("Tab Url");

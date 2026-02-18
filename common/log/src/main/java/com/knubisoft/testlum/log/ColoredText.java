@@ -34,7 +34,8 @@ public class ColoredText {
 
     private void print(final Consumer<String> consumer) {
         for (String line : lines) {
-            consumer.accept(LogFormat.with(color, line));
+            String formatted = (color == null) ? line : LogFormat.with(color, line);
+            consumer.accept(formatted);
         }
         lines.clear();
     }

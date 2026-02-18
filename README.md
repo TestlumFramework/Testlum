@@ -30,14 +30,14 @@
 
 # Table of Contents
 
-- [Sample](#sample)
+- [Test Sample](#TestSample)
 - [Running](#running)
 - [Documentation](#documentation)
-- [Social Media](#social-media)
+- [Social Media](#Social)
 - [Contributing](#contributing)
 - [License](#license)
 
-# Test Sample
+# TestSample
 
 ```xml
 <scenario>
@@ -78,13 +78,7 @@ After cloning repository to your local machine:
 - navigate to root project folder
 - build executable jar file ```mvn clean install -DskipTests```
 - and run it by passing test resources location ```java -jar engine/target/testlum-1.0.2.jar -c="global-config-file-name.xml" -p"=absolute path to folder with test resources"```
-- examples of test resources can be found in our [Wiki](https://github.com/TestlumFramework/Testlum/releases)
-
-```java
-public static void main(String[] args) {
-    TESTLUMStarter.main(new String[]{"-c=global-config.xml", "-p=/path-to-resources"});
-}
-```
+- examples of test resources can be found in our [Wiki](https://github.com/TestlumFramework/Testlum/wiki)
 
 ### If you want to build docker image from the latest code
 - navigate to root project folder
@@ -107,13 +101,14 @@ Full user documentation for this project is available on:
 👉 [View Documentation](https://github.com/TestlumFramework/Testlum/wiki)
 
 
-# Do you want to follow us? 
+# Social
 
-- 🌐 Check for more features on website 👉 [Here](https://testlum.com)
-- 💬 Ask more questions on discord 👉[Here](https://discord.gg/JxfcZPqBNY)
-- 🎥 Get more interesting insights on Youtube 👉[Here](https://www.youtube.com/channel/UC5F7ZWCL-hzYz6Sr2zv2MQA)
+- 🌐 Check for more features on website 👉 [Open](https://testlum.com)
+- 💬 Ask more questions on discord 👉 [Open](https://discord.gg/JxfcZPqBNY)
+- 🎥 Get more interesting insights on YouTube 👉 [Open](https://www.youtube.com/channel/UC5F7ZWCL-hzYz6Sr2zv2MQA)
 
-Subscribe button and never miss an update!
+
+Subscribe and never miss an update
 
 # Contributing
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting your pull requests

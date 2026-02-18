@@ -37,8 +37,6 @@ import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant
 @Slf4j
 @InterpreterForClass(Kafka.class)
 public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
-    private static final String NEW_LOG_LINE = String.format("%n%19s| ", StringUtils.EMPTY);
-    private static final String CONTENT_FORMAT = String.format("%n%19s| %-23s|", StringUtils.EMPTY, StringUtils.EMPTY);
 
     private static final String SEND_ACTION = "send";
     private static final String RECEIVE_ACTION = "receive";
@@ -50,11 +48,6 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
     private static final String TOPIC_LOG = LogFormat.table("Topic");
     private static final String CORRELATION_ID_LOG = LogFormat.table("Correlation Id");
     private static final String TIMEOUT_MILLIS_LOG = LogFormat.table("Timeout Millis");
-    private static final String COMMAND_LOG = LogFormat.withCyan("------- Command #{} - {} -------");
-    private static final String EXCEPTION_LOG = LogFormat.withRed(
-            "----------------    EXCEPTION    -----------------"
-            + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
-            + "--------------------------------------------------");
 
     private static final String KEY = "Key";
     private static final String TOPIC = "Topic";
@@ -97,7 +90,9 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         for (Object action : kafka.getSendOrReceive()) {
-            log.info(COMMAND_LOG, dependencies.getPosition().incrementAndGet(), action.getClass().getSimpleName());
+            log.info(LogFormat.commandLog(),
+                    dependencies.getPosition().incrementAndGet(),
+                    action.getClass().getSimpleName());
             CommandResult commandResult = newCommandResultInstance(dependencies.getPosition().get());
             subCommandsResult.add(commandResult);
             processEachAction(action, kafka.getAlias(), commandResult);
@@ -291,20 +286,12 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
         log.info(ACTION_LOG, action.toUpperCase(Locale.ROOT));
         log.info(TOPIC_LOG, topicOrRoutingKeyOrQueueValue);
         log.info(CONTENT_LOG, StringPrettifier.asJsonResult(content.replaceAll(REGEX_MANY_SPACES, SPACE))
-                .replaceAll(LogFormat.newLine(), CONTENT_FORMAT));
+                .replaceAll(LogFormat.newLine(), LogFormat.contentFormat()));
     }
 
     private void logIfNotNull(final String title, final Object data) {
         if (Objects.nonNull(data)) {
             log.info(title, data);
-        }
-    }
-
-    private void logException(final Exception ex) {
-        if (StringUtils.isNotBlank(ex.getMessage())) {
-            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(LogFormat.newLine(), NEW_LOG_LINE));
-        } else {
-            log.error(EXCEPTION_LOG, ex.toString());
         }
     }
 
@@ -373,11 +360,6 @@ public class KafkaInterpreter extends AbstractInterpreter<Kafka> {
                     .orElseGet(() -> new DefaultFrameworkException(STEP_FAILED));
             setExceptionResult(result, exception);
         }
-    }
-
-    private void setExceptionResult(final CommandResult result, final Exception exception) {
-        result.setSuccess(false);
-        result.setException(exception);
     }
 
     @Data

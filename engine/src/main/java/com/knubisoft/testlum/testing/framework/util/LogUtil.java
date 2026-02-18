@@ -113,8 +113,6 @@ public class LogUtil {
         log.error(LogMessage.INVALID_SCENARIO_LOG, path, exception);
     }
 
-    /* general log */
-
     public void logCondition(final String name, final boolean condition) {
         if (!condition) {
             log.info(LogMessage.COMMAND_SKIPPED_ON_CONDITION_LOG);
@@ -140,10 +138,10 @@ public class LogUtil {
 
     public void logException(final Exception ex) {
         if (StringUtils.isNotBlank(ex.getMessage())) {
-            log.error(LogMessage.EXCEPTION_LOG,
-                    ex.getMessage().replaceAll(LogFormat.newLine(), LogMessage.NEW_LOG_LINE));
+            log.error(LogFormat.exceptionLog(),
+                    ex.getMessage().replaceAll(LogFormat.newLine(), LogFormat.newLogLine()));
         } else {
-            log.error(LogMessage.EXCEPTION_LOG, ex.toString());
+            log.error(LogFormat.exceptionLog(), ex.toString());
         }
     }
 
@@ -162,11 +160,11 @@ public class LogUtil {
     public void logSqlException(final Exception ex, final String query) {
         if (StringUtils.isNotBlank(ex.getMessage())) {
             log.error(LogMessage.ERROR_SQL_QUERY,
-                    ex.getMessage().replaceAll(LogFormat.newLine(), LogMessage.NEW_LOG_LINE),
-                    SqlUtil.getBrokenQuery(ex, query).replaceAll(LogFormat.newLine(), LogMessage.NEW_LOG_LINE));
+                    ex.getMessage().replaceAll(LogFormat.newLine(), LogFormat.newLogLine()),
+                    SqlUtil.getBrokenQuery(ex, query).replaceAll(LogFormat.newLine(), LogFormat.newLogLine()));
         } else {
             log.error(LogMessage.ERROR_SQL_QUERY,
-                    ex.toString().replaceAll(LogFormat.newLine(), LogMessage.NEW_LOG_LINE));
+                    ex.toString().replaceAll(LogFormat.newLine(), LogFormat.newLogLine()));
         }
     }
 
@@ -292,7 +290,7 @@ public class LogUtil {
     }
 
     public void logHotKeyInfo(final AbstractUiCommand command, final int position) {
-        log.info(LogMessage.COMMAND_LOG, position, command.getClass().getSimpleName());
+        log.info(LogFormat.commandLog(), position, command.getClass().getSimpleName());
         log.info(LogMessage.COMMENT_LOG, command.getComment());
     }
 
@@ -313,7 +311,7 @@ public class LogUtil {
     }
 
     public void logAssertCommand(final AbstractCommand command, final int position) {
-        log.info(LogMessage.COMMAND_LOG, position, command.getClass().getSimpleName());
+        log.info(LogFormat.commandLog(), position, command.getClass().getSimpleName());
         log.info(LogMessage.COMMENT_LOG, command.getComment());
     }
 

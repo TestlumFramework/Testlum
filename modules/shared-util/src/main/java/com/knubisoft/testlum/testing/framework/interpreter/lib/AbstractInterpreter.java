@@ -135,4 +135,15 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
             log.info(COMMAND_LOG_WITHOUT_POSITION, command.getClass().getSimpleName());
         }
     }
+
+    protected void logException(final Exception ex) {
+        String msg = StringUtils.isNotBlank(ex.getMessage())
+                ? ex.getMessage().replaceAll(LogFormat.newLine(), LogFormat.newLogLine()) : ex.toString();
+        log.error(LogFormat.exceptionLog(), msg);
+    }
+
+    protected void setExceptionResult(final CommandResult result, final Exception exception) {
+        result.setSuccess(false);
+        result.setException(exception);
+    }
 }

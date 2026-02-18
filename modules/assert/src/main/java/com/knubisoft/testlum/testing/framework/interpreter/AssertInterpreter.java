@@ -12,7 +12,6 @@ import com.knubisoft.testlum.testing.model.scenario.AssertEqual;
 import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
 import com.knubisoft.testlum.testing.model.scenario.AssertNotEqual;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.LinkedList;
@@ -29,14 +28,8 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
     private static final String CONTENT = "Content";
     private static final String STEP_FAILED = "Step failed";
 
-    private static final String COMMAND_LOG = LogFormat.withCyan("------- Command #{} - {} -------");
     private static final String COMMENT_LOG = LogFormat.table("Comment");
     private static final String CONTENT_LOG = LogFormat.table("Content");
-    private static final String NEW_LOG_LINE = String.format("%n%19s| ", StringUtils.EMPTY);
-    private static final String EXCEPTION_LOG = LogFormat.withRed(
-            "----------------    EXCEPTION    -----------------"
-            + NEW_LOG_LINE + "{}" + NEW_LOG_LINE
-            + "--------------------------------------------------");
 
     private static final String ASSERT_CONTENT_NOT_EQUAL = "Equality content <%s> is not equal.";
     private static final String ASSERT_CONTENT_IS_EQUAL = "Inequality content <%s> is equal.";
@@ -134,22 +127,10 @@ public class AssertInterpreter extends AbstractInterpreter<Assert> {
         }
     }
 
-    private void setExceptionResult(final CommandResult result, final Exception exception) {
-        result.setSuccess(false);
-        result.setException(exception);
-    }
-
     private void logAssertEqualityCommand(final AssertEquality command, final int position) {
-        log.info(COMMAND_LOG, position, command.getClass().getSimpleName());
+        log.info(LogFormat.commandLog(), position, command.getClass().getSimpleName());
         log.info(COMMENT_LOG, command.getComment());
         log.info(CONTENT_LOG, String.join(COMMA, command.getContent()));
     }
 
-    public void logException(final Exception ex) {
-        if (StringUtils.isNotBlank(ex.getMessage())) {
-            log.error(EXCEPTION_LOG, ex.getMessage().replaceAll(LogFormat.newLine(), NEW_LOG_LINE));
-        } else {
-            log.error(EXCEPTION_LOG, ex.toString());
-        }
-    }
 }

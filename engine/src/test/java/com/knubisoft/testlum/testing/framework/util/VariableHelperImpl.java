@@ -44,6 +44,8 @@ import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
 import java.util.*;
@@ -274,7 +276,17 @@ public class VariableHelperImpl implements VariableHelper {
 
     private DateTimeFormatter createDateTimeFormatter(final String dateFormatPattern) {
         try {
-            return DateTimeFormatter.ofPattern(dateFormatPattern);
+            ZonedDateTime now = ZonedDateTime.now();
+            return new DateTimeFormatterBuilder()
+                    .appendPattern(dateFormatPattern)
+                    .parseDefaulting(ChronoField.YEAR, now.getYear())
+                    .parseDefaulting(ChronoField.MONTH_OF_YEAR, now.getMonthValue())
+                    .parseDefaulting(ChronoField.DAY_OF_MONTH, now.getDayOfMonth())
+                    .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+                    .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+                    .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+                    .toFormatter();
+
         } catch (IllegalArgumentException e) {
             throw new DefaultFrameworkException(
                     String.format(ExceptionMessage.INVALID_DATE_FORMAT_PATTERN, dateFormatPattern, e.getMessage()));
@@ -336,7 +348,9 @@ public class VariableHelperImpl implements VariableHelper {
         try {
             value = Integer.parseInt(dateShift.getValue());
         } catch (NumberFormatException e) {
-            return zonedDateTime;
+            throw new DefaultFrameworkException(
+                    String.format("Invalid date shift value: '%s'. Expected a valid integer.", dateShift.getValue())
+            );
         }
         int shiftAmount = value * signMultiplier;
         return switch (dateShift.getUnit()) {

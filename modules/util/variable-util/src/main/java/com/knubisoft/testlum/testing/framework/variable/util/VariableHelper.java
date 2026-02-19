@@ -37,7 +37,6 @@ public interface VariableHelper {
 
     String getDateResult(FromDate fromDate, String varName, CommandResult result);
 
-
     String getAlertResult(FromAlert fromAlert, String varName, Alert browserAlert, CommandResult result);
 
 

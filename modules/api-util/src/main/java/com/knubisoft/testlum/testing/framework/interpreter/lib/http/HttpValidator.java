@@ -60,24 +60,15 @@ public final class HttpValidator {
     }
 
     public void validateBody(final String expectedBody, final String actualBody) {
-        try {
-            interpreter.newCompare()
-                    .withExpected(expectedBody)
-                    .withActual(actualBody)
-                    .exec();
-        } catch (ComparisonException e) {
-            result.add(format(HTTP_BODY_EXPECTED_BUT_WAS,
-                    StringPrettifier.asJsonResult(StringPrettifier.cut(expectedBody)),
-                    StringPrettifier.asJsonResult(StringPrettifier.cut(actualBody))));
-        }
+        validateBody(expectedBody, actualBody, true);
     }
 
-    public void validateBody(final String expectedBody, final String actualBody, final String mode) {
+    public void validateBody(final String expectedBody, final String actualBody, final boolean isStrict) {
         try {
             interpreter.newCompare()
                     .withExpected(expectedBody)
                     .withActual(actualBody)
-                    .withMode(mode)
+                    .withMode(isStrict)
                     .exec();
         } catch (ComparisonException e) {
             result.add(format(HTTP_BODY_EXPECTED_BUT_WAS,

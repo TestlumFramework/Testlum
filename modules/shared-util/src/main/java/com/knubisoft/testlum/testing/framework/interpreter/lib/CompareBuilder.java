@@ -28,11 +28,12 @@ public class CompareBuilder {
     private final int position;
     private String expected;
     private Supplier<String> supplierActual;
-    private String mode;
+    private boolean isStrict;
 
     public CompareBuilder(final File scenarioFile, final int position) {
         this.scenarioFile = scenarioFile;
         this.position = position;
+        this.isStrict = true;
     }
 
     public CompareBuilder withActual(final Object actual) {
@@ -58,8 +59,8 @@ public class CompareBuilder {
         return this;
     }
 
-    public CompareBuilder withMode(final String mode) {
-        this.mode = mode;
+    public CompareBuilder withMode(final boolean isStrict) {
+        this.isStrict = isStrict;
         return this;
     }
 
@@ -90,10 +91,6 @@ public class CompareBuilder {
             save(actual);
             throw e;
         }
-    }
-
-    private boolean isStrict() {
-        return !"lenient".equals(mode);
     }
 
     private void save(final String actual) {

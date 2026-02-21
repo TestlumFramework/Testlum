@@ -10,12 +10,11 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
-
-import java.io.File;
 
 @UtilityClass
 public final class JacksonMapperUtil {
@@ -31,11 +30,6 @@ public final class JacksonMapperUtil {
 
     @SneakyThrows
     public <T> T readValue(final byte[] content, final Class<T> valueType) {
-        return MAPPER.readValue(content, valueType);
-    }
-
-    @SneakyThrows
-    public <T> T readValue(final File content, final Class<T> valueType) {
         return MAPPER.readValue(content, valueType);
     }
 
@@ -108,6 +102,7 @@ public final class JacksonMapperUtil {
         PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
                 .allowIfSubType("java.util.")
                 .allowIfSubType("com.knubisoft.testlum.testing.model.scenario.")
+                .allowIfSubType("com.knubisoft.testlum.testing.model.global_config.")
                 .build();
 
         return JsonMapper.builder()

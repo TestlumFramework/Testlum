@@ -1,10 +1,9 @@
 package com.knubisoft.testlum.testing.framework.vault;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
-import com.knubisoft.testlum.testing.framework.vault.model.VaultDto;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.Vault;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.vault.authentication.TokenAuthentication;
@@ -12,6 +11,7 @@ import org.springframework.vault.client.VaultEndpoint;
 import org.springframework.vault.core.VaultTemplate;
 import org.springframework.vault.support.VaultResponse;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,20 +47,26 @@ public class VaultService {
         return endpoint;
     }
 
-    private List<VaultDto> objToVaultDto(final List<Object> vaultList) {
-        return vaultList.stream()
-                .map(JacksonMapperUtil::writeValueAsString)
-                .map(s -> JacksonMapperUtil.readVaultValue(s, VaultDto.class))
-                .toList();
-    }
 
     private List<VaultDto> getVaultByPath(final Map<String, Object> dataByPath) {
-        List<Object> vaultList = Objects.requireNonNull(dataByPath).entrySet()
+        return Objects.requireNonNull(dataByPath).entrySet()
                 .stream()
                 .filter(entry -> VAULT_KEY.equals(entry.getKey()))
                 .map(Map.Entry::getValue)
+                .map(this::toVaultObject)
+                .filter(Objects::nonNull)
                 .toList();
-        return objToVaultDto(vaultList);
+    }
+
+    private VaultDto toVaultObject(final Object object) {
+        Map<String, String> map = (Map<String, String>) object;
+        Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
+        if (it.hasNext()) {
+            Map.Entry<String, String> entry = it.next();
+            return new VaultDto(entry.getKey(), entry.getValue());
+        } else {
+            return null;
+        }
     }
 
     public String inject(final String toInject) {
@@ -98,5 +104,11 @@ public class VaultService {
                 .map(VaultDto::getValue)
                 .findFirst()
                 .orElseThrow(() -> new DefaultFrameworkException("No such key in Vault: %s", key));
+    }
+
+    @Data
+    public static class VaultDto {
+        private final String key;
+        private final String value;
     }
 }

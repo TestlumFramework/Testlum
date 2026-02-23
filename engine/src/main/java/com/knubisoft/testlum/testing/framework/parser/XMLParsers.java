@@ -17,6 +17,8 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URL;
+import java.nio.file.Paths;
 
 public class XMLParsers {
 
@@ -87,7 +89,8 @@ public class XMLParsers {
 
     @SneakyThrows
     public Schema initSchema(final String xsd) {
-        File file = new ClassPathResource(xsd).getFile();
+        URL url = new ClassPathResource(xsd).getURL();
+        File file = Paths.get(url.toURI()).toFile();
         if (!file.exists()) {
             throw new FileNotFoundException("Unable to load xsd file " + xsd);
         }

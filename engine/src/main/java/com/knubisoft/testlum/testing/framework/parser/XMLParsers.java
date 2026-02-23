@@ -10,6 +10,7 @@ import com.knubisoft.testlum.testing.model.pages.Component;
 import com.knubisoft.testlum.testing.model.pages.Page;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.SneakyThrows;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.ClassPathResource;
 
 import javax.xml.XMLConstants;
@@ -89,13 +90,23 @@ public class XMLParsers {
 
     @SneakyThrows
     public Schema initSchema(final String xsd) {
-        URL url = new ClassPathResource(xsd).getURL();
-        File file = Paths.get(url.toURI()).toFile();
-        if (!file.exists()) {
-            throw new FileNotFoundException("Unable to load xsd file " + xsd);
-        }
+        File file = getFile(xsd);
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         factory.setResourceResolver(new LSResourceResolverImpl(file.getAbsolutePath()));
         return factory.newSchema(file);
+    }
+
+    private @NotNull File getFile(final String xsd) throws Exception {
+        File file;
+        try {
+            file = new ClassPathResource(xsd).getFile();
+        } catch (Exception e) {
+            URL resource = getClass().getClassLoader().getResource(xsd);
+            if (resource == null) {
+                throw new FileNotFoundException(e.getMessage());
+            }
+            file = Paths.get(resource.toURI()).toFile();
+        }
+        return file;
     }
 }

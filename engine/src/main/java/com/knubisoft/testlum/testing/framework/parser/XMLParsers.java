@@ -18,8 +18,15 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystemNotFoundException;
+import java.nio.file.FileSystems;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 public class XMLParsers {
 
@@ -101,12 +108,24 @@ public class XMLParsers {
         try {
             file = new ClassPathResource(xsd).getFile();
         } catch (Exception e) {
-            URL resource = getClass().getClassLoader().getResource(xsd);
+            URL resource = getClass().getResource(xsd);
             if (resource == null) {
                 throw new FileNotFoundException(e.getMessage());
             }
-            file = Paths.get(resource.toURI()).toFile();
+            try (FileSystem ignored = getOrCreateFileSystem(resource.toURI())) {
+                file = Paths.get(resource.toURI()).toFile();
+            }
         }
         return file;
+    }
+
+    private FileSystem getOrCreateFileSystem(URI uri) throws IOException {
+        try {
+            return FileSystems.getFileSystem(uri);
+        } catch (FileSystemNotFoundException e) {
+            Map<String, String> env = new HashMap<>();
+            env.put("create", "true");
+            return FileSystems.newFileSystem(uri, env);
+        }
     }
 }

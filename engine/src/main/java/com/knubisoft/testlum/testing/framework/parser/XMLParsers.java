@@ -119,7 +119,7 @@ public class XMLParsers {
         return file;
     }
 
-    private FileSystem getOrCreateFileSystem(URI uri) throws IOException {
+    private FileSystem getOrCreateFileSystem(final URI uri) throws IOException {
         try {
             return FileSystems.getFileSystem(uri);
         } catch (FileSystemNotFoundException e) {

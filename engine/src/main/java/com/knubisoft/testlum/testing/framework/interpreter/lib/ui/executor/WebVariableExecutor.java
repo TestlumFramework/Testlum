@@ -27,14 +27,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.FAILED_VARIABLE_LOG;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.COOKIES;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ELEMENT_ATTRIBUTE;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ELEMENT_PRESENT;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.FULL_DOM;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.HTML_DOM;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.LOCATOR_FORM;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.NO_EXPRESSION;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.URL;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
 import static java.util.Objects.nonNull;
 
 

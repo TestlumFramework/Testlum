@@ -18,9 +18,7 @@ import java.util.stream.Stream;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.SUCCESS_QUERY;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.apache.commons.lang3.StringUtils.LF;
-import static org.apache.commons.lang3.StringUtils.SPACE;
+import static org.apache.commons.lang3.StringUtils.*;
 
 public abstract class AbstractSqlExecutor {
 

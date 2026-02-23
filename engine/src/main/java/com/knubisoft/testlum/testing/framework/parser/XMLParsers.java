@@ -2,7 +2,6 @@ package com.knubisoft.testlum.testing.framework.parser;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
-import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.schema.LSResourceResolverImpl;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -11,42 +10,43 @@ import com.knubisoft.testlum.testing.model.pages.Component;
 import com.knubisoft.testlum.testing.model.pages.Page;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.SneakyThrows;
-import org.jetbrains.annotations.NotNull;
+import org.springframework.core.io.ClassPathResource;
 
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
+import java.io.FileNotFoundException;
 
 public class XMLParsers {
 
     private final Supplier<XMLParser<GlobalTestConfiguration>> globalTestConfigurationXMLParser = Suppliers.
-            memoize(() -> new XMLParser<>(initSchema("global-config.xsd"),
+            memoize(() -> new XMLParser<>(initSchema("schema/global-config.xsd"),
                     GlobalTestConfiguration.class,
                     com.knubisoft.testlum.testing.model.global_config.ObjectFactory.class));
 
     private final Supplier<XMLParser<Integrations>> integrationsXMLParser = Suppliers.
-            memoize(() -> new XMLParser<>(initSchema("integration-config.xsd"),
+            memoize(() -> new XMLParser<>(initSchema("schema/integration-config.xsd"),
                     com.knubisoft.testlum.testing.model.global_config.Integrations.class,
                     com.knubisoft.testlum.testing.model.global_config.ObjectFactory.class));
 
     private final Supplier<XMLParser<UiConfig>> uiConfigXMLParser = Suppliers.
-            memoize(() -> new XMLParser<>(initSchema("ui-config.xsd"),
+            memoize(() -> new XMLParser<>(initSchema("schema/ui-config.xsd"),
                     com.knubisoft.testlum.testing.model.global_config.UiConfig.class,
                     com.knubisoft.testlum.testing.model.global_config.ObjectFactory.class));
 
     private final Supplier<XMLParser<Page>> pageXMLParser = Suppliers.
-            memoize(() -> new XMLParser<>(initSchema("pages.xsd"),
+            memoize(() -> new XMLParser<>(initSchema("schema/pages.xsd"),
                     com.knubisoft.testlum.testing.model.pages.Page.class,
                     com.knubisoft.testlum.testing.model.pages.ObjectFactory.class));
 
     private final Supplier<XMLParser<Component>> componentXMLParser = Suppliers.
-            memoize(() -> new XMLParser<>(initSchema("pages.xsd"),
+            memoize(() -> new XMLParser<>(initSchema("schema/pages.xsd"),
                     com.knubisoft.testlum.testing.model.pages.Component.class,
                     com.knubisoft.testlum.testing.model.pages.ObjectFactory.class));
 
     private final Supplier<XMLParser<Scenario>> scenarioXMLParser = Suppliers.
-            memoize(() -> new XMLParser<>(initSchema("scenario.xsd"),
+            memoize(() -> new XMLParser<>(initSchema("schema/scenario.xsd"),
                     com.knubisoft.testlum.testing.model.scenario.Scenario.class,
                     com.knubisoft.testlum.testing.model.scenario.ObjectFactory.class));
 
@@ -87,25 +87,12 @@ public class XMLParsers {
 
     @SneakyThrows
     public Schema initSchema(final String xsd) {
-        String pathToSchemaFolder = resolvePathToSchemaFolder();
-
-        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        factory.setResourceResolver(new LSResourceResolverImpl(TestResourceSettings.SCHEMAS_FOLDER));
-        return factory.newSchema(new File(pathToSchemaFolder + File.separator + xsd));
-    }
-
-    private static @NotNull String resolvePathToSchemaFolder() {
-        String fullPathToResourceFolder = TestResourceSettings.getInstance().
-                getTestResourcesFolder().getAbsolutePath();
-
-        int indexOfLastFolderSeparator = fullPathToResourceFolder.lastIndexOf(File.separator);
-        String pathToSchemaFolder;
-        if (indexOfLastFolderSeparator == -1) {
-            pathToSchemaFolder = "schema";
-        } else {
-            String projectRootDirectoryFullPath = fullPathToResourceFolder.substring(0, indexOfLastFolderSeparator);
-            pathToSchemaFolder = projectRootDirectoryFullPath + File.separator + "schema";
+        File file = new ClassPathResource(xsd).getFile();
+        if (!file.exists()) {
+            throw new FileNotFoundException("Unable to load xsd file " + xsd);
         }
-        return pathToSchemaFolder;
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        factory.setResourceResolver(new LSResourceResolverImpl(file.getAbsolutePath()));
+        return factory.newSchema(file);
     }
 }

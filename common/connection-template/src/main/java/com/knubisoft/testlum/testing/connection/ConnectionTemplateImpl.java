@@ -1,41 +1,41 @@
-package com.knubisoft.testlum.testing.framework.configuration.connection;
+package com.knubisoft.testlum.testing.connection;
 
-import com.knubisoft.testlum.testing.framework.configuration.connection.health.IntegrationHealthCheck;
-import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
+import com.knubisoft.testlum.log.LogFormat;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.WebDriver;
+
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_ATTEMPT_RETRYING;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_COMPLETELY_FAILED;
-
 @Slf4j
 @Component
 public class ConnectionTemplateImpl implements ConnectionTemplate {
 
-    private static final int DEFAULT_ATTEMPTS = 3;
-    private static final long INITIAL_BACKOFF_MS = 20000;
+    private static final String CONNECTING_INFO =
+            LogFormat.withCyan("Connecting to {} (Attempt {}/{})");
+    private static final String CONNECTION_SUCCESS =
+            LogFormat.withGreen("Successfully connected to {}");
+    private static final String CONNECTION_ATTEMPT_FAILED =
+            LogFormat.withOrange("Attempt {} failed for {} with error: {}");
+    private static final String CONNECTION_ATTEMPT_RETRYING =
+            "Retrying to connect to {} in {} ms";
+    private static final String CONNECTION_COMPLETELY_FAILED =
+            LogFormat.withRed("Max attempts reached for {}. Failed to obtain connection with cause {}");
 
-    public <T> T executeWithRetry(final String integrationName,
-                                  final Supplier<T> connector,
-                                  final IntegrationHealthCheck<T> healthCheck) {
-        return executeWithRetry(integrationName, DEFAULT_ATTEMPTS, connector, healthCheck);
-    }
+    private static final long INITIAL_BACKOFF_MS = 20000;
 
     public <T> T executeWithRetry(final String integrationName,
                                   final int maxAttempts,
                                   final Supplier<T> connector,
-                                  final IntegrationHealthCheck<T> healthCheck) {
+                                  final IntegrationHealthCheck<T> healthCheck,
+                                  final IntegrationCloser<T> integrationCloser) {
 
         Exception lastException = null;
 
         for (int attempt = 1; attempt <= maxAttempts; attempt++) {
             try {
-                return tryConnect(integrationName, attempt, maxAttempts, connector, healthCheck);
+                return tryConnect(integrationName, attempt, maxAttempts, connector, healthCheck, integrationCloser);
             } catch (Exception e) {
                 lastException = e;
                 handleAttemptFailure(integrationName, attempt, maxAttempts, e);
@@ -49,7 +49,8 @@ public class ConnectionTemplateImpl implements ConnectionTemplate {
                              final int attempt,
                              final int max,
                              final Supplier<T> connector,
-                             final IntegrationHealthCheck<T> healthCheck) throws Exception {
+                             final IntegrationHealthCheck<T> healthCheck,
+                             final IntegrationCloser<T> integrationCloser) throws Exception {
         log.info(CONNECTING_INFO, integrationName, attempt, max);
         T client = connector.get();
         try {
@@ -57,7 +58,7 @@ public class ConnectionTemplateImpl implements ConnectionTemplate {
             log.info(CONNECTION_SUCCESS, integrationName);
             return client;
         } catch (final Exception e) {
-            closeResource(client);
+            integrationCloser.close(client);
             throw e;
         }
     }
@@ -75,26 +76,8 @@ public class ConnectionTemplateImpl implements ConnectionTemplate {
                                                 final Exception lastException) {
         String msg = lastException != null ? lastException.getMessage() : "Unknown error";
         log.error(CONNECTION_COMPLETELY_FAILED, integrationName, msg);
-        return new DefaultFrameworkException(
-                String.format("Failed to obtain connection for %s with cause: %s", integrationName, msg)
-        );
-    }
-
-    private void closeResource(final Object resource) {
-        if (resource instanceof WebDriver) {
-            try {
-                ((WebDriver) resource).quit();
-            } catch (final Exception e) {
-                throw new DefaultFrameworkException("Failed to quit WebDriver: ".concat(e.getMessage()));
-            }
-        }
-        if (resource instanceof AutoCloseable) {
-            try {
-                ((AutoCloseable) resource).close();
-            } catch (final Exception ignored) {
-                // ignore
-            }
-        }
+        String error = String.format("Failed to obtain connection for %s with cause: %s", integrationName, msg);
+        return new IntegrationFailureException(error);
     }
 
     private void sleep() {

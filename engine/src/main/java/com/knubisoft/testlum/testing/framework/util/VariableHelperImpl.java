@@ -12,13 +12,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioContext;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.FromConstant;
-import com.knubisoft.testlum.testing.model.scenario.FromExpression;
-import com.knubisoft.testlum.testing.model.scenario.FromFile;
-import com.knubisoft.testlum.testing.model.scenario.FromPath;
-import com.knubisoft.testlum.testing.model.scenario.FromRandomGenerate;
-import com.knubisoft.testlum.testing.model.scenario.FromSQL;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -43,24 +37,13 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.UnaryOperator;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.DOLLAR_SIGN;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.SLASH_SEPARATOR;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VAR_QUERY_RESULT_ERROR;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CONSTANT;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.EXPRESSION;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.FILE;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.GENERATED_STRING;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.JSON_PATH;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.NO_EXPRESSION;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.RELATIONAL_DB_QUERY;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.XML_PATH;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
 import static java.util.Objects.nonNull;
 
 @Slf4j

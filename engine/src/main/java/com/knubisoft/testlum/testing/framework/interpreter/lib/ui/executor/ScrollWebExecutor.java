@@ -6,13 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.InnerScrollScript;
-import com.knubisoft.testlum.testing.framework.util.JavascriptUtil;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.PageScrollScript;
-import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
+import com.knubisoft.testlum.testing.framework.util.*;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import org.openqa.selenium.WebDriver;
 

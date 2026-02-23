@@ -6,12 +6,7 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.model.global_config.Web;
-import com.knubisoft.testlum.testing.model.pages.ClassName;
-import com.knubisoft.testlum.testing.model.pages.CssSelector;
-import com.knubisoft.testlum.testing.model.pages.Id;
-import com.knubisoft.testlum.testing.model.pages.Locator;
-import com.knubisoft.testlum.testing.model.pages.Text;
-import com.knubisoft.testlum.testing.model.pages.Xpath;
+import com.knubisoft.testlum.testing.model.pages.*;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -23,24 +18,13 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.FluentWait;
 
 import java.time.Duration;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.ELEMENT_WAS_FOUND_BY_LOCATOR;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UNABLE_TO_FIND_ELEMENT_BY_LOCATOR;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UNABLE_TO_FIND_ELEMENT_BY_LOCATOR_TYPE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
 
 @Slf4j
 @UtilityClass

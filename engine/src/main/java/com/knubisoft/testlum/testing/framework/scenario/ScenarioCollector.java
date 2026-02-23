@@ -10,16 +10,15 @@ import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
 import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
 import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.Api;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.Auth;
-import com.knubisoft.testlum.testing.model.scenario.Include;
-import com.knubisoft.testlum.testing.model.scenario.Logout;
-import com.knubisoft.testlum.testing.model.scenario.Scenario;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_NOT_FOUND;
 import static java.util.Objects.nonNull;

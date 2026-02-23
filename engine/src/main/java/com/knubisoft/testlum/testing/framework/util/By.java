@@ -1,11 +1,8 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.knubisoft.testlum.testing.model.pages.ClassName;
-import com.knubisoft.testlum.testing.model.pages.CssSelector;
-import com.knubisoft.testlum.testing.model.pages.Id;
-import com.knubisoft.testlum.testing.model.pages.Text;
-import com.knubisoft.testlum.testing.model.pages.Xpath;
+import com.knubisoft.testlum.testing.model.pages.*;
 import lombok.experimental.UtilityClass;
+
 import java.util.List;
 
 import static java.lang.String.format;

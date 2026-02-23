@@ -13,11 +13,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.UNABLE_TO_DISCONNECT_WEBSOCKET_BECAUSE_CLOSED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_ALREADY_SUBSCRIBED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_CONNECTION_CLOSED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_CONNECTION_ESTABLISHED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WEBSOCKET_HANDLER_FOR_TOPIC_NOT_FOUND;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
 import static java.util.Objects.nonNull;
 
 @Slf4j

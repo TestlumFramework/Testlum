@@ -2,14 +2,14 @@ package com.knubisoft.testlum.testing.framework.parser;
 
 import com.knubisoft.testlum.testing.framework.validator.XMLValidator;
 import com.knubisoft.testlum.testing.framework.validator.XSDValidator;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import java.io.File;

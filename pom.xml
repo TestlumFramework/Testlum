@@ -386,6 +386,11 @@
                 <artifactId>testlum-log</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.knubisoft</groupId>
+                <artifactId>connection-template</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!--
 

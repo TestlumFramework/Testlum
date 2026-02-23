@@ -1,4 +1,4 @@
-package com.knubisoft.testlum.testing.framework.exception;
+package com.knubisoft.testlum.testing.framework.validator;
 
 import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;

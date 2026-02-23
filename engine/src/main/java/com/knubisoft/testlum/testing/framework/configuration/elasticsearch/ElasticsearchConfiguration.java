@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.configuration.elasticsearch;
 
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnElasticEnabledCondition;
+import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.condition.OnElasticEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Elasticsearch;
@@ -13,8 +13,9 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.elasticsearch.client.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +33,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 @RequiredArgsConstructor
 public class ElasticsearchConfiguration {
 
-    @Autowired(required = false)
     private final ConnectionTemplate connectionTemplate;
 
     private final Map<String, List<Elasticsearch>> elasticsearchMap =

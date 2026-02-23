@@ -10,16 +10,7 @@ import com.knubisoft.testlum.testing.framework.util.ConditionProviderImpl.Condit
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.AssertAlert;
-import com.knubisoft.testlum.testing.model.scenario.AssertAttribute;
-import com.knubisoft.testlum.testing.model.scenario.AssertChecked;
-import com.knubisoft.testlum.testing.model.scenario.AssertEqual;
-import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
-import com.knubisoft.testlum.testing.model.scenario.AssertNotEqual;
-import com.knubisoft.testlum.testing.model.scenario.AssertPresent;
-import com.knubisoft.testlum.testing.model.scenario.AssertTitle;
-import com.knubisoft.testlum.testing.model.scenario.WebAssert;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebElement;
 

@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.configuration.rabbitmq;
 
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
+import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.condition.OnRabbitMQEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -15,7 +15,6 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -38,8 +37,8 @@ public class RabbitMQConfiguration {
     private static final String SCHEMA = "http://";
     private static final String API_PATH = "/api";
 
-    @Autowired(required = false)
     private final ConnectionTemplate connectionTemplate;
+
     private final Map<String, List<Rabbitmq>> rabbitmqMap = GlobalTestConfigurationProvider.get().getIntegrations()
             .entrySet().stream()
             .collect(Collectors.toMap(Map.Entry::getKey,

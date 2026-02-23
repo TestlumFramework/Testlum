@@ -3,14 +3,11 @@ package com.knubisoft.testlum.testing.framework.util;
 import com.github.romankh3.image.comparison.ImageComparison;
 import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.Rectangle;
-import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.Image;
-import com.knubisoft.testlum.testing.model.scenario.MobileImage;
-import com.knubisoft.testlum.testing.model.scenario.NativeImage;
-import com.knubisoft.testlum.testing.model.scenario.Part;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.experimental.UtilityClass;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 

@@ -13,9 +13,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.ALIAS_NOT_FOUND;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.API_NOT_FOUND;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INTEGRATION_NOT_FOUND;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.*;
 
 @Component
 public class IntegrationsProviderImpl implements IntegrationsProvider {

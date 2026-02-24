@@ -6,14 +6,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
-import com.knubisoft.testlum.testing.model.scenario.AllValues;
-import com.knubisoft.testlum.testing.model.scenario.DropDown;
-import com.knubisoft.testlum.testing.model.scenario.OneValue;
-import com.knubisoft.testlum.testing.model.scenario.SelectOrDeselectBy;
-import com.knubisoft.testlum.testing.model.scenario.TypeForAllValues;
-import com.knubisoft.testlum.testing.model.scenario.TypeForOneValue;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -26,14 +20,8 @@ import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.CUSTOM_DROP_DOWN_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DROP_DOWN_NOT_SUPPORTED;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.BY_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.COMMAND_TYPE_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.VALUE_LOG;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALL_VALUES_DESELECT;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ALL_VALUES_SELECT;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_FOR;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.DROP_DOWN_LOCATOR;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ONE_VALUE_TEMPLATE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
 import static java.lang.String.format;
 
 @Slf4j

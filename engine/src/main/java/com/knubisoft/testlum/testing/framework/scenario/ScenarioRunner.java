@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.ui.MobilebrowserDriverFactory;
+import com.knubisoft.testlum.testing.framework.configuration.ui.MobileBrowserDriverFactory;
 import com.knubisoft.testlum.testing.framework.configuration.ui.NativeDriverFactory;
 import com.knubisoft.testlum.testing.framework.configuration.ui.WebDriverFactory;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
@@ -13,11 +13,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterScanne
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.MockDriver;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.report.ScenarioResult;
-import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
-import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.MobileUtil;
-import com.knubisoft.testlum.testing.framework.util.ResultUtil;
+import com.knubisoft.testlum.testing.framework.util.*;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +25,7 @@ import org.springframework.context.ApplicationContext;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.FUNCTION_FOR_COMMAND_NOT_FOUND;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.MISSING_CONSTRUCTOR;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.MOBILEBROWSER_DRIVER_NOT_INIT;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NATIVE_DRIVER_NOT_INIT;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.WEB_DRIVER_NOT_INIT;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.*;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.EXECUTION_STOP_SIGNAL_LOG;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -207,7 +199,7 @@ public class ScenarioRunner {
     private WebDriver createMobilebrowserDriver() {
         return MobileUtil.getMobileBrowserDeviceBy(scenarioArguments.getEnvironment(),
                         scenarioArguments.getMobileBrowserDevice())
-                .map(MobilebrowserDriverFactory::createDriver)
+                .map(MobileBrowserDriverFactory::createDriver)
                 .orElse(new MockDriver(MOBILEBROWSER_DRIVER_NOT_INIT));
     }
 

@@ -4,12 +4,7 @@ import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigura
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.SeleniumDriverUtil;
-import com.knubisoft.testlum.testing.model.global_config.AppiumNativeCapabilities;
-import com.knubisoft.testlum.testing.model.global_config.BrowserStackNativeCapabilities;
-import com.knubisoft.testlum.testing.model.global_config.GooglePlayLogin;
-import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
-import com.knubisoft.testlum.testing.model.global_config.Platform;
-import com.knubisoft.testlum.testing.model.global_config.UiConfig;
+import com.knubisoft.testlum.testing.model.global_config.*;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.ios.IOSDriver;

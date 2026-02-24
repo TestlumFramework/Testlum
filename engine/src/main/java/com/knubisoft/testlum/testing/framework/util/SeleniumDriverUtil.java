@@ -1,12 +1,7 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
-import com.knubisoft.testlum.testing.model.global_config.AbstractCapabilities;
-import com.knubisoft.testlum.testing.model.global_config.AbstractDevice;
-import com.knubisoft.testlum.testing.model.global_config.BrowserStackLogin;
-import com.knubisoft.testlum.testing.model.global_config.Capabilities;
-import com.knubisoft.testlum.testing.model.global_config.ConnectionType;
-import com.knubisoft.testlum.testing.model.global_config.UiConfig;
+import com.knubisoft.testlum.testing.model.global_config.*;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.remote.DesiredCapabilities;
 

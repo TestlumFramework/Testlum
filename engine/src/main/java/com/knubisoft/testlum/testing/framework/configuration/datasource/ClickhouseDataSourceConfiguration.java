@@ -1,15 +1,14 @@
 package com.knubisoft.testlum.testing.framework.configuration.datasource;
 
 import com.clickhouse.jdbc.DataSourceImpl;
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnClickhouseEnabledCondition;
+import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.condition.OnClickhouseEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Clickhouse;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +25,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 @RequiredArgsConstructor
 public class ClickhouseDataSourceConfiguration {
 
-    @Autowired(required = false)
     private final ConnectionTemplate connectionTemplate;
 
     @Bean("clickhouseDataSource")
@@ -48,18 +46,6 @@ public class ClickhouseDataSourceConfiguration {
                         HealthCheckFactory.forJdbc()
                 );
                 dataSourceMap.put(new AliasEnv(clickhouse.getAlias(), env), checkedDataSource);
-            }
-        }
-        addIfEnabled(integrations, env, dataSourceMap);
-    }
-
-    private void addIfEnabled(final Integrations integrations,
-                              final String env,
-                              final Map<AliasEnv, DataSource> dataSourceMap) {
-        for (Clickhouse clickhouse : integrations.getClickhouseIntegration().getClickhouse()) {
-            if (clickhouse.isEnabled()) {
-                dataSourceMap.put(new AliasEnv(clickhouse.getAlias(), env),
-                        new DataSourceImpl(clickhouse.getConnectionUrl(), clickHouseProperties(clickhouse)));
             }
         }
     }

@@ -1,15 +1,14 @@
 package com.knubisoft.testlum.testing.framework.configuration.sendgrid;
 
+import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSendgridEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Sendgrid;
 import com.sendgrid.SendGrid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +23,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 @RequiredArgsConstructor
 public class SendgridConfiguration {
 
-    @Autowired(required = false)
     private final ConnectionTemplate connectionTemplate;
 
     @Bean

@@ -7,20 +7,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
-import com.knubisoft.testlum.testing.model.scenario.AbstractUiCommand;
-import com.knubisoft.testlum.testing.model.scenario.BackSpace;
-import com.knubisoft.testlum.testing.model.scenario.Copy;
-import com.knubisoft.testlum.testing.model.scenario.Cut;
-import com.knubisoft.testlum.testing.model.scenario.Enter;
-import com.knubisoft.testlum.testing.model.scenario.Escape;
-import com.knubisoft.testlum.testing.model.scenario.Highlight;
-import com.knubisoft.testlum.testing.model.scenario.HotKey;
-import com.knubisoft.testlum.testing.model.scenario.LocatorStrategy;
-import com.knubisoft.testlum.testing.model.scenario.Paste;
-import com.knubisoft.testlum.testing.model.scenario.Space;
-import com.knubisoft.testlum.testing.model.scenario.Tab;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -28,11 +16,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 

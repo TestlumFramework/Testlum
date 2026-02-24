@@ -20,9 +20,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.LOCATOR_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WAIT_INFO_LOG;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.WAIT_TYPE;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
 import static com.knubisoft.testlum.testing.framework.util.ResultUtil.LOCATOR_ID;
 import static java.util.Objects.nonNull;
 

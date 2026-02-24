@@ -19,9 +19,7 @@ import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.IMAGES_MISMATCH;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.IMAGES_SIZE_MISMATCH;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.ADDITIONAL_INFO;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.IMAGE_ATTACHED_TO_STEP;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.IMAGE_MISMATCH_PERCENT;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 

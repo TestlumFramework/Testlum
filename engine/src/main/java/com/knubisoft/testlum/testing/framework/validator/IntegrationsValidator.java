@@ -9,28 +9,14 @@ import com.knubisoft.testlum.testing.model.global_config.Integration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings.INTEGRATION_CONFIG_FILENAME;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_CUSTOM_CLASS_NAME_NOT_MATCH;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_LOGOUT_NOT_MATCH;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_NOT_PRESENT_IN_ALL_ENVS;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_STRATEGY_NOT_MATCH;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INTEGRATIONS_MISMATCH_ENVS;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INTEGRATION_ALIAS_NOT_MATCH;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.SAME_INTEGRATION_ALIAS;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.*;
 import static java.util.Objects.nonNull;
 
 public class IntegrationsValidator implements ConfigurationValidator<Map<String, Integrations>> {

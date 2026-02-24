@@ -1,25 +1,14 @@
 package com.knubisoft.testlum.testing.framework.configuration.ui;
 
+import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.connection.ConnectionTemplateImpl;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplateImpl;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
 import com.knubisoft.testlum.testing.framework.util.SeleniumDriverUtil;
-import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
-import com.knubisoft.testlum.testing.model.global_config.BrowserInDocker;
-import com.knubisoft.testlum.testing.model.global_config.BrowserOptionsArguments;
-import com.knubisoft.testlum.testing.model.global_config.BrowserStackWeb;
-import com.knubisoft.testlum.testing.model.global_config.Capabilities;
-import com.knubisoft.testlum.testing.model.global_config.Chrome;
-import com.knubisoft.testlum.testing.model.global_config.Edge;
-import com.knubisoft.testlum.testing.model.global_config.Firefox;
-import com.knubisoft.testlum.testing.model.global_config.LocalBrowser;
-import com.knubisoft.testlum.testing.model.global_config.RemoteBrowser;
-import com.knubisoft.testlum.testing.model.global_config.Safari;
-import com.knubisoft.testlum.testing.model.global_config.ScreenRecording;
+import com.knubisoft.testlum.testing.model.global_config.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.github.bonigarcia.wdm.managers.ChromeDriverManager;
 import io.github.bonigarcia.wdm.managers.EdgeDriverManager;
@@ -65,18 +54,28 @@ public class WebDriverFactory {
                 browser -> browser instanceof Edge, b -> new EdgeDriverInitializer().init((Edge) b));
     }
 
+    //CHECKSTYLE:OFF
     public WebDriver createDriver(final AbstractBrowser browser) {
         ConnectionTemplate connectionTemplate = new ConnectionTemplateImpl();
         return connectionTemplate.executeWithRetry(
                 String.format(CONNECTION_INTEGRATION_DATA, browser.getClass().getSimpleName(), browser.getAlias()),
+                ConnectionTemplate.DEFAULT_ATTEMPTS,
                 () -> DRIVER_INITIALIZER_MAP.entrySet().stream()
                         .filter(function -> function.getKey().test(browser))
                         .findFirst()
                         .map(function -> function.getValue().apply(browser))
                         .orElseThrow(() -> new DefaultFrameworkException(DRIVER_INITIALIZER_NOT_FOUND)),
-                HealthCheckFactory.forWebDriver(browser)
+                HealthCheckFactory.forWebDriver(browser),
+                integration -> {
+                    try {
+                        integration.quit();
+                    } catch (final Exception e) {
+                        throw new DefaultFrameworkException("Failed to quit WebDriver: ".concat(e.getMessage()));
+                    }
+                }
         );
     }
+    //CHECKSTYLE:ON
 
     private WebDriver getWebDriver(final AbstractBrowser browser,
                                    final MutableCapabilities browserOptions,

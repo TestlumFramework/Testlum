@@ -6,14 +6,7 @@ import lombok.experimental.UtilityClass;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.DB_NOT_SUPPORTED;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.UNSUPPORTED_MIGRATION_FORMAT;
-import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.BSON_EXTENSION;
-import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.CSV_EXTENSION;
-import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.JSON_EXTENSION;
-import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.PARTIQL_EXTENSION;
-import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.SQL_EXTENSION;
-import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.TXT_EXTENSION;
-import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.XLSX_EXTENSION;
-import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.XLS_EXTENSION;
+import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.*;
 
 @UtilityClass
 public class DatasetValidator {

@@ -5,7 +5,6 @@ import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkExcepti
 import com.knubisoft.testlum.testing.model.pages.Locator;
 import lombok.experimental.UtilityClass;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.INCORRECT_NAMING_FOR_LOCATOR_ID;
@@ -15,11 +14,7 @@ import static java.util.Objects.isNull;
 @UtilityClass
 public class GlobalLocators {
 
-    private static final Map<String, Locator> LOCATOR_MAP;
-
-    static {
-        LOCATOR_MAP = Collections.unmodifiableMap(new LocatorCollector().collect());
-    }
+    private static final Map<String, Locator> LOCATOR_MAP = new LocatorCollector().collect();
 
     public Locator getLocator(final String name) {
         Locator locator = LOCATOR_MAP.get(name);

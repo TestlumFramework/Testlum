@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.connection.health;
 
+import com.knubisoft.testlum.testing.connection.IntegrationHealthCheck;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;

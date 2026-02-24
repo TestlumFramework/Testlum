@@ -4,11 +4,7 @@ import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigura
 import com.knubisoft.testlum.testing.framework.env.EnvManager;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.util.SeleniumDriverUtil;
-import com.knubisoft.testlum.testing.model.global_config.AppiumCapabilities;
-import com.knubisoft.testlum.testing.model.global_config.Mobilebrowser;
-import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
-import com.knubisoft.testlum.testing.model.global_config.Platform;
-import com.knubisoft.testlum.testing.model.global_config.UiConfig;
+import com.knubisoft.testlum.testing.model.global_config.*;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.WebDriver;
@@ -22,7 +18,7 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static java.util.Objects.nonNull;
 
 @UtilityClass
-public class MobilebrowserDriverFactory {
+public class MobileBrowserDriverFactory {
 
     public WebDriver createDriver(final MobilebrowserDevice mobileDevice) {
         DesiredCapabilities desiredCapabilities = new DesiredCapabilities();

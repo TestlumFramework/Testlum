@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.configuration.kafka;
 
+import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
-import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -10,7 +10,6 @@ import com.knubisoft.testlum.testing.model.global_config.Kafka;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +29,6 @@ public class KafkaConsumerConfiguration {
 
     private static final int TIMEOUT = 5000;
 
-    @Autowired(required = false)
     private final ConnectionTemplate connectionTemplate;
 
     @Bean

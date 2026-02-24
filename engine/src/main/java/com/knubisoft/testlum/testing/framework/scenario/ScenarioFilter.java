@@ -7,15 +7,15 @@ import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.testlum.testing.model.global_config.TagValue;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_ENABLED_TAGS_CONFIG;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.NO_SCENARIOS_FILTERED_BY_TAGS;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.STOP_IF_NON_PARSED_SCENARIO;
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.VALID_SCENARIOS_NOT_FOUND;
+import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.*;
 
 public class ScenarioFilter {
 

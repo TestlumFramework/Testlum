@@ -21,10 +21,7 @@ import java.util.Objects;
 
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.TAB_NOT_FOUND;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.TAB_OUT_OF_BOUNDS;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CLOSE_COMMAND;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.CLOSE_TAB;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.SWITCH_COMMAND;
-import static com.knubisoft.testlum.testing.framework.util.ResultUtil.SWITCH_TAB;
+import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
 import static java.util.Objects.nonNull;
 
 @Slf4j

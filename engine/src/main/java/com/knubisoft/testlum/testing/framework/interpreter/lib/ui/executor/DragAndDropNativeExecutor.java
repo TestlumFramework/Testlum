@@ -6,7 +6,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-
 import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDropNative;
 import io.appium.java_client.AppiumDriver;

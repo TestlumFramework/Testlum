@@ -1,4 +1,4 @@
-package com.knubisoft.testlum.testing.framework.configuration.connection.health;
+package com.knubisoft.testlum.testing.connection;
 
 @FunctionalInterface
 public interface IntegrationHealthCheck<T> {

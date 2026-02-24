@@ -1,8 +1,8 @@
 package com.knubisoft.testlum.testing.framework.configuration.redis;
 
-import com.knubisoft.testlum.testing.framework.configuration.condition.OnRedisEnabledCondition;
+import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
 import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.configuration.connection.ConnectionTemplate;
+import com.knubisoft.testlum.testing.framework.configuration.condition.OnRedisEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
@@ -32,7 +32,6 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 @RequiredArgsConstructor
 public class RedisConfiguration {
 
-    @Autowired(required = false)
     private final ConnectionTemplate connectionTemplate;
 
     @Bean

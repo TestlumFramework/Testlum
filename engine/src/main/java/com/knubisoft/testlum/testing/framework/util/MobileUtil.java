@@ -8,10 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILE_BROWSER_APPIUM_INFO;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.MOBILE_BROWSER_INFO;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_APPIUM_INFO;
-import static com.knubisoft.testlum.testing.framework.constant.LogMessage.NATIVE_INFO;
+import static com.knubisoft.testlum.testing.framework.constant.LogMessage.*;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;

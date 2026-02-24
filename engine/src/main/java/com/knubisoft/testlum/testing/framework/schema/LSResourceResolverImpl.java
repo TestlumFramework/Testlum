@@ -43,7 +43,7 @@ public class LSResourceResolverImpl implements LSResourceResolver {
         return null;
     }
 
-    private static byte[] readContent(InputStream resourceAsStream) throws IOException {
+    private static byte[] readContent(final InputStream resourceAsStream) throws IOException {
         try {
             return IOUtils.toByteArray(resourceAsStream);
         } finally {

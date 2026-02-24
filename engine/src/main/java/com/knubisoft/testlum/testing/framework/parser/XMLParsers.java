@@ -11,22 +11,12 @@ import com.knubisoft.testlum.testing.model.pages.Page;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.core.io.ClassPathResource;
 
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystemNotFoundException;
-import java.nio.file.FileSystems;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
 public class XMLParsers {
 
@@ -97,35 +87,17 @@ public class XMLParsers {
 
     @SneakyThrows
     public Schema initSchema(final String xsd) {
-        File file = getFile(xsd);
+        URL file = getFileURL(xsd);
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        factory.setResourceResolver(new LSResourceResolverImpl(file.getAbsolutePath()));
+        factory.setResourceResolver(new LSResourceResolverImpl("schema"));
         return factory.newSchema(file);
     }
 
-    private @NotNull File getFile(final String xsd) throws Exception {
-        File file;
-        try {
-            file = new ClassPathResource(xsd).getFile();
-        } catch (Exception e) {
-            URL resource = getClass().getResource(xsd);
-            if (resource == null) {
-                throw new FileNotFoundException(e.getMessage());
-            }
-            try (FileSystem ignored = getOrCreateFileSystem(resource.toURI())) {
-                file = Paths.get(resource.toURI()).toFile();
-            }
+    private @NotNull URL getFileURL(final String xsd) throws Exception {
+        URL file = getClass().getClassLoader().getResource(xsd);
+        if (file == null) {
+            throw new FileNotFoundException("File not found: " + xsd);
         }
         return file;
-    }
-
-    private FileSystem getOrCreateFileSystem(final URI uri) throws IOException {
-        try {
-            return FileSystems.getFileSystem(uri);
-        } catch (FileSystemNotFoundException e) {
-            Map<String, String> env = new HashMap<>();
-            env.put("create", "true");
-            return FileSystems.newFileSystem(uri, env);
-        }
     }
 }

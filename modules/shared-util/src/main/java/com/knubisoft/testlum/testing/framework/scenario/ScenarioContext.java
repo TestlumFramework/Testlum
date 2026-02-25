@@ -1,5 +1,6 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
+import com.knubisoft.testlum.testing.framework.util.JsonSpecialMarkingsParser;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -12,12 +13,14 @@ import java.util.regex.Pattern;
 public class ScenarioContext {
 
     private static final String ROUTE_REGEXP = "\\{\\{(.*?)}}";
+    private static final String RAW_REGEXP ="(\"raw\"\\s*:\\s*\")(?:[^\"\\\\]|\\\\.)*(\")";
     private static final String NO_VALUE_FOUND_FOR_KEY =
             "Unable to find value for key <%s>. Available keys: %s";
     private static final String NO_VALUES_FOUND_IN_CONTEXT =
             "Unable to find any value in scenario context. Available keys: %s";
     private static final Pattern ROUTE_PATTERN =
             Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
+    private static final Pattern RAW_PATTERN = Pattern.compile(RAW_REGEXP);
 
     private final Map<String, String> contextMap;
     private final Map<String, Boolean> conditionMap = new HashMap<>();
@@ -71,23 +74,35 @@ public class ScenarioContext {
         return injectedCondition;
     }
 
-    public String inject(final String original) {
-        if (StringUtils.isBlank(original)) {
-            return original;
+    public String inject(final String scenarioStepAsString) {
+        if (StringUtils.isBlank(scenarioStepAsString)) {
+            return scenarioStepAsString;
         }
-        Matcher m = ROUTE_PATTERN.matcher(original);
-        return getFormattedInject(original, m);
+        if (hasJsonVariationsInBody(scenarioStepAsString)) {
+            String bodyForInjection = JsonSpecialMarkingsParser.buildJson(this.contextMap);
+            return replaceEntireJsonBodyWithJsonVariation(bodyForInjection, scenarioStepAsString);
+        }
+        Matcher m = ROUTE_PATTERN.matcher(scenarioStepAsString);
+        return getFormattedInject(scenarioStepAsString, m);
+    }
+    private boolean hasJsonVariationsInBody(String scenarioStepAsString) {
+        return scenarioStepAsString.contains("{{j(");
+    }
+
+    private String replaceEntireJsonBodyWithJsonVariation(String jsonFromJsonVariations, String scenarioStepAsString) {
+        Matcher matcher = RAW_PATTERN.matcher(scenarioStepAsString);
+        return matcher.replaceFirst("$1" + Matcher.quoteReplacement(jsonFromJsonVariations) + "$2");
     }
 
     private String getFormattedInject(final String original, final Matcher m) {
         String formatted = original;
         while (m.find()) {
-            String firstSubsequence = m.group(1);
-            String zeroSubsequence = m.group(0);
-            String value = get(firstSubsequence);
-            value = StringEscapeUtils.escapeJson(value);
-            formatted = formatted.replace(zeroSubsequence, value);
+            String csvColumnName = m.group(1);
+            String scenarioPlaceholder= m.group(0);
+            String valueToReplacePlaceholder = get(csvColumnName);
+            formatted = formatted.replace(scenarioPlaceholder, StringEscapeUtils.escapeJson(valueToReplacePlaceholder));
         }
         return formatted;
     }
+
 }

@@ -1,14 +1,16 @@
 package com.knubisoft.testlum.testing.framework.util;
 
 import com.google.common.base.Preconditions;
+import com.knubisoft.testlum.log.LogFormat;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.exception.FileLinkingException;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -22,31 +24,45 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Slf4j
-@UtilityClass
+@Component
+@RequiredArgsConstructor
 public final class FileSearcher {
 
-    private static final String ANSI_RESET = "\u001b[0m";
-    private static final String ANSI_RED = "\u001B[31m";
     private static final String SLASH_SEPARATOR = "/";
     private static final String ENV_FOLDER_NOT_EXIST = "[%s] folder does not exist";
-    private static final String DUPLICATE_FILENAME = ANSI_RED + "The [%s] folder and its subfolders contain "
-            + "files with duplicate filenames - [%s]. Each file should have a unique name" + ANSI_RESET;
-    private static final String DUPLICATE_FOLDER_NAME = ANSI_RED + "The [%s] folder and its subfolders contain "
-            + "folders with duplicate names - [%s]. Each folder should have a unique name" + ANSI_RESET;
-    private static final File TEST_RESOURCES_FOLDER = TestResourceSettings.getInstance().getTestResourcesFolder();
-    private static final File DATA_FOLDER = TestResourceSettings.getInstance().getDataFolder();
-    private static final File ENV_FOLDER = TestResourceSettings.getInstance().getEnvConfigFolder();
-    private static final Map<String, File> DATA_FOLDER_FILES = collectFilesFromFolder(DATA_FOLDER);
-    private static final Map<String, Map<String, File>> ENV_FOLDERS_FILES = collectFolderFilesFromFolder(ENV_FOLDER);
+    private static final String DUPLICATE_FILENAME = LogFormat.withRed(
+            "The [%s] folder and its subfolders contain files with "
+                    + "duplicate filenames - [%s]. Each file should have a unique name");
+    private static final String DUPLICATE_FOLDER_NAME = LogFormat.withRed(
+            "The [%s] folder and its subfolders contain folders with "
+                    + "duplicate names - [%s]. Each folder should have a unique name");
+
+    private final File testResourcesFolder;
+    private final File dataFolder;
+    private final File envFolder;
+    private final Map<String, File> dataFolderFiles;
+    private final Map<String, Map<String, File>> envFoldersFiles;
+
+    public FileSearcher() {
+        this(new TestResourceSettings());
+    }
+
+    public FileSearcher(final TestResourceSettings testResourceSettings) {
+        this.testResourcesFolder = testResourceSettings.getTestResourcesFolder();
+        this.dataFolder = testResourceSettings.getDataFolder();
+        this.envFolder = testResourceSettings.getEnvConfigFolder();
+        this.dataFolderFiles = collectFilesFromFolder(dataFolder);
+        this.envFoldersFiles = collectFolderFilesFromFolder(envFolder);
+    }
 
     public File searchFileFromDir(final File fromDir, final String name) {
         final String targetName = name.startsWith(SLASH_SEPARATOR) ? name.substring(1) : name;
         FilenameFilter filter = (dir, file) -> file.equals(targetName);
-        return find(fromDir, filter).orElseThrow(() -> new FileLinkingException(fromDir, TEST_RESOURCES_FOLDER, name));
+        return find(fromDir, filter).orElseThrow(() -> new FileLinkingException(fromDir, testResourcesFolder, name));
     }
 
     private Optional<File> find(final File fromDir, final FilenameFilter filter) {
-        if (TEST_RESOURCES_FOLDER.equals(fromDir)) {
+        if (testResourcesFolder.equals(fromDir)) {
             return Optional.empty();
         }
         File[] files = fromDir.listFiles(filter);
@@ -66,17 +82,17 @@ public final class FileSearcher {
         final String targetName = fileName.startsWith(SLASH_SEPARATOR)
                 ? fileName.substring(1) : fileName;
         String finalFileName = targetName.split("\\s+")[0];
-        File file = DATA_FOLDER_FILES.get(finalFileName);
+        File file = dataFolderFiles.get(finalFileName);
         if (isNull(file)) {
-            throw new FileLinkingException(DATA_FOLDER, TEST_RESOURCES_FOLDER, finalFileName);
+            throw new FileLinkingException(dataFolder, testResourcesFolder, finalFileName);
         }
         return file;
     }
 
     public Optional<File> searchFileFromEnvFolder(final String folder, final String fileName) {
-        Map<String, File> files = ENV_FOLDERS_FILES.get(folder);
+        Map<String, File> files = envFoldersFiles.get(folder);
         if (isNull(files)) {
-            throw new FileLinkingException(String.format(ENV_FOLDER_NOT_EXIST, folder), ENV_FOLDER);
+            throw new FileLinkingException(String.format(ENV_FOLDER_NOT_EXIST, folder), envFolder);
         }
         return Optional.ofNullable(files.get(fileName));
     }

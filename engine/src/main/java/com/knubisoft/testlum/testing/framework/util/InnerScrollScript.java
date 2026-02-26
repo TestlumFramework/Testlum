@@ -8,6 +8,8 @@ import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollDirection;
 import com.knubisoft.testlum.testing.model.scenario.ScrollMeasure;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,92 +20,101 @@ import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 
 @Getter
-public enum InnerScrollScript {
+@Component
+public class InnerScrollScript {
 
-    VERTICAL_BY_CSS_SELECTOR(locator -> nonNull(WebElementFinder.getLocatorsByType(locator, CssSelector.class)),
-            locator -> WebElementFinder.getLocatorsByType(locator, CssSelector.class)
-                    .stream().map(CssSelector::getValue).toList(),
-            "document.querySelector('%s').scrollBy(0, %s)",
-            "document.querySelector('%s').scrollBy(0, document.querySelector('%s')"
-                    + ".scrollHeight * %s)"),
-    VERTICAL_BY_ID(locator -> nonNull(WebElementFinder.getLocatorsByType(locator, Id.class)),
-            locator -> WebElementFinder.getLocatorsByType(locator, Id.class)
-                    .stream().map(Id::getValue).toList(),
-            "document.getElementById('%s').scrollBy(0, %s)",
-            "document.getElementById('%s').scrollBy(0, document.getElementById('%s')"
-                    + ".scrollHeight * %s)"),
-    VERTICAL_BY_CLASS(locator -> nonNull(WebElementFinder.getLocatorsByType(locator, ClassName.class)),
-            locator -> WebElementFinder.getLocatorsByType(locator, ClassName.class)
-                    .stream().map(ClassName::getValue).toList(),
-            "document.getElementsByClassName('%s').scrollBy(0, %s)",
-            "document.getElementsByClassName('%s').scrollBy(0, "
-                    + "document.getElementsByClassName('%s').scrollHeight * %s)"),
-    VERTICAL_BY_XPATH(locator -> nonNull(WebElementFinder.getLocatorsByType(locator, Xpath.class)),
-            locator -> WebElementFinder.getLocatorsByType(locator, Xpath.class)
-                    .stream().map(Xpath::getValue).toList(),
-            "document.evaluate('%s', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
-                    + ".singleNodeValue.scrollBy(0, %s)",
-            "document.evaluate('%s', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
-                    + ".singleNodeValue.scrollBy(0, document.evaluate('%s', document, null, "
-                    + "XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollHeight * %s)");
+    private final InnerScrollScriptItem verticalByCssSelector;
+    private final InnerScrollScriptItem verticalById;
+    private final InnerScrollScriptItem verticalByClass;
+    private final InnerScrollScriptItem verticalByXpath;
 
-    private final Predicate<Locator> locatorTypePredicate;
-    private final Function<Locator, List<String>> locatorValue;
-    private final String pixelScript;
-    private final String percentageScript;
-
-
-    InnerScrollScript(final Predicate<Locator> locatorTypePredicate,
-                      final Function<Locator, List<String>> locatorValue,
-                      final String pixelScript,
-                      final String percentageScript) {
-        this.locatorTypePredicate = locatorTypePredicate;
-        this.locatorValue = locatorValue;
-        this.pixelScript = pixelScript;
-        this.percentageScript = percentageScript;
+    public InnerScrollScript(final WebElementFinder webElementFinder) {
+        this.verticalByCssSelector = new InnerScrollScriptItem(locator ->
+                nonNull(webElementFinder.getLocatorsByType(locator, CssSelector.class)),
+                locator -> webElementFinder.getLocatorsByType(locator, CssSelector.class)
+                        .stream().map(CssSelector::getValue).toList(),
+                "document.querySelector('%s').scrollBy(0, %s)",
+                "document.querySelector('%s').scrollBy(0, document.querySelector('%s')"
+                        + ".scrollHeight * %s)");
+        this.verticalById = new InnerScrollScriptItem(locator ->
+                nonNull(webElementFinder.getLocatorsByType(locator, Id.class)),
+                locator -> webElementFinder.getLocatorsByType(locator, Id.class)
+                        .stream().map(Id::getValue).toList(),
+                "document.getElementById('%s').scrollBy(0, %s)",
+                "document.getElementById('%s').scrollBy(0, document.getElementById('%s')"
+                        + ".scrollHeight * %s)");
+        this.verticalByClass = new InnerScrollScriptItem(locator ->
+                nonNull(webElementFinder.getLocatorsByType(locator, ClassName.class)),
+                locator -> webElementFinder.getLocatorsByType(locator, ClassName.class)
+                        .stream().map(ClassName::getValue).toList(),
+                "document.getElementsByClassName('%s').scrollBy(0, %s)",
+                "document.getElementsByClassName('%s').scrollBy(0, "
+                        + "document.getElementsByClassName('%s').scrollHeight * %s)");
+        this.verticalByXpath = new InnerScrollScriptItem(locator ->
+                nonNull(webElementFinder.getLocatorsByType(locator, Xpath.class)),
+                locator -> webElementFinder.getLocatorsByType(locator, Xpath.class)
+                        .stream().map(Xpath::getValue).toList(),
+                "document.evaluate('%s', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
+                        + ".singleNodeValue.scrollBy(0, %s)",
+                "document.evaluate('%s', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)"
+                        + ".singleNodeValue.scrollBy(0, document.evaluate('%s', document, null, "
+                        + "XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.scrollHeight * %s)");
     }
 
-    public static List<String> getInnerScrollScript(final Scroll scroll) {
-        Locator locator = UiUtil.getLocatorByStrategy(scroll.getLocator(), scroll.getLocatorStrategy());
-        return Arrays.stream(InnerScrollScript.values())
+    public List<String> getInnerScrollScript(final Scroll scroll, final UiUtil uiUtil) {
+        Locator locator = uiUtil.getLocatorByStrategy(scroll.getLocator(), scroll.getLocatorStrategy());
+        InnerScrollScriptItem[] items = new InnerScrollScriptItem[]{
+                verticalByCssSelector, verticalById, verticalByClass, verticalByXpath};
+        return Arrays.stream(items)
                 .filter(e -> e.getLocatorTypePredicate().test(locator))
                 .findFirst()
                 .map(e -> {
                     List<String> selectors = e.locatorValue.apply(locator);
-                    return getFormattedScript(e, scroll, selectors);
+                    return getFormattedScript(e, scroll, selectors, uiUtil);
                 })
                 .orElseThrow(() -> new DefaultFrameworkException(ExceptionMessage.INVALID_LOCATOR, locator));
     }
 
-    private static List<String> getFormattedScript(final InnerScrollScript e,
-                                                   final Scroll scroll,
-                                                   final List<String> selectorList) {
+    private List<String> getFormattedScript(final InnerScrollScriptItem e,
+                                            final Scroll scroll,
+                                            final List<String> selectorList,
+                                            final UiUtil uiUtil) {
         int value = scroll.getValue();
         ScrollDirection scrollDirection = scroll.getDirection();
         return selectorList.stream()
                 .map(selector -> ScrollMeasure.PERCENT == scroll.getMeasure()
-                ? formatInnerPercentScript(e.getPercentageScript(), selector, value, scrollDirection)
-                : formatInnerPixelScript(e.getPixelScript(), selector, value, scrollDirection))
+                        ? formatInnerPercentScript(e.getPercentageScript(), selector, value, scrollDirection, uiUtil)
+                        : formatInnerPixelScript(e.getPixelScript(), selector, value, scrollDirection))
                 .toList();
     }
 
-    private static String formatInnerPixelScript(final String script,
-                                                 final String selector,
-                                                 final int value,
-                                                 final ScrollDirection scrollDirection) {
+    private String formatInnerPixelScript(final String script,
+                                          final String selector,
+                                          final int value,
+                                          final ScrollDirection scrollDirection) {
         return format(script,
                 selector,
                 ScrollDirection.UP == scrollDirection ? DelimiterConstant.DASH + value : value);
     }
 
-    private static String formatInnerPercentScript(final String script,
-                                                   final String selector,
-                                                   final int value,
-                                                   final ScrollDirection scrollDirection) {
-        float percent = UiUtil.calculatePercentageValue(value);
+    private String formatInnerPercentScript(final String script,
+                                            final String selector,
+                                            final int value,
+                                            final ScrollDirection scrollDirection,
+                                            final UiUtil uiUtil) {
+        float percent = uiUtil.calculatePercentageValue(value);
         return format(script,
                 selector,
                 selector,
                 ScrollDirection.UP == scrollDirection ? DelimiterConstant.DASH + percent : percent);
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    private static class InnerScrollScriptItem {
+        private final Predicate<Locator> locatorTypePredicate;
+        private final Function<Locator, List<String>> locatorValue;
+        private final String pixelScript;
+        private final String percentageScript;
     }
 }

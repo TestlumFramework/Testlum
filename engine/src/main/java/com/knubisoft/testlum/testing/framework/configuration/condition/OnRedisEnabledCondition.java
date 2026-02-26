@@ -1,24 +1,21 @@
 package com.knubisoft.testlum.testing.framework.configuration.condition;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import com.knubisoft.testlum.testing.model.global_config.Redis;
 import com.knubisoft.testlum.testing.model.global_config.RedisIntegration;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
 
-public class OnRedisEnabledCondition implements Condition {
-
-    private final RedisIntegration redisIntegration =
-            GlobalTestConfigurationProvider.get().getDefaultIntegrations().getRedisIntegration();
+@Component
+public class OnRedisEnabledCondition extends AbstractCondition<Redis> {
 
     @Override
-    public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        if (Objects.nonNull(redisIntegration)) {
-            return IntegrationsUtil.isEnabled(redisIntegration.getRedis());
-        }
-        return false;
+    List<? extends Integration> getIntegrations(final Integrations integrations) {
+        return Optional.ofNullable(integrations.getRedisIntegration())
+                .map(RedisIntegration::getRedis)
+                .orElse(null);
     }
 }

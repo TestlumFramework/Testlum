@@ -6,11 +6,11 @@ import com.knubisoft.testlum.testing.framework.schema.LSResourceResolverImpl;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.UiConfig;
-import com.knubisoft.testlum.testing.model.pages.Component;
 import com.knubisoft.testlum.testing.model.pages.Page;
 import com.knubisoft.testlum.testing.model.scenario.Scenario;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Component;
 
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
@@ -18,6 +18,7 @@ import javax.xml.validation.SchemaFactory;
 import java.io.FileNotFoundException;
 import java.net.URL;
 
+@Component
 public class XMLParsers {
 
     private final Supplier<XMLParser<GlobalTestConfiguration>> globalTestConfigurationXMLParser = Suppliers.
@@ -40,8 +41,8 @@ public class XMLParsers {
                     com.knubisoft.testlum.testing.model.pages.Page.class,
                     com.knubisoft.testlum.testing.model.pages.ObjectFactory.class));
 
-    private final Supplier<XMLParser<Component>> componentXMLParser = Suppliers.
-            memoize(() -> new XMLParser<>(initSchema("schema/pages.xsd"),
+    private final Supplier<XMLParser<com.knubisoft.testlum.testing.model.pages.Component>> componentXMLParser =
+            Suppliers.memoize(() -> new XMLParser<>(initSchema("schema/pages.xsd"),
                     com.knubisoft.testlum.testing.model.pages.Component.class,
                     com.knubisoft.testlum.testing.model.pages.ObjectFactory.class));
 
@@ -49,17 +50,6 @@ public class XMLParsers {
             memoize(() -> new XMLParser<>(initSchema("schema/scenario.xsd"),
                     com.knubisoft.testlum.testing.model.scenario.Scenario.class,
                     com.knubisoft.testlum.testing.model.scenario.ObjectFactory.class));
-
-    private XMLParsers() {
-    }
-
-    private static class Holder {
-        private static final XMLParsers INSTANCE = new XMLParsers();
-    }
-
-    public static XMLParsers getInstance() {
-        return Holder.INSTANCE;
-    }
 
     public XMLParser<GlobalTestConfiguration> forGlobalTestConfiguration() {
         return globalTestConfigurationXMLParser.get();
@@ -77,7 +67,7 @@ public class XMLParsers {
         return pageXMLParser.get();
     }
 
-    public XMLParser<Component> forComponentLocator() {
+    public XMLParser<com.knubisoft.testlum.testing.model.pages.Component> forComponentLocator() {
         return componentXMLParser.get();
     }
 
@@ -86,11 +76,15 @@ public class XMLParsers {
     }
 
     @SneakyThrows
-    public Schema initSchema(final String xsd) {
-        URL file = getFileURL(xsd);
-        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        factory.setResourceResolver(new LSResourceResolverImpl("schema"));
-        return factory.newSchema(file);
+    private Schema initSchema(final String xsd) {
+        try {
+            URL file = getFileURL(xsd);
+            SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            factory.setResourceResolver(new LSResourceResolverImpl("schema"));
+            return factory.newSchema(file);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private @NotNull URL getFileURL(final String xsd) throws Exception {

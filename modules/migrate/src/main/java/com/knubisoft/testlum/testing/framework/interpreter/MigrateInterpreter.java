@@ -12,7 +12,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpret
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.model.scenario.Migrate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -34,7 +33,7 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     private static final String DATABASE_ALIAS = "Database alias";
     private static final String DEFAULT_ALIAS_VALUE = "DEFAULT";
 
-    @Autowired(required = false)
+    @Autowired
     private AliasToStorageOperation aliasToStorageOperation;
 
     public MigrateInterpreter(final InterpreterDependencies dependencies) {
@@ -77,7 +76,7 @@ public class MigrateInterpreter extends AbstractInterpreter<Migrate> {
     }
 
     private Source createSource(final String datasetName) {
-        File dataset = FileSearcher.searchFileFromDataFolder(datasetName);
+        File dataset = fileSearcher.searchFileFromDataFolder(datasetName);
         log.info(DATASET_PATH_LOG, dataset.getAbsolutePath());
         return new FileSource(dataset);
     }

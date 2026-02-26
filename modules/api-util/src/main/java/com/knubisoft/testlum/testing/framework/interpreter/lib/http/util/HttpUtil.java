@@ -5,17 +5,9 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpret
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
-import com.knubisoft.testlum.testing.model.scenario.Body;
-import com.knubisoft.testlum.testing.model.scenario.ElasticSearchRequest;
-import com.knubisoft.testlum.testing.model.scenario.Elasticsearch;
-import com.knubisoft.testlum.testing.model.scenario.Http;
-import com.knubisoft.testlum.testing.model.scenario.HttpInfo;
-import com.knubisoft.testlum.testing.model.scenario.Param;
-import com.knubisoft.testlum.testing.model.scenario.PartFile;
-import com.knubisoft.testlum.testing.model.scenario.PartParam;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -27,6 +19,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -43,7 +36,8 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
-@UtilityClass
+@Component
+@RequiredArgsConstructor
 public final class HttpUtil {
 
     public static final String INCORRECT_HTTP_PROCESSING = "Incorrect http processing";
@@ -69,6 +63,8 @@ public final class HttpUtil {
         ES_HTTP_METHOD_MAP.put(Elasticsearch::getDelete, HttpMethod.DELETE);
         ES_HTTP_METHOD_MAP.put(Elasticsearch::getHead, HttpMethod.HEAD);
     }
+
+    private final FileSearcher fileSearcher;
 
     public HttpMethodMetadata getHttpMethodMetadata(final Http http) {
         return HTTP_METHOD_MAP.entrySet().stream()
@@ -157,7 +153,7 @@ public final class HttpUtil {
     private void addFileBody(final MultipartEntityBuilder builder,
                              final PartFile file,
                              final File fromDir) {
-        File from = FileSearcher.searchFileFromDir(fromDir, file.getFileName());
+        File from = fileSearcher.searchFileFromDir(fromDir, file.getFileName());
         builder.addBinaryBody(file.getName(), from, isNotBlank(file.getContentType())
                 ? ContentType.parse(file.getContentType()) : ContentType.DEFAULT_BINARY, file.getFileName());
     }

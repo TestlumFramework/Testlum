@@ -5,12 +5,13 @@ import com.github.romankh3.image.comparison.model.ImageComparisonResult;
 import com.github.romankh3.image.comparison.model.ImageComparisonState;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import org.apache.commons.io.FilenameUtils;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -23,12 +24,17 @@ import static com.knubisoft.testlum.testing.framework.util.ResultUtil.*;
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 
-@UtilityClass
+@RequiredArgsConstructor
+@Component
 public class ImageComparisonUtil {
 
     private static final String MOBILE_SCREEN_HEIGHT = "return screen.height;";
     private static final String WINDOW_INNER_HEIGHT = "return window.innerHeight;";
     private static final String STATUS_BAR_HEIGHT = "statBarHeight";
+
+    private final UiUtil uiUtil;
+    private final ResultUtil resultUtil;
+    private final JavascriptUtil javascriptUtil;
 
     @SneakyThrows
     public void processImageComparisonResult(final ImageComparisonResult comparisonResult,
@@ -40,7 +46,7 @@ public class ImageComparisonUtil {
         if (imageComparisonState != ImageComparisonState.MATCH) {
             File actualImage =
                     saveActualImage(comparisonResult, expectedImageFullName, isHighlightDifference, directoryToSave);
-            UiUtil.putScreenshotToResult(result, actualImage);
+            uiUtil.putScreenshotToResult(result, actualImage);
             result.put(ADDITIONAL_INFO, IMAGE_ATTACHED_TO_STEP);
             if (imageComparisonState.equals(ImageComparisonState.SIZE_MISMATCH)) {
                 processSizeMismatchException(comparisonResult, result);
@@ -53,7 +59,7 @@ public class ImageComparisonUtil {
 
     private void processSizeMismatchException(final ImageComparisonResult comparisonResult,
                                               final CommandResult result) {
-        ResultUtil.addImagesSizeMetaData(comparisonResult, result);
+        resultUtil.addImagesSizeMetaData(comparisonResult, result);
         throw new ImageComparisonException(format(IMAGES_SIZE_MISMATCH,
                 comparisonResult.getExpected().getWidth(), comparisonResult.getExpected().getHeight(),
                 comparisonResult.getActual().getWidth(), comparisonResult.getActual().getHeight()));
@@ -93,11 +99,12 @@ public class ImageComparisonUtil {
 
     public int getStatusBarHeight(final WebDriver driver) {
         Capabilities deviceCapabilities = ((RemoteWebDriver) driver).getCapabilities();
-        if (nonNull(deviceCapabilities.getCapability(STATUS_BAR_HEIGHT))) {
-            return (int) ((long) deviceCapabilities.getCapability(STATUS_BAR_HEIGHT));
+        Object capability = deviceCapabilities.getCapability(STATUS_BAR_HEIGHT);
+        if (nonNull(capability)) {
+            return (int) ((long) capability);
         }
-        long screenHeight = (Long) JavascriptUtil.executeJsScript(MOBILE_SCREEN_HEIGHT, driver);
-        long windowHeight = (Long) JavascriptUtil.executeJsScript(WINDOW_INNER_HEIGHT, driver);
+        long screenHeight = (Long) javascriptUtil.executeJsScript(MOBILE_SCREEN_HEIGHT, driver);
+        long windowHeight = (Long) javascriptUtil.executeJsScript(WINDOW_INNER_HEIGHT, driver);
         return (int) (screenHeight - windowHeight);
     }
 }

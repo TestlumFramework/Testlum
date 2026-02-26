@@ -1,24 +1,21 @@
 package com.knubisoft.testlum.testing.framework.configuration.condition;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import com.knubisoft.testlum.testing.model.global_config.Sendgrid;
 import com.knubisoft.testlum.testing.model.global_config.SendgridIntegration;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
 
-public class OnSendgridEnabledCondition implements Condition {
-
-    private final SendgridIntegration sendgridIntegration =
-            GlobalTestConfigurationProvider.get().getDefaultIntegrations().getSendgridIntegration();
+@Component
+public class OnSendgridEnabledCondition extends AbstractCondition<Sendgrid> {
 
     @Override
-    public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        if (Objects.nonNull(sendgridIntegration)) {
-            return IntegrationsUtil.isEnabled(sendgridIntegration.getSendgrid());
-        }
-        return false;
+    List<? extends Integration> getIntegrations(final Integrations integrations) {
+        return Optional.ofNullable(integrations.getSendgridIntegration())
+                .map(SendgridIntegration::getSendgrid)
+                .orElse(null);
     }
 }

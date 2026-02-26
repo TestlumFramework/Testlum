@@ -1,12 +1,12 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSESEnabledCondition;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.ses.SESOperation;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Ses;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
@@ -17,14 +17,15 @@ import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant
 
 @Conditional({OnSESEnabledCondition.class})
 @Component
+@RequiredArgsConstructor
 public class AliasSESAdapter implements AliasAdapter {
 
-    @Autowired(required = false)
-    private SESOperation sesOperation;
+    private final SESOperation sesOperation;
+    private final Integrations integrations;
 
     @Override
     public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
-        for (Ses ses : GlobalTestConfigurationProvider.get().getDefaultIntegrations().getSesIntegration().getSes()) {
+        for (Ses ses : integrations.getSesIntegration().getSes()) {
             if (ses.isEnabled()) {
                 aliasMap.put(SES + UNDERSCORE + ses.getAlias(), sesOperation);
             }

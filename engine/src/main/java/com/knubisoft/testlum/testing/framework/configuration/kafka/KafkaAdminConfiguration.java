@@ -1,10 +1,11 @@
 package com.knubisoft.testlum.testing.framework.configuration.kafka;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnKafkaEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
+import com.knubisoft.testlum.testing.framework.vault.VaultService;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Kafka;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -18,6 +19,7 @@ import org.springframework.kafka.core.KafkaAdmin;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
@@ -30,14 +32,18 @@ public class KafkaAdminConfiguration {
     private static final int TIMEOUT = 10000;
 
     private final ConnectionTemplate connectionTemplate;
-
-    private final Map<String, List<Kafka>> kafkaMap = GlobalTestConfigurationProvider.get().getIntegrations()
-            .entrySet().stream()
-            .collect(Collectors.toMap(Map.Entry::getKey,
-                    entry -> entry.getValue().getKafkaIntegration().getKafka()));
+    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
-    public Map<AliasEnv, KafkaAdmin> kafkaAdmin() {
+    public Map<String, List<Kafka>> getKafkaMap(final Map<String, Integrations> integrations) {
+        return integrations
+                .entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        entry -> entry.getValue().getKafkaIntegration().getKafka()));
+    }
+
+    @Bean
+    public Map<AliasEnv, KafkaAdmin> kafkaAdmin(final Map<String, List<Kafka>> kafkaMap) {
         final Map<AliasEnv, KafkaAdmin> adminMap = new HashMap<>();
         kafkaMap.forEach((env, kafkaList) -> addKafkaAdmin(kafkaList, env, adminMap));
         return adminMap;
@@ -61,7 +67,7 @@ public class KafkaAdminConfiguration {
     }
 
     @Bean
-    public Map<AliasEnv, AdminClient> kafkaAdminClient() {
+    public Map<AliasEnv, AdminClient> kafkaAdminClient(final Map<String, List<Kafka>> kafkaMap) {
         final Map<AliasEnv, AdminClient> clientMap = new HashMap<>();
         kafkaMap.forEach((env, kafkaList) -> addAdminClient(kafkaList, env, clientMap));
         return clientMap;
@@ -86,6 +92,6 @@ public class KafkaAdminConfiguration {
                         AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, TIMEOUT,
                         AdminClientConfig.DEFAULT_API_TIMEOUT_MS_CONFIG, TIMEOUT
                 )),
-                HealthCheckFactory.forKafkaAdmin());
+                healthCheckFactory.forKafkaAdmin());
     }
 }

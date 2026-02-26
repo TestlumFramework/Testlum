@@ -1,24 +1,21 @@
 package com.knubisoft.testlum.testing.framework.configuration.condition;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import com.knubisoft.testlum.testing.model.global_config.Sqs;
 import com.knubisoft.testlum.testing.model.global_config.SqsIntegration;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
 
-public class OnSQSEnabledCondition implements Condition {
-
-    private final SqsIntegration sqsIntegration =
-            GlobalTestConfigurationProvider.get().getDefaultIntegrations().getSqsIntegration();
+@Component
+public class OnSQSEnabledCondition extends AbstractCondition<Sqs> {
 
     @Override
-    public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        if (Objects.nonNull(sqsIntegration)) {
-            return IntegrationsUtil.isEnabled(sqsIntegration.getSqs());
-        }
-        return false;
+    List<? extends Integration> getIntegrations(final Integrations integrations) {
+        return Optional.ofNullable(integrations.getSqsIntegration())
+                .map(SqsIntegration::getSqs)
+                .orElse(null);
     }
 }

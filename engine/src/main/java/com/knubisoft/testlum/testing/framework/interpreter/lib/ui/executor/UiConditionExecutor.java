@@ -4,7 +4,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.ConditionProviderImpl.ConditionUtil;
 import com.knubisoft.testlum.testing.model.scenario.UiCondition;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,7 +17,7 @@ public class UiConditionExecutor extends AbstractUiExecutor<UiCondition> {
 
     @Override
     protected void execute(final UiCondition condition, final CommandResult result) {
-        ConditionUtil.processCondition(condition.getName(), condition.getSpel(),
+        conditionUtil.processCondition(condition.getName(), condition.getSpel(),
                 dependencies.getScenarioContext(), result);
     }
 }

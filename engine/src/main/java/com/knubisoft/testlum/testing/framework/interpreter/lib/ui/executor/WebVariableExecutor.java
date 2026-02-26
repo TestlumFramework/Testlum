@@ -6,10 +6,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarMethod;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper.VarPredicate;
@@ -41,7 +37,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     public WebVariableExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
         this.variableHelper = dependencies.getContext().getBean(VariableHelper.class);
-        varToMethodMap = Map.of(
+        this.varToMethodMap = Map.of(
                 var -> nonNull(var.getElement()), this::getElementResult,
                 var -> nonNull(var.getDom()), this::getDomResult,
                 var -> nonNull(var.getCookie()), this::getWebCookiesResult,
@@ -67,7 +63,7 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     private void setContextVariable(final WebVar var, final CommandResult result) {
         String value = getValueForContext(var, result);
         dependencies.getScenarioContext().set(var.getName(), value);
-        LogUtil.logVarInfo(var.getName(), value);
+        logUtil.logVarInfo(var.getName(), value);
     }
 
     private String getValueForContext(final WebVar var, final CommandResult result) {
@@ -90,33 +86,33 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
     private String getPresentValue(final ElementPresent present, final String varName, final CommandResult r) {
         String value;
         try {
-            UiUtil.findWebElement(dependencies, present.getLocator(), present.getLocatorStrategy());
+            uiUtil.findWebElement(dependencies, present.getLocator(), present.getLocatorStrategy());
             value = String.valueOf(true);
         } catch (DefaultFrameworkException e) {
             value = String.valueOf(false);
         }
-        ResultUtil.addVariableMetaData(ELEMENT_PRESENT, varName, LOCATOR_FORM, present.getLocator(), value, r);
+        resultUtil.addVariableMetaData(ELEMENT_PRESENT, varName, LOCATOR_FORM, present.getLocator(), value, r);
         return value;
     }
 
     private String getAttributeValue(final ElementAttribute attribute, final String varName, final CommandResult r) {
-        WebElement webElement = UiUtil.findWebElement(dependencies, attribute.getLocator(),
+        WebElement webElement = uiUtil.findWebElement(dependencies, attribute.getLocator(),
                 attribute.getLocatorStrategy());
-        String value = UiUtil.getElementAttribute(webElement, attribute.getName(), dependencies.getDriver());
-        ResultUtil.addVariableMetaData(ELEMENT_ATTRIBUTE, varName, LOCATOR_FORM, attribute.getLocator(), value, r);
+        String value = uiUtil.getElementAttribute(webElement, attribute.getName(), dependencies.getDriver());
+        resultUtil.addVariableMetaData(ELEMENT_ATTRIBUTE, varName, LOCATOR_FORM, attribute.getLocator(), value, r);
         return value;
     }
 
     private String getDomResult(final WebVar webVar, final CommandResult result) {
         String locatorId = webVar.getDom().getLocator();
         if (StringUtils.isNotBlank(locatorId)) {
-            String valueResult = UiUtil.findWebElement(dependencies, locatorId, webVar.getDom().getLocatorStrategy())
+            String valueResult = uiUtil.findWebElement(dependencies, locatorId, webVar.getDom().getLocatorStrategy())
                     .getAttribute("outerHTML");
-            ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), LOCATOR_FORM, locatorId, valueResult, result);
+            resultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), LOCATOR_FORM, locatorId, valueResult, result);
             return valueResult;
         }
         String valueResult = dependencies.getDriver().getPageSource();
-        ResultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), FULL_DOM, valueResult, result);
+        resultUtil.addVariableMetaData(HTML_DOM, webVar.getName(), FULL_DOM, valueResult, result);
         return valueResult;
     }
 
@@ -125,19 +121,19 @@ public class WebVariableExecutor extends AbstractUiExecutor<WebVar> {
         String valueResult = cookies.stream()
                 .map(cookie -> String.join(DelimiterConstant.EQUALS_MARK, cookie.getName(), cookie.getValue()))
                 .collect(Collectors.joining(DelimiterConstant.SEMICOLON));
-        ResultUtil.addVariableMetaData(COOKIES, var.getName(), NO_EXPRESSION, valueResult, result);
+        resultUtil.addVariableMetaData(COOKIES, var.getName(), NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 
     private String getUrlResult(final WebVar var, final CommandResult result) {
         String valueResult = dependencies.getDriver().getCurrentUrl();
-        ResultUtil.addVariableMetaData(URL, var.getName(), NO_EXPRESSION, valueResult, result);
+        resultUtil.addVariableMetaData(URL, var.getName(), NO_EXPRESSION, valueResult, result);
         return valueResult;
     }
 
     private String getPathResult(final WebVar var, final CommandResult result) {
         UnaryOperator<String> fileToString = fileName -> {
-            String content = FileSearcher.searchFileToString(fileName, dependencies.getFile());
+            String content = fileSearcher.searchFileToString(fileName, dependencies.getFile());
             return inject(content);
         };
         return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result,

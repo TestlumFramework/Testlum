@@ -1,24 +1,21 @@
 package com.knubisoft.testlum.testing.framework.configuration.condition;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import com.knubisoft.testlum.testing.model.global_config.Postgres;
 import com.knubisoft.testlum.testing.model.global_config.PostgresIntegration;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
 
-public class OnPostgresEnabledCondition implements Condition {
-
-    private final PostgresIntegration postgresIntegration =
-            GlobalTestConfigurationProvider.get().getDefaultIntegrations().getPostgresIntegration();
+@Component
+public class OnPostgresEnabledCondition extends AbstractCondition<Postgres> {
 
     @Override
-    public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        if (Objects.nonNull(postgresIntegration)) {
-            return IntegrationsUtil.isEnabled(postgresIntegration.getPostgres());
-        }
-        return false;
+    List<? extends Integration> getIntegrations(final Integrations integrations) {
+        return Optional.ofNullable(integrations.getPostgresIntegration())
+                .map(PostgresIntegration::getPostgres)
+                .orElse(null);
     }
 }

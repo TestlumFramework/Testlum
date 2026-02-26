@@ -5,13 +5,11 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -34,6 +32,13 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
 
     public HotKeyExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
+        this.hotKeyCmdMethods = getHotKeyCmdMethods();
+        this.action = new Actions(dependencies.getDriver());
+        this.ctrlKey = chooseKeyForOperatingSystem();
+    }
+
+    //CHECKSTYLE:OFF
+    private @NotNull Map<HotKeyCommandPredicate, HotKeyCommandMethod> getHotKeyCmdMethods() {
         Map<HotKeyCommandPredicate, HotKeyCommandMethod> commands = new HashMap<>();
         commands.put(key -> key instanceof Cut, (key, result) -> cutCommand());
         commands.put(key -> key instanceof Copy, (key, result) -> copyCommand());
@@ -49,20 +54,19 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
                 (key, result) -> singleKeyCommand(Keys.ESCAPE, ((Escape) key).getTimes(), result));
         commands.put(key -> key instanceof Space,
                 (key, result) -> singleKeyCommand(Keys.SPACE, ((Space) key).getTimes(), result));
-        hotKeyCmdMethods = Collections.unmodifiableMap(commands);
-        action = new Actions(dependencies.getDriver());
-        ctrlKey = chooseKeyForOperatingSystem();
+        return Collections.unmodifiableMap(commands);
     }
+    //CHECKSTYLE:ON
 
     @Override
     public void execute(final HotKey hotKey, final CommandResult result) {
         List<CommandResult> subCommandsResult = new LinkedList<>();
         result.setSubCommandsResult(subCommandsResult);
         hotKey.getCopyOrPasteOrCut().forEach(command -> {
-            CommandResult commandResult = ResultUtil.newUiCommandResultInstance(
+            CommandResult commandResult = resultUtil.newUiCommandResultInstance(
                     dependencies.getPosition().incrementAndGet(), command);
             subCommandsResult.add(commandResult);
-            LogUtil.logHotKeyInfo(command, dependencies.getPosition().get());
+            logUtil.logHotKeyInfo(command, dependencies.getPosition().get());
             executeHotKeyCommand(command, commandResult);
         });
     }
@@ -80,8 +84,8 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
         for (int step = 0; step < times; step++) {
             action.sendKeys(key).perform();
         }
-        ResultUtil.addSingleKeyCommandMetaData(times, result);
-        LogUtil.logSingleKeyCommandTimes(times);
+        resultUtil.addSingleKeyCommandMetaData(times, result);
+        logUtil.logSingleKeyCommandTimes(times);
     }
 
     private void highlightCommand(final Highlight highlight, final CommandResult result) {
@@ -120,13 +124,16 @@ public class HotKeyExecutor extends AbstractUiExecutor<HotKey> {
                                            final LocatorStrategy locatorStrategy) {
         result.put(HOTKEY_LOCATOR, locatorId);
         log.info(HOTKEY_COMMAND_LOCATOR, locatorId);
-        return UiUtil.findWebElement(dependencies, locatorId, locatorStrategy);
+        return uiUtil.findWebElement(dependencies, locatorId, locatorStrategy);
     }
 
     private Keys chooseKeyForOperatingSystem() {
         return SystemUtils.IS_OS_MAC_OSX ? Keys.COMMAND : Keys.CONTROL;
     }
 
-    private interface HotKeyCommandPredicate extends Predicate<AbstractUiCommand> { }
-    private interface HotKeyCommandMethod extends BiConsumer<AbstractUiCommand, CommandResult> { }
+    private interface HotKeyCommandPredicate extends Predicate<AbstractUiCommand> {
+    }
+
+    private interface HotKeyCommandMethod extends BiConsumer<AbstractUiCommand, CommandResult> {
+    }
 }

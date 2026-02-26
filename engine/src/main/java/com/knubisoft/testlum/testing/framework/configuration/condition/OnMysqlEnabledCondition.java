@@ -1,24 +1,21 @@
 package com.knubisoft.testlum.testing.framework.configuration.condition;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import com.knubisoft.testlum.testing.model.global_config.Mysql;
 import com.knubisoft.testlum.testing.model.global_config.MysqlIntegration;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
 
-public class OnMysqlEnabledCondition implements Condition {
-
-    private final MysqlIntegration mysqlIntegration =
-            GlobalTestConfigurationProvider.get().getDefaultIntegrations().getMysqlIntegration();
+@Component
+public class OnMysqlEnabledCondition extends AbstractCondition<Mysql> {
 
     @Override
-    public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        if (Objects.nonNull(mysqlIntegration)) {
-            return IntegrationsUtil.isEnabled(mysqlIntegration.getMysql());
-        }
-        return false;
+    List<? extends Integration> getIntegrations(final Integrations integrations) {
+        return Optional.ofNullable(integrations.getMysqlIntegration())
+                .map(MysqlIntegration::getMysql)
+                .orElse(null);
     }
 }

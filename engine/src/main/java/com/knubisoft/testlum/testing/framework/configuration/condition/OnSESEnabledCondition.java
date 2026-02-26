@@ -1,24 +1,21 @@
 package com.knubisoft.testlum.testing.framework.configuration.condition;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import com.knubisoft.testlum.testing.model.global_config.Ses;
 import com.knubisoft.testlum.testing.model.global_config.SesIntegration;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
 
-public class OnSESEnabledCondition implements Condition {
-
-    private final SesIntegration sesIntegration =
-            GlobalTestConfigurationProvider.get().getDefaultIntegrations().getSesIntegration();
+@Component
+public class OnSESEnabledCondition extends AbstractCondition<Ses> {
 
     @Override
-    public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        if (Objects.nonNull(sesIntegration)) {
-            return IntegrationsUtil.isEnabled(sesIntegration.getSes());
-        }
-        return false;
+    List<? extends Integration> getIntegrations(final Integrations integrations) {
+        return Optional.ofNullable(integrations.getSesIntegration())
+                .map(SesIntegration::getSes)
+                .orElse(null);
     }
 }

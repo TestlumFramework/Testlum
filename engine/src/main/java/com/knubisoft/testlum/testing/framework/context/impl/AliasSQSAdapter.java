@@ -1,12 +1,12 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSQSEnabledCondition;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.sqs.SQSOperation;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.Sqs;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
@@ -17,14 +17,15 @@ import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant
 
 @Conditional({OnSQSEnabledCondition.class})
 @Component
+@RequiredArgsConstructor
 public class AliasSQSAdapter implements AliasAdapter {
 
-    @Autowired(required = false)
-    private SQSOperation sqsOperation;
+    private final SQSOperation sqsOperation;
+    private final Integrations integrations;
 
     @Override
     public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
-        for (Sqs sqs : GlobalTestConfigurationProvider.get().getDefaultIntegrations().getSqsIntegration().getSqs()) {
+        for (Sqs sqs : integrations.getSqsIntegration().getSqs()) {
             if (sqs.isEnabled()) {
                 aliasMap.put(SQS + UNDERSCORE + sqs.getAlias(), sqsOperation);
             }

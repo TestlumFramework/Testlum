@@ -1,24 +1,21 @@
 package com.knubisoft.testlum.testing.framework.configuration.condition;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import com.knubisoft.testlum.testing.model.global_config.Oracle;
 import com.knubisoft.testlum.testing.model.global_config.OracleIntegration;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
 
-public class OnOracleEnabledCondition implements Condition {
-
-    private final OracleIntegration oracleIntegration =
-            GlobalTestConfigurationProvider.get().getDefaultIntegrations().getOracleIntegration();
+@Component
+public class OnOracleEnabledCondition extends AbstractCondition<Oracle> {
 
     @Override
-    public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        if (Objects.nonNull(oracleIntegration)) {
-            return IntegrationsUtil.isEnabled(oracleIntegration.getOracle());
-        }
-        return false;
+    List<? extends Integration> getIntegrations(final Integrations integrations) {
+        return Optional.ofNullable(integrations.getOracleIntegration())
+                .map(OracleIntegration::getOracle)
+                .orElse(null);
     }
 }

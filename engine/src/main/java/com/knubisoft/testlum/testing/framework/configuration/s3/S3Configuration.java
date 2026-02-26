@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.s3;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnS3EnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
@@ -28,11 +28,13 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class S3Configuration {
 
     private final ConnectionTemplate connectionTemplate;
+    private final HealthCheckFactory healthCheckFactory;
 
-    @Bean
-    public Map<AliasEnv, S3Client> s3Client() {
+    @Bean("s3Client")
+    public Map<AliasEnv, S3Client> s3Client(
+            final GlobalTestConfigurationProvider.EnvToIntegrationMap envTointegrations) {
         Map<AliasEnv, S3Client> amazonS3Map = new HashMap<>();
-        GlobalTestConfigurationProvider.get().getIntegrations()
+        envTointegrations
                 .forEach((env, integrations) -> addAmazonS3(integrations, env, amazonS3Map));
         return amazonS3Map;
     }
@@ -45,7 +47,7 @@ public class S3Configuration {
                 S3Client resilientClient = connectionTemplate.executeWithRetry(
                         String.format(CONNECTION_INTEGRATION_DATA, "S3", s3.getAlias()),
                         () -> createAmazonS3(s3),
-                        HealthCheckFactory.forS3()
+                        healthCheckFactory.forS3()
                 );
 
                 amazonS3Map.put(new AliasEnv(s3.getAlias(), env), resilientClient);

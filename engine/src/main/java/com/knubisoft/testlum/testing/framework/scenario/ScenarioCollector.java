@@ -1,48 +1,44 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
+import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.exception.IntegrationDisabledException;
 import com.knubisoft.testlum.testing.framework.parser.XMLParsers;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.InjectionUtil;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
-import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl.GlobalVariationsProvider;
+import com.knubisoft.testlum.testing.framework.util.IntegrationsUtil;
+import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.Api;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.AUTH_NOT_FOUND;
-import static java.util.Objects.nonNull;
+import java.util.*;
 
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class ScenarioCollector {
 
-    private final File rootTestResources;
-    private final Optional<File> scenarioScopeFolder;
     private final ScenarioValidator scenarioValidator;
-
-    public ScenarioCollector() {
-        TestResourceSettings resourceSettings = TestResourceSettings.getInstance();
-        this.rootTestResources = resourceSettings.getTestResourcesFolder();
-        this.scenarioScopeFolder = resourceSettings.getScenarioScopeFolder();
-        this.scenarioValidator = new ScenarioValidator();
-    }
+    private final XMLParsers xmlParsers;
+    private final TestResourceSettings testResourceSettings;
+    private final IntegrationsUtil integrationUtil;
+    private final FileSearcher fileSearcher;
+    private final GlobalVariationsProvider globalVariationsProvider;
+    private final InjectionUtil injectionUtil;
+    private final Integrations integrations;
 
     public Result collect() {
         List<File> scenarios = new ArrayList<>();
-        if (scenarioScopeFolder.isPresent()) {
-            walk(scenarioScopeFolder.get(), scenarios);
+        if (testResourceSettings.getScenarioScopeFolder().isPresent()) {
+            walk(testResourceSettings.getScenarioScopeFolder().get(), scenarios);
         } else {
-            walk(rootTestResources, scenarios);
+            walk(testResourceSettings.getTestResourcesFolder(), scenarios);
         }
         Result result = new Result();
         for (File each : scenarios) {
@@ -53,7 +49,7 @@ public class ScenarioCollector {
 
     private void walk(final File root, final List<File> scenarios) {
         File[] listFiles = root.listFiles();
-        if (nonNull(listFiles)) {
+        if (Objects.nonNull(listFiles)) {
             for (File file : listFiles) {
                 processEachFile(scenarios, file);
             }
@@ -84,15 +80,15 @@ public class ScenarioCollector {
     }
 
     private Scenario convertXmlToScenario(final File xmlFile) {
-        Scenario scenario = XMLParsers.getInstance().forScenario().process(xmlFile);
+        Scenario scenario = xmlParsers.forScenario().process(xmlFile);
         Optional<String> variations = getScenarioVariations(xmlFile, scenario);
         updateScenario(scenario, variations);
         return scenario;
     }
 
     private Optional<String> getScenarioVariations(final File xmlFile, final Scenario scenario) {
-        if (nonNull(scenario.getSettings().getVariations())) {
-            GlobalVariationsProvider.process(scenario, xmlFile);
+        if (Objects.nonNull(scenario.getSettings().getVariations())) {
+            globalVariationsProvider.process(scenario, xmlFile);
             return Optional.of(scenario.getSettings().getVariations());
         } else {
             return Optional.empty();
@@ -143,12 +139,12 @@ public class ScenarioCollector {
 
     private boolean isAutoLogout(final String alias) {
         //todo move to interpreter
-        List<Api> apiList = GlobalTestConfigurationProvider.get().getDefaultIntegrations().getApis().getApi();
-        Api apiIntegration = IntegrationsUtil.findApiForAlias(apiList, alias);
-        if (nonNull(apiIntegration.getAuth())) {
+        List<Api> apiList = integrations.getApis().getApi();
+        Api apiIntegration = integrationUtil.findApiForAlias(apiList, alias);
+        if (Objects.nonNull(apiIntegration.getAuth())) {
             return apiIntegration.getAuth().isAutoLogout();
         }
-        throw new DefaultFrameworkException(AUTH_NOT_FOUND, apiIntegration.getAlias());
+        throw new DefaultFrameworkException(ExceptionMessage.AUTH_NOT_FOUND, apiIntegration.getAlias());
     }
 
     private void addIncludeCommands(final List<AbstractCommand> updatedCommands,
@@ -163,20 +159,20 @@ public class ScenarioCollector {
     private Include getIncludeCommand(final AbstractCommand command, final Optional<String> variationFileName) {
         Include include = (Include) command;
         if (variationFileName != null && variationFileName.isPresent()) {
-            List<Map<String, String>> variationList = GlobalVariationsProvider.getVariations(variationFileName.get());
+            List<Map<String, String>> variationList = globalVariationsProvider.getVariations(variationFileName.get());
             include = variationList.stream()
-                    .map(variationMap -> (Include) InjectionUtil.injectObjectVariation(command, variationMap))
+                    .map(variationMap -> (Include) injectionUtil.injectObjectVariation(command, variationMap))
                     .findFirst().get();
         }
         return include;
     }
 
     private Scenario findIncludedScenarioAndParse(final Include include) {
-        File scenariosFolder = TestResourceSettings.getInstance().getScenariosFolder();
+        File scenariosFolder = testResourceSettings.getScenariosFolder();
         File includedScenarioFolder = new File(scenariosFolder,
                 include.getScenario());
-        File file = FileSearcher.searchFileFromDir(includedScenarioFolder, TestResourceSettings.SCENARIO_FILENAME);
-        return XMLParsers.getInstance().forScenario().process(file, scenarioValidator);
+        File file = fileSearcher.searchFileFromDir(includedScenarioFolder, TestResourceSettings.SCENARIO_FILENAME);
+        return xmlParsers.forScenario().process(file, scenarioValidator);
     }
 
     public static class Result extends ArrayList<MappingResult> {

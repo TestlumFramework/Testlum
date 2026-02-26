@@ -3,9 +3,7 @@ package com.knubisoft.testlum.testing.framework.util;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.EMPTY;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_BRACE;
-import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.OPEN_SQUARE_BRACKET;
+import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.*;
 
 @UtilityClass
 public class StringPrettifier {

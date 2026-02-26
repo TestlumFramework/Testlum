@@ -7,7 +7,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDepend
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.UiType;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.*;
+import com.knubisoft.testlum.testing.framework.util.ImageComparator;
 import com.knubisoft.testlum.testing.model.scenario.FullScreen;
 import com.knubisoft.testlum.testing.model.scenario.MobileImage;
 import lombok.SneakyThrows;
@@ -39,14 +39,14 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
     @SneakyThrows
     @Override
     protected void execute(final MobileImage image, final CommandResult result) {
-        LogUtil.logImageComparisonInfo(image);
-        ResultUtil.addImageComparisonMetaData(image, result);
+        logUtil.logImageComparisonInfo(image);
+        resultUtil.addImageComparisonMetaData(image, result);
         File scenarioFile = dependencies.getFile();
-        BufferedImage expected = ImageIO.read(FileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
+        BufferedImage expected = ImageIO.read(fileSearcher.searchFileFromDir(scenarioFile, image.getFile()));
         BufferedImage actual = getActualImage(dependencies.getDriver(), image, result);
         ImageComparisonResult comparisonResult = ImageComparator.compare(image, expected,
                 cutStatusBar(image.getFullScreen(), actual, dependencies.getDriver()));
-        ImageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
+        imageComparisonUtil.processImageComparisonResult(comparisonResult, image.getFile(),
                 image.isHighlightDifference(), scenarioFile.getParentFile(), result);
     }
 
@@ -55,7 +55,7 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
                                          final MobileImage image,
                                          final CommandResult result) throws IOException {
         if (nonNull(image.getPicture())) {
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
+            WebElement webElement = uiUtil.findWebElement(dependencies, image.getPicture().getLocator(),
                     image.getPicture().getLocatorStrategy());
             return extractImageFromElement(webElement, image.getPicture().getAttribute(), result);
         }
@@ -63,19 +63,19 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
             if (UiType.MOBILE_BROWSER.equals(dependencies.getUiType()) && isIosDevice(webDriver)) {
                 throw new DefaultFrameworkException(IOS_NOT_SUPPORT_PART_COMMAND);
             }
-            WebElement webElement = UiUtil.findWebElement(dependencies, image.getPart().getLocator(),
+            WebElement webElement = uiUtil.findWebElement(dependencies, image.getPart().getLocator(),
                     image.getPart().getLocatorStrategy());
-            return ImageIO.read(UiUtil.takeScreenshot(webElement));
+            return ImageIO.read(uiUtil.takeScreenshot(webElement));
         }
-        return ImageIO.read(UiUtil.takeScreenshot(webDriver));
+        return ImageIO.read(uiUtil.takeScreenshot(webDriver));
     }
     //CHECKSTYLE:ON
 
     private BufferedImage extractImageFromElement(final WebElement webElement,
                                                   final String imageSourceAttribute,
                                                   final CommandResult result) throws IOException {
-        String urlToImage = UiUtil.getElementAttribute(webElement, imageSourceAttribute, dependencies.getDriver());
-        urlToImage = UiUtil.resolveHostIfNeeded(urlToImage);
+        String urlToImage = uiUtil.getElementAttribute(webElement, imageSourceAttribute, dependencies.getDriver());
+        urlToImage = uiUtil.resolveHostIfNeeded(urlToImage);
         log.info(URL_TO_IMAGE_LOG, urlToImage);
         result.put(URL_TO_ACTUAL_IMAGE, urlToImage);
         return ImageIO.read(new URL(urlToImage));
@@ -85,7 +85,7 @@ public class MobileCompareImageExecutor extends AbstractUiExecutor<MobileImage> 
                                        final BufferedImage screenshot,
                                        final WebDriver driver) {
         if (nonNull(fullScreen) && isIosDevice(driver)) {
-            int statusBarHeight = ImageComparisonUtil.getStatusBarHeight(driver);
+            int statusBarHeight = imageComparisonUtil.getStatusBarHeight(driver);
             return screenshot.getSubimage(0, statusBarHeight, screenshot.getWidth(),
                     screenshot.getHeight() - statusBarHeight);
         }

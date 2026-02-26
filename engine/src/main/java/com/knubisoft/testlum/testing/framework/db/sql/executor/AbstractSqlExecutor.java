@@ -33,9 +33,11 @@ public abstract class AbstractSqlExecutor {
     private static final String COUNT = "count";
 
     protected final JdbcTemplate template;
+    protected final LogUtil logUtil;
 
-    public AbstractSqlExecutor(final DataSource dataSource) {
+    public AbstractSqlExecutor(final DataSource dataSource, final LogUtil logUtil) {
         this.template = Objects.isNull(dataSource) ? null : new JdbcTemplate(dataSource);
+        this.logUtil = logUtil;
     }
 
     public abstract void truncate();
@@ -65,7 +67,7 @@ public abstract class AbstractSqlExecutor {
             Object result = executeAppropriateQuery(queryResult.getQuery());
             queryResult.setContent(result);
         } catch (InvalidDataAccessResourceUsageException e) {
-            LogUtil.logSqlException(e, queryResult.getQuery());
+            logUtil.logSqlException(e, queryResult.getQuery());
             throw e;
         }
         return queryResult;

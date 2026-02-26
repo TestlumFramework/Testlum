@@ -1,11 +1,13 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioCollector.MappingResult;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
+import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.RunScenariosByTag;
 import com.knubisoft.testlum.testing.model.global_config.TagValue;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,7 +19,12 @@ import java.util.stream.Collectors;
 import static com.knubisoft.testlum.testing.framework.constant.DelimiterConstant.COMMA;
 import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.*;
 
+@RequiredArgsConstructor
+@Component
 public class ScenarioFilter {
+
+    private final GlobalTestConfiguration globalTestConfiguration;
+    private final LogUtil logUtil;
 
     //CHECKSTYLE:OFF
     public List<MappingResult> filterScenarios(final List<MappingResult> original) {
@@ -25,9 +32,9 @@ public class ScenarioFilter {
                 original.stream().filter(e -> e.scenario == null).toList();
         if (!nonParsedScenarios.isEmpty()) {
             for (MappingResult entry : nonParsedScenarios) {
-                LogUtil.logNonParsedScenarioInfo(entry.file.getPath(), entry.exception.getMessage());
+                logUtil.logNonParsedScenarioInfo(entry.file.getPath(), entry.exception.getMessage());
             }
-            if (GlobalTestConfigurationProvider.get().provide().isStopIfInvalidScenario()) {
+            if (globalTestConfiguration.isStopIfInvalidScenario()) {
                 throw new DefaultFrameworkException(STOP_IF_NON_PARSED_SCENARIO);
             }
         } else if (original.isEmpty()) {
@@ -55,7 +62,7 @@ public class ScenarioFilter {
     }
 
     private List<MappingResult> filterScenariosByTags(final List<MappingResult> activeScenarios) {
-        RunScenariosByTag runScenariosByTag = GlobalTestConfigurationProvider.get().provide().getRunScenariosByTag();
+        RunScenariosByTag runScenariosByTag = globalTestConfiguration.getRunScenariosByTag();
         return runScenariosByTag.isEnabled()
                 ? filterByTags(activeScenarios, getEnabledTags(runScenariosByTag.getTag()))
                 : sortByName(activeScenarios);
@@ -79,7 +86,7 @@ public class ScenarioFilter {
 
     private boolean isMatchesTags(final MappingResult entry, final List<String> enabledTags) {
         if (entry.scenario.getSettings().getTags() == null) {
-            LogUtil.logScenarioWithoutTags(entry.file.getPath());
+            logUtil.logScenarioWithoutTags(entry.file.getPath());
             return false;
         }
         List<String> scenarioTags = Arrays.asList((entry.scenario.getSettings().getTags()).split(COMMA));

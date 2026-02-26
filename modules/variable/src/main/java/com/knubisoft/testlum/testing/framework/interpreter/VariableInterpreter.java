@@ -5,12 +5,10 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpret
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
 import com.knubisoft.testlum.testing.framework.variable.util.VariableHelper;
 import com.knubisoft.testlum.testing.model.scenario.Var;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 import java.util.Objects;
@@ -27,12 +25,12 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
     private static final String FAILED_VARIABLE_LOG = "Failed variable <{}> comment <{}>";
 
     private final Map<VariableHelper.VarPredicate<Var>, VariableHelper.VarMethod<Var>> varToMethodMap;
-    @Autowired
-    private VariableHelper variableHelper;
+    private final VariableHelper variableHelper;
 
     public VariableInterpreter(final InterpreterDependencies dependencies) {
         super(dependencies);
-        varToMethodMap = Map.of(variable -> Objects.nonNull(variable.getSql()), this::getSQLResult,
+        this.variableHelper = dependencies.getContext().getBean(VariableHelper.class);
+        this.varToMethodMap = Map.of(variable -> Objects.nonNull(variable.getSql()), this::getSQLResult,
                 variable -> Objects.nonNull(variable.getFile()), this::getFileResult,
                 variable -> Objects.nonNull(variable.getConstant()), this::getConstantResult,
                 variable -> Objects.nonNull(variable.getExpression()), this::getExpressionResult,
@@ -68,7 +66,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
 
     private String getFileResult(final Var var, final CommandResult result) {
         UnaryOperator<String> fileToString = fileName -> {
-            String content = FileSearcher.searchFileToString(fileName, dependencies.getFile());
+            String content = fileSearcher.searchFileToString(fileName, dependencies.getFile());
             return inject(content);
         };
         return variableHelper.getFileResult(var.getFile(), var.getName(), fileToString, result);
@@ -84,7 +82,7 @@ public class VariableInterpreter extends AbstractInterpreter<Var> {
 
     private String getPathResult(final Var var, final CommandResult result) {
         UnaryOperator<String> fileToString = fileName -> {
-            String content = FileSearcher.searchFileToString(fileName, dependencies.getFile());
+            String content = fileSearcher.searchFileToString(fileName, dependencies.getFile());
             return inject(content);
         };
         return variableHelper.getPathResult(var.getPath(), var.getName(), dependencies.getScenarioContext(), result,

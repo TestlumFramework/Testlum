@@ -2,7 +2,7 @@ package com.knubisoft.testlum.testing.framework.configuration.datasource;
 
 import com.clickhouse.jdbc.DataSourceImpl;
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider.EnvToIntegrationMap;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnClickhouseEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
@@ -26,12 +26,14 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class ClickhouseDataSourceConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
+    private final HealthCheckFactory healthCheckFactory;
 
     @Bean("clickhouseDataSource")
-    public Map<AliasEnv, DataSource> dataSource() {
+    public Map<AliasEnv, DataSource> dataSource(final EnvToIntegrationMap envTointegrations) {
         final Map<AliasEnv, DataSource> dataSourceMap = new HashMap<>();
-        GlobalTestConfigurationProvider.get().getIntegrations()
-                .forEach((env, integrations) -> collectDataSource(integrations, env, dataSourceMap));
+        envTointegrations
+                .forEach((env, integrations) ->
+                        collectDataSource(integrations, env, dataSourceMap));
         return dataSourceMap;
     }
 
@@ -43,7 +45,7 @@ public class ClickhouseDataSourceConfiguration {
                 DataSource checkedDataSource = connectionTemplate.executeWithRetry(
                         String.format(CONNECTION_INTEGRATION_DATA, "ClickHouse", clickhouse.getAlias()),
                         () -> new DataSourceImpl(clickhouse.getConnectionUrl(), clickHouseProperties(clickhouse)),
-                        HealthCheckFactory.forJdbc()
+                        healthCheckFactory.forJdbc()
                 );
                 dataSourceMap.put(new AliasEnv(clickhouse.getAlias(), env), checkedDataSource);
             }

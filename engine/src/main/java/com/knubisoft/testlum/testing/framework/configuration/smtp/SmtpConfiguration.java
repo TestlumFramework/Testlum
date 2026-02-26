@@ -1,7 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.smtp;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSmtpEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
@@ -28,11 +27,12 @@ public class SmtpConfiguration {
     private static final int TIMEOUT = 5000;
 
     private final ConnectionTemplate connectionTemplate;
+    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
-    public Map<AliasEnv, JavaMailSenderImpl> javaMailSender() {
+    public Map<AliasEnv, JavaMailSenderImpl> javaMailSender(final Map<String, Integrations> envToIntegrations) {
         Map<AliasEnv, JavaMailSenderImpl> senderMap = new HashMap<>();
-        GlobalTestConfigurationProvider.get().getIntegrations()
+        envToIntegrations
                 .forEach((env, integrations) -> addSenderToMap(integrations, env, senderMap));
         return senderMap;
     }
@@ -45,7 +45,7 @@ public class SmtpConfiguration {
                 JavaMailSenderImpl resilientSender = connectionTemplate.executeWithRetry(
                         String.format(CONNECTION_INTEGRATION_DATA, "SMTP", smtp.getAlias()),
                         () -> createJavaMailSender(smtp),
-                        HealthCheckFactory.forSmtp()
+                        healthCheckFactory.forSmtp()
                 );
 
                 senderMap.put(new AliasEnv(smtp.getAlias(), env), resilientSender);

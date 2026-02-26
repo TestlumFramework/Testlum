@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;

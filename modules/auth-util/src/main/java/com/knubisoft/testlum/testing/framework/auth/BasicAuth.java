@@ -15,9 +15,7 @@ import org.apache.commons.io.FileUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-import static com.knubisoft.testlum.testing.framework.auth.AuthorizationConstant.HEADER_BASIC;
-import static com.knubisoft.testlum.testing.framework.auth.AuthorizationConstant.PASSWORD_JPATH;
-import static com.knubisoft.testlum.testing.framework.auth.AuthorizationConstant.USERNAME_JPATH;
+import static com.knubisoft.testlum.testing.framework.auth.AuthorizationConstant.*;
 
 @Slf4j
 public class BasicAuth extends AbstractAuthStrategy {
@@ -27,9 +25,11 @@ public class BasicAuth extends AbstractAuthStrategy {
     private static final String CREDENTIALS_LOG = LogFormat.table("Credentials");
 
     private static final String AUTHENTICATION_TYPE = "Authentication type";
+    private final FileSearcher fileSearcher;
 
     public BasicAuth(final InterpreterDependencies dependencies) {
         super(dependencies);
+        this.fileSearcher = dependencies.getContext().getBean(FileSearcher.class);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class BasicAuth extends AbstractAuthStrategy {
 
     @SneakyThrows
     private String getCredentialsFromFile(final String fileName) {
-        return FileUtils.readFileToString(FileSearcher.searchFileFromDataFolder(fileName), StandardCharsets.UTF_8);
+        return FileUtils.readFileToString(fileSearcher.searchFileFromDataFolder(fileName), StandardCharsets.UTF_8);
     }
 
     private void logAuthInfo(final Auth auth) {

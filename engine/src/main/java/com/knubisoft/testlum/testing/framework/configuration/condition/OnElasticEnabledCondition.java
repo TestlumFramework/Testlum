@@ -1,24 +1,21 @@
 package com.knubisoft.testlum.testing.framework.configuration.condition;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Elasticsearch;
 import com.knubisoft.testlum.testing.model.global_config.ElasticsearchIntegration;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
 
-public class OnElasticEnabledCondition implements Condition {
-
-    private final ElasticsearchIntegration elasticsearchIntegration =
-            GlobalTestConfigurationProvider.get().getDefaultIntegrations().getElasticsearchIntegration();
+@Component
+public class OnElasticEnabledCondition extends AbstractCondition<Elasticsearch> {
 
     @Override
-    public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        if (Objects.nonNull(elasticsearchIntegration)) {
-            return IntegrationsUtil.isEnabled(elasticsearchIntegration.getElasticsearch());
-        }
-        return false;
+    List<? extends Integration> getIntegrations(final Integrations integrations) {
+        return Optional.ofNullable(integrations.getElasticsearchIntegration())
+                .map(ElasticsearchIntegration::getElasticsearch)
+                .orElse(null);
     }
 }

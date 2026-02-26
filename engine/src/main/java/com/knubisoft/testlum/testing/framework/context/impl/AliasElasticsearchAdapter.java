@@ -1,12 +1,12 @@
 package com.knubisoft.testlum.testing.framework.context.impl;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnElasticEnabledCondition;
 import com.knubisoft.testlum.testing.framework.context.AliasAdapter;
 import com.knubisoft.testlum.testing.framework.db.AbstractStorageOperation;
 import com.knubisoft.testlum.testing.framework.db.elasticsearch.ElasticsearchOperation;
 import com.knubisoft.testlum.testing.model.global_config.Elasticsearch;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
@@ -17,15 +17,15 @@ import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant
 
 @Conditional({OnElasticEnabledCondition.class})
 @Component
+@RequiredArgsConstructor
 public class AliasElasticsearchAdapter implements AliasAdapter {
 
-    @Autowired(required = false)
-    private ElasticsearchOperation elasticsearchOperation;
+    private final ElasticsearchOperation elasticsearchOperation;
+    private final Integrations integrations;
 
     @Override
     public void apply(final Map<String, AbstractStorageOperation> aliasMap) {
-        for (Elasticsearch elasticsearch : GlobalTestConfigurationProvider.get()
-                .getDefaultIntegrations().getElasticsearchIntegration().getElasticsearch()) {
+        for (Elasticsearch elasticsearch : integrations.getElasticsearchIntegration().getElasticsearch()) {
             if (elasticsearch.isEnabled()) {
                 aliasMap.put(ELASTICSEARCH + UNDERSCORE + elasticsearch.getAlias(), elasticsearchOperation);
             }

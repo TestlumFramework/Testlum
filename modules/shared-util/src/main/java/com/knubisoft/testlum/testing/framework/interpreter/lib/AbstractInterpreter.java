@@ -8,6 +8,7 @@ import com.knubisoft.testlum.testing.framework.util.ConditionProvider;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
+import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -39,11 +40,16 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     protected final InterpreterDependencies dependencies;
     protected final ConfigProvider configurationProvider;
     protected final ConditionProvider conditionProvider;
+    protected final FileSearcher fileSearcher;
+    private final boolean stopScenarioOnFailure;
 
     protected AbstractInterpreter(final InterpreterDependencies dependencies) {
         this.dependencies = dependencies;
         this.configurationProvider = dependencies.getContext().getBean(ConfigProvider.class);
         this.conditionProvider = dependencies.getContext().getBean(ConditionProvider.class);
+        this.fileSearcher = dependencies.getContext().getBean(FileSearcher.class);
+        this.stopScenarioOnFailure = dependencies.getContext().
+                getBean(GlobalTestConfiguration.class).isStopScenarioOnFailure();
     }
 
     public final void apply(final T o, final CommandResult result) {
@@ -95,7 +101,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
 
     public String getContentIfFile(final String fileOrContent) {
         if (StringUtils.isNotBlank(fileOrContent) && fileOrContent.endsWith(JSON_EXTENSION)) {
-            String content = FileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
+            String content = fileSearcher.searchFileToString(fileOrContent, dependencies.getFile());
             return inject(content);
         }
         return fileOrContent;
@@ -123,7 +129,7 @@ public abstract class AbstractInterpreter<T extends AbstractCommand> {
     }
 
     protected void checkIfStopScenarioOnFailure(final Exception e) {
-        if (configurationProvider.provide().isStopScenarioOnFailure()) {
+        if (stopScenarioOnFailure) {
             throw new DefaultFrameworkException(e);
         }
     }

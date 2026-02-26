@@ -51,9 +51,9 @@ public class CompareBuilder {
         return this;
     }
 
-    public CompareBuilder withExpectedFile(final String fileName) {
+    public CompareBuilder withExpectedFile(final FileSearcher fileSearcher, final String fileName) {
         if (StringUtils.isNotBlank(fileName)) {
-            File file = FileSearcher.searchFileFromDir(scenarioFile, fileName);
+            File file = fileSearcher.searchFileFromDir(scenarioFile, fileName);
             return tryToUseExpectedFile(file);
         }
         return this;

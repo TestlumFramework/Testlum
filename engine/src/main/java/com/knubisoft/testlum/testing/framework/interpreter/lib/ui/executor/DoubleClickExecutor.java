@@ -4,7 +4,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.DoubleClick;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -21,9 +20,9 @@ public class DoubleClickExecutor extends AbstractUiExecutor<DoubleClick> {
     @Override
     public void execute(final DoubleClick click, final CommandResult result) {
         result.put(DOUBLE_CLICK_LOCATOR, click.getLocator());
-        WebElement webElement = UiUtil.findWebElement(dependencies, click.getLocator(), click.getLocatorStrategy());
-        UiUtil.highlightElementIfRequired(click.isHighlight(), webElement, dependencies.getDriver());
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        WebElement webElement = uiUtil.findWebElement(dependencies, click.getLocator(), click.getLocatorStrategy());
+        uiUtil.highlightElementIfRequired(click.isHighlight(), webElement, dependencies.getDriver());
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         Actions act = new Actions(dependencies.getDriver());
         act.doubleClick(webElement).perform();
     }

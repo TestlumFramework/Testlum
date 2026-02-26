@@ -1,24 +1,21 @@
 package com.knubisoft.testlum.testing.framework.configuration.condition;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import com.knubisoft.testlum.testing.model.global_config.Kafka;
 import com.knubisoft.testlum.testing.model.global_config.KafkaIntegration;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
 
-public class OnKafkaEnabledCondition implements Condition {
-
-    private final KafkaIntegration kafkaIntegration =
-            GlobalTestConfigurationProvider.get().getDefaultIntegrations().getKafkaIntegration();
+@Component
+public class OnKafkaEnabledCondition extends AbstractCondition<Kafka> {
 
     @Override
-    public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        if (Objects.nonNull(kafkaIntegration)) {
-            return IntegrationsUtil.isEnabled(kafkaIntegration.getKafka());
-        }
-        return false;
+    List<? extends Integration> getIntegrations(final Integrations integrations) {
+        return Optional.ofNullable(integrations.getKafkaIntegration())
+                .map(KafkaIntegration::getKafka)
+                .orElse(null);
     }
 }

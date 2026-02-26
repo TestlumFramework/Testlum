@@ -4,7 +4,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.framework.wait.util.WaitUtil;
 import com.knubisoft.testlum.testing.model.scenario.WaitNative;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,7 @@ public class WaitNativeExecutor extends AbstractUiExecutor<WaitNative> {
         String time = wait.getTime();
         log.info(WAIT_INFO_LOG, time, wait.getUnit());
         TimeUnit timeUnit = waitUtil.getTimeUnit(wait.getUnit());
-        ResultUtil.addWaitMetaData(time, timeUnit, result);
+        resultUtil.addWaitMetaData(time, timeUnit, result);
         waitUtil.sleep(Long.parseLong(time), timeUnit);
     }
 }

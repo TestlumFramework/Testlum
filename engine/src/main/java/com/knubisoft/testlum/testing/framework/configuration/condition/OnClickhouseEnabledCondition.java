@@ -1,24 +1,21 @@
 package com.knubisoft.testlum.testing.framework.configuration.condition;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Clickhouse;
 import com.knubisoft.testlum.testing.model.global_config.ClickhouseIntegration;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
 
-public class OnClickhouseEnabledCondition implements Condition {
-
-    private final ClickhouseIntegration clickhouseIntegration =
-            GlobalTestConfigurationProvider.get().getDefaultIntegrations().getClickhouseIntegration();
+@Component
+public class OnClickhouseEnabledCondition extends AbstractCondition<Clickhouse> {
 
     @Override
-    public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        if (Objects.nonNull(clickhouseIntegration)) {
-            return IntegrationsUtil.isEnabled(clickhouseIntegration.getClickhouse());
-        }
-        return false;
+    List<? extends Integration> getIntegrations(final Integrations integrations) {
+        return Optional.ofNullable(integrations.getClickhouseIntegration())
+                .map(ClickhouseIntegration::getClickhouse)
+                .orElse(null);
     }
 }

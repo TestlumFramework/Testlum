@@ -1,24 +1,21 @@
 package com.knubisoft.testlum.testing.framework.configuration.condition;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import com.knubisoft.testlum.testing.model.global_config.Twilio;
 import com.knubisoft.testlum.testing.model.global_config.TwilioIntegration;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
 
-public class OnTwilioEnabledCondition implements Condition {
-
-    private final TwilioIntegration twilioIntegration =
-            GlobalTestConfigurationProvider.get().getDefaultIntegrations().getTwilioIntegration();
+@Component
+public class OnTwilioEnabledCondition extends AbstractCondition<Twilio> {
 
     @Override
-    public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        if (Objects.nonNull(twilioIntegration)) {
-            return IntegrationsUtil.isEnabled(twilioIntegration.getTwilio());
-        }
-        return false;
+    List<? extends Integration> getIntegrations(final Integrations integrations) {
+        return Optional.ofNullable(integrations.getTwilioIntegration())
+                .map(TwilioIntegration::getTwilio)
+                .orElse(null);
     }
 }

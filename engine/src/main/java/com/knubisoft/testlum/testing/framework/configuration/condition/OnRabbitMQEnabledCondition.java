@@ -1,24 +1,21 @@
 package com.knubisoft.testlum.testing.framework.configuration.condition;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import com.knubisoft.testlum.testing.model.global_config.Rabbitmq;
 import com.knubisoft.testlum.testing.model.global_config.RabbitmqIntegration;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
 
-public class OnRabbitMQEnabledCondition implements Condition {
-
-    private final RabbitmqIntegration rabbitmqIntegration =
-            GlobalTestConfigurationProvider.get().getDefaultIntegrations().getRabbitmqIntegration();
+@Component
+public class OnRabbitMQEnabledCondition extends AbstractCondition<Rabbitmq> {
 
     @Override
-    public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        if (Objects.nonNull(rabbitmqIntegration)) {
-            return IntegrationsUtil.isEnabled(rabbitmqIntegration.getRabbitmq());
-        }
-        return false;
+    List<? extends Integration> getIntegrations(final Integrations integrations) {
+        return Optional.ofNullable(integrations.getRabbitmqIntegration())
+                .map(RabbitmqIntegration::getRabbitmq)
+                .orElse(null);
     }
 }

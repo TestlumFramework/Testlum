@@ -6,10 +6,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.ConditionProviderImpl.ConditionUtil;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebElement;
@@ -38,10 +34,10 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
         result.setSubCommandsResult(subCommandsResult);
         aAssert.getAttributeOrEqualOrNotEqual().forEach(command -> {
             CommandResult commandResult =
-                    ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
+                    resultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
             subCommandsResult.add(commandResult);
-            LogUtil.logAssertCommand(command, dependencies.getPosition().get());
-            if (ConditionUtil.isTrue(command.getCondition(), dependencies.getScenarioContext(), commandResult)) {
+            logUtil.logAssertCommand(command, dependencies.getPosition().get());
+            if (conditionUtil.isTrue(command.getCondition(), dependencies.getScenarioContext(), commandResult)) {
                 processEachCommand(command, commandResult);
             }
         });
@@ -56,17 +52,17 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
     }
 
     private void executeAttributeCommand(final AssertAttribute attribute, final CommandResult result) {
-        LogUtil.logAssertAttributeInfo(attribute);
-        ResultUtil.addAssertAttributeMetaData(attribute, result);
+        logUtil.logAssertAttributeInfo(attribute);
+        resultUtil.addAssertAttributeMetaData(attribute, result);
         String actual = getActualValue(attribute);
         String expected = attribute.getContent();
-        ResultUtil.setExpectedActual(expected, actual, result);
+        resultUtil.setExpectedActual(expected, actual, result);
         executeComparison(actual, expected, result);
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private String getActualValue(final AssertAttribute attribute) {
-        WebElement webElement = UiUtil.findWebElement(dependencies, attribute.getLocator(),
+        WebElement webElement = uiUtil.findWebElement(dependencies, attribute.getLocator(),
                 attribute.getLocatorStrategy());
         return webElement.getAttribute(attribute.getName());
     }
@@ -78,8 +74,8 @@ public class NativeAssertExecutor extends AbstractUiExecutor<NativeAssert> {
                     .withExpected(expected)
                     .exec();
         } catch (Exception e) {
-            LogUtil.logException(e);
-            ResultUtil.setExceptionResult(result, e);
+            logUtil.logException(e);
+            resultUtil.setExceptionResult(result, e);
         }
     }
 

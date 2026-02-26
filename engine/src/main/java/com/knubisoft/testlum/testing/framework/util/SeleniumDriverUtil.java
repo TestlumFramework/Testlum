@@ -2,8 +2,8 @@ package com.knubisoft.testlum.testing.framework.util;
 
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.*;
-import lombok.experimental.UtilityClass;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ import static com.knubisoft.testlum.testing.framework.constant.ExceptionMessage.
 import static java.lang.String.format;
 import static java.util.Objects.nonNull;
 
-@UtilityClass
+@Component
 public class SeleniumDriverUtil {
 
     private static final String BROWSER_STACK_URL_TEMPLATE = "https://%s:%s@hub-cloud.browserstack.com/wd/hub";
@@ -27,7 +27,7 @@ public class SeleniumDriverUtil {
         throw new DefaultFrameworkException(BROWSER_STACK_CONFIGURATION_NOT_FOUND);
     }
 
-    public String getMobilebrowserConnectionUrl(final UiConfig uiConfig) {
+    public String getMobileBrowserConnectionUrl(final UiConfig uiConfig) {
         return getServerUrl(uiConfig.getMobilebrowser().getConnection(), uiConfig);
     }
 

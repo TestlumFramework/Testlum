@@ -1,14 +1,16 @@
 package com.knubisoft.testlum.testing.framework.configuration;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.io.File.separator;
-
 @Getter
+@Component
+@Setter
 public class TestResourceSettings {
 
     public static final String SCENARIO_FILENAME = "scenario.xml";
@@ -23,8 +25,8 @@ public class TestResourceSettings {
     public static final String SCREENSHOT_FOLDER = "screenshots";
     public static final String SCHEMAS_FOLDER = "schema";
     public static final String REPORT_FOLDER = "report";
-    public static final String LOCATORS_PAGES_FOLDER = "locators" + separator + "pages";
-    public static final String LOCATORS_COMPONENTS_FOLDER = "locators" + separator + "component";
+    public static final String LOCATORS_PAGES_FOLDER = "locators" + File.separator + "pages";
+    public static final String LOCATORS_COMPONENTS_FOLDER = "locators" + File.separator + "component";
     public static final String SCENARIOS_FOLDER = "scenarios";
     public static final String DATA_FOLDER = "data";
     public static final String ENV_CONFIG_FOLDER = "config";
@@ -37,9 +39,17 @@ public class TestResourceSettings {
     private static final String DATA_FOLDER_NOT_EXIST = "[data] folder does not exist";
     private static final String ENV_CONFIG_FOLDER_NOT_EXIST = "[config] folder does not exist";
 
-    private static TestResourceSettings instance;
+    @Getter
+    private static String configFileName;
+    @Getter
+    private static String pathToTestResources;
+    @Getter
+    private static Optional<String> scenarioScope;
+    private static boolean initialized = false;
 
     private final File testResourcesFolder;
+
+    @Getter
     private final File configFile;
     private final File envConfigFolder;
     private final File scenariosFolder;
@@ -48,9 +58,11 @@ public class TestResourceSettings {
     private File pagesFolder;
     private File componentsFolder;
 
-    private TestResourceSettings(final String configFileName,
-                                 final String pathToTestResources,
-                                 final Optional<String> scenarioScope) {
+    public TestResourceSettings() {
+        if (!initialized) {
+            throw new RuntimeException("TestResourceSettings not initialized. Use init()");
+        }
+
         this.testResourcesFolder = new File(pathToTestResources);
         this.configFile = new File(testResourcesFolder, configFileName);
         this.envConfigFolder = subFolder(testResourcesFolder, ENV_CONFIG_FOLDER, ENV_CONFIG_FOLDER_NOT_EXIST);
@@ -58,29 +70,24 @@ public class TestResourceSettings {
         this.dataFolder = subFolder(testResourcesFolder, DATA_FOLDER, DATA_FOLDER_NOT_EXIST);
         this.scenarioScopeFolder = scenarioScope
                 .map(s -> subFolder(scenariosFolder, s, SPECIFIED_SCENARIOS_FOLDER_NOT_EXIST));
+        this.pagesFolder = subFolder(testResourcesFolder, LOCATORS_PAGES_FOLDER, PAGES_FOLDER_NOT_EXIST);
+        this.componentsFolder = subFolder(testResourcesFolder, LOCATORS_COMPONENTS_FOLDER, COMPONENTS_FOLDER_NOT_EXIST);
     }
 
     public static void init(
             final String configFileName,
             final String pathToTestResources,
             final Optional<String> scenarioScope) {
-        TestResourceSettings.instance =
-                new TestResourceSettings(configFileName, pathToTestResources, scenarioScope);
-    }
-
-    public void initLocatorsFolder() {
-        this.pagesFolder = subFolder(testResourcesFolder, LOCATORS_PAGES_FOLDER, PAGES_FOLDER_NOT_EXIST);
-        this.componentsFolder = subFolder(testResourcesFolder, LOCATORS_COMPONENTS_FOLDER, COMPONENTS_FOLDER_NOT_EXIST);
-    }
-
-    public static TestResourceSettings getInstance() {
-        return TestResourceSettings.instance;
+        TestResourceSettings.initialized = true;
+        TestResourceSettings.configFileName = configFileName;
+        TestResourceSettings.pathToTestResources = pathToTestResources;
+        TestResourceSettings.scenarioScope = scenarioScope;
     }
 
     private File subFolder(final File sourceDirectory, final String name, final String errorMessage) {
         File folder = new File(sourceDirectory, name);
-        checkArgument(folder.exists(),
-                String.format(FOLDER_LOCATION_ERROR_MESSAGE, errorMessage, folder.getAbsolutePath()));
+        String message = String.format(FOLDER_LOCATION_ERROR_MESSAGE, errorMessage, folder.getAbsolutePath());
+        Preconditions.checkArgument(folder.exists(), message);
         return folder;
     }
 }

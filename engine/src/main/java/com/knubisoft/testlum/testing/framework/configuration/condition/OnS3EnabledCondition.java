@@ -1,24 +1,21 @@
 package com.knubisoft.testlum.testing.framework.configuration.condition;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
+import com.knubisoft.testlum.testing.model.global_config.Integration;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
+import com.knubisoft.testlum.testing.model.global_config.S3;
 import com.knubisoft.testlum.testing.model.global_config.S3Integration;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.Optional;
 
-public class OnS3EnabledCondition implements Condition {
-
-    private final S3Integration s3Integration =
-            GlobalTestConfigurationProvider.get().getDefaultIntegrations().getS3Integration();
+@Component
+public class OnS3EnabledCondition extends AbstractCondition<S3> {
 
     @Override
-    public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
-        if (Objects.nonNull(s3Integration)) {
-            return IntegrationsUtil.isEnabled(s3Integration.getS3());
-        }
-        return false;
+    List<? extends Integration> getIntegrations(final Integrations integrations) {
+        return Optional.ofNullable(integrations.getS3Integration())
+                .map(S3Integration::getS3)
+                .orElse(null);
     }
 }

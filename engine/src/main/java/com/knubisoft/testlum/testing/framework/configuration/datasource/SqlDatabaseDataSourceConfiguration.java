@@ -1,7 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.datasource;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSqlDatabaseEnableCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
@@ -17,6 +16,7 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider.EnvToIntegrationMap;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 
 @Configuration
@@ -25,11 +25,12 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class SqlDatabaseDataSourceConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
+    private final HealthCheckFactory healthCheckFactory;
 
     @Bean("sqlDatabaseDataSource")
-    public Map<AliasEnv, DataSource> sqlDatabaseDataSource() {
+    public Map<AliasEnv, DataSource> sqlDatabaseDataSource(final EnvToIntegrationMap envTointegrations) {
         Map<AliasEnv, DataSource> dataSourceMap = new HashMap<>();
-        GlobalTestConfigurationProvider.get().getIntegrations()
+        envTointegrations
                 .forEach((env, integrations) -> collectDataSource(integrations, env, dataSourceMap));
         return dataSourceMap;
     }
@@ -42,7 +43,7 @@ public class SqlDatabaseDataSourceConfiguration {
                 DataSource checkedDataSource = connectionTemplate.executeWithRetry(
                         String.format(CONNECTION_INTEGRATION_DATA, "SqlDatabase", sqlDatabase.getAlias()),
                         () -> DataSourceUtil.getHikariDataSource(sqlDatabase),
-                        HealthCheckFactory.forJdbc()
+                        healthCheckFactory.forJdbc()
                 );
                 dataSourceMap.put(new AliasEnv(sqlDatabase.getAlias(), env), checkedDataSource);
             }

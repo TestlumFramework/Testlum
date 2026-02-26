@@ -1,9 +1,6 @@
 package com.knubisoft.testlum.starter;
 
-
 import com.knubisoft.testlum.testing.RootTest;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
-
 import com.knubisoft.testlum.testing.framework.env.parallel.GlobalParallelExecutionConfigStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +38,7 @@ public class TestRunner implements CommandLineRunner {
      *
      * @return the test execution summary containing pass/fail counts and details
      */
-    private static TestExecutionSummary launchTestsAndGetSummary() {
+    private TestExecutionSummary launchTestsAndGetSummary() {
         Launcher launcher = LauncherFactory.create();
         SummaryGeneratingListener listener = new SummaryGeneratingListener();
         launcher.registerTestExecutionListeners(listener);
@@ -57,7 +54,7 @@ public class TestRunner implements CommandLineRunner {
      *
      * @return the configured launcher discovery request
      */
-    private static LauncherDiscoveryRequest createRequest() {
+    private LauncherDiscoveryRequest createRequest() {
         LauncherDiscoveryRequestBuilder request = LauncherDiscoveryRequestBuilder.request();
         request.selectors(DiscoverySelectors.selectClass(RootTest.class));
         return parallel(request).build();
@@ -72,8 +69,8 @@ public class TestRunner implements CommandLineRunner {
      * @param b the launcher discovery request builder to configure
      * @return the configured builder with parallel execution settings
      */
-    private static LauncherDiscoveryRequestBuilder parallel(final LauncherDiscoveryRequestBuilder b) {
-        boolean isParallel = GlobalTestConfigurationProvider.get().provide().isParallelExecution();
+    private LauncherDiscoveryRequestBuilder parallel(final LauncherDiscoveryRequestBuilder b) {
+        boolean isParallel = false; // TODO update from settings globalTestConfigurationProvider
         String clazz = GlobalParallelExecutionConfigStrategy.class.getName();
         return b.configurationParameter("junit.jupiter.execution.parallel.enabled", String.valueOf(isParallel))
                 .configurationParameter("junit.jupiter.execution.parallel.config.strategy", "custom")
@@ -95,9 +92,10 @@ public class TestRunner implements CommandLineRunner {
         log.info(toString(summary::printTo).lines().filter(line ->
                         !line.contains("container"))
                 .collect(Collectors.joining(System.lineSeparator())));
-        if (summary.getTestsFailedCount() > 0) {
+        if (summary.getTestsFailedCount() > 0 || summary.getFailures() != null && !summary.getFailures().isEmpty()) {
             log.error(toString(summary::printFailuresTo));
         }
+
         System.exit(exitCode.getExitCode());
     }
 

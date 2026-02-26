@@ -1,7 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.redis;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnRedisEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
@@ -33,6 +32,7 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class RedisConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
+    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
     public Map<AliasEnv, StringRedisConnection> stringRedisConnection(
@@ -46,7 +46,7 @@ public class RedisConfiguration {
             StringRedisConnection checkedConnection = connectionTemplate.executeWithRetry(
                     String.format(CONNECTION_INTEGRATION_DATA, "Redis", aliasEnv.getAlias()),
                     () -> new DefaultStringRedisConnection(connection, new StringRedisSerializer()),
-                    HealthCheckFactory.forRedis(connection)
+                    healthCheckFactory.forRedis(connection)
             );
             redisConnectionMap.put(aliasEnv, checkedConnection);
         });
@@ -61,10 +61,10 @@ public class RedisConfiguration {
     }
 
     @Bean
-    public Map<AliasEnv, RedisStandaloneConfiguration> redisStandaloneConfiguration() {
+    public Map<AliasEnv, RedisStandaloneConfiguration> redisStandaloneConfiguration(
+            final Map<String, Integrations> envTointegrations) {
         final Map<AliasEnv, RedisStandaloneConfiguration> redisConfigMap = new HashMap<>();
-        GlobalTestConfigurationProvider.get().getIntegrations()
-                .forEach((env, integrations) -> addStandaloneConfig(integrations, env, redisConfigMap));
+        envTointegrations.forEach((env, integrations) -> addStandaloneConfig(integrations, env, redisConfigMap));
         return redisConfigMap;
     }
 

@@ -1,15 +1,13 @@
 package com.knubisoft.testlum.testing.framework.scenario;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.TestResourceSettings;
 import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.ExceptionMessage;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.http.util.HttpUtil;
 import com.knubisoft.testlum.testing.framework.util.*;
-import com.knubisoft.testlum.testing.framework.util.IntegrationsProviderImpl.IntegrationsUtil;
 import com.knubisoft.testlum.testing.framework.validator.XMLValidator;
-import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl.GlobalVariationsProvider;
+import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.*;
 import com.knubisoft.testlum.testing.model.scenario.Auth;
 import com.knubisoft.testlum.testing.model.scenario.Clickhouse;
@@ -32,9 +30,12 @@ import com.knubisoft.testlum.testing.model.scenario.Sqs;
 import com.knubisoft.testlum.testing.model.scenario.Twilio;
 import com.knubisoft.testlum.testing.model.scenario.Web;
 import com.knubisoft.testlum.testing.model.scenario.*;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,21 +46,36 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+@RequiredArgsConstructor
+@Component
 public class ScenarioValidator implements XMLValidator<Scenario> {
 
-    private final Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
-    private final Map<AbstractCommandPredicate, AbstractCommandValidator> uiCommandValidatorsMap;
-    private final Integrations integrations = GlobalTestConfigurationProvider.get().getDefaultIntegrations();
+    private final Integrations integrations;
+    private final MobileUtil mobileUtil;
+    private final IntegrationsUtil integrationsUtil;
+    private final TestResourceSettings testResourceSettings;
+    private final HttpUtil httpUtil;
+    private final FileSearcher fileSearcher;
+    private final BrowserUtil browserUtil;
+    private final DatasetValidator datasetValidator;
+    private final GlobalVariationsProvider globalVariationsProvider;
+    private final UiConfig uiConfig;
+    private final Map<String, UiConfig> uiConfigs;
+
+    private Map<AbstractCommandPredicate, AbstractCommandValidator> abstractCommandValidatorsMap;
+    private Map<AbstractCommandPredicate, AbstractCommandValidator> uiCommandValidatorsMap;
 
     private List<Map<String, String>> variationList = new ArrayList<>();
 
-    public ScenarioValidator() {
-        this.abstractCommandValidatorsMap = createCommandsValidatorsMap();
+    @PostConstruct
+    public void init() {
+        this.abstractCommandValidatorsMap = createCommandsValidatorsMap(integrations);
         this.uiCommandValidatorsMap = createUICommandsValidatorMap();
     }
 
     //CHECKSTYLE:OFF
-    private @NotNull Map<AbstractCommandPredicate, AbstractCommandValidator> createCommandsValidatorsMap() {
+    private @NotNull Map<AbstractCommandPredicate, AbstractCommandValidator>
+    createCommandsValidatorsMap(final Integrations integrations) {
         return Map.ofEntries(
                 Map.entry(o -> o instanceof Auth, (xmlFile, command) -> {
                     checkIntegrationExistence(integrations.getApis(), Apis.class);
@@ -223,7 +239,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 Map.entry(o -> o instanceof Web, (xmlFile, command) ->
                         validateWebCommands((Web) command, xmlFile)),
                 Map.entry(o -> o instanceof Mobilebrowser, (xmlFile, command) ->
-                        validateMobilebrowserCommands((Mobilebrowser) command, xmlFile)),
+                        validateMobileBrowserCommands((Mobilebrowser) command, xmlFile)),
                 Map.entry(o -> o instanceof Native, (xmlFile, command) ->
                         validateNativeCommands((Native) command, xmlFile)));
     }
@@ -268,8 +284,8 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateVariationsIfExist(final Scenario scenario, final File xmlFile) {
         if (StringUtils.isNotBlank(scenario.getSettings().getVariations())) {
-            GlobalVariationsProvider.process(scenario, xmlFile);
-            variationList.addAll(GlobalVariationsProvider.getVariations(scenario.getSettings().getVariations()));
+            globalVariationsProvider.process(scenario, xmlFile);
+            variationList.addAll(globalVariationsProvider.getVariations(scenario.getSettings().getVariations()));
         }
     }
 
@@ -277,7 +293,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         boolean containsNativeAndMobileCommands =
                 commands.stream().anyMatch(command -> command instanceof Native)
                         && commands.stream().anyMatch(command -> command instanceof Mobilebrowser);
-        if (containsNativeAndMobileCommands && MobileUtil.isNativeAndMobileBrowserConfigEnabled()) {
+        if (containsNativeAndMobileCommands && mobileUtil.isNativeAndMobileBrowserConfigEnabled()) {
             validateNativeAndMobileAppiumConfig();
         }
     }
@@ -292,7 +308,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private boolean isSameUrl() {
-        return GlobalTestConfigurationProvider.get().getUiConfigs().values().stream()
+        return uiConfigs.values().stream()
                 .filter(uiConfig -> ObjectUtils.allNotNull(uiConfig.getMobilebrowser(), uiConfig.getNative()))
                 .filter(uiConfig -> ObjectUtils.allNotNull(uiConfig.getNative().getConnection().getAppiumServer(),
                         uiConfig.getMobilebrowser().getConnection().getAppiumServer()))
@@ -302,7 +318,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private boolean isSameNativeAndMobileDevices() {
-        return GlobalTestConfigurationProvider.get().getUiConfigs().values().stream()
+        return uiConfigs.values().stream()
                 .filter(uiConfig -> ObjectUtils.allNotNull(uiConfig.getMobilebrowser(), uiConfig.getNative()))
                 .anyMatch(this::isSameNativeAndMobileDevices);
     }
@@ -328,7 +344,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         }
         if (StringUtils.isNotBlank(fileName) && !fileName.trim().contains(DelimiterConstant.DOUBLE_OPEN_BRACE)
                 && !fileName.trim().contains(DelimiterConstant.DOUBLE_CLOSE_BRACE)) {
-            return FileSearcher.searchFileFromDataFolder(fileName).getName();
+            return fileSearcher.searchFileFromDataFolder(fileName).getName();
         }
         return fileName;
     }
@@ -339,16 +355,16 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
             validateFileNamesIfVariations(xmlFile, fileName);
         } else if (StringUtils.isNotBlank(fileName) && !fileName.trim().contains(DelimiterConstant.DOUBLE_OPEN_BRACE)
                 && !fileName.trim().contains(DelimiterConstant.DOUBLE_CLOSE_BRACE)) {
-            FileSearcher.searchFileFromDir(xmlFile, fileName);
+            fileSearcher.searchFileFromDir(xmlFile, fileName);
         }
     }
 
     private File validateFileNamesIfVariations(final File xmlFile, final String fileName) {
         String variationValue = variationList.stream()
-                .map(variationsMap -> GlobalVariationsProvider.getValue(fileName, variationsMap))
+                .map(variationsMap -> globalVariationsProvider.getValue(fileName, variationsMap))
                 .findFirst().get();
-        return Objects.nonNull(xmlFile) ? FileSearcher.searchFileFromDir(xmlFile, variationValue)
-                : FileSearcher.searchFileFromDataFolder(variationValue);
+        return Objects.nonNull(xmlFile) ? fileSearcher.searchFileFromDir(xmlFile, variationValue)
+                : fileSearcher.searchFileFromDataFolder(variationValue);
     }
 
     private void checkIntegrationExistence(final Object integration, final Class<?> name) {
@@ -358,7 +374,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateAlias(final List<? extends Integration> integrationList, final String alias) {
-        IntegrationsUtil.findForAlias(integrationList, alias);
+        integrationsUtil.findForAlias(integrationList, alias);
     }
 
     //CHECKSTYLE:OFF
@@ -394,7 +410,7 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     //CHECKSTYLE:ON
 
     private void validateAuthCommand(final Auth auth) {
-        Api apiIntegration = IntegrationsUtil.findApiForAlias(integrations.getApis().getApi(), auth.getApiAlias());
+        Api apiIntegration = integrationsUtil.findApiForAlias(integrations.getApis().getApi(), auth.getApiAlias());
         if (Objects.isNull(apiIntegration.getAuth())) {
             throw new DefaultFrameworkException(ExceptionMessage.AUTH_NOT_FOUND, apiIntegration.getAlias());
         }
@@ -407,9 +423,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateHttpCommand(final File xmlFile, final Http http) {
-        IntegrationsUtil.findApiForAlias(integrations.getApis().getApi(), http.getAlias());
+        integrationsUtil.findApiForAlias(integrations.getApis().getApi(), http.getAlias());
 
-        HttpInfo httpInfo = HttpUtil.getHttpMethodMetadata(http).getHttpInfo();
+        HttpInfo httpInfo = httpUtil.getHttpMethodMetadata(http).getHttpInfo();
         Response response = httpInfo.getResponse();
         if (Objects.nonNull(response) && StringUtils.isNotBlank(response.getFile())) {
             validateFileIfExist(xmlFile, response.getFile());
@@ -468,11 +484,11 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
         StorageName storageName = migrate.getName();
         datasets.stream()
                 .map(this::validateFileExistenceInDataFolder)
-                .forEach(dataset -> DatasetValidator.validateDatasetByExtension(dataset, storageName));
+                .forEach(dataset -> datasetValidator.validateDatasetByExtension(dataset, storageName));
     }
 
     private void validateElasticsearchCommand(final File xmlFile, final Elasticsearch elasticsearch) {
-        ElasticSearchResponse elasticSearchResponse = HttpUtil.getESHttpMethodMetadata(elasticsearch)
+        ElasticSearchResponse elasticSearchResponse = httpUtil.getESHttpMethodMetadata(elasticsearch)
                 .getElasticSearchRequest().getResponse();
         if (Objects.nonNull(elasticSearchResponse) && StringUtils.isNotBlank(elasticSearchResponse.getFile())) {
             validateFileIfExist(xmlFile, elasticSearchResponse.getFile());
@@ -563,16 +579,16 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
 
     private void validateRepeatCommand(final String variationsFileName) {
         if (StringUtils.isNotBlank(variationsFileName)) {
-            GlobalVariationsProvider.process(variationsFileName);
-            variationList.addAll(GlobalVariationsProvider.getVariations(variationsFileName));
+            globalVariationsProvider.process(variationsFileName);
+            variationList.addAll(globalVariationsProvider.getVariations(variationsFileName));
         }
     }
 
     private void validateIncludeAction(final Include include, final File xmlFile) {
         if (StringUtils.isNotBlank(include.getScenario())) {
-            File includedScenarioFolder = new File(TestResourceSettings.getInstance().getScenariosFolder(),
+            File includedScenarioFolder = new File(testResourceSettings.getScenariosFolder(),
                     include.getScenario());
-            File includedFile = FileSearcher.searchFileFromDir(includedScenarioFolder,
+            File includedFile = fileSearcher.searchFileFromDir(includedScenarioFolder,
                     TestResourceSettings.SCENARIO_FILENAME);
             if (includedFile.equals(xmlFile)) {
                 throw new DefaultFrameworkException(ExceptionMessage.SCENARIO_CANNOT_BE_INCLUDED_TO_ITSELF);
@@ -581,24 +597,24 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
     }
 
     private void validateWebCommands(final Web command, final File xmlFile) {
-        if (BrowserUtil.filterDefaultEnabledBrowsers().isEmpty()
-                || !GlobalTestConfigurationProvider.get().getDefaultUiConfigs().getWeb().isEnabled()) {
+        if (browserUtil.filterDefaultEnabledBrowsers().isEmpty()
+                || !uiConfig.getWeb().isEnabled()) {
             throw new DefaultFrameworkException(ExceptionMessage.NOT_ENABLED_BROWSERS);
         }
         validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);
     }
 
-    private void validateMobilebrowserCommands(final Mobilebrowser command, final File xmlFile) {
-        if (MobileUtil.filterDefaultEnabledMobileBrowserDevices().isEmpty()
-                || !GlobalTestConfigurationProvider.get().getDefaultUiConfigs().getMobilebrowser().isEnabled()) {
+    private void validateMobileBrowserCommands(final Mobilebrowser command, final File xmlFile) {
+        if (mobileUtil.filterDefaultEnabledMobileBrowserDevices().isEmpty()
+                || !uiConfig.getMobilebrowser().isEnabled()) {
             throw new DefaultFrameworkException(ExceptionMessage.NOT_ENABLED_MOBILEBROWSER_DEVICE);
         }
         validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);
     }
 
     private void validateNativeCommands(final Native command, final File xmlFile) {
-        if (MobileUtil.filterDefaultEnabledNativeDevices().isEmpty()
-                || !GlobalTestConfigurationProvider.get().getDefaultUiConfigs().getNative().isEnabled()) {
+        if (mobileUtil.filterDefaultEnabledNativeDevices().isEmpty()
+                || !uiConfig.getNative().isEnabled()) {
             throw new DefaultFrameworkException(ExceptionMessage.NOT_ENABLED_NATIVE_DEVICE);
         }
         validateSubCommands(command.getClickOrInputOrAssert(), xmlFile);
@@ -625,6 +641,9 @@ public class ScenarioValidator implements XMLValidator<Scenario> {
                 .ifPresent(validator -> validator.getValue().accept(xmlFile, command));
     }
 
-    private interface AbstractCommandPredicate extends Predicate<AbstractCommand> { }
-    private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> { }
+    private interface AbstractCommandPredicate extends Predicate<AbstractCommand> {
+    }
+
+    private interface AbstractCommandValidator extends BiConsumer<File, AbstractCommand> {
+    }
 }

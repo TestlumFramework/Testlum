@@ -5,9 +5,9 @@ import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import com.knubisoft.testlum.testing.model.scenario.ScrollDirection;
 import com.knubisoft.testlum.testing.model.scenario.ScrollMeasure;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import static java.lang.String.format;
-
+@RequiredArgsConstructor
 @Getter
 public enum PageScrollScript {
 
@@ -16,17 +16,15 @@ public enum PageScrollScript {
 
     private final String script;
 
-    PageScrollScript(final String script) {
-        this.script = script;
-    }
-
-    public static String getPageScrollScript(final Scroll scroll) {
+    public static String getPageScrollScript(final Scroll scroll, final UiUtil uiUtil) {
         int value = scroll.getValue();
         boolean isUpDirection = ScrollDirection.UP == scroll.getDirection();
         if (ScrollMeasure.PERCENT == scroll.getMeasure()) {
-            float percent = UiUtil.calculatePercentageValue(value);
-            return format(VERTICAL_BY_PERCENT.getScript(), isUpDirection ? DelimiterConstant.DASH + percent : percent);
+            float percent = uiUtil.calculatePercentageValue(value);
+            Object o = isUpDirection ? DelimiterConstant.DASH + percent : percent;
+            return String.format(VERTICAL_BY_PERCENT.getScript(), o);
         }
-        return format(VERTICAL_BY_PIXEL.getScript(), isUpDirection ? DelimiterConstant.DASH + value : value);
+        Object o = isUpDirection ? DelimiterConstant.DASH + value : value;
+        return String.format(VERTICAL_BY_PIXEL.getScript(), o);
     }
 }

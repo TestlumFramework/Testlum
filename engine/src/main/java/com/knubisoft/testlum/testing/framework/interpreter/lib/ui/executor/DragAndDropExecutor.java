@@ -5,7 +5,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.*;
 import com.knubisoft.testlum.testing.model.scenario.DragAndDrop;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.InvalidArgumentException;
@@ -27,23 +26,23 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
 
     public DragAndDropExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        driver = dependencies.getDriver();
+        this.driver = dependencies.getDriver();
     }
 
     public void execute(final DragAndDrop dragAndDrop, final CommandResult result) {
-        LogUtil.logDragAndDropInfo(dragAndDrop);
-        ResultUtil.addDragAndDropMetaDada(dragAndDrop, result);
-        WebElement target = UiUtil.findWebElement(dependencies, dragAndDrop.getToLocator(),
+        logUtil.logDragAndDropInfo(dragAndDrop);
+        resultUtil.addDragAndDropMetaDada(dragAndDrop, result);
+        WebElement target = uiUtil.findWebElement(dependencies, dragAndDrop.getToLocator(),
                 dragAndDrop.getToLocatorStrategy());
         if (StringUtils.isNotBlank(dragAndDrop.getFileName())) {
-            File source = FileSearcher.searchFileFromDir(
+            File source = fileSearcher.searchFileFromDir(
                     dependencies.getFile().getParentFile(), dragAndDrop.getFileName());
             dropFile(target, source);
         } else {
-            dropElement(target, UiUtil.findWebElement(dependencies, dragAndDrop.getFromLocator(),
+            dropElement(target, uiUtil.findWebElement(dependencies, dragAndDrop.getFromLocator(),
                     dragAndDrop.getToLocatorStrategy()));
         }
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void dropElement(final WebElement target, final WebElement source) {
@@ -59,7 +58,7 @@ public class DragAndDropExecutor extends AbstractUiExecutor<DragAndDrop> {
         }
         WebElement input = target;
         if (!target.getTagName().equalsIgnoreCase("input")) {
-            input = (WebElement) JavascriptUtil.executeJsScript(QUERY_FOR_DRAG_AND_DROP, driver, target);
+            input = (WebElement) javascriptUtil.executeJsScript(QUERY_FOR_DRAG_AND_DROP, driver, target);
         }
         try {
             input.sendKeys(source.getAbsolutePath());

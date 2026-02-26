@@ -1,7 +1,7 @@
 package com.knubisoft.testlum.testing.framework.configuration.websocket;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnWebsocketEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
@@ -33,11 +33,14 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class WebsocketConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
+    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
-    public Map<AliasEnv, WebsocketConnectionManager> websocketConnectionSupplier() {
+    public Map<AliasEnv, WebsocketConnectionManager> websocketConnectionSupplier(
+            final GlobalTestConfigurationProvider.EnvToIntegrationMap envTointegrations
+    ) {
         final Map<AliasEnv, WebsocketConnectionManager> connectionSupplierMap = new HashMap<>();
-        GlobalTestConfigurationProvider.get().getIntegrations()
+        envTointegrations
                 .forEach((env, integrations) -> addWebsocketConnection(integrations, env, connectionSupplierMap));
         return connectionSupplierMap;
     }
@@ -62,7 +65,7 @@ public class WebsocketConfiguration {
                         return getWsStandardConnectionManager(websocket.getUrl());
                     }
                 },
-                HealthCheckFactory.forWebSocket(websocket)
+                healthCheckFactory.forWebSocket(websocket)
         );
     }
 

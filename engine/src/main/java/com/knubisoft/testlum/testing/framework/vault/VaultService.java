@@ -3,9 +3,12 @@ package com.knubisoft.testlum.testing.framework.vault;
 import com.knubisoft.testlum.testing.framework.exception.DefaultFrameworkException;
 import com.knubisoft.testlum.testing.model.global_config.GlobalTestConfiguration;
 import com.knubisoft.testlum.testing.model.global_config.Vault;
+import jakarta.annotation.PostConstruct;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.springframework.stereotype.Service;
 import org.springframework.vault.authentication.TokenAuthentication;
 import org.springframework.vault.client.VaultEndpoint;
 import org.springframework.vault.core.VaultTemplate;
@@ -18,15 +21,20 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@RequiredArgsConstructor
+@Service
 public class VaultService {
 
     private static final String VAULT_KEY = "data";
     private static final String ROUTE_REGEXP = "\\{\\{(.*?)}}";
     private static final Pattern ROUTE_PATTERN = Pattern.compile(ROUTE_REGEXP, Pattern.DOTALL);
 
-    private final VaultTemplate template;
+    private final GlobalTestConfiguration configuration;
 
-    public VaultService(final GlobalTestConfiguration configuration) {
+    private VaultTemplate template;
+
+    @PostConstruct
+    public void init() {
         Vault vault = getVaultOrThrow(configuration);
         this.template = new VaultTemplate(vaultEndpoint(vault), new TokenAuthentication(vault.getToken()));
     }

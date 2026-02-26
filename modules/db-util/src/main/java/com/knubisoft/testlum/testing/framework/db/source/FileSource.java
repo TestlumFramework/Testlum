@@ -10,9 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.CSV_EXTENSION;
-import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.XLSX_EXTENSION;
-import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.XLS_EXTENSION;
+import static com.knubisoft.testlum.testing.framework.constant.MigrationConstant.*;
 
 public class FileSource implements Source {
 

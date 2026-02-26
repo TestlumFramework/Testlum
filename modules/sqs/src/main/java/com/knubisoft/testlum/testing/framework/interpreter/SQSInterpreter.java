@@ -11,7 +11,10 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForCla
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
 import com.knubisoft.testlum.testing.framework.util.JacksonMapperUtil;
 import com.knubisoft.testlum.testing.framework.util.StringPrettifier;
-import com.knubisoft.testlum.testing.model.scenario.*;
+import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
+import com.knubisoft.testlum.testing.model.scenario.ReceiveSqsMessage;
+import com.knubisoft.testlum.testing.model.scenario.SendSqsMessage;
+import com.knubisoft.testlum.testing.model.scenario.Sqs;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;

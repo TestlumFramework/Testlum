@@ -1,6 +1,7 @@
 package com.knubisoft.testlum.testing.framework.db.sql.executor.impl;
 
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
+import com.knubisoft.testlum.testing.framework.util.LogUtil;
 
 import javax.sql.DataSource;
 import java.util.LinkedHashMap;
@@ -37,8 +38,8 @@ public class OracleExecutor extends AbstractSqlExecutor {
         SELECT_TO_TRUNCATE_QUERIES.put(SELECT_ORACLE_TABLE_NAMES_AND_CONSTRAINTS_FOR_ENABLE, ENABLE_CONSTRAINT);
     }
 
-    public OracleExecutor(final DataSource dataSource) {
-        super(dataSource);
+    public OracleExecutor(final DataSource dataSource, final LogUtil logUtil) {
+        super(dataSource, logUtil);
     }
 
     @Override

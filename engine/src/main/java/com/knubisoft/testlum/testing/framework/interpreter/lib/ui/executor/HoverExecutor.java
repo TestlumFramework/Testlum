@@ -4,15 +4,10 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.Hover;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-
-import static com.knubisoft.testlum.testing.framework.util.ConditionProviderImpl.ConditionUtil;
 
 @ExecutorForClass(Hover.class)
 public class HoverExecutor extends AbstractUiExecutor<Hover> {
@@ -25,18 +20,18 @@ public class HoverExecutor extends AbstractUiExecutor<Hover> {
 
     @Override
     public void execute(final Hover hover, final CommandResult result) {
-        ResultUtil.addHoverMetaData(hover, result);
-        LogUtil.logHover(hover);
+        resultUtil.addHoverMetaData(hover, result);
+        logUtil.logHover(hover);
         Actions actions = new Actions(dependencies.getDriver());
-        if (ConditionUtil.isTrue(hover.getCondition(), dependencies.getScenarioContext(), result)) {
+        if (conditionUtil.isTrue(hover.getCondition(), dependencies.getScenarioContext(), result)) {
             executeHoverCommand(actions, hover);
         }
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
         moveToEmptySpace(hover.isMoveToEmptySpace(), actions);
     }
 
     private void executeHoverCommand(final Actions actions, final Hover hover) {
-        WebElement webElement = UiUtil.findWebElement(dependencies, hover.getLocator(), hover.getLocatorStrategy());
+        WebElement webElement = uiUtil.findWebElement(dependencies, hover.getLocator(), hover.getLocatorStrategy());
         performMovement(actions, webElement);
     }
 

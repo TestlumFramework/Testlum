@@ -8,14 +8,14 @@ import com.knubisoft.testlum.testing.framework.scenario.ScenarioFilter;
 import com.knubisoft.testlum.testing.framework.util.BrowserUtil;
 import com.knubisoft.testlum.testing.framework.util.MobileUtil;
 import com.knubisoft.testlum.testing.framework.util.ScenarioStepReader;
-import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsImpl.GlobalVariationsProvider;
+import com.knubisoft.testlum.testing.framework.variations.GlobalVariationsProvider;
 import com.knubisoft.testlum.testing.model.global_config.AbstractBrowser;
 import com.knubisoft.testlum.testing.model.global_config.MobilebrowserDevice;
 import com.knubisoft.testlum.testing.model.global_config.NativeDevice;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.provider.Arguments;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.HashMap;
@@ -26,25 +26,38 @@ import java.util.stream.Stream;
 import static java.util.Objects.nonNull;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-@Service
+@Component
 public class TestSetCollector {
 
     private final List<String> browsers;
     private final List<String> mobileBrowsers;
     private final List<String> nativeDevices;
+    private final ScenarioCollector scenarioCollector;
+    private final ScenarioFilter scenarioFilter;
+    private final TestResourceSettings testResourceSettings;
+    private final GlobalVariationsProvider globalVariationsProvider;
 
-    public TestSetCollector() {
-        this.browsers = BrowserUtil.filterDefaultEnabledBrowsers().stream()
+    public TestSetCollector(final ScenarioCollector scenarioCollector,
+                            final ScenarioFilter scenarioFilter,
+                            final BrowserUtil browserUtil,
+                            final MobileUtil mobileUtil,
+                            final TestResourceSettings testResourceSettings,
+                            final GlobalVariationsProvider globalVariationsProvider) {
+        this.scenarioCollector = scenarioCollector;
+        this.scenarioFilter = scenarioFilter;
+        this.browsers = browserUtil.filterDefaultEnabledBrowsers().stream()
                 .map(AbstractBrowser::getAlias).toList();
-        this.mobileBrowsers = MobileUtil.filterDefaultEnabledMobileBrowserDevices().stream()
+        this.mobileBrowsers = mobileUtil.filterDefaultEnabledMobileBrowserDevices().stream()
                 .map(MobilebrowserDevice::getAlias).toList();
-        this.nativeDevices = MobileUtil.filterDefaultEnabledNativeDevices().stream()
+        this.nativeDevices = mobileUtil.filterDefaultEnabledNativeDevices().stream()
                 .map(NativeDevice::getAlias).toList();
+        this.testResourceSettings = testResourceSettings;
+        this.globalVariationsProvider = globalVariationsProvider;
     }
 
     public Stream<Arguments> collect() {
-        ScenarioCollector.Result result = new ScenarioCollector().collect();
-        List<MappingResult> validScenarios = new ScenarioFilter().filterScenarios(result);
+        ScenarioCollector.Result result = scenarioCollector.collect();
+        List<MappingResult> validScenarios = scenarioFilter.filterScenarios(result);
         return validScenarios.stream().flatMap(this::createArguments);
     }
 
@@ -158,7 +171,7 @@ public class TestSetCollector {
     }
 
     private String getShortPath(final File file) {
-        File scenariosFolder = TestResourceSettings.getInstance().getScenariosFolder();
+        File scenariosFolder = testResourceSettings.getScenariosFolder();
         return file.getPath().replace(scenariosFolder.toString(), StringUtils.EMPTY);
     }
 
@@ -167,6 +180,6 @@ public class TestSetCollector {
     }
 
     private List<Map<String, String>> getVariationList(final MappingResult entry) {
-        return GlobalVariationsProvider.getVariations(entry.scenario.getSettings().getVariations());
+        return globalVariationsProvider.getVariations(entry.scenario.getSettings().getVariations());
     }
 }

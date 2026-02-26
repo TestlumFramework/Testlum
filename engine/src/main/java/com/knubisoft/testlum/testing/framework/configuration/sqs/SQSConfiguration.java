@@ -1,7 +1,6 @@
 package com.knubisoft.testlum.testing.framework.configuration.sqs;
 
 import com.knubisoft.testlum.testing.connection.ConnectionTemplate;
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.configuration.condition.OnSQSEnabledCondition;
 import com.knubisoft.testlum.testing.framework.configuration.connection.health.HealthCheckFactory;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
@@ -20,6 +19,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.knubisoft.testlum.testing.framework.GlobalTestConfigurationProvider.EnvToIntegrationMap;
 import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNECTION_INTEGRATION_DATA;
 
 @Configuration
@@ -28,11 +28,12 @@ import static com.knubisoft.testlum.testing.framework.constant.LogMessage.CONNEC
 public class SQSConfiguration {
 
     private final ConnectionTemplate connectionTemplate;
+    private final HealthCheckFactory healthCheckFactory;
 
     @Bean
-    public Map<AliasEnv, SqsClient> sqsClient() {
+    public Map<AliasEnv, SqsClient> sqsClient(final EnvToIntegrationMap envTointegrations) {
         final Map<AliasEnv, SqsClient> amazonSqsMap = new HashMap<>();
-        GlobalTestConfigurationProvider.get().getIntegrations()
+        envTointegrations
                 .forEach((env, integrations) -> addAmazonSqs(integrations, env, amazonSqsMap));
         return amazonSqsMap;
     }
@@ -45,7 +46,7 @@ public class SQSConfiguration {
                 SqsClient checkedSqsClient = connectionTemplate.executeWithRetry(
                         String.format(CONNECTION_INTEGRATION_DATA, "SQS", sqs.getAlias()),
                         () -> createAmazonSqs(sqs),
-                        HealthCheckFactory.forSqs()
+                        healthCheckFactory.forSqs()
                 );
 
                 amazonSqsMap.put(new AliasEnv(sqs.getAlias(), env), checkedSqsClient);

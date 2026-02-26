@@ -5,27 +5,33 @@ import com.knubisoft.testlum.testing.framework.util.ConfigUtil;
 import com.knubisoft.testlum.testing.framework.util.LogUtil;
 import com.knubisoft.testlum.testing.framework.util.ResultUtil;
 import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.time.StopWatch;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Component
 public class RepeatCommandsRunnerImpl implements RepeatCommandRunner {
+
+    private final ResultUtil resultUtil;
+    private final ConfigUtil configUtil;
+    private final LogUtil logUtil;
 
     public void runCommands(final List<AbstractCommand> commandList,
                             final InterpreterDependencies dependencies,
                             final CommandResult result,
                             final List<CommandResult> subCommandsResult) {
         commandList.forEach(command -> processEachCommand(command, dependencies, subCommandsResult));
-        ResultUtil.setExecutionResultIfSubCommandsFailed(result);
+        resultUtil.setExecutionResultIfSubCommandsFailed(result);
     }
 
     private void processEachCommand(final AbstractCommand command,
                                     final InterpreterDependencies dependencies,
                                     final List<CommandResult> subCommandsResult) {
         CommandResult commandResult =
-                ResultUtil.newCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
+                resultUtil.newCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
         subCommandsResult.add(commandResult);
         executeCommand(command, dependencies, commandResult);
     }
@@ -37,14 +43,14 @@ public class RepeatCommandsRunnerImpl implements RepeatCommandRunner {
         try {
             getAppropriateInterpreter(command, dependencies).apply(command, result);
         } catch (Exception e) {
-            ResultUtil.setExceptionResult(result, e);
-            LogUtil.logException(e);
-            ConfigUtil.checkIfStopScenarioOnFailure(e);
+            resultUtil.setExceptionResult(result, e);
+            logUtil.logException(e);
+            configUtil.checkIfStopScenarioOnFailure(e);
         } finally {
             long execTime = stopWatch.getDuration().toMillis();
             stopWatch.stop();
             result.setExecutionTime(execTime);
-            LogUtil.logExecutionTime(execTime, command);
+            logUtil.logExecutionTime(execTime, command);
         }
     }
 

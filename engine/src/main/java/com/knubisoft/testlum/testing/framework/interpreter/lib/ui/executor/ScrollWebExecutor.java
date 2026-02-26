@@ -6,7 +6,8 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.*;
+import com.knubisoft.testlum.testing.framework.util.InnerScrollScript;
+import com.knubisoft.testlum.testing.framework.util.PageScrollScript;
 import com.knubisoft.testlum.testing.model.scenario.Scroll;
 import org.openqa.selenium.WebDriver;
 
@@ -15,26 +16,29 @@ import java.util.List;
 @ExecutorForClass(Scroll.class)
 public class ScrollWebExecutor extends AbstractUiExecutor<Scroll> {
 
+    private final InnerScrollScript innerScrollScript;
+
     public ScrollWebExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
+        this.innerScrollScript = dependencies.getContext().getBean(InnerScrollScript.class);
     }
 
     @Override
     public void execute(final Scroll scroll, final CommandResult result) {
-        ResultUtil.addScrollMetaData(scroll, result);
-        LogUtil.logScrollInfo(scroll);
+        resultUtil.addScrollMetaData(scroll, result);
+        logUtil.logScrollInfo(scroll);
         executeScrollScript(scroll, dependencies.getDriver());
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void executeScrollScript(final Scroll scroll, final WebDriver webDriver) {
         switch (scroll.getType()) {
             case INNER:
-                List<String> scrollScripts = InnerScrollScript.getInnerScrollScript(scroll);
+                List<String> scrollScripts = innerScrollScript.getInnerScrollScript(scroll, uiUtil);
                 tryToScroll(scrollScripts, webDriver);
                 break;
             case PAGE:
-                JavascriptUtil.executeJsScript(PageScrollScript.getPageScrollScript(scroll), webDriver);
+                javascriptUtil.executeJsScript(PageScrollScript.getPageScrollScript(scroll, uiUtil), webDriver);
                 break;
             default:
                 throw new DefaultFrameworkException(ExceptionMessage.SCROLL_TYPE_NOT_FOUND, scroll.getType());
@@ -45,7 +49,7 @@ public class ScrollWebExecutor extends AbstractUiExecutor<Scroll> {
         boolean anyLocatorSucceeded = false;
         for (String script : scrollScripts) {
             try {
-                JavascriptUtil.executeJsScript(script, driver);
+                javascriptUtil.executeJsScript(script, driver);
                 anyLocatorSucceeded = true;
             } catch (DefaultFrameworkException ignored) {
                 //ignored

@@ -7,10 +7,11 @@ import com.knubisoft.testlum.testing.framework.constant.DelimiterConstant;
 import com.knubisoft.testlum.testing.framework.constant.LogMessage;
 import com.knubisoft.testlum.testing.framework.scenario.ScenarioArguments;
 import com.knubisoft.testlum.testing.model.scenario.*;
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +19,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@UtilityClass
+@Component
+@RequiredArgsConstructor
 @Slf4j
 public class LogUtil {
+
+    private final BrowserUtil browserUtil;
+    private final MobileUtil mobileUtil;
 
     //CHECKSTYLE:OFF
     public void logScenarioDetails(final ScenarioArguments scenarioArguments,
@@ -72,17 +77,17 @@ public class LogUtil {
         if (StringUtils.isNotBlank(variation)) {
             messages.add(String.format(LogMessage.VARIATION_LOG, variation));
         }
-        BrowserUtil.getBrowserBy(environment, browserAlias).ifPresent(abstractBrowser ->
+        browserUtil.getBrowserBy(environment, browserAlias).ifPresent(abstractBrowser ->
                 messages.add(String.format(LogMessage.BROWSER_NAME_LOG,
-                        BrowserUtil.getBrowserInfo(abstractBrowser))));
+                        browserUtil.getBrowserInfo(abstractBrowser))));
 
-        MobileUtil.getMobileBrowserDeviceBy(environment, mobileBrowserAlias).ifPresent(mobilebrowserDevice ->
+        mobileUtil.getMobileBrowserDeviceBy(environment, mobileBrowserAlias).ifPresent(mobilebrowserDevice ->
                 messages.add(String.format(LogMessage.MOBILE_BROWSER_LOG,
-                        MobileUtil.getMobileBrowserDeviceInfo(mobilebrowserDevice))));
+                        mobileUtil.getMobileBrowserDeviceInfo(mobilebrowserDevice))));
 
-        MobileUtil.getNativeDeviceBy(environment, nativeDeviceAlias).ifPresent(nativeDevice ->
+        mobileUtil.getNativeDeviceBy(environment, nativeDeviceAlias).ifPresent(nativeDevice ->
                 messages.add(String.format(LogMessage.NATIVE_LOG,
-                        MobileUtil.getNativeDeviceInfo(nativeDevice))));
+                        mobileUtil.getNativeDeviceInfo(nativeDevice))));
 
         return messages;
     }
@@ -183,38 +188,47 @@ public class LogUtil {
         log.info(LogMessage.END_UI_COMMANDS_IN_WEBVIEW);
     }
 
-
     public void logImageComparisonInfo(final Image image) {
-        log.info(LogMessage.IMAGE_FOR_COMPARISON_LOG, image.getFile());
-        log.info(LogMessage.HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
-        if (Objects.nonNull(image.getPicture())) {
-            logCompareWithElementInfo(image.getPicture());
-        } else if (Objects.nonNull(image.getFullScreen())) {
-            logCompareWithFullscreen(image.getFullScreen());
-        } else if (Objects.nonNull(image.getPart())) {
-            logCompareWithPart(image.getPart());
-        }
+        log(image.getFile(),
+                image.isHighlightDifference(),
+                image.getPicture(),
+                image.getFullScreen(),
+                image.getPart());
     }
 
     public void logImageComparisonInfo(final MobileImage image) {
-        log.info(LogMessage.IMAGE_FOR_COMPARISON_LOG, image.getFile());
-        log.info(LogMessage.HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
-        if (Objects.nonNull(image.getPicture())) {
-            logCompareWithElementInfo(image.getPicture());
-        } else if (Objects.nonNull(image.getFullScreen())) {
-            logCompareWithFullscreen(image.getFullScreen());
-        } else if (Objects.nonNull(image.getPart())) {
-            logCompareWithPart(image.getPart());
-        }
+        log(image.getFile(),
+                image.isHighlightDifference(),
+                image.getPicture(),
+                image.getFullScreen(),
+                image.getPart());
     }
 
     public void logImageComparisonInfo(final NativeImage image) {
-        log.info(LogMessage.IMAGE_FOR_COMPARISON_LOG, image.getFile());
-        log.info(LogMessage.HIGHLIGHT_DIFFERENCE_LOG, image.isHighlightDifference());
-        if (Objects.nonNull(image.getFullScreen())) {
-            logCompareWithFullscreen(image.getFullScreen());
-        } else if (Objects.nonNull(image.getPart())) {
-            logCompareWithPart(image.getPart());
+        log(image.getFile(),
+                image.isHighlightDifference(),
+                null,
+                image.getFullScreen(),
+                image.getPart());
+    }
+
+    private void log(final String file,
+                     final boolean isHighlightDifference,
+                     final Picture picture,
+                     final FullScreen fullScreen,
+                     final Part part) {
+        log.info(LogMessage.IMAGE_FOR_COMPARISON_LOG, file);
+        log.info(LogMessage.HIGHLIGHT_DIFFERENCE_LOG, isHighlightDifference);
+        if (Objects.nonNull(picture)) {
+            logCompareWithElementInfo(picture);
+        } else if (Objects.nonNull(fullScreen)) {
+            if (fullScreen instanceof WebFullScreen) {
+                logCompareWithFullscreen((WebFullScreen) fullScreen);
+            } else {
+                logCompareWithFullscreen(fullScreen);
+            }
+        } else if (Objects.nonNull(part)) {
+            logCompareWithPart(part);
         }
     }
 
@@ -350,7 +364,7 @@ public class LogUtil {
         log.info(LogMessage.NEGATIVE_LOG, command.isNegative());
     }
 
-    public static void logScenarioWithoutTags(final String scenarioPath) {
+    public void logScenarioWithoutTags(final String scenarioPath) {
         log.warn(LogMessage.SCENARIO_WITH_EMPTY_TAG_LOG, scenarioPath);
     }
 }

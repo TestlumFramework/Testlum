@@ -1,9 +1,10 @@
 package com.knubisoft.testlum.testing.framework.db.sql.executor.impl;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
 import com.knubisoft.testlum.testing.framework.db.sql.executor.AbstractSqlExecutor;
 import com.knubisoft.testlum.testing.framework.env.AliasEnv;
 import com.knubisoft.testlum.testing.framework.util.FileSearcher;
+import com.knubisoft.testlum.testing.framework.util.LogUtil;
+import com.knubisoft.testlum.testing.model.global_config.Integrations;
 import com.knubisoft.testlum.testing.model.global_config.SqlDatabase;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +22,18 @@ import java.util.List;
 public class SqlDatabaseExecutor extends AbstractSqlExecutor {
 
     private final AliasEnv aliasEnv;
+    private final FileSearcher fileSearcher;
+    private final Integrations integrations;
 
-    public SqlDatabaseExecutor(final DataSource dataSource, final AliasEnv aliasEnv) {
-        super(dataSource);
+    public SqlDatabaseExecutor(final FileSearcher fileSearcher,
+                               final DataSource dataSource,
+                               final AliasEnv aliasEnv,
+                               final LogUtil logUtil,
+                               final Integrations integrations) {
+        super(dataSource, logUtil);
         this.aliasEnv = aliasEnv;
+        this.fileSearcher = fileSearcher;
+        this.integrations = integrations;
     }
 
     @Override
@@ -43,8 +52,7 @@ public class SqlDatabaseExecutor extends AbstractSqlExecutor {
     }
 
     private @Nullable SqlDatabase getSqlDatabase() {
-        return GlobalTestConfigurationProvider.get()
-                .getDefaultIntegrations()
+        return integrations
                 .getSqlDatabaseIntegration()
                 .getSqlDatabase().stream()
                 .filter(db -> db.getAlias().equals(aliasEnv.getAlias()))
@@ -53,7 +61,7 @@ public class SqlDatabaseExecutor extends AbstractSqlExecutor {
 
     private void doTruncate(final String fileName) {
         try {
-            File truncateFile = FileSearcher.searchFileFromDataFolder(fileName);
+            File truncateFile = fileSearcher.searchFileFromDataFolder(fileName);
             String sql = FileUtils.readFileToString(truncateFile, StandardCharsets.UTF_8);
             List<String> queries = splitSqlStatements(sql);
 

@@ -6,10 +6,6 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.AbstractUiExec
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.ui.ExecutorForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.framework.util.ConditionProviderImpl.ConditionUtil;
-import com.knubisoft.testlum.testing.framework.util.LogUtil;
-import com.knubisoft.testlum.testing.framework.util.ResultUtil;
-import com.knubisoft.testlum.testing.framework.util.UiUtil;
 import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebElement;
@@ -40,7 +36,7 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
 
     public AssertExecutor(final ExecutorDependencies dependencies) {
         super(dependencies);
-        assertCommandMap = Map.of(
+        this.assertCommandMap = Map.of(
                 AssertAttribute.class::isInstance, (a, result) -> executeAttributeCommand((AssertAttribute) a, result),
                 a -> a instanceof AssertEquality, (a, result) -> executeEqualityCommand((AssertEquality) a, result),
                 AssertTitle.class::isInstance, (a, result) -> executeTitleCommand((AssertTitle) a, result),
@@ -55,10 +51,10 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         result.setSubCommandsResult(subCommandsResult);
         webAssert.getAttributeOrTitleOrEqual().forEach(command -> {
             CommandResult commandResult =
-                    ResultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
+                    resultUtil.newUiCommandResultInstance(dependencies.getPosition().incrementAndGet(), command);
             subCommandsResult.add(commandResult);
-            LogUtil.logAssertCommand(command, dependencies.getPosition().get());
-            if (ConditionUtil.isTrue(command.getCondition(), dependencies.getScenarioContext(), commandResult)) {
+            logUtil.logAssertCommand(command, dependencies.getPosition().get());
+            if (conditionUtil.isTrue(command.getCondition(), dependencies.getScenarioContext(), commandResult)) {
                 executeSubCommand(command, commandResult);
             }
         });
@@ -75,19 +71,19 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
     }
 
     private void executeAttributeCommand(final AssertAttribute attribute, final CommandResult result) {
-        LogUtil.logAssertAttributeInfo(attribute);
-        ResultUtil.addAssertAttributeMetaData(attribute, result);
+        logUtil.logAssertAttributeInfo(attribute);
+        resultUtil.addAssertAttributeMetaData(attribute, result);
         String actual = getActualValue(attribute);
         String expected = attribute.getContent();
-        ResultUtil.setExpectedActual(expected, actual, result);
+        resultUtil.setExpectedActual(expected, actual, result);
         executeComparison(actual, expected, result, attribute.isNegative());
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private String getActualValue(final AssertAttribute attribute) {
-        WebElement webElement = UiUtil.findWebElement(dependencies, attribute.getLocator(),
+        WebElement webElement = uiUtil.findWebElement(dependencies, attribute.getLocator(),
                 attribute.getLocatorStrategy());
-        return UiUtil.getElementAttribute(webElement, attribute.getName(), dependencies.getDriver());
+        return uiUtil.getElementAttribute(webElement, attribute.getName(), dependencies.getDriver());
     }
 
     private void executeEqualityCommand(final AssertEquality action, final CommandResult result) {
@@ -118,26 +114,26 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
     }
 
     private void executeTitleCommand(final AssertTitle title, final CommandResult result) {
-        LogUtil.logAssertTitleCommand(title);
+        logUtil.logAssertTitleCommand(title);
         String actual = dependencies.getDriver().getTitle();
-        ResultUtil.setExpectedActual(title.getContent(), actual, result);
+        resultUtil.setExpectedActual(title.getContent(), actual, result);
         executeComparison(actual, title.getContent(), result, title.isNegative());
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void executeAssertAlert(final AssertAlert alert, final CommandResult result) {
-        LogUtil.logAssertAlertCommand(alert);
+        logUtil.logAssertAlertCommand(alert);
         String actual = dependencies.getDriver().switchTo().alert().getText();
-        ResultUtil.setExpectedActual(alert.getText(), actual, result);
+        resultUtil.setExpectedActual(alert.getText(), actual, result);
         executeComparison(actual, alert.getText(), result, alert.isNegative());
-        UiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
+        uiUtil.takeScreenshotAndSaveIfRequired(result, dependencies);
     }
 
     private void executeAssertPresent(final AssertPresent present, final CommandResult result) {
         try {
-            LogUtil.logAssertPresent(present);
-            ResultUtil.addAssertPresentMetadata(present, result);
-            UiUtil.findWebElement(dependencies, present.getLocator(), present.getLocatorStrategy());
+            logUtil.logAssertPresent(present);
+            resultUtil.addAssertPresentMetadata(present, result);
+            uiUtil.findWebElement(dependencies, present.getLocator(), present.getLocatorStrategy());
             if (present.isNegative()) {
                 Exception e = new DefaultFrameworkException(String.format(ASSERT_NOT_PRESENT, present.getLocator()));
                 onException(result, e);
@@ -151,10 +147,10 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
     }
 
     private void executeAssertChecked(final AssertChecked checked, final CommandResult result) {
-        LogUtil.logAssertChecked(checked);
-        ResultUtil.addAssertCheckedMetadata(checked, result);
+        logUtil.logAssertChecked(checked);
+        resultUtil.addAssertCheckedMetadata(checked, result);
         boolean isSelected =
-                UiUtil.findWebElement(dependencies, checked.getLocator(), checked.getLocatorStrategy()).isSelected();
+                uiUtil.findWebElement(dependencies, checked.getLocator(), checked.getLocatorStrategy()).isSelected();
         if (checked.isNegative() && isSelected || !checked.isNegative() && !isSelected) {
             Exception e = new DefaultFrameworkException(String
                     .format(ASSERT_CHECKED, checked.getLocator()));
@@ -181,8 +177,8 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
 
     private void onException(final CommandResult result, final Exception e) {
         exceptions.add(e.getMessage());
-        LogUtil.logException(e);
-        ResultUtil.setExceptionResult(result, e);
+        logUtil.logException(e);
+        resultUtil.setExceptionResult(result, e);
     }
 
     private void rethrowOnErrors() {
@@ -191,6 +187,9 @@ public class AssertExecutor extends AbstractUiExecutor<WebAssert> {
         }
     }
 
-    private interface AssertCmdPredicate extends Predicate<AbstractCommand> { }
-    private interface AssertMethod extends BiConsumer<AbstractCommand, CommandResult> { }
+    private interface AssertCmdPredicate extends Predicate<AbstractCommand> {
+    }
+
+    private interface AssertMethod extends BiConsumer<AbstractCommand, CommandResult> {
+    }
 }

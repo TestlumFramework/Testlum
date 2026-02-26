@@ -6,11 +6,7 @@ import com.knubisoft.testlum.testing.framework.interpreter.lib.AbstractInterpret
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterDependencies;
 import com.knubisoft.testlum.testing.framework.interpreter.lib.InterpreterForClass;
 import com.knubisoft.testlum.testing.framework.report.CommandResult;
-import com.knubisoft.testlum.testing.model.scenario.AbstractCommand;
-import com.knubisoft.testlum.testing.model.scenario.Assert;
-import com.knubisoft.testlum.testing.model.scenario.AssertEqual;
-import com.knubisoft.testlum.testing.model.scenario.AssertEquality;
-import com.knubisoft.testlum.testing.model.scenario.AssertNotEqual;
+import com.knubisoft.testlum.testing.model.scenario.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
 

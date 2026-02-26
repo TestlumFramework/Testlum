@@ -1,8 +1,9 @@
 package com.knubisoft.testlum.testing.framework.util;
 
-import com.knubisoft.testlum.testing.framework.configuration.GlobalTestConfigurationProvider;
+import com.knubisoft.testlum.testing.framework.EnvironmentLoader;
 import com.knubisoft.testlum.testing.model.global_config.*;
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,18 +14,22 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-@UtilityClass
+@Component
+@RequiredArgsConstructor
 public class MobileUtil {
 
+    private final UiConfig uiConfig;
+    private final EnvironmentLoader environmentLoader;
+
     public List<NativeDevice> filterDefaultEnabledNativeDevices() {
-        Native aNative = GlobalTestConfigurationProvider.get().getDefaultUiConfigs().getNative();
-        return nonNull(aNative)
-                ? filterEnabledDevices(aNative.getDevices().getDevice())
+        Native nativeSettings = uiConfig.getNative();
+        return nonNull(nativeSettings)
+                ? filterEnabledDevices(nativeSettings.getDevices().getDevice())
                 : Collections.emptyList();
     }
 
     public List<MobilebrowserDevice> filterDefaultEnabledMobileBrowserDevices() {
-        Mobilebrowser mobilebrowser = GlobalTestConfigurationProvider.get().getDefaultUiConfigs().getMobilebrowser();
+        Mobilebrowser mobilebrowser = uiConfig.getMobilebrowser();
         return nonNull(mobilebrowser)
                 ? filterEnabledDevices(mobilebrowser.getDevices().getDevice())
                 : Collections.emptyList();
@@ -35,16 +40,15 @@ public class MobileUtil {
     }
 
     public boolean isNativeAndMobileBrowserConfigEnabled() {
-        UiConfig defaultUiConfigs = GlobalTestConfigurationProvider.get().getDefaultUiConfigs();
         return !filterDefaultEnabledMobileBrowserDevices().isEmpty() && !filterDefaultEnabledNativeDevices().isEmpty()
-                && allNotNull(defaultUiConfigs.getMobilebrowser().getConnection().getAppiumServer(),
-                defaultUiConfigs.getNative().getConnection().getAppiumServer());
+                && allNotNull(uiConfig.getMobilebrowser().getConnection().getAppiumServer(),
+                uiConfig.getNative().getConnection().getAppiumServer());
     }
 
     public Optional<MobilebrowserDevice> getMobileBrowserDeviceBy(final String env, final String deviceAlias) {
         return isBlank(deviceAlias)
                 ? Optional.empty()
-                : GlobalTestConfigurationProvider.get().getMobileBrowserSettings(env)
+                : environmentLoader.getMobileBrowserSettings(env).get()
                 .getDevices().getDevice().stream()
                 .filter(MobilebrowserDevice::isEnabled)
                 .filter(device -> device.getAlias().equalsIgnoreCase(deviceAlias))
@@ -54,7 +58,7 @@ public class MobileUtil {
     public Optional<NativeDevice> getNativeDeviceBy(final String env, final String deviceAlias) {
         return isBlank(deviceAlias)
                 ? Optional.empty()
-                : GlobalTestConfigurationProvider.get().getNativeSettings(env)
+                : environmentLoader.getNativeSettings(env).get()
                 .getDevices().getDevice().stream()
                 .filter(device -> device.isEnabled() && device.getAlias().equalsIgnoreCase(deviceAlias))
                 .findFirst();
